@@ -20,7 +20,9 @@ import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.EQCriterion;
+import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.ProxyCriterion;
+import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.filter.CriteriaFilterDefinition;
 import org.topazproject.otm.filter.FilterDefinition;
@@ -954,90 +956,146 @@ public class OqlTest extends GroovyTestCase {
       s.saveOrUpdate(o3)
     }
 
-    FilterDefinition fd1 =
-        new OqlFilterDefinition('noBob', 'Test1', "o where o.info.name.givenName != 'Bob'")
-    FilterDefinition fd2 =
-        new OqlFilterDefinition('state', 'Test1', 'o where o.state != :state')
-    FilterDefinition fd3 =
-        new OqlFilterDefinition('noJack', o1.info.name.getClass().getName(),
-                                "n where n.givenName != 'Jack'")
+    String nameCls = o1.info.name.getClass().getName()
 
-    rdf.sessFactory.addFilterDefinition(fd1);
-    rdf.sessFactory.addFilterDefinition(fd2);
-    rdf.sessFactory.addFilterDefinition(fd3);
+    FilterDefinition ofd1 =
+        new OqlFilterDefinition('noBob', 'Test1', "o where o.info.name.givenName != 'Bob'")
+    FilterDefinition ofd2 =
+        new OqlFilterDefinition('state', 'Test1', 'o where o.state != :state')
+    FilterDefinition ofd3 =
+        new OqlFilterDefinition('noJack', nameCls, "n where n.givenName != 'Jack'")
+
+    FilterDefinition cfd1 = new CriteriaFilterDefinition('noBob', 'Test1',
+        new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
+            add(Restrictions.ne('givenName', 'Bob')).parent.parent)
+    FilterDefinition cfd2 = new CriteriaFilterDefinition('state', 'Test1',
+        new DetachedCriteria('Test1').add(Restrictions.ne('state', new Parameter('state'))))
+    FilterDefinition cfd3 = new CriteriaFilterDefinition('noJack', nameCls,
+        new DetachedCriteria(nameCls).add(Restrictions.ne('givenName', 'Jack')))
 
     // run tests
     def checker = new ResultChecker(test:this)
 
-    doInTx { s ->
-      // no filters
-      Results r = s.createQuery("select obj from Test1 obj order by obj;").execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o1.id) }
-        row { object (class:cls, id:o2.id) }
-        row { object (class:cls, id:o3.id) }
+    for (t in [[ofd1, ofd2, ofd3], [cfd1, cfd2, cfd2]]) {
+      // set up available filters
+      for (fd in t) {
+        rdf.sessFactory.removeFilterDefinition(fd.getFilterName());
+        rdf.sessFactory.addFilterDefinition(fd);
       }
 
-      // with filter(s)
-      s.enableFilter('noBob');
-      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o2.id) }
-        row { object (class:cls, id:o3.id) }
+      // run oql tests
+      doInTx { s ->
+        // no filters
+        Results r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o1.id) }
+          row { object (class:cls, id:o2.id) }
+          row { object (class:cls, id:o3.id) }
+        }
+
+        // with filter(s)
+        s.enableFilter('noBob');
+        r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o2.id) }
+          row { object (class:cls, id:o3.id) }
+        }
+
+        s.disableFilter('noBob');
+        s.enableFilter('state').setParameter('state', 2);
+        r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o1.id) }
+          row { object (class:cls, id:o3.id) }
+        }
+
+        s.enableFilter('noBob');
+        r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o3.id) }
+        }
+
+        // filter on non-root class
+        s.disableFilter('state');
+        assert s.enableFilter('noJack') != null;
+        r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o2.id) }
+          row { object (class:cls, id:o3.id) }
+        }
+
+        r = s.createQuery("select obj from Test1 obj where obj.info.name.id != <foo:1> order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o3.id) }
+        }
+
+        // other constraints
+        s.disableFilter('noBob');
+        r = s.createQuery("select obj from Test1 obj where obj.state = '3'^^<xsd:int> order by obj;").
+              execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o3.id) }
+        }
+
+        r = s.createQuery("select obj from Test1 obj where obj.state = '2'^^<xsd:int> order by obj;").
+              execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o2.id) }
+        }
+
+        r = s.createQuery("select obj.info.name from Test1 obj where obj.state = '2'^^<xsd:int>;").
+              execute()
+        checker.verify(r) {
+        }
+
+        s.disableFilter('noJack');
+        r = s.createQuery("select obj.info.name from Test1 obj where obj.state = '2'^^<xsd:int>;").
+              execute()
+        checker.verify(r) {
+          row { object (class:o2.info.name.getClass(), id:o2.info.name.id) }
+        }
       }
 
-      s.disableFilter('noBob');
-      s.enableFilter('state').setParameter('state', 2);
-      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o1.id) }
-        row { object (class:cls, id:o3.id) }
-      }
+      // run criteria tests
+      doInTx { s ->
+        // no filters
+        List r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+        assertEquals([o1, o2, o3], r)
 
-      s.enableFilter('noBob');
-      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o3.id) }
-      }
+        // with filter(s)
+        s.enableFilter('noBob');
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+        assertEquals([o2, o3], r)
 
-      // filter on non-root class
-      s.disableFilter('state');
-      assert s.enableFilter('noJack') != null;
-      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o2.id) }
-        row { object (class:cls, id:o3.id) }
-      }
+        s.disableFilter('noBob');
+        s.enableFilter('state').setParameter('state', 2);
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+        assertEquals([o1, o3], r)
 
-      r = s.createQuery("select obj from Test1 obj where obj.info.name.id != <foo:1> order by obj;").execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o3.id) }
-      }
+        s.enableFilter('noBob');
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+        assertEquals([o3], r)
 
-      // other constraints
-      s.disableFilter('noBob');
-      r = s.createQuery("select obj from Test1 obj where obj.state = '3'^^<xsd:int> order by obj;").
-            execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o3.id) }
-      }
+        // filter on non-root class
+        s.disableFilter('state');
+        assert s.enableFilter('noJack') != null;
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+        assertEquals([o2, o3], r)
 
-      r = s.createQuery("select obj from Test1 obj where obj.state = '2'^^<xsd:int> order by obj;").
-            execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o2.id) }
-      }
+        r = s.createCriteria(cls).createCriteria('info').createCriteria('name').
+              add(Restrictions.ne('id', 'foo:1'.toURI())).parent.parent.
+              addOrder(Order.asc('state')).list()
+        assertEquals([o3], r)
 
-      r = s.createQuery("select obj.info.name from Test1 obj where obj.state = '2'^^<xsd:int>;").
-            execute()
-      checker.verify(r) {
-      }
+        // other constraints
+        s.disableFilter('noBob');
+        r = s.createCriteria(cls).add(Restrictions.eq('state', 3)).addOrder(Order.asc('state')).
+              list()
+        assertEquals([o3], r)
 
-      s.disableFilter('noJack');
-      r = s.createQuery("select obj.info.name from Test1 obj where obj.state = '2'^^<xsd:int>;").
-            execute()
-      checker.verify(r) {
-        row { object (class:o2.info.name.getClass(), id:o2.info.name.id) }
+        r = s.createCriteria(cls).add(Restrictions.eq('state', 2)).addOrder(Order.asc('state')).
+              list()
+        assertEquals([o2], r)
       }
     }
   }
@@ -1062,9 +1120,9 @@ public class OqlTest extends GroovyTestCase {
       FilterDefinition cfd = new CriteriaFilterDefinition("critF", "Article", dc)
       assert cfd.createFilter(s).getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := o.parts and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := v1.nextObject and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
 
-      def qry = "o where (o.title = 'foo' or o.authors = 'blah') and o.nextObject.uri = <foo:bar> and o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and (x := 'none' and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)))";
+      def qry = "o where (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)))";
       FilterDefinition ofd = new OqlFilterDefinition("oqlF", "Article", qry)
-      Criteria c = ofd.createFilter(s).getCriteria();
+      Criteria c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria();
 
       assert c.criterionList.size() == 1
       assert c.criterionList[0] instanceof Disjunction
@@ -1074,7 +1132,8 @@ public class OqlTest extends GroovyTestCase {
       assert c.criterionList[0].criterions[0].fieldName == 'title'
       assert c.criterionList[0].criterions[0].value == 'foo'
       assert c.criterionList[0].criterions[1].fieldName == 'authors'
-      assert c.criterionList[0].criterions[1].value == 'blah'
+      assert c.criterionList[0].criterions[1].value instanceof Parameter
+      assert c.criterionList[0].criterions[1].value.parameterName == 'auth'
 
       assert c.children.size() == 3
       assert c.children[0].mapping.name == 'parts'
@@ -1106,7 +1165,8 @@ public class OqlTest extends GroovyTestCase {
       assert c.criterionList[0].criterions[1].criterions[0] instanceof EQCriterion
       assert c.criterionList[0].criterions[1].criterions[1] instanceof ProxyCriterion
       assert c.criterionList[0].criterions[1].criterions[0].fieldName == 'rights'
-      assert c.criterionList[0].criterions[1].criterions[0].value == 'none'
+      assert c.criterionList[0].criterions[1].criterions[0].value instanceof Parameter
+      assert c.criterionList[0].criterions[1].criterions[0].value.parameterName == 'x'
       assert c.criterionList[0].criterions[1].criterions[1].function == 'le'
       assert c.criterionList[0].criterions[1].criterions[1].arguments.length == 2
       assert c.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'

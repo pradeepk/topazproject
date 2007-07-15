@@ -48,7 +48,8 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
   }
 
   public Set<String> getParameterNames() {
-    return Collections.EMPTY_SET;       // not supported yet
+    //return crit.getParameterNames(); FIXME
+    return Collections.EMPTY_SET;
   }
 
   public Filter createFilter(Session sess) throws OtmException {
@@ -56,25 +57,27 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
   }
 
   private static class CriteriaFilter extends AbstractFilterImpl {
-    private final DetachedCriteria crit;
+    private final Criteria crit;
 
     private CriteriaFilter(FilterDefinition fd, DetachedCriteria crit, Session sess)
                          throws OtmException {
       super(fd, sess);
-      this.crit = crit;
+      this.crit = crit.getExecutableCriteria(sess);
+    }
+
+    public Set<String> getParameterNames() {
+      return crit.getParameterNames();
     }
 
     public Criteria getCriteria() throws OtmException {
-      Criteria cr = crit.getExecutableCriteria(sess);
-      cr.applyParameterValues(paramValues);
-      return cr;
+      crit.applyParameterValues(paramValues);
+      return crit;
     }
 
     public GenericQueryImpl getQuery() throws OtmException {
-      Criteria cr = getCriteria();
       StringBuilder qry = new StringBuilder("select o from ");
-      qry.append(cr.getClassMetadata().getName()).append(" o where ");
-      toOql(qry, cr, "o", "v");
+      qry.append(crit.getClassMetadata().getName()).append(" o where ");
+      toOql(qry, getCriteria(), "o", "v");
       qry.append(";");
 
       GenericQueryImpl q = new GenericQueryImpl(qry.toString(), CriteriaFilterDefinition.log);

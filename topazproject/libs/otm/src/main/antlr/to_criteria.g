@@ -34,6 +34,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.Order;
+import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
 
 import antlr.RecognitionException;
@@ -195,7 +196,8 @@ options {
       }
 
       // validate and get criteria to attach to
-      if (l.getType() != REF || (r.getType() != QSTRING && r.getType() != URIREF))
+      if (l.getType() != REF || (r.getType() != QSTRING && r.getType() != URIREF &&
+          r.getType() != PARAM))
         throw new RecognitionException("equality comparisons must be between a reference and a " +
                                        "constant: " + node.toStringTree());
 
@@ -254,7 +256,7 @@ options {
       if (op.equals("lt") || op.equals("le") || op.equals("gt") || op.equals("ge")) {
         AST a2 = (args != null) ? args.getNextSibling() : null;
         if (args == null || a2 == null || args.getType() != REF ||
-            (a2.getType() != QSTRING && a2.getType() != URIREF))
+            (a2.getType() != QSTRING && a2.getType() != URIREF && a2.getType() != PARAM))
           throw new RecognitionException("comparisons must be between a reference and a " +
                                          "constant: " + node.toStringTree());
       }
@@ -380,6 +382,10 @@ options {
                         "dropping them (" + v.toStringTree() + ")");
         return t.substring(1, t.length() - 1).replaceAll("\\\\'", "'").
                  replaceAll("\\\\\\\\", "\\\\");
+      }
+
+      if (v.getType() == PARAM) {
+        return new Parameter(v.getFirstChild().getText());
       }
 
       if (v.getType() == REF) {
