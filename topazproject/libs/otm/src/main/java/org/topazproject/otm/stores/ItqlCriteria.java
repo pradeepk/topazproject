@@ -65,7 +65,7 @@ public class ItqlCriteria {
     qry.append(" from <").append(model).append("> where ");
 
     len = qry.length();
-    buildWhereClause(criteria, qry, "$s");
+    buildWhereClause(criteria, qry, "$s", "$s", true, false);
 
     if (qry.length() == len)
       throw new OtmException("No criterion list to filter by and the class '" + cm
@@ -107,40 +107,47 @@ public class ItqlCriteria {
       buildProjections(cr, qry, subject + "c" + i++);
   }
 
-  private void buildWhereClause(Criteria criteria, StringBuilder qry, String subject)
+  private void buildWhereClause(Criteria criteria, StringBuilder qry, String subject, String pfx,
+                                boolean needType, boolean isFilter)
                          throws OtmException {
     ClassMetadata cm    = criteria.getClassMetadata();
     String        model = getModelUri(cm.getModel());
 
-    if (cm.getType() != null)
+    if (needType && cm.getType() != null)
       qry.append(subject).append(" <rdf:type> <").append(cm.getType()).append("> in <").append(model)
           .append("> and ");
 
     //XXX: there is problem with this auto generated where clause
     //XXX: it could potentially limit the result set returned by a trans() criteriom
     int    i      = 0;
-    String object = subject + "o";
+    String object = pfx + "o";
 
-    for (Order o : criteria.getOrderList())
-      buildPredicateWhere(cm, o.getName(), subject, object + i++, qry, model);
+    if (!isFilter) {
+      for (Order o : criteria.getOrderList())
+        buildPredicateWhere(cm, o.getName(), subject, object + i++, qry, model);
+    }
 
     i = 0;
 
-    String tmp = subject + "t";
+    String tmp = pfx + "t";
 
     for (Criterion c : criteria.getCriterionList())
       qry.append(c.toItql(criteria, subject, tmp + i++)).append(" and ");
 
-    for (Filter f : criteria.getFilters())
-      for (Criterion c : getCriterionList(f))
-        qry.append(c.toItql(criteria, subject, tmp + i++)).append(" and ");
+    if (!isFilter) {
+      for (Filter f : criteria.getFilters()) {
+        Criteria fc = getFilterAsCriteria(criteria, f);
+        if (fc != null)
+          buildWhereClause(fc, qry, subject, pfx + "f" + i++, false, true);
+      }
+    }
 
     i = 0;
 
     for (Criteria cr : criteria.getChildren()) {
-      String child = subject + "c" + i++;
+      String child = pfx + "c" + i++;
       buildPredicateWhere(cm, cr.getMapping().getName(), subject, child, qry, model);
-      buildWhereClause(cr, qry, child);
+      buildWhereClause(cr, qry, child, child, true, isFilter);
     }
   }
 
@@ -192,18 +199,18 @@ public class ItqlCriteria {
     return mc.getUri().toString();
   }
 
-  private List<Criterion> getCriterionList(Filter f) throws OtmException {
+  private Criteria getFilterAsCriteria(Criteria current, Filter f) throws OtmException {
     ClassMetadata cm =
-      criteria.getSession().getSessionFactory()
+      current.getSession().getSessionFactory()
                .getClassMetadata(f.getFilterDefinition().getFilteredClass());
 
     if (cm == null)
-      return Collections.emptyList();
+      return null;
 
-    if (!cm.getSourceClass().isAssignableFrom(criteria.getClassMetadata().getSourceClass()))
-      return Collections.emptyList();
+    if (!cm.getSourceClass().isAssignableFrom(current.getClassMetadata().getSourceClass()))
+      return null;
 
-    return ((AbstractFilterImpl) f).getCriteria().getCriterionList();
+    return ((AbstractFilterImpl) f).getCriteria();
   }
 
   /**
