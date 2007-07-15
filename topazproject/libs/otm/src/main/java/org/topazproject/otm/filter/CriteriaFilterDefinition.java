@@ -39,11 +39,10 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
    * Create a new filter-definition based on the given criteria.
    * 
    * @param filterName    the name of the filter
-   * @param filteredClass the entity-name or fully-qualified class name of the class being filtered
    * @param crit          the criteria defining this filter
    */
-  public CriteriaFilterDefinition(String filterName, String filteredClass, DetachedCriteria crit) {
-    super(filterName, filteredClass);
+  public CriteriaFilterDefinition(String filterName, DetachedCriteria crit) {
+    super(filterName, crit.getAlias());
     this.crit = crit;
   }
 

@@ -965,12 +965,12 @@ public class OqlTest extends GroovyTestCase {
     FilterDefinition ofd3 =
         new OqlFilterDefinition('noJack', nameCls, "n where n.givenName != 'Jack'")
 
-    FilterDefinition cfd1 = new CriteriaFilterDefinition('noBob', 'Test1',
+    FilterDefinition cfd1 = new CriteriaFilterDefinition('noBob',
         new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
             add(Restrictions.ne('givenName', 'Bob')).parent.parent)
-    FilterDefinition cfd2 = new CriteriaFilterDefinition('state', 'Test1',
+    FilterDefinition cfd2 = new CriteriaFilterDefinition('state',
         new DetachedCriteria('Test1').add(Restrictions.ne('state', new Parameter('state'))))
-    FilterDefinition cfd3 = new CriteriaFilterDefinition('noJack', nameCls,
+    FilterDefinition cfd3 = new CriteriaFilterDefinition('noJack',
         new DetachedCriteria(nameCls).add(Restrictions.ne('givenName', 'Jack')))
 
     // run tests
@@ -1117,7 +1117,7 @@ public class OqlTest extends GroovyTestCase {
           add(Restrictions.eq("dc_type", new URI("dc:type"))).
           add(Restrictions.eq("uri", new URI("foo:bar")))
 
-      FilterDefinition cfd = new CriteriaFilterDefinition("critF", "Article", dc)
+      FilterDefinition cfd = new CriteriaFilterDefinition("critF", dc)
       assert cfd.createFilter(s).getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := o.parts and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := v1.nextObject and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
 
       def qry = "o where (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)))";
