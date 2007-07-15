@@ -109,7 +109,7 @@ public class FilterResolverFactory implements ResolverFactory {
         store.loadConfiguration(fConfUrl);
         config = store.getConfiguration();
       } catch (MalformedURLException mue) {
-        throw new InitializerException("Error parsing '" + fConfUrl + "'", mue);
+        throw new InitializerException("Error parsing '" + fConf + "'", mue);
       } catch (ConfigurationException ce) {
         throw new InitializerException("Error reading '" + fConfUrl + "'", ce);
       } catch (RuntimeException re) {
