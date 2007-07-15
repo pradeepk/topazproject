@@ -1004,6 +1004,13 @@ public class OqlTest extends GroovyTestCase {
         }
 
         s.disableFilter('noBob');
+        s.enableFilter('state').setParameter('state', 3);
+        r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+        checker.verify(r) {
+          row { object (class:cls, id:o1.id) }
+          row { object (class:cls, id:o2.id) }
+        }
+
         s.enableFilter('state').setParameter('state', 2);
         r = s.createQuery("select obj from Test1 obj order by obj;").execute()
         checker.verify(r) {
@@ -1070,6 +1077,10 @@ public class OqlTest extends GroovyTestCase {
         assertEquals([o2, o3], r)
 
         s.disableFilter('noBob');
+        s.enableFilter('state').setParameter('state', 3);
+        r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+        assertEquals([o1, o2], r)
+
         s.enableFilter('state').setParameter('state', 2);
         r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
         assertEquals([o1, o3], r)
