@@ -933,18 +933,22 @@ public class OqlTest extends GroovyTestCase {
 
   void testFilters() {
     // create data
+    Class clsN = rdf.class('Name') {
+      givenName ()
+      surname   ()
+    }
+
     Class cls = rdf.class('Test1') {
       state (type:'xsd:int')
       info () {
-        name () {
-          givenName ()
-          surname   ()
+        name (className:'Name2', extendsClass:'Name') {
+          middleName ()
         }
       }
     }
 
     def o1 = cls.newInstance(id:"foo:1".toURI(), state:1,
-                             info:[name:[givenName:'Bob', surname:'Cutter']])
+                             info:[name:[givenName:'Bob', surname:'Cutter', middleName:'Fritz']])
     def o2 = cls.newInstance(id:"foo:2".toURI(), state:2,
                              info:[name:[givenName:'Jack', surname:'Keller']])
     def o3 = cls.newInstance(id:"foo:3".toURI(), state:3,
@@ -956,14 +960,12 @@ public class OqlTest extends GroovyTestCase {
       s.saveOrUpdate(o3)
     }
 
-    String nameCls = o1.info.name.getClass().getName()
-
     FilterDefinition ofd1 =
         new OqlFilterDefinition('noBob', 'Test1', "o where o.info.name.givenName != 'Bob'")
     FilterDefinition ofd2 =
         new OqlFilterDefinition('state', 'Test1', 'o where o.state != :state')
     FilterDefinition ofd3 =
-        new OqlFilterDefinition('noJack', nameCls, "n where n.givenName != 'Jack'")
+        new OqlFilterDefinition('noJack', 'Name', "n where n.givenName != 'Jack'")
 
     FilterDefinition cfd1 = new CriteriaFilterDefinition('noBob',
         new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
@@ -971,7 +973,7 @@ public class OqlTest extends GroovyTestCase {
     FilterDefinition cfd2 = new CriteriaFilterDefinition('state',
         new DetachedCriteria('Test1').add(Restrictions.ne('state', new Parameter('state'))))
     FilterDefinition cfd3 = new CriteriaFilterDefinition('noJack',
-        new DetachedCriteria(nameCls).add(Restrictions.ne('givenName', 'Jack')))
+        new DetachedCriteria('Name').add(Restrictions.ne('givenName', 'Jack')))
 
     // run tests
     def checker = new ResultChecker(test:this)

@@ -107,12 +107,11 @@ tokens {
         XSD + "unsignedShort", XSD + "unsignedByte", XSD + "positiveInteger",
     };
 
-    private Session sess;
-    private String  tmpVarPfx;
-    private boolean addTypeConstr;
-    private int     varCnt = 0;
-    private Map<String, Collection<ItqlFilter>> filters =
-                                            new HashMap<String, Collection<ItqlFilter>>();
+    private Session                sess;
+    private String                 tmpVarPfx;
+    private boolean                addTypeConstr;
+    private int                    varCnt = 0;
+    private Collection<ItqlFilter> filters;
 
     public ItqlConstraintGenerator(Session session, String tmpVarPfx, boolean addTypeConstr,
                                    Collection<ItqlFilter> filters) {
@@ -120,15 +119,7 @@ tokens {
       this.sess          = session;
       this.tmpVarPfx     = tmpVarPfx;
       this.addTypeConstr = addTypeConstr;
-
-      if (filters != null) {
-        for (ItqlFilter f : filters) {
-          Collection<ItqlFilter> list = this.filters.get(f.getFilteredClass());
-          if (list == null)
-            this.filters.put(f.getFilteredClass(), list = new ArrayList<ItqlFilter>());
-          list.add(f);
-        }
-      }
+      this.filters       = filters;
     }
 
     private OqlAST nextVar() {
@@ -444,9 +435,13 @@ tokens {
           type.getType() != ExprType.Type.CLASS && type.getType() != ExprType.Type.EMB_CLASS)
         return null;
 
-      Collection<ItqlFilter> list = filters.get(type.getMeta().getName());
-      if (list == null)
-        list = filters.get(type.getMeta().getSourceClass().getName());
+      Collection<ItqlFilter> list = new ArrayList<ItqlFilter>();
+      for (ItqlFilter f : filters) {
+        ClassMetadata fcm = sess.getSessionFactory().getClassMetadata(f.getFilteredClass());
+        if (fcm != null && fcm.getSourceClass().isAssignableFrom(type.getMeta().getSourceClass()))
+          list.add(f);
+      }
+
       return list;
     }
 
