@@ -40,7 +40,7 @@ public class NECriterion extends AbstractBinaryCriterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
-    Criterion impl = new PredicateCriterion(getFieldName(), getValue());
+    Criterion impl = new EQCriterion(getFieldName(), getValue());
     impl = new NotCriterion(impl);
 
     return impl.toItql(criteria, subjectVar, varPrefix);
