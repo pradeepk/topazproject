@@ -62,7 +62,7 @@ public class Session {
    *
    * @param sessionFactory the session factory that created this session
    */
-  public Session(SessionFactory sessionFactory) {
+  Session(SessionFactory sessionFactory) {
     this.sessionFactory = sessionFactory;
   }
 
