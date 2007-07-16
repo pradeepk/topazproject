@@ -29,7 +29,7 @@
   </bean>
 
   <bean id="defaultEncodingCharset" class="java.lang.String">
-    <constructor-arg value="UTF-8"/>
+    <constructor-arg type="java.lang.String" value="UTF-8"/>
   </bean>
 
   <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService" scope="session">
