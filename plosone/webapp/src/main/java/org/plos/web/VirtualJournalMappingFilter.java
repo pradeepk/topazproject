@@ -12,6 +12,10 @@ package org.plos.web;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.HashMap;
+
+import javax.management.MBeanServer;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -21,6 +25,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+
+import net.sf.ehcache.CacheException;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.management.ManagementService;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -51,6 +61,29 @@ public class VirtualJournalMappingFilter implements Filter {
   private static ServletContext servletContext = null;
 
   private static final Log log = LogFactory.getLog(VirtualJournalMappingFilter.class);
+
+  private static Ehcache fileSystemCache  = null;
+  static {
+    try {
+      CacheManager cacheManager = CacheManager.getInstance();
+      fileSystemCache = cacheManager.getEhcache("VirtualJournalMappingFilter");
+      MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+      ManagementService.registerMBeans(cacheManager, mBeanServer, true, true, true, true);
+    } catch (CacheException ce) {
+      log.error("Error getting cache-manager", ce);
+    } catch (IllegalStateException ise) {
+      log.error("Error getting cache", ise);
+    }
+
+    if (fileSystemCache == null) {
+      log.error("No cache configuration found for VirtualJournalMappingFilter");
+    } else {
+      log.info("Cache configuration found for VirtualJournalMappingFilter");
+    }
+  }
+
+  // Cache Element value to indicate directory doesn't exist
+  private static final HashMap DIRECTORY_DOES_NOT_EXIST = new HashMap();
 
   /*
    * @see javax.servlet.Filter#init
@@ -84,7 +117,7 @@ public class VirtualJournalMappingFilter implements Filter {
       throws ServletException, IOException {
 
     // lookup virtual journal context, mapping, & modify URI of Request if necessary
-    String[] virtualJournalResource = lookupVirtualJournalResource((HttpServletRequest) request);
+    final String[] virtualJournalResource = lookupVirtualJournalResource((HttpServletRequest) request);
 
     // wrap Request if a virtual journal override should be used
     if (virtualJournalResource != null) {
@@ -140,6 +173,10 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
       mappingPrefix  = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS + "." + virtualJournal + ".mappingPrefix");
     }
 
+    if (log.isDebugEnabled()) {
+      log.debug("using mappingPrefix: \"" + mappingPrefix + "\"");
+    }
+
     // no modification if mappingPrefix doesn't exist
     if ( mappingPrefix == null || mappingPrefix.length() == 0) {
       return null;
@@ -151,15 +188,49 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
       ? mappingPrefix       + request.getServletPath()
       : mappingPrefix + "/" + request.getServletPath();
     final String realPath = servletContext.getRealPath(reqUri);
+    final int lastSlash = realPath.lastIndexOf("/");
+    final String realDir = realPath.substring(0, lastSlash);
+    final String realFile = realPath.substring(lastSlash + 1);
+
+    if (log.isDebugEnabled()) {
+      log.debug("using realDir + \"/\" + realFile: \"" + realDir + "\" + \"/\" + " + realFile + "\"");
+    }
 
     // does resource actually exist?
-    File virtualJournalFile = new File(realPath);
-    if (!virtualJournalFile.exists()) {
+    // find directory in cache
+    Element cachedDirElement = fileSystemCache.get(realDir);
+    if (cachedDirElement == null) {
       if (log.isDebugEnabled()) {
-        log.debug("ignoring virtual journal override: File(" + realPath + ").exists == false");
+        log.debug("cache miss for : \"" + realDir + "\"");
       }
 
+      // try dir on file system
+      File dir = new File(realDir);
+      if (!dir.exists()) {
+        fileSystemCache.put(new Element(realDir, DIRECTORY_DOES_NOT_EXIST));
+        return null;
+      }
+
+      // put dir contents in a HashMap for later use
+      HashMap dirMap = new HashMap();
+      for (File dirEntry : dir.listFiles()) {
+        dirMap.put(dirEntry.getAbsolutePath(), dirEntry);
+      }
+      cachedDirElement = new Element(realDir, dirMap);
+      fileSystemCache.put(cachedDirElement);
+    }
+
+    // cache knows if directory doesn't exist, test against static Object
+    if (cachedDirElement.getObjectValue() == DIRECTORY_DOES_NOT_EXIST) {
       return null;
+    }
+
+    // look for file in dir, if specified
+    if (realFile.length() != 0) {
+      if (!((HashMap) cachedDirElement.getObjectValue()).containsKey(realPath)) {
+        // file not in dir
+        return null;
+      }
     }
 
     // use virtual journal resource
