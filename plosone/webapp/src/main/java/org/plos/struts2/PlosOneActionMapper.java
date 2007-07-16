@@ -15,14 +15,13 @@ import com.opensymphony.xwork2.config.ConfigurationManager;
 import org.apache.struts2.dispatcher.mapper.ActionMapping;
 import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.web.VirtualJournalMappingFilter;
 
 /**
  * Custom WebWork ActionMapper.
@@ -41,28 +40,50 @@ public class PlosOneActionMapper extends DefaultActionMapper {
    */
   public ActionMapping getMapping(HttpServletRequest request, ConfigurationManager configManager) {
 
-    // filtering is driven by the request URI
-    URI uri;
-    try {
-      uri = new URI(request.getRequestURI());
-    } catch (URISyntaxException ex) {
-      // should never happen
-      log.error(ex);
-      throw new RuntimeException(ex);
-    }
+    final String origUri = request.getRequestURI();
+    ActionMapping actionMapping = null;
 
     // do not care about "null"
-    if (uri.getPath() == null) {
+    if (origUri == null) {
       return super.getMapping(request, configManager);
     }
 
-    // only care about "/article/feed"
-    if (uri.getPath().startsWith("/article/feed")) {
-      return mapUriToAction(uri);
+    // is a mapping prefix defined for a virtual journal context?
+    final String mappingPrefix = (String) request.getAttribute(VirtualJournalMappingFilter.PUB_VIRTUALJOURNAL_MAPPINGPREFIX);
+    if (mappingPrefix == null
+      || mappingPrefix.length() == 0) {
+      // no override in effect, use default
+      actionMapping = super.getMapping(request, configManager);
+      if (log.isDebugEnabled()) {
+        log.debug("no mappingPrefix, using default action");
+      }
+    } else {
+      // look for an override Action in the mappingPrefix namespace
+      final String reqUri = mappingPrefix + origUri;
+      final String reqServletPath = request.getServletPath().startsWith("/")
+        ? mappingPrefix       + request.getServletPath()
+        : mappingPrefix + "/" + request.getServletPath();
+      actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request, reqUri, reqServletPath), configManager);
+      if (actionMapping == null) {
+        // use default
+        actionMapping = super.getMapping(request, configManager);
+        if (log.isDebugEnabled()) {
+          log.debug("no override action for mappingPrefix: " + mappingPrefix);
+        }
+      } else {
+        if (log.isDebugEnabled()) {
+          log.debug("override action for mappingPrefix: " + mappingPrefix + ", action: " + actionMapping.getName());
+        }
+      }
     }
 
-    // use default
-    return super.getMapping(request, configManager);
+    // ATOM feed hook: only care about "/article/feed"
+    // will factor out with comprehensive REST URI mapping
+    if (origUri.startsWith("/article/feed")) {
+      return mapUriToAction();
+    }
+
+    return actionMapping;
   }
 
   /**
@@ -86,7 +107,9 @@ public class PlosOneActionMapper extends DefaultActionMapper {
    *
    * @return ActionMapping for getFeed.
    */
- private ActionMapping mapUriToAction(URI uri) {
+ private ActionMapping mapUriToAction() {
+
+   // placeholder for real REST URIs
 
    // TODO: possible to use common config?
    HashMap<String, String> parms = new HashMap();

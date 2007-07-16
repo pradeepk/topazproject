@@ -150,9 +150,6 @@ public class VirtualJournalMappingFilter implements Filter {
    */
 private String[] lookupVirtualJournalResource(final HttpServletRequest request) {
 
-    // put default mappingPrefix in the Request for others to use in case it isn't overridden
-    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX);
-
     // lookup virtual journal context
     final String virtualJournal = (String) request.getAttribute(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_JOURNAL);
     if (virtualJournal == null) {
@@ -172,6 +169,8 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
       // use <journals><${journalName}><mappingPrefix>
       mappingPrefix  = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS + "." + virtualJournal + ".mappingPrefix");
     }
+    // put mappingPrefix in the Request for others to use
+    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, mappingPrefix);
 
     if (log.isDebugEnabled()) {
       log.debug("using mappingPrefix: \"" + mappingPrefix + "\"");
@@ -234,13 +233,10 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
     }
 
     // use virtual journal resource
-    // put mappingPrefix in the Request for others to use
-    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, mappingPrefix);
-
     return new String[] {reqUri, reqServletPath};
   }
 
-  private HttpServletRequest wrapRequest(HttpServletRequest request, final String requestUri, final String requestServletPath) {
+  public static HttpServletRequest wrapRequest(HttpServletRequest request, final String requestUri, final String requestServletPath) {
 
     return new HttpServletRequestWrapper(request) {
 
