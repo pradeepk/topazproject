@@ -88,6 +88,7 @@ public class ArticleFeed extends BaseActionSupport {
   private int maxResults = -1;
   private String representation;
   private boolean relativeLinks = false;
+  private String selfLink;
 
   // WebWorks PlosOneFeedResult parms
   private WireFeed wireFeed;
@@ -149,6 +150,7 @@ public class ArticleFeed extends BaseActionSupport {
     final String FEED_TITLE            = configuration.getString("pub.feed.title",    "PLoS ONE Alerts: PLoS ONE Journal");
     final String FEED_TAGLINE          = configuration.getString("pub.feed.tagline",  "Publishing science, accelerating research");
     final String FEED_ICON             = configuration.getString("pub.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
+    final String FEED_ID               = configuration.getString("pub.feed.id",       "info:doi/10.1371/feed.pone");
 
     // use WebWorks to get Action URIs
     // TODO: WebWorks ActionMapper is broken, hand-code URIs
@@ -162,17 +164,24 @@ public class ArticleFeed extends BaseActionSupport {
     feed.setXmlBase(PLOSONE_URI);
 
     String xmlBase = (relativeLinks ? "" : PLOSONE_URI);
+    if (selfLink == null || selfLink.equals(""))
+      selfLink = PLOSONE_URI + uri;
 
     // must link to self
     Link self = new Link();
     self.setRel("self");
-    self.setHref(xmlBase + uri.toString());
+    self.setHref(selfLink);
     self.setTitle(FEED_TITLE);
     List<Link> otherLinks = new ArrayList();
     otherLinks.add(self);
     feed.setOtherLinks(otherLinks);
 
-    feed.setId(uri.toString());  // TODO: used canned URIs
+    String id = FEED_ID;
+    if (category != null)
+      id += "?category=" + category;
+    if (author != null)
+      id += "?author=" + author;
+    feed.setId(id);
     feed.setTitle(FEED_TITLE);
     Content tagline = new Content();
     tagline.setValue(FEED_TAGLINE);
@@ -451,6 +460,13 @@ public class ArticleFeed extends BaseActionSupport {
     this.relativeLinks = relativeLinks;
   }
 
+  /**
+   * WebWorks will set from URI param
+   */
+  public void setSelfLink(final String selfLink) {
+    this.selfLink = selfLink;
+  }
+  
   /**
    * Representation to return results in.
    */

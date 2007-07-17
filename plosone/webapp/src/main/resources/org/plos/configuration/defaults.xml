@@ -93,6 +93,7 @@
       <title>PLoS ONE Alerts: PLoS ONE Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
       <icon>${webserver-url}images/pone_favicon.ico</icon>
+      <id>info:doi/1371/feed.pone</id> <!-- Unique id. Should change for different criteria -->
     </feed>
 
     <!-- Define defaults for spring - must be redone soon -->
