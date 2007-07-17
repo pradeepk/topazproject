@@ -13,7 +13,9 @@ import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
@@ -320,4 +322,27 @@ public class DetachedCriteria {
   public void setAlias(String alias) {
     this.alias = alias;
   }
+
+  /** 
+   * Return the list of parameter names. 
+   * 
+   * @return the set of names; will be empty if there are no parameters
+   */
+  public Set<String> getParameterNames() throws OtmException {
+    if (parent != null)
+      return parent.getParameterNames();
+
+    return getParameterNames(new HashSet<String>());
+  }
+
+  private Set<String> getParameterNames(Set<String> paramNames) throws OtmException {
+    for (DetachedCriteria dc : childCriteriaList)
+      dc.getParameterNames(paramNames);
+
+    for (Criterion c : criterionList)
+      paramNames.addAll(c.getParamNames());
+
+    return paramNames;
+  }
+
 }

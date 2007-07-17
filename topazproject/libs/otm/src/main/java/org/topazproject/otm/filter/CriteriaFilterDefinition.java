@@ -47,8 +47,7 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
   }
 
   public Set<String> getParameterNames() {
-    //return crit.getParameterNames(); FIXME
-    return Collections.EMPTY_SET;
+    return crit.getParameterNames();
   }
 
   public Filter createFilter(Session sess) throws OtmException {
@@ -64,10 +63,6 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
       this.crit = crit.getExecutableCriteria(sess);
     }
 
-    public Set<String> getParameterNames() {
-      return crit.getParameterNames();
-    }
-
     public Criteria getCriteria() throws OtmException {
       crit.applyParameterValues(paramValues);
       return crit;
@@ -81,7 +76,7 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
 
       GenericQueryImpl q = new GenericQueryImpl(qry.toString(), CriteriaFilterDefinition.log);
       q.prepareQuery(sess.getSessionFactory());
-      q.applyParameterValues(Collections.EMPTY_MAP);
+      q.applyParameterValues(paramValues);
       return q;
     }
 
