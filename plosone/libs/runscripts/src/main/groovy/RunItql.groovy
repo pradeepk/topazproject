@@ -53,6 +53,7 @@ pp = !opt.N
 mode = opt.m
 echo = opt.v || opt.e || !opt.f
 trunc = opt.t
+running = true
 def writer = echo ? new OutputStreamWriter(System.out) : new StringWriter()
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
 def mulgaraUri  = "http://${mulgaraBase}${MULGARA_LOC}"
@@ -84,8 +85,8 @@ These are interpreted as follows:
   . - Runs special commands. See ".help cmds"
 
 Availalbe topcis:
-  variables cmds .alias .meta init'''
-help["cmds"] = '''The following commands are supported: .alias, .meta
+  variables cmds .alias .meta .quit init'''
+help["cmds"] = '''The following commands are supported: .alias, .meta, .quit
 Run ".help .<cmd>" for help with a specific command'''
 help[".alias"] = """.alias [load|list|save|set alias uri]
   load - loads any aliases defined in <$metamodel>
@@ -96,6 +97,7 @@ help[".meta"]  = """.meta [classes|show type]
   classes - Shows all the classes defined in <$metamodel>
   show type - Shows information about a specific OWL class
   load jar-files|dirs ... - Load owl metadata for supplied classes"""
+help[".quit"] = """.quit - Exit the interpreter"""
 help["variables"] = '''Variables can be used for a number of things:
   - Controlling features of the interpreter (see list of variables below)
   - As place holders in itql. 
@@ -164,6 +166,8 @@ def showClass(cls) {
             or  <$cls> <rdfs:subClassOf> \$class
             or  trans(<$cls> <rdfs:subClassOf> \$class));
 """
+  if (verbose)
+    println q
   def ans = new XmlSlurper().parseText(itql.doQuery(q, aliases))
   showTable(ans)
 }
@@ -360,6 +364,7 @@ def handleCmd(s) {
     if      ("alias".startsWith(cmd)) { alias(args) }
     else if ("meta".startsWith(cmd))  { meta(args) }
     else if ("help".startsWith(cmd))  { showHelp(args) }
+    else if ("quit".startsWith(cmd))  { running = false }
     else { println "Unknown command: .$s" }
   } catch (Throwable e) {
     println "Error running command: .$s"
@@ -425,7 +430,7 @@ try {
 }
 
 //file.eachLine { line -> // Old way (without jline)
-while ((line = cr.readLine()) != null) { // Loop over lines with jline
+while (running && (line = cr.readLine()) != null) { // Loop over lines with jline
   processLine(line, cr, true)
 }
 
