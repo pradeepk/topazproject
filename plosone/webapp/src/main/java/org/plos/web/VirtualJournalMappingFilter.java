@@ -47,15 +47,6 @@ import org.plos.configuration.ConfigurationStore;
  */
 public class VirtualJournalMappingFilter implements Filter {
 
-  /**
-   * ServletRequest attribute for the virtual journal mapping prefix.
-   */
-  public static final String PUB_VIRTUALJOURNAL_MAPPINGPREFIX = "pub.virtualjournal.mappingprefix";
-  /**
-   * Default virtual journal mapping prefix.
-   */
-  public static final String PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX = "";
-
   private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
   private static ServletContext servletContext = null;
@@ -151,34 +142,17 @@ public class VirtualJournalMappingFilter implements Filter {
 private String[] lookupVirtualJournalResource(final HttpServletRequest request) {
 
     // lookup virtual journal context
-    final String virtualJournal = (String) request.getAttribute(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_JOURNAL);
-    if (virtualJournal == null) {
+    final String virtualJournal = (String) request.getAttribute(
+      VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_JOURNAL);
+    final String mappingPrefix  = (String) request.getAttribute(
+      VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_MAPPINGPREFIX);
+    if (virtualJournal == null || mappingPrefix == null || mappingPrefix.length() == 0) {
       return null;
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("looking up mappingPrefix for virutalJournal: \"" + virtualJournal + "\"");
-    }
-
-    // lookup mapping prefix
-    String mappingPrefix  = null;
-    if (virtualJournal.equals(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL)) {
-      // use <default><mappingPrefix>
-      mappingPrefix  = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
-    } else {
-      // use <journals><${journalName}><mappingPrefix>
-      mappingPrefix  = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS + "." + virtualJournal + ".mappingPrefix");
-    }
-    // put mappingPrefix in the Request for others to use
-    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, mappingPrefix);
-
-    if (log.isDebugEnabled()) {
-      log.debug("using mappingPrefix: \"" + mappingPrefix + "\"");
-    }
-
-    // no modification if mappingPrefix doesn't exist
-    if ( mappingPrefix == null || mappingPrefix.length() == 0) {
-      return null;
+      log.debug("looking up virtual journal resource for virutalJournal: \"" + virtualJournal + "\""
+        + ", mappingPrefix: \"" + mappingPrefix + "\"");
     }
 
     // what is resource name on filesystem?

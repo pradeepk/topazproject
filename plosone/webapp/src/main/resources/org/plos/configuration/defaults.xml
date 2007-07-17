@@ -49,14 +49,14 @@
       </default>
       <!-- entries to config each virtual journal -->
       <!--
-      <journals>clinicalTrials,${journalName},${list of journal names}</journals>
-      <clinicalTrials>
+      <journals>PLoSClinicalTrials,${journalName},${list of journal names}</journals>
+      <PLoSClinicalTrials>
         <description>Clinical Trials</description>
-        <mappingPrefix>/clinicalTrials</mappingPrefix>
+        <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
         <rules>
           <host>clinicaltrials\..*</host>
         </rules>
-      </clinicalTrials>
+      </PLoSClinicalTrials>
       <${journalName}>
         <description>${display for Admin, etc.}</description>
         <mappingPrefix>${URI path prefix for virtual journal resources}</mappingPrefix>
@@ -707,7 +707,27 @@
           <file>/css/pone_screen.css</file>
         </css>
       </page>
-    </journal>-->
+      <page>
+        <name>/journals/clinicalTrials/index.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_home.css</file>
+        </css>
+        <javascript>
+          <file>/javascript/dojo/dojo_home.js</file>
+          <file>/javascript/topaz/topaz.js</file>      
+          <file>/javascript/topaz/domUtil.js</file>
+          <file>/javascript/topaz/htmlUtil.js</file>
+          <file>/javascript/dojoRequire_default.ftl</file>
+          <file>/javascript/config_home.js</file>
+          <file>/javascript/topaz/horizontalTabs.js</file>
+          <file>/javascript/init_global.js</file>  
+          <file>/javascript/init_navigation.js</file>   
+          <file>/javascript/init_home.js</file>
+        </javascript>
+      </page>
+    </journal>
    
   </freemarker>
   

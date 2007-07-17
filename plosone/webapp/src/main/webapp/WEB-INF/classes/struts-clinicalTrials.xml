@@ -1,0 +1,24 @@
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<!--
+  - Copyright (c) 2006 by Topaz, Inc.
+  - http://topazproject.org
+  -
+  - Licensed under the Educational Community License version 1.0
+  - http://opensource.org/licenses/ecl1.php
+  -->
+<struts>
+
+  <package name="default-clinicalTrials" extends="default" namespace="/journals/clinicalTrials">
+
+    <action name="home" class="org.plos.action.HomePageAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/journals/clinicalTrials/index.ftl</param>
+      </result>
+    </action>
+
+  </package>
+
+</struts>

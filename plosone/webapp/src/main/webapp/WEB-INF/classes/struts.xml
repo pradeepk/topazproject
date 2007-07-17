@@ -926,5 +926,6 @@
     </action>
   </package>
 
-
+  <!-- make Clinical Trial Actions and configs available  -->
+  <include file="struts-clinicalTrials.xml" />
 </struts>

@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.web.VirtualJournalContextFilter;
 import org.plos.web.VirtualJournalMappingFilter;
 
 /**
@@ -49,7 +50,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
     }
 
     // is a mapping prefix defined for a virtual journal context?
-    final String mappingPrefix = (String) request.getAttribute(VirtualJournalMappingFilter.PUB_VIRTUALJOURNAL_MAPPINGPREFIX);
+    final String mappingPrefix = (String) request.getAttribute(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_MAPPINGPREFIX);
     if (mappingPrefix == null
       || mappingPrefix.length() == 0) {
       // no override in effect, use default
