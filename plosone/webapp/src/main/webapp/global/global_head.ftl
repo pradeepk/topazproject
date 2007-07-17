@@ -5,7 +5,7 @@
 </#if>
 <#assign pgTitle = freemarker_config.getTitle(templateFile)>
 <#if pgTitle = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->
-	<#assign pgTitle = freemarker_config.getArticleTitlePrefix(journalContext) + articleInfo.dublinCore.title?replace('</?[a-z]*>', '', 'r')>
+	<#assign pgTitle = freemarker_config.getArticleTitlePrefix(journalContext) + " " + articleInfo.dublinCore.title?replace('</?[a-z]*>', '', 'r')>
 </#if>
 	<title>${pgTitle}</title>
 
