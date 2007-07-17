@@ -87,6 +87,7 @@ public class ArticleFeed extends BaseActionSupport {
   private String author;
   private int maxResults = -1;
   private String representation;
+  private boolean relativeLinks = false;
 
   // WebWorks PlosOneFeedResult parms
   private WireFeed wireFeed;
@@ -160,10 +161,12 @@ public class ArticleFeed extends BaseActionSupport {
     feed.setEncoding("UTF-8");
     feed.setXmlBase(PLOSONE_URI);
 
+    String xmlBase = (relativeLinks ? "" : PLOSONE_URI);
+
     // must link to self
     Link self = new Link();
     self.setRel("self");
-    self.setHref(uri.toString());
+    self.setHref(xmlBase + uri.toString());
     self.setTitle(FEED_TITLE);
     List<Link> otherLinks = new ArrayList();
     otherLinks.add(self);
@@ -278,7 +281,7 @@ public class ArticleFeed extends BaseActionSupport {
       // must link to self, do it first so link is favored
       Link entrySelf = new Link();
       entrySelf.setRel("alternate");
-      entrySelf.setHref(fetchArticleAction + "?articleURI=" + dc.getIdentifier());
+      entrySelf.setHref(xmlBase + fetchArticleAction + "?articleURI=" + dc.getIdentifier());
       entrySelf.setTitle(dc.getTitle());
       altLinks.add(entrySelf);
 
@@ -287,7 +290,7 @@ public class ArticleFeed extends BaseActionSupport {
       if (representations != null) {
         for (String representation : representations) {
           Link altLink = new Link();
-          altLink.setHref(fetchObjectAttachmentAction + "?uri=" + dc.getIdentifier() + "&representation=" + representation);
+          altLink.setHref(xmlBase + fetchObjectAttachmentAction + "?uri=" + dc.getIdentifier() + "&representation=" + representation);
           altLink.setRel("related");
           altLink.setTitle("(" + representation + ") " + dc.getTitle());
           altLink.setType(FileUtils.getContentType(representation));
@@ -439,6 +442,13 @@ public class ArticleFeed extends BaseActionSupport {
    */
   public void setMaxResults(final int maxResults) {
     this.maxResults = maxResults;
+  }
+
+  /**
+   * WebWorks will set from URI param
+   */
+  public void setRelativeLinks(final boolean relativeLinks) {
+    this.relativeLinks = relativeLinks;
   }
 
   /**
