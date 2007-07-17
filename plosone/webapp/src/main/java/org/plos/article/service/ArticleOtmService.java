@@ -183,7 +183,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     return TransactionHelper.doInTxE(session,
                               new TransactionHelper.ActionE<String, NoSuchObjectIdException>() {
       public String run(Transaction tx) throws NoSuchObjectIdException {
-        Article a = tx.getSession().get(Article.class, obj);
+        ObjectInfo a = tx.getSession().get(ObjectInfo.class, obj);
         if (a == null)
           throw new NoSuchObjectIdException(obj);
 
