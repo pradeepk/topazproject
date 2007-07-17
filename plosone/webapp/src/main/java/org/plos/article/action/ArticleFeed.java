@@ -229,7 +229,7 @@ public class ArticleFeed extends BaseActionSupport {
 
     // sort by date, ascending
     HashMap<String, Boolean> sort = new HashMap();
-    sort.put("date", true);
+    sort.put("dublinCore.date", true);
 
     List<Article> articles = null;
     try {
