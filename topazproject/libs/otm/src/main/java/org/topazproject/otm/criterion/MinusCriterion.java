@@ -9,6 +9,10 @@
  */
 package org.topazproject.otm.criterion;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
+
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Entity;
@@ -90,5 +94,21 @@ public class MinusCriterion extends Criterion {
    */
   public void setSubtrahend(Criterion subtrahend) {
     this.subtrahend = subtrahend;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Set<String> getParamNames() {
+    Set<String> s1 = minuend.getParamNames();
+    Set<String> s2 = subtrahend.getParamNames();
+
+    if (s1.size() + s2.size() == 0)
+      return Collections.emptySet();
+
+    Set<String> s = new HashSet<String>();
+    s.addAll(s1);
+    s.addAll(s2);
+    return s;
   }
 }

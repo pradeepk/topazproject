@@ -9,6 +9,8 @@
  */
 package org.topazproject.otm.criterion;
 
+import java.util.Set;
+
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Entity;
@@ -70,5 +72,12 @@ public class NotCriterion extends Criterion {
    */
   public void setCriterion(Criterion criterion) {
     this.criterion = criterion;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Set<String> getParamNames() {
+    return criterion.getParamNames();
   }
 }

@@ -10,7 +10,9 @@
 package org.topazproject.otm.criterion;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
@@ -25,6 +27,7 @@ public abstract class Junction extends Criterion {
   @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
   private List<Criterion>  criterions = new ArrayList<Criterion>();
   private transient String op;
+  private transient Set<String> paramNames = new HashSet<String>();
 
   /**
    * Creates a new Junction object.
@@ -44,6 +47,7 @@ public abstract class Junction extends Criterion {
    */
   public Junction add(Criterion c) {
     criterions.add(c);
+    paramNames.addAll(c.getParamNames());
 
     return this;
   }
@@ -64,6 +68,17 @@ public abstract class Junction extends Criterion {
    */
   public void setCriterions(List<Criterion> criterions) {
     this.criterions = criterions;
+
+    paramNames.clear();
+    for (Criterion c : criterions)
+      paramNames.addAll(c.getParamNames());
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Set<String> getParamNames() {
+    return paramNames;
   }
 
   /**
