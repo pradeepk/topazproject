@@ -1,3 +1,8 @@
+<#if Request[freemarker_config.journalContextAttributeKey]?exists>
+	<#assign journalContext = Request[freemarker_config.journalContextAttributeKey]>
+<#else>
+	<#assign journalContext = "">
+</#if>
 <title>PLoS Journals : A Peer-Reviewed, Open-Access Journal</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
