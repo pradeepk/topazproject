@@ -21,4 +21,11 @@ public interface PLoS {
   public static final String creativeCommons    = "http://web.resource.org/cc/";
   /** Bibtex namespace */
   public static final String bibtex             = "http://purl.org/net/nknouf/ns/bibtex#";
+
+  /** Base name space for article types for PLoS */
+  public static final String PLOS_ArticleType = plos + "articleType/";
+  /** Research article */
+  public static final String PLOS_ResearchArticle = PLOS_ArticleType + "researchArticle";
+  /** Correspondence */
+  public static final String PLOS_Correspondence = PLOS_ArticleType + "correspondence";
 }

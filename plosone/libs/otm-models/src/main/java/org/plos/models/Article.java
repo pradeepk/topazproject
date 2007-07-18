@@ -40,6 +40,9 @@ public class Article extends ObjectInfo {
 
   @Predicate(uri = Rdf.dc_terms + "hasPart")
   private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
+  // This will be used to indicate the PLoS type of article
+  @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")
+  private String articleType;
 
   /**
    * The categories the article belongs to
@@ -70,6 +73,31 @@ public class Article extends ObjectInfo {
    */
   public Set<Category> getCategories() {
     return categories;
+  }
+
+  /**
+   * Set the article type. PLoS uses the same underlying schema (NLM DTD) for
+   * the content for different 'types' of content. For example eLetter,
+   * Correspondence, Editorial comment, etc. This articleType is used to stored
+   * the value of the type. Please note that the string passed should be a
+   * valid URI.
+   *
+   * @param articleType the string representation of the URI for the type
+   *
+   * @throws IllegalArgumentException if the string is not a valid URI.
+   */
+  public void setArticleType(String articleType) {
+    assert URI.create(articleType) != null : "Invalid PLoS Article Type" + articleType;
+    this.articleType = articleType;
+  }
+
+  /**
+   * Return the PLoS type of the article. The returned string is an URI.
+   *
+   * @return the article type as a string representation of a URI.
+   */
+  public String getArticleType() {
+    return articleType;
   }
 
   /**
