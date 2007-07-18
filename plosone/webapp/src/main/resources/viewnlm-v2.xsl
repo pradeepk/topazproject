@@ -1021,7 +1021,7 @@ Make article meta data
             <strong><xsl:value-of select="role"/>:</strong><xsl:text> </xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <strong>Editor:</strong><xsl:text> </xsl:text>
+            <strong>Academic Editor:</strong><xsl:text> </xsl:text>
           </xsl:otherwise>
         </xsl:choose>
            <xsl:choose>
@@ -1105,16 +1105,16 @@ Make article meta data
     <strong>DOI:</strong><xsl:text> </xsl:text>
     <xsl:value-of select="article-id[@pub-id-type='doi']"/>
     </p>-->
+    <xsl:for-each select="author-notes/fn[@fn-type='current-aff']">
+      <p>
+        <xsl:apply-templates select="." mode="front"/>
+      </p>
+    </xsl:for-each>   
     <xsl:if test="author-notes/corresp">
       <p>
         <xsl:apply-templates select="author-notes/corresp" mode="front"/>
       </p>
     </xsl:if>
-    <xsl:for-each select="author-notes/fn[@fn-type='current-aff']">
-      <p>
-        <xsl:apply-templates select="." mode="front"/>
-      </p>
-    </xsl:for-each>
     <xsl:if test="contrib-group/contrib[@contrib-type='author'][@equal-contrib='yes']">
       <p>
         <a name="equal-contrib"></a><xsl:text>#</xsl:text> These authors contributed equally to this work.
@@ -3573,20 +3573,39 @@ Make article meta data
 <!-- called by template for abstract and trans-abstract -->
 
 <xsl:template name="words-for-abstract-title">
-
+  <xsl:variable name="idx" select="count(preceding-sibling::abstract)"/>
+  <xsl:variable name="abs_id">abstract<xsl:value-of select="$idx"/></xsl:variable>
   <xsl:choose>
     <!-- if there's a title, use it -->
     <xsl:when test="title">
+      <xsl:element name="a">
+        <xsl:attribute name="id"><xsl:value-of select="$abs_id"/></xsl:attribute> 
+        <xsl:attribute name="name"><xsl:value-of select="$abs_id"/></xsl:attribute>
+        <xsl:attribute name="toc"><xsl:value-of select="$abs_id"/></xsl:attribute>
+        <xsl:attribute name="title"><xsl:value-of select="title"/></xsl:attribute>
+      </xsl:element>
       <xsl:apply-templates select="title"/>
     </xsl:when>
 
     <!-- abstract with no title -->
     <xsl:when test="self::abstract">
+      <xsl:element name="a">
+        <xsl:attribute name="id"><xsl:value-of select="$abs_id"/></xsl:attribute> 
+        <xsl:attribute name="name"><xsl:value-of select="$abs_id"/></xsl:attribute>
+        <xsl:attribute name="toc"><xsl:value-of select="$abs_id"/></xsl:attribute>
+        <xsl:attribute name="title">Abstract</xsl:attribute>
+      </xsl:element>
       <h2><xsl:text>Abstract</xsl:text></h2>
     </xsl:when>
 
     <!-- trans-abstract with no title -->
     <xsl:when test="self::trans-abstract">
+      <xsl:element name="a">
+        <xsl:attribute name="id"><xsl:value-of select="$abs_id"/></xsl:attribute> 
+        <xsl:attribute name="name"><xsl:value-of select="$abs_id"/></xsl:attribute>
+        <xsl:attribute name="toc"><xsl:value-of select="$abs_id"/></xsl:attribute>
+        <xsl:attribute name="title">Abstract, Translated</xsl:attribute>
+      </xsl:element>
       <h2><xsl:text>Abstract, Translated</xsl:text></h2>
     </xsl:when>
     <!-- there is no logical otherwise -->
