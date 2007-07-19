@@ -93,9 +93,10 @@ help[".alias"] = """.alias [load|list|save|set alias uri]
   save - saves all currently defined aliases into <$metamodel>
   list - lists currently active aliases (but doesn't load them)
   set alias uri - adds an alias to the interpreter (but doesn't save it)"""
-help[".meta"]  = """.meta [classes|show type]
-  classes - Shows all the classes defined in <$metamodel>
+help[".meta"]  = """.meta [classes|show type|showall|load ...]
+  classes   - Shows all the classes defined in <$metamodel>
   show type - Shows information about a specific OWL class
+  showall   - Shows information about all loaded classes
   load jar-files|dirs ... - Load owl metadata for supplied classes"""
 help[".quit"] = """.quit - Exit the interpreter"""
 help["variables"] = '''Variables can be used for a number of things:
@@ -130,6 +131,7 @@ def meta(args) {
   switch(args[0]) {
   case 'classes': showClasses();      break
   case 'show':    showClass(args[1]); break
+  case 'showall': showAllClasses();   break
   case 'load':    Metadata.addClasses(args[1..-1]); break
   }
 }
@@ -138,6 +140,14 @@ def showClasses() {
   def q = '''select $class $model from <''' + metamodel + '''>
               where $class <rdf:type> <owl:Class> and $class <topaz:inModel> $model;'''
   showTable(new XmlSlurper().parseText(itql.doQuery(q, aliases)))
+}
+
+def showAllClasses() {
+  def q = '''select $class $model from <''' + metamodel + '''>
+              where $class <rdf:type> <owl:Class> and $class <topaz:inModel> $model;'''
+  new XmlSlurper().parseText(itql.doQuery(q, aliases)).query.solution.class.'@resource'.each() {
+    showClass(it.toString())
+  }
 }
 
 def showClass(cls) {
