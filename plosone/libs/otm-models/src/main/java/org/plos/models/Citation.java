@@ -43,7 +43,7 @@ public abstract class Citation {
    * Mulgara
    */
   @Predicate(uri = PLoS.bibtex + "hasYear", dataType = Rdf.xsd + "double")
-  private int year;
+  private Integer year;
 
   @Predicate(uri = PLoS.bibtex + "hasMonth", dataType = Rdf.xsd + "string")
   private String month;
@@ -55,7 +55,17 @@ public abstract class Citation {
    * Mulgara
    */
   @Predicate(uri = PLoS.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
-  private int volume;
+  private Integer volume;
+
+  /**
+   * The number of a journal, magazine, technical report, or of a work in a
+   * series. An issue of a journal or magazine is usually identified by its
+   * volume and number; the organization that issues a technical report usually
+   * gives it a number; and sometimes books are given numbers in a named
+   * series.
+   */
+  @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.xsd + "XMLLiteral")
+  private String issue;
 
   /**
    * Typically, a Title will be a name by which the resource is formally known.
@@ -131,6 +141,12 @@ public abstract class Citation {
   private String summary;
 
   /**
+   * This will be used to indicate the type of citation
+   */
+  @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")
+  private String citationType;
+
+  /**
    * Get id.
    *
    * @return id as URI.
@@ -151,14 +167,14 @@ public abstract class Citation {
   /**
    * @returns the year of the citation (if available)
    */
-  public int getYear() {
+  public Integer getYear() {
     return year;
   }
 
   /**
    * @param year the year of the citation
    */
-  public void setYear(int year) {
+  public void setYear(Integer year) {
     this.year = year;
   }
 
@@ -179,15 +195,29 @@ public abstract class Citation {
   /**
    * @return the volume this citation is in
    */
-  public int getVolume() {
+  public Integer getVolume() {
     return volume;
   }
 
   /**
    * @param volume the volume of this citation
    */
-  public void setVolume(int volume) {
+  public void setVolume(Integer volume) {
     this.volume = volume;
+  }
+
+  /**
+   * @return the issue of the citation's article
+   */
+  public String getIssue() {
+    return issue;
+  }
+
+  /**
+   * @param title the issue of the citation's article
+   */
+  public void setIssue(String issue) {
+    this.title = issue;
   }
 
   /**
@@ -332,5 +362,28 @@ public abstract class Citation {
    */
   public void setSummary(String summary) {
     this.summary = summary;
+  }
+
+  /**
+   * Set the citation type. Bibtex specifies different type of citations and
+   * this field is intended to track that. Please note that the string passed
+   * should be a valid URI.
+   *
+   * @param citationType the string representation of the URI for the type
+   *
+   * @throws IllegalArgumentException if the string is not a valid URI.
+   */
+  public void setCitationType(String citationType) {
+    assert URI.create(citationType) != null : "Invalid PLoS Citation Type" + citationType;
+    this.citationType = citationType;
+  }
+
+  /**
+   * Return the type of the citation. The returned string is an URI.
+   *
+   * @return the citation type as a string representation of a URI.
+   */
+  public String getCitationType() {
+    return citationType;
   }
 }
