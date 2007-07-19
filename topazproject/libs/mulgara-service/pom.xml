@@ -15,11 +15,13 @@
     <dependency>
       <groupId>org.mulgara</groupId>
       <artifactId>mulgara-lite</artifactId>
+      <!-- WARNING: When changing this, change version in mulgara & antrun task below too! -->
       <version>1.0.1-t2</version>
     </dependency>
     <dependency>
       <groupId>org.mulgara</groupId>
       <artifactId>mulgara</artifactId>
+      <!-- WARNING: When changing this, change mulgara version in antrun task below too! -->
       <version>1.0.1-t2</version>
     </dependency>
 
