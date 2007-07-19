@@ -82,6 +82,7 @@
     <figure-action1>article/slideshow.action?uri=</figure-action1>
     <figure-action2>&amp;imageURI=</figure-action2>
     <error-page>static/pageNotFound.action</error-page>
+    <doi-resolver-url>http://dx.plos.org/</doi-resolver-url>
 
     <!-- common display constants -->
     <name>Public Library of Science</name>

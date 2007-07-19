@@ -479,7 +479,7 @@
       <map>
         <entry key="text" value="emailThisArticle-text.ftl"/>
         <entry key="html" value="emailThisArticle-html.ftl"/>
-        <entry key="url" value="http://dx.plos.org/"/>
+        <entry key="url" value="${pub.doi-resolver-url}"/>
         <entry key="subject" value="An Article from "/>
       </map>
     </property>
