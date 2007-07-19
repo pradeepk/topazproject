@@ -112,14 +112,21 @@ public class PlosOneFreemarkerConfig {
 
         if (jc.getMetaKeywords() == null) {
           final String metaKeywords= oneConfig.getString(journal + ".metaKeywords");
-          if (metaKeywords!= null) {
+          if (metaKeywords != null) {
             jc.setMetaKeywords(metaKeywords);            
           }
         }
-
+        
+        if (jc.getDisplayName() == null) {
+          final String displayName = oneConfig.getString(journal + ".displayName");
+          if (displayName != null) {
+            jc.setDisplayName(displayName);            
+          }
+        }
+        
         if (jc.getArticleTitlePrefix() == null) {
           final String articleTitlePrefix= oneConfig.getString(journal + ".articleTitlePrefix");
-          if (articleTitlePrefix!= null) {
+          if (articleTitlePrefix != null) {
             jc.setArticleTitlePrefix(articleTitlePrefix);            
           }
         }
@@ -408,7 +415,6 @@ public class PlosOneFreemarkerConfig {
     return getJavaScript (templateName, defaultJournalName);
   }
   
-  
   /**
    * Gets meta keywords for journal
    * 
@@ -450,6 +456,28 @@ public class PlosOneFreemarkerConfig {
     }
     return retVal != null ? retVal : "";
   }
+  
+  /**
+   * Gets display name for journal
+   * 
+   * @param journalName
+   * @return display name
+   */
+  public String getDisplayName(String journalName) {
+    JournalConfig jc = journals.get(journalName);
+    boolean usingDefault = false; 
+    if (jc == null) {
+      usingDefault = true; 
+      jc = journals.get(defaultJournalName);
+    }
+    String retVal = jc.getDisplayName();
+    if ((retVal == null) && !usingDefault) {
+      jc = journals.get(defaultJournalName);
+      retVal = jc.getDisplayName();
+    }
+    return retVal != null ? retVal : "";
+  }
+  
   
   /**
    * gets prefix for article title
@@ -616,6 +644,7 @@ public class PlosOneFreemarkerConfig {
     private String metaKeywords;
     private String metaDescription;
     private String articleTitlePrefix;
+    private String displayName;
     
     public JournalConfig () {
     }
@@ -726,6 +755,18 @@ public class PlosOneFreemarkerConfig {
      */
     public void setMetaKeywords(String metaKeywords) {
       this.metaKeywords = metaKeywords;
+    }
+    /**
+     * @return Returns the displayName.
+     */
+    public String getDisplayName() {
+      return displayName;
+    }
+    /**
+     * @param displayName The displayName to set.
+     */
+    public void setDisplayName(String displayName) {
+      this.displayName = displayName;
     }
   }
 

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -37,6 +37,7 @@ public class EmailArticleAction extends UserActionSupport {
   private String note;
   private String title;
   private String description;
+  private String journalName;
   private PlosoneMailer plosoneMailer;
   private FetchArticleService fetchArticleService;
   private static final Log log = LogFactory.getLog(EmailArticleAction.class);
@@ -71,6 +72,8 @@ public class EmailArticleAction extends UserActionSupport {
     mapFields.put("note", note);
     mapFields.put("title", title);
     mapFields.put("description", description);
+    mapFields.put("journalName", journalName);
+    mapFields.put("subject", "An Article from " + journalName);
     plosoneMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
@@ -229,5 +232,19 @@ public class EmailArticleAction extends UserActionSupport {
    */
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  /**
+   * @return Returns the journalName.
+   */
+  public String getJournalName() {
+    return journalName;
+  }
+
+  /**
+   * @param journalName The journalName to set.
+   */
+  public void setJournalName(String journalName) {
+    this.journalName = journalName;
   }
 }

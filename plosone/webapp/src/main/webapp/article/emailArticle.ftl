@@ -8,6 +8,7 @@
 	<@s.form name="emailThisArticle" cssClass="pone-form" action="emailThisArticleSubmit" namespace="/article" method="post" title="E-mail this article" enctype="multipart/form-data">
 	  <@s.hidden name="articleURI"/>
  	  <@s.hidden name="title"/>
+	  <@s.hidden name="journalName" value="${freemarker_config.getDisplayName(journalContext)}"/>
 		<fieldset>
 			<legend>Complete this form</legend>
 			<ol>
