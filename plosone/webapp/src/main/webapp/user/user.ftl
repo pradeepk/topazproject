@@ -33,7 +33,7 @@
 
    	<#if !isDisplayNameSet>
       <!--after="(Usernames are <strong>permanent</strong> and must be between 4 and 18 characters)"-->
-        <@s.textfield name="displayName" label="Username" required="true" tabindex="1" after="(Usernames are <strong>permanent</strong> and must be between 4 and 18 characters)" />
+        <@s.textfield name="displayName" label="Username" required="true" tabindex="1" maxlength="18" after="(Usernames are <strong>permanent</strong> and must be between 4 and 18 characters)" />
 	  </#if>
    	<#if tabId?has_content>
           <@s.textfield name="givenNames" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="First/Given Name" required="true" tabindex="2" />
