@@ -73,7 +73,8 @@ class Metadata {
     }
 
     // Do the deed
-    OwlHelper.addFactory((SessionFactory)factory)
+    factory.addModel(new ModelConfig("metadata", URI.create(MODEL_PREFIX + "metadata"), null))
+    OwlHelper.addFactory((SessionFactory)factory, factory.getModel("metadata"))
   }
 
   static void addJar(File file) {
