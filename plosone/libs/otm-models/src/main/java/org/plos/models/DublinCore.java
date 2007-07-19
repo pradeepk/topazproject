@@ -202,6 +202,14 @@ public class DublinCore {
   private Set<Citation> references;
 
   /**
+   * A reference to an established standard to which the resource conforms. For
+   * example, for an XML document this can point to the URI identifying the
+   * DTD.
+   */
+  @Predicate(uri = Rdf.dc_terms + "conformsTo")
+  private URI conformsTo;
+
+  /**
    * Empty contructor
    */
   public DublinCore() {
@@ -634,5 +642,24 @@ public class DublinCore {
    */
   public void setReferences(Set<Citation> references) {
     this.references = references;
+  }
+
+  /**
+   * Set the format this object conforms to. For example, the DTD URI for an
+   * XML document.
+   *
+   * @param conformsTo the URI specifying the conformance standard
+   */
+  public void setConformsTo(URI conformsTo) {
+    this.conformsTo = conformsTo;
+  }
+
+  /**
+   * Return the URI identifying the standard the object conforms to
+   *
+   * @return the URI identifying the standard the object conforms to
+   */
+  public URI getConformsTo() {
+    return conformsTo;
   }
 }
