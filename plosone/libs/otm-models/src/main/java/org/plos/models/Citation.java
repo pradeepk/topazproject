@@ -217,7 +217,7 @@ public abstract class Citation {
    * @param title the issue of the citation's article
    */
   public void setIssue(String issue) {
-    this.title = issue;
+    this.issue = issue;
   }
 
   /**
