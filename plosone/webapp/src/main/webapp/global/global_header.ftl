@@ -10,7 +10,15 @@
     <@s.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile" tabId="preferences"/>
         <p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session[freemarker_config.userAttributeKey].userId}" title="You are logged in as ${Session[freemarker_config.userAttributeKey].displayName}">--><strong>${Session[freemarker_config.userAttributeKey].displayName}</strong></a>!</p>
         <ul>
-          <@s.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action"/>
+          <#assign urlBase = Request[freemarker_config.journalContextAttributeKey].requestScheme + "://" + Request[freemarker_config.journalContextAttributeKey].requestServerName/>
+          <#if Request[freemarker_config.journalContextAttributeKey].requestPort?exists>
+            <#assign port = Request[freemarker_config.journalContextAttributeKey].requestPort/>
+            <#if port != 80>
+              <#assign urlBase = urlBase + ":" + port?c/>
+            </#if>
+          </#if>
+          <#assign urlBase = urlBase + Request[freemarker_config.journalContextAttributeKey].requestContext/>
+          <@s.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=${urlBase}/logout.action"/>
           <li><a href="${editProfileURL}" title="Edit your account preferences and alert settings">Preferences</a></li>
           <li><a href="${logoutURL}" title="Logout">Logout</a></li>
         </ul>
