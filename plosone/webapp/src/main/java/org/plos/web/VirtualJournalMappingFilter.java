@@ -142,10 +142,10 @@ public class VirtualJournalMappingFilter implements Filter {
 private String[] lookupVirtualJournalResource(final HttpServletRequest request) {
 
     // lookup virtual journal context
-    final String virtualJournal = (String) request.getAttribute(
-      VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_JOURNAL);
-    final String mappingPrefix  = (String) request.getAttribute(
-      VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_MAPPINGPREFIX);
+    final VirtualJournalContext virtualJournalContext = (VirtualJournalContext) request.getAttribute(
+      VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
+    final String virtualJournal = virtualJournalContext.getJournal();
+    final String mappingPrefix  = virtualJournalContext.getMappingPrefix();
     if (virtualJournal == null || mappingPrefix == null || mappingPrefix.length() == 0) {
       return null;
     }

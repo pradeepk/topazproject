@@ -622,7 +622,7 @@ public class PlosOneFreemarkerConfig {
    * @return Returns the 
    */
   public String getJournalContextAttributeKey() {
-    return org.plos.web.VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_JOURNAL;
+    return org.plos.web.VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT;
   }
 
   /**

@@ -28,38 +28,17 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 /**
- * A Filter that sets the virtual journal context and mapping prefix
- * as attributes in the ServletRequest.
+ * A Filter that sets the virtual journal context as attributes in the ServletRequest.
  *
  * Application usage:
- *
- * String virtualJournal = ServletRequest.getAttribute(PUB_VIRTUALJOURNAL_JOURNAL);
- * if (virtualJournal.equals(PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL) {
- *   // in default context
- * }
- * String mappingPrefix = ServletRequest.getAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX);
+ * <pre>
+ * VirtualJournalContext requestContent = ServletRequest.getAttribute(PUB_VIRTUALJOURNAL_CONTEXT);
+ * String requestJournal = requestContext.getJournal();
+ * </pre>
  *
  * See WEB-INF/classes/org/plos/configuration/defaults.xml for configuration examples.
  */
 public class VirtualJournalContextFilter implements Filter {
-
-  /**
-   * ServletRequest attribute for the virtual journal name.
-   */
-  public static final String PUB_VIRTUALJOURNAL_JOURNAL = "pub.virtualjournal.journal";
-  /**
-   * Default virtual journal name.
-   */
-  public static final String PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL = "";
-
-  /**
-   * ServletRequest attribute for the virtual journal mapping prefix.
-   */
-  public static final String PUB_VIRTUALJOURNAL_MAPPINGPREFIX = "pub.virtualjournal.mappingprefix";
-  /**
-   * Default virtual journal mapping prefix.
-   */
-  public static final String PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX = "";
 
   public static final String CONF_VIRTUALJOURNALS          = "pub.virtualJournals";
   public static final String CONF_VIRTUALJOURNALS_DEFAULT  = CONF_VIRTUALJOURNALS + ".default";
@@ -111,18 +90,18 @@ public class VirtualJournalContextFilter implements Filter {
 
     // need to do <rule> based processing?
     if (virtualJournal == null) {
-      final String[] ruleValues = processVirtualJournalRules(
+      final VirtualJournalContext ruleValues = processVirtualJournalRules(
         configuration, (HttpServletRequest) request);
       if (ruleValues != null) {
-        virtualJournal = ruleValues[0];
-        mappingPrefix  = ruleValues[1];
+        virtualJournal = ruleValues.getJournal();
+        mappingPrefix  = ruleValues.getMappingPrefix();
       }
     }
 
     // use system default if not set
     if (virtualJournal == null) {
-      virtualJournal = PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL;
-      mappingPrefix  = PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX;
+      virtualJournal = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL;
+      mappingPrefix  = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX;
 
       if (log.isDebugEnabled()) {
         log.debug("setting virtual journal = \"" + virtualJournal + "\""
@@ -137,8 +116,10 @@ public class VirtualJournalContextFilter implements Filter {
     }
 
     // put virtualJournal context in the ServletRequest for webapp to use
-    request.setAttribute(PUB_VIRTUALJOURNAL_JOURNAL,       virtualJournal);
-    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, mappingPrefix);
+    request.setAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT,
+      new VirtualJournalContext(virtualJournal, mappingPrefix, request.getScheme(),
+        request.getServerPort(), request.getServerName(),
+        ((HttpServletRequest) request).getContextPath()));
 
     // continue the Filter chain ...
     filterChain.doFilter(request, response);
@@ -149,9 +130,9 @@ public class VirtualJournalContextFilter implements Filter {
    *
    * @param configuration <code>Configuration</code> that contains the rules.
    * @param request <code>HttpServletRequest</code> to apply the rules against.
-   * @ return String[] {virtualJournalContext, mappingPrefix}.  May be <code>null</code>.
+   * @ return VirtualJournalContext.  May be <code>null</code>.
    */
-  private String[] processVirtualJournalRules(
+  private VirtualJournalContext processVirtualJournalRules(
     Configuration configuration, HttpServletRequest request) {
 
     String virtualJournal = null;
@@ -204,6 +185,6 @@ public class VirtualJournalContextFilter implements Filter {
     }
 
     // return match or null
-    return new String[] {virtualJournal, mappingPrefix};
+    return new VirtualJournalContext(virtualJournal, mappingPrefix, null, 0, null, null);
   }
 }
