@@ -295,18 +295,28 @@ public class ClassDef {
       return null
 
     Class generatorClazz
-    try {
-      // Try to find generator by using FQCN
-      generatorClazz = Class.forName(idGenerator);
-    } catch (ClassNotFoundException cnfe) {
+    ClassNotFoundException lastEx
+    for (cl in [Thread.currentThread().getContextClassLoader(), ClassDef.class.getClassLoader()]) {
       try {
-        // Allow classname to default to our package
-        generatorClazz = Class.forName("org.topazproject.otm.id.${idGenerator}")
-      } catch (ClassNotFoundException cnfe2) {
-        // Allow classname to leave off the normal Generator suffix too
-        generatorClazz = Class.forName("org.topazproject.otm.id.${idGenerator}Generator")
+        // Try to find generator by using FQCN
+        generatorClazz = Class.forName(idGenerator, true, cl);
+      } catch (ClassNotFoundException cnfe) {
+        try {
+          // Allow classname to default to our package
+          generatorClazz = Class.forName("org.topazproject.otm.id.${idGenerator}", true, cl)
+        } catch (ClassNotFoundException cnfe2) {
+          try {
+            // Allow classname to leave off the normal Generator suffix too
+            generatorClazz =
+                Class.forName("org.topazproject.otm.id.${idGenerator}Generator", true, cl)
+          } catch (ClassNotFoundException cnfe3) {
+            lastEx = cnfe3;
+          }
+        }
       }
     }
+    if (!generatorClazz)
+      throw lastEx
 
     def gen = generatorClazz.newInstance();
     gen.uriPrefix = uriPrefix
