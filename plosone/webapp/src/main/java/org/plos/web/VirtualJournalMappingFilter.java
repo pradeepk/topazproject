@@ -161,12 +161,13 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
       ? mappingPrefix       + request.getServletPath()
       : mappingPrefix + "/" + request.getServletPath();
     final String realPath = servletContext.getRealPath(reqUri);
-    final int lastSlash = realPath.lastIndexOf("/");
+    final int lastSlash = realPath.lastIndexOf(System.getProperty("file.separator"));
     final String realDir = realPath.substring(0, lastSlash);
     final String realFile = realPath.substring(lastSlash + 1);
 
     if (log.isDebugEnabled()) {
-      log.debug("using realDir + \"/\" + realFile: \"" + realDir + "\" + \"/\" + " + realFile + "\"");
+      log.debug("using realDir + \"/\" + realFile: \"" + realDir + "\" + \"" +
+                System.getProperty("file.separator") +  "\" + \"" + realFile + "\"");
     }
 
     // does resource actually exist?
