@@ -538,22 +538,36 @@ public class OqlTest extends GroovyTestCase {
     def checker = new ResultChecker(test:this)
 
     doInTx { s ->
-      Results r = s.createQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Jack';").execute()
+      Results r = s.createQuery("""
+          select obj from Test1 obj where
+            obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.
+                <http://rdf.topazproject.org/RDF/givenName> = 'Jack';
+          """).execute()
       checker.verify(r) {
         row { object (class:cls, id:o2.id) }
       }
 
-      r = s.createQuery("select obj from Test1 obj where obj.info.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';").execute()
+      r = s.createQuery("""
+          select obj from Test1 obj where
+            obj.info.<http://rdf.topazproject.org/RDF/name>.
+                <http://rdf.topazproject.org/RDF/givenName> = 'Bob';
+          """).execute()
       checker.verify(r) {
         row { object (class:cls, id:o1.id) }
       }
 
-      r = s.createQuery("select obj.<http://rdf.topazproject.org/RDF/info> from Test1 obj where obj.info.name.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';").execute()
+      r = s.createQuery("""
+          select obj.<http://rdf.topazproject.org/RDF/info> from Test1 obj where
+            obj.info.name.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';
+          """).execute()
       checker.verify(r) {
         row { uri (id:o1.info.id) }
       }
 
-      r = s.createQuery("select obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name> n from Test1 obj order by n;").execute()
+      r = s.createQuery("""
+          select obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name> n
+            from Test1 obj order by n;
+          """).execute()
       checker.verify(r) {
         if (o1.info.name.id < o2.info.name.id) {
           row { uri (id:o1.info.name.id) }
@@ -565,11 +579,18 @@ public class OqlTest extends GroovyTestCase {
       }
 
       assert shouldFail(QueryException, {
-        r = s.createQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.name.givenName != 'foo' order by obj;").execute()
+        r = s.createQuery("""
+          select obj from Test1 obj where
+            obj.<http://rdf.topazproject.org/RDF/info>.name.givenName != 'foo' order by obj;
+          """).execute()
       }).contains("error parsing query")
 
       assert shouldFail(QueryException, {
-        r = s.createQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.givenName != 'foo' order by obj;").execute()
+        r = s.createQuery("""
+          select obj from Test1 obj where
+            obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.
+                givenName != 'foo' order by obj;
+          """).execute()
       }).contains("error parsing query")
     }
   }
@@ -926,7 +947,10 @@ public class OqlTest extends GroovyTestCase {
       }
 
       // same parameter twice
-      q = s.createQuery("select obj from Test1 obj where obj.info.name.givenName = :name or obj.info.name.surname = :name order by obj;")
+      q = s.createQuery("""
+          select obj from Test1 obj where
+            obj.info.name.givenName = :name or obj.info.name.surname = :name order by obj;
+          """)
       assert q.getParameterNames() == ['name'] as Set
 
       r = q.setParameter("name", "Bob").execute()
@@ -936,7 +960,10 @@ public class OqlTest extends GroovyTestCase {
       }
 
       // two parameters
-      q = s.createQuery("select obj from Test1 obj where obj.info.name.givenName = :gname or obj.info.name.surname = :sname order by obj;")
+      q = s.createQuery("""
+          select obj from Test1 obj
+            where obj.info.name.givenName = :gname or obj.info.name.surname = :sname order by obj;
+          """)
       assert q.getParameterNames() == ['gname', 'sname'] as Set
 
       r = q.setParameter("gname", "Bob").setParameter("sname", "Keller").execute()
@@ -1049,21 +1076,22 @@ public class OqlTest extends GroovyTestCase {
           row { object (class:cls, id:o3.id) }
         }
 
-        r = s.createQuery("select obj from Test1 obj where obj.info.name.id != <foo:1> order by obj;").execute()
+        r = s.createQuery(
+            "select obj from Test1 obj where obj.info.name.id != <foo:1> order by obj;").execute()
         checker.verify(r) {
           row { object (class:cls, id:o3.id) }
         }
 
         // other constraints
         s.disableFilter('noBob');
-        r = s.createQuery("select obj from Test1 obj where obj.state = '3'^^<xsd:int> order by obj;").
-              execute()
+        r = s.createQuery(
+            "select obj from Test1 obj where obj.state = '3'^^<xsd:int> order by obj;").execute()
         checker.verify(r) {
           row { object (class:cls, id:o3.id) }
         }
 
-        r = s.createQuery("select obj from Test1 obj where obj.state = '2'^^<xsd:int> order by obj;").
-              execute()
+        r = s.createQuery(
+            "select obj from Test1 obj where obj.state = '2'^^<xsd:int> order by obj;").execute()
         checker.verify(r) {
           row { object (class:cls, id:o2.id) }
         }
@@ -1152,7 +1180,10 @@ public class OqlTest extends GroovyTestCase {
       FilterDefinition cfd = new CriteriaFilterDefinition("critF", dc);
       assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := o.parts and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := v1.nextObject and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
 
-      def qry = "o where (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)))";
+      def qry = """o where
+        (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
+        o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and
+        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)))""";
       FilterDefinition ofd = new OqlFilterDefinition("oqlF", "Article", qry)
       Criteria c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria();
 
