@@ -561,7 +561,7 @@ public class OqlTest extends GroovyTestCase {
             obj.info.name.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';
           """).execute()
       checker.verify(r) {
-        row { uri (id:o1.info.id) }
+        row { uri (o1.info.id) }
       }
 
       r = s.createQuery("""
@@ -570,11 +570,11 @@ public class OqlTest extends GroovyTestCase {
           """).execute()
       checker.verify(r) {
         if (o1.info.name.id < o2.info.name.id) {
-          row { uri (id:o1.info.name.id) }
-          row { uri (id:o2.info.name.id) }
+          row { uri (o1.info.name.id) }
+          row { uri (o2.info.name.id) }
         } else {
-          row { uri (id:o2.info.name.id) }
-          row { uri (id:o1.info.name.id) }
+          row { uri (o2.info.name.id) }
+          row { uri (o1.info.name.id) }
         }
       }
 
