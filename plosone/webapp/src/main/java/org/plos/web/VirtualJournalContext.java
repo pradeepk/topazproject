@@ -44,6 +44,7 @@ public class VirtualJournalContext {
   private final int    requestPort;
   private final String requestServerName;
   private final String requestContext;
+  private final String baseUrl;
 
   /**
    * Construct an immutable VirtualJournalContext.
@@ -58,6 +59,19 @@ public class VirtualJournalContext {
     this.requestPort       = requestPort;
     this.requestServerName = requestServerName;
     this.requestContext    = requestContext;
+
+    // assume that we're dealing with http or https schemes for now
+    StringBuilder urlBaseValue = new StringBuilder(requestScheme).append("://")
+                                                  .append(requestServerName);
+    if (requestScheme != null) {
+      //assume that we don't want to put the default ports numbers on the URL
+      if (("http".equals(requestScheme.toLowerCase()) && requestPort != 80) ||
+          ("https".equals(requestScheme.toLowerCase()) && requestPort != 443)) {
+        urlBaseValue.append(":").append(requestPort);
+      }
+    }
+    urlBaseValue.append(requestContext).append("/");
+    this.baseUrl = urlBaseValue.toString();
   }
 
   /**
@@ -112,5 +126,15 @@ public class VirtualJournalContext {
    */
   public String getRequestContext() {
     return requestContext;
+  }
+
+  /**
+   * Get the base url of the request which consists of the scheme, server name, server port, and
+   * context with an ending slash.
+   *
+   * @return string representing the base request URL
+   */
+  public String getBaseUrl () {
+    return baseUrl;
   }
 }
