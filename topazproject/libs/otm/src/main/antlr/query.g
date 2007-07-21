@@ -97,8 +97,8 @@ pexpr   // projection expression
     ;
 
 fldexpr // field expression
-    :   (var (DOT field)* (DOT STAR)) => var (DOT! field)* (DOT! STAR) { #fldexpr = #([REF,"ref"], fldexpr); }
-    |   var (DOT! field)* { #fldexpr = #([REF,"ref"], fldexpr); }
+    :   (var (DOT (field|predicate))* (DOT STAR)) => var (DOT! (field|predicate))* (DOT! STAR) { #fldexpr = #([REF,"ref"], fldexpr); }
+    |   var (DOT! (field|predicate))* { #fldexpr = #([REF,"ref"], fldexpr); }
     ;
 
 subquery        // subquery

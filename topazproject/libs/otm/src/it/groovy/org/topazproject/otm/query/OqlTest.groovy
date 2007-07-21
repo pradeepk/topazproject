@@ -548,6 +548,22 @@ public class OqlTest extends GroovyTestCase {
         row { object (class:cls, id:o1.id) }
       }
 
+      r = s.createQuery("select obj.<http://rdf.topazproject.org/RDF/info> from Test1 obj where obj.info.name.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';").execute()
+      checker.verify(r) {
+        row { uri (id:o1.info.id) }
+      }
+
+      r = s.createQuery("select obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name> n from Test1 obj order by n;").execute()
+      checker.verify(r) {
+        if (o1.info.name.id < o2.info.name.id) {
+          row { uri (id:o1.info.name.id) }
+          row { uri (id:o2.info.name.id) }
+        } else {
+          row { uri (id:o2.info.name.id) }
+          row { uri (id:o1.info.name.id) }
+        }
+      }
+
       assert shouldFail(QueryException, {
         r = s.createQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.name.givenName != 'foo' order by obj;").execute()
       }).contains("error parsing query")
