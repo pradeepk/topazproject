@@ -71,7 +71,9 @@ class ItqlResults extends Results {
 
     int idx = 0;
     for (Object t : qi.getTypes()) {
-      if (t instanceof QueryInfo)
+      if (t == null)
+        res[idx] = Type.UNKNOWN;
+      else if (t instanceof QueryInfo)
         res[idx] = Type.SUBQ_RESULTS;
       else if (t.equals(URI.class))
         res[idx] = Type.URI;
@@ -101,15 +103,15 @@ class ItqlResults extends Results {
     curRow = new Object[qi.getVars().size()];
     for (int idx = 0; idx < curRow.length; idx++) {
       try {
-        curRow[idx] = getResult(idx);
+        curRow[idx] = getResult(idx, getType(idx));
       } catch (AnswerException ae) {
         throw new QueryException("Error parsing answer", ae);
       }
     }
   }
 
-  private Object getResult(int idx) throws OtmException, AnswerException {
-    switch (getType(idx)) {
+  private Object getResult(int idx, Type type) throws OtmException, AnswerException {
+    switch (type) {
       case LITERAL:
         // FIXME: need lang from AnswerSet
         return new Literal(qas.getString(idx), qas.getLiteralDataType(idx), null);
@@ -124,8 +126,19 @@ class ItqlResults extends Results {
       case CLASS:
         return sess.get((Class) qi.getTypes().get(idx), qas.getString(idx));
 
+      case UNKNOWN:
+        if (qas.isLiteral(idx))
+          types[idx] = Type.LITERAL;
+        else if (qas.isURI(idx))
+          types[idx] = Type.URI;
+        else if (qas.isSubQueryResults(idx))
+          types[idx] = Type.SUBQ_RESULTS;
+        else
+          throw new Error("unknown query-answer type encountered at index " + idx);
+        return getResult(idx, types[idx]);
+
       default:
-        throw new Error("unknown type " + getType(idx) + " encountered");
+        throw new Error("unknown type " + type + " encountered");
     }
   }
 }

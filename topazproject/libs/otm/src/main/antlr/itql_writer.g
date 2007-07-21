@@ -150,7 +150,7 @@ pexpr[QueryBuilder qb, AST var]
         qb.prjExprs.add(toItqlStr(#v));
         ExprType type = ((OqlAST) #v).getExprType();
         if (type == null)
-          qb.prjTypes.add(String.class);
+          qb.prjTypes.add(null);
         else {
           switch (type.getType()) {
             case CLASS:
