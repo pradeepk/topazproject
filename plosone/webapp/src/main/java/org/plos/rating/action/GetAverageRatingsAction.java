@@ -13,6 +13,8 @@ import java.net.URI;
 
 import java.util.List;
 
+import com.googlecode.jsonplugin.annotations.JSON;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
@@ -241,6 +243,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    *
    * @return Returns the otm session.
    */
+  @JSON(serialize = false)
   public Session getOtmSession() {
     return session;
   }

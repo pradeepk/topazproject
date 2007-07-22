@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.googlecode.jsonplugin.annotations.JSON;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -232,6 +234,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    *
    * @return Returns the otm session.
    */
+  @JSON(serialize = false)
   public Session getOtmSession() {
     return session;
   }
@@ -252,6 +255,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    *
    * @return The ArticleOtmService.
    */
+  @JSON(serialize = false)
   public ArticleOtmService getArticleOtmService() {
     return articleOtmService;
   }
