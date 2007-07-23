@@ -115,6 +115,8 @@ public class SerializerFactory {
     setSerializer(Boolean.TYPE, new XsdBooleanSerializer());
     setSerializer(Integer.class, new SimpleSerializer<Integer>(Integer.class));
     setSerializer(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class));
+    setSerializer(Integer.class, Rdf.xsd + "double", new SimpleSerializer<Integer>(Integer.class));
+    setSerializer(Integer.TYPE, Rdf.xsd + "double", new SimpleSerializer<Integer>(Integer.class));
     setSerializer(Long.class, new SimpleSerializer<Long>(Long.class));
     setSerializer(Long.TYPE, new SimpleSerializer<Long>(Long.class));
     setSerializer(Short.class, new SimpleSerializer<Short>(Short.class));
