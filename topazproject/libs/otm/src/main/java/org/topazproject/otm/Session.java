@@ -612,6 +612,9 @@ public class Session {
         if ((p.getSerializer() != null) || (p.getUri() == null))
           continue;
 
+        if (log.isDebugEnabled())
+          log.debug("Checking object '" + cm.getName() + "' field '" + p.getName() +
+                    "' literal type '" + p.getDataType() + "' rdf type '" + p.getRdfType() + "'");
         for (Object ao : p.get(o)) {
           Id aid = checkObject(ao);
 
