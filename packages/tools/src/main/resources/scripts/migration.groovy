@@ -10,8 +10,9 @@
 import org.plos.article.util.ToolHelper
 import org.plos.models.Article
 import org.plos.models.Category
-import org.plos.models.Reference
 import org.plos.models.Citation
+import org.plos.models.PLoS
+import org.plos.models.UserProfile
 import org.topazproject.otm.SessionFactory
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.stores.ItqlStore
@@ -29,9 +30,17 @@ def cli = new CliBuilder(usage: 'migration [-c config-overrides.xml] article-uri
 cli.h(longOpt:'help', "help (this message)")
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz.xml')
 cli.a(args:1, 'article (i.e. doi:10.1371/journal.pone.nnnnnnn)')
+cli.d(args:0, 'dump otm objects')
+cli.n(args:0, 'show null entries too')
+cli.t(args:0, 'test (dry-run)')
 
 // Display help if requested
 def opt = cli.parse(args); if (opt.h) { cli.usage(); return }
+
+// Stash args
+DUMP = opt.d
+DRYRUN = opt.t
+SHOWNULLS = opt.n
 
 // Load configuration before ArticleUtil is instantiated
 CONF = ToolHelper.loadConfiguration(opt.c)
@@ -55,11 +64,14 @@ def journalMeta = slurpedArticle.front.'journal-meta'
 def factory = new SessionFactory();
 def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
 def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null);
+def p = new ModelConfig("profiles", URI.create(CONF.getString("topaz.models.profiles")), null);
 factory.setTripleStore(itql)
 factory.addModel(ri);
+factory.addModel(p);
 factory.preload(Article.class);
 factory.preload(Category.class);
-factory.preload(org.plos.models.Reference.class);
+factory.preload(Citation.class);
+factory.preload(UserProfile.class);
 def session = factory.openSession();
 def tx = session.beginTransaction();
 
@@ -92,61 +104,182 @@ def toint(value) {
 Set affiliations = new HashSet()
 articleMeta.aff.institution.each() { aff -> affiliations.add(aff.toString()) }
 List authors = new ArrayList()
-articleMeta.'contrib-group'.contrib.each() {
-  switch(it.@'contrib-type') {
-  case 'author': authors += getName(it.name); break
+List editors = new ArrayList()
+articleMeta.'contrib-group'.contrib.each() { contrib ->
+  def user = new UserProfile()
+  user.realName = getName(contrib.name)
+  user.givenNames = contrib.name.'given-names'
+  user.surnames = contrib.name.surname
+  contrib.xref.each() { xref ->
+    switch(xref.'@ref-type') {
+//    case 'corresp': bc.note += articleMeta.'author-notes'.corresp.'@id'[xref.'@rid'] + "\n"; break
+//    case 'aff': user.organizationName = articleMeta.aff.'@id'[xref.'@rid'].'addr-line'; break
+    }
+  }
+  switch(contrib.@'contrib-type') {
+  case 'author': authors += user; break
+  case 'editor': editors += user; break
   }
 }
 
 // Update article
-article.articleType        = tostr(slurpedArticle.'@article-type')
-article.volume             = toint(articleMeta.volume)
-article.issue              = toint(articleMeta.issue)
-article.journalTitle       = tostr(journalMeta.'journal-title')
-article.publisherName      = tostr(journalMeta.'publisher'.'publisher-name')
-article.copyrightStatement = tostr(articleMeta.'copyright-statement')
-article.copyrightYear      = toint(articleMeta.'copyright-year')
-article.pageCount          = toint(articleMeta.counts.'page-count'.'@count')
-article.publisherName      = tostr(journalMeta.publisher.'publisher-name')
-article.affiliations       = affiliations
-article.orderedAuthors     = authors
-article.body               = new StreamingMarkupBuilder().bind { mkp.yield(slurpedArticle.body) }
+def dc = article.dublinCore
+def bc = dc.bibliographicCitation = new Citation()
+
+bc.id                    = new URI(tostr(article.id.toString() + "#bibliographicCitation"))
+bc.year                  = toint(articleMeta.'pub-date'[0].year)
+bc.month                 = toint(articleMeta.'pub-date'[0].month)
+bc.volume                = toint(articleMeta.volume)
+bc.issue                 = tostr(articleMeta.issue)
+bc.title                 = dc.title
+bc.publisherLocation     = tostr(journalMeta.publisher.'publisher-loc')
+bc.publisherName         = tostr(journalMeta.publisher.'publisher-name')
+//bc.pages                 = "1-" + tostr(articleMeta.counts.'page-count'.'@count') // bad?
+bc.journal               = tostr(journalMeta.'journal-title')
+bc.note                  = tostr(journalMeta.'author-notes'.fn)
+bc.summary               = dc.description
+bc.url                   = "http://dx.plos.org/${dc.identifier.substring(9)}"
+bc.editors               = (editors ? editors : null)
+bc.authors               = (authors ? authors : null)
+
+// dc.confirmsTo should scrape from the article, but for migration from 0.7, this works
+dc.conformsTo            = new URI('http://dtd.nlm.nih.gov/publishing/2.0/journalpublishing.dtd')
+dc.copyrightYear         = toint(articleMeta.'copyright-year')
+dc.references            = new HashSet()
+// TODO: Set dc.license -- doc has article.article-meta.copyright-statement, but no bloody URI!
+
+article.articleType = new HashSet()
+article.articleType.add(new URI(PLoS.PLOS_ResearchArticle))
+bc.citationType = new URI(PLoS.PLOS_ResearchArticle)
 
 // Handle references
 slurpedArticle.back.'ref-list'.ref.each() { src ->
-  def ref = new org.plos.models.Reference()
-  def cit = ref.citation
+  def cit = new Citation()
 
-  ref.id                = new URI('info:doi/10.1371/reference.' + src.'@id')
-  ref.label             = tostr(src.label)
-  cit.citationType      = tostr(src.citation.'@citation-type')
-  cit.source            = tostr(src.citation.source)
-  cit.comment           = tostr(src.citation.comment)
-  cit.publisherLocation = tostr(src.citation.'publisher-loc')
-  cit.publisherName     = tostr(src.citation.'publiser-name')
-  cit.articleTitle      = tostr(src.citation.'article-title')
-  cit.setFirstPage(toint(src.citation.fpage))
-  cit.setLastPage(toint(src.citation.lpage))
-  cit.setVolume(toint(src.citation.volume))
-  cit.setYear(toint(src.citation.year))
-
-  // Handle authors and editors of citations
-  src.citation.'person-group'.each() { group ->
-    group.name.each() { name ->
-      switch (group.@'person-group-type') {
-      case 'author': cit.authors.add(getName(name)); break
-      case 'editor': cit.editors.add(getName(name)); break;
-      default: log.warn("Unknown person-group-type: ${group.@'person-group-type'}"); break
+  authors = new ArrayList()
+  editors = new ArrayList()
+  src.citation.'person-group'.each() { person ->
+    person.name.each() { name ->
+      def user = new UserProfile()
+      user.realName   = getName(name)
+      user.givenNames = name.'given-names'
+      user.surnames   = name.surname
+      switch(person.@'person-group-type') {
+        case 'author': authors += user; break
+        case 'editor': editors += user; break
       }
     }
   }
 
-  article.references.add(ref)
+  def pages = tostr(src.citation.'page-range')
+  def fpage = tostr(src.citation.fpage)
+  def lpage = tostr(src.citation.lpage)
+  if (!pages) {
+    if (fpage && lpage)
+      pages = "$fpage-$lpage"
+    else if (fpage)
+      pages = fpage
+  }
+
+  cit.id                = new URI('info:doi/10.1371/reference.' + src.'@id')
+  cit.year              = toint(src.citation.year)
+  cit.month             = tostr(src.citation.month)
+  cit.volume            = toint(src.citation.volume)
+  cit.issue             = tostr(src.citation.issue)
+  cit.title             = tostr(src.citation.'article-title')
+  cit.publisherLocation = tostr(src.citation.'publisher-loc')
+  cit.publisherName     = tostr(src.citation.'publisher-name')
+  cit.pages             = pages
+  cit.journal           = tostr(src.citation.source)
+  cit.note              = tostr(src.citation.comment)
+  cit.authors           = (authors ? authors : null)
+  cit.editors           = (editors ? editors : null)
+  cit.url               = tostr(src.citation.@'xlink:role')
+
+  def citationType = tostr(src.citation.@'citation-type')
+  if (citationType)
+    cit.citationType    = new URI(PLoS.PLOS_ArticleType + citationType) // Bad? Tired of arguing
+
+  dc.references.add(cit)
 }
 
-println "Updating mulgara..."
-session.saveOrUpdate(article)
-tx.commit()
-session.close()
+
+// TODO: All these routines should be a separate utility (or at least part of a library)
+def max(a, b) { return (a) < (b) ? (b) : (a) }
+def trunc(s, len) { s = s.toString(); return s.size() <= len ? s : s[0..(len-3)] + "..." }
+def abbreviate(s) {
+  def v = s[0]
+  s[1..-1].each() { if (it <= 'Z' || it == ']') v += it.toLowerCase() }
+  return v
+}
+def abbreviateClass(s) {
+  def v = ""
+  s.each() { if (it <= 'Z' && it >= 'A') v += it }
+  return v
+}
+
+// Dump a map or a java-object
+def dump(obj, prefix, indent, width) {
+  def map = new TreeMap(obj instanceof Map ? obj : obj.getProperties())
+  def keyLength = 0
+  map.each() { 
+    if (it.value != null || SHOWNULLS) keyLength = max(keyLength, it.key.toString().size())
+  }
+  map.each() { prop ->
+    if (prop.key != "nextObject" && prop.key != "class") {
+      if (prop.value != null || SHOWNULLS)
+        printf "%s %${keyLength}s: ", prefix, prop.key
+      switch (prop.value?.getClass()) {
+        case null: 
+          if (SHOWNULLS) println 'null'
+          break
+        case java.util.Date.class:
+        case java.lang.Integer.class:
+          println trunc(prop.value, width - keyLength - indent - 2)
+          break
+        case java.lang.String.class:
+          println "'" + trunc(prop.value, width - keyLength - indent - 4) + "'"
+          break
+        case java.net.URI.class:
+          println "<" + trunc(prop.value, width - keyLength - indent - 4) + ">"
+          break
+        case org.plos.models.DublinCore.class:
+        case org.plos.models.Citation.class:
+        case org.plos.models.UserProfile.class:
+        case org.plos.models.Category.class:
+          println prop.value.class.name + ":"
+          def abbrev = abbreviate(prop.key) + '.' + abbreviateClass(prop.value.class.name)
+          dump(prop.value, prefix + abbrev + ':', indent + 2, width)
+          break
+        case java.util.HashSet.class:
+        case java.util.ArrayList.class:
+          println "${prop.value.size()} element(s) (${prop.value.class.name})"
+          int i = 0
+          def tmpmap = new HashMap()
+          prop.value.each() {  tmpmap["[$i]"] = it; i++ }
+          dump(tmpmap, prefix + prop.key, indent + 2, width)
+          break
+        default: 
+          println prop.value.getClass().getName()
+          break
+      }
+    }
+  }
+}
+
+if (DUMP) {
+  dump(article, "a:", 0, 100)
+}
+if (!DRYRUN) {
+  println "Updating mulgara..."
+  try {
+    session.saveOrUpdate(article)
+    tx.commit()
+    session.close()
+  } catch (Throwable t) {
+    log.error("Unable to save article", t);
+    println "Unable to save article: " + t
+  }
+}
 
 // TODO: Deal with errors (i.e. catch exceptions)
