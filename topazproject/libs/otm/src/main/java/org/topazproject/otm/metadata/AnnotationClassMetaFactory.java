@@ -283,8 +283,9 @@ public class AnnotationClassMetaFactory {
 
     Serializer serializer = sf.getSerializerFactory().getSerializer(type, dt);
 
-    if (log.isDebugEnabled() && (serializer == null))
-      log.debug("No serializer found for " + type);
+    if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
+      throw new OtmException("No serializer found for '" + type + "' with dataType '" 
+          + dt + "' for field " + toString(f));
 
     if (!embedded) {
       boolean inverse = (rdf != null) && rdf.inverse();

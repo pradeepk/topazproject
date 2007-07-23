@@ -163,6 +163,18 @@ public class SerializerFactory {
   }
 
   /**
+   * Tests if a class must be serialized. 
+   *
+   * @param clazz the class
+   * @return true if this class must be serialized
+   */
+  public boolean mustSerialize(Class clazz) {
+    // XXX: may be the apps would like to control this. 
+    // XXX: for now piggy-back on the typeMap
+    return typeMap.containsKey(clazz);
+  }
+
+  /**
    * Gets the default data type for a class (usually for basic java types).
    *
    * @param clazz the class
