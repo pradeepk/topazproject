@@ -29,7 +29,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @Entity(type = PLoS.bibtex + "Entry", model = "ri")
 @UriPrefix(Rdf.topaz)
-public abstract class Citation {
+public class Citation {
   @Id
   private URI   id;
 
@@ -64,7 +64,7 @@ public abstract class Citation {
    * gives it a number; and sometimes books are given numbers in a named
    * series.
    */
-  @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.xsd + "XMLLiteral")
+  @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.rdf + "XMLLiteral")
   private String issue;
 
   /**
@@ -79,13 +79,13 @@ public abstract class Citation {
    * entirely. For small publishers, on the other hand, you can help the reader
    * by giving the complete address.
    */
-  @Predicate(uri = PLoS.bibtex + "hasAddress", dataType = Rdf.xsd + "String")
+  @Predicate(uri = PLoS.bibtex + "hasAddress", dataType = Rdf.xsd + "string")
   private String publisherLocation;
 
   /**
    * The publisher's name.
    */
-  @Predicate(uri = PLoS.bibtex + "hasPublisher", dataType = Rdf.xsd + "String")
+  @Predicate(uri = PLoS.bibtex + "hasPublisher", dataType = Rdf.xsd + "string")
   private String publisherName;
 
   /**
@@ -95,21 +95,21 @@ public abstract class Citation {
    * databases, the standard styles convert a single dash (as in 7-33) to the
    * double dash used in TeX to denote number ranges (as in 7-33).
    */
-  @Predicate(uri = PLoS.bibtex + "hasPages", dataType = Rdf.xsd + "String")
+  @Predicate(uri = PLoS.bibtex + "hasPages", dataType = Rdf.xsd + "string")
   private String pages;
 
   /**
    * A journal name. Abbreviations are provided for many journals; see the
    * Local Guide
    */
-  @Predicate(uri = PLoS.bibtex + "hasJournal", dataType = Rdf.xsd + "String")
+  @Predicate(uri = PLoS.bibtex + "hasJournal", dataType = Rdf.xsd + "string")
   private String journal;
 
   /**
    * Any additional information that can help the reader. The first word should
    * be capitalized.
    */
-  @Predicate(uri = PLoS.bibtex + "hasNote", dataType = Rdf.xsd + "String")
+  @Predicate(uri = PLoS.bibtex + "hasNote", dataType = Rdf.xsd + "string")
   private String note;
 
   /**
@@ -131,7 +131,7 @@ public abstract class Citation {
    * referenced. This often is used for technical reports to point to the ftp
    * or web site where the postscript source of the report is located.
    */
-  @Predicate(uri = PLoS.bibtex + "hasURL", dataType = Rdf.xsd + "String")
+  @Predicate(uri = PLoS.bibtex + "hasURL", dataType = Rdf.xsd + "string")
   private String url;
 
   /**
