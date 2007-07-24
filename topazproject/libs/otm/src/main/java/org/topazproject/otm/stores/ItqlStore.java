@@ -368,15 +368,7 @@ public class ItqlStore implements TripleStore {
             v.add(s);
           }
 
-          AnswerSet.QueryAnswerSet sqa = qa.getSubQueryResults(3);
-          sqa.beforeFirst();
-          while (sqa.next()) {
-            String assoc = inverse ? s : o;
-            Set<String> v = types.get(assoc);
-            if (v == null)
-              types.put(assoc, v = new HashSet<String>());
-            v.add(sqa.getString("t"));
-          }
+          updateTypeMap(qa.getSubQueryResults(3), inverse ? s : o, types);
         }
       }
     } catch (AnswerException ae) {
@@ -412,11 +404,11 @@ public class ItqlStore implements TripleStore {
         continue;
       String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : modelUri;
       if (Mapper.MapperType.RDFLIST == m.getMapperType())
-        fvalues.put(p, getRdfList(id, p, mUri, txn));
+        fvalues.put(p, getRdfList(id, p, mUri, txn, types));
       else if (Mapper.MapperType.RDFBAG == m.getMapperType() ||
           Mapper.MapperType.RDFSEQ == m.getMapperType() || 
           Mapper.MapperType.RDFALT == m.getMapperType())
-        fvalues.put(p, getRdfBag(id, p, mUri, txn));
+        fvalues.put(p, getRdfBag(id, p, mUri, txn, types));
     }
 
     // create result
@@ -534,28 +526,32 @@ public class ItqlStore implements TripleStore {
     return clss.toArray(new ClassMetadata[clss.size()]);
   }
 
-  private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn)
-      throws OtmException {
+  private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn, 
+      Map<String, Set<String>> types) throws OtmException {
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o from <").append(modelUri).append("> where ")
+    qry.append("select $o subquery (select $t from <").append(modelUri)
+       .append("> where $o <rdf:type> $t) from <").append(modelUri).append("> where ")
        .append("(trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <")
        .append(sub).append("> <").append(pred).append("> $s) and <")
        .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o;");
 
-    return execCollectionsQry(qry.toString(), txn);
+    return execCollectionsQry(qry.toString(), txn, types);
   }
 
-  private List<String> getRdfBag(String sub, String pred, String modelUri, Transaction txn)
-      throws OtmException {
+  private List<String> getRdfBag(String sub, String pred, String modelUri, Transaction txn,
+      Map<String, Set<String>> types) throws OtmException {
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o $p from <").append(modelUri).append("> where ")
+    qry.append("select $o $p subquery (select $t from <").append(modelUri)
+       .append("> where $o <rdf:type> $t) from <")
+       .append(modelUri).append("> where ")
        .append("($s $p $o minus $s <rdf:type> $o) and <")
        .append(sub).append("> <").append(pred).append("> $s;");
 
-    return execCollectionsQry(qry.toString(), txn);
+    return execCollectionsQry(qry.toString(), txn, types);
   }
 
-  private List<String> execCollectionsQry(String qry, Transaction txn) throws OtmException {
+  private List<String> execCollectionsQry(String qry, Transaction txn,
+      Map<String, Set<String>> types) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
     SessionFactory      sf  = txn.getSession().getSessionFactory();
 
@@ -585,8 +581,11 @@ public class ItqlStore implements TripleStore {
       qa.beforeFirst();
       boolean sort = qa.indexOf("p") != -1;
       if (!sort) {
-        while (qa.next())
-          res.add(qa.getString("o"));
+        while (qa.next()) {
+          String assoc = qa.getString("o");
+          res.add(assoc);
+          updateTypeMap(qa.getSubQueryResults(1), assoc, types);
+        }
       } else {
         while (qa.next()) {
           String p = qa.getString("p");
@@ -595,14 +594,31 @@ public class ItqlStore implements TripleStore {
           int i = Integer.decode(p.substring(Rdf.rdf.length() + 1)) - 1;
           while (i >= res.size())
             res.add(null);
-          res.set(i, qa.getString("o"));
+          String assoc = qa.getString("o");
+          res.set(i, assoc);
+          updateTypeMap(qa.getSubQueryResults(2), assoc, types);
         }
       }
+      // XXX: Type map will contain rdf:Bag, rdf:List, rdf:Seq, rdf:Alt.
+      // XXX: These are left over from the rdf:type look-ahead in the main query.
+      // XXX: Ideally we should clean it up. But it does not affect the
+      // XXX: mostSepcificSubclass selection.
 
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
     }
     return res;
+  }
+
+  private void updateTypeMap(AnswerSet.QueryAnswerSet sqa, String assoc, 
+      Map<String, Set<String>> types) throws AnswerException {
+    sqa.beforeFirst();
+    while (sqa.next()) {
+      Set<String> v = types.get(assoc);
+      if (v == null)
+        types.put(assoc, v = new HashSet<String>());
+      v.add(sqa.getString("t"));
+    }
   }
 
   public List list(Criteria criteria, Transaction txn) throws OtmException {

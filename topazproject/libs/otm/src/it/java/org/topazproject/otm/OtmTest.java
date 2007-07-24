@@ -865,6 +865,13 @@ public class OtmTest extends TestCase {
       m.alt.add("a1");
       m.alt.add("a2");
 
+      m.assocList.add(new SpecialMappers("http://localhost/sm/l1"));
+      m.assocList.add(new SpecialMappers("http://localhost/sm/l2"));
+
+      m.assocSeq.add(new SpecialMappers("http://localhost/sm/s1"));
+      m.assocSeq.add(new SpecialMappers("http://localhost/sm/s2"));
+
+
       session.saveOrUpdate(m);
 
       tx.commit(); // Flush happens automatically
@@ -918,6 +925,14 @@ public class OtmTest extends TestCase {
       assertTrue(m.seq.get(8).equals("s9"));
       assertTrue(m.seq.get(9).equals("s10"));
       assertTrue(m.seq.get(10).equals("s11"));
+
+      assertEquals(2, m.assocList.size());
+      assertTrue(m.assocList.get(0).id.startsWith("http://localhost/sm/l"));
+      assertTrue(m.assocList.get(1).id.startsWith("http://localhost/sm/l"));
+
+      assertEquals(2, m.assocSeq.size());
+      assertTrue(m.assocSeq.get(0).id.startsWith("http://localhost/sm/s1"));
+      assertTrue(m.assocSeq.get(1).id.startsWith("http://localhost/sm/s2"));
 
       tx.commit();
     } catch (OtmException e) {

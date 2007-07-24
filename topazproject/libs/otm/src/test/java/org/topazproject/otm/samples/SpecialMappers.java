@@ -19,7 +19,7 @@ import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Predicate;
 
 @UriPrefix(Rdf.topaz)
-@Entity(model = "ri")
+@Entity(model = "ri", type=Rdf.topaz + "SpecialMappers")
 public class SpecialMappers {
   @Id
   public String id;
@@ -32,10 +32,19 @@ public class SpecialMappers {
   @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
   public List<String> seq = new ArrayList<String>();
 
+  @Predicate(storeAs=Predicate.StoreAs.rdfList)
+  public List<SpecialMappers> assocList = new ArrayList<SpecialMappers>();
+
+  @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
+  public List<SpecialMappers> assocSeq = new ArrayList<SpecialMappers>();
+
+  public String name;
+
   public SpecialMappers() {
   }
 
   public SpecialMappers(String id) {
     this.id = id;
+    this.name = id;
   }
 }
