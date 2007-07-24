@@ -43,7 +43,7 @@ import org.plos.models.Category;
 import org.plos.models.ObjectInfo;
 import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
-import org.plos.util.TransactionHelper;
+import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 

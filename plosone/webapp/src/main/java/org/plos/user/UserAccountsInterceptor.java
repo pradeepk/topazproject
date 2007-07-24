@@ -31,7 +31,7 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
 
 import org.plos.models.UserAccount;
-import org.plos.util.TransactionHelper;
+import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * A webwork interceptor that maps the authenticated user id to an internal plos-user-id. The plos

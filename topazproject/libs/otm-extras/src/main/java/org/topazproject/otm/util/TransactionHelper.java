@@ -7,8 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-
-package org.plos.util;
+package org.topazproject.otm.util;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;

@@ -31,7 +31,7 @@ import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
 import org.plos.models.RatingSummaryContent;
 import org.plos.user.PlosOneUser;
-import org.plos.util.TransactionHelper;
+import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 

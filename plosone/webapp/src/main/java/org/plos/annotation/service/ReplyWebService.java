@@ -34,7 +34,7 @@ import org.plos.models.ReplyThread;
 
 import org.plos.permission.service.PermissionWebService;
 
-import org.plos.util.TransactionHelper;
+import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 

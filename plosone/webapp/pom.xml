@@ -78,6 +78,11 @@
       <artifactId>otm</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>otm-extras</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>aopalliance</groupId>

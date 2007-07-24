@@ -32,7 +32,7 @@ import org.plos.models.Comment;
 import org.plos.models.Rating;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
-import org.plos.util.TransactionHelper;
+import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 

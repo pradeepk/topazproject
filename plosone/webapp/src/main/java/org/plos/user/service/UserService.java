@@ -30,7 +30,7 @@ import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
 import org.plos.user.UsersPEP;
-import org.plos.util.TransactionHelper;
+import org.topazproject.otm.util.TransactionHelper;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;

@@ -14,7 +14,7 @@ import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
 import org.plos.web.UserContext;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
-import org.plos.util.TransactionHelper;
+import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 
