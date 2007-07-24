@@ -505,16 +505,16 @@ public class ItqlStore implements TripleStore {
   private static String getModelsExpr(ClassMetadata[] cmList, Transaction txn) throws OtmException {
     Set<String> mList = new HashSet<String>();
     for (ClassMetadata cm : cmList) {
-      mList.add(cm.getModel());
+      mList.add(getModelUri(cm.getModel(), txn));
       for (Mapper p : cm.getFields()) {
         if (p.getModel() != null)
-          mList.add(p.getModel());
+          mList.add(getModelUri(p.getModel(), txn));
       }
     }
 
     StringBuilder mexpr = new StringBuilder(100);
     for (String m : mList)
-      mexpr.append("<").append(getModelUri(m, txn)).append("> or ");
+      mexpr.append("<").append(m).append("> or ");
     mexpr.setLength(mexpr.length() - 4);
 
     return mexpr.toString();
