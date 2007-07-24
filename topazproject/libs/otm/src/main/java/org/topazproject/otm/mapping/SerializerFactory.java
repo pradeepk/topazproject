@@ -115,8 +115,8 @@ public class SerializerFactory {
     setSerializer(Boolean.TYPE, new XsdBooleanSerializer());
     setSerializer(Integer.class, new SimpleSerializer<Integer>(Integer.class));
     setSerializer(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class));
-    setSerializer(Integer.class, Rdf.xsd + "double", new SimpleSerializer<Integer>(Integer.class));
-    setSerializer(Integer.TYPE, Rdf.xsd + "double", new SimpleSerializer<Integer>(Integer.class));
+    setSerializer(Integer.class, Rdf.xsd + "double", new IntegerSerializer<Integer>(Integer.class));
+    setSerializer(Integer.TYPE, Rdf.xsd + "double", new IntegerSerializer<Integer>(Integer.class));
     setSerializer(Long.class, new SimpleSerializer<Long>(Long.class));
     setSerializer(Long.TYPE, new SimpleSerializer<Long>(Long.class));
     setSerializer(Short.class, new SimpleSerializer<Short>(Short.class));
@@ -262,6 +262,23 @@ public class SerializerFactory {
     }
   }
 
+  /**
+   * When de-serializing an Integer that is stored as some non-integer, be sure to remove
+   * the decimal point.
+   */
+  private class IntegerSerializer<T> extends SimpleSerializer<T> {
+    public IntegerSerializer(Class<T> clazz) {
+      super(clazz);
+    }
+    
+    public T deserialize(String o) throws Exception {
+      int decimal = o.indexOf(".");
+      if (decimal != -1)
+        o = o.substring(0, decimal); // TODO: Round-off properly?
+      return super.deserialize(o);
+    }
+  }
+  
   private static interface DateBuilder<T> {
     public Date toDate(T o);
 
