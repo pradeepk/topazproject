@@ -26,6 +26,20 @@ import org.topazproject.authentication.PasswordProtectedService;
 import org.topazproject.authentication.UnProtectedService;
 import org.plos.configuration.ConfigurationStore;
 
+import org.topazproject.otm.util.TransactionHelper;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.stores.ItqlStore;
+
+import org.plos.models.Article;
+import org.plos.models.ObjectInfo;
+import org.plos.models.Category;
+import org.plos.models.Citation;
+import org.plos.models.PLoS;
+import org.plos.models.UserProfile;
+
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.Answer;
@@ -83,6 +97,23 @@ public class ArticleUtil {
           // find the article itself
        "  or $obj <mulgara:is> <${subj}> );").
       replaceAll("\\Q${MODEL}", MODEL);
+  
+  private static SessionFactory factory = new SessionFactory();
+
+  static {
+    try {
+      factory.setTripleStore(new ItqlStore(new URI(CONF.getString("topaz.services.itql.uri"))));
+      factory.addModel(new ModelConfig("ri", new URI(CONF.getString("topaz.models.articles")), null));
+      factory.addModel(new ModelConfig("profiles", new URI(CONF.getString("topaz.models.profiles")), null));
+      factory.preload(Article.class);
+      factory.preload(Category.class);
+      factory.preload(Citation.class);
+      factory.preload(UserProfile.class);
+    } catch (URISyntaxException e) {
+      throw new Error(e);
+    }
+  }
+    
 
   /**
    * Create article utilities from default configuration values.<p>
@@ -161,71 +192,69 @@ public class ArticleUtil {
     }
   }
 
-  public static void delete(String article, ItqlHelper itql, FedoraAPIM apim,
-                  FgsOperations[] fgs) throws NoSuchArticleIdException, RemoteException {
-    String txn = itql.isInTransaction() ? null : ("delete " + article);
-    try {
-      // TODO: Remove article via otm
-      if (txn != null)
-        itql.beginTxn(txn);
+  public static void delete(final String article, ItqlHelper itql, final FedoraAPIM apim,
+                  final FgsOperations[] fgs) throws NoSuchArticleIdException, RemoteException {
+    boolean bExists = 
+      TransactionHelper.doInTxE(
+        factory.openSession(),
+        new TransactionHelper.ActionE<Boolean, RemoteException>() {
+          public Boolean run(Transaction tx) throws RemoteException {
+            Session session = tx.getSession();
+            Article a = (Article) session.get(Article.class, article);
+            if (a == null)
+              return false;
 
-      String[][] objList = findAllObjects(article, itql);
-      if (log.isDebugEnabled())
-        log.debug("deleting all objects for uri '" + article + "'");
+            if (log.isDebugEnabled())
+              log.debug("deleting all objects for uri '" + article + "'");
+      
+            ObjectInfo oi = a;
+            while(oi != null) {
+              if (log.isDebugEnabled())
+                log.debug("deleting uri '" + oi.getId() + "'");
 
-      for (int idx = 0; idx < objList.length; idx++) {
-        String uri = objList[idx][0];
-        String pid = objList[idx][1];
+              // Remove article from full-text index first
+              String result = "";
+              RemoteException firstRE = null;
+              for (int i = 0; i < fgs.length; i++) {
+                try {
+                  result = fgs[i].updateIndex("deletePid", oi.getPid(), FGS_REPO, null, null, null);
+                } catch (RemoteException re) {
+                  if (i == 0)
+                    throw re;
+                  if (firstRE == null)
+                    firstRE = re;
+                  log.error("Deleted pid '" + oi.getPid() +
+                            "' from some server(s). But not from server " +
+                            i + ". Cleanup required.", re);
+                }
+              }
+              if (firstRE != null)
+                throw firstRE;
 
-        if (log.isDebugEnabled())
-          log.debug("deleting uri '" + uri + "'");
+              if (log.isDebugEnabled())
+                log.debug("Removed '" + oi.getPid() + "' from full-text index:\n" + result);
 
-        // Remove article from full-text index first
-        String result = "";
-        RemoteException firstRE = null;
-        for (int i = 0; i < fgs.length; i++) {
-          try {
-            result = fgs[i].updateIndex("deletePid", pid, FGS_REPO, null, null, null);
-          } catch (RemoteException re) {
-            if (i == 0)
-              throw re;
-            if (firstRE == null)
-              firstRE = re;
-            log.error("Deleted pid '" + pid + "' from some server(s). But not from server " +
-                      i + ". Cleanup required.", re);
+              // Remove from fedora
+              try {
+                apim.purgeObject(oi.getPid(), "Purged object", false);
+              } catch (RemoteException re) {
+                if (!FedoraUtil.isNoSuchObjectException(re))
+                  throw re;
+                log.warn("Tried to remove non-existent object '" + oi.getPid() + "'");
+              }
+
+              oi = oi.getNextObject();
+            }
+
+            // finally delete the article
+            session.delete(a);
+
+            return true;
           }
-        }
-        if (firstRE != null)
-          throw firstRE;
+        });
 
-        if (log.isDebugEnabled())
-          log.debug("Removed '" + pid + "' from full-text index:\n" + result);
-
-        // Remove from fedora
-        try {
-          apim.purgeObject(pid, "Purged object", false);
-        } catch (RemoteException re) {
-          if (!FedoraUtil.isNoSuchObjectException(re))
-            throw re;
-          log.warn("Tried to remove non-existent object '" + pid + "'");
-        }
-        itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", uri), null);
-        itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_PP, "subj", uri), null);
-      }
-
-      if (txn != null)
-        itql.commitTxn(txn);
-      txn = null;
-    } catch (AnswerException ae) {
-      throw new RemoteException("Error querying RDF", ae);
-    } finally {
-      try {
-        if (txn != null)
-          itql.rollbackTxn(txn);
-      } catch (Throwable t) {
-        log.debug("Error rolling failed transaction", t);
-      }
-    }
+    if (!bExists)
+      throw new NoSuchArticleIdException(article);
   }
 
   /**
