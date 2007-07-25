@@ -54,7 +54,7 @@ public class DetachedCriteria {
    * The id field used for persistence. Ignored otherwise.
    */
   @Id
-  @GeneratedValue(uriPrefix = Criterion.NS + "/Criteria/Id/")
+  @GeneratedValue(uriPrefix = Criterion.NS + "Criteria/Id/")
   public URI criteriaId;
 
   /**
