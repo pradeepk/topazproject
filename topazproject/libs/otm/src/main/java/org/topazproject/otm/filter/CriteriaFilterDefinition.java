@@ -10,7 +10,6 @@
 
 package org.topazproject.otm.filter;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.topazproject.otm.Criteria;
@@ -72,6 +71,8 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
       StringBuilder qry = new StringBuilder("select o from ");
       qry.append(crit.getClassMetadata().getName()).append(" o where ");
       toOql(qry, getCriteria(), "o", "v");
+      if (qry.substring(qry.length() - 7).equals(" where "))
+        qry.setLength(qry.length() - 7);
       qry.append(";");
 
       GenericQueryImpl q = new GenericQueryImpl(qry.toString(), CriteriaFilterDefinition.log);
