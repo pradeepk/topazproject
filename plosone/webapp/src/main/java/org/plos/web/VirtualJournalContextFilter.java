@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 /**
- * A Filter that sets the virtual journal context as attributes in the ServletRequest.
+ * A Filter that sets the {@link VirtualJournalContext} as an attribute in the ServletRequest.
  *
  * Application usage:
  * <pre>
@@ -43,6 +43,11 @@ public class VirtualJournalContextFilter implements Filter {
   public static final String CONF_VIRTUALJOURNALS          = "pub.virtualJournals";
   public static final String CONF_VIRTUALJOURNALS_DEFAULT  = CONF_VIRTUALJOURNALS + ".default";
   public static final String CONF_VIRTUALJOURNALS_JOURNALS = CONF_VIRTUALJOURNALS + ".journals";
+
+  /** Allow setting/overriding the virtual journal as a URI param. */
+  public static final String URI_PARAM_VIRTUALJOURNAL = "virtualJournal";
+  /** Allow setting/overriding the mapping prefix as a URI param. */
+  public static final String URI_PARAM_MAPPINGPREFIX = "mappingPrefix";
 
   private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
@@ -79,13 +84,25 @@ public class VirtualJournalContextFilter implements Filter {
     String virtualJournal = null;
     String mappingPrefix  = null;
 
-    // was a simple config <default> specified?
-    virtualJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
-    mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
+    // allow a URI param to set context, useful for debugging
+    virtualJournal = request.getParameter(URI_PARAM_VIRTUALJOURNAL);
+    mappingPrefix  = request.getParameter(URI_PARAM_MAPPINGPREFIX);
+    if (virtualJournal != null) {
+      if (log.isDebugEnabled()) {
+        log.debug("virtual journal from URI params: journal = \"" + virtualJournal + "\""
+          + ", mappingPrefix = \"" + mappingPrefix + "\"");
+      }
+    }
 
-    if (log.isDebugEnabled()) {
-      log.debug("virtual journal defaults: journal = \"" + virtualJournal + "\""
-        + ", mappingPrefix = \"" + mappingPrefix + "\"");
+    // was a simple config <default> specified?
+    if (virtualJournal == null) {
+      virtualJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
+      mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
+
+      if (log.isDebugEnabled()) {
+        log.debug("virtual journal from defaults: journal = \"" + virtualJournal + "\""
+          + ", mappingPrefix = \"" + mappingPrefix + "\"");
+      }
     }
 
     // need to do <rule> based processing?
@@ -95,6 +112,12 @@ public class VirtualJournalContextFilter implements Filter {
       if (ruleValues != null) {
         virtualJournal = ruleValues.getJournal();
         mappingPrefix  = ruleValues.getMappingPrefix();
+        if (virtualJournal != null) {
+          if (log.isDebugEnabled()) {
+            log.debug("virtual journal from rules: journal = \"" + virtualJournal + "\""
+              + ", mappingPrefix = \"" + mappingPrefix + "\"");
+          }
+        }
       }
     }
 

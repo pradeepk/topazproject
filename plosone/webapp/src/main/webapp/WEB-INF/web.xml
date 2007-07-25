@@ -108,7 +108,22 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
+    <url-pattern>/css/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>VirtualJournalMappingFilter</filter-name>
     <url-pattern>/images/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>VirtualJournalMappingFilter</filter-name>
+    <url-pattern>/javascript/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>VirtualJournalMappingFilter</filter-name>
+    <url-pattern>/static/*</url-pattern>
   </filter-mapping>
 
   <!--

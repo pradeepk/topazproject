@@ -60,10 +60,13 @@ public class VirtualJournalContext {
     this.requestServerName = requestServerName;
     this.requestContext    = requestContext;
 
+    StringBuilder urlBaseValue = new StringBuilder();
+
     // assume that we're dealing with http or https schemes for now
-    StringBuilder urlBaseValue = new StringBuilder(requestScheme).append("://")
-                                                  .append(requestServerName);
+    // TODO: understand how scheme can be null in request? for now, guard against null
     if (requestScheme != null) {
+      urlBaseValue.append(requestScheme).append("://").append(requestServerName);
+
       //assume that we don't want to put the default ports numbers on the URL
       if (("http".equals(requestScheme.toLowerCase()) && requestPort != 80) ||
           ("https".equals(requestScheme.toLowerCase()) && requestPort != 443)) {
@@ -73,6 +76,105 @@ public class VirtualJournalContext {
     urlBaseValue.append(requestContext).append("/");
     this.baseUrl = urlBaseValue.toString();
   }
+
+  /**
+   * Virtualize URI values.
+   *
+   * If URI is already prefixed with the mappingPrefix, it is already virtualized.<br/>
+   * If URI is prefixed with the virtual journal name, replace with mappingPrefix to
+   *   virtualize.<br/>
+   * Else, prefix with mappingPrefix to virtualize.
+   *
+   * @return String[] of mapped {contextPath, servletPath, pathInfo, requestUri}
+   */
+  public String[] virtualizeUri(
+    final String contextPath, final String servletPath, final String pathInfo) {
+
+    // will need to examine, and possibly modify, Request Path Elements
+    String virtualContextPath = contextPath;
+    String virtualServletPath = servletPath;
+    String virtualPathInfo    = pathInfo;
+
+    // in tests below, be flexible with servletPath and pathInfo, not all containers adhere tightly
+    // to Servlet SRV.4.4.  e.g. prefix could be in servletPath or pathInfo.
+
+    // does URI already contain mappingPrefix?
+    if ((virtualServletPath != null && virtualServletPath.startsWith(mappingPrefix))
+      || (virtualPathInfo != null && virtualPathInfo.startsWith(mappingPrefix))) {
+      return new String [] {virtualContextPath, virtualServletPath, virtualPathInfo,
+        virtualContextPath + virtualServletPath + (virtualPathInfo != null ? virtualPathInfo : "")};
+    }
+
+    // does URI contain journal name?
+    if (virtualServletPath != null && virtualServletPath.startsWith("/" + journal)) {
+      virtualServletPath = mappingPrefix + virtualServletPath.substring(journal.length() + 1);
+      return new String [] {virtualContextPath, virtualServletPath, virtualPathInfo,
+        virtualContextPath + virtualServletPath + (virtualPathInfo != null ? virtualPathInfo : "")};
+    }
+    if (virtualPathInfo != null && virtualPathInfo.startsWith("/" + journal)) {
+      virtualPathInfo = mappingPrefix + virtualPathInfo.substring(journal.length() + 1);
+      return new String [] {virtualContextPath, virtualServletPath, virtualPathInfo,
+        virtualContextPath + virtualServletPath + virtualPathInfo};
+    }
+
+    // need to add mappingPrefix to URI
+    if (virtualServletPath != null && virtualServletPath.length() > 0) {
+      virtualServletPath = mappingPrefix + virtualServletPath;
+    } else {
+      virtualPathInfo = mappingPrefix + (virtualPathInfo != null ? virtualPathInfo : "");
+    }
+
+      return new String [] {virtualContextPath, virtualServletPath, virtualPathInfo,
+        virtualContextPath + virtualServletPath + (virtualPathInfo != null ? virtualPathInfo : "")};
+   }
+
+  /**
+   * Default URI values.
+   *
+   * If URI is already prefixed with the mappingPrefix, remove it.<br/>
+   * If URI is prefixed with the virtual journal name, remove it.<br/>
+   * Else, already default values.
+   *
+   * @return String[] of defaulted {contextPath, servletPath, pathInfo, requestUri}
+   */
+  public String[] defaultUri(final String contextPath, final String servletPath, final String pathInfo) {
+
+    // will need to examine, and possibly modify, Request Path Elements
+    String defaultContextPath = contextPath;
+    String defaultServletPath = servletPath;
+    String defaultPathInfo    = pathInfo;
+
+    // in tests below, be flexible with servletPath and pathInfo, not all containers adhere tightly
+    // to Servlet SRV.4.4.  e.g. prefix could be in servletPath or pathInfo.
+
+    // does URI already contain mappingPrefix?
+    if (defaultServletPath != null && defaultServletPath.startsWith(mappingPrefix)) {
+      defaultServletPath = defaultServletPath.substring(mappingPrefix.length());
+      return new String [] {defaultContextPath, defaultServletPath, defaultPathInfo,
+        defaultContextPath + defaultServletPath + (defaultPathInfo != null ? defaultPathInfo : "")};
+    }
+    if (defaultPathInfo != null && defaultPathInfo.startsWith(mappingPrefix)) {
+      defaultPathInfo = defaultPathInfo.substring(mappingPrefix.length());
+      return new String [] {defaultContextPath, defaultServletPath, defaultPathInfo,
+        defaultContextPath + defaultServletPath + (defaultPathInfo != null ? defaultPathInfo : "")};
+    }
+
+    // does URI contain journal name?
+    if (defaultServletPath != null && defaultServletPath.startsWith("/" + journal)) {
+      defaultServletPath = defaultServletPath.substring(journal.length() + 1);
+      return new String [] {defaultContextPath, defaultServletPath, defaultPathInfo,
+        defaultContextPath + defaultServletPath + (defaultPathInfo != null ? defaultPathInfo : "")};
+    }
+    if (defaultPathInfo != null && defaultPathInfo.startsWith("/" + journal)) {
+      defaultPathInfo = defaultPathInfo.substring(journal.length() + 1);
+      return new String [] {defaultContextPath, defaultServletPath, defaultPathInfo,
+        defaultContextPath + defaultServletPath + (defaultPathInfo != null ? defaultPathInfo : "")};
+    }
+
+    // already defaulted
+    return new String [] {defaultContextPath, defaultServletPath, defaultPathInfo,
+      defaultContextPath + defaultServletPath + (defaultPathInfo != null ? defaultPathInfo : "")};
+   }
 
   /**
    * Get the virtual journal name.

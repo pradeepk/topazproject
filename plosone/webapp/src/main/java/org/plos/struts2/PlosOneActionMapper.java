@@ -49,9 +49,15 @@ public class PlosOneActionMapper extends DefaultActionMapper {
       return super.getMapping(request, configManager);
     }
 
-    // is a mapping prefix defined for a virtual journal context?
-    final String mappingPrefix = ((VirtualJournalContext) request.getAttribute(
-      VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getMappingPrefix();
+    // does a virtual journal context exist?
+    final VirtualJournalContext virtualJournalContext = (VirtualJournalContext) request
+      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
+    final String mappingPrefix;
+    if (virtualJournalContext != null) {
+      mappingPrefix = virtualJournalContext.getMappingPrefix();
+    } else {
+      mappingPrefix = null;
+    }
     if (mappingPrefix == null
       || mappingPrefix.length() == 0) {
       // no override in effect, use default
@@ -61,14 +67,30 @@ public class PlosOneActionMapper extends DefaultActionMapper {
       }
     } else {
       // look for an override Action in the mappingPrefix namespace
-      final String reqUri = mappingPrefix + origUri;
-      final String reqServletPath = request.getServletPath().startsWith("/")
-        ? mappingPrefix       + request.getServletPath()
-        : mappingPrefix + "/" + request.getServletPath();
-      actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request, reqUri, reqServletPath), configManager);
+
+      // will need to examine Request Path Elements
+      // get virtualized URI values
+      final String[] virtualizedValues = virtualJournalContext.virtualizeUri(
+        request.getContextPath(), request.getServletPath(), request.getPathInfo());
+      final String virtualContextPath = virtualizedValues[0];
+      final String virtualServletPath = virtualizedValues[1];
+      final String virtualPathInfo    = virtualizedValues[2];
+      final String virtualRequestUri  = virtualizedValues[3];
+
+      actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request,
+        virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri), configManager);
+
       if (actionMapping == null) {
-        // use default
-        actionMapping = super.getMapping(request, configManager);
+        // get defaulted URI values
+        final String[] defaultedValues = virtualJournalContext.defaultUri(
+          request.getContextPath(), request.getServletPath(), request.getPathInfo());
+        final String defaultContextPath = defaultedValues[0];
+        final String defaultServletPath = defaultedValues[1];
+        final String defaultPathInfo    = defaultedValues[2];
+        final String defaultRequestUri  = defaultedValues[3];
+
+        actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request,
+          defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri), configManager);
         if (log.isDebugEnabled()) {
           log.debug("no override action for mappingPrefix: " + mappingPrefix);
         }

@@ -39,11 +39,12 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 /**
- * A Filter that maps incoming URI Requests to an appropriate virtual journal resource.
+ * A Filter that maps incoming URI Requests to an appropriate virtual journal resources.
  *
  * If a virtual journal context is set, a lookup is done to see if an override for the requested
- * resource exists for the virtual journal.  If so, the virtual journal override is wrapped in a
- * Request and passed on to the FilterChain.  If not, the Request is left as is.
+ * resource exists for the virtual journal.  If so, the Request is wrapped with the override values
+ * and passed on to the FilterChain.  If not, the Request is wrapped with default values for the
+ * resource and then passed to the FilterChain.
  */
 public class VirtualJournalMappingFilter implements Filter {
 
@@ -108,46 +109,41 @@ public class VirtualJournalMappingFilter implements Filter {
       throws ServletException, IOException {
 
     // lookup virtual journal context, mapping, & modify URI of Request if necessary
-    final String[] virtualJournalResource = lookupVirtualJournalResource((HttpServletRequest) request);
+    final ServletRequest virtualJournalResource = lookupVirtualJournalResource((HttpServletRequest) request);
 
-    // wrap Request if a virtual journal override should be used
-    if (virtualJournalResource != null) {
-      if (log.isDebugEnabled()) {
-        log.debug("virtual journal override mapped to: "
-          + "requestUri=\"" + virtualJournalResource[0] + "\""
-          + ", requestServletPath=\"" + virtualJournalResource[1] + "\"");
-      }
-
-      filterChain.doFilter(wrapRequest((HttpServletRequest) request, virtualJournalResource[0], virtualJournalResource[1]), response);
-    } else {
-      // continue the Filter chain unmodified
-      if (log.isDebugEnabled()) {
-        log.debug("no virtual journal override for: "
-          + "requestUri=\"" + ((HttpServletRequest)request).getRequestURI() + "\""
-          + ", requestServletPath=\"" + ((HttpServletRequest)request).getServletPath() + "\"");
-      }
-
-      filterChain.doFilter(request, response);
+    if (log.isDebugEnabled()) {
+      log.debug("virtual journal resource Request:"
+        + "  requestUri=\""  + ((HttpServletRequest) virtualJournalResource).getRequestURI() + "\""
+        + ", contextPath=\"" + ((HttpServletRequest) virtualJournalResource).getContextPath() + "\""
+        + ", servletPath=\"" + ((HttpServletRequest) virtualJournalResource).getServletPath() + "\""
+        + ", pathInfo=\""    + ((HttpServletRequest) virtualJournalResource).getPathInfo() + "\"");
     }
+
+    // continue the Filter chain with virtual journal resource
+    filterChain.doFilter(virtualJournalResource, response);
   }
 
   /**
    * Lookup a virtual journal resource.
    *
-   * If resource exists within the virtual journal context, return the requestUri and requestServletPath for the resource.
+   * If resource exists within the virtual journal context, return a WrappedRequest with the
+   * mappingPrefix,  else return a WrappedRequest for the default resource.
    *
    * @param request <code>HttpServletRequest</code> to apply the lookup against.
-   * @return String[] {requestUri, requestServletPath} or <code>null</code> if virtual journal resource doesn't exist.
+   * @return WrappedRequest for the resource.
    */
-private String[] lookupVirtualJournalResource(final HttpServletRequest request) {
+private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest request) {
 
     // lookup virtual journal context
     final VirtualJournalContext virtualJournalContext = (VirtualJournalContext) request.getAttribute(
       VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
+    if (virtualJournalContext == null) {
+      return request;
+    }
     final String virtualJournal = virtualJournalContext.getJournal();
     final String mappingPrefix  = virtualJournalContext.getMappingPrefix();
     if (virtualJournal == null || mappingPrefix == null || mappingPrefix.length() == 0) {
-      return null;
+      return request;
     }
 
     if (log.isDebugEnabled()) {
@@ -155,12 +151,25 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
         + ", mappingPrefix: \"" + mappingPrefix + "\"");
     }
 
+    // will need to examine Request Path Elements
+    // get virtualized URI values
+    final String[] virtualizedValues = virtualJournalContext.virtualizeUri(
+      request.getContextPath(), request.getServletPath(), request.getPathInfo());
+    final String virtualContextPath = virtualizedValues[0];
+    final String virtualServletPath = virtualizedValues[1];
+    final String virtualPathInfo    = virtualizedValues[2];
+    final String virtualRequestUri  = virtualizedValues[3];
+    // get defaulted URI values
+    final String[] defaultedValues = virtualJournalContext.defaultUri(
+      request.getContextPath(), request.getServletPath(), request.getPathInfo());
+    final String defaultContextPath = defaultedValues[0];
+    final String defaultServletPath = defaultedValues[1];
+    final String defaultPathInfo    = defaultedValues[2];
+    final String defaultRequestUri  = defaultedValues[3];
+
     // what is resource name on filesystem?
-    final String reqUri = mappingPrefix + request.getRequestURI();
-    final String reqServletPath = request.getServletPath().startsWith("/")
-      ? mappingPrefix       + request.getServletPath()
-      : mappingPrefix + "/" + request.getServletPath();
-    final String realPath = servletContext.getRealPath(reqUri);
+    final String realPath = servletContext.getRealPath(virtualRequestUri);
+
     final int lastSlash = realPath.lastIndexOf(System.getProperty("file.separator"));
     final String realDir = realPath.substring(0, lastSlash);
     final String realFile = realPath.substring(lastSlash + 1);
@@ -182,7 +191,9 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
       File dir = new File(realDir);
       if (!dir.exists()) {
         fileSystemCache.put(new Element(realDir, DIRECTORY_DOES_NOT_EXIST));
-        return null;
+        // use defaults in Request
+        return wrapRequest(request,
+          defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri);
       }
 
       // put dir contents in a HashMap for later use
@@ -196,33 +207,49 @@ private String[] lookupVirtualJournalResource(final HttpServletRequest request) 
 
     // cache knows if directory doesn't exist, test against static Object
     if (cachedDirElement.getObjectValue() == DIRECTORY_DOES_NOT_EXIST) {
-      return null;
+      // use defaults in Request
+      return wrapRequest(request,
+        defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri);
     }
 
     // look for file in dir, if specified
     if (realFile.length() != 0) {
       if (!((HashMap) cachedDirElement.getObjectValue()).containsKey(realPath)) {
-        // file not in dir
-        return null;
-      }
+        // file not in dir, use defaults in Request
+        return wrapRequest(request,
+          defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri);
+        }
     }
 
     // use virtual journal resource
-    return new String[] {reqUri, reqServletPath};
+    return wrapRequest(request,
+      virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri);
   }
 
-  public static HttpServletRequest wrapRequest(HttpServletRequest request, final String requestUri, final String requestServletPath) {
+
+  /**
+   * Wrap an HttpServletRequest with arbitrary URI values.
+   */
+  public static HttpServletRequest wrapRequest(final HttpServletRequest request,
+    final String contextPath, final String servletPath, final String pathInfo,
+    final String requestUri) {
 
     return new HttpServletRequestWrapper(request) {
 
       public String getRequestURI() {
-
         return requestUri;
       }
 
-      public String getServletPath() {
+      public String getContextPath() {
+        return contextPath;
+      }
 
-        return requestServletPath;
+      public String getServletPath() {
+        return servletPath;
+      }
+
+      public String getPathInfo() {
+        return pathInfo;
       }
     };
   }
