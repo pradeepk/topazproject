@@ -70,8 +70,8 @@ public class MasterWebAppListener implements ServletContextListener {
           Class theClass = Class.forName(listenerName);
           ServletContextListener listener = (ServletContextListener) theClass.newInstance();
           log.debug("Calling " + methodName + " on " + listenerName);
-          Method method = theClass.getMethod(methodName, new Class[] {ServletContextEvent.class});
-          method.invoke(listener, new Object[] {event});
+          Method method = theClass.getMethod(methodName, ServletContextEvent.class);
+          method.invoke(listener, event);
         } catch (Exception e) {
           log.warn("Error calling " + methodName + " on " + listenerName, e);
         }
