@@ -487,4 +487,36 @@
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
+    <!--
+    Journal cache.
+    This cache replicates using defaults.
+    It also bootstraps from the cluster, using default properties.
+    -->
+    <cache name="Journals"
+           maxElementsInMemory="10000"
+           eternal="true"
+           timeToIdleSeconds="1800"
+           timeToLiveSeconds="1800"
+           overflowToDisk="false">
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    </cache>
+    <!--
+    Article-carriers cache.
+    This cache replicates using defaults.
+    It also bootstraps from the cluster, using default properties.
+    -->
+    <cache name="ArticleCarriers"
+           maxElementsInMemory="100000"
+           eternal="true"
+           timeToIdleSeconds="1800"
+           timeToLiveSeconds="1800"
+           overflowToDisk="false">
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    </cache>
 </ehcache>

@@ -33,12 +33,14 @@
     </result-types>
 
     <interceptors>
+      <interceptor name="journalSessionSetup" class="org.plos.journal.SessionFiltersInterceptor"/>
       <interceptor name="ensureUserAccount" class="org.plos.user.EnsureUserAccountInterceptor"/>
       <interceptor name="ensureAdmin" class="org.plos.user.EnsureRoleInterceptor">
         <param name="roleToCheck">admin</param>
       </interceptor>
       <interceptor name="plosUserLookup" class="org.plos.user.UserAccountsInterceptor"/>
       <interceptor name="json" class="com.googlecode.jsonplugin.JSONInterceptor"/>
+
       <interceptor-stack name="plosBaseStack">
         <interceptor-ref name="exception">
           <param name="logEnabled">true</param>
@@ -64,6 +66,7 @@
         <interceptor-ref name="workflow">
            <param name="excludeMethods">input,back,cancel,browse</param>
         </interceptor-ref>
+        <interceptor-ref name="journalSessionSetup"/>
         <interceptor-ref name="plosUserLookup"/>
       </interceptor-stack>
 

@@ -9,18 +9,8 @@
  */
 package org.plos.models;
 
-import java.net.URI;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.GeneratedValue;
-import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.PredicateMap;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Marker class to mark an Aggregation as a "Journal".
@@ -29,5 +19,24 @@ import org.topazproject.otm.annotations.Rdf;
  */
 @Entity(type = PLoS.plos + "Journal", model = "ri")
 public class Journal extends Aggregation {
+  @Predicate(uri = PLoS.plos + "key")
+  private String  key;
 
+  /**
+   * Get the internal key used to identify this journal.
+   *
+   * @return the key.
+   */
+  public String getKey() {
+    return key;
+  }
+
+  /**
+   * Set the internal key used to identify this journal.
+   *
+   * @param key the key.
+   */
+  public void setKey(String key) {
+    this.key = key;
+  }
 }

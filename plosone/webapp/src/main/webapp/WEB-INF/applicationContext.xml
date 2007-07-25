@@ -362,6 +362,19 @@
             </bean>
           </constructor-arg>
         </bean>
+        <bean name="criteriaModel" class="org.topazproject.otm.ModelConfig">
+          <constructor-arg index="0" value="criteria" />
+          <constructor-arg index="1">
+            <bean class="java.net.URI">
+              <constructor-arg value="local:///topazproject#filter:model=criteria"/>
+            </bean>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <bean class="java.net.URI">
+              <constructor-arg value="http://topazproject.org/models#filter" />
+            </bean>
+          </constructor-arg>
+        </bean>
         <bean name="strModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="str" />
           <constructor-arg index="1">
@@ -393,22 +406,51 @@
 
     <property name="preloadClasses">
       <list>
-        <value>org.plos.models.Comment</value>
-        <value>org.plos.models.Reply</value>
-        <value>org.plos.models.ReplyThread</value>
-        <value>org.plos.models.Rating</value>
-        <value>org.plos.models.RatingContent</value>
-        <value>org.plos.models.RatingSummary</value>
-        <value>org.plos.models.RatingSummaryContent</value>
+        <value>org.plos.models.Aggregation</value>
+        <value>org.plos.models.Annotation</value>
+        <value>org.plos.models.Annotea</value>
         <value>org.plos.models.Article</value>
         <value>org.plos.models.AuthenticationId</value>
         <value>org.plos.models.Category</value>
+        <value>org.plos.models.Citation</value>
+        <value>org.plos.models.Comment</value>
+        <value>org.plos.models.DublinCore</value>
+        <value>org.plos.models.EditorialBoard</value>
+        <value>org.plos.models.FoafPerson</value>
+        <value>org.plos.models.Issue</value>
+        <value>org.plos.models.Journal</value>
+        <value>org.plos.models.License</value>
         <value>org.plos.models.ObjectInfo</value>
+        <value>org.plos.models.PLoS</value>
+        <value>org.plos.models.RatingContent</value>
+        <value>org.plos.models.Rating</value>
+        <value>org.plos.models.RatingSummaryContent</value>
+        <value>org.plos.models.RatingSummary</value>
+        <value>org.plos.models.Reply</value>
+        <value>org.plos.models.ReplyThread</value>
         <value>org.plos.models.UserAccount</value>
         <value>org.plos.models.UserPreference</value>
         <value>org.plos.models.UserPreferences</value>
         <value>org.plos.models.UserProfile</value>
         <value>org.plos.models.UserRole</value>
+        <value>org.topazproject.otm.criterion.Conjunction</value>
+        <value>org.topazproject.otm.criterion.Criterion</value>
+        <value>org.topazproject.otm.criterion.DetachedCriteria</value>
+        <value>org.topazproject.otm.criterion.Disjunction</value>
+        <value>org.topazproject.otm.criterion.EQCriterion</value>
+        <value>org.topazproject.otm.criterion.ExistsCriterion</value>
+        <value>org.topazproject.otm.criterion.GECriterion</value>
+        <value>org.topazproject.otm.criterion.GTCriterion</value>
+        <value>org.topazproject.otm.criterion.LECriterion</value>
+        <value>org.topazproject.otm.criterion.LTCriterion</value>
+        <value>org.topazproject.otm.criterion.MinusCriterion</value>
+        <value>org.topazproject.otm.criterion.NECriterion</value>
+        <value>org.topazproject.otm.criterion.NotCriterion</value>
+        <value>org.topazproject.otm.criterion.NotExistsCriterion</value>
+        <value>org.topazproject.otm.criterion.Order</value>
+        <value>org.topazproject.otm.criterion.Parameter</value>
+        <value>org.topazproject.otm.criterion.TransCriterion</value>
+        <value>org.topazproject.otm.criterion.WalkCriterion</value>
       </list>
     </property>
   </bean>
@@ -419,6 +461,18 @@
   <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
       destroy-method="close" scope="request">
     <aop:scoped-proxy/>
+  </bean>
+
+  <bean id="journalService" class="org.plos.journal.JournalService" scope="singleton">
+    <constructor-arg index="0">
+      <ref bean="otmSessionFactory"/>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <ref bean="journalCache"/>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <ref bean="carrierCache"/>
+    </constructor-arg>
   </bean>
 
   <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
@@ -433,6 +487,7 @@
 
   <bean id="plosOneFreemarkerConfig" class="org.plos.struts2.PlosOneFreemarkerConfig" />
 
+  <!-- Caches -->
   <bean id="userCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy">
     <constructor-arg index="0">
       <props>
@@ -441,7 +496,7 @@
       </props>
     </constructor-arg>
   </bean>
-<!-- store articles and annotations -->
+  <!-- store articles and annotations -->
   <bean id="articleCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy">
      <constructor-arg index="0">
        <props>
@@ -451,6 +506,24 @@
        <!--    <prop key="cache.capacity">500</prop>-->
        </props>
      </constructor-arg>
+  </bean>
+
+  <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+    <property name="configLocation">
+      <value>classpath:ehcache.xml</value>
+    </property>
+  </bean>
+
+  <bean id="journalCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>Journals</value>
+    </property>
+  </bean>
+
+  <bean id="carrierCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>ArticleCarriers</value>
+    </property>
   </bean>
 
   <!-- email configuration -->
