@@ -486,6 +486,31 @@ public class Session {
   }
 
   /** 
+   * Enable the filter defined by the specified filter-definition. Unlike {@link
+   * #enableFilter(java.lang.String) enableFilter(String)} this filter-definition does not have to
+   * be pre-registered on the session-factory. The filter can be disabled by name, just like with
+   * filters from pre-registered filter-definitions.
+   *
+   * <p>This does not affect existing queries or criteria.
+   * 
+   * @param fd the filter-definition whose filter to enable
+   * @return the enabled filter
+   * @throws OtmException if a filter-definition with the same name has been registered with the
+   *                      session-factory or a filter with the same name is already enabled
+   */
+  public Filter enableFilter(FilterDefinition fd) throws OtmException {
+    if (sessionFactory.getFilterDefinition(fd.getFilterName()) != null)
+      throw new OtmException("a filter with the given definition is registered with the " +
+                             "session-factory");
+    if (filters.containsKey(fd.getFilterName()))
+      throw new OtmException("a filter with the given definition has already been enabled");
+
+    Filter f = fd.createFilter(this);
+    filters.put(f.getName(), f);
+    return f;
+  }
+
+  /** 
    * Disable the named filter. This does nothing if no filter by the given name has been enabled.
    * This does not affect existing queries or criteria.
    * 
@@ -493,6 +518,15 @@ public class Session {
    */
   public void disableFilter(String name) {
     filters.remove(name);
+  }
+
+  /** 
+   * Get the set of enabled filters' names. 
+   * 
+   * @return the names of the enabled filters
+   */
+  public Set<String> listFilters() {
+    return Collections.unmodifiableSet(filters.keySet());
   }
 
   private void write(Id id, Object o, boolean delete) throws OtmException {
