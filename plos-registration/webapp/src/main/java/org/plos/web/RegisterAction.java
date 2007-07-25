@@ -28,7 +28,7 @@ import org.plos.service.UserAlreadyExistsException;
  */
 public class RegisterAction extends BaseAction {
   private static final String EMAIL_REGEX =
-    "^[a-zA-Z0-9!#$%&?'`{|/}*+=^._~-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
+    "^[a-zA-Z0-9!#$%&?'`{|/}*+=^._~-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
   private String loginName1;
   private String loginName2;
