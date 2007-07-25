@@ -526,7 +526,7 @@ public class Session {
    * @return the names of the enabled filters
    */
   public Set<String> listFilters() {
-    return Collections.unmodifiableSet(filters.keySet());
+    return new HashSet<String>(filters.keySet());
   }
 
   private void write(Id id, Object o, boolean delete) throws OtmException {

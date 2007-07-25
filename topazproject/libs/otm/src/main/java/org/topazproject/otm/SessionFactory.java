@@ -14,7 +14,6 @@ import java.lang.reflect.Modifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -364,7 +363,7 @@ public class SessionFactory {
    *         been registered.
    */
   public Collection<FilterDefinition> listFilterDefinitions() {
-    return Collections.unmodifiableCollection(filterDefs.values());
+    return new ArrayList<FilterDefinition>(filterDefs.values());
   }
 
   /** 
