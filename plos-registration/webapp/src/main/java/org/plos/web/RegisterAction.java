@@ -11,7 +11,7 @@ package org.plos.web;
 
 import static org.plos.Constants.Length.PASSWORD_MAX;
 import static org.plos.Constants.Length.PASSWORD_MIN;
-import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
@@ -27,6 +27,8 @@ import org.plos.service.UserAlreadyExistsException;
  * Uses use this to register as a new user. Verification stage is separate from this.
  */
 public class RegisterAction extends BaseAction {
+  private static final String EMAIL_REGEX =
+    "^[a-zA-Z0-9!#$%&?'`{|/}*+=^._~-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$";
 
   private String loginName1;
   private String loginName2;
@@ -57,7 +59,7 @@ public class RegisterAction extends BaseAction {
   /**
    * @return loginName1.
    */
-  @EmailValidator(message="You must enter a valid e-mail")
+  @RegexFieldValidator(message = "You must enter a valid e-mail", expression = EMAIL_REGEX)
   @RequiredStringValidator(message="You must enter an e-mail address")
   @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2", message="Email addresses must match")
   @StringLengthFieldValidator(maxLength = "256", message="E-mail must be less than 256")
