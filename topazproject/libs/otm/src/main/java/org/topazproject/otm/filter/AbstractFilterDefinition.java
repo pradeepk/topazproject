@@ -31,4 +31,14 @@ public abstract class AbstractFilterDefinition implements FilterDefinition {
   public String getFilteredClass() {
     return filteredClass;
   }
+
+  public int hashCode() {
+    return filterName.hashCode();
+  }
+
+  public boolean equals(Object other) {
+    if (!(other instanceof FilterDefinition))
+      return false;
+    return filterName.equals(((FilterDefinition) other).getFilterName());
+  }
 }

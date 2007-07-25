@@ -58,4 +58,14 @@ public abstract class AbstractFilterImpl extends AbstractParameterizable<Filter>
    * @return the query representing this filter
    */
   public abstract GenericQueryImpl getQuery() throws OtmException;
+
+  public int hashCode() {
+    return getName().hashCode();
+  }
+
+  public boolean equals(Object other) {
+    if (!(other instanceof Filter))
+      return false;
+    return getName().equals(((Filter) other).getName());
+  }
 }
