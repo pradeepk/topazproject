@@ -19,12 +19,14 @@
 <config>
   <cas></cas>
   <registration>
-    <from-email>registration@your-org</from-email>
-    <from-name>My Org Registration</from-name>
-    <context>/plos-registration</context>
+    <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
+    <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
+    <context>/plos-registration</context>          <!-- Directory of webapp -->
+    <!-- Full URL of registration webapp - Shouldn't need to be exposed -->
     <url>https://${network.hosts.registration}:${network.ports.registration-ssl}${registration.context}</url>
-    <plosone>
-      <context></context>
+    <plosone> <!-- Location of publishing app so links in registration work -->
+      <context></context> <!-- directory of publishing app -->
+      <!-- URL of publicly accessible publishing app (webhead if there is one) -->
       <url>http://${network.hosts.default}:${network.ports.default}</url>
     </plosone>
   </registration>

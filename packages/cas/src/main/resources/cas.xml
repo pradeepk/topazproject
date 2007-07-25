@@ -56,18 +56,20 @@
          For example, talking to postgresql, you need the database name at the end of the url
          The user and password are for the database as well. -->
     <db>
-      <user>casuser</user>
-      <password>caspass</password>
-      <url>jdbc:postgresql://localhost/casdb</url>
-      <driver>org.postgresql.Driver</driver>
+      <user>casuser</user>                         <!-- database user name -->
+      <password>caspass</password>                 <!-- database user password -->
+      <url>jdbc:postgresql://localhost/casdb</url> <!-- jdbc url - VERIFY DB NAME at end -->
+      <driver>org.postgresql.Driver</driver>       <!-- jdbc driver to use -->
     </db>
   </cas>
 
   <registration>
-    <from-email>registration@plosone.org</from-email>
-    <from-name>PLoS Registration</from-name>
-    <plosone>
-      <context></context>
+    <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
+    <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
+    <context>/plos-registration</context>          <!-- Directory of webapp -->
+    <plosone> <!-- Location of publishing app so links in registration work -->
+      <context></context> <!-- directory of publishing app -->
+      <!-- URL of publicly accessible publishing app (webhead if there is one) -->
       <url>http://${network.hosts.default}:${network.ports.default}</url>
     </plosone>
   </registration>
