@@ -69,23 +69,12 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
   private Session session;
   private boolean wrap = false;
 
-  public String intercept(ActionInvocation invocation) throws Exception {  
-    String result = null;  
-    before(invocation);  
-    result = invocation.invoke();  
-    after(invocation, result);  
-
-    return result;  
-  }  
-
-  
-  private void before(ActionInvocation actionInvocation) throws Exception {
+  public String intercept(ActionInvocation invocation) throws Exception {
     String user = lookupUser(ServletActionContext.getRequest());
     if (wrap)
       ServletActionContext.setRequest(wrapRequest(ServletActionContext.getRequest(), user));
-  }
 
-  private void after(ActionInvocation actionInvocation, String s) {
+    return invocation.invoke();
   }
 
   /**
