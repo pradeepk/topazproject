@@ -10,7 +10,11 @@
 
 package org.topazproject.otm.stores;
 
+import java.util.Set;
+
 import org.topazproject.otm.Filter;
+import org.topazproject.otm.filter.ConjunctiveFilterDefinition;
+import org.topazproject.otm.filter.JunctionFilterDefinition;
 
 import antlr.collections.AST;
 
@@ -20,18 +24,23 @@ import antlr.collections.AST;
  * @author Ronald Tschalär
  */
 public class ItqlFilter {
-  private final String filteredClass;
-  private final AST    filterDef;
-  private final String classVar;
+  public static enum Type { PLAIN, AND, OR };
+
+  private final String          filteredClass;
+  private final Type            type;
+  private final AST             filterDef;
+  private final String          classVar;
+  private final Set<ItqlFilter> filters;
 
   /** 
-   * Create a new filter-info instance. 
+   * Create a new plain filter-info instance. 
    * 
    * @param f           the original filter this is for
    * @param parsedQuery the preparsed filter expression, as returned by ItqlConstraingGenerator
    */
   ItqlFilter(Filter f, AST parsedQuery) {
     this.filteredClass = f.getFilterDefinition().getFilteredClass();
+    this.type = Type.PLAIN;
 
     AST from = parsedQuery.getFirstChild();
     assert from.getText().equals("from");
@@ -40,8 +49,23 @@ public class ItqlFilter {
     AST where = from.getNextSibling();
     assert where.getText().equals("where");
 
-    this.filterDef     = where.getFirstChild();
-    this.classVar      = from.getFirstChild().getNextSibling().getText();
+    this.filterDef = where.getFirstChild();
+    this.classVar  = from.getFirstChild().getNextSibling().getText();
+    this.filters   = null;
+  }
+
+  /** 
+   * Create a new junction filter-info instance. 
+   * 
+   * @param jf      the original junction filter this is for
+   * @param filters the component filters
+   */
+  ItqlFilter(JunctionFilterDefinition.JunctionFilter jf, Set<ItqlFilter> filters) {
+    this.filteredClass = jf.getFilterDefinition().getFilteredClass();
+    this.type = (jf instanceof ConjunctiveFilterDefinition.ConjunctiveFilter) ? Type.AND : Type.OR;
+    this.filters   = filters;
+    this.filterDef = null;
+    this.classVar  = null;
   }
 
   /** 
@@ -52,16 +76,32 @@ public class ItqlFilter {
   }
 
   /** 
-   * @return the where clause of preparsed filter expression, as returned by ItqlConstraingGenerator
+   * @return the type of filter this represents
+   */
+  public Type getType() {
+    return type;
+  }
+
+  /** 
+   * @return the where clause of preparsed filter expression, as returned by
+   *         ItqlConstraingGenerator, or null if this has a junction-type
    */
   public AST getDef() {
     return filterDef;
   }
 
   /** 
-   * @return the variable in the filter expression representing the filtered class
+   * @return the variable in the filter expression representing the filtered class, or null if this
+   *         has a junction-type
    */
   public String getVar() {
     return classVar;
+  }
+
+  /** 
+   * @return the component filters, or null if this is a plain filter
+   */
+  public Set<ItqlFilter> getFilters() {
+    return filters;
   }
 }

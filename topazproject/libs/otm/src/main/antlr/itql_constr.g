@@ -378,7 +378,7 @@ tokens {
           if (flist == null)
             continue;
           for (ItqlFilter f : flist)
-            root.addChild(renameVariable(astFactory.dupTree(f.getDef()), f.getVar(), ve.getKey()));
+            root.addChild(getFilterAST(f, ve.getKey()));
 
         } else {                                // multiple types - add locally
           for (Map.Entry<ExprType, Collection<ASTPair>> te : ve.getValue().entrySet()) {
@@ -389,8 +389,7 @@ tokens {
               if (p.root.getType() != AND)
                 insertAnd(p);
               for (ItqlFilter f : flist)
-                p.root.addChild(
-                    renameVariable(astFactory.dupTree(f.getDef()), f.getVar(), ve.getKey()));
+                p.root.addChild(getFilterAST(f, ve.getKey()));
             }
           }
         }
@@ -443,6 +442,29 @@ tokens {
       }
 
       return list;
+    }
+
+    private AST getFilterAST(ItqlFilter f, String var) {
+      AST res;
+      switch (f.getType()) {
+        case PLAIN:
+          return renameVariable(astFactory.dupTree(f.getDef()), f.getVar(), var);
+
+        case AND:
+          res = #([AND, "and"]);
+          for (ItqlFilter cf : f.getFilters())
+            res.addChild(getFilterAST(cf, var));
+          return res;
+
+        case OR:
+          res = #([OR, "or"]);
+          for (ItqlFilter cf : f.getFilters())
+            res.addChild(getFilterAST(cf, var));
+          return res;
+
+        default:
+          throw new Error("Unknown filter type '" + f.getType() + "'");
+      }
     }
 
     private void insertAnd(ASTPair parents) {

@@ -12,6 +12,8 @@ package org.topazproject.otm.stores;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.filter.JunctionFilterDefinition;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.query.ErrorCollector;
 import org.topazproject.otm.query.GenericQueryImpl;
@@ -96,6 +99,19 @@ class ItqlQuery extends QueryImplBase {
   }
 
   private ItqlFilter parseItqlFilter(AbstractFilterImpl f, String pfx) throws OtmException {
+    if (!(f instanceof JunctionFilterDefinition.JunctionFilter))
+      return parsePlainItqlFilter(f, pfx);
+
+    JunctionFilterDefinition.JunctionFilter jf = (JunctionFilterDefinition.JunctionFilter) f;
+    Set<ItqlFilter> filters = new HashSet<ItqlFilter>();
+    int idx = 0;
+    for (AbstractFilterImpl cf : jf.getFilters())
+      filters.add(parseItqlFilter(cf, pfx + "j" + idx++));
+
+    return new ItqlFilter(jf, filters);
+  }
+
+  private ItqlFilter parsePlainItqlFilter(AbstractFilterImpl f, String pfx) throws OtmException {
     GenericQueryImpl fqry = f.getQuery();
 
     if (log.isDebugEnabled())

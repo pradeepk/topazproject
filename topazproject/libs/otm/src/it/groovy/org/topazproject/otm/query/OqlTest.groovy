@@ -11,6 +11,7 @@
 package org.topazproject.otm.query;
 
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
@@ -24,7 +25,9 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.ProxyCriterion;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.filter.ConjunctiveFilterDefinition;
 import org.topazproject.otm.filter.CriteriaFilterDefinition;
+import org.topazproject.otm.filter.DisjunctiveFilterDefinition;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.filter.OqlFilterDefinition;
 import org.topazproject.otm.metadata.RdfBuilder;
@@ -1018,9 +1021,9 @@ public class OqlTest extends GroovyTestCase {
     FilterDefinition cfd3 = new CriteriaFilterDefinition('noJack',
         new DetachedCriteria('Name').add(Restrictions.ne('givenName', 'Jack')))
 
-    // run tests
     def checker = new ResultChecker(test:this)
 
+    // run plain filter tests
     for (t in [[ofd1, ofd2, ofd3], [cfd1, cfd2, cfd2]]) {
       // set up available filters
       for (fd in t) {
@@ -1154,6 +1157,126 @@ public class OqlTest extends GroovyTestCase {
               list()
         assertEquals([o2], r)
       }
+    }
+
+    // run junction filter tests
+    FilterDefinition jfd1 = new ConjunctiveFilterDefinition('notBobAndNotState', 'Test1').
+                                addFilterDefinition(ofd1).addFilterDefinition(cfd2);
+    FilterDefinition jfd2 = new DisjunctiveFilterDefinition('notBobOrNotState', 'Test1').
+                                addFilterDefinition(cfd1).addFilterDefinition(ofd2);
+
+    rdf.sessFactory.addFilterDefinition(jfd1);
+    rdf.sessFactory.addFilterDefinition(jfd2);
+
+    doInTx { s ->
+      s.enableFilter('notBobAndNotState').getFilters('state')[0].setParameter('state', 2);
+      Results r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o3.id) }
+      }
+      List l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o3], l)
+
+      s.enableFilter('notBobAndNotState').getFilters('state')[0].setParameter('state', 1);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o2, o3], l)
+
+      s.disableFilter('notBobAndNotState');
+      s.enableFilter('notBobOrNotState').getFilters('state')[0].setParameter('state', 2);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o1, o2, o3], l)
+
+      s.enableFilter('notBobOrNotState').getFilters('state')[0].setParameter('state', 1);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o2, o3], l)
+    }
+
+    FilterDefinition ofd4 =
+        new OqlFilterDefinition('noKeller', 'Test1', "o where o.info.name.surname != 'Keller'")
+    FilterDefinition cfd4 = new CriteriaFilterDefinition('noKeller',
+        new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
+            add(Restrictions.ne('surname', 'Keller')).parent.parent)
+
+    FilterDefinition jfd3 =
+        new ConjunctiveFilterDefinition('notBobAnd_notStateOrNotKeller', 'Test1').
+            addFilterDefinition(ofd1).addFilterDefinition(
+                new DisjunctiveFilterDefinition('notStateOrNotKeller', 'Test1').
+                    addFilterDefinition(cfd2).addFilterDefinition(ofd4));
+
+    FilterDefinition jfd4 =
+        new DisjunctiveFilterDefinition('notStateOr_notBobAndNotKeller', 'Test1').
+            addFilterDefinition(ofd2).addFilterDefinition(
+                new ConjunctiveFilterDefinition('notBobAndNotKeller', 'Test1').
+                    addFilterDefinition(cfd1).addFilterDefinition(cfd4));
+
+    rdf.sessFactory.addFilterDefinition(jfd3);
+    rdf.sessFactory.addFilterDefinition(jfd4);
+
+    doInTx { s ->
+      Filter stF = s.enableFilter('notBobAnd_notStateOrNotKeller').
+                     getFilters('notStateOrNotKeller')[0].getFilters('state')[0];
+      stF.setParameter('state', 2);
+      Results r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o3.id) }
+      }
+      List l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o3], l)
+
+      stF.setParameter('state', 3);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o2, o3], l)
+
+      s.disableFilter('notBobAnd_notStateOrNotKeller');
+      stF = s.enableFilter('notStateOr_notBobAndNotKeller').getFilters('state')[0];
+      stF.setParameter('state', 1);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o2, o3], l)
+
+      stF.setParameter('state', 2);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o1, o3], l)
+
+      stF.setParameter('state', 3);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+      l = s.createCriteria(cls).addOrder(Order.asc('state')).list()
+      assertEquals([o1, o2, o3], l)
     }
   }
 

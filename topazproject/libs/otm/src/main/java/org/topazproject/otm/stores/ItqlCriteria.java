@@ -24,6 +24,8 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.filter.AbstractFilterImpl;
+import org.topazproject.otm.filter.ConjunctiveFilterDefinition;
+import org.topazproject.otm.filter.JunctionFilterDefinition;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -136,9 +138,10 @@ public class ItqlCriteria {
 
     if (!isFilter) {
       for (Filter f : criteria.getFilters()) {
-        Criteria fc = getFilterAsCriteria(criteria, f);
-        if (fc != null)
-          buildWhereClause(fc, qry, subject, pfx + "f" + i++, false, true);
+        if (isFilterApplicable(criteria, f)) {
+          buildFilter((AbstractFilterImpl) f, qry, subject, pfx + "f" + i++);
+          qry.append(" and ");
+        }
       }
     }
 
@@ -148,6 +151,31 @@ public class ItqlCriteria {
       String child = pfx + "c" + i++;
       buildPredicateWhere(cm, cr.getMapping().getName(), subject, child, qry, model);
       buildWhereClause(cr, qry, child, child, true, isFilter);
+    }
+  }
+
+  private void buildFilter(AbstractFilterImpl f, StringBuilder qry, String subject, String pfx)
+       throws OtmException {
+    if (f instanceof JunctionFilterDefinition.JunctionFilter) {
+      JunctionFilterDefinition.JunctionFilter jf = (JunctionFilterDefinition.JunctionFilter) f;
+      if (jf.getFilters().size() == 0)
+        return;
+
+      String op = (jf instanceof ConjunctiveFilterDefinition.ConjunctiveFilter) ? " and " : " or ";
+      qry.append("(");
+
+      int idx = 0;
+      for (AbstractFilterImpl cf : jf.getFilters()) {
+        buildFilter(cf, qry, subject, pfx + "j" + idx++);
+        qry.append(op);
+      }
+
+      qry.setLength(qry.length() - op.length());
+      qry.append(")");
+    } else {
+      Criteria fc = f.getCriteria();
+      buildWhereClause(fc, qry, subject, pfx, false, true);
+      qry.setLength(qry.length() - 5);
     }
   }
 
@@ -199,18 +227,13 @@ public class ItqlCriteria {
     return mc.getUri().toString();
   }
 
-  private Criteria getFilterAsCriteria(Criteria current, Filter f) throws OtmException {
+  private boolean isFilterApplicable(Criteria current, Filter f) throws OtmException {
     ClassMetadata cm =
-      current.getSession().getSessionFactory()
+        current.getSession().getSessionFactory()
                .getClassMetadata(f.getFilterDefinition().getFilteredClass());
 
-    if (cm == null)
-      return null;
-
-    if (!cm.getSourceClass().isAssignableFrom(current.getClassMetadata().getSourceClass()))
-      return null;
-
-    return ((AbstractFilterImpl) f).getCriteria();
+    return (cm != null &&
+            cm.getSourceClass().isAssignableFrom(current.getClassMetadata().getSourceClass()));
   }
 
   /**
