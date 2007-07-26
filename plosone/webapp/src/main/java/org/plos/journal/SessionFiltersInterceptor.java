@@ -10,6 +10,7 @@
 
 package org.plos.journal;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.ServletException;
@@ -60,7 +61,8 @@ public class SessionFiltersInterceptor extends AbstractInterceptor {
       //throw new ServletException("No journal found with name '" + jName + "'");
       log.error("No journal found with name '" + jName + "'");
 
-    for (String fName : jf) {
+    // XXX: guard against jf == null, we don't have any journals yet, allow development to continue
+    for (String fName : (jf != null ? jf : new HashSet<String>(0))) {
       Filter f = session.enableFilter(fName);
       if (f == null)            // shouldn't happen
         throw new ServletException("Filter '" + fName +
