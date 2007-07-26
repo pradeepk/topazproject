@@ -45,7 +45,7 @@ import org.topazproject.otm.query.Results;
  *
  * @author Pradeep Krishnan
  */
-public class MemStore implements TripleStore {
+public class MemStore extends AbstractTripleStore {
   private Storage storage = new Storage();
 
   /*
@@ -99,7 +99,7 @@ public class MemStore implements TripleStore {
   /*
    * inherited javadoc
    */
-  public ResultObject get(ClassMetadata cm, String id, Transaction txn)
+  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn)
                    throws OtmException {
     MemStoreConnection        msc     = (MemStoreConnection) txn.getConnection();
     Storage                   storage = msc.getStorage();
@@ -127,7 +127,8 @@ public class MemStore implements TripleStore {
       }
     }
 
-    return instantiate(txn.getSession().getSessionFactory(), cm.getSourceClass(), id, value, rvalue);
+    return instantiate(txn.getSession(), instance, cm, id, value, rvalue, 
+        new HashMap<String, Set<String>>());
   }
 
   /*
@@ -263,53 +264,6 @@ public class MemStore implements TripleStore {
     return ids;
   }
 
-  /*
-     public T <Collection<T>> find(Class<T> clazz, List<Criteria> criteria,
-         List<Field> orderBy, long offset, long size);
-   */
-  private ResultObject instantiate(SessionFactory sessionFactory, Class clazz, String id,
-                                   Map<String, List<String>> props, Map<String, List<String>> rprops)
-                            throws OtmException {
-    List<String> types = props.get(Rdf.rdf + "type");
-
-    clazz = sessionFactory.mostSpecificSubClass(clazz, types);
-
-    ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
-
-    if ((types.size() == 0) && (cm.getType() != null))
-      return null;
-
-    ResultObject ro;
-
-    try {
-      ro = new ResultObject(clazz.newInstance(), id);
-    } catch (Exception e) {
-      throw new OtmException("instantiation failed", e);
-    }
-
-    cm.getIdField().set(ro.o, Collections.singletonList(id));
-
-    // A field could be of rdf:type. So remove the values used in class identification
-    // from the set of rdf:type values before running through and setting field values. 
-    types.removeAll(cm.getTypes());
-
-    int count = types.size();
-
-    for (Mapper p : cm.getFields()) {
-      List<String> vals = p.hasInverseUri() ? rprops.get(p.getUri()) : props.get(p.getUri());
-      count += vals.size();
-
-      if (p.getSerializer() != null)
-        p.set(ro.o, vals);
-      else
-        ro.unresolvedAssocs.put(p, vals);
-    }
-
-    // Put back what we removed
-    types.addAll(cm.getTypes());
-
-    return (count > 0) ? ro : null;
-  }
 
   private static class PropertyId {
     private String model;

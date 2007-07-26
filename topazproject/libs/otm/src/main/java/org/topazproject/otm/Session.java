@@ -281,7 +281,7 @@ public class Session {
       o = dirtyMap.get(id);
 
     if (o == null) {
-      o = getFromStore(clazz, id, checkClass(clazz));
+      o = getFromStore(id, checkClass(clazz), null);
 
       if (o != null) {
         // Must merge here. Associations may have a back-pointer to this Id.
@@ -292,12 +292,8 @@ public class Session {
       }
     }
 
-    if (o instanceof ProxyObject) {
-      LazyLoadMethodHandler llm = proxies.get(id);
-
-      if (llm != null)
-        llm.load(); // ensure it is loaded
-    }
+    if (o instanceof ProxyObject)
+        o.equals(null); // ensure it is loaded
 
     if ((o == null) || clazz.isInstance(o))
       return clazz.cast(o);
@@ -355,8 +351,7 @@ public class Session {
     Id id = checkObject(o);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
-      Class clazz = o.getClass();
-      o = getFromStore(clazz, id, checkClass(clazz));
+      o = getFromStore(id, checkClass(o.getClass()), o);
       sync(o, id, true, false, false);
     }
   }
@@ -531,7 +526,7 @@ public class Session {
 
   private void write(Id id, Object o, boolean delete) throws OtmException {
     LazyLoadMethodHandler llm           = (o instanceof ProxyObject) ? proxies.get(id) : null;
-    boolean               pristineProxy = (llm != null) ? (llm.getLoaded() == null) : false;
+    boolean               pristineProxy = (llm != null) ? llm.isLoaded() : false;
     ClassMetadata         cm            = sessionFactory.getClassMetadata(o.getClass());
     TripleStore           store         = sessionFactory.getTripleStore();
 
@@ -550,62 +545,14 @@ public class Session {
     }
   }
 
-  private Object getFromStore(Class clazz, Id id, ClassMetadata cm)
+  private Object getFromStore(Id id, ClassMetadata cm, Object instance)
                        throws OtmException {
     if (txn == null)
       throw new OtmException("No transaction active");
 
     TripleStore              store = sessionFactory.getTripleStore();
 
-    TripleStore.ResultObject ro    = store.get(cm, id.getId(), txn);
-
-    return (ro == null) ? null : instantiate(ro);
-  }
-
-  private Object instantiate(TripleStore.ResultObject ro)
-                      throws OtmException {
-    for (Map.Entry<Mapper, List<String>> e : ro.unresolvedAssocs.entrySet()) {
-      List   assocs = new ArrayList();
-      Mapper p      = e.getKey();
-
-      for (String val : e.getValue()) {
-        // lazy load
-        Class       clazz = p.getComponentType();
-        Set<String> types = ro.types.get(val);
-
-        if (types != null)
-          clazz = sessionFactory.mostSpecificSubClass(clazz, types);
-
-        if (clazz != null) {
-          Object a = load(clazz, val);
-
-          if (a != null)
-            assocs.add(a);
-        }
-      }
-
-      p.set(ro.o, assocs);
-    }
-
-    for (Map.Entry<Mapper, List<TripleStore.ResultObject>> e : ro.resolvedAssocs.entrySet()) {
-      List   assocs = new ArrayList();
-      Mapper p      = e.getKey();
-
-      for (TripleStore.ResultObject val : e.getValue()) {
-        Object io = instantiate(val);
-        Object a  = sync(io, new Id(io.getClass(), val.id), true, false, false);
-
-        if (a != null)
-          assocs.add(a);
-      }
-
-      p.set(ro.o, assocs);
-    }
-
-    if (log.isDebugEnabled())
-      log.debug("Instantiated " + ro.id);
-
-    return ro.o;
+    return store.get(cm, id.getId(), instance, txn);
   }
 
   private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
@@ -683,14 +630,6 @@ public class Session {
     if (!cm.getSourceClass().isAssignableFrom(ocm.getSourceClass()))
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
-    LazyLoadMethodHandler llm = proxies.get(checkObject(o));
-
-    if (llm != null) {
-      llm.setLoaded(other);
-
-      return o;
-    }
-
     if (log.isDebugEnabled())
       log.debug("Copy merging " + checkObject(o));
 
@@ -734,39 +673,34 @@ public class Session {
                           throws OtmException {
     LazyLoadMethodHandler mi =
       new LazyLoadMethodHandler() {
-        private Object loaded = null;
+        private boolean loaded = false;
+        private boolean loading = false;
 
         public Object invoke(Object self, Method m, Method proceed, Object[] args)
                       throws Throwable {
-          if (loaded == null) {
+          if (loaded)
+            return proceed.invoke(self, args);
+
+          if (!loading) {
             if (log.isDebugEnabled())
               log.debug(m.getName() + " on " + id + " is forcing a load from store");
 
-            loaded = getFromStore(clazz, id, cm);
+            loading = true;
+            try {
+              getFromStore(id, cm, self);
+            } finally {
+              loading = false;
+            }
+            loaded = true;
           }
 
-          return m.invoke(loaded, args);
+          return proceed.invoke(self, args);
         }
 
-        public Object getLoaded() {
+        public boolean isLoaded() {
           return loaded;
         }
 
-        public void setLoaded(Object o) {
-          if ((loaded != o) && log.isDebugEnabled())
-            log.debug("Replacing the loaded object for proxy " + id);
-
-          loaded = o;
-        }
-
-        public void load() throws OtmException {
-          if (loaded == null) {
-            if (log.isDebugEnabled())
-              log.debug(id + " is force loaded from store");
-
-            loaded = getFromStore(clazz, id, cm);
-          }
-        }
       };
 
     try {
@@ -894,10 +828,6 @@ public class Session {
   }
 
   private interface LazyLoadMethodHandler extends MethodHandler {
-    public Object getLoaded();
-
-    public void setLoaded(Object o);
-
-    public void load() throws OtmException;
+    public boolean isLoaded();
   }
 }

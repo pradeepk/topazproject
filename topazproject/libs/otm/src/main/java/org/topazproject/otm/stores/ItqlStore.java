@@ -54,7 +54,7 @@ import org.topazproject.otm.query.Results;
  * 
  * @author Ronald Tschalär
  */
-public class ItqlStore implements TripleStore {
+public class ItqlStore extends AbstractTripleStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
   private static final Map<Object, List<ItqlHelper>> conCache = new HashMap();
   private        final URI serverUri;
@@ -314,7 +314,8 @@ public class ItqlStore implements TripleStore {
     }
   }
 
-  public ResultObject get(ClassMetadata cm, String id, Transaction txn) throws OtmException {
+  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn) 
+             throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
     SessionFactory      sf  = txn.getSession().getSessionFactory();
 
@@ -411,70 +412,7 @@ public class ItqlStore implements TripleStore {
         fvalues.put(p, getRdfBag(id, p, mUri, txn, types));
     }
 
-    // create result
-    ResultObject ro;
-    try {
-      ro = new ResultObject(clazz.newInstance(), id);
-    } catch (Exception e) {
-      throw new OtmException("Failed to instantiate " + clazz, e);
-    }
-
-    cm.getIdField().set(ro.o, Collections.singletonList(id));
-
-    // re-map values based on the rdf:type look ahead
-    Map<Mapper, List<String>> mvalues = new HashMap();
-    boolean inverse = false;
-    for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
-      for (String p : values.keySet()) {
-        for (String o : values.get(p)) {
-          Mapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
-          if (m != null) {
-            List<String> v = mvalues.get(m);
-            if (v == null)
-              mvalues.put(m, v = new ArrayList<String>());
-            v.add(o);
-          }
-        }
-      }
-      inverse = true;
-    }
-
-    // now assign values to fields
-    for (Mapper m : mvalues.keySet()) {
-      if (m.getSerializer() != null)
-        m.set(ro.o, mvalues.get(m));
-      else
-        ro.unresolvedAssocs.put(m, mvalues.get(m));
-    }
-
-    ro.types = types;
-
-    boolean found = false;
-    for (Mapper m : cm.getFields()) {
-      if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
-        found = true;
-        break;
-      }
-    }
-
-    if (found) {
-      Map<String, List<String>> map = new HashMap<String, List<String>>();
-      map.putAll(fvalues);
-      for (Mapper m : cm.getFields()) {
-        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
-          continue;
-        if (m.hasInverseUri())
-          continue;
-        map.remove(m.getUri());
-      }
-      for (Mapper m : cm.getFields()) {
-        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
-          m.setRawValue(ro.o, map);
-      }
-    }
-
-    // done
-    return ro;
+    return instantiate(txn.getSession(), instance, cm, id, fvalues, rvalues, types);
   }
 
   private void buildGetSelect(StringBuilder qry, ClassMetadata cm, String id, Transaction txn)

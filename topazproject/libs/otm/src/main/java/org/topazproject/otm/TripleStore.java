@@ -24,7 +24,7 @@ import org.topazproject.otm.query.Results;
  * An abstraction to represent triple stores.
  *
  * @author Pradeep Krishnan
-  */
+ */
 public interface TripleStore {
   /**
    * Opens a connection to the store.
@@ -74,13 +74,14 @@ public interface TripleStore {
    *
    * @param cm the class metadata for the object
    * @param id the id/subject-uri for the object
+   * @param instance the instance to be refreshed or null 
    * @param txn the transaction context
    *
-   * @return the result that may contain a partially created object
+   * @return the result instance
    *
    * @throws OtmException on an error
    */
-  public ResultObject get(ClassMetadata cm, String id, Transaction txn)
+  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn)
                    throws OtmException;
 
   /**
@@ -158,18 +159,4 @@ public interface TripleStore {
    */
   public void setCriterionBuilder(String func, CriterionBuilder builder)
                            throws OtmException;
-
-  public static class ResultObject {
-    public Object                          o;
-    public String                          id;
-    public Map<Mapper, List<String>>       unresolvedAssocs = new HashMap<Mapper, List<String>>();
-    public Map<Mapper, List<ResultObject>> resolvedAssocs   =
-      new HashMap<Mapper, List<ResultObject>>();
-    public Map<String, Set<String>> types;
-
-    public ResultObject(Object o, String id) {
-      this.o    = o;
-      this.id   = id;
-    }
-  }
 }
