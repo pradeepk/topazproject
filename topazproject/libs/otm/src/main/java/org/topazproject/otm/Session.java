@@ -9,6 +9,7 @@
  */
 package org.topazproject.otm;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
@@ -678,10 +679,7 @@ public class Session {
 
         public Object invoke(Object self, Method m, Method proceed, Object[] args)
                       throws Throwable {
-          if (loaded)
-            return proceed.invoke(self, args);
-
-          if (!loading) {
+          if (!loaded && !loading) {
             if (log.isDebugEnabled())
               log.debug(m.getName() + " on " + id + " is forcing a load from store");
 
@@ -694,7 +692,13 @@ public class Session {
             loaded = true;
           }
 
-          return proceed.invoke(self, args);
+          try {
+            return proceed.invoke(self, args);
+          } catch (InvocationTargetException ite) {
+            if (log.isDebugEnabled())
+              log.debug("Caught ite while invoking '" + proceed + "' on '" + self + "'", ite);
+            throw ite.getCause();
+          }
         }
 
         public boolean isLoaded() {
