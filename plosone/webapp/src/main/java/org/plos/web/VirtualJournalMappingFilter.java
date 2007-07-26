@@ -10,10 +10,10 @@
 
 package org.plos.web;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import javax.management.MBeanServer;
 import javax.servlet.Filter;
@@ -74,8 +74,10 @@ public class VirtualJournalMappingFilter implements Filter {
     }
   }
 
-  // Cache Element value to indicate directory doesn't exist
-  private static final HashMap DIRECTORY_DOES_NOT_EXIST = new HashMap();
+  // Cache Element value to indicate resource exists
+  private static final String RESOURCE_EXISTS = "EXISTS";
+  // Cache Element value to indicate resource does not exists
+  private static final String RESOURCE_DOES_NOT_EXIST = "DOES NOT EXIST";
 
   /*
    * @see javax.servlet.Filter#init
@@ -132,7 +134,8 @@ public class VirtualJournalMappingFilter implements Filter {
    * @param request <code>HttpServletRequest</code> to apply the lookup against.
    * @return WrappedRequest for the resource.
    */
-private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest request) {
+private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest request)
+  throws ServletException {
 
     // lookup virtual journal context
     final VirtualJournalContext virtualJournalContext = (VirtualJournalContext) request.getAttribute(
@@ -167,63 +170,51 @@ private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest
     final String defaultPathInfo    = defaultedValues[2];
     final String defaultRequestUri  = defaultedValues[3];
 
-    // what is resource name on filesystem?
-    final String realPath = servletContext.getRealPath(virtualRequestUri);
-
-    final int lastSlash = realPath.lastIndexOf(System.getProperty("file.separator"));
-    final String realDir = realPath.substring(0, lastSlash);
-    final String realFile = realPath.substring(lastSlash + 1);
-
-    if (log.isDebugEnabled()) {
-      log.debug("using realDir + \"/\" + realFile: \"" + realDir + "\" + \"" +
-                System.getProperty("file.separator") +  "\" + \"" + realFile + "\"");
-    }
-
-    // does resource actually exist?
-    // find directory in cache
-    Element cachedDirElement = fileSystemCache.get(realDir);
-    if (cachedDirElement == null) {
+    // look in cache 1st for virtual resource
+    Element cachedVirtualResourceElement = fileSystemCache.get(virtualRequestUri);
+    if (cachedVirtualResourceElement == null) {
       if (log.isDebugEnabled()) {
-        log.debug("cache miss for : \"" + realDir + "\"");
+        log.debug("cache miss for virtual resource: " + virtualRequestUri);
       }
 
-      // try dir on file system
-      File dir = new File(realDir);
-      if (!dir.exists()) {
-        fileSystemCache.put(new Element(realDir, DIRECTORY_DOES_NOT_EXIST));
-        // use defaults in Request
-        return wrapRequest(request,
-          defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri);
+      // can the ServletContext find the virtual resource?
+      final URL virtualResourceURL;
+      try {
+        virtualResourceURL = servletContext.getResource(virtualRequestUri);
+      } catch (MalformedURLException mre) {
+        // should never happen
+        log.error(mre);
+        throw new ServletException("virtualRequestUri=" + virtualRequestUri, mre);
       }
+      if (virtualResourceURL != null) {
+        cachedVirtualResourceElement = new Element(virtualRequestUri, RESOURCE_EXISTS);
+      } else {
+        cachedVirtualResourceElement = new Element(virtualRequestUri, RESOURCE_DOES_NOT_EXIST);
+      }
+      // populate cache with existence
+      fileSystemCache.put(cachedVirtualResourceElement);
 
-      // put dir contents in a HashMap for later use
-      HashMap dirMap = new HashMap();
-      for (File dirEntry : dir.listFiles()) {
-        dirMap.put(dirEntry.getAbsolutePath(), dirEntry);
+      if (log.isDebugEnabled()) {
+        log.debug("ServletContext.getResource(" + virtualRequestUri + "): "
+          + cachedVirtualResourceElement.getObjectValue());
       }
-      cachedDirElement = new Element(realDir, dirMap);
-      fileSystemCache.put(cachedDirElement);
+    } else {
+      if (log.isDebugEnabled()) {
+        log.debug("cache hit for virtual resource: " + virtualRequestUri
+          + ", value: " + cachedVirtualResourceElement.getObjectValue());
+      }
     }
 
-    // cache knows if directory doesn't exist, test against static Object
-    if (cachedDirElement.getObjectValue() == DIRECTORY_DOES_NOT_EXIST) {
-      // use defaults in Request
+    // test existence with == for static Object
+    if (cachedVirtualResourceElement.getObjectValue() == RESOURCE_EXISTS) {
+      // use virtual journal resource
+      return wrapRequest(request,
+        virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri);
+    } else {
+      // use default resource
       return wrapRequest(request,
         defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri);
     }
-
-    // look for file in dir, if specified
-    if (realFile.length() != 0) {
-      if (!((HashMap) cachedDirElement.getObjectValue()).containsKey(realPath)) {
-        // file not in dir, use defaults in Request
-        return wrapRequest(request,
-          defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri);
-        }
-    }
-
-    // use virtual journal resource
-    return wrapRequest(request,
-      virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri);
   }
 
 
