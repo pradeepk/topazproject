@@ -11,6 +11,7 @@
 package org.plos.journal;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -470,7 +471,9 @@ public class JournalService {
    * @param oid the info:&lt;oid&gt; uri of the article
    */
   public void articleWasAdded(URI oid) {
-    articleCarriers.put(new Element(oid, buildCarrierMap(oid, session).values().iterator().next()));
+    Collection<Set<URI>> journalSets = buildCarrierMap(oid, session).values();
+    if (journalSets.size() > 0)
+      articleCarriers.put(new Element(oid, journalSets.iterator().next()));
 
     if (log.isDebugEnabled())
       log.debug("article '" + oid + "' was added and belongs to journals: " +
