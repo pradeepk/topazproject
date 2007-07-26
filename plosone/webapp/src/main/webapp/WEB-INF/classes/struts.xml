@@ -115,6 +115,28 @@
       <result type="redirect">/</result>
     </action>
 
+    <action name="trackback" class="org.plos.action.TrackbackAction">
+      <result name="success">
+        <param name="location">/trackback/success.ftl</param>
+        <param name="contentType">application/xml</param>
+      </result>
+      <result name="error">
+        <param name="location">/trackback/error.ftl</param>
+        <param name="contentType">application/xml</param>
+      </result>
+    </action>
+
+    <action name="getTrackbacks" class="org.plos.action.TrackbackAction" method="getTrackbacks">
+      <result name="success">
+        <param name="location">/trackback/listTrackbacks.ftl</param>
+      </result>
+      <result name="error">
+        <param name="location">/trackback/error.ftl</param>
+        <param name="contentType">application/xml</param>
+      </result>
+    </action>
+
+
     <action name="home" class="org.plos.action.HomePageAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/index.ftl</param>
@@ -433,15 +455,15 @@
 
     <action name="slideshow" class="org.plos.article.action.SecondaryObjectAction" method="listFiguresAndTables">
       <result name="success" type="plosOneFreemarker">
-      	<param name="location">/templates/headless_template.ftl</param>
-      	<param name="templateFile">/article/imageWindow.ftl</param>
+        <param name="location">/templates/headless_template.ftl</param>
+        <param name="templateFile">/article/imageWindow.ftl</param>
       </result>
     </action>
 
     <action name="showImageLarge">
       <result name="success" type="plosOneFreemarker">
-      	<param name="location">/templates/headless_template.ftl</param>
-      	<param name="templateFile">/article/imageWindowLarge.ftl</param>
+        <param name="location">/templates/headless_template.ftl</param>
+        <param name="templateFile">/article/imageWindowLarge.ftl</param>
       </result>
     </action>
 
@@ -469,7 +491,7 @@
 
     <action name="fetchBody" class="org.plos.article.action.FetchArticleAction">
       <result name="success" type="plosOneFreemarker">
-      	<param name="location">/article/article_content.ftl</param>
+        <param name="location">/article/article_content.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
@@ -796,7 +818,7 @@
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/user/profile.ftl</param>
       </result>
-		</action>
+    </action>
   </package>
 
   <package name="user" extends="default" namespace="/user">
@@ -847,50 +869,50 @@
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
-  	<action name="adminTop" class="org.plos.admin.action.AdminTopAction">
+    <action name="adminTop" class="org.plos.admin.action.AdminTopAction">
       <result name="success" type="plosOneFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
-  	</action>
+    </action>
 
-  	<action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
-  	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	</action>
+    <action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
+        <result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
+    </action>
 
-  	<action name="publishArchives" class="org.plos.admin.action.PublishArchivesAction">
-  	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	</action>
+    <action name="publishArchives" class="org.plos.admin.action.PublishArchivesAction">
+        <result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
+    </action>
 
-  	<action name="processFlags" class="org.plos.admin.action.ProcessFlagsAction">
-  	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	</action>
+    <action name="processFlags" class="org.plos.admin.action.ProcessFlagsAction">
+        <result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
+    </action>
 
-  	<action name="viewAnnotation" class="org.plos.admin.action.ViewAnnotationAction">
-  	  	<result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
-  	</action>
+    <action name="viewAnnotation" class="org.plos.admin.action.ViewAnnotationAction">
+        <result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
+    </action>
 
-  	<action name="viewRating" class="org.plos.admin.action.ViewRatingAction">
-  	  	<result name="success">/WEB-INF/pages/admin/viewRating.ftl</result>
-  	</action>
+    <action name="viewRating" class="org.plos.admin.action.ViewRatingAction">
+        <result name="success">/WEB-INF/pages/admin/viewRating.ftl</result>
+    </action>
 
         <action name="viewReply" class="org.plos.annotation.action.GetReplyAction">
-  	  	<result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
-  	</action>
+        <result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
+    </action>
 
-  	<action name="findUser">
-  	  	<result>/WEB-INF/pages/user/searchUser.ftl</result>
-  	</action>
+    <action name="findUser">
+        <result>/WEB-INF/pages/user/searchUser.ftl</result>
+    </action>
 
-  	<action name="findUserByUserId" class="org.plos.user.action.SearchUserAction" method="executeFindUserByAuthId">
+    <action name="findUserByUserId" class="org.plos.user.action.SearchUserAction" method="executeFindUserByAuthId">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
-  	</action>
+    </action>
 
-  	<action name="findUserByEmailAddress" class="org.plos.user.action.SearchUserAction" method="executeFindUserByEmailAddress">
+    <action name="findUserByEmailAddress" class="org.plos.user.action.SearchUserAction" method="executeFindUserByEmailAddress">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
-  	</action>
+    </action>
 
     <action name="editProfileByAdmin" class="org.plos.user.action.AdminUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="plosOneFreemarker">

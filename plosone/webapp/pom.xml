@@ -20,6 +20,12 @@
       <artifactId>jsonplugin</artifactId>
       <version>0.14</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>trackback-util</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
       <artifactId>plosone-emailer</artifactId>
@@ -54,7 +60,7 @@
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <version>6.1.3</version>
+      <version>6.1.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -327,8 +333,7 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.3</version>
-
+        <version>6.1.4</version>
         <dependencies>
           <dependency>
             <groupId>log4j</groupId>

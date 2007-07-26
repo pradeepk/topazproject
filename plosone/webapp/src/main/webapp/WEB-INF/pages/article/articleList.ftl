@@ -1,14 +1,12 @@
 <html>
-	<head>
-		<title>Articles you can view</title>
-	</head>
+  <head>
+    <title>Articles you can view</title>
+  </head>
 
-	<body>
+  <body>
+    <#list articles as article>
     <fieldset>
       <legend>Available articles</legend>
-
-      <#list articles as article>
-
         <@s.url id="fetchArticleURL" action="fetchArticle" articleURI="${article}"/>
         <@s.a href="%{fetchArticleURL}">${article}</@s.a>
 
@@ -61,9 +59,8 @@
             <@s.url id="getTrackbacksURL" action="getTrackbacks" namespace="/" trackbackId="${article}"/>
             <@s.a href="%{getTrackbacksURL}">Get Trackbacks</@s.a>
           </li>
+          </ul>
 
-
-          <li>
             <fieldset>
               <legend>Create an annotation</legend>
             <@s.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">
@@ -80,8 +77,6 @@
               <@s.submit value="create annotation" />
             </@s.form>
             </fieldset>
-          </li>
-          <li>
             <fieldset>
               <legend>Rate the Article</legend>
             <@s.form name="rateArticle Form" action="rateArticle" method="post" namespace="/rate/secure" enctype="multipart/form-data">
@@ -95,8 +90,7 @@
               <@s.submit value="Submit Rating" />
             </@s.form>
             </fieldset>
-          </li>
-          <li>
+
             <fieldset>
               <legend>TrackbackPing the article</legend>
             <@s.form name="trackbackArticle Form" action="trackback" method="post" namespace="/" enctype="application/x-www-form-urlencoded;charset=utf-8">
@@ -109,14 +103,7 @@
               <@s.submit value="Submit Ping" />
             </@s.form>
             </fieldset>
-          </li>
-
-
-        </ul>
-
+        </fieldset>
       </#list>
-
-    </fieldset>
-
   </body>
 </html>
