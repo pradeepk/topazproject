@@ -19,6 +19,7 @@
     <module>article-util</module>
     <module>conf-helper</module>
     <module>runscripts</module>
+    <module>trackback-util</module>
   </modules>
 
   <!-- TODO: Move this up one level - be sure to test! -->
