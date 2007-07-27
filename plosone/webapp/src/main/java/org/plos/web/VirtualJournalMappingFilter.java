@@ -180,7 +180,8 @@ private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest
       // can the ServletContext find the virtual resource?
       final URL virtualResourceURL;
       try {
-        virtualResourceURL = servletContext.getResource(virtualRequestUri);
+        // path must begin with a "/" and is interpreted as relative to the current context root
+        virtualResourceURL = servletContext.getResource(virtualRequestUri.substring(virtualContextPath.length()));
       } catch (MalformedURLException mre) {
         // should never happen
         log.error(mre);
