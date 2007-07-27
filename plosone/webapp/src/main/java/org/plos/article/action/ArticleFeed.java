@@ -54,11 +54,12 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.article.util.FedoraArticle;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.models.DublinCore;
+import org.plos.models.Citation;
 import org.plos.models.Category;
+import org.plos.models.UserProfile;
 import org.plos.util.FileUtils;
 
 import org.topazproject.xml.transform.cache.CachedSource;
@@ -310,46 +311,47 @@ public class ArticleFeed extends BaseActionSupport {
       // set all alternative links
       entry.setAlternateLinks(altLinks);
 
-      // TODO: Authors,Contributors should be in Article order in OTM,
-      // use Fedora workaround until database is re-ingested
-      FedoraArticle fedoraArticle = null;
-      try {
-        fedoraArticle = new FedoraArticle(dc.getIdentifier());
-      } catch (RuntimeException groovyRuntime) {
-        log.warn(groovyRuntime);  // call to attention
-        throw groovyRuntime;
-      }
-
       // Authors
-      List authors = fedoraArticle.getAuthors();
-      if (authors != null) {
-        List<Person> authorList = new ArrayList();
-        Iterator onAuthor = authors.iterator();
-        while (onAuthor.hasNext()) {
-          String author = (String) onAuthor.next();
+      String authorNames = ""; // Sometimes added to article content for feed
+      List<Person> authors = new ArrayList<Person>();
+      Citation bc = article.getDublinCore().getBibliographicCitation();
+      if (bc != null) {
+        List<UserProfile> authorProfiles = bc.getAuthors();
+        for (UserProfile profile: authorProfiles) {
           Person person = new Person();
-          person.setName(author);
-          // TODO: setEmail, setUri
-          authorList.add(person);
+          person.setName(profile.getRealName());
+          authors.add(person);
+
+          if (authorNames.length() > 0)
+            authorNames += ", ";
+          authorNames += profile.getRealName();
         }
-        entry.setAuthors(authorList);
+      } else // This should only happen for older, unmigrated articles
+        log.warn("No bibliographic citation (is article '" + article.id + "' migrated?)");
+
+      // We only want one author on the regular feed
+      // TODO: For internal feed, add all authors
+      if (authors.size() >= 1) {
+        List oneAuthor = new ArrayList(1);
+        String name = authors.get(0).getName();
+        Person person = new Person();
+        if (authors.size() > 1)
+          person.setName(name + " et al.");
+        else
+          person.setName(name);
+        oneAuthor.add(person);
+        entry.setAuthors(oneAuthor);
       }
 
-      // contributors
-      List contributors = fedoraArticle.getContributors();
-      if (contributors != null) {
-        List<Person> contributorList = new ArrayList();
-        Iterator onContributor = contributors.iterator();
-        while (onContributor.hasNext()) {
-          String contributor = (String) onContributor.next();
-          Person person = new Person();
-          person.setName(contributor);
-          // TODO: setEmail, setUri
-          contributorList.add(person);
-        }
-        entry.setContributors(contributorList);
+      // Contributors - TODO: Get ordered list when available
+      List<Person> contributors = new ArrayList<Person>();
+      for (String contributor: article.getDublinCore().getContributors()) {
+        Person person = new Person();
+        person.setName(contributor);
+        contributors.add(person);
       }
-
+      entry.setContributors(contributors);
+      
       Set<Category> categories = article.getCategories();
       if (categories != null) {
         List<com.sun.syndication.feed.atom.Category> feedCategoryList = new ArrayList();
@@ -381,7 +383,11 @@ public class ArticleFeed extends BaseActionSupport {
       Content description = new Content();
       description.setType("html");
       try {
-        description.setValue(transformToHtml(dc.getDescription()));
+        String text = "";
+        if (authors.size() > 1)
+          text = "<p>by " + authorNames + "</p>\n";
+        text += transformToHtml(dc.getDescription());
+        description.setValue(text);
       } catch (Exception e) {
         log.error(e);
         description.setValue("<p>Internal server error.</p>");

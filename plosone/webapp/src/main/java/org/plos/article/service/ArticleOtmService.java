@@ -38,10 +38,11 @@ import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.util.Zip;
-import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Category;
+import org.plos.models.Citation;
 import org.plos.models.ObjectInfo;
+import org.plos.models.UserProfile;
 import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
 import org.topazproject.otm.util.TransactionHelper;
@@ -72,9 +73,8 @@ public class ArticleOtmService extends BaseConfigurableService {
   private String largeImageRep;
   private String mediumImageRep;
 
-  private ArticlePEP     pep;
-  private Session        session;
-  private JournalService jrnlSvc;
+  private ArticlePEP pep;
+  private Session session;
 
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
@@ -120,9 +120,6 @@ public class ArticleOtmService extends BaseConfigurableService {
         new Zip.DataSourceZip(
           new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
                                                 8192, "application/octet-stream", true)));
-
-      jrnlSvc.articleWasAdded(URI.create(ret));
-
       txn.commit();
       txn = null;
       return ret;
@@ -221,7 +218,6 @@ public class ArticleOtmService extends BaseConfigurableService {
       ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
       ArticleUtil.delete(article, itql);
       txn = null;
-      jrnlSvc.articleWasDeleted(URI.create(article));
     } finally {
       try {
         if (txn != null)
@@ -295,8 +291,6 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     if (qry.indexOf(" and ", qry.length() - 5) > 0)
       qry.setLength(qry.length() - 4);
-    if (qry.indexOf(" where ", qry.length() - 7) > 0)
-      qry.setLength(qry.length() - 6);
 
     qry.append("order by d ").append(ascending ? "asc" : "desc").append(";");
 
@@ -471,6 +465,12 @@ public class ArticleOtmService extends BaseConfigurableService {
       Article article = (Article) it.next();
       try {
         pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+
+        // Force some more things to be loaded via the OTM
+        Citation bc = article.getDublinCore().getBibliographicCitation();
+        if (bc != null)
+          for (UserProfile profile: bc.getAuthors())
+            profile.getRealName();
       } catch (SecurityException se) {
         it.remove();
         if (log.isDebugEnabled())
@@ -830,16 +830,6 @@ public class ArticleOtmService extends BaseConfigurableService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
-  }
-
-  /**
-   * Set the journal service. Called by spring's bean wiring.
-   *
-   * @param service The journal session to set.
-   */
-  @Required
-  public void setJournalService(JournalService service) {
-    this.jrnlSvc = service;
   }
 
   private static FgsOperations[] getFgsOperations() throws ServiceException {
