@@ -90,6 +90,7 @@ public class ArticleFeed extends BaseActionSupport {
   private String representation;
   private boolean relativeLinks = false;
   private boolean extended = false;
+  private String title;
   private String selfLink;
 
   // WebWorks PlosOneFeedResult parms
@@ -149,7 +150,7 @@ public class ArticleFeed extends BaseActionSupport {
     final String PLOSONE_EMAIL_GENERAL = configuration.getString("pub.email.general", "webmaster@plos.org");
     final String PLOSONE_COPYRIGHT     = configuration.getString("pub.copyright",
       "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
-    final String FEED_TITLE            = configuration.getString("pub.feed.title",    "PLoS ONE Alerts: PLoS ONE Journal");
+    final String FEED_TITLE            = configuration.getString("pub.feed.title",    "PLoS ONE");
     final String FEED_TAGLINE          = configuration.getString("pub.feed.tagline",  "Publishing science, accelerating research");
     final String FEED_ICON             = configuration.getString("pub.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
     final String FEED_ID               = configuration.getString("pub.feed.id",       "info:doi/10.1371/feed.pone");
@@ -184,7 +185,18 @@ public class ArticleFeed extends BaseActionSupport {
     if (author != null)
       id += "?author=" + author;
     feed.setId(id);
-    feed.setTitle(FEED_TITLE);
+
+    if (title != null)
+      feed.setTitle(title);
+    else {
+      String feedTitle = FEED_TITLE;
+      if (category != null)
+        feedTitle += " - Category " + category;
+      if (author != null)
+        feedTitle += " - Author " + author;
+      feed.setTitle(feedTitle);
+    }
+
     Content tagline = new Content();
     tagline.setValue(FEED_TAGLINE);
     feed.setTagline(tagline);
@@ -474,6 +486,13 @@ public class ArticleFeed extends BaseActionSupport {
    */
   public void setExtended(final boolean extended) {
     this.extended = extended;
+  }
+
+  /**
+   * WebWroks will set from URI param
+   */
+  public void setTitle(final String title) {
+    this.title = title;
   }
 
   /**
