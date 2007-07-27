@@ -36,8 +36,8 @@
 
     <url><proxy-callback>https://${network.hosts.plosone}:${network.ports.plosone-ssl}${pub.app-context}/CasProxyServlet</proxy-callback></url>
 
-    <app-context>/plosone-webapp</app-context>
-    <resource-sub-dir></resource-sub-dir>
+    <app-context></app-context> <!-- web application context; leave empty if deployed in root directory  -->
+    <resource-sub-dir></resource-sub-dir> <!-- used only if web resources like images/css are deployed in a separate directory; rarely used  -->
 
     <!-- virtual journal config -->
     <virtualJournals>
@@ -77,12 +77,11 @@
     </search>
 
     <!-- Stuff used by doi-resolver -->
-    <webserver-url>http://${network.hosts.default}:${network.ports.default}${pub.app-context}/</webserver-url>
-    <article-action>article/fetchArticle.action?articleURI=</article-action>
-    <figure-action1>article/slideshow.action?uri=</figure-action1>
+    <webserver-url>http://${network.hosts.default}:${network.ports.default}${pub.app-context}/</webserver-url>  <!-- pub app url -->
+    <article-action>article/fetchArticle.action?articleURI=</article-action> <!-- action to which doi resolvers forwards to display an article -->
+    <figure-action1>article/slideshow.action?uri=</figure-action1> <!-- with figure-action2, constructs url for graphics and table display -->
     <figure-action2>&amp;imageURI=</figure-action2>
-    <error-page>static/pageNotFound.action</error-page>
-    <doi-resolver-url>http://dx.plos.org/</doi-resolver-url>
+    <error-page>static/pageNotFound.action</error-page> <!-- error page to redirect to in pub app if article not found -->
 
     <!-- common display constants -->
     <name>Public Library of Science</name>
@@ -107,13 +106,13 @@
         </plos>
         <login>crossref-username</login>     <!-- crossref login -->
         <password>your-password</password>   <!-- crossref password -->
-        <area>test</area>
+        <area>test</area>                    <!-- set to "live" to activate, "test" for dev -->
         <sendToXref>false</sendToXref>       <!-- Set to true to turn on crossref posting -->
         <post><url>http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=${pub.spring.crossref.login}&amp;login_passwd=${pub.spring.crossref.password}&amp;area=${pub.spring.crossref.area}</url></post>
       </crossref>
 
       <hostname>${network.hosts.plosone}</hostname>
-      <mailhost>${network.hosts.mailhost}</mailhost>
+      <mailhost>${network.hosts.mailhost}</mailhost> <!-- SMTP server -->
       <server>
         <plosone>${network.hosts.plosone}:${network.ports.plosone}</plosone>
         <cas>${network.hosts.cas}:${network.ports.cas-ssl}</cas>
@@ -137,9 +136,10 @@
   </pub>
 
   <plos-registration>
-    <app-context>/plos-registration</app-context>
+    <app-context>/plos-registration</app-context> <!-- app context for registration -->
     <url>
       <base>https://${network.hosts.cas}:${network.ports.cas-ssl}${plos-registration.app-context}</base>
+      <!-- properties below are used by pub app to determine where to send the user for certain actions -->
       <registration>${plos-registration.url.base}/register.action</registration>
       <change-password>${plos-registration.url.base}/changePassword.action</change-password>
       <change-email>${plos-registration.url.base}/changeEmail.action</change-email>
@@ -178,15 +178,15 @@
     <users>
       <pdpName>_default_</pdpName>
     </users>
-    
+
     <life-cycle-listeners>
       <listener name="models">org.plos.bootstrap.WebAppListenerInitModels</listener>
       <listener name="ehcache">net.sf.ehcache.constructs.web.ShutdownListener</listener>
     </life-cycle-listeners>
   </topaz>
 
-  <!-- 
-    # This section defines the various journals and the css and javascript files which should be 
+  <!--
+    # This section defines the various journals and the css and javascript files which should be
     # included on each page as well as the page title.  The values within the <default> tag are used
     # if any of the values are missing in the <page> definitions.  Note, that the title, css, and
     # javascript level values are entirely replaced, they are not additive.  Override config files
@@ -196,7 +196,7 @@
     # 2. Default value defined in journal
     # 3. Page defined in default journal
     # 4. Default value in default journal
-    # To define an empty value for a certain page so that it doesn't use defaults, just put the 
+    # To define an empty value for a certain page so that it doesn't use defaults, just put the
     # element tag with no value, e.g. <javascript></javascript>
    -->
 
@@ -218,15 +218,15 @@
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_default.js</file>
           <file>/javascript/dojo/dojo_home.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
+          <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/dojoRequire_default.ftl</file>
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>  
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
         </javascript>
       </default>
-  
+
       <page>
         <name>/article/article_body.ftl</name>
         <title>CODE_ARTICLE_TITLE</title>
@@ -240,56 +240,56 @@
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_article.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/annotation.js</file>      
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/annotation.js</file>
           <file>/javascript/topaz/displayComment.js</file>
           <file>/javascript/topaz/rating.js</file>
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/floatingMenu.js</file>
           <file>/javascript/topaz/navigationUtil.js</file>
           <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/formSetup_article.js</file>   
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
-          <file>/javascript/init_article.js</file>   
+          <file>/javascript/formSetup_article.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+          <file>/javascript/init_article.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/discussion/discussion.ftl</name>
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_discussion.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/dojoRequire_discussion.ftl</file>
-          <file>/javascript/topaz/responsePanel.js</file>   
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
-          <file>/javascript/init_discussion.js</file>   
+          <file>/javascript/topaz/responsePanel.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+          <file>/javascript/init_discussion.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/discussion/startDiscussion.ftl</name>
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_discussion.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/dojoRequire_discussion.ftl</file>
-          <file>/javascript/topaz/responsePanel.js</file>   
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
-          <file>/javascript/init_newDiscussion.js</file>   
+          <file>/javascript/topaz/responsePanel.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+          <file>/javascript/init_newDiscussion.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/rating/index.ftl</name>
         <css>
@@ -302,18 +302,18 @@
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_discussion.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/rating.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/dojoRequire_discussion.ftl</file>
-          <file>/javascript/topaz/responsePanel.js</file>   
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
-          <file>/javascript/init_discussion.js</file>   
+          <file>/javascript/topaz/responsePanel.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+          <file>/javascript/init_discussion.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/article/imageWindow.ftl</name>
         <css>
@@ -324,15 +324,15 @@
           <file>/javascript/config_slideshow.js</file>
           <file>/javascript/slideshowReference.ftl</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/dojoRequire_slideshow.ftl</file>
-          <file>/javascript/topaz/slideshow.js</file>   
-          <file>/javascript/init_slideshow.js</file>   
+          <file>/javascript/topaz/slideshow.js</file>
+          <file>/javascript/init_slideshow.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/article/imageWindowLarge.ftl</name>
         <css>
@@ -341,11 +341,11 @@
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
+          <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/dojoRequire_slideshow.ftl</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/article/emailArticle.ftl</name>
         <css>
@@ -355,7 +355,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/article/emailSuccess.ftl</name>
         <css>
@@ -365,7 +365,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/feedback/feedbackEntry.ftl</name>
         <css>
@@ -375,7 +375,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/feedback/feedbackSuccess.ftl</name>
         <css>
@@ -385,64 +385,64 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
-      <page> 
+
+      <page>
         <name>/user/alerts.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>      
+          <file>/css/pone_static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/user/createNewUser.ftl</name>
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/htmlUtil.js</file>
           <file>/javascript/dojoRequire_profile.ftl</file>
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
           <file>/javascript/init_newProfile.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/user/editPlosAlerts.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>      
+          <file>/css/pone_static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/htmlUtil.js</file>
           <file>/javascript/dojoRequire_profile.ftl</file>
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
           <file>/javascript/init_plosAlerts.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/user/editUser.ftl</name>
         <css>
@@ -454,19 +454,19 @@
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
-          <file>/javascript/topaz/formUtil.js</file>   
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/htmlUtil.js</file>
           <file>/javascript/dojoRequire_profile.ftl</file>
           <file>/javascript/config_profile.js</file>
           <file>/javascript/topaz/horizontalTabs.js</file>
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
           <file>/javascript/init_profile.js</file>
         </javascript>
       </page>
-  
+
       <page>
         <name>/static/browse.ftl</name>
         <css>
@@ -475,7 +475,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/comment_guidelines.ftl</name>
         <css>
@@ -484,7 +484,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/competing.ftl</name>
         <css>
@@ -493,7 +493,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/contact.ftl</name>
         <css>
@@ -502,7 +502,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/edboard.ftl</name>
         <css>
@@ -511,7 +511,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/faq.ftl</name>
         <css>
@@ -520,7 +520,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/figure_guidelines.ftl</name>
         <css>
@@ -529,7 +529,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/guidelines.ftl</name>
         <css>
@@ -538,7 +538,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/help.ftl</name>
         <css>
@@ -547,7 +547,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/information.ftl</name>
         <css>
@@ -556,7 +556,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/latex.ftl</name>
         <css>
@@ -565,7 +565,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/license.ftl</name>
         <css>
@@ -574,7 +574,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/media.ftl</name>
         <css>
@@ -583,7 +583,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/policies.ftl</name>
         <css>
@@ -592,7 +592,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/privacy.ftl</name>
         <css>
@@ -601,7 +601,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/policies.ftl</name>
         <css>
@@ -610,7 +610,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/reviwer_guidelines.ftl</name>
         <css>
@@ -619,7 +619,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/static/rss_feeds.ftl</name>
         <css>
@@ -628,7 +628,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/rss_info.ftl</name>
         <css>
@@ -637,7 +637,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/serverError.ftl</name>
         <css>
@@ -646,7 +646,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/sitemap.ftl</name>
         <css>
@@ -655,7 +655,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/terms.ftl</name>
         <css>
@@ -664,7 +664,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-  
+
       <page>
         <name>/static/whypublish.ftl</name>
         <css>
@@ -673,7 +673,7 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
+
       <page>
         <name>/index.ftl</name>
         <css>
@@ -683,14 +683,14 @@
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
+          <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/htmlUtil.js</file>
           <file>/javascript/dojoRequire_default.ftl</file>
           <file>/javascript/config_home.js</file>
           <file>/javascript/topaz/horizontalTabs.js</file>
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
           <file>/javascript/init_home.js</file>
         </javascript>
       </page>
@@ -719,19 +719,19 @@
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>
-          <file>/javascript/topaz/topaz.js</file>      
+          <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/htmlUtil.js</file>
           <file>/javascript/dojoRequire_default.ftl</file>
           <file>/javascript/config_home.js</file>
           <file>/javascript/topaz/horizontalTabs.js</file>
-          <file>/javascript/init_global.js</file>  
-          <file>/javascript/init_navigation.js</file>   
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
           <file>/javascript/init_home.js</file>
         </javascript>
       </page>
     </journal>
-   
+
   </freemarker>
-  
+
 </config>

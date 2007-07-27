@@ -572,7 +572,7 @@
       <map>
         <entry key="text" value="emailThisArticle-text.ftl"/>
         <entry key="html" value="emailThisArticle-html.ftl"/>
-        <entry key="url" value="${pub.doi-resolver-url}"/>
+        <entry key="url" value="${pub.spring.crossref.plos.doiurl}"/>
         <entry key="subject" value="An Article from "/>
       </map>
     </property>
