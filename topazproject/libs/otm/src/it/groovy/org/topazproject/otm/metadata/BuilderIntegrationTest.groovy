@@ -284,6 +284,43 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
   }
 
+  void testMostSpecificSubClass() {
+    Class base = rdf.class("BaseClass", type:'base:type') {
+      uri   (isId:true)
+    }
+
+    Class wrong = rdf.class("WrongOne", extendsClass:"BaseClass") {
+      name 'Test2'
+    }
+    
+    Class right = rdf.class("RightOne", type:'sub:type', extendsClass:"BaseClass") {
+    }
+ 
+    Class p = rdf.sessFactory.mostSpecificSubClass(base, ['base:type', 'sub:type'])
+    assert right == p
+    
+    p = rdf.sessFactory.mostSpecificSubClass(wrong, ['base:type', 'sub:type'])
+    assert wrong == p;
+    
+    p = rdf.sessFactory.mostSpecificSubClass(right, ['base:type', 'sub:type'])
+    assert right == p;
+
+    p = rdf.sessFactory.mostSpecificSubClass(wrong, ['base:type'])
+    assert wrong == p;
+
+    p = rdf.sessFactory.mostSpecificSubClass(right, ['base:type'])
+    assert null == p;
+
+    p = rdf.sessFactory.mostSpecificSubClass(base, ['base:type'])
+    assert wrong == p;
+
+    p = rdf.sessFactory.mostSpecificSubClass(base, ['junk:type'])
+    assert null == p;
+
+    p = rdf.sessFactory.mostSpecificSubClass(base, [])
+    assert base == p;
+  }
+
   private def doInTx(Closure c) {
     Session s = rdf.sessFactory.openSession()
     s.beginTransaction()

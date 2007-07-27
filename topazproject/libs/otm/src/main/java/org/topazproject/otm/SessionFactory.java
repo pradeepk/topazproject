@@ -151,27 +151,35 @@ public class SessionFactory {
    * @return the most specific sub class
    */
   public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris) {
-    Set<Class> mappedClasses = new HashSet<Class>();
+    if (typeUris.size() == 0)
+      return clazz;
+
+    ClassMetadata solution  = null;
 
     for (String uri : typeUris) {
       Set<Class> classes = classmap.get(uri);
 
-      if (classes != null)
-        mappedClasses.addAll(classes);
+      if (classes == null)
+        continue;
+
+      Class candidate = clazz;
+
+      //find the most specific class with the same rdf:type
+      for (Class cl : classes) {
+        if (candidate.isAssignableFrom(cl) && isInstantiable(cl))
+          candidate = cl;
+      }
+
+      if (classes.contains(candidate)) {
+        ClassMetadata cm = metadata.get(candidate);
+        if (solution == null)
+          solution = cm;
+        else if ((cm != null) && (solution.getTypes().size() < cm.getTypes().size()))
+          solution = cm;
+      }
     }
 
-    Class solution = clazz;
-
-    //now we have to find the most specific class
-    for (Class candidate : mappedClasses) {
-      if (solution.isAssignableFrom(candidate) && isInstantiable(candidate))
-        solution = candidate;
-    }
-
-    if (!mappedClasses.contains(solution) && (typeUris.size() > 0))
-      return null;
-
-    return solution;
+    return (solution != null) ? solution.getSourceClass() : null;
   }
 
   /**
