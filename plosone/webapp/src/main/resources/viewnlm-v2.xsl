@@ -436,24 +436,7 @@
 
 <xsl:template match="/">
   <xsl:call-template name="nl-1"/>
-  <div id="researchArticle" class="content">
-<!--    <xsl:call-template name="makeXpathLocation"/>-->
-    <a id="top" name="top" toc="top" title="Top"></a>
-    <div class="beta">We are still in beta! Help us make the site better and
-      <xsl:element name="a">
-        <xsl:attribute name="href">
-          <xsl:variable name="doi" select="/article/front/article-meta/article-id[@pub-id-type='doi']"/>
-          <xsl:value-of select="concat('../feedbackCreate.action?page=fetchArticle.action',$doi)"/>
-        </xsl:attribute>
-        <xsl:attribute name="title">
-          <xsl:text>Submit your feedback</xsl:text>
-        </xsl:attribute>
-        <xsl:text>report bugs</xsl:text>
-      </xsl:element><xsl:text>.</xsl:text>
-    </div>
-    <span id="oa">Open Access</span>
-    <xsl:apply-templates/>
-  </div>
+  <xsl:apply-templates/>
 </xsl:template>
 
 
