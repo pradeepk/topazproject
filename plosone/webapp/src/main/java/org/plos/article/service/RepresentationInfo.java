@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.ObjectInfo;
+import org.topazproject.otm.annotations.Rdf;
 
 /**
  * This holds the information returned about a representation of an object.
@@ -54,8 +55,8 @@ public class RepresentationInfo {
       String format = (String) it.next();
 
       // build keys into predicate Map
-      String contentTypeKey = "<topaz:" + format + "-contentType>";
-      String objectSizeKey = "<topaz:" + format + "-objectSize>";
+      String contentTypeKey = Rdf.topaz + format + "-contentType";
+      String objectSizeKey = Rdf.topaz + format + "-objectSize";
 
       String contentType = null;
       List<String> contentTypeList = data.get(contentTypeKey);
