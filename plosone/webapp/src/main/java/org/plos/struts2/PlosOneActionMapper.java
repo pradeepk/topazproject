@@ -10,16 +10,19 @@
 
 package org.plos.struts2;
 
+import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationManager;
-
-import org.apache.struts2.dispatcher.mapper.ActionMapping;
-import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
+import com.opensymphony.xwork2.config.entities.ActionConfig;
+import com.opensymphony.xwork2.config.entities.PackageConfig;
 
 import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.dispatcher.mapper.ActionMapping;
+import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
 import org.plos.web.VirtualJournalContext;
 import org.plos.web.VirtualJournalMappingFilter;
@@ -58,18 +61,15 @@ public class PlosOneActionMapper extends DefaultActionMapper {
     } else {
       mappingPrefix = null;
     }
-    if (mappingPrefix == null
-      || mappingPrefix.length() == 0) {
+    if (mappingPrefix == null || mappingPrefix.length() == 0) {
       // no override in effect, use default
       actionMapping = super.getMapping(request, configManager);
       if (log.isDebugEnabled()) {
-        log.debug("no mappingPrefix, using default action");
+        log.debug("no mappingPrefix, using default action: " + debugActionMapping(actionMapping));
       }
     } else {
       // look for an override Action in the mappingPrefix namespace
-
-      // will need to examine Request Path Elements
-      // get virtualized URI values
+      // will need to examine Request Path Elements, get virtualized URI values
       final String[] virtualizedValues = virtualJournalContext.virtualizeUri(
         request.getContextPath(), request.getServletPath(), request.getPathInfo());
       final String virtualContextPath = virtualizedValues[0];
@@ -77,9 +77,36 @@ public class PlosOneActionMapper extends DefaultActionMapper {
       final String virtualPathInfo    = virtualizedValues[2];
       final String virtualRequestUri  = virtualizedValues[3];
 
+      // get an ActionMapping for the re-written URI
       actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request,
         virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri), configManager);
 
+      // does created ActionMapping actually exist in config?
+      if (actionMapping != null) {
+        boolean actionMappingExists = false;
+
+        final Configuration configuration = configManager.getConfiguration();
+        final Map<String, PackageConfig> packageConfigs = configuration.getPackageConfigs();
+        for (final PackageConfig packageConfig : packageConfigs.values()) {
+          // is package in our namespace?
+          if (!packageConfig.getNamespace().equals(actionMapping.getNamespace())) {
+            continue;
+          }
+
+          // does package contain this action?
+          final Map<String, ActionConfig> actionConfigs = packageConfig.getAllActionConfigs();
+          if (actionConfigs.containsKey(actionMapping.getName())) {
+            actionMappingExists = true;
+            break;
+          }
+        }
+
+        if (!actionMappingExists) {
+          actionMapping = null;
+        }
+      }
+
+      // if no override, use default
       if (actionMapping == null) {
         // get defaulted URI values
         final String[] defaultedValues = virtualJournalContext.defaultUri(
@@ -92,11 +119,13 @@ public class PlosOneActionMapper extends DefaultActionMapper {
         actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request,
           defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri), configManager);
         if (log.isDebugEnabled()) {
-          log.debug("no override action for mappingPrefix: " + mappingPrefix);
+          log.debug("using default action for mappingPrefix: " + mappingPrefix
+            + ", action: " + debugActionMapping(actionMapping));
         }
       } else {
         if (log.isDebugEnabled()) {
-          log.debug("override action for mappingPrefix: " + mappingPrefix + ", action: " + actionMapping.getName());
+          log.debug("override action for mappingPrefix: " + mappingPrefix
+            + ", action: " + debugActionMapping(actionMapping));
         }
       }
     }
@@ -144,5 +173,18 @@ public class PlosOneActionMapper extends DefaultActionMapper {
      "/article/feed",                        // namespace
      "execute",                              // method
      null);                                  // parms
+ }
+
+ /**
+  * Create a debug String from  an ActionMapping.
+  */
+ private String debugActionMapping(final ActionMapping actionMapping) {
+
+   if (actionMapping == null) {
+     return null;
+   }
+
+   return actionMapping.getName() + "#" + actionMapping.getMethod()
+    + "(" + actionMapping.getParams() + ") in namespace " + actionMapping.getNamespace();
  }
 }
