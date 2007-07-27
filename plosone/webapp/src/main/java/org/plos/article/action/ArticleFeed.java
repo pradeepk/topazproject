@@ -327,7 +327,7 @@ public class ArticleFeed extends BaseActionSupport {
           authorNames += profile.getRealName();
         }
       } else // This should only happen for older, unmigrated articles
-        log.warn("No bibliographic citation (is article '" + article.id + "' migrated?)");
+        log.warn("No bibliographic citation (is article '" + article.getId() + "' migrated?)");
 
       // We only want one author on the regular feed
       // TODO: For internal feed, add all authors
