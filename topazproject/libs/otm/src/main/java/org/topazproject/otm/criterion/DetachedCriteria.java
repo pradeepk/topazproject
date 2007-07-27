@@ -24,6 +24,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
 
@@ -41,13 +42,15 @@ public class DetachedCriteria {
   private Integer          maxResults;
   private Integer          firstResult;
 
-  // FIXME : The following need to be an rdf:Seq or rdf:List
-  // TODO  : rdf:type look-ahead in ItqlStore impl
+  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
   private List<Criterion>        criterionList     = new ArrayList<Criterion>();
+  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
   private List<Order>            orderList         = new ArrayList<Order>();
+  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
   private List<DetachedCriteria> childCriteriaList = new ArrayList<DetachedCriteria>();
 
   // Only valid in the root criteria
+  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
   private List<Order> rootOrderList = new ArrayList<Order>();
 
   /**
@@ -121,7 +124,7 @@ public class DetachedCriteria {
       c.addOrder(or);
 
     for (DetachedCriteria dc : childCriteriaList)
-      dc.copyTo(c.createCriteria(dc.alias));
+      dc.copyTo(c.createCriteria(dc.getAlias()));
   }
 
   /**
@@ -180,7 +183,7 @@ public class DetachedCriteria {
    */
   public DetachedCriteria addOrder(Order order) {
     orderList.add(order);
-    getRoot().rootOrderList.add(order);
+    getRoot().getRootOrderList().add(order);
 
     return this;
   }

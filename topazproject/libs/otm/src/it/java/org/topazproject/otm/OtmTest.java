@@ -81,11 +81,14 @@ public class OtmTest extends TestCase {
     ModelConfig grants         =
       new ModelConfig("grants", URI.create("local:///topazproject#otmtest2"), null);
     ModelConfig revokes        =
-      new ModelConfig("revokes", URI.create("local:///topazproject#otmtest2"), null);
+      new ModelConfig("revokes", URI.create("local:///topazproject#otmtest3"), null);
+    ModelConfig criteria =
+      new ModelConfig("criteria", URI.create("local:///topazproject#otmtest1"), null);
 
     factory.addModel(ri);
     factory.addModel(grants);
     factory.addModel(revokes);
+    factory.addModel(criteria);
 
     factory.preload(ReplyThread.class);
     factory.preload(PublicAnnotation.class);
@@ -96,6 +99,7 @@ public class OtmTest extends TestCase {
     factory.preload(SpecialMappers.class);
     factory.preload(Grants.class);
     factory.preload(Revokes.class);
+    preloadCriteriaClasses();
   }
 
   /**
@@ -731,6 +735,8 @@ public class OtmTest extends TestCase {
       assertEquals(id3, a1.getId());
       assertEquals(id2, a2.getId());
 
+      session.saveOrUpdate(dc);
+
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       log.warn("test failed", e);
@@ -829,6 +835,40 @@ public class OtmTest extends TestCase {
       if (a.getSupersededBy() != null)
         assertTrue(a == a.getSupersededBy().getSupersedes());
     }
+
+
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+      DetachedCriteria dc = (DetachedCriteria) session.createCriteria(DetachedCriteria.class)
+                                     .add(Restrictions.eq("alias", "Annotation"))
+                                     .list().iterator().next();
+      List l = dc.getExecutableCriteria(session).setParameter("p1", "foo:1").list();
+      assertEquals(2, l.size());
+      Annotation a1   = (Annotation) l.get(0);
+      Annotation a2   = (Annotation) l.get(1);
+      assertEquals(id3, a1.getId());
+      assertEquals(id2, a2.getId());
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
   }
 
   /**
@@ -1394,7 +1434,7 @@ public class OtmTest extends TestCase {
 
   }
 
-  public void test12() throws OtmException {
+  public void preloadCriteriaClasses() throws OtmException {
     Class classes[] = new Class[] {Conjunction.class,
       Criterion.class,
       DetachedCriteria.class,
