@@ -89,6 +89,7 @@ public class ArticleFeed extends BaseActionSupport {
   private int maxResults = -1;
   private String representation;
   private boolean relativeLinks = false;
+  private boolean extended = false;
   private String selfLink;
 
   // WebWorks PlosOneFeedResult parms
@@ -330,9 +331,10 @@ public class ArticleFeed extends BaseActionSupport {
         log.warn("No bibliographic citation (is article '" + article.getId() + "' migrated?)");
 
       // We only want one author on the regular feed
-      // TODO: For internal feed, add all authors
-      if (authors.size() >= 1) {
-        List oneAuthor = new ArrayList(1);
+      if (extended)
+        entry.setAuthors(authors);
+      else if (authors.size() >= 1) {
+        List<Person> oneAuthor = new ArrayList<Person>(1);
         String name = authors.get(0).getName();
         Person person = new Person();
         if (authors.size() > 1)
@@ -384,7 +386,8 @@ public class ArticleFeed extends BaseActionSupport {
       description.setType("html");
       try {
         String text = "";
-        if (authors.size() > 1)
+        // If this is a nomral feed (not extended) and there's more than one author, add to content
+        if ((!extended) && authors.size() > 1)
           text = "<p>by " + authorNames + "</p>\n";
         text += transformToHtml(dc.getDescription());
         description.setValue(text);
@@ -464,6 +467,13 @@ public class ArticleFeed extends BaseActionSupport {
    */
   public void setRelativeLinks(final boolean relativeLinks) {
     this.relativeLinks = relativeLinks;
+  }
+
+  /**
+   * WebWorks will set from URI param
+   */
+  public void setExtended(final boolean extended) {
+    this.extended = extended;
   }
 
   /**
