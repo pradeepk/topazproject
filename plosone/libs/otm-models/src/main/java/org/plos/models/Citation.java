@@ -386,4 +386,25 @@ public class Citation {
   public String getCitationType() {
     return citationType;
   }
+
+  /**
+   * Utility method to return the ordered list of author names by recursing through the
+   * author's UserProfile instances.
+   *
+   * This is so frequently desired in common usage, that it is provided here.
+   * N.B. if the author UserProfile objects were not touched in the transaction (lazy
+   * load), this routine may return inaccurate data.
+   *
+   * @return the ordered list of author names
+   */
+  public List<String> getAuthorsRealNames() {
+    if (authors == null)
+      return null;
+
+    List<String> realNames = new ArrayList<String>();
+    for (UserProfile profile: authors)
+      realNames.add(profile.getRealName());
+
+    return realNames;
+  }
 }

@@ -85,7 +85,7 @@
           <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${art.id}" includeParams="none"/>
 					<span class="article"><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${art.dublinCore.title}</@s.a></span>
 					<span class="authors">
-						<#list art.dublinCore.creators as auth><#if auth_index gt 0>, </#if>${auth}</#list>
+						<#list art.dublinCore.bibliographicCitation.authorsRealNames as auth><#if auth_index gt 0>, </#if>${auth}</#list>
 					</span>
 				</li>
 			</#list>
