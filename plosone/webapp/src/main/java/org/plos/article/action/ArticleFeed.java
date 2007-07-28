@@ -105,6 +105,8 @@ public class ArticleFeed extends BaseActionSupport {
 
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
+  private static final String ATOM_NS = "http://www.w3.org/2005/Atom"; // Tmp hack for categories
+  
   /**
    * Returns a feed based on interpreting the URI.
    *
@@ -389,36 +391,35 @@ public class ArticleFeed extends BaseActionSupport {
         }
       }
 
-      // Add foreign markup
-      if (extended && foreignMarkup.size() > 0)
-        entry.setForeignMarkup(foreignMarkup);
-      
       Set<Category> categories = article.getCategories();
       if (categories != null) {
-        List<com.sun.syndication.feed.atom.Category> feedCategoryList = new ArrayList();
         for (Category category : categories) {
-          com.sun.syndication.feed.atom.Category feedCategory = new com.sun.syndication.feed.atom.Category();
-          feedCategory.setTerm(category.getMainCategory());
+          // TODO: How can we get NS to be automatically filled in from Atom?
+          Element feedCategory = new Element("category", ATOM_NS);
+          feedCategory.setAttribute("term", category.getMainCategory());
           // TODO: what's the URI for our categories
           // feedCategory.setScheme(category.getPid());
-          feedCategory.setLabel(category.getMainCategory());
-          feedCategoryList.add(feedCategory);
+          feedCategory.setAttribute("label", category.getMainCategory());
 
           // subCategory?
           String subCategory = category.getSubCategory();
           if (subCategory != null) {
-            subCategory += " (Subcategory)";
-            com.sun.syndication.feed.atom.Category feedSubCategory = new com.sun.syndication.feed.atom.Category();
-            feedSubCategory.setTerm(subCategory);
+            Element feedSubCategory = new Element("category", ATOM_NS);
+            feedSubCategory.setAttribute("term", subCategory);
             // TODO: what's the URI for our categories
             // feedSubCategory.setScheme();
-            feedSubCategory.setLabel(subCategory);
-            feedCategoryList.add(feedSubCategory);
+            feedSubCategory.setAttribute("label", subCategory);
+            feedCategory.addContent(feedSubCategory);
           }
+
+          foreignMarkup.add(feedCategory);
         }
-        entry.setCategories(feedCategoryList);
       }
 
+      // Add foreign markup
+      if (extended && foreignMarkup.size() > 0)
+        entry.setForeignMarkup(foreignMarkup);
+      
       // atom:content
       List <Content> contents = new ArrayList();
       Content description = new Content();
