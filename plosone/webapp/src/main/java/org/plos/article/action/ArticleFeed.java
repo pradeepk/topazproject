@@ -68,6 +68,8 @@ import org.w3c.dom.Document;
 
 import org.xml.sax.InputSource;
 
+import org.jdom.Element;
+
 
 /**
  * Get a variety of Article Feeds.
@@ -154,6 +156,8 @@ public class ArticleFeed extends BaseActionSupport {
     final String FEED_TAGLINE          = configuration.getString("pub.feed.tagline",  "Publishing science, accelerating research");
     final String FEED_ICON             = configuration.getString("pub.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
     final String FEED_ID               = configuration.getString("pub.feed.id",       "info:doi/10.1371/feed.pone");
+    final String FEED_EXTENDED_NS      = configuration.getString("pub.feed.extended.namespace", "http://www.plos.org/atom/ns#plos");
+    final String FEED_EXTENDED_PREFIX  = configuration.getString("pub.feed.extended.prefix",    "plos");
 
     // use WebWorks to get Action URIs
     // TODO: WebWorks ActionMapper is broken, hand-code URIs
@@ -365,6 +369,29 @@ public class ArticleFeed extends BaseActionSupport {
         contributors.add(person);
       }
       entry.setContributors(contributors);
+
+      // All our foreign markup
+      List<Element> foreignMarkup = new ArrayList<Element>();
+
+      // Volume & issue
+      if (extended && bc != null) {
+        // Add volume
+        if (bc.getVolume() != null) {
+          Element volume = new Element("volume", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
+          volume.setText(bc.getVolume().toString());
+          foreignMarkup.add(volume);
+        }
+        // Add issue
+        if (bc.getIssue() != null) {
+          Element issue = new Element("issue", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
+          issue.setText(bc.getIssue());
+          foreignMarkup.add(issue);
+        }
+      }
+
+      // Add foreign markup
+      if (extended && foreignMarkup.size() > 0)
+        entry.setForeignMarkup(foreignMarkup);
       
       Set<Category> categories = article.getCategories();
       if (categories != null) {

@@ -92,6 +92,10 @@
       <title>PLoS ONE</title>
       <tagline>Publishing science, accelerating research</tagline>
       <icon>${webserver-url}images/pone_favicon.ico</icon>
+      <extended> <!-- Configuration of extended atom feeds -->
+        <prefix>plos</prefix> <!-- namespace prefix for custom elements -->
+        <namespace>http://www.plos.org/atom/ns#plos</namespace> <!-- custom element namespace -->
+      </extended>
     </feed>
 
     <spring>
