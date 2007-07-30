@@ -1,13 +1,13 @@
 <#if Request[freemarker_config.journalContextAttributeKey]?exists>
-	<#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
+  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
 <#else>
-	<#assign journalContext = "">
+  <#assign journalContext = "">
 </#if>
-<#assign pgTitle = freemarker_config.getTitle(templateFile)>
+<#assign pgTitle = freemarker_config.getTitle(templateFile, journalContext)>
 <#if pgTitle = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->
-	<#assign pgTitle = freemarker_config.getArticleTitlePrefix(journalContext) + " " + articleInfo.dublinCore.title?replace('</?[a-z]*>', '', 'r')>
+  <#assign pgTitle = freemarker_config.getArticleTitlePrefix(journalContext) + " " + articleInfo.dublinCore.title?replace('</?[a-z]*>', '', 'r')>
 </#if>
-	<title>${pgTitle}</title>
+  <title>${pgTitle}</title>
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
