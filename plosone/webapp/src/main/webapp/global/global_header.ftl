@@ -1,5 +1,5 @@
   <!-- begin : logo -->
-  <div id="logo" title="${freemarker_config.getDisplayName(journalContext)}"><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}" title="${freemarker_config.getDisplayName(journalContext)}"><span>${freemarker_config.getDisplayName(journalContext)}</span></a></div>
+  <div id="logo" title="${freemarker_config.getDisplayName(journalContext)}"><a href="${homeURL}" title="${freemarker_config.getDisplayName(journalContext)}"><span>${freemarker_config.getDisplayName(journalContext)}</span></a></div>
   <!-- end : logo -->
   <!-- begin : user controls -->
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
