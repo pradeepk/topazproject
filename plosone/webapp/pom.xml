@@ -107,12 +107,14 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
       <version>2.0.6</version>
+      <!-- allow log4j, PLoS explicitly uses API(s)
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
+      -->
     </dependency>
 
     <dependency>
@@ -292,6 +294,12 @@
       <version>${pom.parent.version}</version>
     </dependency>
 
+    <!-- PLoS explictly uses log4j API(s) -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+    </dependency>
   </dependencies>
 
   <!--

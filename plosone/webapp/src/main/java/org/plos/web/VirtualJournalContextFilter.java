@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.NDC;
 
 import org.plos.configuration.ConfigurationStore;
 
@@ -143,9 +144,21 @@ public class VirtualJournalContextFilter implements Filter {
       new VirtualJournalContext(virtualJournal, mappingPrefix, request.getScheme(),
         request.getServerPort(), request.getServerName(),
         ((HttpServletRequest) request).getContextPath()));
+    
+    // establish a "Nested Diagnostic Context" for logging, e.g. prefix log entries w/journal name
+    // http://logging.apache.org/log4j/docs/api/org/apache/log4j/NDC.html
+    if (virtualJournal != null) {
+      NDC.push(virtualJournal);
+    }
 
     // continue the Filter chain ...
     filterChain.doFilter(request, response);
+    
+    // cleanup "Nested Diagnostic Context" for logging
+    if (virtualJournal != null) {
+      NDC.pop();
+      NDC.remove(); // TODO: appropriate place to cleanup for Thread?
+    }
   }
 
   /**
