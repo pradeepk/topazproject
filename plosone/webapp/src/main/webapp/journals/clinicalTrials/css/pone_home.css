@@ -4,8 +4,8 @@ Global Homepages Style Sheet for PLoS Journals
 
 Created on: August 22, 2006
 Created by: Margaret Shear
-Modified on: May 09, 2007
-Modified by: Susanne DeRisi
+Modified on: July 19, 2007
+Modified by: Sebastian Toomey
 ----------------------------------------------------------
 All journal specific styles, colors are on individual
 journal style sheets
@@ -20,17 +20,32 @@ body		{ background-color: transparent;}
 /* Homepage : Elements
 ----------------------------------------------------------
 */
-#home			{ position: relative; background:  url(../images/pone_home_bg.gif) no-repeat 0 9px!important; margin: 0; margin-top: -30px; border: 1px solid #fff;}
+	#home			{ position: relative; background:  url(../images/pone_home_bg.gif) no-repeat 0 9px!important; margin: 0; margin-top: -30px; border:0;}/* removed border to fix 1px vertical alignment discrepency in IE7*/
 #home img,
 #home object		{ display: inline; position: relative;}
-#home a:link,
-#home a:visited	{ text-decoration: none; }	/* remove the underline from all homepage links to increase legibility */
+/*#home a:link,
+#home a:visited	{ text-decoration: none; }	 remove the underline from all homepage links to increase legibility */
 #home a:hover 	{ text-decoration: underline; } /* apply a border in hover state */
+	#home a:hover h1{ color: inherit; } /* this ensures that the headings in the ad blocks will highlight appropriately */
 #home h2		{ margin: 10px 0; font-size: 1.8em; color: #333; border: none; padding-left: 24px; background-repeat: no-repeat; background-position: left center;}
-div.feature h2	{ background-image: url(../images/pone_home_newnoted_bg.png); }
+div.feature h2	{ background-image: url(../images/pone_home_newnoted_bg.gif); }
+	#home div.recent h2	{ padding-left:6px; margin-bottom:0}
 div.subject h2 	{ background-image: url(../images/pone_home_subject_bg.gif); }
 div.info h2		{ background-image: url(../images/pone_home_info_bg.gif); }
-#home h3		{ font-size: 1.6em; border-top: 1px solid #ccc; margin-top: 10px;padding-top: 8px; color: #444;}
+	#home h3		{ font-size: 1.6em; line-height:1.2em; margin-top:14px; padding:0 0 3px 0; color:#444; border-bottom:1px solid #ccc; }
+	
+	/* for NEW section and badging */
+	#home #new h2		{ position:relative; margin-top:-32px; padding:0;}
+	img.badgenew 			{ position:relative; top:14px; border:0; padding:0; margin:0 }
+	
+	/* suppress underlined links in lists */
+	ul li a,
+	ul li a:link,
+	ul li a:visited,
+	dl dd a,
+	dl dd a:link,
+	dl dd a:visited { text-decoration:none;}
+	
 /* Homepage : Layout : Structure
 ----------------------------------------------------------
 This layout has been adapted from the Yahoo Developer's Interface Library
@@ -45,7 +60,7 @@ All rights reserved.
 /* float left and kill margin on first for added flex */
 #first, .col .first 		{ float:left; }
 /* container column 1 */
-#first 						{ width: 518px; }
+#first 						{ width: 518px;}
 /* column 1 */
 #first .first 				{ width: 140px; /*margin-top: 30px;*/text-align: right; padding-top: 10px;}
 #first .first div.block 	{ margin: 0; padding-left: 0;padding-right: 2px; }
@@ -55,13 +70,15 @@ All rights reserved.
 #first .first ul			{ margin: 0; padding: 0; background-color: transparent;}
 #first .first ul ul			{ display: none; }
 
-/* column 2 */
-#first .last 				{ width: 373px; position: relative;}
+	/* column 2 */
+	#first .last 				{ width: 500px; position: relative;}
 
 ul.articles a:link,
 ul.articles a:visited,
 div.feature a:link,
-div.feature a:visited		{ font-weight: bold; }
+div.feature a:visited,
+	div.recent a:link,
+	div.recent a:visited		{ font-weight: bold; }
 
 /* contains columns 3 and column 4 */
 #second 					{ width: 400px;}
@@ -97,28 +114,41 @@ div.banner				{ padding: 0; border: none; margin: 4px; }
 div.banner img,
 div.banner object 			{ float: none; margin: 4px; background: transparent; }
 div.banner object			{ padding-top: 0; }
-div.partner 				{ text-align: center; margin-right: 0; padding-right: 0; padding-top: 0;border-right: 1px solic #ccc; position: relative; border-top: 1px solic #ccc;}
+	div.partner 				{ text-align: center; margin:0; padding:0; }
 div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/pone_home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
-#first div.partner img 			{ float: none; display: block; margin: 20px auto 30px auto; text-align: center;  }
+	div.partner img 			{ margin:0 20px; vertical-align:top;}
 
 /* fixes float clearing bug */
 .block:after					{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
 
 /* subject contains and category styles the category list */
 div.subject		{ padding: 0; padding-top: 5px; border: none;}
-dl.category 		{ margin: 0;  padding: 10px 0 20px 0; }
-dl.category dt	{ margin: 0; padding: 0; font-size: .9em; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
+	dl.category 		{ margin: 0;  padding: 0 0 20px 0; }
+	dl.category dt	{ margin:8px 0; padding: 0; font-size: 1em; font-weight: bold; /* vertical-align: bottom; clear: left; This fixes the IE5 Win gap! */ }
 dl.category dt a {padding-bottom: 0; margin-bottom: 2px;}
 dl.category dt a:hover {text-decoration: underline;}
+	dl.category dd { line-height:1.5em; padding:0 0 8px 0;}
+	dl.category dt a {padding-bottom: 0; margin-bottom: 2px;}
+	dl.category dt a:hover {text-decoration: underline;}
 dl.category a.expand,
 dl.category a:visited.expand 	{ padding-left: 15px;  background: url(../images/pone_home_expand.gif) no-repeat 0 5px;}
 dl.category img	{display: inline; padding: 0; margin-left: 0;}
 
-/* outreach blocks */
-div.ad					{ margin-top: 20px; }
-div.ad strong			{ display: block; }
-div.ad img				{ border: 1px solid #ccc; }
-
+	/* outreach block styles, based on those from non-Topaz journals */ 
+	div.block.ad	{ margin:0 3px 6px 3px; padding:0; border:1px solid #ccc; }
+	#home #second div.block.ad { clear:left; background:#efefef; height:6.3em; }
+	div.block.ad img { border:1px solid #ccc; display:block; float:left; }
+	#home div.ad a:hover img { border:1px solid #0033cc; }
+	div.block.ad a,
+	div.block.ad a:link,
+	div.block.ad a:visited { color:#555; text-decoration:none; display:block; padding:6px; height:5em; }
+	#home div.block.ad a:hover { text-decoration:none; border:2px solid; padding:4px; height:5.3em; }
+	#home div.ad a:hover { background-color:#bfd4ff; border-color:#0033cc; color:#0033cc; height:5em; /*height repeated here to fix IE6 1px jump on rollover*/ }
+	div.block.ad a span.body { font-size:.9em; display:block; }
+	#home div.block.ad a strong { font:normal 1.4em  Georgia,"Times New Roman",Times,serif; letter-spacing:-0.05em; text-decoration:none; display:block; }
+	#home div.block.ad a strong,
+	#home div.block.ad a span.body { margin:0 0 0 70px; line-height:1.5em; }
+	
 div.mainnav	{ margin: 30px 0 0 ; padding: 20px 0 10px 0;}
 .mainnav ul,			
 .mainnav ul li 		{ margin: 0; padding: 0; list-style-type: none; }
@@ -127,16 +157,37 @@ div.mainnav	{ margin: 30px 0 0 ; padding: 20px 0 10px 0;}
 .mainnav dl			{ margin: 10px 0; padding:0; text-indent: 0; }
 .mainnav dt			{ background-color: #D2F7FF; margin: 5px 0 0 0; padding-right: 5px; font-size: .85em;}			
 
-#home div.feature	{ padding: 0;}
+#home div.feature,
+	#home div.recent	{ padding: 0;}
 #home div.feature div,
-#home div.info div 	{ padding: 0 10px;}
+#home div.info div,
+	#home div.recent div 	{ padding: 0 10px;}
 #home div.info div	{ padding-bottom: 0; }
-div.feature p		{ margin: 0 0 10px 0; font-size: .9em; }
+div.feature p,
+	div.recent p		{ margin: 0 0 10px 0; font-size: .9em; }
 
-#home div.info		{ padding-bottom: 0; margin-left: 0; padding-left: 0;}
+	#home div.info		{ padding-bottom: 0; /*margin-left: 0;*/ padding-left: 0;}
 #home div.info ul	{ margin: 0; padding: 0; text-indent: 0;}
 #home div.info li	{ background: url(../images/pone_home_new_bullet.gif) no-repeat 0 4px; padding: 0 0 5px 14px;margin:0; text-indent: 0; list-style-type: none; }
 
+	/* calls to action blocks */
+	div#alerts,
+	div#rss	{float:left; margin:0 0 20px 5px; font-size:.90em; line-height: 1.2em}
+	div#alerts a	{ display: block; background: url(../images/pone_block_alerts_bg.gif) no-repeat left top; width:241px; color:#555555; text-decoration:none; }
+	div#rss a	{ display: block; background: url(../images/pone_block_rss_bg.gif) no-repeat left top; width:241px; color:#555555; text-decoration:none; }
+	div#alerts a:hover,
+	div#rss a:hover	{background-position: -241px 0%; text-decoration:none; color:#03c}
+	div#alerts a span,
+	div#rss a span	{ display: block; background: url(../images/pone_block_btm_bg.gif) no-repeat left bottom; padding: 10px 10px 18px 70px; } /* span used for the sake of IE6 */
+	div#alerts a:hover span,
+	div#rss a:hover span	{background-position: -241px 100%;}
+	div.block.ad a strong, /* this one for advocacy blocks too */
+	div#alerts a span strong,
+	div#rss a span strong	{margin: 4px 0 5px 0; font-size:1.7em; font-weight:normal; font-family:Georgia,"Times New Roman",Times,serif;letter-spacing:-0.05em; text-decoration:none; display:block;}
+
+	/* browse widget */
+	div#browseWidget { background: url(../images/pone_home_browse_bg.gif) no-repeat left center; }
+	div#browseWidget p { margin:0 0 0 30px; padding:0; font-weight:bold;}
 
 ul#tabsContainer		{ margin: 0; padding: 18px 0 0 0; }
 ul#tabsContainer li		{ padding: 12px 0; font-size: .9em; border-width: 0;}

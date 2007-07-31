@@ -7,100 +7,48 @@
                         <div class="col">
                                 <!-- begin : wrapper for cols 1 & 2 -->
                                 <div id="first" class="col">
-                                        <!-- begin : col 1 -->
-                                        <div class="col first">
-                                                <div class="block mainnav">
-                                                        <ul>
-                                                                <li><a href="http://www.plos.org/oa/index.html" title="Learn more about Open Access on PLoS.org">Open Access</a></li>
-                                                                <li><a href="http://www.plos.org/support/donate.php" title="Join PLoS and our Open Access mission">Join PLoS</a></li>
-                                                                <li><a href="/static/checklist.action" title="Find out how to submit to PLoS ONE"><@s.url action="checklist.action" namespace="/static/" includeParams="none" id="checklist"/>
-Submit Today</a></li>
-                                                        </ul>
-                                                </div><!-- end : block mainnav -->
-                                                <div class="block partner">
-                                                        <h6>Partners</h6>
-                                                        <a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="${freemarker_config.context}/images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
-                                                        <a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
-                                                        <a href="http://www.mulgara.org/" title="Mulgara.org"><img src="${freemarker_config.context}/images/pone_home_mulgara.png" alt="Mulgara.org"/></a>
-                                                        <a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.gif"  alt="Science Commons"/></a>
-                                                        <a href="http://www.osafoundation.org" title="Open Source Applications Foundation"><img src="${freemarker_config.context}/images/pone_home_osaf.gif" alt="OSAF"/></a>
-                                                        <a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.gif" alt="Moore Foundation"/></a>
-                                                </div><!-- end : block partner -->
-                                                <div class="block banner">
-                                                        <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-                                                        <script language='JavaScript' type='text/javascript'>
-                                                        <!--
-                                                           if (!document.phpAds_used) document.phpAds_used = ',';
-                                                           phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-
-                                                           document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-                                                           document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-                                                           document.write ("&amp;what=zone:38&amp;source=ONE&amp;target=_top&amp;block=1");
-                                                           document.write ("&amp;exclude=" + document.phpAds_used);
-                                                           if (document.referrer)
-                                                                  document.write ("&amp;referer=" + escape(document.referrer));
-                                                           document.write ("'><" + "/script>");
-                                                        //-->
-                                                        </script><noscript><a href='http://ads.plos.org/adclick.php?n=a50d73a8' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:38&amp;source=ONE&amp;n=a50d73a8' border='0' alt=''></a></noscript>
-                                                </div><!-- end : block banner -->
-                                                <div class="block banner">
-                                                        <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-                                                        <script language='JavaScript' type='text/javascript'>
-                                                        <!--
-                                                           if (!document.phpAds_used) document.phpAds_used = ',';
-                                                           phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-
-                                                           document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-                                                           document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-                                                           document.write ("&amp;what=zone:37&amp;source=ONE&amp;target=_top&amp;block=1");
-                                                           document.write ("&amp;exclude=" + document.phpAds_used);
-                                                           if (document.referrer)
-                                                                  document.write ("&amp;referer=" + escape(document.referrer));
-                                                           document.write ("'><" + "/script>");
-                                                        //-->
-                                                        </script><noscript><a href='http://ads.plos.org/adclick.php?n=a8d63154' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:37&amp;source=ONE&amp;n=a8d63154' border='0' alt=''></a></noscript>
-                                                </div><!-- end : block banner -->
-                                        </div><!-- end : col first -->
+								
+                                        <!-- SWT removed col 1 -->
+										
                                         <!-- begin : col 2 -->
                                         <div class="col last">
-                                                <div class="horizontalTabs" style="padding-top: 0; ">
-                                                        <ul id="tabsContainer">
-                                                        </ul>
-
-                                                        <div id="tabPaneSet" class="contentwrap">
-                                                                <#include "/article/recentArticles.ftl">
-                                                        </div>
-                                                </div><!-- end : horizontalTabs -->
-
-                                                <div class="block feature">
-
-                                                        <h2>New and Noted</h2>
-
-                                                        <h3>PLoS Clinical Trials overrides active!</h3>
-                                                        <div>
-                                                                <a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000443" title="Read Open-Access Article">Order in Spontaneous Behavior</a>
-                                                                <p>Animals are usually considered to behave as complex automata, responding predictably to external stimuli. This study suggests otherwise, showing that even the humble fruit fly can behave spontaneously. The flight paths of flies in a completely featureless environment were neither random nor predictable, but followed a complicated fractal pattern generated within the fly's brain.</p>
-
-                                                                <a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000444" title="Read Open-Access Article">Economic Inequality Predicts Biodiversity Loss</a>
-                                                                <p>Human activity is causing high rates of biodiversity loss, but how socioeconomics feeds into this decline is poorly understood. This research explores how economic inequality, the gap between a country's rich and its poor, is related to biodiversity loss. Looking at both countries and individual U.S. states, it shows that inequality and increased biodiversity loss go hand-in-hand.</p>
-
-                                                                <a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000451" title="Read Open-Access Article">Immunity against <em>Ixodes scapularis</em> Salivary Proteins Expressed within 24 Hours of Attachment Thwarts Tick Feeding and Impairs <em>Borrelia</em> Transmission</a>
-                                                                <p>In North America, the black-legged tick, <em>Ixodes scapularis</em>, spreads several human diseases. This study shows that, in guinea pigs, immunity against proteins that ticks produce in the first day after their attachment inhibited the ticks' subsequent feeding. It also reduced transmission of the Lyme disease agent <em>Borrelia burgdorferi</em>, suggesting new strategies for the control tick-borne diseases.</p>
-
-                                                                <h3>Also of Note</h3>
-                                                                <ul class="articles">
-                                                                        <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000446" title="Read Open-Access Article">Calculation of the Free Energy and Cooperativity of Protein Folding</a></li>
-                                                                        <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000450" title="Read Open-Access Article">Conditional Expression of <em>Wnt4</em> during Chondrogenesis Leads to Dwarfism in Mice</a></li>
-                                                                        <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000447" title="Read Open-Access Article">Genetic Evidence for a Link Between Glycolysis and DNA Replication</a></li>
-                                                                        <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000445" title="Read Open-Access Article">A Model of Late Long-Term Potentiation Simulates Aspects of Memory Maintenance</a></li>
-                                                                </ul>
-                                                        </div>
-                                                </div>
-
-                                           <!-- end block feature -->
+										
+                                                <!-- SWT removed horizontalTabs -->
+												
+                                                <div id="new" class="block">
+                                                        <h2><img class="badgenew" src="images/pone_home_new_badge.gif" alt="NEW!" />PLoS Clinical Trials Community Portal</h2>
+                                                        <p>It's the first step in the evolution of our first community - a window on content in your field. <a href="#">Interactive tools</a> and <a href="#">open-access</a> content facilitate finding connections between research and individuals like never before, leading to faster scientific progress.</p>
+							<p>Currently, the <em>PLoS Hub - Clinical Trials</em> features all the articles that were originally published in <a href="#"><em>PLoS Clinical Trials</em> and have recently moved to <em>PLoS ONE</em></a>. You can also see all the new Clinical Trials articles from PLoS ONE and selected content from <a href="#"><em>PLoS Medicine</em></a> and other open-access journals.</p>
+							<p>In the future, this new resource will expand to include articles from all the PLoS titles that publish clinical trials such as <a href="#"><em>PLoS Neglected Tropical Diseases</em></a> (launching later this year). It will also feature more from other open-access publishers plus other user generated and led content.</p>
+							<p><a href="#">Find out more</a> and <a href="#">tell us what you think</a>.</p>
+						</div>
+						<!-- end block new -->
+						<!-- begin : calls to action blocks -->
+						<div id="alerts">
+							<a href="#"><span><strong>Content Alerts</strong>E-mail updates of the latest Clinical Trials content.</span></a>
+						</div>
+						<div id="rss">
+							<a href="#"><span><strong>Clinical Trials RSS</strong>Direct feed of the latest Clinical Trials articles.</span></a>
+							<a href="#" style="display:block; position:relative; top:3px; left:165px; background:none;">What is RSS?</a>
+						</div>
+						<!-- end : calls to action blocks -->
+						<div class="block recent">		
+							<h2>Recently Added Clinical Trials</h2>
+							<ul class="articles">
+								<li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000012" title="Read Open Access Article">The Effectiveness of Contact Tracing in Emerging Epidemics</a></li>
+								<li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000008" title="Read Open Access Article">Molecular Adaptation during Adaptive Radiation in the Hawaiian Endemic Genus <em>Schiedea</em></a></li>
+								<li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000000" title="Read Open Access Article">PLoS ONE Sandbox: A Place to Learn and Play</a></li>
+								<li><a href="#" title="Read Open-Access Article">The Effect of Acclydine in Chronic Fatigue Syndrome: A Randomized Controlled Trial</a></li>
+								<li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000007" title="Read Open Access Article">A Single Basis for Developmental Buffering of <em>Drosophila</em> Wing Shape</a></li>
+							</ul>
+                                                </div><!-- end : block recent -->
+						<!-- begin : browse widget block -->
+						<div id="browseWidget" class="block">
+								<p>Browse Clinical Trials Articles: <a href="${browseSubjectURL}">By Subject</a> or <a href="${browseDateURL}">By Publication Date</a></p>
+						</div>
+						<!-- end : browse block -->
                                         </div><!-- end : col last -->
                                 </div><!-- end : wrapper for cols 1 & 2 -->
-
                                 <!-- begin : wrapper for cols 3 & 4 -->
                                 <div id="second" class="col">
                                         <!-- begin : col 3 -->
@@ -109,49 +57,71 @@ Submit Today</a></li>
                                                         <@s.url action="feedbackCreate.action" namespace="/static" includeParams="none" id="feedback"/>
                                                         <@s.url action="commentGuidelines.action#annotation" namespace="/static" includeParams="none" id="annotation"/>
                                                         <@s.url action="commentGuidelines.action#discussion" namespace="/static" includeParams="none" id="discussion"/>
-
-                                                        <h2>What is PLoS ONE?</h2>
-                                                        <div>
-                                                                <p>A new way of communicating peer-reviewed science and medicine.</p>
-                                                                <ul>
-                                                                        <li>Try out <a href="${annotation}" title="Learn how to add an annotation">annotations</a> and <a href="${discussion}" title="Learn how to start a discussion">discussions</a> in the <a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000000" title="PLoS ONE Sandbox: A Play to Learn and Play"><em>PLoS ONE</em> Sandbox</a>.</li>
-                                                                <li><a href="${freemarker_config.context}/article/browse.action?field=date" title="PLoS ONE | Browse by Publication Date">Browse articles by Publication Date</a> and try our improved <a href="/article/browse.action" title="PLoS ONE | Browse by Subject">Browse by Subject</a>.</li>
-                                                                <li><a href="${freemarker_config.context}/static/rssFeeds.action" title="PLoS ONE | RSS Feeds">RSS Feeds</a> by Subject</li>
-                                                                </ul>
-                                                                <p><em>More functionality coming soon</em></p>
-                                                                <p><a href="${feedback}" title="Send us your feedback">Your feedback</a> will help us shape <em>PLoS ONE</em>.</p>
-                                                                <h3>Journal Clubs - New Discussion</h3>
-                                                                <p><em>PLoS ONE</em> regularly sends out papers in advance of publication to interested labs to debate them and post their comments online. </p>
-                                                                <ul>
-                                                                        <li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000343" title="Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">This recent paper</a> was discussed by the <a href="${freemarker_config.context}/user/showUser.action?userId=info:doi/10.1371/account/39755" title="Potsdam University Eye-Movement Group">Potsdam University Eye-Movement Group</a>.</li>
-                                                                        <li>Add your own comments to <a href="${freemarker_config.context}/annotation/getCommentary.action?target=info:doi/10.1371/journal.pone.0000343" title="Annotations and Discussions Re: Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">the discussion</a>.</li>
-                                                                        <li><a href="${feedback}" title="Send us your feedback">Nominate your lab</a> for a future journal club.</li>
-                                                                </ul>
-                                                        </div>
+                                                        <h3>Join the Community</h3>
+							<p><a href="#" title="Register">Register now</a> and share your views on clinical trials research.  Only registrants can <a href="#" title="Rating Guidelines">rate</a>, <a href="${discussion}" title="Learn how to start a discussion">discuss</a> and <a href="${annotation}" title="Learn how to add an annotation">annotate</a> the articles in the PLoS Community Portal.</p>
+							<p>PLoS is committed to publishing the results of all clinical trials, regardless of outcome, and making this essential information publicly available. <a href="#" title="Submission Info">Find out how to submit your work</a>.</p>
                                                 </div><!-- end : info block -->
+						<!-- begin : advocacy blocks -->
+						<script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+						<script language='JavaScript' type='text/javascript'>
+						<!--
+						   if (!document.phpAds_used) document.phpAds_used = ',';
+						   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
 
-                                                <#if categoryNames?size gt 0>
-                                                <div class="subject block">
-                                                        <h2>Explore by Subject</h2>
-                                                        <dl class="category">
-                                                        <#list categoryNames as category>
-                                                        <#assign categoryId = category?replace("\\s|\'","","r")>
-                                                        <#if categoryId?length lt 8>
-                                                                <#assign index = categoryId?length>
-                                                        <#else>
-                                                                <#assign index = 8>
-                                                        </#if>
-                                                        <@s.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
-                                                        <dt>
-                                                                <a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${articlesByCategory[category_index]?size})</a>&nbsp;
-                                                                <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-12x12.gif" /></a>
-                                                        </dt>
-                                                        </#list>
-                                                        </dl>
-                                                </div><!-- end : subject block -->
-                                                </#if>
+						   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+						   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+						   document.write ("&amp;what=zone:160&amp;source=ONE&amp;target=_top&amp;block=1");
+						   document.write ("&amp;exclude=" + document.phpAds_used);
+						   if (document.referrer)
+								  document.write ("&amp;referer=" + escape(document.referrer));
+						   document.write ("'><" + "/script>");
+						//-->
+						</script><noscript><a href='http://ads.plos.org/adclick.php?n=a58966f8' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:160&amp;source=ONE&amp;n=a58966f8' border='0' alt='' /></a></noscript>
+						<script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+						<script language='JavaScript' type='text/javascript'>
+						<!--
+						   if (!document.phpAds_used) document.phpAds_used = ',';
+						   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+
+						   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+						   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+						   document.write ("&amp;what=zone:161&amp;source=ONE&amp;target=_top&amp;block=1");
+						   document.write ("&amp;exclude=" + document.phpAds_used);
+						   if (document.referrer)
+								  document.write ("&amp;referer=" + escape(document.referrer));
+						   document.write ("'><" + "/script>");
+						//-->
+						</script><noscript><a href='http://ads.plos.org/adclick.php?n=a67dfba7' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:161&amp;source=ONE&amp;n=a67dfba7' border='0' alt='' /></a></noscript>
+						<script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+						<script language='JavaScript' type='text/javascript'>
+						<!--
+						   if (!document.phpAds_used) document.phpAds_used = ',';
+						   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+
+						   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+						   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+						   document.write ("&amp;what=zone:162&amp;source=ONE&amp;target=_top&amp;block=1");
+						   document.write ("&amp;exclude=" + document.phpAds_used);
+						   if (document.referrer)
+								  document.write ("&amp;referer=" + escape(document.referrer));
+						   document.write ("'><" + "/script>");
+						//-->
+						</script><noscript><a href='http://ads.plos.org/adclick.php?n=a08b8fff' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:162&amp;source=ONE&amp;n=a08b8fff' border='0' alt='' /></a></noscript>
+						<!-- end : advocacy blocks -->
+						<div class="subject block">
+							<h3>Clinical Trials in Other Open Access Journals</h3>
+							<dl class="category">
+								<dt><em>PLoS Medicine</em></dt>
+								<dd><a href="#">Does Random Treatment Assignment Cause Harm to Research Participants?</a></dd>
+								<dd><a href="#">Insecticide-Treated Nets for the Prevention of Malaria in Pregnancy: A Systematic Review of Randomised Controlled Trials</a></dd>
+								<dd><a href="#">Reporting Methods of Blinding in Randomized Trials Assessing Nonpharmacological Treatments</a></dd>
+								<dt>BMC Clinical Trials</dt>
+								<dd><a href="#">The possible role of cell cycle regulators in multistep process of HPV-associated cervical carcinoma</a></dd>
+								<dd><a href="#">Rosai-Dorfman Disease: A previously unreported association with Sickle Cell Disease</a></dd>
+							</dl>
+						</div><!-- end : subject block -->
                                         </div><!-- end : subcol first -->
-
+					<!-- end : col 3 -->
                                         <!-- begin : col 4 -->
                                         <div class="subcol last">
                                                 <div class="block banner">
@@ -173,61 +143,15 @@ Submit Today</a></li>
                                                 </div><!-- end : block banner -->
                                         </div><!-- end : subcol last -->
                                 </div><!-- end : wrapper for cols 3 & 4 -->
-
-                                <div id="lower">
-                                        <div class="col first">
-                                                <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-                                                <script language='JavaScript' type='text/javascript'>
-                                                <!--
-                                                   if (!document.phpAds_used) document.phpAds_used = ',';
-                                                   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-
-                                                   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-                                                   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-                                                   document.write ("&amp;what=zone:160&amp;source=ONE&amp;target=_top&amp;block=1");
-                                                   document.write ("&amp;exclude=" + document.phpAds_used);
-                                                   if (document.referrer)
-                                                          document.write ("&amp;referer=" + escape(document.referrer));
-                                                   document.write ("'><" + "/script>");
-                                                //-->
-                                                </script><noscript><a href='http://ads.plos.org/adclick.php?n=a58966f8' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:160&amp;source=ONE&amp;n=a58966f8' border='0' alt='' /></a></noscript>
-
-
-                                                <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-                                                <script language='JavaScript' type='text/javascript'>
-                                                <!--
-                                                   if (!document.phpAds_used) document.phpAds_used = ',';
-                                                   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-
-                                                   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-                                                   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-                                                   document.write ("&amp;what=zone:161&amp;source=ONE&amp;target=_top&amp;block=1");
-                                                   document.write ("&amp;exclude=" + document.phpAds_used);
-                                                   if (document.referrer)
-                                                          document.write ("&amp;referer=" + escape(document.referrer));
-                                                   document.write ("'><" + "/script>");
-                                                //-->
-                                                </script><noscript><a href='http://ads.plos.org/adclick.php?n=a67dfba7' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:161&amp;source=ONE&amp;n=a67dfba7' border='0' alt='' /></a></noscript>
-
-                                                <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-                                                <script language='JavaScript' type='text/javascript'>
-                                                <!--
-                                                   if (!document.phpAds_used) document.phpAds_used = ',';
-                                                   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-
-                                                   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-                                                   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-                                                   document.write ("&amp;what=zone:162&amp;source=ONE&amp;target=_top&amp;block=1");
-                                                   document.write ("&amp;exclude=" + document.phpAds_used);
-                                                   if (document.referrer)
-                                                          document.write ("&amp;referer=" + escape(document.referrer));
-                                                   document.write ("'><" + "/script>");
-                                                //-->
-                                                </script><noscript><a href='http://ads.plos.org/adclick.php?n=a08b8fff' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:162&amp;source=ONE&amp;n=a08b8fff' border='0' alt='' /></a></noscript>
-                                        </div><!-- end : col first -->
-                                </div><!-- end : lower -->
-
+								<div id="lower">&nbsp;</div>
                         </div><!-- end : col -->
+			<div class="partner">
+				<a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
+				<a href="http://fedora.info/" title="Fedora.info"><img src="images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
+				<a href="http://www.mulgara.org/" title="Mulgara.org"><img src="images/pone_home_mulgara.gif" alt="Mulgara.org"/></a>
+				<a href="http://www.sciencecommons.org/" title="Science Commons"><img src="images/pone_home_sciencecommons.gif"  alt="Science Commons"/></a>
+				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="images/pone_home_moore.gif" alt="Moore Foundation"/></a>
+			</div><!-- end : block partners -->
                 </div><!-- end : home -->
         </div><!-- end : wrap -->
 </div><!-- end : content -->

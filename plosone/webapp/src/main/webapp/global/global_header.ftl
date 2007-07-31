@@ -51,5 +51,14 @@
   </div>
   <!-- end : dashboard -->
   <!-- begin : navigation -->
-  <#include "../global/global_navigation.ftl">
-  <!-- end : navigation -->
+
+  <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
+  <#if journalContext = "PLoSClinicalTrials" >
+    <#include "/journals/clinicalTrials/global/global_navigation.ftl">
+  <#else>
+    <#include "../global/global_navigation.ftl">
+  </#if>
+  <#-- END HACK -->  
+
+
+<!-- end : navigation -->
