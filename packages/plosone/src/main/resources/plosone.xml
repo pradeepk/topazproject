@@ -98,6 +98,23 @@
       </extended>
     </feed>
 
+    <!-- 
+      This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
+      The rules are applied sequentially from top to bottom and the first matching one will execute.
+      If an error is encountered, or the article is not found, it will use the network.hosts.default,
+      network.ports.default, and pub.app-context to construct the page not found url.
+     -->
+    <doi-journals>
+      <journal>
+        <url>http://www.plosone.org/${pub.app-context}/</url>
+        <regex>10\.1371/journal\.pone\.\d{7}</regex>
+      </journal>
+      <journal>
+        <url>http://clinicaltrials.plos.org/${pub.app-context}/</url>
+        <regex>10\.1371/journal\.pctr\.\d{7}</regex>
+      </journal>
+    </doi-journals>
+
     <spring>
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
