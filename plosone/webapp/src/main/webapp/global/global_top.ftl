@@ -10,7 +10,13 @@
 
   <!-- begin : top banner external ad space -->
   <div id="topBanner">
+  <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
+  <#if journalContext = "PLoSClinicalTrials" >
+    <#include "/journals/clinicalTrials/global/global_topbanner.ftl">
+  <#else>
     <#include "global_topbanner.ftl">
+  </#if>
+  <#-- END MAJOR HACK -->
   </div>
   <!-- end : top banner external ad space -->
 
