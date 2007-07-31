@@ -92,11 +92,11 @@
     <doi-journals>
       <journal>
         <url>http://clinicaltrials.plos.org/${pub.app-context}/</url>
-        <regex>10\\.1371/journal\\.pctr\\.\\d{7}</regex>
+        <regex>10\.1371/journal\.pctr\.\d{7}</regex>
       </journal>
       <journal>
         <url>http://${network.hosts.default}:${network.ports.default}${pub.app-context}/</url>
-        <regex>10\\.1371/journal\\.pone\\.\\d{7}</regex>
+        <regex>10\.1371/journal\.pone\.\d{7}</regex>
       </journal>
     </doi-journals>
     -->
