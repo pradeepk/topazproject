@@ -7,21 +7,21 @@
 <body>
 <!-- begin : container -->
 <div id="container">
-	
-	<!-- begin : top banner external ad space -->
-	<div id="topBanner">
-	<#include "global_topbanner.ftl">
-	</div>
-	<!-- end : top banner external ad space -->
-	
-	<#if Session[freemarker_config.userAttributeKey]?exists>
-	<!-- begin : header -->
-	<div id="hdr">
-  <#else>	
-	<!-- begin : header -->
-	<div id="hdr" class="login">
-	</#if>
-	
-	<#include "global_header.ftl">
-	</div>
-	<!-- end : header -->
+
+  <!-- begin : top banner external ad space -->
+  <div id="topBanner">
+    <#include "global_topbanner.ftl">
+  </div>
+  <!-- end : top banner external ad space -->
+
+  <#if Session[freemarker_config.userAttributeKey]?exists>
+  <!-- begin : header -->
+  <div id="hdr">
+  <#else>
+  <!-- begin : header -->
+  <div id="hdr" class="login">
+  </#if>
+
+  <#include "global_header.ftl">
+  </div>
+  <!-- end : header -->
