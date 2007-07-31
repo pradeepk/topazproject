@@ -41,15 +41,15 @@
 
     <!-- virtual journal config -->
     <virtualJournals>
-      <!-- default values, if specified, values are used w/o further lookup -->
+      <!-- default values used if no virtual journal rules match -->
       <default>
         <journal>PLoSONE</journal>
         <description></description>
         <mappingPrefix></mappingPrefix>
       </default>
       <!-- entries to config each virtual journal -->
-      <!--
-      <journals>PLoSClinicalTrials,${journalName},${list of journal names}</journals>
+      <!-- comma separated list of virtual journal names -->
+      <journals>PLoSClinicalTrials</journals>
       <PLoSClinicalTrials>
         <description>Clinical Trials</description>
         <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
@@ -57,6 +57,7 @@
           <host>clinicaltrials\..*</host>
         </rules>
       </PLoSClinicalTrials>
+      <!-- virtual journal config entry
       <${journalName}>
         <description>${display for Admin, etc.}</description>
         <mappingPrefix>${URI path prefix for virtual journal resources}</mappingPrefix>

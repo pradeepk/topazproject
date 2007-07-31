@@ -94,17 +94,6 @@ public class VirtualJournalContextFilter implements Filter {
       }
     }
 
-    // was a simple config <default> specified?
-    if (virtualJournal == null) {
-      virtualJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
-      mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
-
-      if (log.isDebugEnabled()) {
-        log.debug("virtual journal from defaults: journal = \"" + virtualJournal + "\""
-          + ", mappingPrefix = \"" + mappingPrefix + "\"");
-      }
-    }
-
     // need to do <rule> based processing?
     if (virtualJournal == null) {
       final VirtualJournalContext ruleValues = processVirtualJournalRules(
@@ -118,6 +107,17 @@ public class VirtualJournalContextFilter implements Filter {
               + ", mappingPrefix = \"" + mappingPrefix + "\"");
           }
         }
+      }
+    }
+
+    // was a simple config <default> specified?
+    if (virtualJournal == null) {
+      virtualJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
+      mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
+
+      if (log.isDebugEnabled()) {
+        log.debug("virtual journal from defaults: journal = \"" + virtualJournal + "\""
+          + ", mappingPrefix = \"" + mappingPrefix + "\"");
       }
     }
 
