@@ -10,6 +10,7 @@
 
 package org.topazproject.otm.query;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
@@ -185,6 +186,19 @@ public class OqlTest extends GroovyTestCase {
       // omitted where clause
       r = s.createQuery("select n from Annotation n order by n;").execute()
       checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id1) }
+        row { object (class:PublicAnnotation.class, id:id2) }
+        row { object (class:PublicAnnotation.class, id:id3) }
+      }
+
+      // unconstrained variables
+      rdf.sessFactory.setClassMetadata(
+          new ClassMetadata(Object.class, "Object", null, Collections.EMPTY_SET, "ri", null, null,
+                            Collections.EMPTY_SET));
+
+      r = s.createQuery("select o from Object o order by o;").execute()
+      checker.verify(r) {
+        row { object (class:Article.class, uri:id4) }
         row { object (class:PublicAnnotation.class, id:id1) }
         row { object (class:PublicAnnotation.class, id:id2) }
         row { object (class:PublicAnnotation.class, id:id3) }

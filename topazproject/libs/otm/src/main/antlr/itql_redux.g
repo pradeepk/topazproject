@@ -50,6 +50,7 @@ options {
 
 {
     private static final Log log = LogFactory.getLog(ItqlRedux.class);
+    private int tidx = 0;
 
     /**
      * Simplifying a query works as follows. First, the where clause is simplified; then
@@ -87,6 +88,7 @@ options {
       AST pc = p.getFirstChild();
 
       // 0: clone the context
+      Set<String> outerCtxtVars = ctxtVars;
       ctxtVars = new HashSet<String>(ctxtVars);
 
       // 1: extend the context with all the from vars
@@ -102,9 +104,12 @@ options {
       // 3: simplify the where clause
       simplify(wc, ctxtVars, vars, wcls);
 
-      // 4: create dummy constraint if wclause otherwise empty
-      if (!hasConstraints(wc))
-        wc.addChild(#([TRIPLE,"triple"], #([ID,"$t$1"]), #([ID,"$t$2"]), #([ID,"$t$3"])));
+      // 4: ensure all select variables are constrained
+      for (String var : findUnconstrainedVars(p, w, outerCtxtVars)) {
+        String pVar = "t$" + tidx++;
+        String oVar = "t$" + tidx++;
+        wc.addChild(#([TRIPLE, "triple"], createVar(var), createVar(pVar), createVar(oVar)));
+      }
 
       // 5: clean out constants from order
       if (o != null && o.getType() == ORDER) {
@@ -478,21 +483,43 @@ options {
       }
     }
 
-    private boolean hasConstraints(AST node) {
-      for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
-        switch (n.getType()) {
-          case AND:
-          case OR:
-            if (hasConstraints(n))
-              return true;
-            break;
+    private OqlAST createVar(String name) {
+      OqlAST res = (OqlAST) #([ID, name]);
+      res.setIsVar(true);
+      return res;
+    }
 
-          default:
-            return true;
+    private Set<String> findUnconstrainedVars(AST proj, AST where, Set<String> ctxtVars) {
+      Set<String> projVars = new HashSet<String>();
+      findProjVars(proj, projVars);
+      projVars.removeAll(ctxtVars);
+
+      findUnconstrainedVars(where, projVars);
+      return projVars;
+    }
+
+    private void findProjVars(AST node, Set<String> projVars) {
+      for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
+        if (n.getType() == COMMA) {
+          findProjVars(n, projVars);
+        } else {
+          n = n.getNextSibling();
+          if (n.getType() == ID && ((OqlAST) n).isVar())
+            projVars.add(n.getText());
         }
       }
+    }
 
-      return false;
+    private void findUnconstrainedVars(AST node, Set<String> projVars) {
+      for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
+        if (((OqlAST) n).isVar())
+          projVars.remove(n.getText());
+        else
+          findUnconstrainedVars(n, projVars);
+
+        if (projVars.size() == 0)
+          return;
+      }
     }
 }
 
