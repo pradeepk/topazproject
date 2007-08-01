@@ -38,6 +38,7 @@ import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.util.Zip;
+import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.models.Citation;
@@ -73,8 +74,9 @@ public class ArticleOtmService extends BaseConfigurableService {
   private String largeImageRep;
   private String mediumImageRep;
 
-  private ArticlePEP pep;
-  private Session session;
+  private ArticlePEP     pep;
+  private Session        session;
+  private JournalService jrnlSvc;
 
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
@@ -120,6 +122,9 @@ public class ArticleOtmService extends BaseConfigurableService {
         new Zip.DataSourceZip(
           new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
                                                 8192, "application/octet-stream", true)));
+
+      jrnlSvc.objectWasAdded(URI.create(ret));
+
       txn.commit();
       txn = null;
       return ret;
@@ -218,6 +223,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
       ArticleUtil.delete(article, itql);
       txn = null;
+      jrnlSvc.objectWasDeleted(URI.create(article));
     } finally {
       try {
         if (txn != null)
@@ -830,6 +836,16 @@ public class ArticleOtmService extends BaseConfigurableService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  /**
+   * Set the journal service. Called by spring's bean wiring.
+   *
+   * @param service The journal session to set.
+   */
+  @Required
+  public void setJournalService(JournalService service) {
+    this.jrnlSvc = service;
   }
 
   private static FgsOperations[] getFgsOperations() throws ServiceException {

@@ -64,7 +64,7 @@ public class JournalService {
   private final SessionFactory           sf;
   private final Map<String, Set<String>> journalFilters = new HashMap<String, Set<String>>();
   private final Ehcache                  journalCache;
-  private final Ehcache                  articleCarriers;
+  private final Ehcache                  objectCarriers;
 
   private       Session                  session;
 
@@ -74,12 +74,12 @@ public class JournalService {
    * 
    * @param sf           the session-factory to use
    * @param journalCache the cache to use for caching journal definitions
-   * @param articleCache the cache to use for caching the list of journals that carry each article
+   * @param objectCache  the cache to use for caching the list of journals that carry each object
    */
-  public JournalService(SessionFactory sf, Ehcache journalCache, Ehcache articleCache) {
+  public JournalService(SessionFactory sf, Ehcache journalCache, Ehcache objectCache) {
     this.sf           = sf;
-    this.journalCache    = journalCache;
-    this.articleCarriers = articleCache;
+    this.journalCache   = journalCache;
+    this.objectCarriers = objectCache;
 
     initialize();
   }
@@ -100,7 +100,7 @@ public class JournalService {
 
           Map<URI, Set<URI>> cl = buildCarrierMap(null, tx.getSession());
           for (Map.Entry<URI, Set<URI>> e : cl.entrySet())
-            articleCarriers.put(new Element(e.getKey(), e.getValue()));
+            objectCarriers.put(new Element(e.getKey(), e.getValue()));
 
           return null;
         }
@@ -359,15 +359,15 @@ public class JournalService {
       if (j == null)
         j = getAndLoadJournal(jName, s);
 
-      Set<URI> art = getArticles(jName, oid, s);
-      for (URI a : art)
-        put(carriers, a, j.getId());
+      Set<URI> obj = getObjects(jName, oid, s);
+      for (URI o : obj)
+        put(carriers, o, j.getId());
     }
 
     return carriers;
   }
 
-  private Set<URI> getArticles(String jName, URI art, Session s) {
+  private Set<URI> getObjects(String jName, URI obj, Session s) {
     Set<String> oldFilters = s.listFilters();
     for (String fn : oldFilters)
       s.disableFilter(fn);
@@ -377,7 +377,9 @@ public class JournalService {
 
     Set<URI> res = new HashSet<URI>();
 
-    String q = "select a.id from Article a" + (art != null ? " where a.id = <" + art + ">;" : ";");
+    // XXX: should be "... from Object ..." but filters don't get applied then
+    String q = "select id from Article o where id := cast(o, Article).id" +
+                (obj != null ? " and id = <" + obj + ">;" : ";");
     try {
       Results r = s.createQuery(q).execute();
       while (r.next())
@@ -445,7 +447,7 @@ public class JournalService {
   }
 
   /** 
-   * Signal that the given journal was modified. The filters and article lists will be updated.
+   * Signal that the given journal was modified. The filters and object lists will be updated.
    * This assumes an active transaction on the session.
    * 
    * @param j the journal that was modified.
@@ -455,41 +457,49 @@ public class JournalService {
   }
 
   /** 
-   * Get the list of journals which carry the given article.
+   * Get the list of journals which carry the given object (e.g. article).
    * 
-   * @param oid the info:&lt;oid&gt; uri of the article
-   * @return the list of ids of journals which carry this article
+   * @param oid the info:&lt;oid&gt; uri of the object
+   * @return the list of ids of journals which carry this object; will be empty if this object
+   *         doesn't belong to any journal
    */
-  public Set<URI> getJournalsForArticle(URI oid) {
-    return (Set<URI>) articleCarriers.get(oid).getObjectValue();
+  public Set<URI> getJournalsForObject(URI oid) {
+    Element jl = objectCarriers.get(oid);
+    if (jl == null) {
+      Collection<Set<URI>> jnlSets = buildCarrierMap(oid, session).values();
+      Set<URI> jnlList = (jnlSets.size() > 0) ? jnlSets.iterator().next() : Collections.EMPTY_SET;
+      jl = new Element(oid, jnlList);
+      objectCarriers.put(jl);
+    }
+
+    return (Set<URI>) jl.getObjectValue();
   }
 
   /** 
-   * Notify the journal service of a newly added article. This assumes an active transaction on the
-   * session.
+   * Notify the journal service of a newly added object (e.g. an article). This assumes an active
+   * transaction on the session.
    * 
-   * @param oid the info:&lt;oid&gt; uri of the article
+   * @param oid the info:&lt;oid&gt; uri of the object
    */
-  public void articleWasAdded(URI oid) {
-    Collection<Set<URI>> journalSets = buildCarrierMap(oid, session).values();
-    if (journalSets.size() > 0)
-      articleCarriers.put(new Element(oid, journalSets.iterator().next()));
+  public void objectWasAdded(URI oid) {
+    objectCarriers.remove(oid);
+    getJournalsForObject(oid);
 
     if (log.isDebugEnabled())
-      log.debug("article '" + oid + "' was added and belongs to journals: " +
-                articleCarriers.get(oid).getObjectValue());
+      log.debug("object '" + oid + "' was added and belongs to journals: " +
+                objectCarriers.get(oid).getObjectValue());
   }
 
   /** 
-   * Notify the journal service of a recently deleted article. 
+   * Notify the journal service of a recently deleted object (e.g. article). 
    * 
-   * @param oid the info:&lt;oid&gt; uri of the article
+   * @param oid the info:&lt;oid&gt; uri of the object
    */
-  public void articleWasDeleted(URI oid) {
-    articleCarriers.remove(oid);
+  public void objectWasDeleted(URI oid) {
+    objectCarriers.remove(oid);
 
     if (log.isDebugEnabled())
-      log.debug("article '" + oid + "' was removed");
+      log.debug("object '" + oid + "' was removed");
   }
 
   /**
