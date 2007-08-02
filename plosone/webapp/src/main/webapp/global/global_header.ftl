@@ -3,6 +3,7 @@
   <!-- end : logo -->
   <!-- begin : user controls -->
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
+  <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
   <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
   <#if Session[freemarker_config.userAttributeKey]?exists>
   <div id="user">
@@ -25,7 +26,6 @@
         <@s.url id="loginURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${thisPage}"/>
         <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback"><strong>Login</strong></a></li>
         <li><a href="${freemarker_config.registrationURL}">Create Account</a></li>
-        <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
         <li class="feedback"><a href="${feedbackURL}" title="Send us your feedback">Feedback</a></li>
       </ul>
     </div>
@@ -58,7 +58,7 @@
   <#else>
     <#include "../global/global_navigation.ftl">
   </#if>
-  <#-- END HACK -->  
+  <#-- END HACK -->
 
 
-<!-- end : navigation -->
+  <!-- end : navigation -->
