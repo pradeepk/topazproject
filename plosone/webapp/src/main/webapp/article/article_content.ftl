@@ -1,4 +1,5 @@
   <div id="researchArticle" class="content">
+    <@s.url namespace="/" includeParams="none" id="feedbackURL" action="feedbackCreate" page="${articleURI}"/>
     <a id="top" name="top" toc="top" title="Top"></a>
     <div class="beta">We are still in beta! Help us make the site better and
       <a href="${feedbackURL}" title="Submit your feedback">report bugs</a>.
