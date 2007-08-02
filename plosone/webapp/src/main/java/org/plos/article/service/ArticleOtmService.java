@@ -297,6 +297,8 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     if (qry.indexOf(" and ", qry.length() - 5) > 0)
       qry.setLength(qry.length() - 4);
+    if (qry.indexOf(" where ", qry.length() - 7) > 0)
+      qry.setLength(qry.length() - 6);
 
     qry.append("order by d ").append(ascending ? "asc" : "desc").append(";");
 
