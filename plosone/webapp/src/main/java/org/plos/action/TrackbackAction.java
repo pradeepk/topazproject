@@ -27,7 +27,10 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.ApplicationException;
+import org.plos.article.service.FetchArticleService;
 import org.plos.configuration.ConfigurationStore;
+import org.plos.models.ObjectInfo;
 import org.plos.models.Trackback;
 import org.plos.models.TrackbackContent;
 import org.plos.web.VirtualJournalContext;
@@ -37,6 +40,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 
 import org.apache.roller.util.LinkbackExtractor;
@@ -58,9 +62,11 @@ public class TrackbackAction extends BaseActionSupport {
   private String excerpt;
   private String blog_name;
   private String trackbackId;
-  private List<TrackbackContent> trackbackList;
+  private List<Trackback> trackbackList;
   private VirtualJournalContext journalContext;
+  private ObjectInfo articleInfo;
 
+  private FetchArticleService fetchArticleService;
   private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
 
   private Session          session;
@@ -162,7 +168,9 @@ public class TrackbackAction extends BaseActionSupport {
     return SUCCESS;
   }
 
-  public String getTrackbacks () {
+  public String getTrackbacks () throws Exception {
+    articleInfo = fetchArticleService.getArticleInfo(trackbackId);
+
     Transaction tx = null;
     try {
       tx = session.beginTransaction();
@@ -174,14 +182,15 @@ public class TrackbackAction extends BaseActionSupport {
       List<Trackback> trackbacks = session
         .createCriteria(Trackback.class)
         .add(Restrictions.eq("annotates", trackbackId))
+        .addOrder(Order.desc("created"))
         .list();
 
-      trackbackList = new ArrayList<TrackbackContent>(trackbacks.size());
+      trackbackList = new ArrayList<Trackback>(trackbacks.size());
       Iterator<Trackback> iter = trackbacks.iterator();
       while (iter.hasNext()) {
         Trackback t = iter.next();
-        t.getBody().getBlog_name();  //for lazy load
-        trackbackList.add(t.getBody());
+        t.getBlog_name();  //for lazy load
+        trackbackList.add(t);
       }
     } catch (OtmException e) {
       try {
@@ -312,14 +321,14 @@ public class TrackbackAction extends BaseActionSupport {
   /**
    * @return Returns the trackbackList.
    */
-  public List<TrackbackContent> getTrackbackList() {
+  public List<Trackback> getTrackbackList() {
     return trackbackList;
   }
 
   /**
    * @param trackbackList The trackbackList to set.
    */
-  public void setTrackbackList(List<TrackbackContent> trackbackList) {
+  public void setTrackbackList(List<Trackback> trackbackList) {
     this.trackbackList = trackbackList;
   }
 
@@ -333,5 +342,19 @@ public class TrackbackAction extends BaseActionSupport {
 
     return new StringBuilder(baseURL).append (myConfig.getString("pub.article-action"))
                                      .append(escapedURI).toString();
+  }
+
+  /**
+   * @param fetchArticleService The fetchArticleService to set.
+   */
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
+  }
+
+  /**
+   * @return Returns the articleInfo.
+   */
+  public ObjectInfo getArticleInfo() {
+    return articleInfo;
   }
 }

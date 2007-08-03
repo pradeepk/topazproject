@@ -11,6 +11,7 @@
 package org.plos.models;
 
 import java.net.URI;
+import java.net.URL;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -52,4 +53,41 @@ public class Trackback extends Annotation {
   public void setBody(TrackbackContent body) {
     this.body = body;
   }
+
+  /**
+   * @return Returns the url.
+   */
+  public URL getUrl() {
+    if (body != null)
+      return body.getUrl();
+    return null;
+  }
+
+  /**
+   * @return Returns the title.
+   */
+  public String getTitle() {
+    if (body != null)
+      return body.getTitle();
+    return "";
+  }
+
+  /**
+   * @return Returns the excerpt.
+   */
+  public String getExcerpt() {
+    if (body != null)
+      return body.getExcerpt();
+    return "";
+  }
+
+  /**
+   * @return Returns the blog_name.
+   */
+  public String getBlog_name() {
+    if (body != null)
+      return body.getBlog_name();
+    return "";
+  }
+
 }

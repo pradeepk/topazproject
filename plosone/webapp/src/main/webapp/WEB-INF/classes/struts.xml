@@ -412,6 +412,12 @@
   </package>
 
   <package name="article" extends="default" namespace="/article">
+    <action name="listTrackbacks" class="org.plos.action.TrackbackAction" method="getTrackbacks">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/article/trackbackList.ftl</param>
+      </result>
+    </action>
+
     <action name="articleList" class="org.plos.article.action.ArticleListAction">
       <result name="success">/WEB-INF/pages/article/articleList.ftl</result>
     </action>
