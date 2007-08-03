@@ -2,6 +2,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:my="my:ingest.pmc#"
     exclude-result-prefixes="my">
 
@@ -58,6 +59,23 @@
       select="(for $doi in $sec-dois return my:links-for-doi($doi)[1]) union ()"
       as="element()*"/>
 
+  <xsl:variable name="contrib-editors"
+      select="(for $u in $meta/contrib-group/contrib[@contrib-type = 'editor']/name
+               return my:create-user($u, '')) union ()"
+      as="element(user)*"/>
+  <xsl:variable name="contrib-authors"
+      select="(for $u in $meta/contrib-group/contrib[@contrib-type = 'author']/name
+               return my:create-user($u, '')) union ()"
+      as="element(user)*"/>
+  <xsl:variable name="citation-editors"
+      select="(for $u in $orig-article/back/ref-list/ref/citation/person-group[@person-group-type = 'editor']/name
+               return my:create-user($u, $u/../../../@id)) union ()"
+      as="element(user)*"/>
+  <xsl:variable name="citation-authors"
+      select="(for $u in $orig-article/back/ref-list/ref/citation/person-group[@person-group-type = 'author']/name
+               return my:create-user($u, $u/../../../@id)) union ()"
+      as="element(user)*"/>
+
   <xsl:variable name="initial-state" select="1" as="xs:integer"/>
   <xsl:variable name="rdf-ns" select="'http://www.w3.org/1999/02/22-rdf-syntax-ns#'"
       as="xs:string"/>
@@ -101,15 +119,13 @@
         <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
         <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
       <xsl:call-template name="main-ds"/>
     </Object>
 
-    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+    <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
              xmlns:dc="http://purl.org/dc/elements/1.1/"
              xmlns:dc_terms="http://purl.org/dc/terms/">
       <rdf:Description rdf:about="{my:doi-to-uri($article-doi)}">
@@ -117,8 +133,21 @@
       </rdf:Description>
     </rdf:RDF>
 
-    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+    <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/">
+      <rdf:Description rdf:about="{my:doi-to-uri($article-doi)}">
+        <xsl:call-template name="main-new-rdf"/>
+      </rdf:Description>
+    </rdf:RDF>
+
+    <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             model="profiles">
+      <xsl:copy-of select="$contrib-editors/rdf:Description"/>
+      <xsl:copy-of select="$contrib-authors/rdf:Description"/>
+      <xsl:copy-of select="$citation-editors/rdf:Description"/>
+      <xsl:copy-of select="$citation-authors/rdf:Description"/>
+    </rdf:RDF>
+
+    <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
              model="pp">
       <rdf:Description rdf:about="{my:doi-to-uri($article-doi)}">
         <xsl:call-template name="main-pp-rdf"/>
@@ -129,9 +158,9 @@
   <!-- generate the rdf statements for the article -->
   <xsl:template name="main-rdf" xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dc_terms="http://purl.org/dc/terms/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
+    <rdf:type rdf:resource="http://rdf.plos.org/RDF/articleType/researchArticle"/>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($article-doi)"/></dc:identifier>
     <dc:title rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/title-group/article-title"/></xsl:call-template></dc:title>
@@ -150,10 +179,10 @@
       <dc_terms:dateAccepted rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date($meta/history/date[@date-type = 'accepted'])"/></dc_terms:dateAccepted>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
-      <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
+      <dc:creator><xsl:value-of select="my:format-contrib-name(.)"/></dc:creator>
     </xsl:for-each>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'contributor']">
-      <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
+      <dc:contributor><xsl:value-of select="my:format-contrib-name(.)"/></dc:contributor>
     </xsl:for-each>
     <xsl:for-each
         select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
@@ -173,6 +202,12 @@
       <dc_terms:hasPart rdf:resource="{my:doi-to-uri(.)}"/>
     </xsl:for-each>
 
+    <dc_terms:conformsTo
+        rdf:resource="http://dtd.nlm.nih.gov/publishing/2.0/journalpublishing.dtd"/>
+    <xsl:if test="$meta/copyright-year">
+      <dc_terms:dateCopyrighted><xsl:value-of select="$meta/copyright-year"/></dc_terms:dateCopyrighted>
+    </xsl:if>
+
     <xsl:for-each 
         select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
       <topaz:hasCategory
@@ -189,9 +224,190 @@
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
 
+  <!-- generate new stuff - should eventually be in main-rdf when that doesn't get stored
+     - in Fedora anymore
+     -->
+  <xsl:template name="main-new-rdf"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:bibtex="http://purl.org/net/nknouf/ns/bibtex#"
+                xmlns:dc_terms="http://purl.org/dc/terms/">
+    <xsl:call-template name="gen-bib-cit"/>
+    <xsl:call-template name="gen-ref"/>
+  </xsl:template>
+
+  <xsl:template name="gen-bib-cit"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:bibtex="http://purl.org/net/nknouf/ns/bibtex#"
+                xmlns:dc_terms="http://purl.org/dc/terms/">
+    <dc_terms:bibliographicCitation>
+      <xsl:variable name="pub-date"
+          select="if ($meta/pub-date) then my:select-date($meta/pub-date) else ''"/>
+      <xsl:call-template name="gen-citation">
+        <xsl:with-param name="id"
+            select="xs:anyURI(concat(my:doi-to-uri($article-doi), '#bibliographicCitation'))"/>
+        <xsl:with-param name="type"
+            select="xs:anyURI('http://rdf.plos.org/RDF/articleType/researchArticle')"/>
+        <xsl:with-param name="year"
+            select="if ($pub-date) then substring(my:format-date($pub-date), 1, 4) else ''"/>
+        <xsl:with-param name="month"
+            select="if ($pub-date) then substring(my:format-date($pub-date), 6, 2) else ''"/>
+        <xsl:with-param name="volume"
+            select="if ($pub-date) then $pub-date/volume else ''"/>
+        <xsl:with-param name="issue"
+            select="if ($pub-date) then $pub-date/issue else ''"/>
+        <xsl:with-param name="title"
+            select="$meta/title-group/article-title"/>
+        <xsl:with-param name="pub-loc"
+            select="$meta/journal-meta/publisher/publisher-loc"/>
+        <xsl:with-param name="pub-name"
+            select="$meta/journal-meta/publisher/publisher-name"/>
+        <xsl:with-param name="pages"
+            select="''"/>
+        <xsl:with-param name="journal"
+            select="$meta/journal-meta/journal-title"/>
+        <xsl:with-param name="note"
+            select="$meta/article-meta/author-notes/fn[1]"/>
+        <xsl:with-param name="editors"
+            select="$contrib-editors/rdf:Description/@rdf:about"/>
+        <xsl:with-param name="authors"
+            select="$contrib-authors/rdf:Description/@rdf:about"/>
+        <xsl:with-param name="url"
+            select="xs:anyURI(concat('http://dx.plos.org/', $article-doi))"/>
+        <xsl:with-param name="summary"
+            select="if ($meta/abstract) then my:select-abstract($meta/abstract) else ''"/>
+      </xsl:call-template>
+    </dc_terms:bibliographicCitation>
+  </xsl:template>
+
+  <xsl:template name="gen-ref"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:bibtex="http://purl.org/net/nknouf/ns/bibtex#"
+                xmlns:dc_terms="http://purl.org/dc/terms/">
+    <xsl:for-each select="$orig-article/back/ref-list/ref">
+      <xsl:variable name="id" select="@id"/>
+      <dc_terms:references>
+        <xsl:call-template name="gen-citation">
+          <xsl:with-param name="id"
+              select="xs:anyURI(concat('info:doi/10.1371/reference.', $id))"/>
+          <xsl:with-param name="type"
+              select="if (citation/@citation-type) then
+                        xs:anyURI(concat('http://rdf.plos.org/RDF/articleType/', citation/@citation-type))
+                      else ''"/>
+          <xsl:with-param name="year"     select="citation/year"/>
+          <xsl:with-param name="month"    select="citation/month"/>
+          <xsl:with-param name="volume"   select="citation/volume"/>
+          <xsl:with-param name="issue"    select="citation/issue"/>
+          <xsl:with-param name="title"    select="citation/title"/>
+          <xsl:with-param name="pub-loc"  select="citation/publisher-loc"/>
+          <xsl:with-param name="pub-name" select="citation/publisher-name"/>
+          <xsl:with-param name="pages"
+              select="if (citation/page-range) then citation/page-range
+                      else if (citation/lpage) then concat(citation/fpage, '-', citation/lpage)
+                      else citation/fpage"/>
+          <xsl:with-param name="journal"  select="citation/source"/>
+          <xsl:with-param name="note"     select="citation/comment"/>
+          <xsl:with-param name="editors"
+              select="$citation-editors[@cit-id = $id]/rdf:Description/@rdf:about"/>
+          <xsl:with-param name="authors"
+              select="$citation-authors[@cit-id = $id]/rdf:Description/@rdf:about"/>
+          <xsl:with-param name="url"      select="citation/@xlink:role"/>
+          <xsl:with-param name="summary"  select="''"/>
+        </xsl:call-template>
+      </dc_terms:references>
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template name="gen-citation"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:bibtex="http://purl.org/net/nknouf/ns/bibtex#"
+                xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:dc_terms="http://purl.org/dc/terms/">
+    <xsl:param name="id"       as="xs:anyURI"/>
+    <xsl:param name="type"     as="xs:anyURI"/>
+    <xsl:param name="year"     as="xs:string?"/>
+    <xsl:param name="month"    as="xs:string?"/>
+    <xsl:param name="volume"   as="xs:string?"/>
+    <xsl:param name="issue"    as="xs:string?"/>
+    <xsl:param name="title"/>
+    <xsl:param name="pub-loc"  as="xs:string?"/>
+    <xsl:param name="pub-name" as="xs:string?"/>
+    <xsl:param name="pages"    as="xs:string?"/>
+    <xsl:param name="journal"  as="xs:string?"/>
+    <xsl:param name="note"     as="xs:string?"/>
+    <xsl:param name="editors"  as="xs:anyURI*"/>
+    <xsl:param name="authors"  as="xs:anyURI*"/>
+    <xsl:param name="url"      as="xs:anyURI?"/>
+    <xsl:param name="summary"/>
+
+    <rdf:Description rdf:about="{$id}">
+      <rdf:type rdf:resource="http://purl.org/net/nknouf/ns/bibtex#Entry"/>
+      <xsl:if test="$type">
+        <rdf:type rdf:resource="{$type}"/>
+      </xsl:if>
+
+      <xsl:if test="$year">
+        <bibtex:hasYear rdf:datatype="{$xs-ns}double"><xsl:value-of select="$year"/></bibtex:hasYear>
+      </xsl:if>
+      <xsl:if test="$month">
+        <bibtex:hasMonth rdf:datatype="{$xs-ns}string"><xsl:value-of select="$month"/></bibtex:hasMonth>
+      </xsl:if>
+      <xsl:if test="$volume">
+        <bibtex:hasVolume rdf:datatype="{$xs-ns}double"><xsl:value-of select="$volume"/></bibtex:hasVolume>
+      </xsl:if>
+      <xsl:if test="$issue">
+        <bibtex:hasIssue rdf:datatype="{$xs-ns}double"><xsl:value-of select="$issue"/></bibtex:hasIssue>
+      </xsl:if>
+
+      <xsl:if test="$title">
+        <dc:title rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$title"/></xsl:call-template></dc:title>
+      </xsl:if>
+
+      <xsl:if test="$pub-loc">
+        <bibtex:hasAddress rdf:datatype="{$xs-ns}string"><xsl:value-of select="$pub-loc"/></bibtex:hasAddress>
+      </xsl:if>
+      <xsl:if test="$pub-name">
+        <bibtex:hasPublisher rdf:datatype="{$xs-ns}string"><xsl:value-of select="$pub-name"/></bibtex:hasPublisher>
+      </xsl:if>
+      <xsl:if test="$pages">
+        <bibtex:hasPages rdf:datatype="{$xs-ns}string"><xsl:value-of select="$pages"/></bibtex:hasPages>
+      </xsl:if>
+      <xsl:if test="$journal">
+        <bibtex:hasJournal rdf:datatype="{$xs-ns}string"><xsl:value-of select="$journal"/></bibtex:hasJournal>
+      </xsl:if>
+      <xsl:if test="$note">
+        <bibtex:hasNote rdf:datatype="{$xs-ns}string"><xsl:value-of select="$note"/></bibtex:hasNote>
+      </xsl:if>
+      <xsl:if test="$summary">
+        <bibtex:hasAbstract rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$summary"/></xsl:call-template></bibtex:hasAbstract>
+      </xsl:if>
+      <xsl:if test="$url">
+        <bibtex:hasUrl rdf:datatype="{$xs-ns}string"><xsl:value-of select="$url"/></bibtex:hasUrl>
+      </xsl:if>
+
+      <xsl:if test="exists($editors)">
+        <bibtex:hasEditorList>
+          <rdf:Seq>
+            <xsl:for-each select="$editors">
+              <rdf:li rdf:resource="{.}"/>
+            </xsl:for-each>
+          </rdf:Seq>
+        </bibtex:hasEditorList>
+      </xsl:if>
+
+      <xsl:if test="exists($authors)">
+        <bibtex:hasAuthorList>
+          <rdf:Seq>
+            <xsl:for-each select="$authors">
+              <rdf:li rdf:resource="{.}"/>
+            </xsl:for-each>
+          </rdf:Seq>
+        </bibtex:hasAuthorList>
+      </xsl:if>
+    </rdf:Description>
+  </xsl:template>
+
   <!-- generate the propagate-permissions rdf statements for the article -->
-  <xsl:template name="main-pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                xmlns:topaz="http://rdf.topazproject.org/RDF/">
+  <xsl:template name="main-pp-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <topaz:propagate-permissions-to rdf:resource="{my:doi-to-fedora-uri($article-doi)}"/>
     <xsl:for-each select="$sec-dois">
       <topaz:propagate-permissions-to rdf:resource="{my:doi-to-uri(.)}"/>
@@ -231,14 +447,12 @@
         <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
         <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
     </Object>
 
-    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+    <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
              xmlns:dc="http://purl.org/dc/elements/1.1/"
              xmlns:dc_terms="http://purl.org/dc/terms/">
       <rdf:Description rdf:about="{my:doi-to-uri($cat-doi)}">
@@ -278,15 +492,13 @@
         <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
         <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
       <xsl:call-template name="sec-ds"/>
     </Object>
 
-    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+    <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
              xmlns:dc="http://purl.org/dc/elements/1.1/"
              xmlns:dc_terms="http://purl.org/dc/terms/">
       <rdf:Description rdf:about="{my:doi-to-uri($sdoi)}">
@@ -294,8 +506,7 @@
       </rdf:Description>
     </rdf:RDF>
 
-    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+    <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
              model="pp">
       <rdf:Description rdf:about="{my:doi-to-uri($sdoi)}">
         <xsl:call-template name="sec-pp-rdf">
@@ -307,7 +518,6 @@
 
   <!-- generate the rdf statements for the secondary object -->
   <xsl:template name="sec-rdf" xmlns:dc="http://purl.org/dc/elements/1.1/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc_terms="http://purl.org/dc/terms/"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
@@ -317,10 +527,10 @@
       <dc:date rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
-      <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
+      <dc:creator><xsl:value-of select="my:format-contrib-name(.)"/></dc:creator>
     </xsl:for-each>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'contributor']">
-      <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
+      <dc:contributor><xsl:value-of select="my:format-contrib-name(.)"/></dc:contributor>
     </xsl:for-each>
     <xsl:if test="$meta/copyright-statement">
       <dc:rights rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/copyright-statement"/></xsl:call-template></dc:rights>
@@ -362,8 +572,7 @@
   </xsl:template>
 
   <!-- generate the propagate-permissions rdf statements for the article -->
-  <xsl:template name="sec-pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                xmlns:topaz="http://rdf.topazproject.org/RDF/">
+  <xsl:template name="sec-pp-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:param name="sdoi" as="xs:string"/>
     <topaz:propagate-permissions-to rdf:resource="{my:doi-to-fedora-uri($sdoi)}"/>
   </xsl:template>
@@ -374,8 +583,7 @@
   </xsl:template>
 
   <!-- common templates for all datastream definitions -->
-  <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:variable name="ext" select="my:get-ext(@name)"/>
     <xsl:variable name="rep-name" select="my:ext-to-ds-id($ext)"/>
 
@@ -664,7 +872,7 @@
   <xsl:function name="my:filter-dt" as="element()*">
     <xsl:param name="rdf" as="element()*"/>
 
-    <xsl:for-each select="$rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <xsl:for-each select="$rdf">
       <xsl:choose>
         <xsl:when test="@rdf:datatype and
                           @rdf:datatype != concat($xs-ns, 'int') and
@@ -683,20 +891,12 @@
   </xsl:function>
 
   <!-- pmc structured name to simple string (for dc:creator etc) -->
-  <xsl:function name="my:format-name" as="xs:string">
+  <xsl:function name="my:format-contrib-name" as="xs:string">
     <xsl:param name="contrib" as="element(contrib)"/>
 
     <xsl:choose>
       <xsl:when test="$contrib/name">
-        <xsl:value-of select="
-          if ($contrib/name/given-names) then
-            if ($contrib/name/@name-style = 'eastern') then
-              concat($contrib/name/surname, ' ', $contrib/name/given-names)
-            else
-              concat($contrib/name/given-names, ' ', $contrib/name/surname)
-          else
-            $contrib/name/surname
-          "/>
+        <xsl:value-of select="my:format-name($contrib/name)"/>
       </xsl:when>
 
       <xsl:when test="$contrib/collab">
@@ -707,6 +907,19 @@
         <xsl:value-of select="$contrib/string-name"/>
       </xsl:when>
     </xsl:choose>
+  </xsl:function>
+
+  <xsl:function name="my:format-name" as="xs:string">
+    <xsl:param name="name" as="element(name)"/>
+    <xsl:value-of select="
+      if ($name/given-names) then
+        if ($name/@name-style = 'eastern') then
+          concat($name/surname, ' ', $name/given-names)
+        else
+          concat($name/given-names, ' ', $name/surname)
+      else
+        $name/surname
+      "/>
   </xsl:function>
 
   <!-- Select the date to use for dc:date. The order of preference is:
@@ -908,5 +1121,29 @@
   <xsl:function name="my:xml-escape" as="xs:string">
     <xsl:param name="str" as="xs:string"/>
     <xsl:value-of select="replace(replace(replace($str, '&amp;', '&amp;amp;'), '&lt;', '&amp;lt;'), '&gt;', '&amp;gt;')"/>
+  </xsl:function>
+
+  <!-- create a user-profile -->
+  <xsl:function name="my:create-user" as="element(user)"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <xsl:param name="u"  as="element(name)"/>
+    <xsl:param name="id" as="xs:string?"/>
+    <user cit-id="{$id}">
+      <rdf:Description rdf:about="{concat('info:doi/10.1371/profile/', my:gen-uuid())}">
+        <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+        <foaf:name><xsl:value-of select="my:format-name($u)"/></foaf:name>
+        <xsl:if test="$u/given-names">
+          <foaf:givenname><xsl:value-of select="$u/given-names"/></foaf:givenname>
+        </xsl:if>
+        <xsl:if test="$u/surname">
+          <foaf:surname><xsl:value-of select="$u/surname"/></foaf:surname>
+        </xsl:if>
+      </rdf:Description>
+    </user>
+  </xsl:function>
+
+  <xsl:function name="my:gen-uuid" as="xs:string">
+    <!-- no rng in xslt or xpath, so we have to cheat... -->
+    <xsl:value-of xmlns:uuid="java:java.util.UUID" select="uuid:randomUUID()"/>
   </xsl:function>
 </xsl:stylesheet>
