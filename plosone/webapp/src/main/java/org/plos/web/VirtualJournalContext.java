@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -45,6 +45,7 @@ public class VirtualJournalContext {
   private final String requestServerName;
   private final String requestContext;
   private final String baseUrl;
+  private final String baseHostUrl;
 
   /**
    * Construct an immutable VirtualJournalContext.
@@ -73,6 +74,7 @@ public class VirtualJournalContext {
         urlBaseValue.append(":").append(requestPort);
       }
     }
+    this.baseHostUrl = urlBaseValue.toString();
     urlBaseValue.append(requestContext).append("/");
     this.baseUrl = urlBaseValue.toString();
   }
@@ -238,5 +240,14 @@ public class VirtualJournalContext {
    */
   public String getBaseUrl () {
     return baseUrl;
+  }
+
+  /**
+   * Get the base host url of the request which consists of the scheme, server name, and server port
+   *
+   * @return string representing the base host URL
+   */
+  public String getBaseHostUrl () {
+    return baseHostUrl;
   }
 }

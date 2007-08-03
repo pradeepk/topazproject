@@ -3,8 +3,9 @@
 <#else>
   <#assign journalContext = "">
 </#if>
-<#assign pgTitle = freemarker_config.getTitle(templateFile, journalContext)>
-<#if pgTitle = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->
+<#assign pgTitleOrig = freemarker_config.getTitle(templateFile, journalContext)>
+<#assign pgTitle = pgTitleOrig>
+<#if pgTitleOrig = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->
   <#assign pgTitle = freemarker_config.getArticleTitlePrefix(journalContext) + " " + articleInfo.dublinCore.title?replace('</?[a-z]*>', '', 'r')>
 </#if>
   <title>${pgTitle}</title>
@@ -31,7 +32,7 @@
 <rdf:RDF xmlns="http://web.resource.org/cc/"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="http://${freemarker_config.plosOneHost}${rdfPgURL}">
+<Work rdf:about="${Request[freemarker_config.journalContextAttributeKey].baseHostUrl}${rdfPgURL}">
    <license rdf:resource="http://creativecommons.org/licenses/by/2.5/" />
 </Work>
 <License rdf:about="http://creativecommons.org/licenses/by/2.5/">
@@ -41,5 +42,14 @@
    <requires rdf:resource="http://web.resource.org/cc/Attribution" />
    <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
 </License>
+<rdf:Description
+     rdf:about="${Request[freemarker_config.journalContextAttributeKey].baseHostUrl}${rdfPgURL}"
+     dc:identifier="${Request[freemarker_config.journalContextAttributeKey].baseHostUrl}${rdfPgURL}"
+     dc:title="${pgTitle}"
+     <#if pgTitleOrig = "CODE_ARTICLE_TITLE">
+       <@s.url id="trackbackURL" namespace="/" action="trackback" includeParams="none" trackbackId="${articleURI}"/>
+       trackback:ping="${Request[freemarker_config.journalContextAttributeKey].baseHostUrl}${trackbackURL}"
+     </#if>/>
 </rdf:RDF>
+
 -->
