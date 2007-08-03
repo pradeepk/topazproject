@@ -527,7 +527,7 @@ public class Session {
 
   private void write(Id id, Object o, boolean delete) throws OtmException {
     LazyLoadMethodHandler llm           = (o instanceof ProxyObject) ? proxies.get(id) : null;
-    boolean               pristineProxy = (llm != null) ? llm.isLoaded() : false;
+    boolean               pristineProxy = (llm != null) ? !llm.isLoaded() : false;
     ClassMetadata         cm            = sessionFactory.getClassMetadata(o.getClass());
     TripleStore           store         = sessionFactory.getTripleStore();
 

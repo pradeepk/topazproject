@@ -229,19 +229,47 @@ public class OtmTest extends TestCase {
     try {
       tx = session.beginTransaction();
 
-      Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+      Annotation a = session.load(PublicAnnotation.class, "http://localhost/annotation/1");
 
       assertNotNull(a);
+      assertEquals(42, a.getState());
+      a.setState(0);
       assertNotNull(a.foobar);
 
       assertTrue(a instanceof PublicAnnotation);
 
-      assertEquals(42, a.getState());
       assertEquals("Pradeep", a.getCreator());
       assertEquals(Annotation.NS + "Comment", a.getType());
       assertEquals("FOO", a.foobar.foo);
       assertEquals("BAR", a.foobar.bar);
 
+      session.saveOrUpdate(a);
+
+      tx.commit();
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+      Annotation a = session.load(PublicAnnotation.class, "http://localhost/annotation/1");
+      assertEquals(0, a.getState());
       session.delete(a);
 
       a = session.get(Annotation.class, "http://localhost/annotation/1");
