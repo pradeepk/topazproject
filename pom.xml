@@ -173,6 +173,7 @@
                 <goals><goal>test</goal></goals>
                 <configuration>
                   <skip>false</skip><!-- instead, run the tests in the integration-test phase -->
+                  <trimStackTrace>false</trimStackTrace>
                 </configuration>
               </execution>
             </executions>
@@ -343,6 +344,13 @@
           <useReleaseProfile>false</useReleaseProfile>    <!-- no javadoc and source jars -->
           <tagBase>http://gandalf.topazproject.org/svn/tags</tagBase>
           <preparationGoals>clean install</preparationGoals>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
     </plugins>
