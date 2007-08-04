@@ -955,6 +955,26 @@
         <param name="templateFile">/user/alerts.ftl</param>
       </result>
     </action>
+
+    <action name="editAnnotation" class="org.plos.admin.action.EditAnnotationAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
+      </result>
+    </action>
+
+    <action name="editAnnotationLoad" class="org.plos.admin.action.EditAnnotationAction"
+      method="loadAnnotation">
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
+      </result>
+    </action>
+
+    <action name="editAnnotationSave" class="org.plos.admin.action.EditAnnotationAction"
+      method="saveAnnotation">
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
+      </result>
+    </action>
   </package>
 
   <!-- make Clinical Trial Actions and configs available  -->

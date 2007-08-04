@@ -1,10 +1,10 @@
 <html>
   <head>
-    <title>Welcome to PLoS ONE</title>
+    <title>PLoS ONE: Administration</title>
   </head>
   <body>
 
-    <h1>PLoS ONE Administration</h1>
+    <h1>PLoS ONE: Administration</h1>
     <fieldset>
       <legend><b>Messages</b></legend>
       <p>
@@ -14,6 +14,22 @@
       </p>
     </fieldset>
     <br/>
+
+    <fieldset>
+      <legend><b>Actions</b></legend>
+      <table>
+        <tr>
+          <td>
+            <@s.url id="editAnnotation" namespace="/admin" action="editAnnotation"/>
+            <@s.a href="${editAnnotation}">Edit Annotation</@s.a>
+          </td>
+          <td>
+            <@s.url id="findUserURL" namespace="/admin" action="findUser" />
+            <@s.a href="%{findUserURL}">Find User</@s.a>
+          </td>
+        </tr>
+      </table>
+    </fieldset>
 
     <fieldset>
       <legend><b>Ingestable Archives</b></legend>
@@ -45,14 +61,6 @@
         </table>
         <@s.submit value="Publish/Delete Articles"/>
       </@s.form>
-    </fieldset>
-    <br/>
-
-    <fieldset>
-      <legend><b>Other links</b></legend>
-      <@s.url id="findUserURL" namespace="/admin" action="findUser" />
-      <@s.a href="%{findUserURL}">Find user</@s.a>
-      <br/>
     </fieldset>
     <br/>
 

@@ -37,6 +37,11 @@ public class AnnotationsPEP extends AbstractSimplePEP {
   public static final String DELETE_ANNOTATION = "annotations:deleteAnnotation";
 
   /**
+   * The action that represents a updateAnnotation operation in XACML policies.
+   */
+  public static final String UPDATE_ANNOTATION = "annotations:updateAnnotation";
+
+  /**
    * The action that represents a getAnnotation operation in XACML policies.
    */
   public static final String GET_ANNOTATION_INFO = "annotations:getAnnotationInfo";
@@ -68,15 +73,15 @@ public class AnnotationsPEP extends AbstractSimplePEP {
    */
   public static final String[] SUPPORTED_ACTIONS =
     new String[] {
-                   CREATE_ANNOTATION, DELETE_ANNOTATION, GET_ANNOTATION_INFO, SUPERSEDE,
-                   LIST_ANNOTATIONS, LIST_ANNOTATIONS_IN_STATE, SET_ANNOTATION_STATE
+                   CREATE_ANNOTATION, DELETE_ANNOTATION, UPDATE_ANNOTATION, GET_ANNOTATION_INFO,
+                   SUPERSEDE, LIST_ANNOTATIONS, LIST_ANNOTATIONS_IN_STATE, SET_ANNOTATION_STATE
     };
 
   /**
    * The list of all supported obligations
    */
   public static final String[][] SUPPORTED_OBLIGATIONS =
-    new String[][] { null, null, null, null, null, null, null };
+    new String[][] { null, null, null, null, null, null, null, null };
 
   static {
     init(AnnotationsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
