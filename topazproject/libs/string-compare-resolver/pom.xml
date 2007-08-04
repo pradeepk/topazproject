@@ -44,8 +44,6 @@
   </dependencies>
 
   <properties>
-    <maven.compiler.source>1.5</maven.compiler.source>
-    <maven.compiler.target>1.5</maven.compiler.target>
     <forkMode>never</forkMode> <!-- Fixes annoying issue with surefire - see MSUREFIRE-121 -->
   </properties>
 
