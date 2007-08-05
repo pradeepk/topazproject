@@ -246,6 +246,17 @@ public class ArticleUtil {
               oi = oi.getNextObject();
             }
 
+            // remove category objects from Fedora
+            for (Category c : a.getCategories()) {
+              try {
+                apim.purgeObject(c.getPid(), "Purged object", false);
+              } catch (RemoteException re) {
+                if (!FedoraUtil.isNoSuchObjectException(re))
+                  throw re;
+                log.warn("Tried to remove non-existent object '" + c.getPid() + "'");
+              }
+            }
+
             // finally delete the article
             session.delete(a);
 
