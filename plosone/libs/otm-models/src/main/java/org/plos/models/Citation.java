@@ -33,116 +33,50 @@ public class Citation {
   @Id
   private URI   id;
 
-  /**
-   * The year of publication or, for an unpublished work, the year it was
-   * written. Generally it should consist of four numerals, such as 1984,
-   * although the standard styles can handle any year whose last four
-   * nonpunctuation characters are numerals, such as '(about 1984)'
-   *
-   * TODO: Restore to correct datatype .Stored as double because of bug in
-   * Mulgara
-   */
+  /* TODO: Restore to correct datatype. Stored as double because of bug in Mulgara */
   @Predicate(uri = PLoS.bibtex + "hasYear", dataType = Rdf.xsd + "double")
   private Integer year;
 
   @Predicate(uri = PLoS.bibtex + "hasMonth", dataType = Rdf.xsd + "string")
   private String month;
 
-  /**
-   * The volume of a journal or multivolume book.
-   *
-   * TODO: Restore to correct datatype .Stored as double because of bug in
-   * Mulgara
-   */
+  /* TODO: Restore to correct datatype .Stored as double because of bug in Mulgara */
   @Predicate(uri = PLoS.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
   private Integer volume;
 
-  /**
-   * The number of a journal, magazine, technical report, or of a work in a
-   * series. An issue of a journal or magazine is usually identified by its
-   * volume and number; the organization that issues a technical report usually
-   * gives it a number; and sometimes books are given numbers in a named
-   * series.
-   */
   @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.rdf + "XMLLiteral")
   private String issue;
 
-  /**
-   * Typically, a Title will be a name by which the resource is formally known.
-   */
   @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
   private String title;
 
-  /**
-   * Usually the address of the publisher or other type of institution. For
-   * major publishing houses, van Leunen recommends omitting the information
-   * entirely. For small publishers, on the other hand, you can help the reader
-   * by giving the complete address.
-   */
   @Predicate(uri = PLoS.bibtex + "hasAddress", dataType = Rdf.xsd + "string")
   private String publisherLocation;
 
-  /**
-   * The publisher's name.
-   */
   @Predicate(uri = PLoS.bibtex + "hasPublisher", dataType = Rdf.xsd + "string")
   private String publisherName;
 
-  /**
-   * One or more page numbers or range of numbers, such as 42-111 or 7,41,73-97
-   * or 43+ (the `+' in this last example indicates pages following that don't
-   * form a simple range). To make it easier to maintain Scribe-compatible
-   * databases, the standard styles convert a single dash (as in 7-33) to the
-   * double dash used in TeX to denote number ranges (as in 7-33).
-   */
   @Predicate(uri = PLoS.bibtex + "hasPages", dataType = Rdf.xsd + "string")
   private String pages;
 
-  /**
-   * A journal name. Abbreviations are provided for many journals; see the
-   * Local Guide
-   */
   @Predicate(uri = PLoS.bibtex + "hasJournal", dataType = Rdf.xsd + "string")
   private String journal;
 
-  /**
-   * Any additional information that can help the reader. The first word should
-   * be capitalized.
-   */
   @Predicate(uri = PLoS.bibtex + "hasNote", dataType = Rdf.xsd + "string")
   private String note;
 
-  /**
-   * Name(s) of editor(s), typed as indicated in the LaTeX book. If there is
-   * also an author field, then the editor field gives the editor of the book
-   * or collection in which the reference appears.
-   */
   @Predicate(uri = PLoS.bibtex + "hasEditorList", storeAs = Predicate.StoreAs.rdfSeq)
   private List<UserProfile> editors = new ArrayList<UserProfile>();
 
-  /**
-   * The name(s) of the author(s), in the format described in the LaTeX book.
-   */
   @Predicate(uri = PLoS.bibtex + "hasAuthorList", storeAs = Predicate.StoreAs.rdfSeq)
   private List<UserProfile> authors = new ArrayList<UserProfile>();
 
-  /**
-   * The WWW Universal Resource Locator that points to the item being
-   * referenced. This often is used for technical reports to point to the ftp
-   * or web site where the postscript source of the report is located.
-   */
   @Predicate(uri = PLoS.bibtex + "hasURL", dataType = Rdf.xsd + "string")
   private String url;
 
-  /**
-   * An abstract of the work
-   */
   @Predicate(uri = PLoS.bibtex + "hasAbstract")
   private String summary;
 
-  /**
-   * This will be used to indicate the type of citation
-   */
   @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")
   private String citationType;
 
@@ -165,6 +99,10 @@ public class Citation {
   }
 
   /**
+   * The year of publication or, for an unpublished work, the year it was written. Generally it
+   * should consist of four numerals, such as 1984, although the standard styles can handle any year
+   * whose last four nonpunctuation characters are numerals, such as '(about 1984)'
+   *
    * @returns the year of the citation (if available)
    */
   public Integer getYear() {
@@ -207,6 +145,12 @@ public class Citation {
   }
 
   /**
+   * Return the number of a journal, magazine, technical report, or of a work in
+   * a series. An issue of a journal or magazine is usually identified by its
+   * volume and number; the organization that issues a technical report usually
+   * gives it a number; and sometimes books are given numbers in a named
+   * series.
+   *
    * @return the issue of the citation's article
    */
   public String getIssue() {
@@ -221,6 +165,8 @@ public class Citation {
   }
 
   /**
+   * Return the title. Typically, a title will be a name by which the resource is formally known.
+   *
    * @return the title of the citation's article
    */
   public String getTitle() {
@@ -235,6 +181,11 @@ public class Citation {
   }
 
   /**
+   * Return the publisher's location. This is usually the address of the publisher or other type
+   * of institution. For major publishing houses, van Leunen recommends omitting the information
+   * entirely. For small publishers, on the other hand, you can help the reader by giving the
+   * complete address.
+   *
    * @return the publisher's location
    */
   public String getPublisherLocation() {
@@ -263,6 +214,12 @@ public class Citation {
   }
 
   /**
+   * Return the pages. This is one or more page numbers or range of numbers, such as 42-111 or
+   * 7,41,73-97 or 43+ (the `+' in this last example indicates pages following that don't form a
+   * simple range). To make it easier to maintain Scribe-compatible databases, the standard styles
+   * convert a single dash (as in 7-33) to the double dash used in TeX to denote number ranges (as
+   * in 7-33).
+   *
    * @return the pages the citation is on
    */
   public String getPages() {
@@ -277,6 +234,8 @@ public class Citation {
   }
 
   /**
+   * The journal name. Abbreviations are provided for many journals; see the Local Guide.
+   *
    * @return journal the source of the citation
    */
   public String getJournal() {
@@ -291,6 +250,9 @@ public class Citation {
   }
 
   /**
+   * A note is any additional information that can help the reader. The first word should
+   * be capitalized.
+   *
    * @return the note associated with this citation
    */
   public String getNote() {
@@ -333,6 +295,10 @@ public class Citation {
   }
 
   /**
+   * The WWW Universal Resource Locator that points to the item being
+   * referenced. This often is used for technical reports to point to the ftp
+   * or web site where the postscript source of the report is located.
+   *
    * @return the URL for the object
    */
   public String getUrl() {
@@ -347,7 +313,7 @@ public class Citation {
   }
 
   /**
-   * Return the abstract/summary on the object
+   * Return the abstract/summary of the object.
    *
    * @return the abstract/summary of the object
    */
@@ -370,7 +336,6 @@ public class Citation {
    * should be a valid URI.
    *
    * @param citationType the string representation of the URI for the type
-   *
    * @throws IllegalArgumentException if the string is not a valid URI.
    */
   public void setCitationType(String citationType) {

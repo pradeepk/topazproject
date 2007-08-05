@@ -22,7 +22,7 @@ import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Model for a subset of the elements of the Dublin Core metadata
- * specification.  Details on the specification and the individual elements can
+ * specification. Details on the specification and the individual elements can
  * be found at http://dublincore.org/documents/dcmi-terms/.
  *
  * Please note that in most cases the function names map directly into the term
@@ -31,181 +31,78 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Amit Kapoor
  */
 public class DublinCore {
-  /**
-   * Typically, a Title will be a name by which the resource is formally
-   * known.
-   */
   @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
   private String title;
 
-  /**
-   * Description may include but is not limited to: an abstract, a table of
-   * contents, a graphical representation, or a free-text account of the
-   * resource.
-   */
   @Predicate(uri = Rdf.dc + "description", dataType = Rdf.rdf + "XMLLiteral")
   private String description;
 
-  /**
-   * Examples of a Creator include a person, an organization, or a service.
-   * Typically, the name of a Creator should be used to indicate the entity.
-   */
   @Predicate(uri = Rdf.dc + "creator")
   private Set<String> creators = new HashSet<String>();
 
-  /**
-   * Date may be used to express temporal information at any level of
-   * granularity. Recommended best practice is to use an encoding scheme, such
-   * as the W3CDTF profile of ISO 8601 [W3CDTF].
-   */
   @Predicate(uri = Rdf.dc + "date", dataType = Rdf.xsd + "date")
   private Date date;
 
-  /**
-   * Recommended best practice is to identify the resource by means of a string
-   * conforming to a formal identification system.
-   */
   @Predicate(uri = Rdf.dc + "identifier")
   private String identifier;
 
-  /**
-   * Typically, rights information includes a statement about various property
-   * rights associated with the resource, including intellectual property
-   * rights.
-   */
   @Predicate(uri = Rdf.dc + "rights", dataType = Rdf.rdf + "XMLLiteral")
   private String rights;
 
-  /**
-   * Recommended best practice is to use a controlled vocabulary such as the
-   * DCMI Type Vocabulary [DCMITYPE]. To describe the file format, physical
-   * medium, or dimensions of the resource, use the Format element.
-   */
   @Predicate(uri = Rdf.dc + "type")
   private URI type;
 
-  /**
-   * Examples of a Contributor include a person, an organization, or a service.
-   * Typically, the name of a Contributor should be used to indicate the
-   * entity.
-   */
   @Predicate(uri = Rdf.dc + "contributor")
   private Set<String> contributors = new HashSet<String>();
 
-  /**
-   * Typically, the topic will be represented using keywords, key phrases, or
-   * classification codes. Recommended best practice is to use a controlled
-   * vocabulary. To describe the spatial or temporal topic of the resource, use
-   * the Coverage element.
-   */
   @Predicate(uri = Rdf.dc + "subject", dataType = Rdf.rdf + "XMLLiteral")
   private Set<String> subjects = new HashSet<String>();
 
-  /**
-   * Recommended best practice is to use a controlled vocabulary such as RFC
-   * 3066 [RFC3066].
-   */
   @Predicate(uri = Rdf.dc + "language")
   private String language;
 
-  /**
-   * Examples of a Publisher include a person, an organization, or a service.
-   * Typically, the name of a Publisher should be used to indicate the entity.
-   */
   @Predicate(uri = Rdf.dc + "publisher", dataType = Rdf.rdf + "XMLLiteral")
   private String publisher;
 
-  /**
-   * Examples of dimensions include size and duration. Recommended best
-   * practice is to use a controlled vocabulary such as the list of Internet
-   * Media Types [MIME].
-   */
   @Predicate(uri = Rdf.dc + "format")
   private String format;
 
-  /**
-   * The described resource may be derived from the related resource in whole
-   * or in part. Recommended best practice is to identify the related resource
-   * by means of a string conforming to a formal identification system.
-   */
   @Predicate(uri = Rdf.dc + "source")
   private Object source;
 
-  /**
-   * Date (often a range) that the resource will become or did become
-   * available.
-   */
   @Predicate(uri = Rdf.dc_terms + "available", dataType = Rdf.xsd + "date")
   private Date available;
 
-  /**
-   * Date of formal issuance (e.g., publication) of the resource.
-   */
   @Predicate(uri = Rdf.dc_terms + "issued", dataType = Rdf.xsd + "date")
   private Date issued;
 
-  /**
-   * Date of submission of the resource (e.g. thesis, articles, etc.).
-   */
   @Predicate(uri = Rdf.dc_terms + "dateSubmitted", dataType = Rdf.xsd + "date")
   private Date submitted;
 
-  /**
-   * Date of acceptance of the resource (e.g. of thesis by university
-   * department, of article by journal, etc.).
-   */
   @Predicate(uri = Rdf.dc_terms + "dateAccepted", dataType = Rdf.xsd + "date")
   private Date accepted;
 
-  /**
-   * Date of a statement of copyright.
-   */
   @Predicate(uri = Rdf.dc_terms + "dateCopyrighted")
   private int copyrightYear;
 
-  /**
-   * A summary of the content of the resource.
-   */
   @Predicate(uri = Rdf.dc_terms + "abstract")
   private Set<String> summary;
 
-  /**
-   * A bibliographic reference for the resource.
-   */
   @Predicate(uri = Rdf.dc_terms + "bibliographicCitation")
   private Citation bibliographicCitation;
 
-  /**
-   * Date of creation of the object
-   */
   @Predicate(uri = Rdf.dc_terms + "created", dataType = Rdf.xsd + "date")
   private Date created;
 
-  /**
-   * A legal document giving official permission to do something with the
-   * resource.
-   */
   @Predicate(uri = Rdf.dc_terms + "license")
   private Set<License> license;
 
-  /**
-   * Date of modification of the object
-   */
   @Predicate(uri = Rdf.dc_terms + "modified", dataType = Rdf.xsd + "date")
   private Date modified;
 
-  /**
-   * The described resource references, cites, or otherwise points to the
-   * referenced resource.
-   */
   @Predicate(uri = Rdf.dc_terms + "references")
   private Set<Citation> references;
 
-  /**
-   * A reference to an established standard to which the resource conforms. For
-   * example, for an XML document this can point to the URI identifying the
-   * DTD.
-   */
   @Predicate(uri = Rdf.dc_terms + "conformsTo")
   private URI conformsTo;
 
@@ -216,7 +113,9 @@ public class DublinCore {
   }
 
   /**
-   * Return the list of creators of the object
+   * Return the list of creators of the object. Examples of a Creator include a person, an
+   * organization, or a service. Typically, the name of a Creator should be used to indicate the
+   * entity.
    *
    * @return the creators
    */
@@ -225,7 +124,7 @@ public class DublinCore {
   }
 
   /**
-   * Set the list of creators of the object
+   * Set the list of creators of the object.
    *
    * @param creators the set of creators for this object
    */
@@ -234,7 +133,8 @@ public class DublinCore {
   }
 
   /**
-   * Return the list of contributors
+   * Return the list of contributors. Examples of a Contributor include a person, an organization,
+   * or a service. Typically, the name of a Contributor should be used to indicate the entity.
    *
    * @return the contributors
    */
@@ -243,16 +143,19 @@ public class DublinCore {
   }
 
   /**
-   * Set the list of contributors
+   * Set the list of contributors.
    *
    * @param contributors the contributors to set
+   * @see #getContributors
    */
   public void setContributors(Set<String> contributors) {
     this.contributors = contributors;
   }
 
   /**
-   * Return the date
+   * Return the date. Date may be used to express temporal information at any level of granularity.
+   * Recommended best practice is to use an encoding scheme, such as the W3CDTF profile of ISO 8601
+   * [W3CDTF].
    *
    * @return the date
    */
@@ -261,16 +164,19 @@ public class DublinCore {
   }
 
   /**
-   * Set the date
+   * Set the date.
    *
    * @param date the date to set
+   * @see #getDate
    */
   public void setDate(Date date) {
     this.date = date;
   }
 
   /**
-   * Return the type of the object
+   * Return the type of the object. Recommended best practice is to use a controlled vocabulary such
+   * as the DCMI Type Vocabulary [DCMITYPE]. To describe the file format, physical medium, or
+   * dimensions of the resource, use the Format element.
    *
    * @return the type
    */
@@ -279,14 +185,19 @@ public class DublinCore {
   }
 
   /**
+   * Set the type of the object.
+   *
    * @param type the type to set
+   * @see #getType
    */
   public void setType(URI type) {
     this.type = type;
   }
 
   /**
-   * Return the description of the object
+   * Return the description of the object. Description may include but is not limited to: an
+   * abstract, a table of contents, a graphical representation, or a free-text account of the
+   * resource.
    *
    * @return the description
    */
@@ -295,16 +206,19 @@ public class DublinCore {
   }
 
   /**
-   * Set the description of the object
+   * Set the description of the object.
    *
    * @param description the description to set
+   * @see #getDescription
    */
   public void setDescription(String description) {
     this.description = description;
   }
 
   /**
-   * Return the identifier of the object
+   * Return the identifier of the object. Recommended best practice is to identify the resource by
+   * means of a string conforming to a formal identification system.
+   *
    * @return the identifier
    */
   public String getIdentifier() {
@@ -312,16 +226,18 @@ public class DublinCore {
   }
 
   /**
-   * Set the identifier of the object
+   * Set the identifier of the object.
    *
    * @param identifier the identifier to set
+   * @see #getIdentifier
    */
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
   }
 
   /**
-   * Return the rights of the objects
+   * Return the rights of the objects. Typically, rights information includes a statement about
+   * various property rights associated with the resource, including intellectual property rights.
    *
    * @return the rights
    */
@@ -330,16 +246,18 @@ public class DublinCore {
   }
 
   /**
-   * Set the rights of the object
+   * Set the rights of the object.
    *
    * @param rights the rights to set
+   * @see #getRights
    */
   public void setRights(String rights) {
     this.rights = rights;
   }
 
   /**
-   * Return the title of the object.
+   * Return the title of the object. Typically, a Title will be a name by which the resource is
+   * formally known.
    *
    * @return the title
    */
@@ -348,16 +266,20 @@ public class DublinCore {
   }
 
   /**
-   * Set the title of the object
+   * Set the title of the object.
    *
    * @param title the title to set
+   * @see #getTitle
    */
   public void setTitle(String title) {
     this.title = title;
   }
 
   /**
-   * Return the list of subjects the object is about
+   * Return the list of subjects the object is about. Typically, the topic will be represented
+   * using keywords, key phrases, or classification codes. Recommended best practice is to use a
+   * controlled vocabulary. To describe the spatial or temporal topic of the resource, use the
+   * Coverage element.
    *
    * @return the subjects the object is about
    */
@@ -366,16 +288,18 @@ public class DublinCore {
   }
 
   /**
-   * Set the list of subjects the object is about
+   * Set the list of subjects the object is about.
    *
    * @param subjects the subjects the object is about
+   * @see #getSubjects
    */
   public void setSubjects(Set<String> subjects) {
     this.subjects = subjects;
   }
 
   /**
-   * Get the language of the object
+   * Get the language of the object. Recommended best practice is to use a controlled vocabulary
+   * such as RFC 3066 [RFC3066].
    *
    * @return the language
    */
@@ -384,16 +308,19 @@ public class DublinCore {
   }
 
   /**
-   * Set the language of the object
+   * Set the language of the object.
    *
    * @param language the language to set
+   * @see #getLanguage
    */
   public void setLanguage(String language) {
     this.language = language;
   }
 
   /**
-   * Get the name of the publisher of this object
+   * Get the name of the publisher of this object. Examples of a Publisher include a person, an
+   * organization, or a service. Typically, the name of a Publisher should be used to indicate the
+   * entity.
    *
    * @return the publisher
    */
@@ -402,16 +329,18 @@ public class DublinCore {
   }
 
   /**
-   * Set the name of the publisher of this object
+   * Set the name of the publisher of this object.
    *
    * @param publisher the name of the publisher
+   * @see #getPublisher
    */
   public void setPublisher(String publisher) {
     this.publisher = publisher;
    }
 
   /**
-   * Get the format of the object
+   * Get the format of the object. Recommended best practice is to use a controlled vocabulary such
+   * as the list of Internet Media Types [MIME].
    *
    * @return format
    */
@@ -420,16 +349,17 @@ public class DublinCore {
   }
 
   /**
-   * Set the format of the object
+   * Set the format of the object.
    *
    * @param format the dc:format to set
+   * @see #getFormat
    */
   public void setFormat(String format) {
     this.format = format;
   }
 
   /**
-   * Get the date the object was made available
+   * Get the date the object was made available.
    *
    * @return the date the object was made available
    */
@@ -441,13 +371,14 @@ public class DublinCore {
    * Set the date the object was made available.
    *
    * @param available the date the object was made available
+   * @see #getAvailable
    */
   public void setAvailable(Date available) {
     this.available = available;
   }
 
   /**
-   * Get the issued date
+   * Get the issued date. This is the date of formal issuance (e.g., publication) of the resource.
    *
    * @return the issued date
    */
@@ -456,16 +387,17 @@ public class DublinCore {
   }
 
   /**
-   * Set the issued date
+   * Set the issued date.
    *
    * @param issued the date the object was issued
+   * @see #getIssued
    */
   public void setIssued(Date issued) {
     this.issued = issued;
   }
 
   /**
-   * Get the submission date
+   * Get the submission date (e.g. thesis, articles, etc.).
    *
    * @return the submission date
    */
@@ -474,16 +406,18 @@ public class DublinCore {
   }
 
   /**
-   * Set the submission date
+   * Set the submission date.
    *
    * @param submitted the date the object was submitted
+   * @see #getSubmitted
    */
   public void setSubmitted(Date submitted) {
     this.submitted = submitted;
   }
 
   /**
-   * Return the acceptance date
+   * Return the acceptance date (e.g. of thesis by university department, of article by journal,
+   * etc.).
    *
    * @return the accpetance date
    */
@@ -492,16 +426,17 @@ public class DublinCore {
   }
 
   /**
-   * Set the acceptance date
+   * Set the acceptance date.
    *
    * @param accepted the date the object was accepted
+   * @see #getAccepted
    */
   public void setAccepted(Date accepted) {
     this.accepted = accepted;
   }
 
   /**
-   * Return the year of the copyright
+   * Return the year of the copyright.
    *
    * @return the year of the copyright
    */
@@ -510,16 +445,19 @@ public class DublinCore {
   }
 
   /**
-   * Set the year of the copyright
+   * Set the year of the copyright.
    *
    * @param copyrightYear the year of the copyright
+   * @see #getCopyrightYear
    */
   public void setCopyrightYear(int copyrightYear) {
     this.copyrightYear = copyrightYear;
   }
 
   /**
-   * Return the source of the object
+   * Return the source of the object. The described resource may be derived from the related
+   * resource in whole or in part. Recommended best practice is to identify the related resource by
+   * means of a string conforming to a formal identification system.
    *
    * @return the source of the object
    */
@@ -528,16 +466,17 @@ public class DublinCore {
   }
 
   /**
-   * Set the source of the object
+   * Set the source of the object.
    *
    * @param source the source of the object
+   * @see #getSource
    */
   public void setSource(Object source) {
     this.source = source;
   }
 
   /**
-   * Return the abstract/summary on the object
+   * Return the abstract/summary on the object.
    *
    * @return the abstract/summary of the object
    */
@@ -546,16 +485,17 @@ public class DublinCore {
   }
 
   /**
-   * Set the abstract/summary of the object
+   * Set the abstract/summary of the object.
    *
    * @param summary the summary/abstract of the object
+   * @see #getSummary
    */
   public void setSummary(Set<String> summary) {
     this.summary = summary;
   }
 
   /**
-   * Return the bibliographic citation for the object
+   * Return the bibliographic citation for the object.
    *
    * @return bibliographic citation for the object
    */
@@ -564,16 +504,17 @@ public class DublinCore {
   }
 
   /**
-   * bibliographic citation for the object
+   * Set the bibliographic citation for the object.
    *
    * @param bibliographicCitation bibliographic citation for the object
+   * @see #getBibliographicCitation
    */
   public void setBibliographicCitation(Citation bibliographicCitation) {
     this.bibliographicCitation = bibliographicCitation;
   }
 
   /**
-   * Return the creation date
+   * Return the creation date.
    *
    * @return the creation date
    */
@@ -582,7 +523,7 @@ public class DublinCore {
   }
 
   /**
-   * Set the creation date
+   * Set the creation date.
    *
    * @param created the date the object was created
    */
@@ -591,7 +532,8 @@ public class DublinCore {
   }
 
   /**
-   * Return the set of licenses for this object
+   * Return the set of licenses for this object. A licenses is a legal document giving official
+   * permission to do something with the resource.
    *
    * @return the set of licenses for this object
    */
@@ -600,16 +542,17 @@ public class DublinCore {
   }
 
   /**
-   * Set the set of licenses for this object
+   * Set the set of licenses for this object.
    *
    * @param license the set of licenses governing this object
+   * @see #getLicense
    */
   public void setLicense(Set<License> license) {
     this.license = license;
   }
 
   /**
-   * Return the modified date
+   * Return the modified date.
    *
    * @return the modified date
    */
@@ -618,16 +561,17 @@ public class DublinCore {
   }
 
   /**
-   * Set the modified date
+   * Set the modified date.
    *
    * @param modified the date the object was modified
+   * @see #getModified
    */
   public void setModified(Date modified) {
     this.modified = modified;
   }
 
   /**
-   * Return the set of objects referred to by this object
+   * Return the set of objects referred to by this object.
    *
    * @return the set of objects referred to by this object
    */
@@ -636,30 +580,32 @@ public class DublinCore {
   }
 
   /**
-   * Set the set of objects referred to by this object
+   * Set the set of objects referred to by this object.
    *
    * @param references the set of objects referred to by this object
+   * @see #getReferences
    */
   public void setReferences(Set<Citation> references) {
     this.references = references;
   }
 
   /**
-   * Set the format this object conforms to. For example, the DTD URI for an
-   * XML document.
-   *
-   * @param conformsTo the URI specifying the conformance standard
-   */
-  public void setConformsTo(URI conformsTo) {
-    this.conformsTo = conformsTo;
-  }
-
-  /**
-   * Return the URI identifying the standard the object conforms to
+   * Return the URI identifying the standard the object conforms to. For example, for an XML
+   * document this can point to the URI identifying the DTD.
    *
    * @return the URI identifying the standard the object conforms to
    */
   public URI getConformsTo() {
     return conformsTo;
+  }
+
+  /**
+   * Set the format this object conforms to.
+   *
+   * @param conformsTo the URI specifying the conformance standard
+   * @see #getConformsTo
+   */
+  public void setConformsTo(URI conformsTo) {
+    this.conformsTo = conformsTo;
   }
 }
