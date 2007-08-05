@@ -55,12 +55,9 @@ public class RatingSummaryContent {
    * @param totalValue total value
    * @param numRatings number of ratings
    */
-  public RatingSummaryContent(
-    int insightNumRatings,     double insightTotal,
-    int reliabilityNumRatings, double reliabilityTotal,
-    int styleNumRatings,       double styleTotal,
-    int numUsersThatRated) {
-
+  public RatingSummaryContent(int insightNumRatings, double insightTotal, int reliabilityNumRatings,
+                              double reliabilityTotal, int styleNumRatings, double styleTotal,
+                              int numUsersThatRated) {
     this.insightNumRatings     = insightNumRatings;
     this.insightTotal          = insightTotal;
     this.reliabilityNumRatings = reliabilityNumRatings;
