@@ -134,9 +134,10 @@ bc.issue                 = tostr(articleMeta.issue)
 bc.title                 = dc.title
 bc.publisherLocation     = tostr(journalMeta.publisher.'publisher-loc')
 bc.publisherName         = tostr(journalMeta.publisher.'publisher-name')
-//bc.pages                 = "1-" + tostr(articleMeta.counts.'page-count'.'@count') // bad?
+if (articleMeta.counts.'page-count')
+  bc.pages                 = "1-" + tostr(articleMeta.counts.'page-count'.'@count')
 bc.journal               = tostr(journalMeta.'journal-title')
-bc.note                  = tostr(journalMeta.'author-notes'.fn)
+bc.note                  = tostr(articleMeta.'author-notes'.fn)
 bc.summary               = dc.description
 bc.url                   = "http://dx.plos.org/${dc.identifier.substring(9)}"
 bc.editors               = (editors ? editors : null)
