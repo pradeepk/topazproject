@@ -240,21 +240,21 @@
                 xmlns:bibtex="http://purl.org/net/nknouf/ns/bibtex#"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
     <dc_terms:bibliographicCitation>
-      <xsl:variable name="pub-date"
-          select="if ($meta/pub-date) then my:select-date($meta/pub-date) else ''"/>
+      <xsl:variable name="pub-date" as="xs:string?"
+          select="if ($meta/pub-date) then my:format-date(my:select-date($meta/pub-date)) else ()"/>
       <xsl:call-template name="gen-citation">
         <xsl:with-param name="id"
             select="xs:anyURI(concat(my:doi-to-uri($article-doi), '#bibliographicCitation'))"/>
         <xsl:with-param name="type"
             select="xs:anyURI('http://rdf.plos.org/RDF/articleType/researchArticle')"/>
         <xsl:with-param name="year"
-            select="if ($pub-date) then substring(my:format-date($pub-date), 1, 4) else ''"/>
+            select="if ($pub-date) then substring($pub-date, 1, 4) else ()"/>
         <xsl:with-param name="month"
-            select="if ($pub-date) then substring(my:format-date($pub-date), 6, 2) else ''"/>
+            select="if ($pub-date) then substring($pub-date, 6, 2) else ()"/>
         <xsl:with-param name="volume"
-            select="if ($pub-date) then $pub-date/volume else ''"/>
+            select="$meta/volume"/>
         <xsl:with-param name="issue"
-            select="if ($pub-date) then $pub-date/issue else ''"/>
+            select="$meta/issue"/>
         <xsl:with-param name="title"
             select="$meta/title-group/article-title"/>
         <xsl:with-param name="pub-loc"
@@ -262,11 +262,12 @@
         <xsl:with-param name="pub-name"
             select="$meta/journal-meta/publisher/publisher-name"/>
         <xsl:with-param name="pages"
-            select="''"/>
+            select="if ($meta/counts/page-count) then concat('1-', $meta/counts/page-count/@count)
+                    else ()"/>
         <xsl:with-param name="journal"
             select="$meta/journal-meta/journal-title"/>
         <xsl:with-param name="note"
-            select="$meta/article-meta/author-notes/fn[1]"/>
+            select="$meta/author-notes/fn[1]"/>
         <xsl:with-param name="editors"
             select="$contrib-editors/rdf:Description/@rdf:about"/>
         <xsl:with-param name="authors"
@@ -274,7 +275,7 @@
         <xsl:with-param name="url"
             select="xs:anyURI(concat('http://dx.plos.org/', $article-doi))"/>
         <xsl:with-param name="summary"
-            select="if ($meta/abstract) then my:select-abstract($meta/abstract) else ''"/>
+            select="if ($meta/abstract) then my:select-abstract($meta/abstract) else ()"/>
       </xsl:call-template>
     </dc_terms:bibliographicCitation>
   </xsl:template>
@@ -292,7 +293,7 @@
           <xsl:with-param name="type"
               select="if (citation/@citation-type) then
                         xs:anyURI(concat('http://rdf.plos.org/RDF/articleType/', citation/@citation-type))
-                      else ''"/>
+                      else ()"/>
           <xsl:with-param name="year"     select="citation/year"/>
           <xsl:with-param name="month"    select="citation/month"/>
           <xsl:with-param name="volume"   select="citation/volume"/>
@@ -311,7 +312,7 @@
           <xsl:with-param name="authors"
               select="$citation-authors[@cit-id = $id]/rdf:Description/@rdf:about"/>
           <xsl:with-param name="url"      select="citation/@xlink:role"/>
-          <xsl:with-param name="summary"  select="''"/>
+          <xsl:with-param name="summary"  select="()"/>
         </xsl:call-template>
       </dc_terms:references>
     </xsl:for-each>
@@ -323,7 +324,7 @@
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
     <xsl:param name="id"       as="xs:anyURI"/>
-    <xsl:param name="type"     as="xs:anyURI"/>
+    <xsl:param name="type"     as="xs:anyURI?"/>
     <xsl:param name="year"     as="xs:string?"/>
     <xsl:param name="month"    as="xs:string?"/>
     <xsl:param name="volume"   as="xs:string?"/>
@@ -355,7 +356,7 @@
         <bibtex:hasVolume rdf:datatype="{$xs-ns}double"><xsl:value-of select="$volume"/></bibtex:hasVolume>
       </xsl:if>
       <xsl:if test="$issue">
-        <bibtex:hasIssue rdf:datatype="{$xs-ns}double"><xsl:value-of select="$issue"/></bibtex:hasIssue>
+        <bibtex:hasNumber rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:value-of select="$issue"/></bibtex:hasNumber>
       </xsl:if>
 
       <xsl:if test="$title">
@@ -378,10 +379,10 @@
         <bibtex:hasNote rdf:datatype="{$xs-ns}string"><xsl:value-of select="$note"/></bibtex:hasNote>
       </xsl:if>
       <xsl:if test="$summary">
-        <bibtex:hasAbstract rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$summary"/></xsl:call-template></bibtex:hasAbstract>
+        <bibtex:hasAbstract rdf:datatype="{$xs-ns}string"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$summary"/></xsl:call-template></bibtex:hasAbstract>
       </xsl:if>
       <xsl:if test="$url">
-        <bibtex:hasUrl rdf:datatype="{$xs-ns}string"><xsl:value-of select="$url"/></bibtex:hasUrl>
+        <bibtex:hasURL rdf:datatype="{$xs-ns}string"><xsl:value-of select="$url"/></bibtex:hasURL>
       </xsl:if>
 
       <xsl:if test="exists($editors)">
