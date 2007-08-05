@@ -29,14 +29,14 @@ import org.apache.log4j.Logger;
  * @author Ronald Tschalär
  */
 abstract class QueueingFilterHandler extends AbstractFilterHandler {
-  protected final Logger          logger;
-  protected final boolean         orderedMods;
-  protected final List            updQueue = new ArrayList();
-  protected final Map             txQueue  = new HashMap();
-  protected       boolean         newUpdPending;
-  protected final XAResource      xaResource;
-  protected final Worker          worker;
-  protected       Xid             currentTxId;
+  protected final Logger           logger;
+  protected final boolean          orderedMods;
+  protected final List             updQueue = new ArrayList();
+  protected final Map<Xid, List>   txQueue  = new HashMap<Xid, List>();
+  protected       boolean          newUpdPending;
+  protected final XAResource       xaResource;
+  protected final Worker           worker;
+  protected final ThreadLocal<Xid> currentTxId = new ThreadLocal<Xid>();
 
   /** 
    * Create a new queueing-filter instance. Events are queued and the queue is processed by a
@@ -66,9 +66,9 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
 
   protected void queue(Object obj) {
     synchronized (txQueue) {
-      List queue = (List) txQueue.get(currentTxId);
+      List queue = txQueue.get(currentTxId.get());
       if (queue == null)
-        txQueue.put(currentTxId, queue = new ArrayList());
+        txQueue.put(currentTxId.get(), queue = new ArrayList());
 
       queue.add(obj);
     }
@@ -145,17 +145,17 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
    */
   protected class QueueingXAResource extends DummyXAResource {
     public void start(Xid xid, int flags) {
-      currentTxId = xid;
+      currentTxId.set(xid);
     }
 
     public void end(Xid xid, int flags) {
-      currentTxId = null;
+      currentTxId.set(null);
     }
 
     public void commit(Xid xid, boolean onePhase) {
       List queue;
       synchronized (txQueue) {
-        queue = (List) txQueue.remove(xid);
+        queue = txQueue.remove(xid);
       }
 
       if (queue != null) {
