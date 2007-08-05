@@ -196,7 +196,7 @@ public class DummySSOFilter implements Filter {
         sb.append("      <input type=\"hidden\" name=\"").append(e.getKey()).append("\" value=\"").append(e.getValue()[idx]).append("\"/>\n");
     }
 
-    sb.append("      <input type=\"submit\" value=\"Log in\"/>\n").
+    sb.append("      <input type=\"submit\" value=\"Log in\" name=\"sso.login\"/>\n").
        append("    </form>\n").
        append("    <p>Notes:</p>\n").
        append("    <ul>\n").
