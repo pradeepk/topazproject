@@ -48,7 +48,8 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
     if (articlesToPublish != null){
       for (String article : articlesToPublish) {
         try {
-          getDocumentManagementService().publish(article);
+          getDocumentManagementService().publish(article,
+                  article == articlesToPublish[articlesToPublish.length - 1]);
           if (log.isDebugEnabled()) {
             log.debug("published article: " + article);
           }

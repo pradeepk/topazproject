@@ -466,9 +466,11 @@ public class DocumentManagementService {
    * @param uri
    *          uri to be published Send CrossRef xml file top CrossRef -- if it is _received_ ok then
    *          set article stat to active
+   * @param isLast true if this is the last of a batch being published - used
+   *               to avoid flushing the caches multiple times
    * @throws Exception
    */
-  public void publish(String uri) throws Exception {
+  public void publish(String uri, boolean isLast) throws Exception {
     if (sendToXref) {
       File xref = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
       int stat;
@@ -481,8 +483,10 @@ public class DocumentManagementService {
       }
     }
     articleOtmService.setState(uri, Article.STATE_ACTIVE);
-    articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
-    articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
+    if (isLast) {
+      articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
+      articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
+    }
   }
 
   private static class PngDataSource implements DataSource {
