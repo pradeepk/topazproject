@@ -15,6 +15,11 @@
   <pub>
     <app-context>/plosone-webapp</app-context>
   </pub>
+  <dummy>
+    <sso>
+      <enabled>true</enabled>
+    </sso>
+  </dummy>
   <freemarker>
     <journal>
       <name>PLoSONE</name>

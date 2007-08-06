@@ -51,6 +51,7 @@ public class DummySSOFilter implements Filter {
   private String  casUrl;
   private String  ssoUrl;
   private boolean wrap = false;
+  private boolean enabled = false;
 
   /*
    * @see javax.servlet.Filter#init
@@ -71,7 +72,12 @@ public class DummySSOFilter implements Filter {
     if (ssoUrl == null)
       ssoUrl = "/dummy/";
 
-    log.info("dummy sso enabled");
+    enabled = configuration.getBoolean("dummy.sso.enabled", false);
+
+    if (enabled)
+      log.info("dummy sso enabled");
+    else
+      log.info("dummy sso disabled (use -Ddummy.sso.enabled=true to enable)");
   }
 
   /*
@@ -85,6 +91,11 @@ public class DummySSOFilter implements Filter {
    */
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc)
       throws ServletException, IOException {
+    if (!enabled) {
+     fc.doFilter(request, response);
+     return;
+    }
+
     HttpServletRequest  req = (HttpServletRequest)  request;
     HttpServletResponse rsp = (HttpServletResponse) response;
 
