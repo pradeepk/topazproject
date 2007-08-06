@@ -3,10 +3,10 @@
 	Annotation Style Sheet : www.plosone.org
 	
 	CREATED ON 	: 08-26-2006
-	MODIFIED ON : 09-19-2006
+	MODIFIED ON 	: 08-02-2007
 	
 	CREATED BY	: MARGARET SHEAR
-	MODIFIED BY	: MARGARET SHEAR
+	MODIFIED BY	: SEBASTIAN TOOMEY
  
    	------------------------------------------------------------- */	
 
@@ -39,8 +39,8 @@ div.dialog div.detail{ padding: 5px; background-color: #fff; border: 2px solid #
 div.contentwrap{ padding: 10px; background-color: #fff; margin: 0; border: 2px solid #ccc; border-width: 0 2px 1px 2px;}
 
 div.dialog .posting.pane{ background: none; }
-div.pane a.instructions,
-div.pane a:visited.instructions { color: #eee;}
+/*div.pane a.instructions,
+div.pane a:visited.instructions { color: #eee;} now defined in pone_screen.css -SWT */
 div.comment div.comment{ margin: 10px 0; padding-left: 20px; border-left: 4px solid #999; background-color: #eee;}
 div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 0; }
 
@@ -168,6 +168,8 @@ div.flag	{ background-color: #3C9544; background-image: url(../images/pone_respo
 div#flagForm { display:block; background: #3C9544;}
 div#flagForm form,
 div#flagForm fieldset { background: #3C9544; }
+div#flagForm a.instructions,
+div#DiscussionPanel a.instructions { color: #fff; } /* for white text links on dark backgrounds -SWT */
 div.response div.posting form,
 div.response div.posting fieldset { background: #666; }
 textarea #responseArea .response{ margin-left: 0!important; }

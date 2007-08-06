@@ -16,19 +16,23 @@
                                                 <!-- SWT removed horizontalTabs -->
 												
                                                 <div id="new" class="block">
-                                                        <h2><img class="badgenew" src="images/pone_home_new_badge.gif" alt="NEW!" />PLoS Clinical Trials Community Portal</h2>
-                                                        <p>It's the first step in the evolution of our first community - a window on content in your field. <a href="#">Interactive tools</a> and <a href="#">open-access</a> content facilitate finding connections between research and individuals like never before, leading to faster scientific progress.</p>
-							<p>Currently, the <em>PLoS Hub - Clinical Trials</em> features all the articles that were originally published in <a href="#"><em>PLoS Clinical Trials</em> and have recently moved to <em>PLoS ONE</em></a>. You can also see all the new Clinical Trials articles from PLoS ONE and selected content from <a href="#"><em>PLoS Medicine</em></a> and other open-access journals.</p>
-							<p>In the future, this new resource will expand to include articles from all the PLoS titles that publish clinical trials such as <a href="#"><em>PLoS Neglected Tropical Diseases</em></a> (launching later this year). It will also feature more from other open-access publishers plus other user generated and led content.</p>
+                                                        <h2><img class="badgenew" src="images/pone_home_new_badge.gif" alt="NEW!" />What is the PLoS Hub for Clinical Trials?</h2>
+                                                        <p>Launched in August 2007, the Clinical Trials Hub collects together PLoS journal articles that relate to clinical trials. The Hub will be a destination site for researchers to share their views, and build a dynamic, interactive community.</p>
+							<p>Currently, the Clinical Trials Hub features articles originally published in <em>PLoS Clinical Trials</em>, along with clinical trials articles from <em>PLoS ONE</em>.</p>
+							<p>In the future, this new resource will expand to include articles from all the PLoS titles that publish clinical trials. It will also feature open-access articles from other journals plus user-generated content.</p>
 							<p><a href="#">Find out more</a> and <a href="#">tell us what you think</a>.</p>
 						</div>
 						<!-- end block new -->
 						<!-- begin : calls to action blocks -->
 						<div id="alerts">
-							<a href="#"><span><strong>Content Alerts</strong>E-mail updates of the latest Clinical Trials content.</span></a>
+							<a href="#"><span><strong>Content Alerts</strong>
+							<!-- E-mail updates of the latest Clinical Trials content. -->
+							Latest content from the PLoS Hub for Clinical Trials</span></a>
 						</div>
 						<div id="rss">
-							<a href="#"><span><strong>Clinical Trials RSS</strong>Direct feed of the latest Clinical Trials articles.</span></a>
+							<a href="#"><span><strong>Clinical Trials RSS</strong>
+							<!-- Direct feed of the latest Clinical Trials articles. -->
+							Latest content from the PLoS Hub for Clinical Trials</span></a>
 							<a href="#" style="display:block; position:relative; top:3px; left:165px; background:none;">What is RSS?</a>
 						</div>
 						<!-- end : calls to action blocks -->
@@ -58,8 +62,9 @@
                                                         <@s.url action="commentGuidelines.action#annotation" namespace="/static" includeParams="none" id="annotation"/>
                                                         <@s.url action="commentGuidelines.action#discussion" namespace="/static" includeParams="none" id="discussion"/>
                                                         <h3>Join the Community</h3>
-							<p><a href="#" title="Register">Register now</a> and share your views on clinical trials research.  Only registrants can <a href="#" title="Rating Guidelines">rate</a>, <a href="${discussion}" title="Learn how to start a discussion">discuss</a> and <a href="${annotation}" title="Learn how to add an annotation">annotate</a> the articles in the PLoS Community Portal.</p>
-							<p>PLoS is committed to publishing the results of all clinical trials, regardless of outcome, and making this essential information publicly available. <a href="#" title="Submission Info">Find out how to submit your work</a>.</p>
+							<p><a href="#" title="Register">Register now</a> and share your views on clinical trials research.  Only registrants can <a href="#" title="Rating Guidelines">rate</a>, <a href="${discussion}" title="Learn how to start a discussion">discuss</a> and <a href="${annotation}" title="Learn how to add an annotation">annotate</a> articles in the <em>Clinical Trials Hub</em>.</p>
+							<h3>Submit Your Work</h3>
+							<p>PLoS is committed to publishing the results of all clinical trials, regardless of outcome, and making this essential information freely and publicly available. <a href="#" title="Submission Info">Find out how to submit your work</a>.</p>
                                                 </div><!-- end : info block -->
 						<!-- begin : advocacy blocks -->
 						<script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
@@ -109,14 +114,11 @@
 						</script><noscript><a href='http://ads.plos.org/adclick.php?n=a08b8fff' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:162&amp;source=ONE&amp;n=a08b8fff' border='0' alt='' /></a></noscript>
 						<!-- end : advocacy blocks -->
 						<div class="subject block">
-							<h3>Clinical Trials in Other Open Access Journals</h3>
+							<h3>Highlights from other Open Access Journals</h3>
 							<dl class="category">
 								<dt><em>PLoS Medicine</em></dt>
-								<dd><a href="#">Does Random Treatment Assignment Cause Harm to Research Participants?</a></dd>
-								<dd><a href="#">Insecticide-Treated Nets for the Prevention of Malaria in Pregnancy: A Systematic Review of Randomised Controlled Trials</a></dd>
-								<dd><a href="#">Reporting Methods of Blinding in Randomized Trials Assessing Nonpharmacological Treatments</a></dd>
+								<dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040201">Liver Fluke Induces Cholangiocarcinoma</a></dd>
 								<dt>BMC Clinical Trials</dt>
-								<dd><a href="#">The possible role of cell cycle regulators in multistep process of HPV-associated cervical carcinoma</a></dd>
 								<dd><a href="#">Rosai-Dorfman Disease: A previously unreported association with Sickle Cell Disease</a></dd>
 							</dl>
 						</div><!-- end : subject block -->

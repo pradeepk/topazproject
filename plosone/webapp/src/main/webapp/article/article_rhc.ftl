@@ -70,6 +70,8 @@
 					</ul>
 				</li>
 				
+				<li><a href="#" class="trackback icon">Trackbacks (0)</a></li>
+				
 	<!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
 			</ol>
 		</div> 
