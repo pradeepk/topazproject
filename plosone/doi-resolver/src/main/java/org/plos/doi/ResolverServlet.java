@@ -9,8 +9,10 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.regex.Pattern;
 import java.util.Arrays;
 
@@ -76,7 +78,11 @@ public class ResolverServlet extends HttpServlet{
       failWithError(resp);
       return;
     }
-    doi = doi.trim();
+    try {
+      doi = URLDecoder.decode(doi.trim(),"UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+      doi = doi.trim();
+    }
     try {
      resp.sendRedirect (constructURL (doi));
     } catch (Exception e){
