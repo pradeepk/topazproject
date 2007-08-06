@@ -54,8 +54,12 @@
     <property name="FEDORA_JAR"
       value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/>
 
+    <property name="FEDORA_HOME"
+      value="${FEDORA_INSTALL_DIR}/${FEDORA_ROOT}"/>
+
     <mkdir dir="${FEDORA_INSTALL_DIR}"/>
     <unjar src="${FEDORA_JAR}" dest="${FEDORA_INSTALL_DIR}"/>
+    <echo>FEDORA_HOME=${FEDORA_HOME}</echo>
     <chmod perm="u+x">
       <fileset dir="${FEDORA_HOME}">
         <include name="**/bin/*"/>
@@ -76,7 +80,7 @@
     <exec
       dir="${FEDORA_HOME}/server"
       executable="${keytool}">
-      <arg line="-export -alias jakarta-tomcat -keystore ${ECQS_KEYSTORE} -file
+      <arg line="-export -alias jakarta-tomcat -keystore ${ECQS_INSTALL_DIR}/${ECQS_KEYSTORE} -file
         ecqs.cert"/>
     </exec>
     <exec
@@ -90,9 +94,29 @@
     
   </target>
 
-  <target name="fedora-start" depends="fedora-start-or-spawn, fedora-if-spawned"/>
-  
-  <target name="fedora-start-or-spawn" depends="exec-ext">
+  <target name="fedora-start" depends="mckoi-start">
+    <property name="FEDORA_HOME"
+      value="${FEDORA_INSTALL_DIR}/${FEDORA_ROOT}"/>
+    <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
+    <exec dir="${FEDORA_HOME}"
+      executable="${FEDORA_HOME}/server/bin/fedora-start${ext}"
+      spawn="${SPAWN}">
+      <arg line="${DB}"/>
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+    </exec>
+    <if>
+      <equals arg1="${SPAWN}" arg2="true" casesensitive="false" trim="true"/>
+      <then>
+        <echo>Spawned off fedora; sleeping a bit to give it time to really start...</echo>
+        <sleep seconds="10"/>
+        <echo>Sleep done.</echo>
+      </then>
+    </if>
+  </target>
+
+  <target name="mckoi-start" depends="exec-ext">
+    <property name="FEDORA_HOME"
+      value="${FEDORA_INSTALL_DIR}/${FEDORA_ROOT}"/>
     <if>
       <equals arg1="${DB}" arg2="mckoi" casesensitive="false" trim="true"/>
       <then>
@@ -107,41 +131,59 @@
         <!-- <sleep seconds="2"/> -->
       </then>
     </if>
-
-    <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
-    <exec dir="${FEDORA_HOME}"
-      executable="${FEDORA_HOME}/server/bin/fedora-start${ext}"
-      spawn="${SPAWN}">
-      <arg line="${DB}"/>
-      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
-    </exec>
   </target>
 
-  <target name="fedora-if-spawned" if="SPAWN">
-    <echo>Spawned off fedora; sleeping a bit to give it time to really start...</echo>
-    <sleep seconds="10"/>
-    <echo>Sleep done.</echo>
-  </target>
+  <target name="fedora-stop" depends="mckoi-stop"/>
 
-  <target name="fedora-stop" depends="exec-ext">
+  <target name="--stop-fedora--" depends="exec-ext">
+    <property name="FEDORA_HOME"
+      value="${FEDORA_INSTALL_DIR}/${FEDORA_ROOT}"/>
     <echo>Stopping fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
-
     <exec dir="${FEDORA_HOME}" 
       executable="${FEDORA_HOME}/server/bin/fedora-stop${ext}">
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
+  </target>
 
+  <target name="mckoi-stop" depends="--stop-fedora--">
+    <property name="FEDORA_HOME"
+      value="${FEDORA_INSTALL_DIR}/${FEDORA_ROOT}"/>
     <if>
       <equals arg1="${DB}" arg2="mckoi" casesensitive="false" trim="true"/>
       <then>
         <echo>Stopping mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
-
         <exec dir="${FEDORA_HOME}" executable="${FEDORA_HOME}/server/bin/mckoi-stop${ext}">
           <arg line="fedoraAdmin fedoraAdmin"/>
           <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
         </exec>
       </then>
     </if>
+  </target>
+  
+  <target name="fedora-rebuild" depends="mckoi-start">
+    <property name="FEDORA_HOME"
+      value="${FEDORA_INSTALL_DIR}/${FEDORA_ROOT}"/>
+    <if>
+      <equals arg1="${FEDORA_REBUILD_FROM}" arg2="${FEDORA_HOME}/data" casesensitive="false" trim="true"/>
+      <then>
+        <echo>Rebuilding fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
+      </then>
+      <else>
+        <echo>Replacing objects and datastreams with those from ${FEDORA_REBUILD_FROM}</echo>
+        <delete dir="${FEDORA_HOME}/data/datastreams"/>
+        <delete dir="${FEDORA_HOME}/data/objects"/>
+        <copy todir="${FEDORA_HOME}/data">
+          <fileset dir="${FEDORA_REBUILD_FROM}"/>
+        </copy>
+        <echo>Rebuilding fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
+      </else>
+    </if>
+    <exec dir="${FEDORA_HOME}" 
+      executable="${FEDORA_HOME}/server/bin/fedora-rebuild${ext}"
+      input="${FEDORA_REBUILD_STDIN}">
+      <arg line="${DB}"/>
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+    </exec>
   </target>
 
   <target name="fedora-package" depends="exec-ext">

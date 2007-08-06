@@ -17,7 +17,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>get-artifacts</call>
-      <requiresProject>true</requiresProject>
+      <requiresProject>false</requiresProject>
 
       <description>
         Fetch the list of artifacts
@@ -28,6 +28,7 @@
         <parameter>
           <name>dependencies</name>
           <property>dependencies</property>
+          <expression>${dependencies}</expression>
           <required>true</required>
         </parameter>
 
@@ -36,6 +37,7 @@
           <name>type</name>
           <property>type</property>
           <required>true</required>
+          <expression>${type}</expression>
           <defaultValue>jar</defaultValue>
         </parameter>
 
@@ -44,6 +46,47 @@
           <name>location</name>
           <property>location</property>
           <required>true</required>
+          <expression>${location}</expression>
+          <defaultValue>${project.build.directory}</defaultValue>
+        </parameter>
+      </parameters>
+    </mojo>
+
+    <mojo>
+      <goal>tgz-explode</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>tgz-explode</call>
+      <requiresProject>false</requiresProject>
+
+      <description>
+        Explode a set of artifacts
+      </description>
+
+      <parameters>
+        <!-- List of artifacts separated by "," -->
+        <parameter>
+          <name>dependencies</name>
+          <property>dependencies</property>
+          <expression>${dependencies}</expression>
+          <required>true</required>
+        </parameter>
+
+        <!-- Type of artifact -->
+        <parameter>
+          <name>type</name>
+          <property>type</property>
+          <required>true</required>
+          <expression>${type}</expression>
+          <defaultValue>tgz</defaultValue>
+        </parameter>
+
+        <!-- Pass the location directory in as Ant task cannot access it -->
+        <parameter>
+          <name>location</name>
+          <property>location</property>
+          <required>true</required>
+          <expression>${location}</expression>
           <defaultValue>${project.build.directory}</defaultValue>
         </parameter>
       </parameters>

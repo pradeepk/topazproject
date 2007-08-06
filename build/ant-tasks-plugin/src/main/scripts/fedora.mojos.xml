@@ -30,17 +30,18 @@
           <property>FEDORA_INSTALL_DIR</property>
           <required>true</required>
           <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${FEDORA_INSTALL_DIR}</expression>
           <type>java.lang.String</type>
-          <description>The name of the input file.</description>
+          <description>Install here.</description>
         </parameter>
         
         <parameter>
-          <name>FEDORA_HOME</name>
-          <property>FEDORA_HOME</property>
+          <name>FEDORA_ROOT</name>
+          <property>FEDORA_ROOT</property>
           <required>true</required>
-          <defaultValue>${topazproject.install.dir}/fedora-2.1.1</defaultValue>
+          <defaultValue>fedora-2.1.1</defaultValue>
           <type>java.lang.String</type>
-          <description>Fedora Home directory</description>
+          <description>Fedora Root directory inside the install</description>
         </parameter>
 
         <parameter>
@@ -81,10 +82,20 @@
         </parameter>
         
         <parameter>
+          <name>ECQS_INSTALL_DIR</name>
+          <property>ECQS_INSTALL_DIR</property>
+          <required>true</required>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${ECQS_INSTALL_DIR}</expression>
+          <type>java.lang.String</type>
+          <description>ecqs installed here</description>
+        </parameter>
+
+        <parameter>
           <name>ECQS_KEYSTORE</name>
           <property>ECQS_KEYSTORE</property>
           <required>true</required>
-          <defaultValue>${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
+          <defaultValue>esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
         </parameter>
 
         <parameter>
@@ -119,14 +130,76 @@
 
       <parameters>
         <parameter>
-          <name>FEDORA_HOME</name>
-          <property>FEDORA_HOME</property>
+          <name>FEDORA_INSTALL_DIR</name>
+          <property>FEDORA_INSTALL_DIR</property>
           <required>true</required>
-          <defaultValue>${topazproject.install.dir}/fedora-2.1.1</defaultValue>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${FEDORA_INSTALL_DIR}</expression>
           <type>java.lang.String</type>
-          <description>Fedora Home directory</description>
+          <description>Install here.</description>
         </parameter>
         
+        <parameter>
+          <name>FEDORA_ROOT</name>
+          <property>FEDORA_ROOT</property>
+          <required>true</required>
+          <defaultValue>fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Root directory inside the install</description>
+        </parameter>
+
+        <parameter>
+          <name>SPAWN</name>
+          <property>SPAWN</property>
+          <required>true</required>
+          <expression>${SPAWN}</expression>
+          <defaultValue>false</defaultValue>
+          <description>Whether we should spawn or not</description>
+        </parameter>
+
+        <parameter>
+          <name>DB</name>
+          <property>DB</property>
+          <required>true</required>
+          <expression>${DB}</expression>
+          <defaultValue>mckoi</defaultValue>
+          <description>Which database to use</description>
+        </parameter>
+        
+      </parameters>
+    </mojo>
+
+    <mojo>
+      <goal>mckoi-start</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>mckoi-start</call>
+      <requiresProject>false</requiresProject>
+
+      <description>
+        Start mckoi on the local machine..
+      </description>
+
+      <parameters>
+        <parameter>
+          <name>FEDORA_INSTALL_DIR</name>
+          <property>FEDORA_INSTALL_DIR</property>
+          <required>true</required>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${FEDORA_INSTALL_DIR}</expression>
+          <type>java.lang.String</type>
+          <description>Install here.</description>
+        </parameter>
+        
+        <parameter>
+          <name>FEDORA_ROOT</name>
+          <property>FEDORA_ROOT</property>
+          <required>true</required>
+          <defaultValue>fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Root directory inside the install</description>
+        </parameter>
+
         <parameter>
           <name>SPAWN</name>
           <property>SPAWN</property>
@@ -161,12 +234,125 @@
 
       <parameters>
         <parameter>
-          <name>FEDORA_HOME</name>
-          <property>FEDORA_HOME</property>
+          <name>FEDORA_INSTALL_DIR</name>
+          <property>FEDORA_INSTALL_DIR</property>
           <required>true</required>
-          <defaultValue>${topazproject.install.dir}/fedora-2.1.1</defaultValue>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${FEDORA_INSTALL_DIR}</expression>
           <type>java.lang.String</type>
-          <description>Fedora Home directory</description>
+          <description>Install here.</description>
+        </parameter>
+        
+        <parameter>
+          <name>FEDORA_ROOT</name>
+          <property>FEDORA_ROOT</property>
+          <required>true</required>
+          <defaultValue>fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Root directory inside the install</description>
+        </parameter>
+
+        <parameter>
+          <name>DB</name>
+          <property>DB</property>
+          <required>true</required>
+          <expression>${DB}</expression>
+          <defaultValue>mckoi</defaultValue>
+          <description>Which database to use</description>
+        </parameter>
+      </parameters>
+    </mojo>
+
+    <mojo>
+      <goal>mckoi-stop</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>mckoi-stop</call>
+      <requiresProject>false</requiresProject>
+
+      <description>
+        Stop mckoi on the local machine..
+      </description>
+
+      <parameters>
+        <parameter>
+          <name>FEDORA_INSTALL_DIR</name>
+          <property>FEDORA_INSTALL_DIR</property>
+          <required>true</required>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${FEDORA_INSTALL_DIR}</expression>
+          <type>java.lang.String</type>
+          <description>Install here.</description>
+        </parameter>
+        
+        <parameter>
+          <name>FEDORA_ROOT</name>
+          <property>FEDORA_ROOT</property>
+          <required>true</required>
+          <defaultValue>fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Root directory inside the install</description>
+        </parameter>
+
+        <parameter>
+          <name>DB</name>
+          <property>DB</property>
+          <required>true</required>
+          <expression>${DB}</expression>
+          <defaultValue>mckoi</defaultValue>
+          <description>Which database to use</description>
+        </parameter>
+      </parameters>
+    </mojo>
+
+    <mojo>
+      <goal>fedora-rebuild</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>fedora-rebuild</call>
+      <requiresProject>false</requiresProject>
+
+      <description>
+        Rebuild fedora on the local machine..
+      </description>
+
+      <parameters>
+        <parameter>
+          <name>FEDORA_INSTALL_DIR</name>
+          <property>FEDORA_INSTALL_DIR</property>
+          <required>true</required>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${FEDORA_INSTALL_DIR}</expression>
+          <type>java.lang.String</type>
+          <description>Install here.</description>
+        </parameter>
+        
+        <parameter>
+          <name>FEDORA_ROOT</name>
+          <property>FEDORA_ROOT</property>
+          <required>true</required>
+          <defaultValue>fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Root directory inside the install</description>
+        </parameter>
+
+        <parameter>
+          <name>FEDORA_REBUILD_FROM</name>
+          <property>FEDORA_REBUILD_FROM</property>
+          <expression>${FEDORA_REBUILD_FROM}</expression>
+          <required>true</required>
+          <defaultValue>${topazproject.install.dir}/fedora-2.1.1/data</defaultValue>
+          <type>java.lang.String</type>
+          <description>Data directory from which to rebuild</description>
+        </parameter>
+        
+        <parameter>
+          <name>FEDORA_REBUILD_STDIN</name>
+          <property>FEDORA_REBUILD_STDIN</property>
+          <expression>${FEDORA_REBUILD_STDIN}</expression>
+          <required>true</required>
+          <type>java.lang.String</type>
+          <description>Answers for prompts from fedora-rebuild</description>
         </parameter>
 
         <parameter>

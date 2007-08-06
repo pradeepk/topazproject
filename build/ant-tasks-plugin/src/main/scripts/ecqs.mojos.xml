@@ -143,6 +143,7 @@
           <name>ECQS_INSTALL_DIR</name>
           <property>ECQS_INSTALL_DIR</property>
           <required>true</required>
+          <expression>${ECQS_INSTALL_DIR}</expression>
           <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 

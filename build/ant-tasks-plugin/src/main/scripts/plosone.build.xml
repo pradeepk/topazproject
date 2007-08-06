@@ -107,6 +107,8 @@
     <echo message="Using home    = ${home}"/>
     <echo message="Using log-dir = ${tomcatlog.dir}"/>
     <echo message="Using war     = ${plosone-war}"/>
+    <echo message="Using war     = ${plosreg-war}"/>
+    <echo message="Using war     = ${search-war}"/>
     <echo message="Using port    = ${port}"/>
     <echo message="Shutdown port = ${SHUTDOWN_PORT}"/>
     <echo message="Use -Dlog4j.configuration=file:///..location.. to specify log4j config"/>
@@ -118,7 +120,7 @@
     <tempfile property="temp.file" prefix="plosone" suffix=".properties" destDir="${home}"/>
     <echo file="${temp.file}" message=""/>
     <propertyselector property="prop.list" casesensitive="false"
-        match="(topaz|plosone|plos-registration|crossref|itql|log4j|com|ingest|server|service|hosts|ports)\..*"/>
+        match="(topaz|plosone|plos-registration|crossref|itql|log4j|com|ingest|server|service|hosts|ports|org)\..*"/>
     <if>
       <isset property="prop.list"/>
       <then>
