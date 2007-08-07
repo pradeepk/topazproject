@@ -19,18 +19,21 @@
 
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 
-  <xsl:output name="pmc-1.1"
+  <xsl:output name="nlm-1.1"
       doctype-public="-//NLM//DTD Journal Publishing DTD v1.1 20031101//EN"
       doctype-system="http://dtd.nlm.nih.gov/publishing/1.1/journalpublishing.dtd"/>
-  <xsl:output name="pmc-2.0"
+  <xsl:output name="nlm-2.0"
       doctype-public="-//NLM//DTD Journal Publishing DTD v2.0 20040830//EN"
       doctype-system="http://dtd.nlm.nih.gov/publishing/2.0/journalpublishing.dtd"/>
-  <xsl:output name="pmc-2.1"
+  <xsl:output name="nlm-2.1"
       doctype-public="-//NLM//DTD Journal Publishing DTD v2.1 20050630//EN"
       doctype-system="http://dtd.nlm.nih.gov/publishing/2.1/journalpublishing.dtd"/>
-  <xsl:output name="pmc-2.2"
+  <xsl:output name="nlm-2.2"
       doctype-public="-//NLM//DTD Journal Publishing DTD v2.2 20060430//EN"
       doctype-system="http://dtd.nlm.nih.gov/publishing/2.2/journalpublishing.dtd"/>
+  <xsl:output name="nlm-2.3"
+      doctype-public="-//NLM//DTD Journal Publishing DTD v2.3 20070202//EN"
+      doctype-system="http://dtd.nlm.nih.gov/publishing/2.3/journalpublishing.dtd"/>
 
   <xsl:param name="output-loc"     select="''"                    as="xs:string"/>
   <xsl:param name="doi-url-prefix" select="'http://dx.plos.org/'" as="xs:string"/>
@@ -434,7 +437,7 @@
     <xsl:variable name="loc"     as="xs:string"
         select="concat($output-loc, encode-for-uri(my:basename($article-entry/@name)))"/>
 
-    <xsl:result-document href="{$loc}" method="xml" format="pmc-{$fixed-article/@dtd-version}">
+    <xsl:result-document href="{$loc}" method="xml" format="nlm-{$fixed-article/@dtd-version}">
       <xsl:sequence select="$fixed-article"/>
     </xsl:result-document>
 
