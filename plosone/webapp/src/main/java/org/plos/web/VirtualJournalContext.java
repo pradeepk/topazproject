@@ -10,6 +10,8 @@
 
 package org.plos.web;
 
+import java.util.Collection;
+
 /**
  * The virtual journal context.
  *
@@ -46,13 +48,14 @@ public class VirtualJournalContext {
   private final String requestContext;
   private final String baseUrl;
   private final String baseHostUrl;
+  private final Collection<String> virtualJournals;
 
   /**
    * Construct an immutable VirtualJournalContext.
    */
   public VirtualJournalContext(final String journal, final String mappingPrefix,
     final String requestScheme, final int requestPort, final String requestServerName,
-    final String requestContext) {
+    final String requestContext, final Collection<String> virtualJournals) {
 
     this.journal           = journal;
     this.mappingPrefix     = mappingPrefix;
@@ -77,6 +80,8 @@ public class VirtualJournalContext {
     this.baseHostUrl = urlBaseValue.toString();
     urlBaseValue.append(requestContext).append("/");
     this.baseUrl = urlBaseValue.toString();
+
+    this.virtualJournals = virtualJournals;
   }
 
   /**
@@ -249,5 +254,14 @@ public class VirtualJournalContext {
    */
   public String getBaseHostUrl () {
     return baseHostUrl;
+  }
+
+  /**
+   * Get the virtual journals that are available.
+   *
+   * @return Available virtual journals.
+   */
+  public Collection<String> getVirtualJournals() {
+    return virtualJournals;
   }
 }

@@ -46,14 +46,22 @@
     <fieldset>
       <legend><b>Publishable Documents</b></legend>
       <@s.form id="publishArchives" name="publishArchives" action="publishArchives" method="post" namespace="/admin">
-        <table>
+        <table border="1" cellpadding="2" cellspacing="0">
           <tr>
-            <td><b>Publish</b></td><td><b>Delete</b></td><td></td>
+            <th>Publish</th>
+            <#list Request[freemarker_config.journalContextAttributeKey].virtualJournals as virtualJournal>
+              <th>${virtualJournal}</th>
+            </#list>
+            <th>Delete</th>
+            <th>&nbsp;</th>
           </tr>
           <#list publishableFiles as article>
             <tr>
               <@s.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${article}"/>
               <td><@s.checkbox name="articlesToPublish" fieldValue="${article}"/></td>
+              <#list Request[freemarker_config.journalContextAttributeKey].virtualJournals as virtualJournal>
+                <td><@s.checkbox name="articlesInVirtualJournals" fieldValue="${article}::${virtualJournal}"/></td>
+              </#list>
               <td><@s.checkbox name="articlesToDelete" fieldValue="${article}"/></td>
               <td><a target="_article" href="${articleURL}">${article}</a></td>
             </tr>

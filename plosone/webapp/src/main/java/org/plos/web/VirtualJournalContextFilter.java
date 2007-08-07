@@ -11,6 +11,7 @@
 package org.plos.web;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import javax.servlet.Filter;
@@ -82,6 +83,8 @@ public class VirtualJournalContextFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
+    final Collection<String> virtualJournals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
+
     String virtualJournal = null;
     String mappingPrefix  = null;
 
@@ -143,8 +146,8 @@ public class VirtualJournalContextFilter implements Filter {
     request.setAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT,
       new VirtualJournalContext(virtualJournal, mappingPrefix, request.getScheme(),
         request.getServerPort(), request.getServerName(),
-        ((HttpServletRequest) request).getContextPath()));
-    
+        ((HttpServletRequest) request).getContextPath(), virtualJournals));
+
     // establish a "Nested Diagnostic Context" for logging, e.g. prefix log entries w/journal name
     // http://logging.apache.org/log4j/docs/api/org/apache/log4j/NDC.html
     if (virtualJournal != null) {
@@ -153,7 +156,7 @@ public class VirtualJournalContextFilter implements Filter {
 
     // continue the Filter chain ...
     filterChain.doFilter(request, response);
-    
+
     // cleanup "Nested Diagnostic Context" for logging
     if (virtualJournal != null) {
       NDC.pop();
@@ -221,6 +224,6 @@ public class VirtualJournalContextFilter implements Filter {
     }
 
     // return match or null
-    return new VirtualJournalContext(virtualJournal, mappingPrefix, null, 0, null, null);
+    return new VirtualJournalContext(virtualJournal, mappingPrefix, null, 0, null, null, null);
   }
 }
