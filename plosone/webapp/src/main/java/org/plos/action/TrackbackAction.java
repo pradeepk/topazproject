@@ -27,7 +27,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.ObjectInfo;
@@ -62,9 +61,10 @@ public class TrackbackAction extends BaseActionSupport {
   private String excerpt;
   private String blog_name;
   private String trackbackId;
+  private String articleURI;
   private List<Trackback> trackbackList;
   private VirtualJournalContext journalContext;
-  private ObjectInfo articleInfo;
+  private ObjectInfo articleObj;
 
   private FetchArticleService fetchArticleService;
   private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
@@ -154,22 +154,70 @@ public class TrackbackAction extends BaseActionSupport {
       return returnError("Error inserting trackback");
     }
 
-    if (log.isDebugEnabled() && inserted){
-      StringBuilder msg = new StringBuilder ("Successfully inserted trackback with title: ")
-                                             .append (title)
-                                             .append ("; url: ")
-                                             .append (url)
-                                             .append ("; excerpt: ")
-                                             .append (excerpt)
-                                             .append ("; blog_name: ")
-                                             .append (blog_name);
-      log.debug(msg);
+    if (log.isInfoEnabled() && inserted) {
+      if (log.isDebugEnabled() && inserted){
+        StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
+                                               .append (trackbackId)
+                                               .append ("; with title: ")
+                                               .append (title)
+                                               .append ("; url: ")
+                                               .append (url)
+                                               .append ("; excerpt: ")
+                                               .append (excerpt)
+                                               .append ("; blog_name: ")
+                                               .append (blog_name);
+        log.debug(msg);
+      } else {
+        StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
+                                               .append (trackbackId);
+        log.info(msg);
+      }
     }
     return SUCCESS;
   }
 
-  public String getTrackbacks () throws Exception {
-    articleInfo = fetchArticleService.getArticleInfo(trackbackId);
+
+  /**
+   * Sets the trackbackList with the trackback objects only, not their bodies in
+   * an effort to make things more efficient.  Useful if you only want to know the
+   * number of trackbacks, or any other information in the base Annotation class.
+   *
+   * @return status
+   * @throws Exception
+   */
+  public String getTrackbackCount() throws Exception {
+    if (trackbackId == null)
+      trackbackId = articleURI;
+    return getTrackbacks(false);
+  }
+
+  /**
+   * Sets the trackbackList with all trackbacks for a given article (including bodies)
+   * and also retrieves the article information object and sets articleObj with that
+   * information.
+   *
+   * @return status
+   * @throws Exception
+   */
+  public String getTrackbacksForArticle() throws Exception {
+    if (trackbackId == null)
+      trackbackId = articleURI;
+    articleObj = fetchArticleService.getArticleInfo(trackbackId);
+
+    return getTrackbacks(true);
+  }
+
+  /**
+   * Set trackbackList with all trackbacks for the resource given by trackbackId.
+   *
+   * @return status
+   * @throws Exception
+   */
+  public String getTrackbacks() throws Exception {
+    return getTrackbacks(true);
+  }
+
+  private String getTrackbacks (boolean getBodies) throws Exception {
 
     Transaction tx = null;
     try {
@@ -189,7 +237,8 @@ public class TrackbackAction extends BaseActionSupport {
       Iterator<Trackback> iter = trackbacks.iterator();
       while (iter.hasNext()) {
         Trackback t = iter.next();
-        t.getBlog_name();  //for lazy load
+        if (getBodies)
+          t.getBlog_name();  //for lazy load
         trackbackList.add(t);
       }
     } catch (OtmException e) {
@@ -354,7 +403,14 @@ public class TrackbackAction extends BaseActionSupport {
   /**
    * @return Returns the articleInfo.
    */
-  public ObjectInfo getArticleInfo() {
-    return articleInfo;
+  public ObjectInfo getArticleObj() {
+    return articleObj;
+  }
+
+  /**
+   * @param articleURI The articleURI to set.
+   */
+  public void setArticleURI(String articleURI) {
+    this.articleURI = articleURI;
   }
 }

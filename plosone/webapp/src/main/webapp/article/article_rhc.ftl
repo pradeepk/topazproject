@@ -69,8 +69,8 @@
             <#include "/article/article_rhc_count.ftl">
           </ul>
         </li>
-
-        <li><a href="#" class="trackback icon">Trackbacks (0)</a></li>
+        <@s.url id="trackbackURL" namespace="/article" action="listTrackbacks" includeParams="none" trackbackId="${articleURI}"/>
+        <li><a href="${trackbackURL}" class="trackback icon">Trackbacks (${trackbackList?size})</a></li>
 
   <!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
       </ol>
@@ -135,6 +135,7 @@
             <#include "/article/article_rhc_count.ftl">
           </ul>
         </li>
+        <li><a href="${trackbackURL}" class="trackback icon">Trackbacks (${trackbackList?size})</a></li>
 
   <!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
       </ol>

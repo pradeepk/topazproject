@@ -3,7 +3,7 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <!--
-  - Copyright (c) 2006 by Topaz, Inc.
+  - Copyright (c) 2006-2007 by Topaz, Inc.
   - http://topazproject.org
   -
   - Licensed under the Educational Community License version 1.0
@@ -412,7 +412,7 @@
   </package>
 
   <package name="article" extends="default" namespace="/article">
-    <action name="listTrackbacks" class="org.plos.action.TrackbackAction" method="getTrackbacks">
+    <action name="listTrackbacks" class="org.plos.action.TrackbackAction" method="getTrackbacksForArticle">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/article/trackbackList.ftl</param>
       </result>
@@ -448,10 +448,19 @@
       </result>
     </action>
 
-    <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
+    <action name="getNumTrackbacksForArticle" class="org.plos.action.TrackbackAction" method="getTrackbackCount">
+      <interceptor-ref name="chain"/>
+      <interceptor-ref name="plosUserStack"/>
       <result type="chain">
         <param name="actionName">getAverageRatingsForArticle</param>
         <param name="namespace">/rate</param>
+      </result>
+    </action>
+
+    <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
+      <result type="chain">
+        <param name="actionName">getNumTrackbacksForArticle</param>
+        <param name="namespace">/article</param>
       </result>
     </action>
 

@@ -2,7 +2,7 @@
   <h1>Trackbacks</h1>
   <@s.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${Request.trackbackId}"/>
   <div class="source">
-    <span>Original Article</span><a href="${articleURL}" title="Back to original article" class="article icon">${articleInfo.dublinCore.title}</a>
+    <span>Original Article</span><a href="${articleURL}" title="Back to original article" class="article icon">${articleObj.dublinCore.title}</a>
   </div>
   <@s.url namespace="/" includeParams="none" id="trackbackURL" action="trackback" trackbackId="${Request.trackbackId}"/>
   <#assign trackbackLink = Request[freemarker_config.journalContextAttributeKey].baseHostUrl + trackbackURL>
