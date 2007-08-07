@@ -32,7 +32,8 @@
       doctype-public="-//NLM//DTD Journal Publishing DTD v2.2 20060430//EN"
       doctype-system="http://dtd.nlm.nih.gov/publishing/2.2/journalpublishing.dtd"/>
 
-  <xsl:param name="output-loc" select="''" as="xs:string"/>
+  <xsl:param name="output-loc"     select="''"                    as="xs:string"/>
+  <xsl:param name="doi-url-prefix" select="'http://dx.plos.org/'" as="xs:string"/>
 
   <xsl:variable name="file-entries"  select="/ZipInfo/ZipEntry[not(@isDirectory)]"
       as="element(ZipEntry)*"/>
@@ -273,7 +274,7 @@
         <xsl:with-param name="authors"
             select="$contrib-authors/rdf:Description/@rdf:about"/>
         <xsl:with-param name="url"
-            select="xs:anyURI(concat('http://dx.plos.org/', $article-doi))"/>
+            select="xs:anyURI(concat($doi-url-prefix, encode-for-uri($article-doi)))"/>
         <xsl:with-param name="summary"
             select="if ($meta/abstract) then my:select-abstract($meta/abstract) else ()"/>
       </xsl:call-template>
