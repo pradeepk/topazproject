@@ -477,9 +477,17 @@ public class DocumentManagementService {
       if (!xref.exists()) {
         throw new IOException("Cannot find CrossRef xml:" + uriToFilename(uri) + ".xml");
       }
-      stat = crossRefPosterService.post(xref);
-      if (200 != stat) {
-        throw new Exception("CrossRef status returned " + stat);
+      try {
+        stat = crossRefPosterService.post(xref);
+        if (200 != stat) {
+          throw new Exception("CrossRef status returned " + stat);
+        }
+      } catch (HttpException he) {
+        log.error ("Could not connect to CrossRef", he);
+        throw new Exception ("Could not connect to CrossRef. " + he);
+      } catch (IOException ioe) {
+        log.error ("Could not connect to CrossRef", ioe);
+        throw new Exception ("Could not connect to CrossRef. " + ioe);
       }
     }
     articleOtmService.setState(uri, Article.STATE_ACTIVE);
