@@ -484,10 +484,10 @@ public class DocumentManagementService {
         }
       } catch (HttpException he) {
         log.error ("Could not connect to CrossRef", he);
-        throw new Exception ("Could not connect to CrossRef. " + he);
+        throw new Exception ("Could not connect to CrossRef. " + he, he);
       } catch (IOException ioe) {
         log.error ("Could not connect to CrossRef", ioe);
-        throw new Exception ("Could not connect to CrossRef. " + ioe);
+        throw new Exception ("Could not connect to CrossRef. " + ioe, ioe);
       }
     }
     articleOtmService.setState(uri, Article.STATE_ACTIVE);
