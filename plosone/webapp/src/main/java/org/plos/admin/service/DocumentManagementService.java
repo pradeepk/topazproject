@@ -162,7 +162,7 @@ public class DocumentManagementService {
    * @throws RemoteException
    * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI) throws RemoteException, ServiceException, NoSuchArticleIdException {
+  public void delete(String objectURI) throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
     articleOtmService.delete(objectURI);
   }
 
@@ -177,7 +177,7 @@ public class DocumentManagementService {
    * @throws ServiceException
    * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI, ServletContext servletContext) throws RemoteException, ServiceException, NoSuchArticleIdException {
+  public void delete(String objectURI, ServletContext servletContext) throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
     articleOtmService.delete(objectURI);
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
     articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);

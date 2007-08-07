@@ -207,7 +207,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void delete(final String article)
-    throws RemoteException, ServiceException, NoSuchArticleIdException {
+    throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -220,8 +220,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     try {
       ctx.activate();
       txn = session.beginTransaction();
-      ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
-      ArticleUtil.delete(article, itql);
+      ArticleUtil.delete(article, txn);
       txn = null;
       jrnlSvc.objectWasDeleted(URI.create(article));
     } finally {

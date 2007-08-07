@@ -9,6 +9,19 @@
  */
 package org.plos.article.util
 
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.stores.ItqlStore;
+
+import org.plos.models.Article
+import org.plos.models.ObjectInfo
+import org.plos.models.Category
+import org.plos.models.Citation
+import org.plos.models.PLoS
+import org.plos.models.UserProfile
+
 args = ToolHelper.fixArgs(args)
 
 def cli = new CliBuilder(usage: 'Delete [-c config-overrides.xml] article-uris ...')
@@ -21,6 +34,19 @@ def opt = cli.parse(args); if (opt.h) { cli.usage(); return }
 
 // Load configuration before ArticleUtil is instantiated
 CONF = ToolHelper.loadConfiguration(opt.c)
+
+def factory = new SessionFactory();
+def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
+def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null)
+def p = new ModelConfig("profiles", URI.create(CONF.getString("topaz.models.profiles")), null)
+factory.setTripleStore(itql)
+factory.addModel(ri)
+factory.addModel(p)
+factory.preload(Article.class)
+factory.preload(Category.class)
+factory.preload(Citation.class)
+factory.preload(UserProfile.class)
+def session = factory.openSession()
 
 // We may want to ignore errors if something needs to be cleaned up
 ignore = opt.i
@@ -38,20 +64,13 @@ def ingestedDir = CONF.getString('pub.spring.ingest.destination', '/var/spool/pl
 def util = new ArticleUtil()
 opt.arguments().each() { uri ->
   // Call ArticleUtil.delete() to remove from mulgara, fedora & lucene
-  process() { util.delete(uri) }
-
-  // Clean up /var/spool/plosone
-  def ant = new AntBuilder()
-  def ingestedXmlFile = new File(ingestedDir, uri.replaceAll('[:/.]', '_') + '.xml')
-  process() { ant.delete(file: ingestedXmlFile.toString()) }
-
-  if (!queueDir.equals(ingestedDir)) {
-    def fname    = uri[25..-1] + ".zip"
-    def fromFile = new File(ingestedDir, fname).toString()
-    def toFile   = new File(queueDir,    fname).toString()
-    process() { ant.move(file: fromFile, tofile: toFile) }
+  print "Deleting article $uri..."
+  process() {
+    def tx = session.beginTransaction()
+    util.delete(uri, tx)
+    tx.commit()
   }
-  println "Deleted article $uri"
+  println "done"
 }
 
-println "Deleted ${opt.arguments().size()} article(s)"
+println "Tried to delete ${opt.arguments().size()} article(s)"
