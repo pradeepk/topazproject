@@ -9,6 +9,7 @@
  */
 
 package org.plosone.it;
+import org.apache.tools.ant.taskdefs.Antlib;
 
 public class Env {
   private AntBuilder ant = new AntBuilder();
@@ -41,6 +42,10 @@ public class Env {
     opts  = ' -DECQS_INSTALL_DIR=' + install + 
             ' -DFEDORA_INSTALL_DIR=' + install + 
             ' -DDEST_DIR=' + install
+
+    String url = '/net/sf/antcontrib/antlib.xml'
+    url = this.getClass().getResource(url)
+    Antlib.createAntlib(ant.antProject, url.toURL(), null).execute()
   }
 
   /**
@@ -115,10 +120,13 @@ public class Env {
   }
 
   private void mulgara() {
-    // XXX: launcher does not die. after an ant-tasks:mulgara-stop
-    ant.exec(executable: 'mvn', spawn: true) {
-      arg(line: '-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install
+    ant.echo 'Starting mulgara'
+    ant.forget {
+      ant.exec(executable: 'mvn') {
+        arg(line: '-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install
          + ' -Dtopaz.mulgara.databaseDir=' + install + '/data/mulgara')
+      }
+      ant.echo 'Mulgara stopped'
     }
   }
 
@@ -129,10 +137,13 @@ public class Env {
   }
 
   private void plosone() {
-    // XXX: launcher does not die. after an ant-tasks:plosone-stop
-    ant.exec(executable: 'mvn', spawn: true) {
-      arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
+    ant.echo 'Starting plosone'
+    ant.forget {
+      ant.exec(executable: 'mvn') {
+        arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
          + ' -Dorg.plos.configuration.overrides=defaults-dev.xml')
+      }
+      ant.echo 'PlosOne Stopped'
     }
   }
 
@@ -165,7 +176,6 @@ public class Env {
   }
 
   private void load() {
-    //XXX: can we access mvn antlib directly here somehow?
     ant.exec(executable: 'mvn') {
       arg(line: '-f ' + pom() + ' ant-tasks:tgz-explode -Dlocation=' + install 
         + ' -Dtype=tgz -Ddependencies=' + data)
