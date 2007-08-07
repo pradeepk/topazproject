@@ -234,6 +234,7 @@
                 xmlns:dc_terms="http://purl.org/dc/terms/">
     <xsl:call-template name="gen-bib-cit"/>
     <xsl:call-template name="gen-ref"/>
+    <xsl:call-template name="gen-lic"/>
   </xsl:template>
 
   <xsl:template name="gen-bib-cit"
@@ -407,6 +408,16 @@
         </plos:hasAuthorList>
       </xsl:if>
     </rdf:Description>
+  </xsl:template>
+
+  <xsl:template name="gen-lic" xmlns:dc_terms="http://purl.org/dc/terms/">
+    <!-- Need OTM cascade="no-delete" for this
+    <dc_terms:license>
+      <rdf:Description rdf:about="http://creativecommons.org/licenses/by-sa/3.0/">
+        <rdf:type rdf:resource="http://web.resource.org/cc/License"/>
+      </rdf:Description>
+    </dc_terms:license>
+    -->
   </xsl:template>
 
   <!-- generate the propagate-permissions rdf statements for the article -->
