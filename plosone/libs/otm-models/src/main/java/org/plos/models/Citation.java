@@ -44,7 +44,7 @@ public class Citation {
   @Predicate(uri = PLoS.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
   private Integer volume;
 
-  @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.rdf + "XMLLiteral")
+  @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.xsd + "string")
   private String issue;
 
   @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
@@ -65,16 +65,16 @@ public class Citation {
   @Predicate(uri = PLoS.bibtex + "hasNote", dataType = Rdf.xsd + "string")
   private String note;
 
-  @Predicate(uri = PLoS.bibtex + "hasEditorList", storeAs = Predicate.StoreAs.rdfSeq)
+  @Predicate(uri = PLoS.plos + "hasEditorList", storeAs = Predicate.StoreAs.rdfSeq)
   private List<UserProfile> editors = new ArrayList<UserProfile>();
 
-  @Predicate(uri = PLoS.bibtex + "hasAuthorList", storeAs = Predicate.StoreAs.rdfSeq)
+  @Predicate(uri = PLoS.plos + "hasAuthorList", storeAs = Predicate.StoreAs.rdfSeq)
   private List<UserProfile> authors = new ArrayList<UserProfile>();
 
   @Predicate(uri = PLoS.bibtex + "hasURL", dataType = Rdf.xsd + "string")
   private String url;
 
-  @Predicate(uri = PLoS.bibtex + "hasAbstract")
+  @Predicate(uri = PLoS.bibtex + "hasAbstract", dataType = Rdf.xsd + "string")
   private String summary;
 
   @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")

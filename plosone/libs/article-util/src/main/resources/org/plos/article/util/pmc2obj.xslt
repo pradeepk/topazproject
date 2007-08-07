@@ -321,6 +321,7 @@
 
   <xsl:template name="gen-citation"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:plos="http://rdf.plos.org/RDF/"
                 xmlns:bibtex="http://purl.org/net/nknouf/ns/bibtex#"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
@@ -357,7 +358,7 @@
         <bibtex:hasVolume rdf:datatype="{$xs-ns}double"><xsl:value-of select="$volume"/></bibtex:hasVolume>
       </xsl:if>
       <xsl:if test="$issue">
-        <bibtex:hasNumber rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:value-of select="$issue"/></bibtex:hasNumber>
+        <bibtex:hasNumber rdf:datatype="{$xs-ns}string"><xsl:value-of select="$issue"/></bibtex:hasNumber>
       </xsl:if>
 
       <xsl:if test="$title">
@@ -387,23 +388,23 @@
       </xsl:if>
 
       <xsl:if test="exists($editors)">
-        <bibtex:hasEditorList>
+        <plos:hasEditorList>
           <rdf:Seq>
             <xsl:for-each select="$editors">
               <rdf:li rdf:resource="{.}"/>
             </xsl:for-each>
           </rdf:Seq>
-        </bibtex:hasEditorList>
+        </plos:hasEditorList>
       </xsl:if>
 
       <xsl:if test="exists($authors)">
-        <bibtex:hasAuthorList>
+        <plos:hasAuthorList>
           <rdf:Seq>
             <xsl:for-each select="$authors">
               <rdf:li rdf:resource="{.}"/>
             </xsl:for-each>
           </rdf:Seq>
-        </bibtex:hasAuthorList>
+        </plos:hasAuthorList>
       </xsl:if>
     </rdf:Description>
   </xsl:template>
