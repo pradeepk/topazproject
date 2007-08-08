@@ -450,7 +450,7 @@
       <xsl:sequence select="$fixed-article"/>
     </xsl:result-document>
 
-    <Datastream contLoc="{$loc}" id="{my:ext-to-ds-id($art-ext)}"
+    <Datastream contLoc="{$loc}" id="{my:name-to-ds-id($article-entry/@name)}"
                 controlGroup="{my:ext-to-ctrlgrp($art-ext)}" mimeType="{my:ext-to-mime($art-ext)}"/>
 
     <xsl:apply-templates select="$file-entries[not(. is $article-entry)][my:is-main(@name)]"
@@ -611,7 +611,7 @@
   <!-- common templates for all datastream definitions -->
   <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:variable name="ext" select="my:get-ext(@name)"/>
-    <xsl:variable name="rep-name" select="my:ext-to-ds-id($ext)"/>
+    <xsl:variable name="rep-name" select="my:name-to-ds-id(@name)"/>
 
     <topaz:hasRepresentation><xsl:value-of select="$rep-name"/></topaz:hasRepresentation>
     <xsl:element name="topaz:{$rep-name}-objectSize">
@@ -626,7 +626,7 @@
   <xsl:template match="ZipEntry" mode="ds">
     <xsl:variable name="ext" select="my:get-ext(@name)"/>
 
-    <Datastream contLoc="{encode-for-uri(@name)}" id="{my:ext-to-ds-id($ext)}"
+    <Datastream contLoc="{encode-for-uri(@name)}" id="{my:name-to-ds-id(@name)}"
                 controlGroup="{my:ext-to-ctrlgrp($ext)}" mimeType="{my:ext-to-mime($ext)}"/>
   </xsl:template>
 
@@ -707,7 +707,7 @@
       if ($zip-fmt = 'TPZ') then
         $froot
       else if ($zip-fmt = 'AP') then
-        concat($article-doi, substring($froot, string-length(my:get-root(my:basename($article-entry/@name))) + 1))
+        concat($article-doi, replace(substring($froot, string-length(my:get-root(my:basename($article-entry/@name))) + 1), '-.*', ''))
       else
         error((), concat('internal error: unknown format ''', $zip-fmt, ''' in fct fname-to-doi'))
       "/>
@@ -1023,10 +1023,13 @@
       "/>
   </xsl:function>
 
-  <!-- Filename extension to datastream-id -->
-  <xsl:function name="my:ext-to-ds-id" as="xs:string">
-    <xsl:param name="ext" as="xs:string"/>
-    <xsl:value-of select="upper-case($ext)"/>
+  <!-- Filename to datastream-id -->
+  <xsl:function name="my:name-to-ds-id" as="xs:string">
+    <xsl:param name="name" as="xs:string"/>
+    <xsl:variable name="root" as="xs:string" select="my:get-root(my:basename($name))"/>
+    <xsl:variable name="mod"  as="xs:string"
+        select="if (contains($root, '-')) then replace($root, '.*-', '-') else ''"/>
+    <xsl:value-of select="upper-case(concat(my:get-ext($name), $mod))"/>
   </xsl:function>
 
   <!-- Filename extension to Fedora control-group mapping: everything is 'Managed'. Note:
