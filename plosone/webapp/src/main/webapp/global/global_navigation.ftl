@@ -11,10 +11,10 @@
     <@s.url action="about" namespace="/static" includeParams="none" id="about"/>
     <li><a href="${about}" tabindex="103">About</a>
         <ul>
-        <@s.url action="information.action" namespace="/static" includeParams="none" id="info"/>
-        <@s.url action="edboard.action" namespace="/static" includeParams="none" id="edboard"/>
-        <@s.url action="media.action" namespace="/static" includeParams="none" id="media"/>
-        <@s.url action="license.action" namespace="/static" includeParams="none" id="license"/>
+        <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
+        <@s.url action="edboard" namespace="/static" includeParams="none" id="edboard"/>
+        <@s.url action="media" namespace="/static" includeParams="none" id="media"/>
+        <@s.url action="license" namespace="/static" includeParams="none" id="license"/>
           <li><a href="${info}">Journal Information</a></li>
           <li><a href="${edboard}">Editorial Board</a></li>
           <li><a href="${license}">License</a></li>
@@ -23,10 +23,10 @@
                 <@s.url action="users" namespace="/static" includeParams="none" id="users"/>
     <li><a href="${users}" tabindex="104">For Users</a>
         <ul>
-        <@s.url action="commentGuidelines.action" namespace="/static" includeParams="none" id="comment"/>
-        <@s.url action="help.action" namespace="/static" includeParams="none" id="help"/>
-        <@s.url action="sitemap.action" namespace="/static" includeParams="none" id="site"/>
-          <@s.url action="contact.action" namespace="/static" includeParams="none" id="contact"/>
+        <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="comment"/>
+        <@s.url action="help" namespace="/static" includeParams="none" id="help"/>
+        <@s.url action="sitemap" namespace="/static" includeParams="none" id="site"/>
+          <@s.url action="contact" namespace="/static" includeParams="none" id="contact"/>
           <li><a href="${comment}">Commenting Guidelines</a></li>
           <li><a href="${help}">Help Using this Site</a></li>
           <li><a href="${site}">Site Map</a></li>
@@ -36,12 +36,12 @@
     <@s.url action="authors" namespace="/static" includeParams="none" id="authors"/>
     <li><a href="${authors}" tabindex="105">For Authors and Reviewers</a>
         <ul>
-        <@s.url action="whypublish.action" namespace="/static" includeParams="none" id="why"/>
-        <@s.url action="policies.action" namespace="/static" includeParams="none" id="policies"/>
-        <@s.url action="guidelines.action" namespace="/static" includeParams="none" id="guidelines"/>
-        <@s.url action="figureGuidelines.action" namespace="/static" includeParams="none" id="figure"/>
-        <@s.url action="checklist.action" namespace="/static" includeParams="none" id="checklist"/>
-        <@s.url action="reviewerGuidelines.action" namespace="/static" includeParams="none" id="reviewer"/>
+        <@s.url action="whypublish" namespace="/static" includeParams="none" id="why"/>
+        <@s.url action="policies" namespace="/static" includeParams="none" id="policies"/>
+        <@s.url action="guidelines" namespace="/static" includeParams="none" id="guidelines"/>
+        <@s.url action="figureGuidelines" namespace="/static" includeParams="none" id="figure"/>
+        <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
+        <@s.url action="reviewerGuidelines" namespace="/static" includeParams="none" id="reviewer"/>
           <li><a href="${why}">Why Publish With Us?</a></li>
           <li><a href="${policies}">Editorial and Publishing Policies</a></li>
           <li><a href="${guidelines}">Author Guidelines</a></li>
