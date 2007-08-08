@@ -130,7 +130,8 @@ public class JournalService {
 
     // create the filter definitions
     Map<String, FilterDefinition> jfds =
-        getAggregationFilters(j, j.getKey(), s, new HashSet<Aggregation>());
+        getAggregationFilters(j, j.getKey() + "-" + System.currentTimeMillis(), s,
+                              new HashSet<Aggregation>());
 
     if (log.isDebugEnabled())
       log.debug("journal '" + j.getKey() + "' has filters: " + jfds);
