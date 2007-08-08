@@ -18,7 +18,7 @@
 <link rel="home" title="home" href="${homeURL}" />
 <link rel="alternate" type="application/rss+xml"
   title="${freemarker_config.getArticleTitlePrefix(journalContext)} ${rssName?html}"
-  href="http://${freemarker_config.plosOneHost}${freemarker_config.context}${rssPath}" />
+  href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}" />
 
 <#include "../css/global_css.ftl">
 <#include "../javascript/global_js.ftl">

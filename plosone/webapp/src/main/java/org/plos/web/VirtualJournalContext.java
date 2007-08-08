@@ -78,7 +78,7 @@ public class VirtualJournalContext {
       }
     }
     this.baseHostUrl = urlBaseValue.toString();
-    urlBaseValue.append(requestContext).append("/");
+    urlBaseValue.append(requestContext);
     this.baseUrl = urlBaseValue.toString();
 
     this.virtualJournals = virtualJournals;
@@ -239,7 +239,7 @@ public class VirtualJournalContext {
 
   /**
    * Get the base url of the request which consists of the scheme, server name, server port, and
-   * context with an ending slash.
+   * context.
    *
    * @return string representing the base request URL
    */

@@ -11,7 +11,7 @@
     <@s.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile" tabId="preferences"/>
         <p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session[freemarker_config.userAttributeKey].userId}" title="You are logged in as ${Session[freemarker_config.userAttributeKey].displayName}">--><strong>${Session[freemarker_config.userAttributeKey].displayName}</strong></a>!</p>
         <ul>
-          <@s.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=${Request[freemarker_config.journalContextAttributeKey].baseUrl}logout.action"/>
+          <@s.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=${Request[freemarker_config.journalContextAttributeKey].baseUrl}/logout.action"/>
           <li><a href="${editProfileURL}" title="Edit your account preferences and alert settings">Preferences</a></li>
           <li><a href="${logoutURL}" title="Logout">Logout</a></li>
         </ul>
