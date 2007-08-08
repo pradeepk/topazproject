@@ -149,9 +149,10 @@ dc.copyrightYear         = toint(articleMeta.'copyright-year')
 dc.references            = new HashSet()
 // TODO: Set dc.license -- doc has article.article-meta.copyright-statement, but no bloody URI!
 
+def articleType = new URI(PLoS.PLOS_ArticleType + tostr(slurpedArticle.'@article-type'))
 article.articleType = new HashSet()
-article.articleType.add(new URI(PLoS.PLOS_ResearchArticle))
-bc.citationType = new URI(PLoS.PLOS_ResearchArticle)
+article.articleType.add(articleType)
+bc.citationType = articleType
 
 // Handle references
 slurpedArticle.back.'ref-list'.ref.each() { src ->
@@ -183,6 +184,7 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
   }
 
   cit.id                = new URI('info:doi/10.1371/reference.' + src.'@id')
+  cit.key               = tostr(src.label)
   cit.year              = toint(src.citation.year)
   cit.month             = tostr(src.citation.month)
   cit.volume            = toint(src.citation.volume)

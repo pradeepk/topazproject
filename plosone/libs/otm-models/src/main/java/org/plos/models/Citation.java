@@ -33,6 +33,9 @@ public class Citation {
   @Id
   private URI   id;
 
+  @Predicate(uri = PLoS.bibtex + "hasKey", dataType = Rdf.xsd + "string")
+  private String key;
+
   /* TODO: Restore to correct datatype. Stored as double because of bug in Mulgara */
   @Predicate(uri = PLoS.bibtex + "hasYear", dataType = Rdf.xsd + "double")
   private Integer year;
@@ -96,6 +99,22 @@ public class Citation {
    */
   public void setId(URI id) {
     this.id = id;
+  }
+
+  /**
+   * The key or label referencing a citation from within another source (such as an article).
+   *
+   * @returns the key or label for the citation (if available)
+   */
+  public String getKey() {
+    return key;
+  }
+
+  /**
+   * @param key the key or label for this citation
+   */
+  public void setKey(String key) {
+    this.key = key;
   }
 
   /**
