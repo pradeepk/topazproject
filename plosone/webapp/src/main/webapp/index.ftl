@@ -13,8 +13,8 @@
               <ul>
                 <li><a href="http://www.plos.org/oa/index.html" title="Learn more about Open Access on PLoS.org">Open Access</a></li>
                 <li><a href="http://www.plos.org/support/donate.php" title="Join PLoS and our Open Access mission">Join PLoS</a></li>
-                <li><a href="/static/checklist.action" title="Find out how to submit to PLoS ONE"><@s.url action="checklist.action" namespace="/static/" includeParams="none" id="checklist"/>
-Submit Today</a></li>
+                <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
+                <li><a href="${checklist}" title="Find out how to submit to PLoS ONE">Submit Today</a></li>
               </ul>
             </div><!-- end : block mainnav -->
             <div class="block partner">
@@ -104,9 +104,8 @@ Submit Today</a></li>
           <!-- begin : col 3 -->
           <div class="subcol first">
             <div class="info block">
-              <@s.url action="feedbackCreate.action" namespace="/static" includeParams="none" id="feedback"/>
-              <@s.url action="commentGuidelines.action#annotation" namespace="/static" includeParams="none" id="annotation"/>
-              <@s.url action="commentGuidelines.action#discussion" namespace="/static" includeParams="none" id="discussion"/>
+              <@s.url action="commentGuidelines" anchor="annotation" namespace="/static" includeParams="none" id="annotation"/>
+              <@s.url action="commentGuidelines" anchor="discussion" namespace="/static" includeParams="none" id="discussion"/>
 
               <h2>What is PLoS ONE?</h2>
               <div>
@@ -117,13 +116,13 @@ Submit Today</a></li>
                 <li><a href="${freemarker_config.context}/static/rssFeeds.action" title="PLoS ONE | RSS Feeds">RSS Feeds</a> by Subject</li>
                 </ul>
                 <p><em>More functionality coming soon</em></p>
-                <p><a href="${feedback}" title="Send us your feedback">Your feedback</a> will help us shape <em>PLoS ONE</em>.</p>
+                <p><a href="${feedbackURL}" title="Send us your feedback">Your feedback</a> will help us shape <em>PLoS ONE</em>.</p>
                 <h3>Journal Clubs - New Discussion</h3>
                 <p><em>PLoS ONE</em> regularly sends out papers in advance of publication to interested labs to debate them and post their comments online. </p>
                 <ul>
                   <li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000343" title="Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">This recent paper</a> was discussed by the <a href="${freemarker_config.context}/user/showUser.action?userId=info:doi/10.1371/account/39755" title="Potsdam University Eye-Movement Group">Potsdam University Eye-Movement Group</a>.</li>
                   <li>Add your own comments to <a href="${freemarker_config.context}/annotation/getCommentary.action?target=info:doi/10.1371/journal.pone.0000343" title="Annotations and Discussions Re: Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">the discussion</a>.</li>
-                  <li><a href="${feedback}" title="Send us your feedback">Nominate your lab</a> for a future journal club.</li>
+                  <li><a href="${feedbackURL}" title="Send us your feedback">Nominate your lab</a> for a future journal club.</li>
                 </ul>
               </div>
             </div><!-- end : info block -->
