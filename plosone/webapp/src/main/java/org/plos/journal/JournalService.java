@@ -63,8 +63,8 @@ public class JournalService {
 
   private final SessionFactory           sf;
   private final Map<String, Set<String>> journalFilters = new HashMap<String, Set<String>>();
-  private final Ehcache                  journalCache;
-  private final Ehcache                  objectCarriers;
+  private final Ehcache                  journalCache;          // key/id -> Journal
+  private final Ehcache                  objectCarriers;        // obj-id -> Set<journal-id>
 
   private       Session                  session;
 
@@ -77,7 +77,7 @@ public class JournalService {
    * @param objectCache  the cache to use for caching the list of journals that carry each object
    */
   public JournalService(SessionFactory sf, Ehcache journalCache, Ehcache objectCache) {
-    this.sf           = sf;
+    this.sf             = sf;
     this.journalCache   = journalCache;
     this.objectCarriers = objectCache;
 
@@ -98,9 +98,9 @@ public class JournalService {
           for (Journal j : l)
             loadJournal(j, preloaded, tx.getSession());
 
-          Map<URI, Set<URI>> cl = buildCarrierMap(null, tx.getSession());
-          for (Map.Entry<URI, Set<URI>> e : cl.entrySet())
-            objectCarriers.put(new Element(e.getKey(), e.getValue()));
+          Map<URI, Set<Journal>> cl = buildCarrierMap(null, tx.getSession());
+          for (Map.Entry<URI, Set<Journal>> e : cl.entrySet())
+            objectCarriers.put(new Element(e.getKey(), getIds(e.getValue())));
 
           return null;
         }
@@ -115,6 +115,13 @@ public class JournalService {
     if (values == null)
       map.put(key, values = new HashSet<T>());
     values.add(value);
+  }
+
+  private static Set<URI> getIds(Set<Journal> jList) {
+    Set<URI> ids = new HashSet<URI>();
+    for (Journal j: jList)
+      ids.add(j.getId());
+    return ids;
   }
 
   private void loadJournal(Journal j, Set<Aggregation> preloaded, Session s) {
@@ -149,6 +156,7 @@ public class JournalService {
     // cache journal
     preloadAggregation(j, preloaded, s);
     journalCache.put(new Element(j.getKey(), j));
+    journalCache.put(new Element(j.getId(), j));
   }
 
   private Map<String, FilterDefinition> getAggregationFilters(Aggregation a, String pfx, Session s,
@@ -351,17 +359,16 @@ public class JournalService {
     c.getExecutableCriteria(s);         // easiest way of touching everything...
   }
 
-  private Map<URI, Set<URI>> buildCarrierMap(URI oid, Session s) {
-    Map<URI, Set<URI>> carriers = new HashMap<URI, Set<URI>>();
+  private Map<URI, Set<Journal>> buildCarrierMap(URI oid, Session s) {
+    Map<URI, Set<Journal>> carriers = new HashMap<URI, Set<Journal>>();
 
     for (String jName : journalFilters.keySet()) {
-      Journal j = (Journal) journalCache.get(jName).getObjectValue();
-      if (j == null)
-        j = getAndLoadJournal(jName, s);
+      Element e = journalCache.get(jName);
+      Journal j = (e != null) ? (Journal) e.getObjectValue() : getAndLoadJournal(jName, s);
 
       Set<URI> obj = getObjects(jName, oid, s);
       for (URI o : obj)
-        put(carriers, o, j.getId());
+        put(carriers, o, j);
     }
 
     return carriers;
@@ -405,6 +412,13 @@ public class JournalService {
     return j;
   }
 
+  private Journal getAndLoadJournal(URI id, Session s) {
+    Journal j = s.get(Journal.class, id.toString());
+    if (j != null)
+      loadJournal(j, new HashSet<Aggregation>(), s);
+    return j;
+  }
+
   /** 
    * Get the names of the {@link org.topazproject.otm.Filter session filters} associated with the
    * specified journal.
@@ -429,6 +443,20 @@ public class JournalService {
       return (Journal) e.getObjectValue();
 
     return getAndLoadJournal(jName, session);
+  }
+
+  /** 
+   * Get the specified journal. This assumes an active transaction on the session.
+   * 
+   * @param id  the journal's id
+   * @return the journal, or null if no found
+   */
+  public Journal getJournal(URI id) {
+    Element e = journalCache.get(id);
+    if (e != null)
+      return (Journal) e.getObjectValue();
+
+    return getAndLoadJournal(id, session);
   }
 
   /** 
@@ -460,19 +488,29 @@ public class JournalService {
    * Get the list of journals which carry the given object (e.g. article).
    * 
    * @param oid the info:&lt;oid&gt; uri of the object
-   * @return the list of ids of journals which carry this object; will be empty if this object
+   * @return the list of journals which carry this object; will be empty if this object
    *         doesn't belong to any journal
    */
-  public Set<URI> getJournalsForObject(URI oid) {
+  public Set<Journal> getJournalsForObject(URI oid) {
+    Set<Journal> jnlList;
+
     Element jl = objectCarriers.get(oid);
     if (jl == null) {
-      Collection<Set<URI>> jnlSets = buildCarrierMap(oid, session).values();
-      Set<URI> jnlList = (jnlSets.size() > 0) ? jnlSets.iterator().next() : Collections.EMPTY_SET;
-      jl = new Element(oid, jnlList);
-      objectCarriers.put(jl);
+      Collection<Set<Journal>> jnlSets = buildCarrierMap(oid, session).values();
+      jnlList = (jnlSets.size() > 0) ? jnlSets.iterator().next() : Collections.EMPTY_SET;
+      objectCarriers.put(new Element(oid, getIds(jnlList)));
+    } else {
+      jnlList = new HashSet<Journal>();
+      for (URI id : (Set<URI>) jl.getObjectValue()) {
+        Journal j = getJournal(id);
+        if (j == null)
+          log.error("Unexpected null journal for id '" + id + "'");
+        else
+          jnlList.add(j);
+      }
     }
 
-    return (Set<URI>) jl.getObjectValue();
+    return jnlList;
   }
 
   /** 
