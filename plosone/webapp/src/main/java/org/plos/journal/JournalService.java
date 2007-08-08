@@ -391,6 +391,28 @@ public class JournalService {
     return carriers;
   }
 
+  private void updateCarrierMap(Journal j, boolean deleted, Session s) {
+    Map<URI, Set<Journal>> carriers = new HashMap<URI, Set<Journal>>();
+
+    Set<URI> obj = deleted ? Collections.EMPTY_SET : getObjects(j.getKey(), null, s);
+
+    for (URI o : (List<URI>) objectCarriers.getKeys()) {
+      Element e = objectCarriers.get(o);
+      if (e == null)
+        continue;
+      Set<URI> jIds = (Set<URI>) e.getObjectValue();
+
+      boolean mod = jIds.remove(j.getId());
+      if (obj.remove(o)) {
+        jIds.add(j.getId());
+        mod ^= true;
+      }
+
+      if (mod)
+        objectCarriers.put(e);
+    }
+  }
+
   private Set<URI> getObjects(String jName, URI obj, Session s) {
     Set<String> oldFilters = s.listFilters();
     for (String fn : oldFilters)
@@ -426,13 +448,16 @@ public class JournalService {
 
     Journal j = (Journal) l.get(0);
     loadJournal(j, new HashSet<Aggregation>(), s);
+    updateCarrierMap(j, false, s);
     return j;
   }
 
   private Journal getAndLoadJournal(URI id, Session s) {
     Journal j = s.get(Journal.class, id.toString());
-    if (j != null)
+    if (j != null) {
       loadJournal(j, new HashSet<Aggregation>(), s);
+      updateCarrierMap(j, false, s);
+    }
     return j;
   }
 
@@ -499,17 +524,18 @@ public class JournalService {
    */
   public void journalWasModified(Journal j) {
     loadJournal(j, new HashSet<Aggregation>(), session);
-    // FIXME: update carrier map
+    updateCarrierMap(j, false, session);
   }
 
   /** 
    * Signal that the given journal was deleted. The object lists will be updated.
+   * This assumes an active transaction on the session.
    * 
    * @param j the journal that was deleted.
    */
   public void journalWasDeleted(Journal j) {
     removeJournal(j);
-    // FIXME: update carrier map
+    updateCarrierMap(j, true, session);
   }
 
   /** 
