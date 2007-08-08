@@ -160,6 +160,22 @@ public class JournalService {
     journalCache.put(new Element(j.getId(), j));
   }
 
+  private void removeJournal(Journal j) {
+    if (log.isDebugEnabled())
+      log.debug("removing journal '" + j.getKey() + "'");
+
+    synchronized (sf) {
+      Set<String> oldDefs = journalFilters.remove(j.getKey());
+      if (oldDefs != null) {
+        for (String fn : oldDefs)
+          sf.removeFilterDefinition(fn);
+      }
+    }
+
+    journalCache.remove(j.getKey());
+    journalCache.remove(j.getId());
+  }
+
   private Map<String, FilterDefinition> getAggregationFilters(Aggregation a, String pfx, Session s,
                                                               Set<Aggregation> processed) {
     processed.add(a);
@@ -483,6 +499,17 @@ public class JournalService {
    */
   public void journalWasModified(Journal j) {
     loadJournal(j, new HashSet<Aggregation>(), session);
+    // FIXME: update carrier map
+  }
+
+  /** 
+   * Signal that the given journal was deleted. The object lists will be updated.
+   * 
+   * @param j the journal that was deleted.
+   */
+  public void journalWasDeleted(Journal j) {
+    removeJournal(j);
+    // FIXME: update carrier map
   }
 
   /** 
