@@ -16,7 +16,9 @@
 <link rel="shortcut icon" href="${freemarker_config.context}/images/pone_favicon.ico" type="image/x-icon" />
 <@s.url id="homeURL" includeParams="none" includeContext="true" namespace="/" action="home"/>
 <link rel="home" title="home" href="${homeURL}" />
-<link rel="alternate" type="application/rss+xml" title="${freemarker_config.getArticleTitlePrefix(journalContext)} New Articles" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}/rss/PLoSONE.xml" />
+<link rel="alternate" type="application/rss+xml"
+  title="${freemarker_config.getArticleTitlePrefix(journalContext)} ${rssName?html}"
+  href="http://${freemarker_config.plosOneHost}${freemarker_config.context}${rssPath}" />
 
 <#include "../css/global_css.ftl">
 <#include "../javascript/global_js.ftl">

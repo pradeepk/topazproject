@@ -23,11 +23,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration.Configuration;
+import org.plos.configuration.ConfigurationStore;
+
 /**
  * Base class for all actions.
  */
 public abstract class BaseActionSupport extends ActionSupport {
-  private static final Log log = LogFactory.getLog(BaseActionSupport.class);
+  private static final Log           log  = LogFactory.getLog(BaseActionSupport.class);
+  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+
+  protected static final String feedBasePath    = CONF.getString("pub.feed.basePath", "/article/");
+  private   static final String feedDefaultFile = CONF.getString("pub.feed.defaultFile", "feed");
+  private   static final String feedDefaultName = CONF.getString("pub.feed.defaultName", "New Articles");
+
   /**
    * This overrides the deprecated super inplementation and returns an empty implementation as we
    * want to avoid JSON serializing the deprecated implementation when it tries to serialize
@@ -84,6 +93,20 @@ public abstract class BaseActionSupport extends ActionSupport {
     final String url = urlBuilder.toString();
     log.debug("Url for redirection (on getting proxy invalidation!?) = " + url);
     return url;
+  }
+
+  /**
+   * @return the name of the rss feed for a page (will be prefixed by the journal name)
+   */
+  public String getRssName() {
+    return feedDefaultName;
+  }
+
+  /**
+   * @return the URL path for the rss feed for a page
+   */
+  public String getRssPath() {
+    return feedBasePath + feedDefaultFile;
   }
 
   private HttpServletResponse getResponse() {

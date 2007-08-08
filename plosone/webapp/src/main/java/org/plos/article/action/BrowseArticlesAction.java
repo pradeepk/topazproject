@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.net.URLEncoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,13 +23,20 @@ import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
 import org.plos.models.Article;
 
+import org.apache.commons.configuration.Configuration;
+import org.plos.configuration.ConfigurationStore;
+
 /**
  * @author stevec
  *
  */
 public class BrowseArticlesAction extends BaseActionSupport  {
 
-  private static final Log log = LogFactory.getLog(BrowseArticlesAction.class);
+  private static final Log           log  = LogFactory.getLog(BrowseArticlesAction.class);
+  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+  
+  private static final String feedCategoryPrefix = CONF.getString("pub.feed.categoryPrefix", "feed?category=");
+  
   private String field;
   private int catId;
   private int startPage;
@@ -254,5 +262,21 @@ public class BrowseArticlesAction extends BaseActionSupport  {
    */
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
+  }
+
+  @Override
+  public String getRssName() {
+    return categoryNames.length > catId ? categoryNames[catId] : super.getRssName();
+  }
+
+  private static String canonicalCategoryPath(String categoryName) {
+    return URLEncoder.encode(categoryName);
+  }
+
+  @Override
+  public String getRssPath() {
+    return categoryNames.length > catId
+      ? feedBasePath + feedCategoryPrefix + canonicalCategoryPath(categoryNames[catId])
+      : super.getRssPath();
   }
 }
