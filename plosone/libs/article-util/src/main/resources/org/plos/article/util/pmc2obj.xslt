@@ -164,7 +164,7 @@
                 xmlns:dc_terms="http://purl.org/dc/terms/"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
-    <rdf:type rdf:resource="http://rdf.plos.org/RDF/articleType/researchArticle"/>
+    <rdf:type rdf:resource="http://rdf.plos.org/RDF/articleType/{$fixed-article/@article-type}"/>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($article-doi)"/></dc:identifier>
     <dc:title rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/title-group/article-title"/></xsl:call-template></dc:title>
@@ -251,7 +251,10 @@
         <xsl:with-param name="id"
             select="xs:anyURI(concat(my:doi-to-uri($article-doi), '#bibliographicCitation'))"/>
         <xsl:with-param name="type"
-            select="xs:anyURI('http://rdf.plos.org/RDF/articleType/researchArticle')"/>
+            select="xs:anyURI(
+                concat('http://rdf.plos.org/RDF/articleType/', $fixed-article/@article-type))"/>
+        <xsl:with-param name="key"
+            select="()"/>
         <xsl:with-param name="year"
             select="if ($pub-date) then substring($pub-date, 1, 4) else ()"/>
         <xsl:with-param name="month"
@@ -299,6 +302,7 @@
               select="if (citation/@citation-type) then
                         xs:anyURI(concat('http://rdf.plos.org/RDF/articleType/', citation/@citation-type))
                       else ()"/>
+          <xsl:with-param name="key"      select="label"/>
           <xsl:with-param name="year"     select="citation/year"/>
           <xsl:with-param name="month"    select="citation/month"/>
           <xsl:with-param name="volume"   select="citation/volume"/>
@@ -331,6 +335,7 @@
                 xmlns:dc_terms="http://purl.org/dc/terms/">
     <xsl:param name="id"       as="xs:anyURI"/>
     <xsl:param name="type"     as="xs:anyURI?"/>
+    <xsl:param name="key"      as="xs:string?"/>
     <xsl:param name="year"     as="xs:string?"/>
     <xsl:param name="month"    as="xs:string?"/>
     <xsl:param name="volume"   as="xs:string?"/>
@@ -350,6 +355,10 @@
       <rdf:type rdf:resource="http://purl.org/net/nknouf/ns/bibtex#Entry"/>
       <xsl:if test="$type">
         <rdf:type rdf:resource="{$type}"/>
+      </xsl:if>
+
+      <xsl:if test="$key">
+        <bibtex:hasKey rdf:datatype="{$xs-ns}string"><xsl:value-of select="$key"/></bibtex:hasKey>
       </xsl:if>
 
       <xsl:if test="$year">
