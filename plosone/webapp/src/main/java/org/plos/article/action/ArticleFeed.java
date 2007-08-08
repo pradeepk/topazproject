@@ -186,7 +186,7 @@ public class ArticleFeed extends BaseActionSupport {
     feed.setOtherLinks(otherLinks);
 
     String id = FEED_ID;
-    if (category != null)
+    if (category != null && category.length() > 0)
       id += "?category=" + category;
     if (author != null)
       id += "?author=" + author;
@@ -196,7 +196,7 @@ public class ArticleFeed extends BaseActionSupport {
       feed.setTitle(title);
     else {
       String feedTitle = FEED_TITLE;
-      if (category != null)
+      if (category != null && category.length() > 0)
         feedTitle += " - Category " + category;
       if (author != null)
         feedTitle += " - Author " + author;
@@ -230,6 +230,8 @@ public class ArticleFeed extends BaseActionSupport {
         threeMonthsAgo.add(Calendar.MONTH, -3);
         startDate = threeMonthsAgo.getTime().toString();
     }
+    if (startDate.length() == 0)
+      startDate = null; // shortuct for no startDate, show all articles
     if (log.isDebugEnabled()) {
       log.debug("generating feed w/startDate=" + startDate);
     }
@@ -238,7 +240,7 @@ public class ArticleFeed extends BaseActionSupport {
 
     // was category= URI param specified?
     List<String> categoriesList = new ArrayList();
-    if (category != null) {
+    if (category != null && category.length() > 0) {
       categoriesList.add(category);
       if (log.isDebugEnabled()) {
         log.debug("generating feed w/category=" + category);
