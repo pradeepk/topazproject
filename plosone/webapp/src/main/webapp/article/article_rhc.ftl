@@ -28,9 +28,9 @@
       <h6>Commentary</h6>
       <ol>
         <#if Session[freemarker_config.userAttributeKey]?exists>
-            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a>
+            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a></li>
         <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
+            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a></li>
         </#if>
         <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
 
@@ -94,9 +94,9 @@
       <h6>Commentary</h6>
       <ol>
         <#if Session[freemarker_config.userAttributeKey]?exists>
-            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a>
+            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a></li>
         <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
+            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a></li>
         </#if>
         <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
 

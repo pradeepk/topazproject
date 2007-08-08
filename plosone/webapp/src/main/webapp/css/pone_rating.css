@@ -44,6 +44,10 @@ div.ratingDetail blockquote { background: none!important; border: 0!important; p
 
 div.rsep { margin-top: 10px;  margin-right: -5px; padding: 0; border: none; background: #fff; }
 
+/* Special for the inline overall rating appearing in the right-hand column widget */
+.inline-rating-rhc { float:left; margin-top:3px !important; position:static; } 
+.inline-rating-rhc .current-rating { float:none; position:static; }
+.inline-rating-rhc .overall-rating { margin-left:0; }
 
 .inline-rating { margin: 11px 85px -11px -85px; }
 /* This is a hack for Safari.  This needs to go last because any instruction after this next line will be ignored  */

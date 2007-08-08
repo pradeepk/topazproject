@@ -7,13 +7,10 @@
             <h6>Average Rating <a href="${ratingsURL}" class="rating">(${numUsersThatRated} User Rating${char})</a></h6>
             <ol>
               <li>
-                <span class="inline-rating">
-                  <ul class="star-rating pone_rating" title="overall">
-                    <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
-                    <li class="current-rating overall-rating pct${overallPct}">Currently ${overallRoundedAverage?string("0.#")}/5 Stars.</li>
-                  </ul>
-                </span>
-
+		<ul class="star-rating pone_rating inline-rating-rhc" title="overall">
+		    <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
+		    <li class="current-rating overall-rating pct${overallPct}">Currently ${overallRoundedAverage?string("0.#")}/5 Stars.</li>
+		</ul>
                 <a href="javascript:void(0);" onclick="return topaz.domUtil.swapDisplayTextMode(this, 'ratingAverages', null, 'Hide all categories', 'See all categories');" class="rating catAvg">See all categories</a>
                 <fieldset id="ratingAverages">
                   <ol class="ratingAvgs">
