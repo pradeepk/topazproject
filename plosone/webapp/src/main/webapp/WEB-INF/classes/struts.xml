@@ -201,7 +201,7 @@
   </package>
 
   <package name="static" extends="default" namespace="/static">
-    <action name="about">
+    <action name="about" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/about.ftl</param>
       </result>
