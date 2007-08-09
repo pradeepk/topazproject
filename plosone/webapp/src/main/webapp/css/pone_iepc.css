@@ -102,7 +102,6 @@ html>body #home { height: auto }
 * html div.ratingComment div.hd{ border: 1px solid #fff; }
 * html div.ratingComment div.detail { border: none; }
 * html div.ratingComment div.hd { border: 1px solid #ccc; border-left: 2px; margin-top: -1px; margin-right: -1px;}
-* html div.ratingComment div.close a { top: -22px; right: 19px;}
 * html div.source { width: auto; }
 * html div.ratingComment { margin-bottom: 20px; margin-left: 5px; margin-right: 5px;}
 * html div.ratingComment a.icon { }
