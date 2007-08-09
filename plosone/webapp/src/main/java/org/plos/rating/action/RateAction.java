@@ -217,10 +217,8 @@ public class RateAction extends BaseActionSupport {
       }
 
       // Rating comment
-      if (!StringUtils.isBlank(commentTitle) || !StringUtils.isBlank(comment)) {
-        articleRating.getBody().setCommentTitle(commentTitle);
-        articleRating.getBody().setCommentValue(comment);
-      }
+      articleRating.getBody().setCommentTitle(commentTitle);
+      articleRating.getBody().setCommentValue(comment);
 
       // if this is a new Rating, the summary needs to know
       if (newRating) {
