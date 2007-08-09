@@ -346,17 +346,16 @@ options {
         Set<String> eqlSet = eqls.remove(key);
         eqlSets.add(eqlSet);
 
-        boolean found;
+        Set<String> tmp = new HashSet<String>();
         do {
-          found = false;
+          tmp.clear();
           for (String var : eqlSet) {
             Set<String> set = eqls.remove(var);
-            if (set != null) {
-              eqlSet.addAll(set);
-              found = true;
-            }
+            if (set != null)
+              tmp.addAll(set);
           }
-        } while (found);
+          eqlSet.addAll(tmp);
+        } while (tmp.size() > 0);
       }
 
       // choose a survivor for each group, preferring context over user over temporary vars

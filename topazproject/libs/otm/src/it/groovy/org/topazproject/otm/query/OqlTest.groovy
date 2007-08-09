@@ -203,6 +203,16 @@ public class OqlTest extends GroovyTestCase {
         row { object (class:PublicAnnotation.class, id:id2) }
         row { object (class:PublicAnnotation.class, id:id3) }
       }
+
+      // many <mulgara:equals>
+      r = s.createQuery("""
+          select a from Article a where b := a and c := a and d := a and
+          e := b and f := b and g := b and h := c and i := c and
+          j := f and k := f and l := f and m := f and n := k and o := k and p := k;
+          """).execute()
+      checker.verify(r) {
+        row { object (class:Article.class, uri:id4) }
+      }
     }
   }
 
