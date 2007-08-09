@@ -1,5 +1,3 @@
-<div id="discussionContainer">
-
   <div id="content">
     <h1>Ratings</h1>
       <div class="source">
@@ -18,8 +16,6 @@
         </a>
         <!--<p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>-->
       </div>
-
-      <div class="rsep"></div>
 
       <#list articleRatingSummaries as articleRatingSummary>
         <@s.url id="fetchUserURL" namespace="/user" action="showUser" userId="${articleRatingSummary.creatorURI}"/>
@@ -93,7 +89,7 @@
               <li>
                 <#if Session[freemarker_config.userAttributeKey]?exists>
                   <a href="#" onclick="topaz.responsePanel.show(this, _dcf, 'toolbar', '${articleRatingSummary.ratingId}', null, null, 2); return false;" class="flag tooltip" title="Request Review">Request review</a>
-                <#else>							
+                <#else>
                   <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="flag tooltip" title="Request review">Request review</a>
                 </#if>
               </li>
@@ -103,7 +99,5 @@
         </div>
 
         <div class="rsep"></div>
-
       </#list>
     </div>
-</div>
