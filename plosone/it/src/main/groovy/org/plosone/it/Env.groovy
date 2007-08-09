@@ -124,7 +124,8 @@ public class Env {
     ant.forget {
       ant.exec(executable: 'mvn') {
         arg(line: '-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install
-         + ' -Dtopaz.mulgara.databaseDir=' + install + '/data/mulgara')
+         + ' -Dtopaz.mulgara.databaseDir=' + install + '/data/mulgara -Dlog4j.configuration='
+         + mulgaraLog4j())
       }
       ant.echo 'Mulgara stopped'
     }
@@ -141,7 +142,8 @@ public class Env {
     ant.forget {
       ant.exec(executable: 'mvn') {
         arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
-         + ' -Dorg.plos.configuration.overrides=defaults-dev.xml')
+         + ' -Dorg.plos.configuration.overrides=defaults-dev.xml -Dlog4j.configuration=' 
+         + plosoneLog4j())
       }
       ant.echo 'PlosOne Stopped'
     }
@@ -175,6 +177,7 @@ public class Env {
     return pom(dir.parentFile)
   }
 
+
   private void load() {
     ant.exec(executable: 'mvn') {
       arg(line: '-f ' + pom() + ' ant-tasks:tgz-explode -Dlocation=' + install 
@@ -202,9 +205,21 @@ public class Env {
   }
 
   private String rebuildInput() {
-     String input = install + '/fedora-rebuild-input'
+     return resource('/fedora-rebuild-input')
+  }
+  
+  private String plosoneLog4j() {
+     return 'file://' + resource('/plosoneLog4j.xml')
+  }
+  
+  private String mulgaraLog4j() {
+     return 'file://' + resource('/mulgaraLog4j.xml')
+  }
+
+  private String resource(String name) {
+     String input = install + name
      def out = new BufferedOutputStream(new FileOutputStream(input))
-     out << getClass().getResourceAsStream('/fedora-rebuild-input')
+     out << getClass().getResourceAsStream(name)
      out.close()
      return input
   }
