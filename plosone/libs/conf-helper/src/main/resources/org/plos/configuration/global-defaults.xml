@@ -99,11 +99,14 @@
     
   <topaz>
     <mulgara>
+      <!-- The base uri of all the models that we create in mulgara.-->
       <baseuri>local:///topazproject</baseuri>
     </mulgara>
     <objects>
+      <!-- The base uri for all objects that we create in fedora. -->
       <base-uri>info:doi/10.1371/</base-uri>
     </objects>
+    <!-- The list of models in mulgara that we depend on/create -->
     <models>
       <ri type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=ri</ri>
       <articles type="${topaz.models.ri[@type]}">${topaz.models.ri}</articles>
@@ -180,6 +183,12 @@
       </fgsrepository>
     </fedoragsearch>
 
+    <!-- 
+    The pdpName configures the XACML-PDP used by the corresponding XACML-PEP.
+    PDPs are configured seperately in a PDPConfig.xml. The default PDPConfig 
+    file is in WEB-INF/ directory. It can be overridden by specifying a 
+    -Dcom.sun.xacml.PDPConfigFile=fileName 
+    -->
     <articles>
       <pdpName>standard-pdp</pdpName>
     </articles>
