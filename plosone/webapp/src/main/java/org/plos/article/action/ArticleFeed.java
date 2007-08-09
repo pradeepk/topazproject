@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -70,15 +72,18 @@ import org.xml.sax.InputSource;
 
 import org.jdom.Element;
 
+import net.sf.ehcache.Ehcache;
 
 /**
  * Get a variety of Article Feeds.
  *
  * @author Jeff Suttor
+ * @author Eric Brown
  */
 public class ArticleFeed extends BaseActionSupport {
 
   private ArticleOtmService articleOtmService;
+  private Ehcache feedCache;
 
   private Templates toHtmlTranslet;
   private DocumentBuilderFactory factory;
@@ -131,8 +136,28 @@ public class ArticleFeed extends BaseActionSupport {
 
     }
 
-    // generate feed
-    wireFeed = getFeed(uri);
+    // Compute startDate default as it is needed to compute cache-key (its default is tricky)
+    if (startDate == null) {
+        // default is to go back <= 3 months
+        GregorianCalendar threeMonthsAgo = new GregorianCalendar();
+        threeMonthsAgo.add(Calendar.MONTH, -3);
+        startDate = threeMonthsAgo.getTime().toString();
+    }
+    if (startDate.length() == 0)
+      startDate = null; // shortuct for no startDate, show all articles
+    if (log.isDebugEnabled()) {
+      log.debug("generating feed w/startDate=" + startDate);
+    }
+
+    // Get feed if cached or generate feed by querying OTM
+    String cacheKey = getCacheKey();
+    net.sf.ehcache.Element e = feedCache.get(cacheKey);
+    if (e != null)
+      wireFeed = (WireFeed) e.getObjectValue();
+    else {
+      wireFeed = getFeed(uri);
+      feedCache.put(new net.sf.ehcache.Element(cacheKey, wireFeed));
+    }
 
     // Action response type is PlosOneFeedResult, it will return wireFeed as a response.
 
@@ -222,19 +247,6 @@ public class ArticleFeed extends BaseActionSupport {
     feed.setAuthors(feedAuthors);
 
     // build up OTM query, take URI params first, then sensible defaults
-
-    // was startDate= URI param specified?
-    if (startDate == null) {
-        // default is to go back <= 3 months
-        GregorianCalendar threeMonthsAgo = new GregorianCalendar();
-        threeMonthsAgo.add(Calendar.MONTH, -3);
-        startDate = threeMonthsAgo.getTime().toString();
-    }
-    if (startDate.length() == 0)
-      startDate = null; // shortuct for no startDate, show all articles
-    if (log.isDebugEnabled()) {
-      log.debug("generating feed w/startDate=" + startDate);
-    }
 
     // ignore endDate, default is null
 
@@ -458,6 +470,39 @@ public class ArticleFeed extends BaseActionSupport {
    */
   public void setArticleOtmService(final ArticleOtmService articleOtmService) {
     this.articleOtmService = articleOtmService;
+  }
+
+  private String getCacheKey() {
+    Map<String, String> key = new TreeMap<String, String>();
+    if (startDate != null)
+      key.put("sd", startDate);
+    if (endDate != null)
+      key.put("ed", endDate);
+    if (category != null && category.length() > 0)
+      key.put("cat", category);
+    if (author != null)
+      key.put("aut", author);
+    if (maxResults != -1)
+      key.put("cnt", Integer.toString(maxResults));
+    if (!relativeLinks)
+      key.put("rel", "true");
+    if (!extended)
+      key.put("ext", "true");
+    if (title != null)
+      key.put("tit", title);
+    if (selfLink != null)
+      key.put("self", selfLink);
+
+    return key.toString();
+  }
+
+  /**
+   * Set ehcache instance via spring
+   *
+   * @param the ehcache instance
+   */
+  public void setFeedCache(final Ehcache feedCache) {
+    this.feedCache = feedCache;
   }
 
   /**

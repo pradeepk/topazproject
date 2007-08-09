@@ -528,6 +528,12 @@
     </property>
   </bean>
 
+  <bean id="feedCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>FeedCache</value>
+    </property>
+  </bean>
+
   <!-- JMX exporting -->
   <bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
     <property name="autodetect" value="true"/>

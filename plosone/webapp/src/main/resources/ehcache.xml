@@ -519,4 +519,19 @@
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
+    <!--
+    Article Feed cache
+    This cache stores rss feeds
+    -->
+    <cache name="FeedCache"
+           maxElementsInMemory="100000"
+           eternal="true"
+           timeToIdleSeconds="900"
+           timeToLiveSeconds="900"
+           overflowToDisk="false">
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    </cache>
 </ehcache>
