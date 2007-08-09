@@ -24,14 +24,17 @@ public class EnvCommand {
    */
   public static void main(String[] args) throws Exception {
     if (args.length < 1) {
-      System.out.println("Usage: EnvCommand <install-location> [start/stop/install/restore]");
-
+      System.out.println("Usage: EnvCommand <install-location> [start/stop/install/restore] " + 
+          "[data-artifact (eg. org.plosone:plosone-it-data:07)]");
       return;
     }
 
-    Env    env = new Env(args[0], null);
-
     String cmd = (args.length > 1) ? args[1].toLowerCase() : "start";
+    String data = (args.length > 2) ? args[2] : null;
+
+    Env    env = new Env(args[0], data);
+
+    env.invokeMethod(cmd, new Object[0]);
 
     if (cmd.equals("start")) {
       Object block = new Object();
@@ -41,13 +44,6 @@ public class EnvCommand {
           block.wait();
         }
       }
-    } else if (cmd.equals("stop"))
-      env.stop();
-    else if (cmd.equals("install"))
-      env.install();
-    else if (cmd.equals("restore"))
-      env.restore();
-    else
-      System.out.println("Unknown command : " + cmd);
+    }
   }
 }

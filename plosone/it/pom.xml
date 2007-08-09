@@ -94,6 +94,7 @@
           <arguments>
             <argument>${Env}</argument>
             <argument>${command}</argument>
+            <argument>${data}</argument>
           </arguments>
         </configuration>
       </plugin>
