@@ -72,16 +72,30 @@
         <artifactId>groovy-maven-plugin</artifactId>
         <executions>
           <execution>
+            <phase>process-resources</phase>
             <id>compile</id>
             <goals><goal>compile</goal></goals>
           </execution>
-          <!--
-          <execution>
-            <id>testCompile</id>
-            <goals><goal>testCompile</goal></goals>
-          </execution>
-          -->
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>exec</id>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>org.plosone.it.EnvCommand</mainClass>
+          <arguments>
+            <argument>${Env}</argument>
+            <argument>${command}</argument>
+          </arguments>
+        </configuration>
       </plugin>
     </plugins>
   </build>
