@@ -17,7 +17,7 @@
 
     <fieldset>
       <legend><b>Actions</b></legend>
-      <table>
+      <table border="1" cellpadding="2" cellspacing="0">
         <tr>
           <td>
             <@s.url id="editAnnotation" namespace="/admin" action="editAnnotation"/>
@@ -26,6 +26,10 @@
           <td>
             <@s.url id="findUserURL" namespace="/admin" action="findUser" />
             <@s.a href="%{findUserURL}">Find User</@s.a>
+          </td>
+          <td>
+            <@s.url id="viewVirtualJournalsURL" namespace="/admin" action="viewVirtualJournals" />
+            <@s.a href="%{viewVirtualJournalsURL}">View Virtual Journals</@s.a>
           </td>
         </tr>
       </table>

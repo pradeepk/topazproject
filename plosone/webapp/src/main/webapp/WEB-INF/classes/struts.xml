@@ -984,6 +984,10 @@
         <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
       </result>
     </action>
+
+    <action name="viewVirtualJournals" class="org.plos.admin.action.ViewVirtualJournalsAction">
+        <result name="success">/WEB-INF/pages/admin/viewVirtualJournals.ftl</result>
+    </action>
   </package>
 
   <!-- make Clinical Trial Actions and configs available  -->

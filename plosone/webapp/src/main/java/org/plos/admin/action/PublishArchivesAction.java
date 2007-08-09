@@ -96,6 +96,8 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
                 articlesInJournal.add(URI.create(article));
                 journal.setSimpleCollection(articlesInJournal);
 
+                // update Journal
+                session.saveOrUpdate(journal);
                 journalService.journalWasModified(journal);
 
                 final String message = "Article " + article
