@@ -27,7 +27,6 @@
               <a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.gif" alt="Moore Foundation"/></a>
             </div><!-- end : block partner -->
             <div class="block banner">
-              <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
               <script language='JavaScript' type='text/javascript'>
               <!--
                  if (!document.phpAds_used) document.phpAds_used = ',';
@@ -44,7 +43,6 @@
               </script><noscript><a href='http://ads.plos.org/adclick.php?n=a50d73a8' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:38&amp;source=ONE&amp;n=a50d73a8' border='0' alt=''></a></noscript>
             </div><!-- end : block banner -->
             <div class="block banner">
-              <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
               <script language='JavaScript' type='text/javascript'>
               <!--
                  if (!document.phpAds_used) document.phpAds_used = ',';
@@ -152,7 +150,6 @@
           <!-- begin : col 4 -->
           <div class="subcol last">
             <div class="block banner">
-              <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
               <script language='JavaScript' type='text/javascript'>
               <!--
                  if (!document.phpAds_used) document.phpAds_used = ',';
@@ -173,7 +170,6 @@
 
         <div id="lower">
           <div class="col first">
-            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
@@ -190,7 +186,6 @@
             </script><noscript><a href='http://ads.plos.org/adclick.php?n=a58966f8' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:160&amp;source=ONE&amp;n=a58966f8' border='0' alt='' /></a></noscript>
 
 
-            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
@@ -206,7 +201,6 @@
             //-->
             </script><noscript><a href='http://ads.plos.org/adclick.php?n=a67dfba7' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:161&amp;source=ONE&amp;n=a67dfba7' border='0' alt='' /></a></noscript>
 
-            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';

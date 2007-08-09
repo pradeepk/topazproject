@@ -19,7 +19,6 @@
 	<!-- end : left banner slot -->
 	<!-- begin : right banner slot -->
 	<div class="right">
-<script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
 <script language='JavaScript' type='text/javascript'>
 <!--
    if (!document.phpAds_used) document.phpAds_used = ',';
