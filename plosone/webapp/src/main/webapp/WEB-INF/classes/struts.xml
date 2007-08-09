@@ -207,157 +207,157 @@
       </result>
     </action>
 
-    <action name="authors">
+    <action name="authors" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/authors.ftl</param>
       </result>
     </action>
 
-    <action name="browse">
+    <action name="browse" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/browse.ftl</param>
       </result>
     </action>
 
-    <action name="checklist">
+    <action name="checklist" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/checklist.ftl</param>
       </result>
     </action>
 
-    <action name="commentGuidelines">
+    <action name="commentGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/comment_guidelines.ftl</param>
       </result>
     </action>
 
-    <action name="competing">
+    <action name="competing" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/competing.ftl</param>
       </result>
     </action>
 
-    <action name="contact">
+    <action name="contact" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/contact.ftl</param>
       </result>
     </action>
 
-    <action name="edboard">
+    <action name="edboard" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/edboard.ftl</param>
       </result>
     </action>
 
-    <action name="faq">
+    <action name="faq" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/faq.ftl</param>
       </result>
     </action>
 
-    <action name="figureGuidelines">
+    <action name="figureGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/figure_guidelines.ftl</param>
       </result>
     </action>
 
-    <action name="guidelines">
+    <action name="guidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/guidelines.ftl</param>
       </result>
     </action>
 
-    <action name="help">
+    <action name="help" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/help.ftl</param>
       </result>
     </action>
 
-    <action name="information">
+    <action name="information" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/information.ftl</param>
       </result>
     </action>
 
-    <action name="latex">
+    <action name="latex" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/latex.ftl</param>
       </result>
     </action>
 
-    <action name="license">
+    <action name="license" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/license.ftl</param>
       </result>
     </action>
 
-    <action name="media">
+    <action name="media" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/media.ftl</param>
       </result>
     </action>
 
-    <action name="policies">
+    <action name="policies" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/policies.ftl</param>
       </result>
     </action>
 
-    <action name="privacy">
+    <action name="privacy" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/privacy.ftl</param>
       </result>
     </action>
 
-    <action name="reviewerGuidelines">
+    <action name="reviewerGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/reviewer_guidelines.ftl</param>
       </result>
     </action>
 
-    <action name="rssFeeds">
+    <action name="rssFeeds" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/rss_feeds.ftl</param>
       </result>
     </action>
 
-    <action name="rssInfo">
+    <action name="rssInfo" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/rss_info.ftl</param>
       </result>
     </action>
 
-    <action name="sitemap">
+    <action name="sitemap" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/sitemap.ftl</param>
       </result>
     </action>
 
-    <action name="terms">
+    <action name="terms" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/terms.ftl</param>
       </result>
     </action>
 
-    <action name="users">
+    <action name="users" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/users.ftl</param>
       </result>
     </action>
 
-    <action name="whypublish">
+    <action name="whypublish" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/whypublish.ftl</param>
       </result>
     </action>
 
-    <action name="pageNotFound">
+    <action name="pageNotFound" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/pageNotFound.ftl</param>
       </result>
     </action>
 
-    <action name="error">
+    <action name="error" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/serverError.ftl</param>
       </result>
