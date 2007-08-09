@@ -510,10 +510,12 @@
      </constructor-arg>
   </bean>
 
-  <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+  <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+    destroy-method="shutdown">
     <property name="configLocation">
       <value>classpath:ehcache.xml</value>
     </property>
+    <property name="shared" value="true"/>
   </bean>
 
   <bean id="journalCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">

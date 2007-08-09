@@ -204,10 +204,8 @@
     <users>
       <pdpName>_default_</pdpName>
     </users>
-
     <life-cycle-listeners>
       <listener name="models">org.plos.bootstrap.WebAppListenerInitModels</listener>
-      <listener name="ehcache">net.sf.ehcache.constructs.web.ShutdownListener</listener>
     </life-cycle-listeners>
   </topaz>
 
