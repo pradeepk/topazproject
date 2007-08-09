@@ -194,16 +194,15 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- The configuration WebAppListner is not needed if MasterWebAppListener (below) is
-       configured as it pulls in the configuration stuff automatically. -->
-<!--
+  <!-- The configuration WebAppListner to pull in the configuration stuff automatically. -->
   <listener>
     <listener-class>org.plos.configuration.WebAppListener</listener-class>
   </listener>
--->
-
   <listener>
-    <listener-class>org.plos.bootstrap.MasterWebAppListener</listener-class>
+    <listener-class>org.plos.bootstrap.WebAppListenerInitModels</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.plos.bootstrap.permissions.WebAppListenerInitPermissionsModel</listener-class>
   </listener>
 
   <!-- to hook in the spring container -->
