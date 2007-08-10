@@ -13,8 +13,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.service.BaseConfigurableService;
-import org.plos.service.WSTopazContext;
-import org.plos.service.ImplInvocationHandler;
 import org.plos.xacml.XacmlUtil;
 
 import javax.xml.rpc.ServiceException;
@@ -30,7 +28,6 @@ public class PermissionWebService extends BaseConfigurableService {
   private String currentPrincipal;
 
   private static final Log      log    = LogFactory.getLog(PermissionWebService.class);
-  private static WSTopazContext ctx;
   private static PermissionsPEP pep;
   private static Permissions    impl;
 
@@ -39,10 +36,7 @@ public class PermissionWebService extends BaseConfigurableService {
       return impl;
     try {
       pep = new WSPermissionsPEP();
-      ctx  = new WSTopazContext(PermissionWebService.class.getName());
-      ctx.init(null);
-      impl   = new PermissionsImpl(pep, ctx);
-      impl = (Permissions)ImplInvocationHandler.newProxy(impl, ctx, log);
+      impl   = new PermissionsImpl(pep);
       log.info("Permissions service impl is ready for direct-connect");
     } catch (Exception e){
       throw new ServiceException("Failed to set-up direct-connect to permissions service", e);

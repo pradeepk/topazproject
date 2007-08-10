@@ -18,8 +18,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.service.WSTopazContext;
-
 import org.plos.permission.service.Permissions;
 import org.plos.permission.service.PermissionsImpl;
 
@@ -87,11 +85,8 @@ public abstract class PermissionFunction implements Function {
   // A List used by makeProcessingError() to save some steps.
   private static List processingErrList = null;
 
-  // Thread-Local based TopazContext
-  private static final WSTopazContext ctx = new WSTopazContext("xacml");
-
   // The singleton permissions-impl to use
-  private static final PermissionsImpl permissions = new PermissionsImpl(null, ctx);
+  private static final PermissionsImpl permissions = new PermissionsImpl(null);
 
   /**
    * Creates a new PermissionFunction object.
@@ -166,8 +161,6 @@ public abstract class PermissionFunction implements Function {
     String principal = result.getAttributeValue().encode();
 
     try {
-      ctx.activate();
-
       boolean ret = execute(permissions, resource, permission, principal);
 
       return new EvaluationResult(BooleanAttribute.getInstance(ret));
@@ -178,8 +171,6 @@ public abstract class PermissionFunction implements Function {
       log.warn(msg, e);
 
       return makeProcessingError(msg + ". " + e.getMessage());
-    } finally {
-      ctx.passivate();
     }
   }
 

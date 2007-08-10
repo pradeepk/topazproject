@@ -23,8 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
 
-import org.plos.service.TopazContext;
-
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import org.topazproject.mulgara.itql.AnswerException;
@@ -190,17 +188,14 @@ public class PermissionsImpl implements Permissions {
   }
 
   //
-  private final TopazContext   ctx;
   private final PermissionsPEP pep;
 
   /**
    * Create a new permission instance.
    *
    * @param pep the policy-enforcer to use for access-control
-   * @param ctx the topaz context
    */
-  public PermissionsImpl(PermissionsPEP pep, TopazContext ctx) {
-    this.ctx   = ctx;
+  public PermissionsImpl(PermissionsPEP pep) {
     this.pep   = pep;
   }
 
@@ -308,7 +303,7 @@ public class PermissionsImpl implements Permissions {
   public boolean isGranted(String resource, String permission, String principal)
                     throws RemoteException {
     if (principal == null)
-      principal = ctx.getUserName();
+      throw new NullPointerException("principal");
 
     if (grantsCache == null)
       return isInferred(GRANTS_MODEL, resource, permission, principal);
@@ -340,7 +335,7 @@ public class PermissionsImpl implements Permissions {
   public boolean isRevoked(String resource, String permission, String principal)
                     throws RemoteException {
     if (principal == null)
-      principal = ctx.getUserName();
+      throw new NullPointerException("principal");
 
     if (revokesCache == null)
       return isInferred(REVOKES_MODEL, resource, permission, principal);
@@ -369,16 +364,15 @@ public class PermissionsImpl implements Permissions {
   private void updateModel(String action, String model, Ehcache cache, String resource,
                            String[] permissions, String[] principals, boolean insert)
                     throws RemoteException {
-    String user = ctx.getUserName();
     permissions = validateUriList(permissions, "permissions", false);
 
     if (permissions.length == 0)
       return;
 
     if ((principals == null) || (principals.length == 0))
-      principals = new String[] { user };
-    else
-      principals = validateUriList(principals, "principals", true);
+      throw new NullPointerException("principal");
+
+    principals = validateUriList(principals, "principals", false);
 
     pep.checkAccess(action, ItqlHelper.validateUri(resource, "resource"));
 
@@ -386,10 +380,6 @@ public class PermissionsImpl implements Permissions {
 
     for (int i = 0; i < principals.length; i++) {
       String principal = principals[i];
-
-      if (principal == null)
-        principal = user;
-
       for (int j = 0; j < permissions.length; j++) {
         sb.append("<").append(resource).append("> ");
         sb.append("<").append(permissions[j]).append("> ");
@@ -502,9 +492,9 @@ public class PermissionsImpl implements Permissions {
   private String[] listPermissions(String action, String model, String resource, String principal)
                             throws RemoteException {
     if (principal == null)
-      principal = ctx.getUserName();
-    else
-      ItqlHelper.validateUri(principal, "principal");
+      throw new NullPointerException("principal");
+
+    ItqlHelper.validateUri(principal, "principal");
 
     pep.checkAccess(action, ItqlHelper.validateUri(resource, "resource"));
 
@@ -570,7 +560,7 @@ public class PermissionsImpl implements Permissions {
   private boolean isInferred(String model, String resource, String permission, String principal)
                       throws RemoteException {
     if (principal == null)
-      principal = ctx.getUserName();
+      throw new NullPointerException("principal");
 
     ItqlHelper.validateUri(resource, "resource");
     ItqlHelper.validateUri(permission, "permission");
