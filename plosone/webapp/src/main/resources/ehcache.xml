@@ -522,13 +522,15 @@
     <!--
     Article Feed cache
     This cache stores rss feeds
+    An entire feed could be quite big (~100k), but guess 2-5K is average?
     -->
     <cache name="FeedCache"
-           maxElementsInMemory="100000"
-           eternal="true"
-           timeToIdleSeconds="900"
-           timeToLiveSeconds="900"
-           overflowToDisk="false">
+           maxElementsInMemory="10000"
+           eternal="false"
+           timeToIdleSeconds="43200"
+           timeToLiveSeconds="43200"
+           overflowToDisk="true"
+           diskExpiryThreadIntervalSeconds="3600">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
