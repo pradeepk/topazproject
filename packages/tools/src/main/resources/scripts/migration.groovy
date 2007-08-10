@@ -85,7 +85,7 @@ String getName(name) {
 }
 
 String tostr(value) {
-  String s = value.toString()
+  String s = value?.toString()
   if (s != null && s.size() == 0)
     s = null
   return s
