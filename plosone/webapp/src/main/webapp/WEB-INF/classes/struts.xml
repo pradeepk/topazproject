@@ -985,8 +985,8 @@
       </result>
     </action>
 
-    <action name="viewVirtualJournals" class="org.plos.admin.action.ViewVirtualJournalsAction">
-        <result name="success">/WEB-INF/pages/admin/viewVirtualJournals.ftl</result>
+    <action name="manageVirtualJournals" class="org.plos.admin.action.ManageVirtualJournalsAction">
+        <result name="success">/WEB-INF/pages/admin/manageVirtualJournals.ftl</result>
     </action>
   </package>
 

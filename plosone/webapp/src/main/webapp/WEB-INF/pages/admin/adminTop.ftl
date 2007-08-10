@@ -28,8 +28,8 @@
             <@s.a href="%{findUserURL}">Find User</@s.a>
           </td>
           <td>
-            <@s.url id="viewVirtualJournalsURL" namespace="/admin" action="viewVirtualJournals" />
-            <@s.a href="%{viewVirtualJournalsURL}">View Virtual Journals</@s.a>
+            <@s.url id="manageVirtualJournalsURL" namespace="/admin" action="manageVirtualJournals" />
+            <@s.a href="%{manageVirtualJournalsURL}">Manage Virtual Journals</@s.a>
           </td>
         </tr>
       </table>
