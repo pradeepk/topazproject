@@ -117,7 +117,7 @@ public class EmailArticleAction extends UserActionSupport {
   }
 
   private boolean checkEmails (String emailList) {
-    final StringTokenizer emailTokens = new StringTokenizer(emailList);
+    final StringTokenizer emailTokens = new StringTokenizer(emailList, " \t\n\r\f,");
     if (emailTokens.countTokens() > MAX_TO_EMAIL) {
       addFieldError ("emailTo", "Maximum of " + MAX_TO_EMAIL + " email addresses");
       return false;
