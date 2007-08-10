@@ -21,7 +21,6 @@ import org.plos.annotation.FlagUtil;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.rating.service.RatingInfo;
 import org.plos.rating.service.RatingsService;
-import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 
@@ -35,7 +34,7 @@ import java.util.Collection;
  * Used for both annotation and reply services.
  * Provides the Create/Read/Delete annotation operations .
  */
-public class AnnotationService extends BaseConfigurableService {
+public class AnnotationService {
   private AnnotationWebService annotationWebService;
   private ReplyWebService replyWebService;
   private RatingsService ratingsService;

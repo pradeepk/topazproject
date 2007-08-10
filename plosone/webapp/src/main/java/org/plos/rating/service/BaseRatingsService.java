@@ -9,7 +9,6 @@
  */
 package org.plos.rating.service;
 
-import org.plos.service.BaseConfigurableService;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -17,7 +16,7 @@ import org.springframework.beans.factory.annotation.Required;
  * This code is BAAD clone work that demonstrates how difficult it is to use
  * the OTM.
  */
-public abstract class BaseRatingsService extends BaseConfigurableService {
+public abstract class BaseRatingsService {
   private String defaultType;
   private String encodingCharset = "UTF-8";
   private String applicationId;

@@ -141,7 +141,6 @@
 
   <bean id="ratingsService"
         class="org.plos.rating.service.RatingsService" scope="session">
-    <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="permissionWebService" ref="permissionWebService"/>
@@ -149,7 +148,6 @@
   </bean>
 
   <bean id="annotationService" class="org.plos.annotation.service.AnnotationService" scope="session">
-    <property name="userContext" ref="userContext"/>
     <property name="converter" ref="annotationConverter"/>
     <property name="replyWebService" ref="replyWebService"/>
     <property name="permissionWebService" ref="permissionWebService"/>

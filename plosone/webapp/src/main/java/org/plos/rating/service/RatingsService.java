@@ -52,20 +52,12 @@ public class RatingsService extends BaseRatingsService {
   private RatingsPEP           pep;
   private PermissionWebService permissions;
 
-  private RatingsPEP getPEP() {
+  public RatingsService() {
     try {
-      if (pep == null)
-        pep = new RatingsPEP();
+      pep = new RatingsPEP();
     } catch (Exception e) {
       throw new Error("Failed to create Ratings PEP", e);
     }
-    return pep;
-  }
-
-  /**
-   * Initializes the service
-   */
-  public void init() {
   }
 
   /**
@@ -81,7 +73,6 @@ public class RatingsService extends BaseRatingsService {
   public void saveOrUpdateRating(final PlosOneUser user,
                                  final String articleURIStr,
                                  final Rating values) throws RatingsServiceException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     final Date now = Calendar.getInstance().getTime();
 
     try {
@@ -236,10 +227,7 @@ public class RatingsService extends BaseRatingsService {
    */
   public void deleteRating(final String ratingId)
                          throws ApplicationException {
-
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
-    getPEP().checkAccess(RatingsPEP.DELETE_RATINGS, URI.create(ratingId));
+    pep.checkAccess(RatingsPEP.DELETE_RATINGS, URI.create(ratingId));
 
     String string =
       TransactionHelper.doInTxE(session,
@@ -303,8 +291,6 @@ public class RatingsService extends BaseRatingsService {
    * @throws ApplicationException
    */
   public void setPublic(final String ratingId) throws ApplicationException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     final Rating result =
       TransactionHelper.doInTx(session, new TransactionHelper.Action<Rating>() {
           public Rating run(Transaction tx) {
@@ -324,8 +310,6 @@ public class RatingsService extends BaseRatingsService {
    * @throws RatingsServiceException
    */
   public void setFlagged(final String ratingId) throws RatingsServiceException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     final Rating result =
       TransactionHelper.doInTx(session, new TransactionHelper.Action<Rating>() {
           public Rating run(Transaction tx) {
@@ -348,9 +332,6 @@ public class RatingsService extends BaseRatingsService {
    * @throws RemoteException RemoteException
    */
   public Rating getRating(final String ratingId) throws RemoteException {
-
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     Rating rating =
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<Rating>() {
@@ -370,7 +351,7 @@ public class RatingsService extends BaseRatingsService {
     // the PEP check is against what is rated,
     // e.g. can this user see the ratings for what is rated?
     PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
-    getPEP().checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()), rating.getAnnotates());
+    pep.checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()), rating.getAnnotates());
 
     return rating;
   }
@@ -387,8 +368,6 @@ public class RatingsService extends BaseRatingsService {
    */
   public RatingInfo[] listRatings(final String mediator,final int state)
                           throws ApplicationException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     return
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<RatingInfo[]>() {
