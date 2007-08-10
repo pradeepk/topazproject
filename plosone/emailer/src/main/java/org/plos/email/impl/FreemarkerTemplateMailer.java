@@ -1,5 +1,11 @@
 /* $HeadURL::                                                                            $
  * $Id$
+ *
+ * Copyright (c) 2006-2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
  */
 package org.plos.email.impl;
 
@@ -34,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Freemarker template based emailer.
@@ -43,7 +50,7 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   private Configuration configuration;
   private String fromEmailAddress;
   private String fromEmailName;
-  
+
   private final String MIME_TYPE_TEXT_PLAIN = "text/plain";
   private final String MIME_TYPE_TEXT_HTML = "text/html";
   private final Map<String, String> mailContentTypes = new HashMap<String, String>();
@@ -56,43 +63,50 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   private static final String HTML = "html";
   private static final String URL = "url";
   private static final String SUBJECT = "subject";
-  
+
   public static final String TO_EMAIL_ADDRESS = "toEmailAddress";
   public static final String USER_NAME_KEY = "name";
   private static final Log log = LogFactory.getLog(FreemarkerTemplateMailer.class);
 
   /**
    * Mail the email formatted using the given templates
-   * @param toEmailAddress toEmailAddress
+   * @param toEmailAddresses List of email addresses to which emails should be sent.  White space delimited.
    * @param fromEmailAddress fromEmailAddress
    * @param subject subject of the email
    * @param context context to set the values from for the template
    * @param textTemplateFilename textTemplateFilename
    * @param htmlTemplateFilename htmlTemplateFilename
    */
-  public void mail(final String toEmailAddress, final String fromEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename) {
-    final MimeMessagePreparator preparator = new MimeMessagePreparator() {
-      public void prepare(final MimeMessage mimeMessage) throws MessagingException, IOException {
-        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, configuration.getDefaultEncoding());
-        message.setTo(new InternetAddress(toEmailAddress));
-        message.setFrom(new InternetAddress(fromEmailAddress, (String) context.get(USER_NAME_KEY)));
-        message.setSubject(subject);
+  public void mail(final String toEmailAddresses, final String fromEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename) {
+    final StringTokenizer emailTokens = new StringTokenizer(toEmailAddresses);
 
-        // Create a "text" Multipart message
-        final Multipart mp = createPartForMultipart(textTemplateFilename, context, "alternative", MIME_TYPE_TEXT_PLAIN + "; charset=" + configuration.getDefaultEncoding());
+    while (emailTokens.hasMoreTokens()) {
+      final String toEmailAddress = emailTokens.nextToken();
+      final MimeMessagePreparator preparator = new MimeMessagePreparator() {
+        public void prepare(final MimeMessage mimeMessage) throws MessagingException, IOException {
+          final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, configuration.getDefaultEncoding());
+          message.setTo(new InternetAddress(toEmailAddress));
+          message.setFrom(new InternetAddress(fromEmailAddress, (String) context.get(USER_NAME_KEY)));
+          message.setSubject(subject);
 
-        // Create a "HTML" Multipart message
-        final Multipart htmlContent = createPartForMultipart(htmlTemplateFilename, context, "related", MIME_TYPE_TEXT_HTML + "; charset=" + configuration.getDefaultEncoding());
+          // Create a "text" Multipart message
+          final Multipart mp = createPartForMultipart(textTemplateFilename, context, "alternative", MIME_TYPE_TEXT_PLAIN + "; charset=" + configuration.getDefaultEncoding());
 
-        final BodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent(htmlContent);
-        mp.addBodyPart(htmlPart);
+          // Create a "HTML" Multipart message
+          final Multipart htmlContent = createPartForMultipart(htmlTemplateFilename, context, "related", MIME_TYPE_TEXT_HTML + "; charset=" + configuration.getDefaultEncoding());
 
-        mimeMessage.setContent(mp);
+          final BodyPart htmlPart = new MimeBodyPart();
+          htmlPart.setContent(htmlContent);
+          mp.addBodyPart(htmlPart);
+
+          mimeMessage.setContent(mp);
+        }
+      };
+      mailSender.send(preparator);
+      if (log.isDebugEnabled()) {
+        log.debug("Mail sent to:" + toEmailAddress);
       }
-    };
-    mailSender.send(preparator);
-    log.debug("Mail sent to:" + toEmailAddress);
+    }
   }
 
   private Multipart createPartForMultipart(final String templateFilename, final Map<String, Object> context, final String multipartType, final String mimeType) throws IOException, MessagingException {

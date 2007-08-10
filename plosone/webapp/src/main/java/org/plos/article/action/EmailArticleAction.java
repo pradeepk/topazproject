@@ -23,8 +23,11 @@ import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
 import org.plos.user.action.UserActionSupport;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Email the article to another user.
@@ -41,7 +44,8 @@ public class EmailArticleAction extends UserActionSupport {
   private PlosoneMailer plosoneMailer;
   private FetchArticleService fetchArticleService;
   private static final Log log = LogFactory.getLog(EmailArticleAction.class);
-
+  private static final int MAX_TO_EMAIL = 5;
+  
   /**
    * Render the page with the values passed in
    * @return webwork status
@@ -103,16 +107,48 @@ public class EmailArticleAction extends UserActionSupport {
       addFieldError("emailTo", "To e-mail address cannot be empty");
       isValid = false;
     }
-    if (!EmailValidator.getInstance().isValid(emailTo)) {
-      addFieldError("emailTo", "Invalid e-mail address");
-      isValid = false;
-    }
+    isValid = checkEmails(emailTo) && isValid;
     if (StringUtils.isBlank(senderName)) {
       addFieldError("senderName", "Your name cannot be empty");
       isValid = false;
     }
 
     return isValid;
+  }
+
+  private boolean checkEmails (String emailList) {
+    final StringTokenizer emailTokens = new StringTokenizer(emailList);
+    if (emailTokens.countTokens() > MAX_TO_EMAIL) {
+      addFieldError ("emailTo", "Maximum of " + MAX_TO_EMAIL + " email addresses");
+      return false;
+    }
+    EmailValidator validator = EmailValidator.getInstance();
+    ArrayList <String> invalidEmails = new ArrayList<String> ();
+
+    while (emailTokens.hasMoreTokens()) {
+      String email = emailTokens.nextToken();
+      if (!validator.isValid(email)) {
+        invalidEmails.add(email);
+      }
+    }
+    final int numInvalid = invalidEmails.size();
+    if (numInvalid != 0) {
+      StringBuilder errorMsg = new StringBuilder ("Invalid e-mail address");
+      if (numInvalid > 1) {
+        errorMsg.append ("es: ");
+      } else {
+        errorMsg.append(": ");
+      }
+      Iterator<String> iter = invalidEmails.iterator();
+      while (iter.hasNext()){
+        errorMsg.append (iter.next());
+        if (iter.hasNext()) {
+          errorMsg.append(", ");
+        }
+      }
+      addFieldError ("emailTo", errorMsg.toString());
+    }
+    return (numInvalid == 0);
   }
 
   /**
@@ -246,5 +282,12 @@ public class EmailArticleAction extends UserActionSupport {
    */
   public void setJournalName(String journalName) {
     this.journalName = journalName;
+  }
+
+  /**
+   * @return Returns the mAX_TO_EMAIL.
+   */
+  public static int getMaxEmails() {
+    return MAX_TO_EMAIL;
   }
 }

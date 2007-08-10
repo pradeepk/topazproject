@@ -12,7 +12,7 @@
 		<fieldset>
 			<legend>Complete this form</legend>
 			<ol>
-		      <@s.textfield label="Recipient's E-mail address" required="true" name="emailTo" size="40" />
+          <@s.textarea rows="${maxEmails}" label="Recipients' E-mail addresses (one per line, max ${maxEmails})" required="true" name="emailTo" size="40" />
  		      <@s.textfield label="Your E-mail address" required="true" name="emailFrom" size="40" />
  		      <@s.textfield label="Your name" required="true" name="senderName" size="40" />					
  		      <@s.textarea label="Your comments to add to the E-mail" value="%{'I thought you would find this article interesting.'}" name="note" rows="5" cols="40"/>					
