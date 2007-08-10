@@ -250,6 +250,14 @@ public class OqlTest extends GroovyTestCase {
         row { object (class:cls, id:o1.id) }
       }
 
+      r = s.createQuery("""
+            select t from Test1 t where
+              t.{p -> pp := p and ppp := pp and ppp = <topaz:name>} = 'Bob';
+            """).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
       r = s.createQuery("select t from Test1 t where t.{p -> p = :p} = 'Bob';").
             setParameter("p", "topaz:name").execute()
       checker.verify(r) {
@@ -442,6 +450,50 @@ public class OqlTest extends GroovyTestCase {
         row { string ('42');  string ('Paul') }
         row { string ('42');  string ('Joe')  }
         row { string ('153'); string ('John') }
+      }
+
+      r = s.createQuery(
+            "select t.age age, foo from Test1 t where foo := 'yellow' order by age, foo;").
+            execute()
+      checker.verify(r) {
+        row { string ('5');   string ('yellow') }
+        row { string ('42');  string ('yellow') }
+        row { string ('153'); string ('yellow') }
+      }
+
+      r = s.createQuery(
+            "select t.age age, foo from Test1 t where foo := 'yellow' order by foo, age;").
+            execute()
+      checker.verify(r) {
+        row { string ('5');   string ('yellow') }
+        row { string ('42');  string ('yellow') }
+        row { string ('153'); string ('yellow') }
+      }
+
+      r = s.createQuery(
+            "select t.age age, foo from Test1 t where foo := 'yellow' order by foo asc, age;").
+            execute()
+      checker.verify(r) {
+        row { string ('5');   string ('yellow') }
+        row { string ('42');  string ('yellow') }
+        row { string ('153'); string ('yellow') }
+      }
+
+      r = s.createQuery(
+            "select t.age age, foo from Test1 t where foo := 'yellow' order by age, foo asc;").
+            execute()
+      checker.verify(r) {
+        row { string ('5');   string ('yellow') }
+        row { string ('42');  string ('yellow') }
+        row { string ('153'); string ('yellow') }
+      }
+
+      r = s.createQuery("""
+          select t.age, foo from Test1 t where
+              t.age = '42'^^<xsd:int> and foo := 'yellow' order by foo;
+          """).execute()
+      checker.verify(r) {
+        row { string ('42'); string ('yellow') }
       }
 
       r = s.createQuery("select t.age age from Test1 t order by age offset 1;").execute()
