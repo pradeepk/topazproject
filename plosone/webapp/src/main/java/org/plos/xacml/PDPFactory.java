@@ -19,8 +19,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-
 import com.sun.xacml.PDP;
 import com.sun.xacml.PDPConfig;
 import com.sun.xacml.ParsingException;
@@ -43,11 +41,12 @@ public class PDPFactory {
   /**
    * Default PDP configuration File.
    */
-  public static final String DEFAULT_PDP_CONFIG = "/WEB-INF/PDPConfig.xml";
+  public static final String DEFAULT_PDP_CONFIG = "/PDPConfig.xml";
   private ConfigurationStore store;
   private PDP                defaultPDP       = null;
   private PDPConfig          defaultPDPConfig = null;
   private Map                pdpMap           = new HashMap();
+  private static PDPFactory  instance         = null;
 
   /**
    * Returns a singleton instance of the factory for a wep-app. The instance is maintained in the
@@ -68,18 +67,10 @@ public class PDPFactory {
    * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
    *         factory
    */
-  public static PDPFactory getInstance(ServletContext context)
+  public static PDPFactory getInstance()
                                 throws IOException, ParsingException, UnknownIdentifierException {
-    PDPFactory instance;
-
-    synchronized (context) {
-      instance = (PDPFactory) context.getAttribute(PDPFactory.class.getName());
-
-      if (instance == null) {
-        instance = new PDPFactory(getPDPConfigFile(context));
-        context.setAttribute(PDPFactory.class.getName(), instance);
-      }
-    }
+    if (instance == null)
+      instance = new PDPFactory(getPDPConfigFile());
 
     return instance;
   }
@@ -152,9 +143,6 @@ public class PDPFactory {
    * 
    * <ul>
    * <li>
-   * Servlet Init Parameter <code>com.sun.xacml.PDPConfigFile</code>
-   * </li>
-   * <li>
    * System property <code>com.sun.xacml.PDPConfigFile</code>
    * </li>
    * </ul>
@@ -167,19 +155,14 @@ public class PDPFactory {
    * support containers that do not expand a war file).
    * </p>
    *
-   * @param servletContext The web application context
-   *
    * @return the PDP configuration File
    *
    * @throws IOException when there is an error in accessing the resource from the web-app context
    * @throws FileNotFoundException when a configuration file could not be located
    */
-  public static File getPDPConfigFile(ServletContext servletContext)
+  public static File getPDPConfigFile()
                                throws IOException {
-    String name = servletContext.getInitParameter(ConfigurationStore.PDP_CONFIG_PROPERTY);
-
-    if (name == null)
-      name = System.getProperty(ConfigurationStore.PDP_CONFIG_PROPERTY);
+    String name = System.getProperty(ConfigurationStore.PDP_CONFIG_PROPERTY);
 
     if (name == null)
       name = DEFAULT_PDP_CONFIG;
@@ -187,7 +170,7 @@ public class PDPFactory {
     File f;
 
     // Try web-app first
-    InputStream is = servletContext.getResourceAsStream(name);
+    InputStream is = PDPFactory.class.getResourceAsStream(name);
 
     if (is == null) {
       // No. See if a file with that name exists
@@ -198,8 +181,7 @@ public class PDPFactory {
 
       f = null;
     } else {
-      File tmp = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
-      f = new File(tmp, "PDPConfig.xml");
+      f = File.createTempFile("PDPConfig", ".xml");
 
       OutputStream os = new FileOutputStream(f);
 
@@ -216,12 +198,6 @@ public class PDPFactory {
       return f;
 
     // No configuration. Find out why and throw appropriate exception.
-    if (servletContext.getInitParameter(ConfigurationStore.PDP_CONFIG_PROPERTY) != null)
-      throw new FileNotFoundException("Can not find a file or resource named '" + name
-                                      + "' specified for '"
-                                      + ConfigurationStore.PDP_CONFIG_PROPERTY
-                                      + "' in WEB-INF/web.xml");
-
     if (System.getProperty(ConfigurationStore.PDP_CONFIG_PROPERTY) != null)
       throw new FileNotFoundException("Can not find a file or resource named '" + name
                                       + "' specified for '"
@@ -229,7 +205,6 @@ public class PDPFactory {
                                       + "' in System property");
 
     throw new FileNotFoundException(ConfigurationStore.PDP_CONFIG_PROPERTY
-                                    + " must be configured in the WEB-INF/web.xml OR"
                                     + " must be made available as a system property OR "
                                     + DEFAULT_PDP_CONFIG + " must exist.");
   }

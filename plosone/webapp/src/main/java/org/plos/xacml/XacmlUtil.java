@@ -18,8 +18,6 @@ import java.util.Set;
 
 import org.plos.configuration.ConfigurationStore;
 
-import org.apache.struts2.ServletActionContext;
-
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
@@ -75,7 +73,7 @@ public class XacmlUtil extends Util {
     if (pdpName == null)
       throw new UnknownIdentifierException("No config entry named '" + pdpProp + "' found");
 
-    PDPFactory factory = PDPFactory.getInstance(ServletActionContext.getServletContext());
+    PDPFactory factory = PDPFactory.getInstance();
 
     return pdpName.equals(SN_DEFAULT_PDP) ? factory.getDefaultPDP() : factory.getPDP(pdpName);
   }
