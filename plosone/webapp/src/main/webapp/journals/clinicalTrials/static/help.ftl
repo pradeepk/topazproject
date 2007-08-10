@@ -69,14 +69,6 @@
     <li>Enter the new e-mail address which you wish to use to receive alerts and click "Submit".</li>
   </ol>
 
-  <p>
-    (Please note that this modification to your profile ONLY changes the e-mail address where you will receive your
-    alerts and NOT the e-mail address you use to log in to your PLoS user account. The e-mail address you need to use
-    to log in to your PLoS account is listed under "Your Private Information" within the "Preferences" tab
-    of your "PLoS Journal Profile" page.  It cannot be modified at this time. For help, please contact
-    the <strong>webmaster [at] plos.org</strong>.)
-  </p>
-
   <a id="printing" name="printing"></a>
   <h2>Printing PDFs</h2>
 
