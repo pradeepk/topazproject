@@ -46,6 +46,8 @@
       as="element(article)"/>
   <xsl:variable name="meta"          select="$orig-article/front/article-meta"
       as="element(article-meta)"/>
+  <xsl:variable name="jnl-meta"      select="$orig-article/front/journal-meta"
+      as="element(journal-meta)"/>
   <xsl:variable name="article-doi"   select="$meta/article-id[@pub-id-type = 'doi']"
       as="xs:string"/>
   <xsl:variable name="zip-fmt"
@@ -195,8 +197,8 @@
     <xsl:if test="$meta/abstract">
       <dc:description rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="my:select-abstract($meta/abstract)"/></xsl:call-template></dc:description>
     </xsl:if>
-    <xsl:if test="$fixed-article/front/journal-meta/publisher">
-      <dc:publisher rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$fixed-article/front/journal-meta/publisher/publisher-name"/></xsl:call-template></dc:publisher>
+    <xsl:if test="$jnl-meta/publisher/publisher-name">
+      <dc:publisher rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$jnl-meta/publisher/publisher-name"/></xsl:call-template></dc:publisher>
     </xsl:if>
     <xsl:if test="$meta/copyright-statement">
       <dc:rights rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/copyright-statement"/></xsl:call-template></dc:rights>
@@ -266,9 +268,9 @@
         <xsl:with-param name="title"
             select="$meta/title-group/article-title"/>
         <xsl:with-param name="pub-loc"
-            select="$meta/journal-meta/publisher/publisher-loc"/>
+            select="$jnl-meta/publisher/publisher-loc"/>
         <xsl:with-param name="pub-name"
-            select="$meta/journal-meta/publisher/publisher-name"/>
+            select="$jnl-meta/publisher/publisher-name"/>
         <xsl:with-param name="pages"
             select="if ($meta/counts/page-count) then concat('1-', $meta/counts/page-count/@count)
                     else ()"/>
