@@ -26,10 +26,10 @@ log = LogFactory.getLog(this.getClass());
 // Use ToolHelper (currently in wrong place -- article-util) to patch args
 args = ToolHelper.fixArgs(args)
 
-def cli = new CliBuilder(usage: 'migration [-c config-overrides.xml] article-uris ...')
+def cli = new CliBuilder(usage: 'migration [-c config-overrides.xml] -a article-uri')
 cli.h(longOpt:'help', "help (this message)")
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz.xml')
-cli.a(args:1, 'article (i.e. doi:10.1371/journal.pone.nnnnnnn)')
+cli.a(args:1, 'article (e.g. info:doi/10.1371/journal.pone.nnnnnnn)')
 cli.d(args:0, 'dump otm objects')
 cli.n(args:0, 'show null entries too')
 cli.t(args:0, 'test (dry-run)')
