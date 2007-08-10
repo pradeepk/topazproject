@@ -22,6 +22,9 @@ public class Journal extends Aggregation {
   @Predicate(uri = PLoS.plos + "key")
   private String  key;
 
+  @Predicate(uri = "http://prismstandard.org/namespaces/1.2/basic/eIssn")
+  private String  eIssn;
+
   /**
    * Get the internal key used to identify this journal.
    *
@@ -38,5 +41,23 @@ public class Journal extends Aggregation {
    */
   public void setKey(String key) {
     this.key = key;
+  }
+
+  /**
+   * Get the e-issn of this journal.
+   *
+   * @return the e-issn.
+   */
+  public String getEIssn() {
+    return eIssn;
+  }
+
+  /**
+   * Set the e-issn of this journal.
+   *
+   * @param eIssn the e-issn.
+   */
+  public void setEIssn(String eIssn) {
+    this.eIssn = eIssn;
   }
 }

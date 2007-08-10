@@ -61,6 +61,9 @@ public class ObjectInfo {
   @Predicate(uri = Rdf.topaz + "contextElement")
   private String contextElement;
 
+  @Predicate(uri = "http://prismstandard.org/namespaces/1.2/basic/eIssn")
+  private String eIssn;
+
   /**
    * There is a convention for two dynamic predicates:
    * <ul>
@@ -230,5 +233,23 @@ public class ObjectInfo {
    */
   public void setDublinCore(DublinCore dublinCore) {
     this.dublinCore = dublinCore;
+  }
+
+  /**
+   * Get the e-issn of the publication in which this object was published.
+   *
+   * @return the e-issn.
+   */
+  public String getEIssn() {
+    return eIssn;
+  }
+
+  /**
+   * Set the e-issn of the publication in which this object was published.
+   *
+   * @param eIssn the e-issn.
+   */
+  public void setEIssn(String eIssn) {
+    this.eIssn = eIssn;
   }
 }

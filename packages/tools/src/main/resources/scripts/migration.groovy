@@ -154,6 +154,20 @@ article.articleType = new HashSet()
 article.articleType.add(articleType)
 bc.citationType = articleType
 
+// add issn/eIssn
+def addIssn = { field, val ->
+  article."${field}" = val
+  for (part in article.parts)
+    part."${field}" = val
+}
+
+for (issn in journalMeta.issn) {
+  switch(issn.'@pub-type') {
+    case 'ppub': addIssn('issn', tostr(issn)); break
+    case 'epub': addIssn('eIssn', tostr(issn)); break
+  }
+}
+
 // Handle references
 slurpedArticle.back.'ref-list'.ref.each() { src ->
   def cit = new Citation()

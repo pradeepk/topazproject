@@ -125,7 +125,8 @@
         <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:dc_terms="http://purl.org/dc/terms/">
+                xmlns:dc_terms="http://purl.org/dc/terms/"
+                xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/">
         <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
       <xsl:call-template name="main-ds"/>
@@ -133,7 +134,8 @@
 
     <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
              xmlns:dc="http://purl.org/dc/elements/1.1/"
-             xmlns:dc_terms="http://purl.org/dc/terms/">
+             xmlns:dc_terms="http://purl.org/dc/terms/"
+             xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/">
       <rdf:Description rdf:about="{my:doi-to-uri($article-doi)}">
         <xsl:sequence select="$rdf"/>
       </rdf:Description>
@@ -164,11 +166,18 @@
   <!-- generate the rdf statements for the article -->
   <xsl:template name="main-rdf" xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dc_terms="http://purl.org/dc/terms/"
+                xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
     <rdf:type rdf:resource="http://rdf.plos.org/RDF/articleType/{$fixed-article/@article-type}"/>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($article-doi)"/></dc:identifier>
+    <xsl:if test="$jnl-meta/issn[@pub-type = 'ppub']">
+      <prism:issn><xsl:value-of select="$jnl-meta/issn[@pub-type = 'ppub']"/></prism:issn>
+    </xsl:if>
+    <xsl:if test="$jnl-meta/issn[@pub-type = 'epub']">
+      <prism:eIssn><xsl:value-of select="$jnl-meta/issn[@pub-type = 'epub']"/></prism:eIssn>
+    </xsl:if>
     <dc:title rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/title-group/article-title"/></xsl:call-template></dc:title>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/Text"/>
     <dc:format>text/xml</dc:format>
@@ -520,7 +529,8 @@
         <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:dc_terms="http://purl.org/dc/terms/">
+                xmlns:dc_terms="http://purl.org/dc/terms/"
+                xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/">
         <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
       <xsl:call-template name="sec-ds"/>
@@ -528,7 +538,8 @@
 
     <rdf:RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
              xmlns:dc="http://purl.org/dc/elements/1.1/"
-             xmlns:dc_terms="http://purl.org/dc/terms/">
+             xmlns:dc_terms="http://purl.org/dc/terms/"
+             xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/">
       <rdf:Description rdf:about="{my:doi-to-uri($sdoi)}">
         <xsl:sequence select="$rdf"/>
       </rdf:Description>
@@ -547,10 +558,17 @@
   <!-- generate the rdf statements for the secondary object -->
   <xsl:template name="sec-rdf" xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dc_terms="http://purl.org/dc/terms/"
+                xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($sdoi)"/></dc:identifier>
+    <xsl:if test="$jnl-meta/issn[@pub-type = 'ppub']">
+      <prism:issn><xsl:value-of select="$jnl-meta/issn[@pub-type = 'ppub']"/></prism:issn>
+    </xsl:if>
+    <xsl:if test="$jnl-meta/issn[@pub-type = 'epub']">
+      <prism:eIssn><xsl:value-of select="$jnl-meta/issn[@pub-type = 'epub']"/></prism:eIssn>
+    </xsl:if>
     <xsl:if test="$meta/pub-date">
       <dc:date rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
