@@ -69,9 +69,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws URISyntaxException DOCUMENT ME!
    * @throws ServiceException DOCUMENT ME!
    */
-  public void init() throws IOException, URISyntaxException, ServiceException {
+  public AnnotationWebService() throws IOException, URISyntaxException, ServiceException {
     try {
-      if (pep == null)
         pep = new AnnotationsPEP();
     } catch (IOException e) {
       throw e;
@@ -104,8 +103,6 @@ public class AnnotationWebService extends BaseAnnotationService {
   public String createAnnotation(final String mimeType, final String target, final String context,
                                  final String olderAnnotation, final String title, final String body)
                           throws RemoteException, UnsupportedEncodingException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(pep.CREATE_ANNOTATION, URI.create(target));
 
     final String contentType = getContentType(mimeType);
@@ -242,8 +239,6 @@ public class AnnotationWebService extends BaseAnnotationService {
 
   private void deleteAnnotation(final String annotationId)
                          throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     Comment a =
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<Comment>() {
@@ -280,8 +275,6 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public AnnotationInfo[] listAnnotations(final String target)
                                    throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(pep.LIST_ANNOTATIONS, URI.create(target));
 
     return CacheAdminHelper.getFromCache(articleCacheAdministrator, target + CACHE_KEY_ANNOTATION,
@@ -350,8 +343,6 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public AnnotationInfo getAnnotation(final String annotationId)
                                throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
 
     Comment a =
@@ -376,8 +367,6 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws RemoteException RemoteException
    */
   public void setPublic(final String annotationDoi) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
 
     Comment a =
@@ -401,8 +390,6 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws RemoteException RemoteException
    */
   public void setFlagged(final String annotationId) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
     Comment a =
@@ -432,8 +419,6 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public AnnotationInfo[] listAnnotations(final String mediator, final int state)
                                    throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
 
     List<Comment> l           =

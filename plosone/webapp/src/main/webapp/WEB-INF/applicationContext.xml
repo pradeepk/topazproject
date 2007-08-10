@@ -60,10 +60,6 @@
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
   <bean id="articleOtmService" class="org.plos.article.service.ArticleOtmService" scope="session">
-    <property name="userContext" ref="userContext"/>
-    <property name="configurationMap">
-      <map/>
-    </property>
  <!--   <property name="smallImageRep" value="TIF"/>
     <property name="mediumImageRep" value="TIF"/>
     <property name="largeImageRep" value="TIF"/>
@@ -116,10 +112,6 @@
   </bean>
 
   <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" scope="session">
-    <property name="userContext" ref="userContext"/>
-    <property name="configurationMap">
-      <map/>
-    </property>
     <aop:scoped-proxy/>
   </bean>
 
@@ -131,27 +123,19 @@
   </bean>
 
   <bean id="replyWebService" class="org.plos.annotation.service.ReplyWebService" scope="session">
-    <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="permissionWebService" ref="permissionWebService"/>
-    <property name="configurationMap">
-      <map/>
-    </property>
     <aop:scoped-proxy/>
   </bean>
 
   <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" scope="session">
-    <property name="userContext" ref="userContext"/>
     <property name="articleCacheAdministrator" ref="articleCacheAdministrator"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Comment"/>
     <property name="permissionWebService" ref="permissionWebService"/>
-    <property name="configurationMap">
-      <map/>
-    </property>
     <aop:scoped-proxy/>
   </bean>
 

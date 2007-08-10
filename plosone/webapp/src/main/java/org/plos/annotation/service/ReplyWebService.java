@@ -60,10 +60,9 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws URISyntaxException DOCUMENT ME!
    * @throws ServiceException DOCUMENT ME!
    */
-  public void init() throws IOException, URISyntaxException, ServiceException {
+  public void ReplyWebService() throws IOException, URISyntaxException, ServiceException {
     try {
-      if (pep == null)
-        pep = new RepliesPEP();
+      pep = new RepliesPEP();
     } catch (IOException e) {
       throw e;
     } catch (Exception e) {
@@ -95,7 +94,6 @@ public class ReplyWebService extends BaseAnnotationService {
                             final String title, final String body,
                             final AnnotationService annotationService)
                      throws RemoteException, UnsupportedEncodingException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     pep.checkAccess(pep.CREATE_REPLY, URI.create(root));
 
     if (!root.equals(inReplyTo))
@@ -182,7 +180,6 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws RemoteException RemoteException
    */
   public void deleteReply(final String replyId) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a =
@@ -208,8 +205,6 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public void deleteReplies(final String root, final String inReplyTo)
                      throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     final List<Reply> all  =
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Reply>>() {
@@ -260,8 +255,6 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws RemoteException DOCUMENT ME!
    */
   public void deleteReplies(final String target) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     if (log.isDebugEnabled()) {
       log.debug("deleting reply and descendants with id: " + target);
     }
@@ -325,7 +318,6 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws IllegalArgumentException DOCUMENT ME!
    */
   public ReplyInfo getReplyInfo(final String replyId) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     pep.checkAccess(pep.GET_REPLY_INFO, URI.create(replyId));
 
     Reply a =
@@ -354,8 +346,6 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public ReplyInfo[] listReplies(final String root, final String inReplyTo)
                           throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     List<Reply> all =
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Reply>>() {
@@ -400,8 +390,6 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public ReplyInfo[] listAllReplies(final String root, final String inReplyTo)
                              throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     List<Reply> all =
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Reply>>() {
@@ -443,7 +431,6 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws RemoteException RemoteException
    */
   public void unflagReply(final String replyId) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a =
@@ -467,7 +454,6 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws RemoteException RemoteException
    */
   public void setFlagged(final String replyId) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a =
@@ -496,7 +482,6 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public ReplyInfo[] listReplies(final String mediator, final int state)
                           throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     pep.checkAccess(pep.LIST_REPLIES_IN_STATE, pep.ANY_RESOURCE);
 
     List<Reply> l       =

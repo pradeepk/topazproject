@@ -44,7 +44,6 @@ import org.plos.models.Category;
 import org.plos.models.Citation;
 import org.plos.models.ObjectInfo;
 import org.plos.models.UserProfile;
-import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
 import org.topazproject.otm.util.TransactionHelper;
 
@@ -68,8 +67,7 @@ import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
 /**
  * Provide Article "services" via OTM.
  */
-public class ArticleOtmService extends BaseConfigurableService {
-
+public class ArticleOtmService {
   private String smallImageRep;
   private String largeImageRep;
   private String mediumImageRep;
@@ -84,10 +82,8 @@ public class ArticleOtmService extends BaseConfigurableService {
 
   private final WSTopazContext ctx = new WSTopazContext(getClass().getName());
 
-  @Override
-  protected void init() throws IOException {
-    if (pep == null)
-      pep = new ArticlePEP();
+  public ArticleOtmService() throws IOException {
+    pep = new ArticlePEP();
   }
 
   /**
@@ -101,10 +97,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public String ingest(final DataHandler dataHandler)
           throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException {
-
-    // session housekeeping ...
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // ask PEP if ingest is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
@@ -163,8 +155,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public void markSuperseded(final String oldUri, final String newUri)
           throws NoSuchArticleIdException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // TODO
     throw new UnsupportedOperationException();
   }
@@ -180,9 +170,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public String getObjectURL(final String obj, final String rep)
           throws RemoteException, NoSuchObjectIdException {
-    // session housekeeping
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // ask PEP if getting Object URL is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
@@ -208,10 +195,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public void delete(final String article)
     throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
-
-    // session housekeeping
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
@@ -241,8 +224,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void setState(final String article, final int state) throws NoSuchArticleIdException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
 
     TransactionHelper.doInTxE(session,
@@ -276,8 +257,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public List<String> getArticleIds(final String startDate, final String endDate,
                                     final int[] states, boolean ascending) throws Exception {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     final StringBuilder qry = new StringBuilder();
     qry.append("select art.id, art.dublinCore.date d from Article art where ");
 
@@ -353,8 +332,6 @@ public class ArticleOtmService extends BaseConfigurableService {
                                final String[] categories, final String[] authors,
                                final int[] states, final boolean ascending)
       throws ParseException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     return TransactionHelper.doInTxE(session,
                                      new TransactionHelper.ActionE<Article[], ParseException>() {
       public Article[] run(Transaction tx) throws ParseException {
@@ -390,9 +367,6 @@ public class ArticleOtmService extends BaseConfigurableService {
                                    final int[] states, final Map<String, Boolean> orderBy,
                                    final int maxResults)
       throws ParseException {
-
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     return TransactionHelper.doInTxE(session,
                                new TransactionHelper.ActionE<List<Article>, ParseException>() {
       public List<Article> run(Transaction tx) throws ParseException {
@@ -413,8 +387,6 @@ public class ArticleOtmService extends BaseConfigurableService {
                                      String[] authors, int[] states, Map<String, Boolean> orderBy,
                                      int maxResults, Transaction tx)
       throws ParseException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // build up Criteria for the Articles
     Criteria articleCriteria = tx.getSession().createCriteria(Article.class);
 
@@ -497,10 +469,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
   public ObjectInfo getObjectInfo(final String uri) throws NoSuchObjectIdException {
-
-    // session housekeeping
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // sanity check parms
     if (uri == null) throw new IllegalArgumentException("URI == null");
     URI realURI = URI.create(uri);
@@ -539,8 +507,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NoSuchArticleIDException NoSuchArticleIdException
    */
   public Article getArticle(final URI uri) throws NoSuchArticleIdException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // sanity check parms
     if (uri == null) throw new IllegalArgumentException("URI == null");
 
@@ -577,8 +543,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public SecondaryObject[] listSecondaryObjects(final String article)
       throws NoSuchArticleIdException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
     return TransactionHelper.doInTxE(session,
@@ -624,10 +588,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @returns Article[] of most commented Articles.
    */
   public Article[] getCommentedArticles(final int maxArticles) {
-
-    // session housekeeping
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     // sanity check args
     if (maxArticles < 0) {
       throw new IllegalArgumentException("Requesting a maximum # of commented articles < 0: " +  maxArticles);
@@ -687,8 +647,6 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public void setRepresentation(final String objId, final String rep, final DataHandler content)
       throws NoSuchObjectIdException, RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
     pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
 
     try {
