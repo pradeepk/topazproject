@@ -68,48 +68,50 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
           addActionMessage("Published: " + article);
 
           // will this article be published in any Virtual Journals?
-          for (String articleInVirtualJournal : articlesInVirtualJournals) {
-            // form builds checkbox value as "article" + "::" + "virtualJournal"
-            if (!articleInVirtualJournal.startsWith(article + "::")) {
-              continue;
-            }
+          if (articlesInVirtualJournals != null) {
+            for (String articleInVirtualJournal : articlesInVirtualJournals) {
+              // form builds checkbox value as "article" + "::" + "virtualJournal"
+              if (!articleInVirtualJournal.startsWith(article + "::")) {
+                continue;
+              }
 
-            final String virtualJournal = articleInVirtualJournal.split("::")[1];
+              final String virtualJournal = articleInVirtualJournal.split("::")[1];
 
-            TransactionHelper.doInTx(session,
-              new TransactionHelper.Action<Void>() {
+              TransactionHelper.doInTx(session,
+                new TransactionHelper.Action<Void>() {
 
-              public Void run(Transaction tx) {
+                public Void run(Transaction tx) {
 
-                // get Journal by name
-                final Journal journal = journalService.getJournal(virtualJournal);
-                if (journal == null) {
-                  final String errorMessage = "Error adding article " + article
-                    + " to non-existent journal " + virtualJournal;
-                  addActionMessage(errorMessage);
-                  log.error(errorMessage);
+                  // get Journal by name
+                  final Journal journal = journalService.getJournal(virtualJournal);
+                  if (journal == null) {
+                    final String errorMessage = "Error adding article " + article
+                      + " to non-existent journal " + virtualJournal;
+                    addActionMessage(errorMessage);
+                    log.error(errorMessage);
+                    return null;
+                  }
+
+                  // add Article to Journal
+                  List<URI> articlesInJournal = journal.getSimpleCollection();
+                  articlesInJournal.add(URI.create(article));
+                  journal.setSimpleCollection(articlesInJournal);
+
+                  // update Journal
+                  session.saveOrUpdate(journal);
+                  journalService.journalWasModified(journal);
+
+                  final String message = "Article " + article
+                      + " was published in the journal " + virtualJournal;
+                  addActionMessage(message);
+                  if (log.isDebugEnabled()) {
+                    log.debug(message);
+                  }
+
                   return null;
                 }
-
-                // add Article to Journal
-                List<URI> articlesInJournal = journal.getSimpleCollection();
-                articlesInJournal.add(URI.create(article));
-                journal.setSimpleCollection(articlesInJournal);
-
-                // update Journal
-                session.saveOrUpdate(journal);
-                journalService.journalWasModified(journal);
-
-                final String message = "Article " + article
-                    + " was published in the journal " + virtualJournal;
-                addActionMessage(message);
-                if (log.isDebugEnabled()) {
-                  log.debug(message);
-                }
-
-                return null;
-              }
-            });
+              });
+            }
           }
         } catch (Exception e) {
           addActionMessage("Error publishing: " + article + " - " + e.toString());
