@@ -13,9 +13,10 @@
         <ul>
         <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
         <@s.url action="license" namespace="/static" includeParams="none" id="license"/>
+        <@s.url action="faq" namespace="/static" includeParams="none" id="faq"/>
           <li><a href="${info}">Journal Information</a></li>
           <li><a href="${license}">License</a></li>
-          <li><a href="#">FAQ</a></li>
+          <li><a href="${faq}">FAQ</a></li>
         </ul>
       </li>
                 <@s.url action="users" namespace="/static" includeParams="none" id="users"/>
@@ -25,12 +26,10 @@
         <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
         <@s.url action="help" namespace="/static" includeParams="none" id="help"/>
         <@s.url action="sitemap" namespace="/static" includeParams="none" id="site"/>
-          <@s.url action="contact" namespace="/static" includeParams="none" id="contact"/>
           <li><a href="${comment}">Commenting Guidelines</a></li>
           <li><a href="${rating}">Rating Guidelines</a></li>
           <li><a href="${help}">Help Using this Site</a></li>
           <li><a href="${site}">Site Map</a></li>
-          <li><a href="${contact}">Contact Us</a></li>
         </ul>
       </li>
     <@s.url action="authors" namespace="/static" includeParams="none" id="authors"/>
