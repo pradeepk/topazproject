@@ -48,6 +48,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>article-util</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
