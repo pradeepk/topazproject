@@ -207,12 +207,9 @@
     <preferences>
       <pdpName>standard-pdp</pdpName>
     </preferences>
-    <user-accounts>
+    <users>
       <pdpName>standard-pdp</pdpName>
-    </user-accounts>
-    <user-roles>
-      <pdpName>standard-pdp</pdpName>
-    </user-roles>
+    </users>
     <ratings>
       <pdpName>standard-pdp</pdpName>
     </ratings>

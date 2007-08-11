@@ -164,41 +164,5 @@
       <defaultfields>description,title,body,creator</defaultfields>
     </search>
 
-    <articles>
-      <pdpName>standard-pdp</pdpName>
-    </articles>
-    <annotations>
-      <pdpName>standard-pdp</pdpName>
-    </annotations>
-    <replies>
-      <pdpName>standard-pdp</pdpName>
-    </replies>
-    <permissions>
-      <pdpName>standard-pdp</pdpName>
-    </permissions>
-    <profiles>
-      <pdpName>standard-pdp</pdpName>
-    </profiles>
-    <preferences>
-      <pdpName>standard-pdp</pdpName>
-    </preferences>
-    <user-accounts>
-      <pdpName>standard-pdp</pdpName>
-    </user-accounts>
-    <user-roles>
-      <pdpName>standard-pdp</pdpName>
-    </user-roles>
-    <ratings>
-      <pdpName>standard-pdp</pdpName>
-    </ratings>
-    <alerts>
-      <pdpName>standard-pdp</pdpName>
-    </alerts>
-    <search>
-      <pdpName>standard-pdp</pdpName>
-    </search>
-    <access>
-      <pdpName>standard-pdp</pdpName>
-    </access>
   </topaz>
 </config>

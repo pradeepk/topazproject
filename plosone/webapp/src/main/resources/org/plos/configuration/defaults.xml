@@ -17,6 +17,7 @@
   See also libs/conf-helper/src/main/resources/globa-defaults.xml
 -->
 <config>
+  <!-- URLs to access the CAS Single Signon Server -->
   <cas>
     <url>
       <base>https://${network.hosts.cas}:${network.ports.cas-ssl}/cas</base>
@@ -177,32 +178,6 @@
       <indexpath>/var/lib/topaz/data/lucene</indexpath>
       <defaultfields>description,title,body,creator</defaultfields>
     </search>
-
-    <life-cycle-listeners>
-    </life-cycle-listeners>
-    <permissions>
-      <pdpName>_default_</pdpName>
-      <impliedPermissions>
-        <permission uri="annotations:getAnnotationInfo">
-          <implies uri="urn:fedora:names:fedora:2.1:action:id-getDatastreamDissemination"/>
-        </permission>
-        <permission uri="annotations:getReplyInfo">
-          <implies uri="urn:fedora:names:fedora:2.1:action:id-getDatastreamDissemination"/>
-        </permission>
-        <permission uri="annotations:deleteAnnotation">
-          <implies uri="urn:fedora:names:fedora:2.1:action:purgeObject"/>
-        </permission>
-        <permission uri="annotations:deleteReply">
-          <implies uri="urn:fedora:names:fedora:2.1:action:purgeObject"/>
-        </permission>
-      </impliedPermissions>
-    </permissions>
-    <ratings>
-      <pdpName>_default_</pdpName>
-    </ratings>
-    <users>
-      <pdpName>_default_</pdpName>
-    </users>
   </topaz>
 
   <!--
