@@ -186,7 +186,7 @@
     <!-- 
     The pdpName configures the XACML-PDP used by the corresponding XACML-PEP.
     PDPs are configured seperately in a PDPConfig.xml. The default PDPConfig 
-    file is in WEB-INF/ directory. It can be overridden by specifying a 
+    file is in WEB-INF/classes directory. It can be overridden by specifying a 
     -Dcom.sun.xacml.PDPConfigFile=fileName 
     -->
     <articles>
