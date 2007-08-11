@@ -166,9 +166,11 @@ public class PermissionsImpl implements Permissions {
     String txn     = "load implied-permissions from config";
 
     try {
-      itql.beginTxn(txn);
-      itql.doUpdate(cmd, null);
-      itql.commitTxn(txn);
+      if (permissions.size() > 0) {
+        itql.beginTxn(txn);
+        itql.doUpdate(cmd, null);
+        itql.commitTxn(txn);
+      }
       txn = null;
     } finally {
       try {
