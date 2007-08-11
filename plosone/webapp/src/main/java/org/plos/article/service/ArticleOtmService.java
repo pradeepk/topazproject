@@ -470,7 +470,8 @@ public class ArticleOtmService {
    */
   public ObjectInfo getObjectInfo(final String uri) throws NoSuchObjectIdException {
     // sanity check parms
-    if (uri == null) throw new IllegalArgumentException("URI == null");
+    if (uri == null)
+      throw new IllegalArgumentException("URI == null");
     URI realURI = URI.create(uri);
 
     // filter access by id with PEP
@@ -508,7 +509,8 @@ public class ArticleOtmService {
    */
   public Article getArticle(final URI uri) throws NoSuchArticleIdException {
     // sanity check parms
-    if (uri == null) throw new IllegalArgumentException("URI == null");
+    if (uri == null)
+      throw new IllegalArgumentException("URI == null");
 
     // filter access by id with PEP
     try {
