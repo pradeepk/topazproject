@@ -17,7 +17,12 @@
   See also libs/conf-helper/src/main/resources/globa-defaults.xml
 -->
 <config>
-  <!-- URLs to access the CAS Single Signon Server -->
+  <!-- URLs to access the CAS Single Signon Server.
+       login: the login page
+       logout: the logout page
+       proxy-receptor: the URL for getting a proxy ticket using a PGT
+       proxy-validate: the URL to validate/authenticate proxy and regular tickets
+   -->
   <cas>
     <url>
       <base>https://${network.hosts.cas}:${network.ports.cas-ssl}/cas</base>
