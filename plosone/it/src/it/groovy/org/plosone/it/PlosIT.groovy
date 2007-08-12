@@ -12,27 +12,55 @@ package org.plosone.it
 import junit.framework.TestCase;
 
 /**
- * PLoS Configuration for WebTest.
+ * PLoS Integration Tests using WebTest.
  *
- * All WebTests should extend PlosConfig.
+ * Main entry point for testing.
  */
-class PlosConfig extends TestCase {
+class PlosIT extends TestCase {
 
-  def props
   def ant = new AntBuilder()
+  def props
+  def configMap
 
-  public webtestHome
-  public Map configMap
-
-  PlosConfig() {
+  public PlosIT() {
 
     initProps()
     initConfigMap()
     prepare()
   }
 
+  public void testSuite() throws Exception {
+    try {
+      // TODO: scan classpath for *IT test classes, for now, they must be put in manually
+      //
+      //def scanner = ant.fileScanner {
+      //  fileset(includes: '**/*IT.groovy')
+      //}
+
+      def testsIT = ['org.plosone.it.HomeActionIT']
+      testsIT.each {testIT ->
+        println 'testIT: ' + testIT
+        println '  config: ' + configMap
+        def test = this.getClass().getClassLoader().loadClass(testIT).newInstance()
+        test.ant = ant
+        test.props = props
+        test.config = configMap
+        test.testSuite()
+        }
+    } catch (Exception e) {
+      e.printStackTrace()
+      throw(e)
+    }
+  }
+
   void initProps () {
-    ant.property(resource: 'plos.webtest.properties')
+
+    def webtestPropertiesURL = this.getClass().getResource('/plos.webtest.properties')
+
+    println 'webtestPropertiesURL: ' + webtestPropertiesURL
+
+    ant.property(file: webtestPropertiesURL.getFile())
+
     ant.property(environment: 'env')
     props = ant.antProject.properties
   }
@@ -55,8 +83,6 @@ class PlosConfig extends TestCase {
       println 'webtestTaskdefURL: ' + webtestTaskdefURL
 
       ant.taskdef(file: webtestTaskdefURL.getFile())
-
-      println 'ant.taskdef OK'
     } catch (Exception e) {
       System.err.println 'Exception: ' + e
     }

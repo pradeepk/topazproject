@@ -50,16 +50,17 @@ public class PlosOneTest extends TestCase {
   }
 */
   /**
-   * A simple test
+   * Invoke Groovy WebTests.
    *
    * @throws Exception on an error
    */
-  public void testHomePage() throws Exception {
+  public void testPlosOne() throws Exception {
     start07();
-    final WebClient webClient = new WebClient(BrowserVersion.MOZILLA_1_0);
-    final URL url = new URL("http://localhost:8080/plosone-webapp/home.action");
-    final HtmlPage page = (HtmlPage)webClient.getPage(url);
-    assertTrue( "PLoS ONE : Publishing science, accelerating research".equals(page.getTitleText()) );
+    
+    /* call groovy
+    PlosIT plosIT = new PlosIT();
+    plosIT.testSuite();
+    */
   }
 
 }
