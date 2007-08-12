@@ -58,7 +58,7 @@ public class NotExistsCriterion extends Criterion {
     String res = subjectVar;
 
     if (fieldName == null)
-      res += ".{" + varPrefix + "p:}";
+      res += ".{" + varPrefix + "p ->}";
     else
       res += "." + fieldName;
 

@@ -53,7 +53,7 @@ public class NECriterion extends AbstractBinaryCriterion {
     String res = subjectVar;
 
     if (getFieldName() == null)
-      res += ".{" + varPrefix + "p:}";
+      res += ".{" + varPrefix + "p ->}";
     else
       res += "." + getFieldName();
 
