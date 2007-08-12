@@ -119,7 +119,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
     String res = subjectVar;
 
     if (unboundPredicate)
-      res += ".{" + varPrefix + "p:}";
+      res += ".{" + varPrefix + "p ->}";
     else
       res += "." + getFieldName();
 
