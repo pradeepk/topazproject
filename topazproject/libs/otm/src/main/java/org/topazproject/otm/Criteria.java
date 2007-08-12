@@ -267,7 +267,7 @@ public class Criteria implements Parameterizable<Criteria> {
   /*
    * inherited javadoc
    */
-  public Set<String> getParameterNames() throws OtmException {
+  public Set<String> getParameterNames() {
     return getRoot().paramNames;
   }
 

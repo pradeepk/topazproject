@@ -331,14 +331,14 @@ public class DetachedCriteria {
    * 
    * @return the set of names; will be empty if there are no parameters
    */
-  public Set<String> getParameterNames() throws OtmException {
+  public Set<String> getParameterNames() {
     if (parent != null)
       return parent.getParameterNames();
 
     return getParameterNames(new HashSet<String>());
   }
 
-  private Set<String> getParameterNames(Set<String> paramNames) throws OtmException {
+  private Set<String> getParameterNames(Set<String> paramNames) {
     for (DetachedCriteria dc : childCriteriaList)
       dc.getParameterNames(paramNames);
 
