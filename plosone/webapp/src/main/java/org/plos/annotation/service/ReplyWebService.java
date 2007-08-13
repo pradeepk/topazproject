@@ -48,8 +48,8 @@ import org.topazproject.otm.criterion.Restrictions;
  */
 public class ReplyWebService extends BaseAnnotationService {
   private static final Log          log         = LogFactory.getLog(ReplyWebService.class);
-  private RepliesPEP                pep;
-  private FedoraHelper              fedora;
+  private final RepliesPEP          pep;
+  private final FedoraHelper        fedora;
   private Session                   session;
   private PermissionWebService      permissions;
 
@@ -60,7 +60,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws URISyntaxException DOCUMENT ME!
    * @throws ServiceException DOCUMENT ME!
    */
-  public void ReplyWebService() throws IOException, URISyntaxException, ServiceException {
+  public ReplyWebService() throws IOException, URISyntaxException, ServiceException {
     try {
       pep = new RepliesPEP();
     } catch (IOException e) {
@@ -71,8 +71,7 @@ public class ReplyWebService extends BaseAnnotationService {
       throw ioe;
     }
 
-    if (fedora == null)
-      fedora = new FedoraHelper();
+    fedora = new FedoraHelper();
   }
 
   /**
