@@ -467,11 +467,12 @@ public class ItqlStore extends AbstractTripleStore {
   private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn, 
       Map<String, Set<String>> types) throws OtmException {
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o subquery (select $t from <").append(modelUri)
+    qry.append("select $o $s $n subquery (select $t from <").append(modelUri)
        .append("> where $o <rdf:type> $t) from <").append(modelUri).append("> where ")
        .append("(trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <")
        .append(sub).append("> <").append(pred).append("> $s) and <")
-       .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o;");
+       .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o")
+       .append(" and $s <rdf:rest> $n;");
 
     return execCollectionsQry(qry.toString(), txn, types);
   }
@@ -517,13 +518,32 @@ public class ItqlStore extends AbstractTripleStore {
 
       // collect the results,
       qa.beforeFirst();
-      boolean sort = qa.indexOf("p") != -1;
-      if (!sort) {
+      boolean isRdfList = qa.indexOf("n") != -1;
+      if (isRdfList) {
+        Map<String, String> fwd  = new HashMap<String, String>();
+        Map<String, String> rev  = new HashMap<String, String>();
+        Map<String, String> objs = new HashMap<String, String>();
         while (qa.next()) {
           String assoc = qa.getString("o");
-          res.add(assoc);
-          updateTypeMap(qa.getSubQueryResults(1), assoc, types);
+          String node  = qa.isBlankNode(1) ? qa.getBlankNode(1) : qa.getString(1);
+          String next  = qa.isBlankNode(2) ? qa.getBlankNode(2) : qa.getString(2);
+          objs.put(node, assoc);
+          fwd.put(node, next);
+          rev.put(next, node);
+          updateTypeMap(qa.getSubQueryResults(3), assoc, types);
         }
+        log.debug("forward list: " + fwd);
+        log.debug("reverse list: " + rev);
+        log.debug("object  list: " + objs);
+
+        if (objs.size() == 0)
+          return res;
+
+        String first = rev.keySet().iterator().next();
+        while (rev.containsKey(first))
+          first = rev.get(first);
+        for (String n = first; fwd.get(n) != null; n = fwd.get(n))
+          res.add(objs.get(n));
       } else {
         while (qa.next()) {
           String p = qa.getString("p");

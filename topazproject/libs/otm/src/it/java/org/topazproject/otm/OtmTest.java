@@ -970,13 +970,15 @@ public class OtmTest extends TestCase {
       assertNotNull(m);
 
       assertEquals(2, m.list.size());
-      assertTrue(m.list.contains("l1") && m.list.contains("l2"));
+      assertEquals("l1", m.list.get(0));
+      assertEquals("l2", m.list.get(1));
 
       assertEquals(2, m.bag.size());
       assertTrue(m.bag.contains("b1") && m.bag.contains("b2"));
 
       assertEquals(11, m.seq.size());
-      assertTrue(m.seq.contains("s1") && m.seq.contains("s2"));
+      assertEquals("s1", m.seq.get(0));
+      assertEquals("s2", m.seq.get(1));
 
       assertEquals(2, m.alt.size());
       assertTrue(m.alt.contains("a1") && m.alt.contains("a2"));
