@@ -276,6 +276,50 @@ public class AnswerSet extends AbstractAnswer {
     }
 
     /** 
+     * Tests if the value of the specified column in the current row a blank node.
+     * 
+     * @param idx the column index (0-based)
+     * @return true if the column has a non-null value and is a blank node 
+     */
+    public boolean isBlankNode(int idx) {
+      Element v = (Element) ((Object[]) rows.get(curPos))[idx];
+      return (v != null) && v.hasAttribute(BNODE_ATTR);
+    }
+
+    /** 
+     * Get the id of the blank node. This id may be temporary and internal and is only valid
+     * within the current answer-set.
+     * 
+     * @param idx the column index (0-based)
+     * @return the blank node's id
+     * @throws AnswerException if the value isn't a blank node
+     */
+    public String getBlankNode(int idx) throws AnswerException {
+      Element v = (Element) ((Object[]) rows.get(curPos))[idx];
+
+      if (v == null)
+        return null;
+
+      String res = v.getAttribute(BNODE_ATTR);
+      if (res.length() > 0)
+        return res;
+
+      throw new AnswerException("is not a blank node");
+    }
+
+    /** 
+     * Get the id of the blank node. This id may be temporary and internal and is only valid
+     * within the current answer-set.
+     * 
+     * @param var name of the variable
+     * @return the blank node's id
+     * @throws AnswerException if the value isn't a blank node
+     */
+    public String getBlankNode(String var) throws AnswerException {
+      return getBlankNode(indexOf(var));
+    }
+
+    /** 
      * Tests if the value of the specified column in the current row is a subquery result.
      * 
      * @param idx the column index (0-based)
