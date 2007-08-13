@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +44,7 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
+import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.QueryException;
@@ -314,24 +316,23 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn) 
-             throws OtmException {
+  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn,
+                    List<Filter> filters, boolean filterObj) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
     SessionFactory      sf  = txn.getSession().getSessionFactory();
 
     // TODO: eager fetching
 
     // do query
-    StringBuilder get = new StringBuilder(500);
-    buildGetSelect(get, cm, id, txn);
-    get.append(";");
+    String get = buildGetSelect(cm, id, txn, filters, filterObj);
+    if (log.isDebugEnabled())
+      log.debug("get: " + get);
 
-    log.debug("get: " + get);
     String a;
     try {
-      a = isc.getItqlHelper().doQuery(get.toString(), null);
+      a = isc.getItqlHelper().doQuery(get, null);
     } catch (RemoteException re) {
-      throw new OtmException("error performing query: " + get.toString(), re);
+      throw new OtmException("error performing query: " + get, re);
     }
 
     // parse
@@ -405,34 +406,153 @@ public class ItqlStore extends AbstractTripleStore {
         continue;
       String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : modelUri;
       if (Mapper.MapperType.RDFLIST == m.getMapperType())
-        fvalues.put(p, getRdfList(id, p, mUri, txn, types));
+        fvalues.put(p, getRdfList(id, p, mUri, txn, types, m, sf, filters));
       else if (Mapper.MapperType.RDFBAG == m.getMapperType() ||
           Mapper.MapperType.RDFSEQ == m.getMapperType() || 
           Mapper.MapperType.RDFALT == m.getMapperType())
-        fvalues.put(p, getRdfBag(id, p, mUri, txn, types));
+        fvalues.put(p, getRdfBag(id, p, mUri, txn, types, m, sf, filters));
     }
 
     return instantiate(txn.getSession(), instance, cm, id, fvalues, rvalues, types);
   }
 
-  private void buildGetSelect(StringBuilder qry, ClassMetadata cm, String id, Transaction txn)
-      throws OtmException {
-    SessionFactory sf     = txn.getSession().getSessionFactory();
-    String         models = getModelsExpr(new ClassMetadata[] { cm }, txn);
-    String         tmdls  = getModelsExpr(listFieldClasses(cm, sf), txn);
+  private String buildGetSelect(ClassMetadata cm, String id, Transaction txn, List<Filter> filters,
+                                boolean filterObj) throws OtmException {
+    SessionFactory     sf     = txn.getSession().getSessionFactory();
+    Set<ClassMetadata> fCls   = listFieldClasses(cm, sf);
+    String             models = getModelsExpr(Collections.singleton(cm), txn);
+    String             tmdls  = getModelsExpr(fCls.size() > 0 ? fCls : Collections.singleton(cm),
+                                              txn);
+    List<Mapper>       assoc  = listAssociations(cm, sf);
+
+    StringBuilder qry = new StringBuilder(500);
 
     qry.append("select $s $p $o subquery (select $t from ").append(tmdls).append(" where ");
     qry.append("$o <rdf:type> $t) ");
     qry.append("from ").append(models).append(" where ");
-    qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">;");
+    qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">");
+    if (filterObj)
+      applyObjectFilters(qry, cm.getSourceClass(), "$s", filters, sf);
+    applyFieldFilters(qry, assoc, "$s", "$o", filters, sf);
 
-    qry.append("select $s $p $o subquery (select $t from ").append(models).append(" where ");
+    qry.append("; select $s $p $o subquery (select $t from ").append(models).append(" where ");
     qry.append("$s <rdf:type> $t) ");
     qry.append("from ").append(models).append(" where ");
     qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
+    if (filterObj)
+      applyObjectFilters(qry, cm.getSourceClass(), "$o", filters, sf);
+    applyFieldFilters(qry, assoc, "$o", "$s", filters, sf);
+    qry.append(";");
+
+    return qry.toString();
   }
 
-  private static String getModelsExpr(ClassMetadata[] cmList, Transaction txn) throws OtmException {
+  private void applyObjectFilters(StringBuilder qry, Class cls, String var, List<Filter> filters,
+                                  SessionFactory sf) throws OtmException {
+    // avoid work if possible
+    if (filters == null || filters.size() == 0)
+      return;
+
+    // find applicable filters
+    filters = new ArrayList<Filter>(filters);
+    for (Iterator<Filter> iter = filters.iterator(); iter.hasNext(); ) {
+      Filter f = iter.next();
+      ClassMetadata fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
+      if (!fcm.getSourceClass().isAssignableFrom(cls) &&
+          !cls.isAssignableFrom(fcm.getSourceClass()))
+        iter.remove();
+    }
+
+    if (filters.size() == 0)
+      return;
+
+    // apply filters
+    qry.append(" and (");
+
+    int idx = 0;
+    for (Filter f : filters) {
+      qry.append("(");
+      ItqlCriteria.buildFilter((AbstractFilterImpl) f, qry, var, "$gof" + idx++);
+      qry.append(") or ");
+    }
+
+    qry.setLength(qry.length() - 4);
+    qry.append(")");
+  }
+
+  private void applyFieldFilters(StringBuilder qry, List<Mapper> assoc, String objVar, String fVar,
+                                 List<Filter> filters, SessionFactory sf)
+        throws OtmException {
+    // avoid work if possible
+    if (filters == null || filters.size() == 0 || assoc.size() == 0)
+      return;
+
+    // build predicate->filter map
+    Map<String, Set<Filter>> applicFilters = new HashMap<String, Set<Filter>>();
+    for (Mapper m : assoc) {
+      Class mc = m.getComponentType();
+
+      for (Filter f : filters) {
+        ClassMetadata cm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
+        if (cm == null)
+          continue;       // bug???
+
+        Class fc = cm.getSourceClass();
+        if (mc.isAssignableFrom(fc) || fc.isAssignableFrom(mc)) {
+          Set<Filter> fset = applicFilters.get(m.getUri());
+          if (fset == null)
+            applicFilters.put(m.getUri(), fset = new HashSet<Filter>());
+          fset.add(f);
+        }
+      }
+    }
+
+    if (applicFilters.size() == 0)
+      return;
+
+    // a little optimization: try to group filters
+    Map<Set<Filter>, Set<String>> filtersToPred = new HashMap<Set<Filter>, Set<String>>();
+    for (String p : applicFilters.keySet()) {
+      Set<Filter> fset = applicFilters.get(p);
+      Set<String> pset = filtersToPred.get(fset);
+      if (pset == null)
+        filtersToPred.put(fset, pset = new HashSet<String>());
+      pset.add(p);
+    }
+
+    // apply filters
+    StringBuilder predList = new StringBuilder(500);
+    qry.append(" and (");
+
+    int idx = 0;
+    for (Set<Filter> fset : filtersToPred.keySet()) {
+      qry.append("(");
+
+      qry.append("(");
+      Set<String> pset = filtersToPred.get(fset);
+      for (String pred : pset) {
+        String predExpr = "$p <mulgara:is> <" + pred + "> or ";
+        qry.append(predExpr);
+        predList.append(predExpr);
+      }
+      qry.setLength(qry.length() - 4);
+      qry.append(") and ((");
+
+      for (Filter f : fset) {
+        ItqlCriteria.buildFilter((AbstractFilterImpl) f, qry, fVar, "$gff" + idx++);
+        qry.append(") and (");
+      }
+      qry.setLength(qry.length() - 7);
+      qry.append("))) or ");
+    }
+
+    predList.setLength(predList.length() - 4);
+    qry.append("(").append(objVar).append(" $p ").append(fVar).append(" minus (").
+        append(predList).append(")))");
+  }
+
+  private static String getModelsExpr(Set<ClassMetadata> cmList, Transaction txn)
+      throws OtmException {
     Set<String> mList = new HashSet<String>();
     for (ClassMetadata cm : cmList) {
       mList.add(getModelUri(cm.getModel(), txn));
@@ -450,41 +570,60 @@ public class ItqlStore extends AbstractTripleStore {
     return mexpr.toString();
   }
 
-  private static ClassMetadata[] listFieldClasses(ClassMetadata cm, SessionFactory sf) {
+  private static Set<ClassMetadata> listFieldClasses(ClassMetadata cm, SessionFactory sf) {
     Set<ClassMetadata> clss = new HashSet<ClassMetadata>();
+
     for (Mapper p : cm.getFields()) {
       ClassMetadata c = sf.getClassMetadata(p.getComponentType());
       if (c != null)
         clss.add(c);
     }
 
-    if (clss.size() == 0)
-      clss.add(cm);     // dummy to ensure we always have something, to simplify rest of code
+    return clss;
+  }
 
-    return clss.toArray(new ClassMetadata[clss.size()]);
+  private static List<Mapper> listAssociations(ClassMetadata cm, SessionFactory sf) {
+    List<Mapper> mappers = new ArrayList<Mapper>();
+
+    for (Mapper p : cm.getFields()) {
+      if (p.getSerializer() == null && p.getMapperType() == Mapper.MapperType.PREDICATE)
+        mappers.add(p);
+    }
+
+    return mappers;
   }
 
   private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn, 
-      Map<String, Set<String>> types) throws OtmException {
+                                  Map<String, Set<String>> types, Mapper m, SessionFactory sf,
+                                  List<Filter> filters)
+        throws OtmException {
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $s $n subquery (select $t from <").append(modelUri)
        .append("> where $o <rdf:type> $t) from <").append(modelUri).append("> where ")
        .append("(trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <")
        .append(sub).append("> <").append(pred).append("> $s) and <")
        .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o")
-       .append(" and $s <rdf:rest> $n;");
+       .append(" and $s <rdf:rest> $n");
+    if (m.getSerializer() == null)
+      applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
+    qry.append(";");
 
     return execCollectionsQry(qry.toString(), txn, types);
   }
 
   private List<String> getRdfBag(String sub, String pred, String modelUri, Transaction txn,
-      Map<String, Set<String>> types) throws OtmException {
+                                 Map<String, Set<String>> types, Mapper m, SessionFactory sf,
+                                 List<Filter> filters)
+        throws OtmException {
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $p subquery (select $t from <").append(modelUri)
        .append("> where $o <rdf:type> $t) from <")
        .append(modelUri).append("> where ")
        .append("($s $p $o minus $s <rdf:type> $o) and <")
-       .append(sub).append("> <").append(pred).append("> $s;");
+       .append(sub).append("> <").append(pred).append("> $s");
+    if (m.getSerializer() == null)
+      applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
+    qry.append(";");
 
     return execCollectionsQry(qry.toString(), txn, types);
   }
@@ -774,7 +913,11 @@ public class ItqlStore extends AbstractTripleStore {
       if (itql != null) {
         log.warn("Closing connection with an active transaction - rolling back current one",
                  new Throwable());
-        abort(false);
+        try {
+          abort(false);
+        } catch (OtmException oe) {
+          throw new Error(oe);  // can't happen
+        }
       }
     }
   }

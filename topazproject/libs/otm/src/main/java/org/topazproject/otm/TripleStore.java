@@ -76,13 +76,16 @@ public interface TripleStore {
    * @param id the id/subject-uri for the object
    * @param instance the instance to be refreshed or null 
    * @param txn the transaction context
+   * @param filters the filters to use, or null if there are none
+   * @param filterObj whether the object itself needs filtering (if false only the fields are
+   *                  filtered)
    *
    * @return the result instance
    *
    * @throws OtmException on an error
    */
-  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn)
-                   throws OtmException;
+  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn,
+                    List<Filter> filters, boolean filterObj) throws OtmException;
 
   /**
    * Lists objects matching the given Criteria.

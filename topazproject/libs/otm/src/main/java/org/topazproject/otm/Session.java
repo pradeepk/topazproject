@@ -267,6 +267,15 @@ public class Session {
    * @throws OtmException on an error
    */
   public <T> T get(Class<T> clazz, String oid) throws OtmException {
+    return get(clazz, oid, true);
+  }
+
+  /**
+   * Internal method. DO NOT USE.
+   *
+   * @see #get(java.lang.Class, java.lang.String)
+   */
+  public <T> T get(Class<T> clazz, String oid, boolean filterObj) throws OtmException {
     if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
       return null;
 
@@ -282,7 +291,7 @@ public class Session {
       o = dirtyMap.get(id);
 
     if (o == null) {
-      o = getFromStore(id, checkClass(clazz), null);
+      o = getFromStore(id, checkClass(clazz), null, filterObj);
 
       if (o != null) {
         // Must merge here. Associations may have a back-pointer to this Id.
@@ -352,7 +361,7 @@ public class Session {
     Id id = checkObject(o);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
-      o = getFromStore(id, checkClass(o.getClass()), o);
+      o = getFromStore(id, checkClass(o.getClass()), o, true);
       sync(o, id, true, false, false);
     }
   }
@@ -476,6 +485,9 @@ public class Session {
     if (fd == null)
       return null;
 
+    flush();
+    clear();
+
     Filter f = fd.createFilter(this);
     filters.put(f.getName(), f);
     return f;
@@ -501,6 +513,9 @@ public class Session {
     if (filters.containsKey(fd.getFilterName()))
       throw new OtmException("a filter with the given definition has already been enabled");
 
+    flush();
+    clear();
+
     Filter f = fd.createFilter(this);
     filters.put(f.getName(), f);
     return f;
@@ -512,7 +527,9 @@ public class Session {
    * 
    * @param name the name of the filter to disable
    */
-  public void disableFilter(String name) {
+  public void disableFilter(String name) throws OtmException {
+    flush();
+    clear();
     filters.remove(name);
   }
 
@@ -546,14 +563,15 @@ public class Session {
     }
   }
 
-  private Object getFromStore(Id id, ClassMetadata cm, Object instance)
+  private Object getFromStore(Id id, ClassMetadata cm, Object instance, boolean filterObj)
                        throws OtmException {
     if (txn == null)
       throw new OtmException("No transaction active");
 
-    TripleStore              store = sessionFactory.getTripleStore();
+    TripleStore store = sessionFactory.getTripleStore();
 
-    return store.get(cm, id.getId(), instance, txn);
+    return store.get(cm, id.getId(), instance, txn, new ArrayList<Filter>(filters.values()),
+                     filterObj);
   }
 
   private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
@@ -685,7 +703,7 @@ public class Session {
 
             loading = true;
             try {
-              getFromStore(id, cm, self);
+              getFromStore(id, cm, self, true);
             } finally {
               loading = false;
             }

@@ -36,7 +36,7 @@ import org.topazproject.otm.mapping.Mapper;
 public class ItqlCriteria {
   private Criteria criteria;
 
-/**
+  /**
    * Creates a new ItqlCriteria object.
    *
    * @param criteria the criteria
@@ -55,7 +55,7 @@ public class ItqlCriteria {
   String buildUserQuery() throws OtmException {
     StringBuilder qry   = new StringBuilder(500);
     ClassMetadata cm    = criteria.getClassMetadata();
-    String        model = getModelUri(cm.getModel());
+    String        model = getModelUri(criteria, cm.getModel());
 
     qry.append("select $s");
 
@@ -109,11 +109,11 @@ public class ItqlCriteria {
       buildProjections(cr, qry, subject + "c" + i++);
   }
 
-  private void buildWhereClause(Criteria criteria, StringBuilder qry, String subject, String pfx,
-                                boolean needType, boolean isFilter)
+  private static void buildWhereClause(Criteria criteria, StringBuilder qry, String subject,
+                                       String pfx, boolean needType, boolean isFilter)
                          throws OtmException {
     ClassMetadata cm    = criteria.getClassMetadata();
-    String        model = getModelUri(cm.getModel());
+    String        model = getModelUri(criteria, cm.getModel());
 
     if (needType && cm.getType() != null)
       qry.append(subject).append(" <rdf:type> <").append(cm.getType()).append("> in <").append(model)
@@ -126,7 +126,7 @@ public class ItqlCriteria {
 
     if (!isFilter) {
       for (Order o : criteria.getOrderList())
-        buildPredicateWhere(cm, o.getName(), subject, object + i++, qry, model);
+        buildPredicateWhere(cm, criteria, o.getName(), subject, object + i++, qry, model);
     }
 
     i = 0;
@@ -149,12 +149,20 @@ public class ItqlCriteria {
 
     for (Criteria cr : criteria.getChildren()) {
       String child = pfx + "c" + i++;
-      buildPredicateWhere(cm, cr.getMapping().getName(), subject, child, qry, model);
+      buildPredicateWhere(cm, cr, cr.getMapping().getName(), subject, child, qry, model);
       buildWhereClause(cr, qry, child, child, true, isFilter);
     }
   }
 
-  private void buildFilter(AbstractFilterImpl f, StringBuilder qry, String subject, String pfx)
+  /** 
+   * Build a where-clause fragment for the given filter. 
+   * 
+   * @param f       the filter
+   * @param qry     the query to which to attach the fragment
+   * @param subject the query variable being filtered
+   * @param pfx     the prefix to use for variables
+   */
+  static void buildFilter(AbstractFilterImpl f, StringBuilder qry, String subject, String pfx)
        throws OtmException {
     if (f instanceof JunctionFilterDefinition.JunctionFilter) {
       JunctionFilterDefinition.JunctionFilter jf = (JunctionFilterDefinition.JunctionFilter) f;
@@ -179,15 +187,15 @@ public class ItqlCriteria {
     }
   }
 
-  private void buildPredicateWhere(ClassMetadata cm, String name, String subject, String object,
-                                   StringBuilder qry, String model)
+  private static void buildPredicateWhere(ClassMetadata cm, Criteria c, String name, String subject,
+                                          String object, StringBuilder qry, String model)
                             throws OtmException {
     Mapper m = cm.getMapperByName(name);
 
     if (m == null)
       throw new OtmException("No field with the name '" + name + "' in " + cm);
 
-    String mUri = (m.getModel() != null) ? getModelUri(m.getModel()) : model;
+    String mUri = (m.getModel() != null) ? getModelUri(c, m.getModel()) : model;
 
     if (m.hasInverseUri()) {
       String tmp = object;
@@ -199,7 +207,7 @@ public class ItqlCriteria {
         .append(mUri).append("> and ");
   }
 
-  private void buildOrderBy(Criteria criteria, List<String> orders, String subject) {
+  private static void buildOrderBy(Criteria criteria, List<String> orders, String subject) {
     int    i      = 0;
     String prefix = subject + "o";
 
@@ -218,7 +226,7 @@ public class ItqlCriteria {
       buildOrderBy(cr, orders, subject + "c" + i++);
   }
 
-  private String getModelUri(String modelId) throws OtmException {
+  private static String getModelUri(Criteria criteria, String modelId) throws OtmException {
     ModelConfig mc = criteria.getSession().getSessionFactory().getModel(modelId);
 
     if (mc == null) // Happens if using a Class but the model was not added
@@ -227,7 +235,7 @@ public class ItqlCriteria {
     return mc.getUri().toString();
   }
 
-  private boolean isFilterApplicable(Criteria current, Filter f) throws OtmException {
+  private static boolean isFilterApplicable(Criteria current, Filter f) throws OtmException {
     ClassMetadata cm =
         current.getSession().getSessionFactory()
                .getClassMetadata(f.getFilterDefinition().getFilteredClass());
@@ -269,7 +277,7 @@ public class ItqlCriteria {
 
       while (qa.next()) {
         String s = qa.getString("s");
-        Object o = criteria.getSession().get(cm.getSourceClass(), s);
+        Object o = criteria.getSession().get(cm.getSourceClass(), s, false);
 
         if (o != null)
           results.add(o);

@@ -99,8 +99,11 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn)
-                   throws OtmException {
+  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn,
+                    List<Filter> filters, boolean filterObj) throws OtmException {
+    if (filters != null && filters.size() > 0)
+      throw new OtmException("Filters are not supported");
+
     MemStoreConnection        msc     = (MemStoreConnection) txn.getConnection();
     Storage                   storage = msc.getStorage();
     String                    model   = cm.getModel();
