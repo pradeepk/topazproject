@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="PlosOneTest" verbose="10" >
+  <test name="PloSOneTest" >
+    <classes>
+       <class name="org.plosone.it.PlosOneTest"  />
+    </classes>
+  </test>
+</suite>

@@ -47,6 +47,8 @@ class PlosIT extends TestCase {
         test.config = configMap
         test.testSuite()
         }
+
+      style()
     } catch (Exception e) {
       e.printStackTrace()
       throw(e)
@@ -56,7 +58,6 @@ class PlosIT extends TestCase {
   void initProps () {
 
     def webtestPropertiesURL = this.getClass().getResource('/plos.webtest.properties')
-
     println 'webtestPropertiesURL: ' + webtestPropertiesURL
 
     ant.property(file: webtestPropertiesURL.getFile())
@@ -67,6 +68,7 @@ class PlosIT extends TestCase {
 
   // prepare a configmap based on plos.webtest.properties
   def initConfigMap () {
+
     configMap = [:]
     def prefix = 'plos.webtest.'
     props.keySet().each { name ->
@@ -79,12 +81,32 @@ class PlosIT extends TestCase {
 
     try {
       def webtestTaskdefURL = this.getClass().getResource('/plos.webtest.taskdef')
-
       println 'webtestTaskdefURL: ' + webtestTaskdefURL
 
       ant.taskdef(file: webtestTaskdefURL.getFile())
     } catch (Exception e) {
       System.err.println 'Exception: ' + e
     }
+  }
+
+  def style() {
+
+    def webtestStyleURL = this.getClass().getResource('/WebTestReport.xsl')
+    println 'webtestStyleURL: ' + webtestStyleURL
+
+    ant.xslt(
+      basedir:    props.'plos.webtest.resultpath',
+      destdir:    props.'plos.webtest.resultpath',
+      includes:   props.'plos.webtest.resultfile',
+      extension:  '.html',
+      style:      webtestStyleURL.getFile()) {
+        param(name:'reporttime',     expression: new Date().toString())
+        param(name:'title',          expression: "The ${props.projectName} Project")
+        param(name:'resources.dir',  expression: new File(props.'plos.webtest.resultpath' + '/resources').toURI())
+    }
+
+    def reportHtml = props.'plos.webtest.resultpath' + '/' + props.'plos.webtest.resultfile' - '.xml' + '.html'
+    def filename = new File(reportHtml).canonicalPath
+    println "Report generated in: $filename"
   }
 }

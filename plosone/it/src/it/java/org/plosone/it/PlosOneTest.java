@@ -14,17 +14,18 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.testng.annotations.Test;
+
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
-
-import junit.framework.TestCase;
 
 /**
  * PlosOne Tests
  *
  * @author Pradeep Krishnan
  */
-public class PlosOneTest extends TestCase {
+@Test()
+public class PlosOneTest {
   private static final Log log     = LogFactory.getLog(PlosOneTest.class);
   private static Env[] envs = new Env[] {new Env("install/07", "org.plosone:plosone-it-data:0.7"),
                              //  new Env("install/08", "org.plosone:plosone-it-data:0.7"),
@@ -50,10 +51,11 @@ public class PlosOneTest extends TestCase {
   }
 */
   /**
-   * Invoke Groovy WebTests.
+   * Bring up known environment.
    *
    * @throws Exception on an error
    */
+  @Test()
   public void testPlosOne() throws Exception {
     start07();
     
