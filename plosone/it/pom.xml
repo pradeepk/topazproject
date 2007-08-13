@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-it</artifactId>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.8-SNAPSHOT</version>
   <name>PLoS ONE Web Application Integration Tests</name>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.8-SNAPSHOT</version>
   </parent>
 
   <dependencies>
