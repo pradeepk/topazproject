@@ -703,7 +703,7 @@ public class Session {
 
             loading = true;
             try {
-              getFromStore(id, cm, self, true);
+              getFromStore(id, cm, self, false);
             } finally {
               loading = false;
             }
