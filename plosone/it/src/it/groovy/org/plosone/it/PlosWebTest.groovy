@@ -9,48 +9,38 @@
  */
 package org.plosone.it
 
-import junit.framework.TestCase;
+import org.testng.annotations.BeforeClass
 
 /**
  * PLoS Integration Tests using WebTest.
  *
- * Main entry point for testing.
+ * All WebTests should extend this class.
  */
-class PlosIT extends TestCase {
+class PlosWebTest {
 
   def ant = new AntBuilder()
   def props
-  def configMap
+  def config
 
-  public PlosIT() {
-
-    initProps()
-    initConfigMap()
-    prepare()
+  /**
+   * Constructor sets up WebTest environment.
+   */
+  public PlosWebTest() {
+    testSetup()
   }
 
-  public void testSuite() throws Exception {
+  /**
+   * Standard Ant pre-test setup.
+   */
+  @BeforeClass
+  testSetup() {
+
     try {
-      // TODO: scan classpath for *IT test classes, for now, they must be put in manually
-      //
-      //def scanner = ant.fileScanner {
-      //  fileset(includes: '**/*IT.groovy')
-      //}
-
-      def testsIT = ['org.plosone.it.HomeActionIT']
-      testsIT.each {testIT ->
-        println 'testIT: ' + testIT
-        println '  config: ' + configMap
-        def test = this.getClass().getClassLoader().loadClass(testIT).newInstance()
-        test.ant = ant
-        test.props = props
-        test.config = configMap
-        test.testSuite()
-        }
-
-      style()
+      initProps()
+      initConfig()
+      prepare()
     } catch (Exception e) {
-      e.printStackTrace()
+      e.printStackTrace();
       throw(e)
     }
   }
@@ -66,27 +56,23 @@ class PlosIT extends TestCase {
     props = ant.antProject.properties
   }
 
-  // prepare a configmap based on plos.webtest.properties
-  def initConfigMap () {
+  // prepare a config based on plos.webtest.properties
+  def initConfig () {
 
-    configMap = [:]
+    config = [:]
     def prefix = 'plos.webtest.'
     props.keySet().each { name ->
-      if (name.startsWith(prefix)) configMap.put(name - prefix, props[name])
+      if (name.startsWith(prefix)) config.put(name - prefix, props[name])
     }
   }
 
   // prepare the ant taskdef, classpath and filesystem for reporting
   void prepare() {
 
-    try {
-      def webtestTaskdefURL = this.getClass().getResource('/plos.webtest.taskdef')
-      println 'webtestTaskdefURL: ' + webtestTaskdefURL
+    def webtestTaskdefURL = this.getClass().getResource('/plos.webtest.taskdef')
+    println 'webtestTaskdefURL: ' + webtestTaskdefURL
 
-      ant.taskdef(file: webtestTaskdefURL.getFile())
-    } catch (Exception e) {
-      System.err.println 'Exception: ' + e
-    }
+    ant.taskdef(file: webtestTaskdefURL.getFile())
   }
 
   def style() {
