@@ -120,7 +120,7 @@
     <tempfile property="temp.file" prefix="plosone" suffix=".properties" destDir="${home}"/>
     <echo file="${temp.file}" message=""/>
     <propertyselector property="prop.list" casesensitive="false"
-        match="(topaz|plosone|plos-registration|crossref|itql|log4j|com|ingest|server|service|hosts|ports|org)\..*"/>
+        match="(topaz|plosone|plos-registration|crossref|itql|log4j|com|ingest|server|service|hosts|ports|org|pub)\..*"/>
     <if>
       <isset property="prop.list"/>
       <then>
