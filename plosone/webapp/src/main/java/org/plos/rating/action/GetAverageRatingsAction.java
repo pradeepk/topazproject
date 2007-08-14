@@ -17,7 +17,6 @@ import com.googlecode.jsonplugin.annotations.JSON;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 
 import org.plos.action.BaseActionSupport;
 
@@ -33,7 +32,6 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
-import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -80,8 +78,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
     Transaction   tx                 = null;
     RatingSummary ratingSummary      = null;
 
-    PlosOneUser   user               =
-      (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+    PlosOneUser   user               = PlosOneUser.getCurrentUser();
 
     getPEP().checkAccess(RatingsPEP.GET_STATS, URI.create(articleURI));
 

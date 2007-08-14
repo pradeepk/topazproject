@@ -208,7 +208,6 @@
 
   <bean id="searchService" class="org.plos.search.service.SearchService" scope="session">
     <property name="searchWebService" ref="searchWebService"/>
-    <property name="userContext" ref="userContext"/>
     <property name="otmSession" ref="otmSession"/>
     <aop:scoped-proxy/>
   </bean>

@@ -18,10 +18,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.ServletActionContext;
 
 import org.plos.ApplicationException;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
 import org.plos.permission.service.PermissionWebService;
@@ -350,7 +348,7 @@ public class RatingsService extends BaseRatingsService {
 
     // the PEP check is against what is rated,
     // e.g. can this user see the ratings for what is rated?
-    PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+    PlosOneUser user = PlosOneUser.getCurrentUser();
     pep.checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()), rating.getAnnotates());
 
     return rating;

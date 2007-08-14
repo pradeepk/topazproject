@@ -12,6 +12,7 @@ package org.plos.permission.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.user.PlosOneUser;
 import org.plos.xacml.XacmlUtil;
 
 import javax.xml.rpc.ServiceException;
@@ -24,7 +25,6 @@ import java.rmi.RemoteException;
  */
 public class PermissionWebService {
   private Permissions permissionsService;
-  private String currentPrincipal;
 
   private static final Log      log    = LogFactory.getLog(PermissionWebService.class);
   private static PermissionsPEP pep;
@@ -72,16 +72,10 @@ public class PermissionWebService {
    * @return the current user's principle
    */
   public String getCurrentPrincipal() {
-    return currentPrincipal;
+    PlosOneUser user = PlosOneUser.getCurrentUser();
+    return (user != null) ? user.getUserId() : null;
   }
 
-  /**
-   * Set the current principle.
-   * @param currentPrincipal currentPrincipal
-   */
-  public void setCurrentPrincipal(final String currentPrincipal) {
-    this.currentPrincipal = currentPrincipal;
-  }
 
   /**
    * Grants permissions.
@@ -104,7 +98,7 @@ public class PermissionWebService {
    * @throws java.rmi.RemoteException
    */
   public void grant(final String resource, final String[] permissions) throws RemoteException {
-    grant(resource, permissions, currentPrincipal);
+    grant(resource, permissions, getCurrentPrincipal());
   }
 
   private void grant(final String resource, final String[] permissions, final String principal)
@@ -133,7 +127,7 @@ public class PermissionWebService {
    * @throws RemoteException
    */
   public void revoke(final String resource, final String[] permissions) throws RemoteException {
-    revoke(resource, permissions, currentPrincipal);
+    revoke(resource, permissions, getCurrentPrincipal());
   }
 
   private void revoke(final String resource, final String[] permissions, final String principal)

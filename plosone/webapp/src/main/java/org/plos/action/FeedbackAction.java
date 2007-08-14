@@ -13,7 +13,6 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
 import org.plos.user.action.UserActionSupport;
@@ -51,7 +50,7 @@ public class FeedbackAction extends UserActionSupport {
   }
 
   private void setUserDetailsFromSession() {
-    final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
+    final PlosOneUser plosOneUser = PlosOneUser.getCurrentUser();
     if (null != plosOneUser) {
       name = plosOneUser.getDisplayName();
       fromEmailAddress = plosOneUser.getEmail();

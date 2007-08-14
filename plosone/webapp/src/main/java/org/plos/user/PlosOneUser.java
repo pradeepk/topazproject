@@ -12,6 +12,10 @@ package org.plos.user;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.apache.struts2.ServletActionContext;
+
+import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.models.UserAccount;
 import org.plos.models.UserPreferences;
 import org.plos.models.UserProfile;
@@ -42,6 +46,19 @@ public class PlosOneUser {
 
   /** the user-preferences as a map */
   private Map<String, String[]> userPrefs;
+
+
+  /**
+   * Returns the current user. Valid only in a request context.
+   */
+  public static PlosOneUser getCurrentUser() {
+    if (ServletActionContext.getRequest() == null)
+      return null;
+    if (ServletActionContext.getRequest().getSession() == null)
+      return null;
+    return (PlosOneUser) ServletActionContext.getRequest().getSession()
+                                                              .getAttribute(PLOS_ONE_USER_KEY);
+  }
 
   /**
    * Initializes a new PLoS ONE user

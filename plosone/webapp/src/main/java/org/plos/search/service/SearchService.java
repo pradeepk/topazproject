@@ -12,8 +12,6 @@ package org.plos.search.service;
 import org.plos.ApplicationException;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
-import org.plos.web.UserContext;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -37,7 +35,6 @@ public class SearchService {
                                               CONF.getLong("pub.search.cacheDuration", 600000L));
 
   private SearchWebService           searchWebService;
-  private UserContext                userContext;
   private Session                    otmSession;
 
   /**
@@ -52,7 +49,7 @@ public class SearchService {
   public SearchResultPage find(final String query, final int startPage, final int pageSize)
       throws ApplicationException {
     try {
-      PlosOneUser   user     = (PlosOneUser) userContext.getSessionMap().get(PLOS_ONE_USER_KEY);
+      PlosOneUser   user     = PlosOneUser.getCurrentUser();
       final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
 
       /* Wrap all otm checks (that happen in the HitGuard) in one transaction. (Warning:
@@ -85,14 +82,6 @@ public class SearchService {
    */
   public void setSearchWebService(final SearchWebService searchWebService) {
     this.searchWebService = searchWebService;
-  }
-
-  /**
-   * Set the user's context which can be used to obtain user's session values/attributes
-   * @param userContext userContext
-   */
-  public void setUserContext(final UserContext userContext) {
-    this.userContext = userContext;
   }
 
   public void setOtmSession(Session otmSession) {

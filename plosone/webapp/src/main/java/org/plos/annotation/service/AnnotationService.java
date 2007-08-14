@@ -70,7 +70,7 @@ public class AnnotationService {
       final String annotationId = annotationWebService.createAnnotation(mimeType, target, context, olderAnnotation, title, body);
 
       if (log.isDebugEnabled()) {
-        final PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(Constants.PLOS_ONE_USER_KEY);
+        final PlosOneUser user = PlosOneUser.getCurrentUser();
         log.debug("Annotation created with ID: " + annotationId + " for user: " + ((user == null) ? "null" : user.getUserId()) + " for IP: " +
                   ServletActionContext.getRequest().getRemoteAddr());
       }

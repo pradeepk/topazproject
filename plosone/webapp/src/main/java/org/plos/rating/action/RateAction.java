@@ -23,9 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.struts2.ServletActionContext;
-
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.action.BaseActionSupport;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
@@ -79,8 +76,7 @@ public class RateAction extends BaseActionSupport {
    */
   public String rateArticle() {
     Transaction       tx                 = null;
-    PlosOneUser       user               =
-      (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+    PlosOneUser       user               = PlosOneUser.getCurrentUser();
     Date              now                = new Date(System.currentTimeMillis());
 
     URI           annotatedArticle     = null;
@@ -254,8 +250,7 @@ public class RateAction extends BaseActionSupport {
     Transaction tx      = null;
 
     try {
-      PlosOneUser user =
-        (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+      PlosOneUser user = PlosOneUser.getCurrentUser();
 
       if (user == null) {
         log.info("User is null for retrieving user ratings");

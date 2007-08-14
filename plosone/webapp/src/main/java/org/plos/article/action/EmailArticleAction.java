@@ -15,7 +15,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
 
 import org.plos.ApplicationException;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.article.service.FetchArticleService;
 import org.plos.email.impl.FreemarkerTemplateMailer;
 import org.plos.models.ObjectInfo;
@@ -45,14 +44,14 @@ public class EmailArticleAction extends UserActionSupport {
   private FetchArticleService fetchArticleService;
   private static final Log log = LogFactory.getLog(EmailArticleAction.class);
   private static final int MAX_TO_EMAIL = 5;
-  
+
   /**
    * Render the page with the values passed in
    * @return webwork status
    * @throws Exception Exception
    */
   public String executeRender() throws Exception {
-    final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
+    final PlosOneUser plosOneUser = PlosOneUser.getCurrentUser();
     if (null != plosOneUser) {
       senderName = plosOneUser.getDisplayName();
       emailFrom = plosOneUser.getEmail();

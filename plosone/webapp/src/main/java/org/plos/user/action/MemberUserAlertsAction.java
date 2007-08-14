@@ -10,9 +10,6 @@
 package org.plos.user.action;
 
 import org.plos.user.PlosOneUser;
-import org.plos.Constants;
-
-import java.util.Map;
 
 /**
  * User Alerts Action that is called by the member user to update their alerts preferences
@@ -21,7 +18,6 @@ import java.util.Map;
 public class MemberUserAlertsAction extends UserAlertsAction {
   @Override
   protected PlosOneUser getPlosOneUserToUse() {
-    final Map<String, Object> sessionMap = getSessionMap();
-    return (PlosOneUser) sessionMap.get(Constants.PLOS_ONE_USER_KEY);
+    return PlosOneUser.getCurrentUser();
   }
 }
