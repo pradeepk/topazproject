@@ -42,7 +42,6 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.mapping.Mapper;
@@ -60,7 +59,6 @@ public class ItqlStore extends AbstractTripleStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
   private static final Map<Object, List<ItqlHelper>> conCache = new HashMap();
   private        final URI serverUri;
-  private Map<String, CriterionBuilder> critBuilders = new HashMap<String, CriterionBuilder>();
 
   /** 
    * Create a new itql-store instance. 
@@ -823,16 +821,6 @@ public class ItqlStore extends AbstractTripleStore {
         log.warn("Close connection failed", t);
       }
     }
-  }
-
-  public CriterionBuilder getCriterionBuilder(String func)
-                                       throws OtmException {
-    return critBuilders.get(func);
-  }
-
-  public void setCriterionBuilder(String func, CriterionBuilder builder)
-                           throws OtmException {
-    critBuilders.put(func, builder);
   }
 
   public static class ItqlStoreConnection implements Connection {

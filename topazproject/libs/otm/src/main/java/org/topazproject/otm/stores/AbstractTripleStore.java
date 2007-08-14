@@ -21,6 +21,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
+import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 
@@ -30,6 +31,11 @@ import org.topazproject.otm.query.GenericQueryImpl;
  * @author Pradeep Krishnan
  */
 public abstract class AbstractTripleStore implements TripleStore {
+  /**
+   * Map of Criterion Builders for store specific functions. 
+   */
+  protected Map<String, CriterionBuilder> critBuilders = new HashMap<String, CriterionBuilder>();
+
   /**
    * Instantiate an object based on the statements about it found in the triple-store
    *
@@ -143,5 +149,21 @@ public abstract class AbstractTripleStore implements TripleStore {
     }
 
     return instance;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public CriterionBuilder getCriterionBuilder(String func)
+                                       throws OtmException {
+    return critBuilders.get(func);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void setCriterionBuilder(String func, CriterionBuilder builder)
+                           throws OtmException {
+    critBuilders.put(func, builder);
   }
 }
