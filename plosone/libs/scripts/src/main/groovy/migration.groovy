@@ -269,8 +269,7 @@ def dump(obj, prefix, indent, width) {
           def abbrev = abbreviate(prop.key) + '.' + abbreviateClass(prop.value.class.name)
           dump(prop.value, prefix + abbrev + ':', indent + 2, width)
           break
-        case java.util.HashSet:
-        case java.util.ArrayList:
+        case java.util.Collection:
           println "${prop.value.size()} element(s) (${prop.value.class.name})"
           int i = 0
           def tmpmap = new HashMap()
