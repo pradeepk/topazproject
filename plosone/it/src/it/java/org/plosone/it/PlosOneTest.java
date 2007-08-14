@@ -15,6 +15,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.testng.annotations.Test;
+import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.BeforeSuite;
 
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.*;
@@ -24,45 +26,32 @@ import com.gargoylesoftware.htmlunit.html.*;
  *
  * @author Pradeep Krishnan
  */
-@Test()
 public class PlosOneTest {
   private static final Log log     = LogFactory.getLog(PlosOneTest.class);
-  private static Env[] envs = new Env[] {new Env("install/07", "org.plosone:plosone-it-data:0.7"),
-                             //  new Env("install/08", "org.plosone:plosone-it-data:0.7"),
-                             //  new Env("install/empty", null)
+  private Env[] envs = new Env[] {
+             // new Env("install/07", "org.plosone:plosone-it-data:0.7"),
+              new Env("install/basic", "org.plosone:plosone-it-data-basic:0.8"),
+             // new Env("install/empty", null)
   };
 
-  static {
+  @BeforeSuite
+  public void install() {
     for (Env env : envs)
       env.install();
   }
 
 
-  public void start07() {
+
+  @BeforeGroups({"basic"})
+  public void startBasic() {
     envs[0].start(); // note: stops other envs
   }
-/*
-  public void start08() {
-    envs[1].start(); // note: stops other envs
-  }
 
-  public void startEmpty() {
-    envs[2].start(); // note: stops other envs
-  }
-*/
-  /**
-   * Bring up known environment.
-   *
-   * @throws Exception on an error
-   */
-  @Test()
+  @Test(groups={"basic"})
   public void testPlosOne() throws Exception {
-    start07();
-    
-    /* call groovy
-    PlosIT plosIT = new PlosIT();
-    plosIT.testSuite();
-    */
+    startBasic();
+    HomeActionWebTest test = new HomeActionWebTest();
+    test.testSuite();
   }
 
 }

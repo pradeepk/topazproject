@@ -2,21 +2,15 @@
 
 <suite name="PlosOneTestNG" verbose="10" >
   <test name="PloSOneTest (Main)" >
+    <groups>
+      <run>
+        <include name="07"/>
+        <include name="basic"/>
+        <include name="empty"/>
+      </run>
+    </groups>
     <classes>
-<!--
--->
-      <class name="org.plosone.it.PlosOneTest">
-         <methods>
-           <include name="testSuite" />
-         </methods>
-       </class>
-<!--
-       <class name="org.plosone.it.HomeActionWebTest">
-         <methods>
-           <include name="testSuite" />
-         </methods>
-       </class>
--->
+      <class name="org.plosone.it.PlosOneTest"/>
     </classes>
   </test>
 </suite>
