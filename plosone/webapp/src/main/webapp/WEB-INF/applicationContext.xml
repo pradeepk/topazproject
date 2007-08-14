@@ -142,8 +142,6 @@
   <bean id="ratingsService"
         class="org.plos.rating.service.RatingsService" scope="session">
     <property name="applicationId" ref="applicationId"/>
-    <property name="encodingCharset" ref="defaultEncodingCharset"/>
-    <property name="permissionWebService" ref="permissionWebService"/>
     <aop:scoped-proxy/>
   </bean>
 

@@ -44,11 +44,11 @@ import org.topazproject.otm.criterion.Restrictions;
  *
  * @author jonnie.
  */
-public class RatingsService extends BaseRatingsService {
+public class RatingsService {
   private static final Log     log = LogFactory.getLog(RatingsService.class);
   private Session              session;
   private RatingsPEP           pep;
-  private PermissionWebService permissions;
+  private String               applicationId;
 
   public RatingsService() {
     try {
@@ -411,12 +411,20 @@ public class RatingsService extends BaseRatingsService {
   }
 
   /**
-   * Set the PermissionWebService. Called by spring's bean wiring.
-   *
-   * @param permissionWebService permissionWebService
+   * Set the id of the application
+   * @param applicationId applicationId
    */
   @Required
-  public void setPermissionWebService(final PermissionWebService permissionWebService) {
-    this.permissions = permissionWebService;
+  public void setApplicationId(final String applicationId) {
+    this.applicationId = applicationId;
   }
+
+
+  /**
+   * @return the application id
+   */
+  public String getApplicationId() {
+    return applicationId;
+  }
+
 }
