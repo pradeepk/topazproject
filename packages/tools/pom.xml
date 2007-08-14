@@ -117,7 +117,7 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>src/main/resources/scripts</location>
+                      <location>${project.build.directory}/${project.build.finalName}-tools.dir/scripts</location>
                     </source>
                   </sources>
                 </mapping>
