@@ -19,7 +19,7 @@
     <module>article-util</module>
     <module>conf-helper</module>
     <module>runscripts</module>
-    <module>scripts</module>
+    <module>util</module>
     <module>trackback-util</module>
   </modules>
 

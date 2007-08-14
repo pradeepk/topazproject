@@ -1,5 +1,5 @@
 <assembly>
-  <id>scripts</id> <!-- This is the classifier that must be used by dependencies! -->
+  <id>util</id> <!-- This is the classifier that must be used by dependencies! -->
   <formats>
     <format>jar</format>
   </formats>
