@@ -15,19 +15,16 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>mulgara-client</artifactId>
-      <version>${pom.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
-      <version>${pom.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>otm-extras</artifactId>
-      <version>${pom.version}</version>
     </dependency>
 
     <dependency>
@@ -61,13 +58,11 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
-      <version>${pom.version}</version>
     </dependency>
     
     <dependency>
       <groupId>groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>1.0</version>
     </dependency>
 
     <dependency>

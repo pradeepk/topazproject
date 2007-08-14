@@ -16,13 +16,13 @@
       <groupId>org.mulgara</groupId>
       <artifactId>mulgara-lite</artifactId>
       <!-- WARNING: When changing this, change version in mulgara & antrun task below too! -->
-      <version>1.0.1-t2</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.mulgara</groupId>
       <artifactId>mulgara</artifactId>
       <!-- WARNING: When changing this, change mulgara version in antrun task below too! -->
-      <version>1.0.1-t2</version>
+      <version>1.1.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -91,7 +91,7 @@
                 <taskdef resource="org/apache/maven/artifact/ant/antlib.xml" classpathref="maven.plugin.classpath" />
 
                 <dependencies filesetId="mulgara-libs" useScope="runtime">
-                  <dependency groupId="org.mulgara" artifactId="mulgara-lite" version="1.0.1-t2" />
+                  <dependency groupId="org.mulgara" artifactId="mulgara-lite" version="1.1.1-SNAPSHOT" />
                 </dependencies>
 
                 <property name="webinf" location="${project.build.directory}/${project.build.finalName}/WEB-INF" />

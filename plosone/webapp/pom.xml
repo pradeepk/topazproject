@@ -34,12 +34,10 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-search-client-impl</artifactId>
-      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
-      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>it.unibo.cs</groupId>
@@ -49,24 +47,19 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>dom-ranges-helper</artifactId>
-      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>conf-helper</artifactId>
-      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <version>6.1.4</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>freemarker</groupId>
       <artifactId>freemarker</artifactId>
-      <version>2.3.8</version>
     </dependency>
     <dependency>
       <groupId>uk.ltd.getahead</groupId>
@@ -76,18 +69,15 @@
     <dependency>
       <groupId>cas</groupId>
       <artifactId>casclient</artifactId>
-      <version>2.1.1</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
-      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>otm-extras</artifactId>
-      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
@@ -106,7 +96,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
-      <version>2.0.6</version>
       <!-- allow log4j, PLoS explicitly uses API(s)
       <exclusions>
         <exclusion>
@@ -120,38 +109,31 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>2.0.6</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>2.0.6</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>2.0.6</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>2.0.6</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-mock</artifactId>
-      <version>2.0.6</version>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
-      <version>2.0.6</version>
     </dependency>
 
     <!-- needed for scoping support in spring IOC -->
@@ -194,7 +176,6 @@
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>
-      <version>8.7</version>
     </dependency>
 
     <dependency>
@@ -206,8 +187,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
     </dependency>
 
      <dependency>
@@ -232,7 +211,6 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.3.1</version>
     </dependency>
 
     <dependency>
@@ -267,13 +245,11 @@
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
-      <version>1.3.0-patch-1</version>
     </dependency>
 
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
-      <version>3.2</version>
     </dependency>
 
     <dependency>
@@ -319,16 +295,6 @@
         </configuration>
       </plugin>
 
-      <!-- Compiler -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-
       <!--
         mvn clean jetty:run to run the webapp.
         ecqs should also be installed and running first
@@ -341,7 +307,6 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.4</version>
         <dependencies>
           <dependency>
             <groupId>log4j</groupId>
@@ -384,7 +349,7 @@
             </systemProperty>
             <systemProperty>
               <name>log4j.configuration</name>
-              <value>file:///etc/topaz/log4j.xml</value>
+              <value>file:///tmp/log4j.properties</value>
             </systemProperty>
             <systemProperty>
               <!-- Turn on dev mode configuration -->
@@ -399,6 +364,18 @@
             <systemProperty>
               <name>org.apache.commons.logging.Log</name>
               <value>org.apache.commons.logging.impl.Log4JLogger</value>
+            </systemProperty>
+            <systemProperty>
+              <name>pub.spring.ingest.source</name>
+              <value>/tmp/ingest/</value>
+            </systemProperty>
+            <systemProperty>
+              <name>pub.spring.ingest.destination</name>
+              <value>/tmp/ingest/</value>
+            </systemProperty>
+            <systemProperty>
+              <name>topaz.fedoragsearch.urls.url</name>
+              <value>http://localhost:9092/ws-search-webapp/services/FedoraGenericSearchServicePort</value>
             </systemProperty>
           </systemProperties>
           <scanIntervalSeconds>5</scanIntervalSeconds>
