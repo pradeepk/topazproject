@@ -124,11 +124,6 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
-    <!-- mailserver junit extension: http://quintanasoft.com/dumbster/ -->
-    <dependency>
-      <groupId>dumbster</groupId>
-      <artifactId>dumbster</artifactId>
-    </dependency>
     <!-- search -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
