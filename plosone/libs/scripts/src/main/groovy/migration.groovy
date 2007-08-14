@@ -243,34 +243,33 @@ def dump(obj, prefix, indent, width) {
     if (it.value != null || SHOWNULLS) keyLength = max(keyLength, it.key.toString().size())
   }
   map.each() { prop ->
-    if (prop.key != "nextObject" && prop.key != "isPartOf" && prop.key != "class") {
+    if (prop.key != "nextObject" && prop.key != "class") {
       if (prop.value != null || SHOWNULLS)
         printf "%s %${keyLength}s: ", prefix, prop.key
-      switch (prop.value) {
+      switch (prop.value?.getClass()) {
         case null: 
           if (SHOWNULLS) println 'null'
           break
-        case java.util.Date:
-        case java.lang.Integer:
+        case java.util.Date.class:
+        case java.lang.Integer.class:
           println trunc(prop.value, width - keyLength - indent - 2)
           break
-        case java.lang.String:
+        case java.lang.String.class:
           println "'" + trunc(prop.value, width - keyLength - indent - 4) + "'"
           break
-        case java.net.URI:
+        case java.net.URI.class:
           println "<" + trunc(prop.value, width - keyLength - indent - 4) + ">"
           break
-        case org.plos.models.DublinCore:
-        case org.plos.models.Citation:
-        case org.plos.models.UserProfile:
-        case org.plos.models.Category:
-        case org.plos.models.ObjectInfo:
+        case org.plos.models.DublinCore.class:
+        case org.plos.models.Citation.class:
+        case org.plos.models.UserProfile.class:
+        case org.plos.models.Category.class:
           println prop.value.class.name + ":"
           def abbrev = abbreviate(prop.key) + '.' + abbreviateClass(prop.value.class.name)
           dump(prop.value, prefix + abbrev + ':', indent + 2, width)
           break
-        case java.util.HashSet:
-        case java.util.ArrayList:
+        case java.util.HashSet.class:
+        case java.util.ArrayList.class:
           println "${prop.value.size()} element(s) (${prop.value.class.name})"
           int i = 0
           def tmpmap = new HashMap()

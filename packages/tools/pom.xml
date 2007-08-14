@@ -20,6 +20,13 @@
     </dependency>
     <dependency>
       <groupId>org.plosone</groupId>
+      <artifactId>plosone-scripts</artifactId>
+      <version>${pom.version}</version>
+      <type>jar</type>
+      <classifier>scripts</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.plosone</groupId>
       <artifactId>article-util</artifactId>
       <version>${pom.version}</version>
     </dependency>
