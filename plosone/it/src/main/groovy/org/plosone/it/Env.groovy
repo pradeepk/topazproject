@@ -80,8 +80,7 @@ public class Env {
     for (task in ['ecqs-install', 'fedora-install', 'mulgara-install', 'plosone-install'])
       antTask(task)
    
-    if (data != null)
-      load()
+    load()
 
     ant.touch(file: install + '/installed')
   }
@@ -92,8 +91,7 @@ public class Env {
    */
   public void restore() {
     stop()
-    // mulgara works off of the data dir. So delete that
-    ant.delete(dir: install + "/data/mulgara")
+    ant.delete(dir: install + "/data")
     load()
   }
 
@@ -109,8 +107,9 @@ public class Env {
     active = this
     mulgara()
     fedora()
-    plosone()
+    publishingApp()
     waitFor('http://localhost:8080/plosone-webapp/')
+    ant.echo 'Publishing app started'
   }
   
   private void antTask(task) {
@@ -132,20 +131,26 @@ public class Env {
   }
 
   private void fedora() {
+    ant.delete(file: install + '/fedora-2.1.1/server/status')
     ant.exec(executable: 'mvn') {
       arg(line: 'ant-tasks:fedora-start -DSPAWN=true' + opts)
     }
   }
 
-  private void plosone() {
-    ant.echo 'Starting plosone'
+  private void publishingApp() {
+    ant.echo 'Starting publishing app'
     ant.forget {
       ant.exec(executable: 'mvn') {
         arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
          + ' -Dorg.plos.configuration.overrides=defaults-dev.xml -Dlog4j.configuration=' 
-         + plosoneLog4j())
+         + publishingAppLog4j() 
+         + ' -Dpub.spring.ingest.source=' + install + '/data/ingestion-queue'
+         + ' -Dpub.spring.ingest.destination=' + install + '/data/ingested'
+         + ' -Dtopaz.search.indexpath=' + install + '/data/lucene'
+         + ' -Dtopaz.search.defaultfields=description,title,body,creator'      
+       )
       }
-      ant.echo 'PlosOne Stopped'
+      ant.echo 'Publishing app Stopped'
     }
   }
 
@@ -179,23 +184,36 @@ public class Env {
 
 
   private void load() {
-    ant.exec(executable: 'mvn') {
-      arg(line: '-f ' + pom() + ' ant-tasks:tgz-explode -Dlocation=' + install 
-        + ' -Dtype=tgz -Ddependencies=' + data)
+    if (data != null) {
+      ant.exec(executable: 'mvn', failonerror:true) {
+        arg(line: '-f ' + pom() + ' ant-tasks:tgz-explode -Dlocation=' + install 
+          + ' -Dtype=tgz -Ddependencies=' + data)
+      }
     }
+
     File d = new File(install);
     d = new File(install, 'data')
     if (!d.exists())
-      throw new FileNotFoundException("exploded data file '" + data 
-             + "' does not contain the top level directory 'data'")
+       d.mkdir()
     File m = new File(d, 'mulgara')
     if (!m.exists())
-      throw new FileNotFoundException("exploded data file '" + data 
-             + "' does not contain the top level directory 'data/mulgara'")
+      m.mkdir()
+
     File f = new File(d, 'fedora')
     if (!f.exists())
-      throw new FileNotFoundException("exploded data file '" + data 
-             + "' does not contain the top level directory 'data/fedora'")
+      f.mkdir()
+    
+    File iq = new File(d, 'ingestion-queue')
+    if (!iq.exists())
+      iq.mkdir()
+
+    File cq = new File(d, 'ingested')
+    if (!cq.exists())
+      cq.mkdir()
+
+    File l = new File(d, 'lucene')
+    if (!l.exists())
+      l.mkdir()
 
     ant.exec(executable: 'mvn') {
       arg(line: 'ant-tasks:fedora-rebuild ' + opts
@@ -208,7 +226,7 @@ public class Env {
      return resource('/fedora-rebuild-input')
   }
   
-  private String plosoneLog4j() {
+  private String publishingAppLog4j() {
      return 'file://' + resource('/plosoneLog4j.xml')
   }
   
