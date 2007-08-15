@@ -119,6 +119,7 @@
       <profiles type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=profiles</profiles>
       <ratings type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=ratings</ratings>
       <alerts type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=alerts</alerts>
+      <criteria type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=criteria</criteria>
       <str type="http://topazproject.org/models#StringCompare">${topaz.mulgara.baseuri}#str</str>
       <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">${topaz.mulgara.baseuri}#xsd</xsd>
     </models>
