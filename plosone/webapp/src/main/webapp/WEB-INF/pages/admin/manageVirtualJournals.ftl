@@ -26,6 +26,13 @@
     <#list journals as journal>
       <fieldset>
         <legend><b>${journal.key}</b></legend>
+        eIssn: ${journal.eIssn}<br />
+        <!-- TODO: display rules in a meaningful way
+        <#if journal.smartCollectionRules?exists>
+          Smart Collection Rules: ${journal.smartCollectionRules.size}
+        </#if>
+        -->
+
         <@s.form id="manageVirtualJournals_${journal.key}"
           name="manageVirtualJournals_${journal.key}" action="manageVirtualJournals" method="post"
           namespace="/admin">

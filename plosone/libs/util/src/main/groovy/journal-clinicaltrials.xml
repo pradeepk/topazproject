@@ -14,7 +14,10 @@
 
 <journal>
   <key>PLoSClinicalTrials</key>
+  <eIssn>1555-5887</eIssn>
+  <!-- seed Journal with these initial Articles
   <simpleCollection>
-    <doi>info:doi/10.1371/journal.pone.0000021</doi>
+    <doi></doi>
   </simpleCollection>
+  -->
 </journal>
