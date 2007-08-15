@@ -11,6 +11,7 @@
 package org.plos.journal;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -131,7 +132,7 @@ public class JournalService {
     // create the filter definitions
     Map<String, FilterDefinition> jfds =
         getAggregationFilters(j, j.getKey() + "-" + System.currentTimeMillis(), s,
-                              new HashSet<Aggregation>());
+                              new HashSet<Aggregation>(), true);
 
     if (log.isDebugEnabled())
       log.debug("journal '" + j.getKey() + "' has filters: " + jfds);
@@ -177,7 +178,8 @@ public class JournalService {
   }
 
   private Map<String, FilterDefinition> getAggregationFilters(Aggregation a, String pfx, Session s,
-                                                              Set<Aggregation> processed) {
+                                                              Set<Aggregation> processed,
+                                                              boolean addSelf) {
     processed.add(a);
 
     // create a combined set of filter-defs from the rule-based and static collections
@@ -187,11 +189,20 @@ public class JournalService {
       dc.setAlias(normalize(dc.getAlias(), sf));
       put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
     }
+    if (addSelf) {      // FIXME: use the addSelf below instead when queries are fixed
+      DetachedCriteria dc =
+          new DetachedCriteria("Aggregation").add(new SubjectCriterion(a.getId().toString()));
+      put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
+    }
 
     Map<String, FilterDefinition> smartFilterDefs = combineFilterDefs(sfd, pfx + "-af-");
 
-    Map<String, FilterDefinition> staticFilterDefs =
-        buildStaticFilters(a.getSimpleCollection(), pfx + "-sf-", s);
+    List<URI> uris = new ArrayList<URI>(a.getSimpleCollection());
+    /*
+    if (addSelf)
+      uris.add(a.getId());
+    */
+    Map<String, FilterDefinition> staticFilterDefs = buildStaticFilters(uris, pfx + "-sf-", s);
 
     Map<String, FilterDefinition> afds =
         mergeFilterDefs(smartFilterDefs, staticFilterDefs, pfx + "-of-");
@@ -215,8 +226,9 @@ public class JournalService {
     idx = 0;
     for (Aggregation ag : aggs) {
       if (!processed.contains(ag))
-        afds = mergeFilterDefs(afds, getAggregationFilters(ag, pfx + "-ag-" + idx, s, processed),
-                               pfx + "-mf-" + idx++);
+        afds =
+          mergeFilterDefs(afds, getAggregationFilters(ag, pfx + "-ag-" + idx, s, processed, false),
+                          pfx + "-mf-" + idx++);
     }
 
     // done
