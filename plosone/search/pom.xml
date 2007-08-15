@@ -8,8 +8,8 @@
   <version>0.8-SNAPSHOT</version>
 
   <parent>
-    <groupId>org.topazproject</groupId>
-    <artifactId>topazproject</artifactId>
+    <groupId>org.plosone</groupId>
+    <artifactId>plosone</artifactId>
     <version>0.8-SNAPSHOT</version>
   </parent>
 
