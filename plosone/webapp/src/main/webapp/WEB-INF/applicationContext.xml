@@ -103,8 +103,7 @@
   </bean>
 
   <bean id="auth-method" class="java.lang.String">
-    <constructor-arg value="CAS"/>
-    <!--<constructor-arg value="TEST"/>-->
+    <constructor-arg value="NONE"/>
   </bean>
 
   <bean id="userContext" class="org.plos.web.UserContext" scope="session">
