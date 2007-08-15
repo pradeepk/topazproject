@@ -505,10 +505,11 @@ public class Session {
    */
   public Filter enableFilter(FilterDefinition fd) throws OtmException {
     if (sessionFactory.getFilterDefinition(fd.getFilterName()) != null)
-      throw new OtmException("a filter with the given definition is registered with the " +
-                             "session-factory");
+      throw new OtmException("a filter with the name '" + fd.getFilterName() +
+                             "' is registered with the session-factory");
     if (filters.containsKey(fd.getFilterName()))
-      throw new OtmException("a filter with the given definition has already been enabled");
+      throw new OtmException("a filter with the name '" + fd.getFilterName() +
+                             "' has already been enabled");
 
     Filter f = fd.createFilter(this);
     filters.put(f.getName(), f);
