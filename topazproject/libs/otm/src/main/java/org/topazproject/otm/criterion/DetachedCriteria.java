@@ -29,29 +29,35 @@ import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
- * An API for retrieving objects based on filtering and ordering conditions specified  using
- * {@link org.topazproject.otm.criterion.Criterion}.
+ * DetachedCriteria is similar to Criteria except that it can exist without a Session. This
+ * makes it ideal for persistance. DetachedCriteria can be converted to an executable Criteria by
+ * calling the {@link #getExecutableCriteria} method. DetachedCriteria is built the same
+ * way as Criteria, ie. by {@link #add}ing {@link org.topazproject.otm.criterion.Criterion}
+ * objects.
+ *
+ * <p> For persistence, make sure that {@link org.topazproject.otm.criterion.Criterion#MODEL} is 
+ * configured in the SessionFactory. Also note that not all of the setter methods are for use
+ * by application code. They are there to support a load from a triple-store.</p>
  *
  * @author Pradeep Krishnan
  */
 @Entity(type = Criterion.NS + "Criteria", model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
 public class DetachedCriteria {
-  private String           alias;
-  private DetachedCriteria parent;
-  private Integer          maxResults;
-  private Integer          firstResult;
-
+  private String                  alias;
+  private DetachedCriteria        parent;
+  private Integer                 maxResults;
+  private Integer                 firstResult;
   @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
-  private List<Criterion>        criterionList     = new ArrayList<Criterion>();
+  private List<Criterion>         criterionList     = new ArrayList<Criterion>();
   @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
-  private List<Order>            orderList         = new ArrayList<Order>();
+  private List<Order>             orderList         = new ArrayList<Order>();
   @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
-  private List<DetachedCriteria> childCriteriaList = new ArrayList<DetachedCriteria>();
+  private List<DetachedCriteria>  childCriteriaList = new ArrayList<DetachedCriteria>();
 
   // Only valid in the root criteria
   @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
-  private List<Order> rootOrderList = new ArrayList<Order>();
+  private List<Order>             rootOrderList     = new ArrayList<Order>();
 
   /**
    * The id field used for persistence. Ignored otherwise.
@@ -60,20 +66,21 @@ public class DetachedCriteria {
   @GeneratedValue(uriPrefix = Criterion.NS + "Criteria/Id/")
   public URI criteriaId;
 
-  /**
+ /**
    * Creates a new DetachedCriteria object.
    */
   public DetachedCriteria() {
   }
 
-  /**
+/**
    * Creates a new DetachedCriteria object.
    *
-   * @param entity the entity for which this alias is created
+   * @param entity the entity for which the criteria is created. It could be an entity name or the
+   * class name. 
    */
-  public DetachedCriteria(String alias) {
-    this.alias                      = alias;
-    this.parent                     = null;
+  public DetachedCriteria(String entity) {
+    this.alias   = entity;
+    this.parent  = null;
   }
 
   private DetachedCriteria(DetachedCriteria parent, String path) {
@@ -144,7 +151,7 @@ public class DetachedCriteria {
   }
 
   /**
-   * Get parent.
+   * Get parent. 
    *
    * @return parent as Criteria.
    */
@@ -153,9 +160,11 @@ public class DetachedCriteria {
   }
 
   /**
-   * Set parent.
+   * Set parent. For use by persistence.
    *
-   * @param alias the value to set.
+   * DO NOT USE DIRECTLY. Use {@link #createCriteria} instead on the parent.
+   *
+   * @param parent the value to set.
    */
   public void setParent(DetachedCriteria parent) {
     this.parent = parent;
@@ -198,7 +207,8 @@ public class DetachedCriteria {
   }
 
   /**
-   * Sets the list of child Criteria.
+   * Sets the list of child Criteria. For use by persistence.
+   *
    *
    * @param list of child Criteria
    */
@@ -216,7 +226,9 @@ public class DetachedCriteria {
   }
 
   /**
-   * Sets the list of Criterions.
+   * Sets the list of Criterions. For use by persitence.
+   *
+   * DO NOT USE DIRECTLY. Use {@link #add} instead.
    *
    * @param list of Criterions
    */
@@ -234,7 +246,9 @@ public class DetachedCriteria {
   }
 
   /**
-   * Sets the list of Order definitions.
+   * Sets the list of Order definitions. For use by persistence.
+   *
+   * DO NOT USE DIRECTLY. Use {@link #addOrder} instead.
    *
    * @param list of Order dedinitions
    */
@@ -252,7 +266,9 @@ public class DetachedCriteria {
   }
 
   /**
-   * Gets the root order list.
+   * Gets the root order list. For use by persistence.
+   *
+   * DO NOT USE DIRECTLY. Use {@link #addOrder} instead.
    *
    * @param list the root order list
    */
@@ -318,7 +334,9 @@ public class DetachedCriteria {
   }
 
   /**
-   * Set alias.
+   * Set alias. For use by persistence
+   *
+   * DO NOT USE DIRECTLY. Use the constructor instead.
    *
    * @param alias the value to set.
    */
@@ -326,9 +344,9 @@ public class DetachedCriteria {
     this.alias = alias;
   }
 
-  /** 
-   * Return the list of parameter names. 
-   * 
+  /**
+   * Return the list of parameter names.
+   *
    * @return the set of names; will be empty if there are no parameters
    */
   public Set<String> getParameterNames() {
@@ -347,5 +365,4 @@ public class DetachedCriteria {
 
     return paramNames;
   }
-
 }
