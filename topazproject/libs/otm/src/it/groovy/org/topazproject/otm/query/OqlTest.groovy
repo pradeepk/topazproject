@@ -1215,8 +1215,6 @@ public class OqlTest extends GroovyTestCase {
         // filter on non-root class
         s.disableFilter('state');
         assert s.enableFilter('noJack') != null;
-        def n2 = o2.info.name
-        o2.info.name = null
         r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
         assertEquals([o2, o3], r)
 
@@ -1234,8 +1232,6 @@ public class OqlTest extends GroovyTestCase {
         r = s.createCriteria(cls).add(Restrictions.eq('state', 2)).addOrder(Order.asc('state')).
               list()
         assertEquals([o2], r)
-
-        o2.info.name = n2
       }
     }
 
@@ -1365,20 +1361,26 @@ public class OqlTest extends GroovyTestCase {
       assertEquals(o1, s.get(cls, o1.id.toString()));
       assertEquals(o2, s.get(cls, o2.id.toString()));
       assertEquals(o3, s.get(cls, o3.id.toString()));
+    }
 
+    doInTx { s ->
       // with filter(s)
       s.enableFilter('noBob');
       assertNull(s.get(cls, o1.id.toString()));
       assertEquals(o2, s.get(cls, o2.id.toString()));
       assertEquals(o3, s.get(cls, o3.id.toString()));
+    }
 
-      s.disableFilter('noBob');
+    doInTx { s ->
       s.enableFilter('state').setParameter('state', 3);
       assertEquals(o1, s.get(cls, o1.id.toString()));
       assertEquals(o2, s.get(cls, o2.id.toString()));
       assertNull(s.get(cls, o3.id.toString()));
+    }
 
+    doInTx { s ->
       s.enableFilter('noJack');
+      s.enableFilter('state').setParameter('state', 3);
       def n2 = o2.info.name
       o2.info.name = null
       assertEquals(o1, s.get(cls, o1.id.toString()));
@@ -1416,10 +1418,12 @@ public class OqlTest extends GroovyTestCase {
         o.names1[1] = t;
       }
       assertEquals(o4, o);
+    }
 
+    doInTx { s ->
       // with filter(s)
       s.enableFilter('noJack');
-      o = s.get(cls, o4.id.toString())
+      def o = s.get(cls, o4.id.toString())
       assertEquals([o4.names1[0]], o.names1);
       assertEquals([o4.names2[0]], o.names2);
       assertEquals([o4.names3[0]], o.names3);
