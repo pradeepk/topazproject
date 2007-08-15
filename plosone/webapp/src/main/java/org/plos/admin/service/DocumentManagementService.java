@@ -26,7 +26,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -53,16 +57,25 @@ import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
 import org.plos.models.Article;
+import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
 import org.plos.article.service.RepresentationInfo;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.IngestException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
+import org.plos.journal.JournalService;
 import org.plos.util.FileUtils;
+
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.util.TransactionHelper;
+import org.topazproject.xml.transform.cache.CachedSource;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.web.ServletCacheAdministrator;
+
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  *
@@ -85,6 +98,10 @@ public class DocumentManagementService {
   private File xslTemplate;
 
   private GeneralCacheAdministrator articleCacheAdministrator;
+
+  private JournalService journalService;
+
+  private Session session;
 
   private String plosDoiUrl;
 
@@ -162,27 +179,39 @@ public class DocumentManagementService {
    * @throws RemoteException
    * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI) throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
+  public void delete(String objectURI)
+      throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
     articleOtmService.delete(objectURI);
   }
 
   /**
-   * Deletes an article from Topaz and flushes the servlet image cache and article cache
+   * Deletes articles from Topaz and flushes the servlet image cache and article cache
    *
-   * @param objectURI -
-   *          URI of the article to delete
-   * @param servletContext -
-   *          Servlet Context under which the image cache exists
-   * @throws RemoteException
-   * @throws ServiceException
-   * @throws NoSuchArticleIdException
+   * @param objectURIs     URIs of the articles to delete
+   * @param servletContext Servlet Context under which the image cache exists
+   * @return a list of messages describing what was successful and what failed
    */
-  public void delete(String objectURI, ServletContext servletContext) throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
-    articleOtmService.delete(objectURI);
+  public List<String> delete(String[] objectURIs, ServletContext servletContext) {
+    List<String> msgs = new ArrayList<String>();
+    for (String objectURI : objectURIs) {
+      try {
+        articleOtmService.delete(objectURI);
+        msgs.add("Deleted: " + objectURI);
+        if (log.isDebugEnabled())
+          log.debug("deleted article: " + objectURI);
+      } catch (Exception e) {
+        log.error("Could not delete article: " + objectURI, e);
+        msgs.add("Error deleting: " + objectURI + " - " + e);
+      }
+    }
+
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
     articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
-    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
+    for (String objectURI : objectURIs)
+      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
     ServletCacheAdministrator.getInstance(servletContext).flushAll();
+
+    return msgs;
   }
 
   /**
@@ -450,7 +479,7 @@ public class DocumentManagementService {
     t.setParameter("plosEmail", plosEmail);
     StreamSource s_source = new StreamSource(src);
     StreamResult s_result = new StreamResult(dest);
-    t.transform(s_source, s_result);
+    t.transform(new CachedSource(s_source), s_result);
     return dest;
   }
 
@@ -463,38 +492,101 @@ public class DocumentManagementService {
   }
 
   /**
-   * @param uri
-   *          uri to be published Send CrossRef xml file top CrossRef -- if it is _received_ ok then
-   *          set article stat to active
-   * @param isLast true if this is the last of a batch being published - used
-   *               to avoid flushing the caches multiple times
-   * @throws Exception
+   * @param uris  uris to be published. Send CrossRef xml file to CrossRef - if it is _received_ ok
+   *              then set article stat to active
+   * @param vjMap a map giving the set of virtual-journals each article is to be published in
+   * @return a list of messages describing what was successful and what failed
    */
-  public void publish(String uri, boolean isLast) throws Exception {
-    if (sendToXref) {
-      File xref = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
-      int stat;
-      if (!xref.exists()) {
-        throw new IOException("Cannot find CrossRef xml:" + uriToFilename(uri) + ".xml");
-      }
+  public List<String> publish(String[] uris, Map<String, Set<String>> vjMap) {
+    final List<String> msgs             = new ArrayList<String>();
+    final Set<Journal> modifiedJournals = new HashSet<Journal>();
+
+    // publish articles
+    for (String article : uris) {
       try {
-        stat = crossRefPosterService.post(xref);
-        if (200 != stat) {
-          throw new Exception("CrossRef status returned " + stat);
+        // send to cross-ref
+        if (sendToXref) {
+          File xref = new File(ingestedDocumentDirectory, uriToFilename(article) + ".xml");
+          if (!xref.exists())
+            throw new IOException("Cannot find CrossRef xml: " + uriToFilename(article) + ".xml");
+
+          try {
+            int stat = crossRefPosterService.post(xref);
+            if (200 != stat)
+              throw new Exception("CrossRef status returned " + stat);
+          } catch (HttpException he) {
+            log.error ("Could not connect to CrossRef", he);
+            throw new Exception("Could not connect to CrossRef. " + he, he);
+          } catch (IOException ioe) {
+            log.error ("Could not connect to CrossRef", ioe);
+            throw new Exception("Could not connect to CrossRef. " + ioe, ioe);
+          }
         }
-      } catch (HttpException he) {
-        log.error ("Could not connect to CrossRef", he);
-        throw new Exception ("Could not connect to CrossRef. " + he, he);
-      } catch (IOException ioe) {
-        log.error ("Could not connect to CrossRef", ioe);
-        throw new Exception ("Could not connect to CrossRef. " + ioe, ioe);
+
+        // mark article as active
+        articleOtmService.setState(article, Article.STATE_ACTIVE);
+        msgs.add("Published: " + article);
+        if (log.isDebugEnabled())
+          log.debug("published article: '" + article + "'");
+
+        // register with journals
+        final Set<String> vjs = vjMap.get(article);
+        if (vjs != null) {
+          final String art = article;
+          TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
+            public Void run(Transaction tx) throws Exception {
+              for (String virtualJournal : vjs) {
+                // get Journal by name
+                final Journal journal = journalService.getJournal(virtualJournal);
+                if (journal == null)
+                  throw new Exception("Error adding article '" + art +
+                                      "' to non-existent journal '" + virtualJournal + "'");
+
+                // add Article to Journal
+                journal.getSimpleCollection().add(URI.create(art));
+
+                // update Journal
+                session.saveOrUpdate(journal);
+                modifiedJournals.add(journal);
+
+                final String message =
+                  "Article '" + art + "' was published in the journal '" + virtualJournal + "'";
+                msgs.add(message);
+                if (log.isDebugEnabled())
+                  log.debug(message);
+              }
+
+              return null;
+            }
+          });
+        }
+      } catch (Exception e) {
+        log.error("Could not publish article: '" + article + "'", e);
+        msgs.add("Error publishing: '" + article + "' - " + e.toString());
       }
     }
-    articleOtmService.setState(uri, Article.STATE_ACTIVE);
-    if (isLast) {
-      articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
-      articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
-    }
+
+    // notify journal service
+    TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
+      public Void run(Transaction tx) {
+        for (Journal journal : modifiedJournals) {
+          try {
+            journalService.journalWasModified(journal);
+          } catch (Exception e) {
+            log.error("Error updating journal '" + journal + "'", e);
+            msgs.add("Error updating journal '" + journal + "' - " + e.toString());
+          }
+        }
+
+        return null;
+      }
+    });
+
+    // flush caches
+    articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
+    articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
+
+    return msgs;
   }
 
   private static class PngDataSource implements DataSource {
@@ -543,6 +635,26 @@ public class DocumentManagementService {
    */
   public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
     this.articleCacheAdministrator = articleCacheAdministrator;
+  }
+
+  /**
+   * Sets the JournalService.
+   *
+   * @param journalService The JournalService to set.
+   */
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
+  }
+
+  /**
+   * Sets the otm util.
+   *
+   * @param session The otm session to set.
+   */
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
   }
 
   /**
