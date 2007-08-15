@@ -111,4 +111,8 @@ public class MinusCriterion extends Criterion {
     s.addAll(s2);
     return s;
   }
+
+  public String toString() {
+    return "Minus[" + minuend + ", " + subtrahend + "]";
+  }
 }

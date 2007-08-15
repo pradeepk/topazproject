@@ -84,4 +84,8 @@ public class NotExistsCriterion extends Criterion {
   public void setFieldName(String fieldName) {
     this.fieldName = fieldName;
   }
+
+  public String toString() {
+    return "NotExists[" + fieldName + "]";
+  }
 }

@@ -52,4 +52,8 @@ public class SubjectCriterion extends Criterion {
     ClassMetadata cm = criteria.getClassMetadata();
     return subjectVar + "." + cm.getIdField().getName() + " = <" + id + ">";
   }
+
+  public String toString() {
+    return "Subject[" + id + "]";
+  }
 }

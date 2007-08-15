@@ -63,6 +63,19 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
     return this;
   }
 
+  private static String NL = System.getProperty("line.separator");
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder(20 + filterDefList.size() * 50);
+    sb.append(getClass().getName().replace("org.topazproject.otm.filter.", "")).append("[");
+
+    for (FilterDefinition fd : filterDefList)
+      sb.append(NL).append(fd);
+
+    sb.append("]");
+    return sb.toString();
+  }
+
   /** 
    * Common filter implementation for junction filters. The {@link #getCriteria getCriteria()} and
    * {@link @getQuery getQuery()} methods must not be invoked, and throw an

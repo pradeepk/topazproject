@@ -80,4 +80,8 @@ public class NotCriterion extends Criterion {
   public Set<String> getParamNames() {
     return criterion.getParamNames();
   }
+
+  public String toString() {
+    return "Not[" + criterion + "]";
+  }
 }

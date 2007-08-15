@@ -69,4 +69,8 @@ public class Parameter {
   public void setParameterName(String parameterName) {
     this.parameterName = parameterName;
   }
+
+  public String toString() {
+    return "Parameter[" + parameterName + "]";
+  }
 }

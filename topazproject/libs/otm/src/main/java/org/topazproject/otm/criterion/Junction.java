@@ -109,4 +109,17 @@ public abstract class Junction extends Criterion {
 
     return query;
   }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder(criterions.size() * 20);
+    sb.append(getClass().getName().replace("org.topazproject.otm.criterion.", "")).append("[");
+
+    for (Criterion c : criterions)
+      sb.append(c).append(", ");
+    if (criterions.size() > 0)
+      sb.setLength(sb.length() - 2);
+
+    sb.append("]");
+    return sb.toString();
+  }
 }

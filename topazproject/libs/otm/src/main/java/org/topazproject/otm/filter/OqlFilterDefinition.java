@@ -64,6 +64,10 @@ public class OqlFilterDefinition extends AbstractFilterDefinition {
     return new OqlFilter(this, query, sess);
   }
 
+  public String toString() {
+    return "OqlFilterDefinition[" + query + "]";
+  }
+
   private static class OqlFilter extends AbstractFilterImpl {
     private final GenericQueryImpl query;
 

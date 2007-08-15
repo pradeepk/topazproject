@@ -69,4 +69,17 @@ public class ProxyCriterion extends Criterion {
 
     return criterion.toQuery(criteria, subjectVar, varPrefix, ql);
   }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder(15 + args.length * 10);
+    sb.append("Proxy[").append(func).append("(");
+
+    for (Object o : args)
+      sb.append(o).append(", ");
+    if (args.length > 0)
+      sb.setLength(sb.length() - 2);
+
+    sb.append(")]");
+    return sb.toString();
+  }
 }

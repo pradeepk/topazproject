@@ -118,4 +118,8 @@ public class Order {
   public void setAscending(boolean ascending) {
     this.ascending = ascending;
   }
+
+  public String toString() {
+    return "Order[" + name + (ascending ? " (asc)" : " (desc)") + "]";
+  }
 }

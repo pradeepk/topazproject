@@ -138,4 +138,9 @@ public abstract class AbstractBinaryCriterion extends Criterion {
     this.parameter   = parameter;
     this.value       = parameter;
   }
+
+  public String toString() {
+    return getClass().getName().replace("org.topazproject.otm.criterion.", "").
+           replace("Criterion", "") + "[" + getFieldName() + ", " +  getValue() + "]";
+  }
 }
