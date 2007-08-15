@@ -39,12 +39,16 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.servlet.ServletContext;
 import javax.xml.rpc.ServiceException;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
@@ -229,7 +233,7 @@ public class DocumentManagementService {
    * @throws ServiceException
    */
   public String ingest(String pathname) throws IngestException, DuplicateArticleIdException,
-  ImageResizeException, IOException, TransformerException, NoSuchArticleIdException,
+  ImageResizeException, IOException, SAXException, TransformerException, NoSuchArticleIdException,
   NoSuchObjectIdException, ServiceException {
     return ingest(new File(pathname));
   }
@@ -252,7 +256,7 @@ public class DocumentManagementService {
    * @throws ServiceException
    */
   public String ingest(File file) throws IngestException, DuplicateArticleIdException,
-  ImageResizeException, IOException, TransformerException, NoSuchArticleIdException,
+  ImageResizeException, IOException, SAXException, TransformerException, NoSuchArticleIdException,
   NoSuchObjectIdException, ServiceException {
     String uri;
     File ingestedDir = new File(ingestedDocumentDirectory);
@@ -437,7 +441,7 @@ public class DocumentManagementService {
   }
 
   private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException,
-  TransformerException {
+  TransformerException, SAXException {
     ZipFile zip = new ZipFile(file);
     Enumeration entries = zip.entries();
 
@@ -472,14 +476,14 @@ public class DocumentManagementService {
   }
 
   private File crossRefXML(File src, File dest) throws IOException,
-  TransformerFactoryConfigurationError, TransformerException {
+  TransformerFactoryConfigurationError, TransformerException, SAXException {
 
     Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
     t.setParameter("plosDoiUrl", plosDoiUrl);
     t.setParameter("plosEmail", plosEmail);
-    StreamSource s_source = new StreamSource(src);
+    Source       s_source = new CachedSource(new InputSource(src.toURI().toString()));
     StreamResult s_result = new StreamResult(dest);
-    t.transform(new CachedSource(s_source), s_result);
+    t.transform(s_source, s_result);
     return dest;
   }
 
