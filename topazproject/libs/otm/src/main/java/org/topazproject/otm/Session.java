@@ -486,7 +486,6 @@ public class Session {
       return null;
 
     flush();
-    clear();
 
     Filter f = fd.createFilter(this);
     filters.put(f.getName(), f);
@@ -514,7 +513,6 @@ public class Session {
       throw new OtmException("a filter with the given definition has already been enabled");
 
     flush();
-    clear();
 
     Filter f = fd.createFilter(this);
     filters.put(f.getName(), f);
@@ -529,7 +527,6 @@ public class Session {
    */
   public void disableFilter(String name) throws OtmException {
     flush();
-    clear();
     filters.remove(name);
   }
 
