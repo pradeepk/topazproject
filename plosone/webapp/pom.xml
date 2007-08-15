@@ -349,7 +349,7 @@
             </systemProperty>
             <systemProperty>
               <name>log4j.configuration</name>
-              <value>file:///tmp/log4j.properties</value>
+              <value>file:///etc/topaz/log4j.xml</value>
             </systemProperty>
             <systemProperty>
               <!-- Turn on dev mode configuration -->
@@ -364,18 +364,6 @@
             <systemProperty>
               <name>org.apache.commons.logging.Log</name>
               <value>org.apache.commons.logging.impl.Log4JLogger</value>
-            </systemProperty>
-            <systemProperty>
-              <name>pub.spring.ingest.source</name>
-              <value>/tmp/ingest/</value>
-            </systemProperty>
-            <systemProperty>
-              <name>pub.spring.ingest.destination</name>
-              <value>/tmp/ingest/</value>
-            </systemProperty>
-            <systemProperty>
-              <name>topaz.fedoragsearch.urls.url</name>
-              <value>http://localhost:9092/ws-search-webapp/services/FedoraGenericSearchServicePort</value>
             </systemProperty>
           </systemProperties>
           <scanIntervalSeconds>5</scanIntervalSeconds>
