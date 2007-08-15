@@ -244,7 +244,7 @@ public class JournalService {
 
     int idx = 0;
     for (String cls : fds.keySet()) {
-      ConjunctiveFilterDefinition and = new ConjunctiveFilterDefinition(pfx + idx, cls);
+      ConjunctiveFilterDefinition and = new ConjunctiveFilterDefinition(pfx + idx++, cls);
       for (FilterDefinition fd : fds.get(cls))
         and.addFilterDefinition(fd);
 
