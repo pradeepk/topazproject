@@ -23,9 +23,12 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.apache.struts2.ServletActionContext;
+
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.util.CacheAdminHelper;
+import org.plos.web.VirtualJournalContext;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
@@ -37,32 +40,27 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 public class BrowseService {
   private static final Log log = LogFactory.getLog(BrowseService.class);
 
-  private GeneralCacheAdministrator articleCacheAdministrator;
-  private ArticleOtmService articleOtmService;
-
-  private Object[] allBrowseObjects;
-
-  private static final int DATES_INDEX= 0;
-  private static final int DATES_ARTICLES_INDEX= 1;
-  private static final int CAT_NAME_INDEX = 2;
-  private static final int CAT_ARTICLES_INDEX = 3;
-
-  private static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST";
-  private static final String ALL_BROWSE_OBJECTS = "ALL_BROWSE_OBJECTS";
+  private static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST-";
+  private static final String ALL_BROWSE_OBJECTS    = "ALL_BROWSE_OBJECTS-";
 
   public static final String ALL_ARTICLE_CACHE_GROUP_KEY = "ALL_ARTICLE_LIST_GROUP";
 
+  private BrowseObjects             allBrowseObjects;
+  private GeneralCacheAdministrator articleCacheAdministrator;
+  private ArticleOtmService         articleOtmService;
 
-  
+
   /**
    * retrieve a listing of all articles in Topaz
    *
+   * @param jnlName the name of the journal for which to get the articles (must be the "current"
+   *                journal, i.e.  what the otm filters are set to)
    * @return all articles
    */
-  private Article[] getAllArticles() {
-    return CacheAdminHelper.getFromCache(articleCacheAdministrator, ALL_ARTICLE_CACHE_KEY, -1,
-                                         new String[] { ALL_ARTICLE_CACHE_GROUP_KEY },
-                                         "all articles",
+  private Article[] getAllArticles(String jnlName) {
+    return CacheAdminHelper.getFromCache(articleCacheAdministrator, ALL_ARTICLE_CACHE_KEY + jnlName,
+                                         -1, new String[] { ALL_ARTICLE_CACHE_GROUP_KEY },
+                                         "all articles for " + jnlName,
                                          new CacheAdminHelper.CacheUpdater<Article[]>() {
         public Article[] lookup(boolean[] updated) {
           try {
@@ -85,13 +83,18 @@ public class BrowseService {
    * articleDates and articlesByDate values.
    */
   private void populateArticlesAndCategories() {
+    final String jnlName =
+        ((VirtualJournalContext)
+          ServletActionContext.getRequest().
+            getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
+
     allBrowseObjects =
-        CacheAdminHelper.getFromCache(articleCacheAdministrator, ALL_BROWSE_OBJECTS, -1,
+        CacheAdminHelper.getFromCache(articleCacheAdministrator, ALL_BROWSE_OBJECTS + jnlName, -1,
                                       new String[] { ALL_ARTICLE_CACHE_GROUP_KEY },
-                                      "category and date browse objects",
-                                      new CacheAdminHelper.CacheUpdater<Object[]>() {
-        public Object[] lookup(boolean[] updated) {
-          Object[] res = createBrowseObjects();
+                                      "category and date browse objects for " + jnlName,
+                                      new CacheAdminHelper.CacheUpdater<BrowseObjects>() {
+        public BrowseObjects lookup(boolean[] updated) {
+          BrowseObjects res = createBrowseObjects(jnlName);
           updated[0] = true;
           return res;
         }
@@ -99,7 +102,7 @@ public class BrowseService {
     );
   }
 
-  private Object[] createBrowseObjects() {
+  private BrowseObjects createBrowseObjects(String jnlName) {
     ArrayList<ArrayList<Article>> articlesByCategory;
     TreeMap<String, ArrayList<Article>> articlesByCategoryMap;
     TreeMap<Date, ArrayList<Article>> articlesByDateMap;
@@ -107,7 +110,7 @@ public class BrowseService {
     ArrayList<ArrayList<ArrayList<Date>>> articleDates;
     String[] categoryNames;
 
-    Article[] allArticleList = getAllArticles();
+    Article[] allArticleList = getAllArticles(jnlName);
 
     if (allArticleList.length > 0){
       articlesByCategoryMap = new TreeMap<String, ArrayList<Article>>();
@@ -179,11 +182,12 @@ public class BrowseService {
       categoryNames = new String[0];
       articlesByCategory = new ArrayList<ArrayList<Article>>(0);
     }
-    Object[] cacheObjects = new Object[4];
-    cacheObjects[DATES_INDEX] = articleDates;
-    cacheObjects[DATES_ARTICLES_INDEX] = articlesByDate;
-    cacheObjects[CAT_NAME_INDEX] = categoryNames;
-    cacheObjects[CAT_ARTICLES_INDEX] = articlesByCategory;
+
+    BrowseObjects cacheObjects = new BrowseObjects();
+    cacheObjects.articleDates       = articleDates;
+    cacheObjects.articlesByDate     = articlesByDate;
+    cacheObjects.categoryNames      = categoryNames;
+    cacheObjects.articlesByCategory = articlesByCategory;
     return cacheObjects;
   }
 
@@ -199,7 +203,7 @@ public class BrowseService {
    */
   public ArrayList<ArrayList<ArrayList<Date>>> getArticleDates() {
     populateArticlesAndCategories();
-    return (ArrayList<ArrayList<ArrayList<Date>>>)allBrowseObjects[DATES_INDEX];
+    return allBrowseObjects.articleDates;
   }
 
 
@@ -207,8 +211,8 @@ public class BrowseService {
    * @return Returns the articlesByCategory.
    */
   public ArrayList<ArrayList<Article>> getArticlesByCategory() {
-    populateArticlesAndCategories();      
-    return (ArrayList<ArrayList<Article>>) allBrowseObjects[CAT_ARTICLES_INDEX];
+    populateArticlesAndCategories();
+    return allBrowseObjects.articlesByCategory;
   }
 
 
@@ -216,8 +220,8 @@ public class BrowseService {
    * @return Returns the articlesByDate.
    */
   public ArrayList<ArrayList<ArrayList<ArrayList<Article>>>> getArticlesByDate() {
-    populateArticlesAndCategories();      
-    return (ArrayList<ArrayList<ArrayList<ArrayList<Article>>>>) allBrowseObjects[DATES_ARTICLES_INDEX];
+    populateArticlesAndCategories();
+    return allBrowseObjects.articlesByDate;
   }
 
 
@@ -225,8 +229,8 @@ public class BrowseService {
    * @return Returns the categoryNames.
    */
   public String[] getCategoryNames() {
-    populateArticlesAndCategories();      
-    return (String[]) allBrowseObjects[CAT_NAME_INDEX];
+    populateArticlesAndCategories();
+    return allBrowseObjects.categoryNames;
   }
 
 
@@ -245,4 +249,10 @@ public class BrowseService {
     this.articleOtmService = articleOtmService;
   }
 
+  private static class BrowseObjects {
+     ArrayList<ArrayList<ArrayList<Date>>>               articleDates;
+     ArrayList<ArrayList<ArrayList<ArrayList<Article>>>> articlesByDate;
+     String[]                                            categoryNames;
+     ArrayList<ArrayList<Article>>                       articlesByCategory;
+  }
 }
