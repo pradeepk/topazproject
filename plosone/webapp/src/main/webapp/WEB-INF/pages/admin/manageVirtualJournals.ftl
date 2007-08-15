@@ -26,10 +26,14 @@
     <#list journals as journal>
       <fieldset>
         <legend><b>${journal.key}</b></legend>
-        eIssn: ${journal.eIssn}<br />
+        <#if journal.eIssn?exists>
+          eIssn: ${journal.eIssn}<br />
+        <#else>
+          <b>Journal.eIssn returns null</b><br />
+        </#if>
         <!-- TODO: display rules in a meaningful way
         <#if journal.smartCollectionRules?exists>
-          Smart Collection Rules: ${journal.smartCollectionRules.size}
+          Smart Collection Rules Exist: (to be displayed)
         </#if>
         -->
 
