@@ -74,6 +74,12 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>groovy</groupId>
+          <artifactId>groovy-all</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
