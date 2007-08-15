@@ -26,10 +26,10 @@ import org.plos.models.UserPreference;
 import org.plos.models.UserPreferences;
 import org.plos.models.UserRole;
 import org.plos.permission.service.PermissionWebService;
-import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
 import org.plos.user.UsersPEP;
+import org.plos.web.UserContext;
 import org.topazproject.otm.util.TransactionHelper;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
@@ -51,7 +51,7 @@ import java.util.Set;
  * @author Stephen Cheng
  * 
  */
-public class UserService extends BaseConfigurableService {
+public class UserService {
   private static final Log      log = LogFactory.getLog(UserService.class);
   private static final String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
 
@@ -64,7 +64,7 @@ public class UserService extends BaseConfigurableService {
 
   private Session session;
 
-  private UsersPEP pep;
+  private final UsersPEP pep;
 
   private PermissionWebService permissionWebService;
   private GeneralCacheAdministrator userCacheAdministrator;
@@ -76,11 +76,10 @@ public class UserService extends BaseConfigurableService {
   private Collection<String> weeklyCategories;
   private Collection<String> monthlyCategories;
   private Map<String, String> categoryNames;
+  private UserContext userContext;
 
-  @Override
-  public void init() throws IOException {
-    if (pep == null)
-      pep = new UsersPEP();
+  public UserService() throws IOException {
+    pep = new UsersPEP();
   }
 
   /**
@@ -796,5 +795,20 @@ public class UserService extends BaseConfigurableService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  /**
+   * Set the user's context which can be used to obtain user's session values/attributes
+   * @param userContext userContext
+   */
+  public void setUserContext(final UserContext userContext) {
+    this.userContext = userContext;
+  }
+
+  /**
+   * @return get user context
+   */
+  public UserContext getUserContext() {
+    return userContext;
   }
 }

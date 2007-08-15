@@ -152,8 +152,7 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <bean id="userService" class="org.plos.user.service.UserService" scope="session"
-      init-method="init">
+  <bean id="userService" class="org.plos.user.service.UserService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="permissionWebService" ref="permissionWebService"/>
     <property name="userCacheAdministrator" ref="userCacheAdministrator"/>
