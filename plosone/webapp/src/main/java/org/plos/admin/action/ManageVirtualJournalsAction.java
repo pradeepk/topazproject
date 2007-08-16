@@ -98,6 +98,14 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
           // get all Journals
           journals = journalService.getAllJournals();
+          
+          if (log.isDebugEnabled()) {
+            for (final Journal journal : journals) {
+              log.debug("execute(): Journal: key:" + journal.getKey() + ", eIssn:" + journal.getEIssn()
+                + ", smartCollectionRules:" + journal.getSmartCollectionRules().toString()
+                + ", simpleCollection:" + journal.getSimpleCollection().toString());
+            }
+          }
 
           return null;
         }
@@ -113,6 +121,14 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    * @return All virtual Journals.
    */
   public Set<Journal> getJournals() {
+    if (log.isDebugEnabled()) {
+      for (final Journal journal : journals) {
+        log.debug("getJournals(): Journal: key:" + journal.getKey() + ", eIssn:" + journal.getEIssn()
+          + ", smartCollectionRules:" + journal.getSmartCollectionRules().toString()
+          + ", simpleCollection:" + journal.getSimpleCollection().toString());
+      }
+    }
+    
     return journals;
   }
 

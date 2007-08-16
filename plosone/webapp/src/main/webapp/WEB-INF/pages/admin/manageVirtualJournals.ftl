@@ -26,16 +26,10 @@
     <#list journals as journal>
       <fieldset>
         <legend><b>${journal.key}</b></legend>
-        <#if journal.eIssn?exists>
-          eIssn: ${journal.eIssn}<br />
-        <#else>
-          <b>Journal.eIssn returns null</b><br />
-        </#if>
-        <!-- TODO: display rules in a meaningful way
-        <#if journal.smartCollectionRules?exists>
-          Smart Collection Rules Exist: (to be displayed)
-        </#if>
-        -->
+        eIssn: ${journal.eIssn!"null"}<br />
+
+        <!-- TODO: display rules in a meaningful way  ->
+        Smart Collection Rules: ${journal.smartCollectionRules!"null"}
 
         <@s.form id="manageVirtualJournals_${journal.key}"
           name="manageVirtualJournals_${journal.key}" action="manageVirtualJournals" method="post"
