@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-import org.plos.article.util.ToolHelper
+import org.plos.util.ToolHelper
 import org.plos.models.Article
 import org.plos.models.Category
 import org.plos.models.Citation

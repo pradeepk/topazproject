@@ -12,6 +12,8 @@
  */
 package org.plos.article.util
 
+import org.plos.util.ToolHelper
+
 args = ToolHelper.fixArgs(args)
 
 def cli = new CliBuilder(usage: 'Ingest [-c config-overrides.xml] uri representation')

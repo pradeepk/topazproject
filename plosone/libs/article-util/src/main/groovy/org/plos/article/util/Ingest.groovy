@@ -12,6 +12,7 @@ package org.plos.article.util
 import javax.activation.DataHandler;
 import javax.activation.URLDataSource
 import org.plos.article.util.Zip
+import org.plos.util.ToolHelper
 
 args = ToolHelper.fixArgs(args)
 

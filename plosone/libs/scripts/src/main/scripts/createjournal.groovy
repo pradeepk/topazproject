@@ -10,7 +10,7 @@
 
 import groovy.xml.StreamingMarkupBuilder
 
-import org.plos.article.util.ToolHelper
+import org.plos.util.ToolHelper
 import org.plos.models.EditorialBoard
 import org.plos.models.Journal
 

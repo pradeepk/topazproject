@@ -57,6 +57,11 @@
       <version>${version}</version>
     </dependency>
     <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>plosone-util</artifactId>
+      <version>${version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>otm-extras</artifactId>
     </dependency>

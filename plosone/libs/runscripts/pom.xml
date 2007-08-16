@@ -46,6 +46,12 @@
 
     <dependency>
       <groupId>org.plosone</groupId>
+      <artifactId>plosone-util</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.plosone</groupId>
       <artifactId>article-util</artifactId>
       <version>${pom.version}</version>
     </dependency>

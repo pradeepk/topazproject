@@ -9,6 +9,7 @@
  */
 package org.plos.article.util
 
+import org.plos.util.ToolHelper
 import org.plos.configuration.ConfigurationStore
 import org.topazproject.xml.transform.cache.CachedSource
 

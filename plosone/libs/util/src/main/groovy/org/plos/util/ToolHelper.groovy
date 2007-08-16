@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.article.util
+package org.plos.util
 
 import org.apache.commons.lang.text.StrMatcher
 import org.apache.commons.lang.text.StrTokenizer

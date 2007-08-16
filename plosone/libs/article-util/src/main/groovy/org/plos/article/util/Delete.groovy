@@ -22,6 +22,8 @@ import org.plos.models.Citation
 import org.plos.models.PLoS
 import org.plos.models.UserProfile
 
+import org.plos.util.ToolHelper
+
 args = ToolHelper.fixArgs(args)
 
 def cli = new CliBuilder(usage: 'Delete [-c config-overrides.xml] article-uris ...')
