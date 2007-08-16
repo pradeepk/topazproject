@@ -4,8 +4,8 @@ Global Homepages Style Sheet for PLoS Journals
 
 Created on: August 22, 2006
 Created by: Margaret Shear
-Modified on: May 09, 2007
-Modified by: Susanne DeRisi
+Modified on: August 16, 2007
+Modified by: Sebastian Toomey
 ----------------------------------------------------------
 All journal specific styles, colors are on individual
 journal style sheets
@@ -107,12 +107,12 @@ div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; ma
 /* subject contains and category styles the category list */
 div.subject		{ padding: 0; padding-top: 5px; border: none;}
 dl.category 		{ margin: 0;  padding: 10px 0 20px 0; }
-dl.category dt	{ margin: 0; padding: 0; font-size: .9em; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
-dl.category dt a {padding-bottom: 0; margin-bottom: 2px;}
+dl.category dt	{ line-height: 1.3em; margin: 0; padding:2px 0; font-size: .9em; font-weight: normal;  vertical-align: bottom; clear: left; /* This fixes the IE5 Win gap! */
+padding-left: 15px;  background: url(../images/pone_home_expand.gif) no-repeat 0 .4em;}
 dl.category dt a:hover {text-decoration: underline;}
 dl.category a.expand,
-dl.category a:visited.expand 	{ padding-left: 15px;  background: url(../images/pone_home_expand.gif) no-repeat 0 5px;}
-dl.category img	{display: inline; padding: 0; margin-left: 0;}
+dl.category a:visited.expand 	{ line-height:1.2em; background:none} /* ".expand" conflicts with style in pone_screen.css; "background:none" is temp fix to suppress display of wrong background image -SWT */
+dl.category img	{ padding: 0; margin-left: 0; margin-bottom:-1px}
 
 /* outreach blocks */
 div.ad					{ margin-top: 20px; }
