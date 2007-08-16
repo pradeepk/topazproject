@@ -20,6 +20,7 @@
     <module>conf-helper</module>
     <module>runscripts</module>
     <module>util</module>
+    <module>scripts</module>
     <module>trackback-util</module>
   </modules>
 
