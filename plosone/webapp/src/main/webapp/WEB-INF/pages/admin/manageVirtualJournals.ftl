@@ -26,7 +26,7 @@
     <#list journals as journal>
       <fieldset>
         <legend><b>${journal.key}</b></legend>
-        eIssn: ${journal.eIssn!"null"}<br />
+        eIssn: ${journal.getEIssn()!"null"}<br />
 
         <!-- TODO: display rules in a meaningful way  ->
         Smart Collection Rules: ${journal.smartCollectionRules!"null"}
