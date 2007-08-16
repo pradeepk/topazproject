@@ -78,12 +78,7 @@
     </dependency>
     <dependency>
       <groupId>org.plosone</groupId>
-      <artifactId>otm-models</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>article-util</artifactId>
+      <artifactId>plosone-util</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
   </dependencies>
