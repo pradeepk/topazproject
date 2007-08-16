@@ -76,6 +76,16 @@
       <artifactId>ant-contrib</artifactId>
       <version>1.0b2</version>
     </dependency>
+    <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>otm-models</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>article-util</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -108,6 +118,7 @@
             <argument>${Env}</argument>
             <argument>${command}</argument>
             <argument>${data}</argument>
+            <argument>${args}</argument>
           </arguments>
         </configuration>
       </plugin>

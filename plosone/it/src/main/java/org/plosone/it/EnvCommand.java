@@ -31,10 +31,11 @@ public class EnvCommand {
 
     String cmd = (args.length > 1) ? args[1].toLowerCase() : "start";
     String data = (args.length > 2) ? args[2] : null;
+    // simple space seperated for now
+    String cmdArgs[] = ((args.length > 3) && (args[3] != null)) ? args[3].split(" ") : new String[0];
 
     Env    env = new Env(args[0], data);
-
-    env.invokeMethod(cmd, new Object[0]);
+    env.invokeMethod(cmd, cmdArgs);
 
     if (cmd.equals("start")) {
       Object block = new Object();

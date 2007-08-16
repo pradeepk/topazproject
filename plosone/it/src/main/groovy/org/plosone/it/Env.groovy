@@ -242,4 +242,15 @@ public class Env {
      return input
   }
 
+  public void script(String[] args) {
+    String res = args[0]
+    String[] sargs = new String[args.length - 1]
+
+    for (x in 1 .. args.length - 1)
+        sargs[x-1] = args[x]
+
+    println 'executing script ' + res + ' with args ' + sargs
+    GroovyShell shell = new GroovyShell();
+    shell.run(new File(res), sargs)
+  }
 }
