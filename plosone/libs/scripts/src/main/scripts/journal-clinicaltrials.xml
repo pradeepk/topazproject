@@ -15,6 +15,9 @@
 <journal>
   <key>PLoSClinicalTrials</key>
   <eIssn>1555-5887</eIssn>
+  <dublinCore>
+    <title>PLoS Hub for Clinical Trials</title>
+  </dublinCore>
   <!-- seed Journal with these initial Articles
   <simpleCollection>
     <doi></doi>

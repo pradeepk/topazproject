@@ -15,6 +15,9 @@
 <journal>
   <key>PLoSONE</key>
   <eIssn>1932-6203</eIssn>
+  <dublinCore>
+    <title>PLoS ONE</title>
+  </dublinCore>
   <!-- seed Journal with these initial Articles
   <simpleCollection>
     <doi></doi>

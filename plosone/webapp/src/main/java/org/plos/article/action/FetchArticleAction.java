@@ -17,10 +17,18 @@ import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
+import org.plos.journal.JournalService;
+import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
 
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.util.TransactionHelper;
+
+import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Fetch article action.
@@ -32,12 +40,16 @@ public class FetchArticleAction extends BaseActionSupport {
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
   private FetchArticleService fetchArticleService;
+  private JournalService journalService;
+  private Set<Journal> journalList;
+  private Session session;
   private ObjectInfo articleInfo;
   private String transformedArticle;
   private AnnotationService annotationService;
   private int numDiscussions = 0;
   private int numAnnotations = 0;
 
+  
   public String execute() throws Exception {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
@@ -51,6 +63,13 @@ public class FetchArticleAction extends BaseActionSupport {
         }
       }
       setArticleInfo(fetchArticleService.getArticleInfo(articleURI));
+      
+      TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
+          public Void run(Transaction tx) {
+            journalList = journalService.getJournalsForObject(URI.create(articleURI));
+            return null;
+          }
+        });
     } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: "+ articleURI, e);
@@ -175,4 +194,25 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
 
+  /**
+   * @param journalService The journalService to set.
+   */
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
+  }
+
+
+  /**
+   * @return Returns the journalList.
+   */
+  public Set<Journal> getJournalList() {
+    return journalList;
+  }
+
+  /**
+   * @param session The session to set.
+   */
+  public void setOtmSession(Session session) {
+    this.session = session;
+  }
 }

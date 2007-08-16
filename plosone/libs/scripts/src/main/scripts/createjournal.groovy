@@ -11,6 +11,7 @@
 import groovy.xml.StreamingMarkupBuilder
 
 import org.plos.util.ToolHelper
+import org.plos.models.DublinCore
 import org.plos.models.EditorialBoard
 import org.plos.models.Journal
 
@@ -78,6 +79,8 @@ def journal = new Journal()
 // set the journal key, eIssn
 journal.key   = slurpedJournal.key
 journal.eIssn = slurpedJournal.eIssn
+journal.dublinCore = new DublinCore()
+journal.dublinCore.title = slurpedJournal.dublinCore.title
 
 // create a filter, by eIssn, for this journal
 EQCriterion eqEIssn = (EQCriterion)Restrictions.eq("eIssn", journal.eIssn)
@@ -93,6 +96,7 @@ journal.simpleCollection = dois
 println "parsed journal definition input: " + journalDefinition
 println "Journal.key:   " + journal.key
 println "Journal.eIssn: " + journal.eIssn
+println "Journal.dublinCore.title: " + journal.dublinCore.title
 println "Journal.simpleCollection: " + journal.simpleCollection
 
 
