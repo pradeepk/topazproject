@@ -1,8 +1,9 @@
   <ul id="nav">
     <li><a href="${homeURL}" tabindex="101">Home</a></li>
+    <@s.url action="browse" namespace="/static" includeParams="none" id="browseURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubjectURL"/>
     <@s.url action="browse" namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
-    <li><a href="${browseSubjectURL}" tabindex="102">Browse Articles</a>
+    <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
@@ -46,7 +47,7 @@
           <li><a href="http://www.plos.org/oa/index.html" title="Open Access Statement">Open Access</a></li>
           <li><a href="http://www.plos.org/support/donate.php" title="Join PLoS: Show Your Support">Join PLoS</a></li>
           <li><a href="http://www.plos.org/cms/blog" title="PLoS Blog">PLoS Blog</a></li>
-	  <li><a href="http://www.plos.org/connect.html" title="PLoS.org | Stay Connected">Stay Connected</a></li>
+          <li><a href="http://www.plos.org/connect.html" title="PLoS.org | Stay Connected">Stay Connected</a></li>
         </ul>
       </li>
       <li class="journalnav"><a href="${homeURL}" tabindex="109">Hubs</a>

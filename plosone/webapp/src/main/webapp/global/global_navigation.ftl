@@ -1,8 +1,9 @@
   <ul id="nav">
     <li><a href="${homeURL}" tabindex="101">Home</a></li>
+    <@s.url action="browse" namespace="/static" includeParams="none" id="browseURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubjectURL"/>
     <@s.url action="browse" namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
-    <li><a href="${browseSubjectURL}" tabindex="102">Browse Articles</a>
+    <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
