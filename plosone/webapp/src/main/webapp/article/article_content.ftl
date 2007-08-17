@@ -1,4 +1,10 @@
 <#assign publisher=""/>
+<#if Request[freemarker_config.journalContextAttributeKey]?exists>
+  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey
+].journal>
+<#else>
+  <#assign journalContext = "">
+</#if>
 <#list journalList as jour>
   <#-- Special Case -->
   <#if (journalList?size == 1) && (jour.key == journalContext)>
