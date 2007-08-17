@@ -431,7 +431,7 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">");
     if (filterObj)
       applyObjectFilters(qry, cm.getSourceClass(), "$s", filters, sf);
-    // applyFieldFilters(qry, assoc, "$s", "$o", filters, sf);
+    applyFieldFilters(qry, assoc, "$s", "$o", filters, sf);
 
     qry.append("; select $s $p $o subquery (select $t from ").append(models).append(" where ");
     qry.append("$s <rdf:type> $t) ");
@@ -439,7 +439,7 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
     if (filterObj)
       applyObjectFilters(qry, cm.getSourceClass(), "$o", filters, sf);
-    // applyFieldFilters(qry, assoc, "$o", "$s", filters, sf);
+    applyFieldFilters(qry, assoc, "$o", "$s", filters, sf);
     qry.append(";");
 
     return qry.toString();
