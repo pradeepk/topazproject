@@ -17,7 +17,7 @@
   <a id="intro" name="intro"></a>
   <h2>1. Annotation, Discussion, and Rating</h2>
 
-  <p>The PLoS Hub for Clinical Trials employs a system for the assessment of articles that combines
+  <p>The PLoS Web site employs a system for the assessment of articles that combines
    pre- and post-publication peer review. There are three major components to post-publication review:</p>
 
   <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rateGuideURL"/>
@@ -36,7 +36,7 @@
       <strong>Ratings:</strong> Users can assign personal ratings to articles, which are then
       aggregated to provide overall ratings and rankings of articles. Users are not allowed to "vote"
       more than once, but can revise their rating. For more details, see
-      <@s.a href="${rateGuideURL}" title="PLoS ONE | Guidelines for Rating">Guidelines for Rating</@s.a>.
+      <@s.a href="${rateGuideURL}" title="Guidelines for Rating">Guidelines for Rating</@s.a>.
     </li>
   </ol>
 
@@ -46,11 +46,11 @@
   <h2>2. Terms of Use</h2>
 
   <@s.url action="terms" namespace="/static" includeParams="none" id="termsURL"/>
-  <p>All Annotation, Discussion, Rating and other post-publication activity in the PLoS Hubs is
-  subject to the <@s.a href="${termsURL}" title="PLoS Hub | Terms of Use">PLoS Terms of Use</@s.a>. </p>
+  <p>All Annotation, Discussion, Rating and other post-publication activity in the PLoS Web sites is
+  subject to the <@s.a href="${termsURL}" title="Terms of Use">PLoS Terms of Use</@s.a>. </p>
 
   <a id="who" name="who"></a>
-  <h2>3. Who can Contribute?</h2>
+  <h2>3. Who Can Contribute?</h2>
 
   <p>All registered users are able to comment on and rate any article. Anyone can register as a user.
   Users are required to unambiguously identify themselves and to supply a valid e-mail address in order
@@ -61,7 +61,7 @@
   <a id="annotation" name="annotation"></a>
   <h2>4. How to Create and View Annotations</h2>
 
-  <p>To make an Annotation, first make sure you are logged into the website. Then, highlight the text
+  <p>To make an Annotation, first make sure you are logged into the Web site. Then, highlight the text
   to be annotated, and then click the "Add your annotation" link in the right-hand navigation menu of
   the article. Enter a title and text for your annotation in the appropriate boxes. When you are
   satisfied with the text, click "Post" to attach the Annotation to the article. Any correctly formed
@@ -86,7 +86,7 @@
   <h2>5. How to Begin and View Discussions</h2>
 
   <p>To initiate a Discussion about the article as a whole, first make sure you are logged
-  into the website. To create the initial comment for a Discussion, click the "Start a discussion"
+  into the Web site. To create the initial comment for a Discussion, click the "Start a discussion"
   link in the right-hand navigation menu of the article. Enter a title and text for your comment
   in the appropriate boxes. (Note: We advise that Discussion comments first are written in a
   word-processing program that allows for spell checking before they are copied and pasted into
@@ -101,7 +101,7 @@
   <a id="responding" name="responding"></a>
   <h2>6. Responding to Annotation and Discussion Comments</h2>
 
-  <p>To respond to a Discussion or Annotation comment, first make sure you are logged into the website.
+  <p>To respond to a Discussion or Annotation comment, first make sure you are logged into the Web site.
   For Annotations, open an an Annotation and click the "View/respond to this" link at the bottom of
   the Annotation. For Annotations and Discussions, click the "Respond to this Posting" link in the
   bottom-right corner of the comment. Enter a title and text for your response in the appropriate
@@ -137,7 +137,7 @@
     speculation about the motivations or prejudices of authors. </li>
   </ol>
 
-  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Hub for Clinical Trials.</p>
+  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Web sites.</p>
 
   <a id="inappropriatecontent" name="inappropriatecontent"></a>
   <h2>8. Requesting Review of Inappropriate Content</h2>
@@ -149,9 +149,9 @@
   ("Spam," "Offensive," "Inappropriate," or "Other"), enter additional information in the text box,
   and click "Submit". PLoS staff will investigate the comment, which may involve consulting external
   experts if necessary. Any comments that PLoS staff deem to be inappropriate will be removed. Any
-  users who consistently post inappropriate material will have their user privileges removed.  If
+  users who consistently posts inappropriate material will have their user privileges removed.  If
   a comment is removed, all subsequent comments along its thread also will be removed.</p>
 
-  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Hub for Clinical Trials.</p>
+  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Web sites.</p>
 </div>
 <!-- end : main contents -->

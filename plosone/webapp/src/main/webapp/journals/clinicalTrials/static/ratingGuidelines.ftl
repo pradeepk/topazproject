@@ -18,7 +18,7 @@
   <h2>1. Categories</h2>
 
   <p>
-    The PLoS Hub for Clinical Trials allows users to rate articles for subjective "quality".
+    The PLoS Web site allows users to rate articles for subjective "quality".
     Scientific work can be measured on a number of scales and to reflect this, articles can
     be rated in three separate categories: Insight, Reliability, and Style. Rating is done
     on a 1 to 5 scale with 1 being the lowest and 5 the highest rating.
@@ -67,13 +67,13 @@
 
   <@s.url action="terms" namespace="/static" includeParams="none" id="termsURL"/>
   <p>
-    All Annotation, Discussion, Rating and other post-publication activity in the PLoS Hubs is
-    subject to the <@s.a href="${termsURL}" title="PLoS Hub for Clinical Trials | Terms of Use">PLoS
-    Terms of Use</@s.a>.
+    All Annotation, Discussion, Rating and other post-publication activity on the PLoS Web sites is
+    subject to PLoS' <@s.a href="${termsURL}" title="PLoS Hub for Clinical Trials | Terms of Use">Terms
+    of Use</@s.a>.
   </p>
 
   <a id="who" name="who"></a>
-  <h2>3. Who can Rate?</h2>
+  <h2>3. Who Can Rate?</h2>
 
   <p>
     All registered users are able to rate any article.  Anyone can register as a user. Users are
@@ -103,7 +103,7 @@
   <h2>5. How to Rate</h2>
 
   <p>
-    To rate an article first make sure you are logged into the website. Then, click the "Rate This
+    To rate an article first make sure you are logged into the Web site. Then, click the "Rate This
     Article" link in the right hand navigation menu of the article to be rated. This will open a
     separate window within which you can select your desired number of rating stars for the study
     and enter any comments that you may wish to accompany your rating. Once completed, you will be
@@ -147,20 +147,21 @@
     </li>
   </ol>
 
-  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Hub for Clinical Trials.</p>
+  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Web sites.</p>
 
   <a id="inappropriatecontent" name="inappropriatecontent"></a>
   <h2>7. Requesting Review of Inappropriate Content</h2>
 
   <p>
-    To request review of a comment you believe to be inappropriate, or if you suspect that the
-    rating system is being abused please e-mail <strong>webmaster [at] plos.org</strong>
-    using the subject "Request for review of inappropriate content". Briefly indicate why you
-    feel the comment or rating is inappropriate. PLoS staff will investigate the concern, which
-    may involve consulting external experts if necessary. Any comments or ratings that PLoS staff
-    deem to be inappropriate will be removed.
+    To request review of a comment you believe to be inappropriate, or if you suspect that the 
+    rating system is being abused, click the "Request review" link in the bottom-right corner of 
+    the rating. Indicate why the rating should be reviewed ("Spam," "Offensive," "Inappropriate," 
+    or "Other"), enter additional information in the text box, and click "Submit". PLoS staff will 
+    investigate the concern, which may involve consulting external experts if necessary. Any 
+    comments that PLoS staff deem to be inappropriate will be removed. Any users who consistently 
+    posts inappropriate material will have their user privileges removed.
   </p>
 
-  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Hub for Clinical Trials.</p>
+  <p>PLoS is the final arbiter of the suitability of comments for inclusion in the PLoS Web sites.</p>
 </div>
 <!-- end : main contents -->

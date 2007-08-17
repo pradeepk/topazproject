@@ -3,7 +3,8 @@
 
   <h1>Browse Articles</h1>
 
-  <p class="intro">PLoS Hubs post new content as often as once per week. You can browse contents two ways:</p>
+  <p class="intro">The PLoS Hub for Clinical Trials posts new content as often as once 
+  per week. You can browse articles two ways:</p>
 
   <@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
   <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubURL"/>

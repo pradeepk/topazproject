@@ -19,54 +19,49 @@
   <a id="account" name="account"></a>
   <h2>PLoS Journals Account</h2>
   <p>
-    You may read the PLoS Hub for Clinical Trials without creating an account.  However, a PLoS
-    journals account is required to receive journal e-mail alerts and to comment on articles.
+    You may read the entire site without creating an account.  However, a PLoS
+    account is required to receive e-mail alerts and to comment on articles.
     Accounts are free.
   </p>
 
   <h3>Create Account</h3>
   <p>
-    Create a PLoS Journals account at
+    Create a PLoS account at
     <@s.a href="${freemarker_config.registrationURL}" title="Create PLoS Journals Profile">${freemarker_config.registrationURL}</@s.a>.
-    A confirmation will be sent to your e-mail address with the title "Please verify your PLoS registration".  Use the URL in that
-    e-mail to complete your registration.
+    A confirmation will be sent to your e-mail address with the title "Please verify your PLoS registration".  
+    Use the URL in that e-mail to complete your registration. You must fill out and "Save" your Public 
+    Profile in order to complete the registration process.
   </p>
 
   <h3>Login</h3>
-  <p>The "Login" or "My Profile" is available near the top right corner of every journal page.</p>
+  <p>The "Login" link is available near the top right corner of every page.</p>
 
   <h3>Lost Password</h3>
   <p>
     If you have forgotten your password, go to
-    <a href="http://register.plos.org/reminder" title="PLoS Journals Profile Password Reminder">http://register.plos.org/reminder</a>,
-    enter your E-mail address, and click "Submit". An e-mail will be sent to the e-mail address
-    you use to log in to your PLoS user account.
+    <a href="http://register.plos.org/reminder" title="PLoS Profile Password Reminder">http://register.plos.org/reminder</a>,
+    enter your e-mail address, and click "Submit". An e-mail will be sent to the e-mail address
+    you use to log in to your PLoS account.
   </p>
 
-  <h2>Journal E-mail Alerts</h2>
+  <h2>E-mail Content Alerts</h2>
 
-  <p>
-    Sign up for a PLoS journal e-mail alert at
-    <a href="http://www.plosone.org/alerts" title="Register for PLoS Journals E-mail Alerts">http://www.plosone.org/alerts</a>.
-    A confirmation will be sent to your e-mail address with the title "Please verify your PLoS registration".  Use the URL in
-    that e-mail to complete your registration.
-  </p>
-
-
-  <p>To unsubscribe from a PLoS journal e-mail alert:</p>
+  <p>To subscribe to e-mail content alerts, you must first create a PLoS account (see above).  
+  If you already have an account:</p>
   <ol>
-    <li>Login at <a href="http://www.plosone.org/alerts" title="Register for PLoS Journals E-mail Alerts">http://www.plosone.org/alerts</a>.
-      Enter your PLoS login E-mail address and Password. Click "Go!".</li>
-    <li>Please check/uncheck the boxes to subscribe/unsubscribe from a specific mailing list.</li>
+    <li>Go to <a href="http://www.plosone.org/alerts" title="Choose your alerts">http://www.plosone.org/alerts</a>. 
+    Login. Click "Go!".</li>
+    <li>Please check/uncheck the boxes to subscribe/unsubscribe from a specific content alert.</li>
     <li>Scroll to the bottom of the page and click "Save".</li>
   </ol>
 
-  <p>To update your e-mail address to which PLoS journal e-mail alerts are sent:</p>
+  <p>To update your e-mail address to which content alerts are sent:</p>
   <ol>
-    <li>Login at <a href="http://www.plosone.org/alerts" title="Edit PLoS Journals Profile">http://www.plosone.org/profile</a>.
-    Enter your PLoS login E-mail address and Password. Click "Go!".</li>
-    <li>Under "Preferences", click "Change your e-mail address".</li>
-    <li>Enter the new e-mail address which you wish to use to receive alerts and click "Submit".</li>
+    <li>Go to <a href="http://www.plosone.org/profile" title="Edit PLoS Profile">http://www.plosone.org/profile</a>. 
+    Login. Click "Go!".</li>
+    <li>Under "Your Private Information", click "Change your e-mail address".</li>
+    <li>Enter the old e-mail address and the new e-mail address and click "Submit".</li>
+    <li>A confirmation will be sent to your e-mail address.</li>
   </ol>
 
   <a id="printing" name="printing"></a>
@@ -92,7 +87,7 @@
 
   <p>
     If updating your printer drivers does not resolve the problem, please contact
-    <a href="mailto:webmaster@plos.org">webmaster@plos.org</a> with detailed information,
+    <strong>webmaster [at] plos.org</strong> with detailed information,
     including your Web browser software (e.g., Internet Explorer 6.0), version of Adobe Acrobat
     Reader (or other PDF reader), computer operating system (e.g., Windows XP), and the URLs of the
     PDFs you are trying to print.
@@ -196,9 +191,9 @@
 
   <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssURL"/>
   <p>
-    Want to keep abreast of PLoS journals content without having to regularly visit the Web sites?
+    Want to keep abreast of PLoS content without having to regularly visit the Web sites?
     RSS will allow you to do just that.  Get more information
-    <@s.a href="${rssURL}" title="PLoS Hub | About PLoS RSS Feeds">about PLoS RSS feeds</@s.a>.
+    <@s.a href="${rssURL}" title="About PLoS RSS Feeds">about PLoS RSS feeds</@s.a>.
   </p>
 
   <a id="xmlcontent" name="xmlcontent"></a>

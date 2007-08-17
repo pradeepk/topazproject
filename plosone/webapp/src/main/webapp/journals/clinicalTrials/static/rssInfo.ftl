@@ -3,7 +3,7 @@
   <h1>About PLoS RSS Feeds</h1>
 
   <p class="intro">
-    Want to keep abreast of all PLoS journals without having to regularly visit each site? RSS
+    Want to keep abreast of all PLoS content without having to regularly visit each site? RSS
     will allow you to do just that.
   </p>
 
@@ -77,7 +77,8 @@
   <h2>Past Table of Contents in XML format</h2>
   <p>
     If you maintain your own Web site and want to create an index to past issues of PLoS
-    journals (excluding <em>PLoS ONE</em>), PLoS provides the archived tables of contents for
+    journals (excluding <em>PLoS ONE</em> and <em>PLoS Neglected Tropical Diseases</em>), 
+    PLoS provides the archived tables of contents for
     past issues in XML format. To generate a link to a past table of contents file, append the
     specific volume and issue number to the URL for the table of contents feed.  For example,
     the link to the <em>PLoS Biology</em> Table of Contents feed is:<br />

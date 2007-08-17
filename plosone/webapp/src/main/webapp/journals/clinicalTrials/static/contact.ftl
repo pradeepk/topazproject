@@ -4,8 +4,8 @@
   <h2>Editorial</h2>
 
   <p>
-    If you have feedback relating to the Hub, or suggestions for resources or open-access content
-    that could be included, please contact us: <br />
+    If you have feedback relating to the PLoS Hub for Clinical Trials, or suggestions for 
+    resources or open-access content that could be included, please contact us: <br />
     <a href="http://www.plos.org/about/people/medicine.html#eveitch" title="PLoS.org | Emma Veitch's Bio">Emma Veitch</a>, Associate Editor, <em>PLoS Medicine</em><br />
     E-mail <strong>eveitch [at] plos.org</strong><br />
     <a href="http://www.plos.org/cms/blog/18" title="PLoS | Emma Veitch's blog">Emma Veitch's blog</a>

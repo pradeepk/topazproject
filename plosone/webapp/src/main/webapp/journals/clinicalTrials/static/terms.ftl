@@ -2,14 +2,15 @@
 <div id="content" class="static">
   <h1>Terms of Use</h1>
   <p>
-    These Terms of Use are a contract between you and the Public Library of Science ("PLoS"),
-    a company with its principal place of business at 185 Berry Street, Suite 3100,
-    San Francisco, CA 94107, USA. PLoS operates www.PLoS.org, www.PLoSjournals.org, and
-    other PLoS journal sites (collectively the "PLoS Sites"), through which it strives to
-    make the world's scientific and medical literature a freely available public resource.
-    By using the PLoS Sites and any services accessible from the PLoS Sites, you are
-    agreeing to be bound by the following terms and conditions ("Terms of Use").  If you do
-    not agree to these Terms of Use, do not visit or use the PLoS Sites.
+    These Terms of Use are a contract between you and the Public Library of Science ("PLoS"), 
+    a company with its principal place of business at 185 Berry Street, Suite 3100, 
+    San Francisco, CA 94107, USA. PLoS operates www.PLoS.org, www.PLoSjournals.org, 
+    www.PLoSHubs.org, and other PLoS journal sites (collectively the "PLoS Sites"), through 
+    which it strives to make the world's scientific and medical literature a freely 
+    available public resource.  By using the PLoS Sites and any services accessible from the 
+    PLoS Sites, you are agreeing to be bound by the following terms and conditions 
+    ("Terms of Use").  If you do not agree to these Terms of Use, do not visit or use the 
+    PLoS Sites.
   </p>
 
   <h2>Ownership of Content</h2>
@@ -40,9 +41,10 @@
   </p>
 
   <h2>Privacy</h2>
+  <@s.url action="privacy" namespace="/static" includeParams="none" id="privacyURL"/>  
   <p>
-    You confirm that you have read and accept our <a href="privacy.action"
-    title="PLoS ONE | Privacy Statement">Privacy Policy</a>.
+    You confirm that you have read and accept our <a href="${privacyURL}"
+    title="Privacy Statement">Privacy Policy</a>.
   </p>
 
   <h2>General Practices Regarding Use</h2>

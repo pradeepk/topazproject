@@ -32,9 +32,9 @@
   <p>
     This broad license was developed to facilitate open access to, and free use of, original
     works of all types. Applying this standard license to your own work will ensure your right
-    to make your work freely and openly available. Learn more about <a href="/oa/">open access</a>.
-    For queries about the license, please <a href="http://www.plos.org/contact.php?recipient=lic">contact
-    us.</a>
+    to make your work freely and openly available. Learn more about 
+    <a href="http://www.plos.org/oa/">open access</a>.  For queries about the license, please 
+    <a href="http://www.plos.org/contact.php?recipient=lic">contact us.</a>
   </p>
 </div>
 <!-- end : main contents -->
