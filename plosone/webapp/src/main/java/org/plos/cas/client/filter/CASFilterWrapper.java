@@ -9,7 +9,7 @@
  */
 package org.plos.cas.client.filter;
 
-import edu.yale.its.tp.cas.client.filter.CASFilter;
+//import edu.yale.its.tp.cas.client.filter.CASFilter;
 import org.apache.commons.configuration.Configuration;
 import org.plos.cas.ConfigWrapper;
 import org.plos.cas.ConfigWrapperUtil;
