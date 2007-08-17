@@ -100,6 +100,42 @@ def toint(value) {
   }
 }
 
+// Try to extract an integer or return null
+def findInt(value, fieldName, minLength) {
+  try {
+    def orig = tostr(value)
+    if (!orig) return null
+    def started = false
+    def extracted = ""
+    // this could/should be a regex, but this has been tested...
+    for (c in orig) {
+      if (c >= '0' && c <= '9') {
+        extracted += c
+        started = true
+      } else {
+        if (started) {
+          if (extracted && extracted.size() < minLength) {
+            extracted = ""
+            started = false
+          } else if (extracted) {
+            break
+          }
+        }
+      }
+    }
+    if (!extracted) {
+      log.warn("Expected int for $fieldName, got '$orig', unable to extract anything, returning null")
+      return null
+    } else if (!value.equals(extracted)) {
+      log.warn("Expected int for $fieldName, got '$orig', extracted '$extracted'")
+    }
+    return extracted.toInteger()
+  } catch (Exception e) {
+    log.warn("Unexpected $e")
+    return null
+  }
+}
+
 // Build lists of affiliations and authors (TODO: ordered contributors too?)
 Set affiliations = new HashSet()
 articleMeta.aff.institution.each() { aff -> affiliations.add(aff.toString()) }
@@ -121,6 +157,9 @@ articleMeta.'contrib-group'.contrib.each() { contrib ->
   case 'editor': editors += user; break
   }
 }
+
+// Log what we are doing
+log.info("Migrating $doi")
 
 // Update article
 def dc = article.dublinCore
@@ -197,11 +236,12 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
       pages = fpage
   }
 
+  def name              = tostr(src.'@id')
   cit.id                = new URI('info:doi/10.1371/reference.' + src.'@id')
   cit.key               = tostr(src.label)
-  cit.year              = toint(src.citation.year)
+  cit.year              = findInt(src.citation.year, "$name:year", 4)
   cit.month             = tostr(src.citation.month)
-  cit.volume            = toint(src.citation.volume)
+  cit.volume            = findInt(src.citation.volume, "$name:volume", 0)
   cit.issue             = tostr(src.citation.issue)
   cit.title             = tostr(src.citation.'article-title')
   cit.publisherLocation = tostr(src.citation.'publisher-loc')
