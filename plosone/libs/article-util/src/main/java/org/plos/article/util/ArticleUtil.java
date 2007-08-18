@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.PasswordProtectedService;
@@ -146,15 +147,23 @@ public class ArticleUtil {
       // Clean up spool directories
       File ingestedXmlFile = new File(ingestedDir, article.replaceAll("[:/.]", "_") + ".xml");
       log.debug("Deleting '" + ingestedXmlFile + "'");
-      FileUtils.forceDelete(ingestedXmlFile);
+      try {
+        FileUtils.forceDelete(ingestedXmlFile);
+      } catch (FileNotFoundException fnfe) {
+        log.info("'" + ingestedXmlFile + "' does not exist - cannot delete: " + fnfe);
+      }
       if (!queueDir.equals(ingestedDir)) {
         String fname = article.substring(25) + ".zip";
         File fromFile = new File(ingestedDir, fname);
         File toFile   = new File(queueDir,    fname);
         log.debug("Copying '" + fromFile + "' to '" + toFile + "'");
-        FileUtils.copyFile(fromFile, toFile);
-        log.debug("Deleting '" + fromFile + "'");
-        FileUtils.forceDelete(fromFile);
+        try {
+          FileUtils.copyFile(fromFile, toFile);
+          log.debug("Deleting '" + fromFile + "'");
+          FileUtils.forceDelete(fromFile);
+        } catch (FileNotFoundException fnfe) {
+          log.info("Could not copy '" + fromFile + "' to '" + toFile + "': " + fnfe);
+        }
       }
     } catch (MalformedURLException e) {
       throw new RemoteException("Bad configuration", e);
