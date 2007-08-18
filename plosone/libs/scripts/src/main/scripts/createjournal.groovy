@@ -102,15 +102,26 @@ println "Journal.simpleCollection: " + journal.simpleCollection
 
 
 if (!DRYRUN) {
-  println "Creating Journal in database: " + journal.key
   try {
-    for (j in session.createCriteria(Journal.class).add(Restrictions.eq("key", journal.key)).list())
-      session.delete(j);
+    // if Journal already exists, preserve simpleCollection
+    List<Journal> existingJournals = session.createCriteria(Journal.class)
+      .add(Restrictions.eq('key', journal.key)).list()
+    if(existingJournals.size() == 0) {
+      println 'Creating Journal in database: ' + journal.key
+    } else {
+      def existingJournal = existingJournals[0]
+      println 'Journal ' + journal.key + ' already exists'
+      println '\tpreserving simpleCollection DOIs: ' + existingJournal.simpleCollection
+      // use a Set to build a list w/no duplicates
+      Set<URI> combinedDois = new HashSet(journal.simpleCollection)
+      combinedDois.addAll(existingJournal.simpleCollection)
+      journal.simpleCollection = new ArrayList(combinedDois)
+    }
 
     session.saveOrUpdate(journal)
     tx.commit()
     session.close()
-    println "Created Journal in database: " + journal.key
+    println 'Database updated with: ' + journal.key
   } catch (Throwable t) {
     log.error("Unable to save journal", t);
     println "Unable to save journal: " + t
