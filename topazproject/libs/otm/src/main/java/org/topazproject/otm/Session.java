@@ -27,6 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.event.PreInsertEventListener;
+import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Mapper;
@@ -132,6 +134,10 @@ public class Session {
 
     for (Map.Entry<Id, Object> e : deleteMap.entrySet())
       write(e.getKey(), e.getValue(), true);
+
+    for (Object o : dirtyMap.values())
+      if (o instanceof PreInsertEventListener)
+        ((PreInsertEventListener)o).onPreInsert(this, o);
 
     for (Map.Entry<Id, Object> e : dirtyMap.entrySet())
       write(e.getKey(), e.getValue(), false);
@@ -563,8 +569,13 @@ public class Session {
 
     TripleStore store = sessionFactory.getTripleStore();
 
-    return store.get(cm, id.getId(), instance, txn, new ArrayList<Filter>(filters.values()),
-                     filterObj);
+    instance = store.get(cm, id.getId(), instance, txn, 
+                                new ArrayList<Filter>(filters.values()), filterObj);
+
+    if (instance instanceof PostLoadEventListener)
+      ((PostLoadEventListener)instance).onPostLoad(this, instance);
+
+    return instance;
   }
 
   private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
