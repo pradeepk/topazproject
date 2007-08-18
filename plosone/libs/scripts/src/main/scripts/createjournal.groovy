@@ -57,6 +57,8 @@ slurper.setEntityResolver(CachedSource.getResolver())
 // Ask slurper to read journal definition
 def slurpedJournal = slurper.parse(new File(journalDefinition))
 
+println "parsed journal definition input: " + journalDefinition
+
 // Setup OTM
 def factory = new SessionFactory();
 def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
@@ -74,12 +76,22 @@ factory.preload(Journal.class);
 factory.preload(Article.class);
 def session = factory.openSession();
 def tx = session.beginTransaction();
+def key = slurpedJournal.key
 
-// create a new Journal
-def journal = new Journal()
+List<Journal> existingJournals = session.createCriteria(Journal.class)
+      .add(Restrictions.eq('key', key)).list()
+
+def journal
+if(existingJournals.size() == 0) {
+  println 'Creating Journal in database: ' + key
+  journal = new Journal()
+  journal.key   = key
+} else {
+  journal = existingJournals[0]
+  println 'Journal ' + journal.key + ' already exists'
+}
 
 // set the journal key, eIssn
-journal.key   = slurpedJournal.key
 journal.eIssn = slurpedJournal.eIssn
 journal.dublinCore = new DublinCore()
 journal.dublinCore.title = slurpedJournal.dublinCore.title
@@ -90,12 +102,6 @@ eqEIssn.setSerializedValue(journal.eIssn)
 DetachedCriteria filterByEIssn = (new DetachedCriteria("Article")).add(eqEIssn)
 journal.setSmartCollectionRules([filterByEIssn])
 
-// set the Aggregation of Articles that belong to this journal
-List dois = new ArrayList()
-slurpedJournal.simpleCollection.doi.each() { doi -> dois.add(doi.toURI()) }
-journal.simpleCollection = dois
-
-println "parsed journal definition input: " + journalDefinition
 println "Journal.key:   " + journal.key
 println "Journal.eIssn: " + journal.eIssn
 println "Journal.dublinCore.title: " + journal.dublinCore.title
@@ -105,21 +111,6 @@ println "Journal.simpleCollection: " + journal.simpleCollection
 
 if (!DRYRUN) {
   try {
-    // if Journal already exists, preserve simpleCollection
-    List<Journal> existingJournals = session.createCriteria(Journal.class)
-      .add(Restrictions.eq('key', journal.key)).list()
-    if(existingJournals.size() == 0) {
-      println 'Creating Journal in database: ' + journal.key
-    } else {
-      def existingJournal = existingJournals[0]
-      println 'Journal ' + journal.key + ' already exists'
-      println '\tpreserving simpleCollection DOIs: ' + existingJournal.simpleCollection
-      // use a Set to build a list w/no duplicates
-      Set<URI> combinedDois = new HashSet(journal.simpleCollection)
-      combinedDois.addAll(existingJournal.simpleCollection)
-      journal.simpleCollection = new ArrayList(combinedDois)
-    }
-
     session.saveOrUpdate(journal)
     tx.commit()
     session.close()
