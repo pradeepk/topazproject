@@ -14,6 +14,7 @@ import org.plos.util.ToolHelper
 import org.plos.models.DublinCore
 import org.plos.models.EditorialBoard
 import org.plos.models.Journal
+import org.plos.models.Article
 
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.SessionFactory
@@ -70,6 +71,7 @@ factory.preload(DetachedCriteria.class);
 factory.preload(EQCriterion.class);
 factory.preload(EditorialBoard.class);
 factory.preload(Journal.class);
+factory.preload(Article.class);
 def session = factory.openSession();
 def tx = session.beginTransaction();
 
