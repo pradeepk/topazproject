@@ -229,7 +229,7 @@
 
     <action name="commentGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/comment_guidelines.ftl</param>
+        <param name="templateFile">/static/commentGuidelines.ftl</param>
       </result>
     </action>
 
@@ -310,7 +310,13 @@
         <param name="templateFile">/static/privacy.ftl</param>
       </result>
     </action>
-
+    
+    <action name="releaseNotes" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/journals/clinicalTrials/static/releaseNotes.ftl</param>
+      </result>
+    </action>
+    
     <action name="reviewerGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/reviewer_guidelines.ftl</param>
@@ -325,7 +331,7 @@
 
     <action name="rssInfo" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/rss_info.ftl</param>
+        <param name="templateFile">/static/rssInfo.ftl</param>
       </result>
     </action>
 

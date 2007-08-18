@@ -46,12 +46,6 @@
       </result>
     </action>
 
-    <action name="commentGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/commentGuidelines.ftl</param>
-      </result>
-    </action>
-
     <action name="contact" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/clinicalTrials/static/contact.ftl</param>
@@ -64,39 +58,9 @@
       </result>
     </action>
 
-    <action name="help" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/help.ftl</param>
-      </result>
-    </action>
-
     <action name="information" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/clinicalTrials/static/information.ftl</param>
-      </result>
-    </action>
-
-    <action name="license" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/license.ftl</param>
-      </result>
-    </action>
-
-    <action name="privacy" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/privacy.ftl</param>
-      </result>
-    </action>
-
-    <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/ratingGuidelines.ftl</param>
-      </result>
-    </action>
-
-    <action name="releaseNotes" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/releaseNotes.ftl</param>
       </result>
     </action>
 
@@ -106,21 +70,9 @@
       </result>
     </action>
 
-    <action name="rssInfo" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/rssInfo.ftl</param>
-      </result>
-    </action>
-
     <action name="sitemap" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/clinicalTrials/static/sitemap.ftl</param>
-      </result>
-    </action>
-
-    <action name="terms" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/terms.ftl</param>
       </result>
     </action>
 
