@@ -243,7 +243,7 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
   cit.month             = tostr(src.citation.month)
   cit.volume            = findInt(src.citation.volume, "$name:volume", 0)
   cit.issue             = tostr(src.citation.issue)
-  cit.title             = tostr(src.citation.'article-title')
+  cit.title             = new StreamingMarkupBuilder().bind { mkp.yield(src.citation.'article-title') }
   cit.publisherLocation = tostr(src.citation.'publisher-loc')
   cit.publisherName     = tostr(src.citation.'publisher-name')
   cit.pages             = pages
