@@ -28,7 +28,7 @@
         <legend><b>${journal.key}</b></legend>
         eIssn: ${journal.getEIssn()!"null"}<br />
 
-        <!-- TODO: display rules in a meaningful way  ->
+        <!-- TODO: display rules in a meaningful way  -->
         Smart Collection Rules: ${journal.smartCollectionRules!"null"}
 
         <@s.form id="manageVirtualJournals_${journal.key}"
