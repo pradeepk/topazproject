@@ -104,6 +104,9 @@ println "Journal.simpleCollection: " + journal.simpleCollection
 if (!DRYRUN) {
   println "Creating Journal in database: " + journal.key
   try {
+    for (j in session.createCriteria(Journal.class).add(Restrictions.eq("key", journal.key)).list())
+      session.delete(j);
+
     session.saveOrUpdate(journal)
     tx.commit()
     session.close()
