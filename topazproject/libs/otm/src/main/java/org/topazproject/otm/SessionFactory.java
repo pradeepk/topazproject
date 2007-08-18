@@ -151,6 +151,10 @@ public class SessionFactory {
    * @return the most specific sub class
    */
   public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris) {
+    return mostSpecificSubClass(clazz, typeUris, false);
+  }
+
+  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris, boolean any) {
     if (typeUris.size() == 0)
       return clazz;
 
@@ -166,7 +170,7 @@ public class SessionFactory {
 
       //find the most specific class with the same rdf:type
       for (Class cl : classes) {
-        if (candidate.isAssignableFrom(cl) && isInstantiable(cl))
+        if (candidate.isAssignableFrom(cl) && (any || isInstantiable(cl)))
           candidate = cl;
       }
 
