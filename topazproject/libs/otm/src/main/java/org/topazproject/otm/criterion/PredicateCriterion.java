@@ -130,4 +130,18 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
 
     return res;
   }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+    throw new UnsupportedOperationException("Not meant to be persisted");
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+    throw new UnsupportedOperationException("Not meant to be persisted");
+  }
 }

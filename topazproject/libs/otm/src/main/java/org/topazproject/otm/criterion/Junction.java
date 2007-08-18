@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Predicate;
@@ -121,5 +122,21 @@ public abstract class Junction extends Criterion {
 
     sb.append("]");
     return sb.toString();
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+    for (Criterion c : criterions)
+      c.onPreInsert(dc, cm);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+    for (Criterion c : criterions)
+      c.onPostLoad(dc, cm);
   }
 }

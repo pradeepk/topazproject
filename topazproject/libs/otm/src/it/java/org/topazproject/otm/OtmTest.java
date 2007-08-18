@@ -766,6 +766,17 @@ public class OtmTest extends TestCase {
       session.saveOrUpdate(dc);
 
       tx.commit(); // Flush happens automatically
+
+      assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
+      assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri, 
+          factory.getClassMetadata(Annotation.class).getMapperByName("annotates").getUri());
+      dc = dc.getChildCriteriaList().iterator().next();
+      assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
+      assertEquals("" + dc.da.predicateUri, 
+          factory.getClassMetadata(Annotation.class).getMapperByName("supersedes").getUri());
+      assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri, 
+          factory.getClassMetadata(Annotation.class).getMapperByName("creator").getUri());
+
     } catch (OtmException e) {
       log.warn("test failed", e);
 
@@ -873,12 +884,24 @@ public class OtmTest extends TestCase {
       DetachedCriteria dc = (DetachedCriteria) session.createCriteria(DetachedCriteria.class)
                                      .add(Restrictions.eq("alias", "Annotation"))
                                      .list().iterator().next();
+
       List l = dc.getExecutableCriteria(session).setParameter("p1", "foo:1").list();
       assertEquals(2, l.size());
       Annotation a1   = (Annotation) l.get(0);
       Annotation a2   = (Annotation) l.get(1);
       assertEquals(id3, a1.getId());
       assertEquals(id2, a2.getId());
+
+      assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
+      assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri, 
+          factory.getClassMetadata(Annotation.class).getMapperByName("annotates").getUri());
+      dc = dc.getChildCriteriaList().iterator().next();
+      assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
+      assertEquals("" + dc.da.predicateUri, 
+          factory.getClassMetadata(Annotation.class).getMapperByName("supersedes").getUri());
+      assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri, 
+          factory.getClassMetadata(Annotation.class).getMapperByName("creator").getUri());
+
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {

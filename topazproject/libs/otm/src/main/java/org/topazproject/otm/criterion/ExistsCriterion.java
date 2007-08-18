@@ -19,8 +19,7 @@ import org.topazproject.otm.annotations.Entity;
  * @author Pradeep Krishnan
  */
 @Entity(type = Criterion.RDF_TYPE + "/exists")
-public class ExistsCriterion extends Criterion {
-  private String fieldName;
+public class ExistsCriterion extends AbstractUnaryCriterion {
 
   /**
    * Creates a new ExistsCriterion object.
@@ -34,7 +33,7 @@ public class ExistsCriterion extends Criterion {
    * @param name field/predicate name
    */
   public ExistsCriterion(String name) {
-    this.fieldName = name;
+    super(name);
   }
 
   /*
@@ -42,30 +41,9 @@ public class ExistsCriterion extends Criterion {
    */
   public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
                 throws OtmException {
-    Criterion impl = new PredicateCriterion(fieldName);
+    Criterion impl = new PredicateCriterion(getFieldName());
 
     return impl.toQuery(criteria, subjectVar, varPrefix, ql);
   }
 
-  /**
-   * Get fieldName.
-   *
-   * @return fieldName as String.
-   */
-  public String getFieldName() {
-    return fieldName;
-  }
-
-  /**
-   * Set fieldName.
-   *
-   * @param fieldName the value to set.
-   */
-  public void setFieldName(String fieldName) {
-    this.fieldName = fieldName;
-  }
-
-  public String toString() {
-    return "Exists[" + fieldName + "]";
-  }
 }

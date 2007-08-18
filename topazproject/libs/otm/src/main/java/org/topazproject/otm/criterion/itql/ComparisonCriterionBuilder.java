@@ -15,6 +15,7 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
+import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -146,6 +147,20 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       res += subjectVar + "." + name + ", " + serializeValue(value, criteria, name) + ")";
 
       return res;
+    }
+
+    /*
+     * inherited javadoc
+     */
+    public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+      throw new UnsupportedOperationException("Not meant to be persisted");
+    }
+
+    /*
+     * inherited javadoc
+     */
+    public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+      throw new UnsupportedOperationException("Not meant to be persisted");
     }
   }
 }

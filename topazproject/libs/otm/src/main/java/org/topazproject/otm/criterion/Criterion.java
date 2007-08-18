@@ -175,4 +175,21 @@ public abstract class Criterion {
   public Set<String> getParamNames() {
     return Collections.emptySet();
   }
+
+  /**
+   * Do any pre-insert processing. eg. converting field names to predicate-uri
+   *
+   * @param dc the detached criteria that is being persisted
+   * @param cm the class metadata to use to resolve fields
+   */
+  public abstract void onPreInsert(DetachedCriteria dc, ClassMetadata cm);
+
+  /**
+   * Do any post-load processing. eg. converting predicate-uri to field name
+   *
+   * @param dc the detached criteria that is being loaded
+   * @param cm the class metadata to use to resolve fields
+   */
+  public abstract void onPostLoad(DetachedCriteria dc, ClassMetadata cm);
+
 }

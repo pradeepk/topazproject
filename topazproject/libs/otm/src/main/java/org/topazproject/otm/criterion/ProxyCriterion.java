@@ -9,6 +9,7 @@
  */
 package org.topazproject.otm.criterion;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 
@@ -81,5 +82,19 @@ public class ProxyCriterion extends Criterion {
 
     sb.append(")]");
     return sb.toString();
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+    throw new UnsupportedOperationException("Not meant to be persisted");
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+    throw new UnsupportedOperationException("Not meant to be persisted");
   }
 }

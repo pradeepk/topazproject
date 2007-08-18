@@ -12,6 +12,12 @@ package org.topazproject.otm.criterion;
 import java.util.Collections;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.mapping.Mapper;
+
 /**
  * A base class for all binary operations involving a field and its value. The value could be a
  * {@link org.topazproject.otm.criterion.Parameter Parameter} in which case the value is resolved
@@ -25,8 +31,8 @@ import java.util.Set;
  *
  * @see #getValue
  */
-public abstract class AbstractBinaryCriterion extends Criterion {
-  private String           fieldName;
+public abstract class AbstractBinaryCriterion extends AbstractUnaryCriterion {
+  private static final Log log             = LogFactory.getLog(AbstractBinaryCriterion.class);
   private String           serializedValue;
   private transient Object value;
   private Parameter        parameter;
@@ -44,7 +50,7 @@ public abstract class AbstractBinaryCriterion extends Criterion {
    * @param value field/predicate value or a {@link org.topazproject.otm.criterion.Parameter}
    */
   public AbstractBinaryCriterion(String name, Object value) {
-    setFieldName(name);
+    super(name);
     setValue(value);
   }
 
@@ -92,24 +98,6 @@ public abstract class AbstractBinaryCriterion extends Criterion {
       this.parameter = null;
   }
 
-  /**
-   * Get fieldName.
-   *
-   * @return fieldName as String.
-   */
-  public String getFieldName() {
-    return fieldName;
-  }
-
-  /**
-   * Set fieldName.
-   *
-   * @param fieldName the value to set.
-   */
-  public void setFieldName(String fieldName) {
-    this.fieldName = fieldName;
-  }
-
   /*
    * inherited javadoc
    */
@@ -143,4 +131,5 @@ public abstract class AbstractBinaryCriterion extends Criterion {
     return getClass().getName().replace("org.topazproject.otm.criterion.", "").
            replace("Criterion", "") + "[" + getFieldName() + ", " +  getValue() + "]";
   }
+
 }

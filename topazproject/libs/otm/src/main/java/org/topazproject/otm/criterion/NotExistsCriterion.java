@@ -19,8 +19,7 @@ import org.topazproject.otm.annotations.Entity;
  * @author Pradeep Krishnan
  */
 @Entity(type = Criterion.RDF_TYPE + "/notExists")
-public class NotExistsCriterion extends Criterion {
-  private String fieldName;
+public class NotExistsCriterion extends AbstractUnaryCriterion {
 
   /**
    * Creates a new NotExistsCriterion object.
@@ -34,7 +33,7 @@ public class NotExistsCriterion extends Criterion {
    * @param name field/predicate name
    */
   public NotExistsCriterion(String name) {
-    this.fieldName = name;
+    super(name);
   }
 
   /*
@@ -42,7 +41,7 @@ public class NotExistsCriterion extends Criterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
-    Criterion impl = new PredicateCriterion(fieldName);
+    Criterion impl = new PredicateCriterion(getFieldName());
     impl = new NotCriterion(impl);
 
     return impl.toItql(criteria, subjectVar, varPrefix);
@@ -57,35 +56,14 @@ public class NotExistsCriterion extends Criterion {
 
     String res = subjectVar;
 
-    if (fieldName == null)
+    if (getFieldName() == null)
       res += ".{" + varPrefix + "p ->}";
     else
-      res += "." + fieldName;
+      res += "." + getFieldName();
 
     res += " == null";
 
     return res;
   }
 
-  /**
-   * Get fieldName.
-   *
-   * @return fieldName as String.
-   */
-  public String getFieldName() {
-    return fieldName;
-  }
-
-  /**
-   * Set fieldName.
-   *
-   * @param fieldName the value to set.
-   */
-  public void setFieldName(String fieldName) {
-    this.fieldName = fieldName;
-  }
-
-  public String toString() {
-    return "NotExists[" + fieldName + "]";
-  }
 }

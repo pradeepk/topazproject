@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Entity;
@@ -114,5 +115,21 @@ public class MinusCriterion extends Criterion {
 
   public String toString() {
     return "Minus[" + minuend + ", " + subtrahend + "]";
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+    minuend.onPreInsert(dc, cm);
+    subtrahend.onPreInsert(dc, cm);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+    minuend.onPostLoad(dc, cm);
+    subtrahend.onPostLoad(dc, cm);
   }
 }

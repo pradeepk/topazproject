@@ -13,19 +13,27 @@ import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
+import org.topazproject.otm.event.PreInsertEventListener;
+import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -43,8 +51,9 @@ import org.topazproject.otm.mapping.Mapper;
  */
 @Entity(type = Criterion.NS + "Criteria", model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
-public class DetachedCriteria {
-  private String                  alias;
+public class DetachedCriteria implements PreInsertEventListener, PostLoadEventListener {
+  private static final Log        log               = LogFactory.getLog(DetachedCriteria.class);
+  private           String        alias;
   private DetachedCriteria        parent;
   private Integer                 maxResults;
   private Integer                 firstResult;
@@ -59,6 +68,9 @@ public class DetachedCriteria {
   @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
   private List<Order>             rootOrderList     = new ArrayList<Order>();
 
+  @Embedded
+  public DeAliased da = new DeAliased();
+
   /**
    * The id field used for persistence. Ignored otherwise.
    */
@@ -66,13 +78,14 @@ public class DetachedCriteria {
   @GeneratedValue(uriPrefix = Criterion.NS + "Criteria/Id/")
   public URI criteriaId;
 
- /**
-   * Creates a new DetachedCriteria object.
+  /**
+   * Creates a new DetachedCriteria object. 
+   *
    */
   public DetachedCriteria() {
   }
 
-/**
+  /**
    * Creates a new DetachedCriteria object.
    *
    * @param entity the entity for which the criteria is created. It could be an entity name or the
@@ -195,6 +208,125 @@ public class DetachedCriteria {
     getRoot().getRootOrderList().add(order);
 
     return this;
+  }
+
+  private ClassMetadata getClassMetadata(SessionFactory sf) {
+    if (parent == null)
+      return sf.getClassMetadata(alias);
+    ClassMetadata cm = parent.getClassMetadata(sf);
+    if (cm == null)
+      return null;
+    Mapper m = cm.getMapperByName(alias);
+    return (m == null) ? null : sf.getClassMetadata(m.getComponentType());
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPreInsert(Session session, Object object) {
+    assert this == object;
+    SessionFactory sf = session.getSessionFactory();
+
+    if (parent == null) {
+      ClassMetadata cm = sf.getClassMetadata(alias);
+
+      if (cm == null)
+        log.warn("onPreInsert: Entity name '" + alias 
+            + "' is not found in session factory.");
+      else {
+        da.rdfType = URI.create(cm.getType());
+        da.predicateUri = null;
+        da.inverse = false;
+
+        if (log.isDebugEnabled())
+          log.debug("onPreInsert: converted entity '" + alias + "' to <" + da.rdfType + ">");
+
+        for (Criterion cr : criterionList)
+          cr.onPreInsert(this, cm);
+
+        for (Order or : orderList)
+          or.onPreInsert(this, cm);
+      }
+    } else {
+      ClassMetadata cm = parent.getClassMetadata(sf);
+      if (cm == null)
+        log.warn("onPreInsert: Parent of '" + alias + "' not found in session factory");
+      else {
+        Mapper m = cm.getMapperByName(alias);
+        if (m == null)
+          log.warn("onPreInsert: Field '" + alias + "' not found in " + cm);
+        else {
+          cm = sf.getClassMetadata(m.getComponentType());
+          da.rdfType = (cm == null) ? null : URI.create(cm.getType());
+          da.predicateUri = URI.create(m.getUri());
+          da.inverse = m.hasInverseUri();
+          if (log.isDebugEnabled())
+            log.debug("onPreInsert: converted field '" + alias + "' to "  + da);
+
+          for (Criterion cr : criterionList)
+            cr.onPreInsert(this, cm);
+
+          for (Order or : orderList)
+            or.onPreInsert(this, cm);
+        }
+      }
+    }
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPostLoad(Session session, Object object) {
+    assert this == object;
+    SessionFactory sf = session.getSessionFactory();
+
+    if (parent == null) {
+      Class cl = sf.mostSpecificSubClass(Object.class, Collections.singleton(ser(da.rdfType)), true);
+
+      if (cl == null) {
+        log.warn("onPostLoad: A class matching the rdf:type <" + da.rdfType 
+          + "> is not found in session factory. Entity name will remain as '" + alias + "'");
+      } else {
+        ClassMetadata cm = sf.getClassMetadata(cl);
+        alias = cm.getName();
+
+        if (log.isDebugEnabled())
+          log.debug("onPostLoad: converted rdfType <" + da.rdfType + "> to entity '" + alias + "'");
+
+        for (Criterion cr : criterionList)
+          cr.onPostLoad(this, cm);
+
+        for (Order or : orderList)
+          or.onPostLoad(this, cm);
+      }
+    } else {
+      ClassMetadata cm = parent.getClassMetadata(sf);
+      if (cm == null)
+        log.warn("onPostLoad: Parent of '" + alias + "' not found in session factory");
+      else {
+        Mapper m = cm.getMapperByUri(ser(da.predicateUri), da.inverse, ser(da.rdfType));
+        if (m == null)
+          log.warn("onPostLoad: A field matching " + da +  " not found in " + cm);
+        else {
+          alias = m.getName();
+
+          if (log.isDebugEnabled())
+            log.debug("onPostLoad: converted " + da + " to '" + alias + "'");
+
+          cm = sf.getClassMetadata(m.getComponentType());
+
+          for (Criterion cr : criterionList)
+            cr.onPostLoad(this, cm);
+
+          for (Order or : orderList)
+            or.onPostLoad(this, cm);
+        }
+      }
+    }
+  }
+
+  private static String ser(URI u) {
+    return (u == null) ? null : u.toString();
   }
 
   /**
@@ -364,5 +496,19 @@ public class DetachedCriteria {
       paramNames.addAll(c.getParamNames());
 
     return paramNames;
+  }
+
+  @UriPrefix(Criterion.NS)
+  public static class DeAliased {
+    public URI rdfType;
+    public URI predicateUri;
+    public boolean inverse;
+
+    public String toString() {
+      return "[predicate: <" + predicateUri
+            + ">, rdf:type: <" + rdfType
+            + ">, inverse: " + inverse
+            + "]";
+    }
   }
 }
