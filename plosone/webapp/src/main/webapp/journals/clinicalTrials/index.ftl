@@ -35,11 +35,15 @@
             <div class="block recent">
               <h2>Recently Added Clinical Trials</h2>
               <ul class="articles">
-                <li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000012" title="Read Open Access Article">The Effectiveness of Contact Tracing in Emerging Epidemics</a></li>
-                <li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000008" title="Read Open Access Article">Molecular Adaptation during Adaptive Radiation in the Hawaiian Endemic Genus <em>Schiedea</em></a></li>
-                <li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000000" title="Read Open Access Article">PLoS ONE Sandbox: A Place to Learn and Play</a></li>
-                <li><a href="#" title="Read Open-Access Article">The Effect of Acclydine in Chronic Fatigue Syndrome: A Randomized Controlled Trial</a></li>
-                <li><a href="/plosone-webapp/article/fetchArticle.action?articleURI=info%3Adoi%2F10.1371%2Fjournal.pone.0000007" title="Read Open Access Article">A Single Basis for Developmental Buffering of <em>Drosophila</em> Wing Shape</a></li>
+                <@s.url id="article0000000" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000000"/>
+                <@s.url id="article0000007" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000007"/>
+                <@s.url id="article0000008" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000008"/>
+                <@s.url id="article0000012" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000012"/>
+
+                <li><@s.a href="%{article0000012}" title="Read Open Access Article">The Effectiveness of Contact Tracing in Emerging Epidemics</@s.a></li>
+                <li><@s.a href="%{article0000008}" title="Read Open Access Article">Molecular Adaptation during Adaptive Radiation in the Hawaiian Endemic Genus <em>Schiedea</em></@s.a></li>
+                <li><@s.a href="%{article0000000}" title="Read Open Access Article">PLoS ONE Sandbox: A Place to Learn and Play</@s.a></li>
+                <li><@s.a href="%{article0000007}" title="Read Open Access Article">A Single Basis for Developmental Buffering of <em>Drosophila</em> Wing Shape</@s.aa></li>
               </ul>
             </div><!-- end : block recent -->
             <!-- begin : browse widget block -->
