@@ -9,6 +9,11 @@
   </context-param>
 
   <filter>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+  </filter>
+
+  <filter>
     <description>Sets the virtual journal context.
 Should be 1st in the chain as other Filters, e.g. caching, may rely on the journal context.</description>
     <filter-name>VirtualJournalContextFilter</filter-name>
@@ -102,96 +107,138 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   </filter>
 
   <filter-mapping>
+    <filter-name>UrlRewriteFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>VirtualJournalContextFilter</filter-name>
     <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
     <url-pattern>/css/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
     <url-pattern>/images/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
     <url-pattern>/javascript/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
     <url-pattern>/static/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <!--
   <filter-mapping >
     <filter-name>DebuggingFilter</filter-name>
     <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 -->
   <filter-mapping >
     <filter-name>DummySSOFilter</filter-name>
     <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
 <!-- <url-pattern>/*</url-pattern>-->
     <url-pattern>/annotation/secure/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
     <url-pattern>/user/secure/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
     <url-pattern>/rate/secure/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
     <url-pattern>/admin/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
   
   <filter-mapping>
     <filter-name>Member Session</filter-name>
     <url-pattern>/annotation/secure/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>Member Session</filter-name>
     <url-pattern>/user/secure/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>Member Session</filter-name>
     <url-pattern>/rate/secure/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>Member Session</filter-name>
     <url-pattern>/admin/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
  
 
   <filter-mapping>
     <filter-name>CacheFilter</filter-name>
     <url-pattern>/article/fetchAnnotatedArticle.action</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>CacheFilter</filter-name>
     <url-pattern>/article/fetchObject.action</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <filter-mapping>
     <filter-name>struts2</filter-name>
     <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
   <!-- The configuration WebAppListner to pull in the configuration stuff automatically. -->
