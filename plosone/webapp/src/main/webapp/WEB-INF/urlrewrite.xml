@@ -6,25 +6,25 @@
     http://tuckey.org/urlrewrite/
 -->
 <urlrewrite>
-  <rule enabled="false">
+  <rule>
     <note>
       re-write incoming trackbacks URIs.
-     /article/doi/trackback -> /trackback.action?articleURI=doi
+     /article/doi/trackback -> /trackback.action?trackbackId=doi
     </note>
     <from>^(.*)/article/(info:doi/10\.1371/.+)/trackback$</from>
-    <to>$1/trackback.action?articleURI=$2</to>
+    <to>$1/trackback.action?trackbackId=$2</to>
   </rule>
 
-  <outbound-rule enabled="false">
+  <outbound-rule>
     <note>
       re-write outbound trackbacks URIs.
-      /trackback.action?articleURI=doi -> /article/doi/trackback
+      /trackback.action?trackbackId=doi -> /article/doi/trackback
     </note>
-    <from>^(.*)/trackback.action\?articleURI=(info%3Adoi%2F10\.1371%2F.+)$</from>
+    <from>^(.*)/trackback.action\?trackbackId=(info%3Adoi%2F10\.1371%2F.+)$</from>
     <to>$1/article/$2/trackback</to>
   </outbound-rule>
 
-  <rule enabled="false">
+  <rule>
     <note>
       re-write incoming Article URIs.
      /article/doi -> /article/fetchArticle.action?articleURI=doi
@@ -33,7 +33,7 @@
     <to encode="true" last="true">$1/article/fetchArticle.action?articleURI=$2</to>
   </rule>
 
-  <outbound-rule enabled="false">
+  <outbound-rule>
     <note>
       re-write outbound Article URIs.
      /article/fetchArticle.action?articleURI=doi -> /article/doi
