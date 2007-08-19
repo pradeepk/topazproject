@@ -43,7 +43,7 @@
                 <li><@s.a href="%{article0000012}" title="Read Open Access Article">The Effectiveness of Contact Tracing in Emerging Epidemics</@s.a></li>
                 <li><@s.a href="%{article0000008}" title="Read Open Access Article">Molecular Adaptation during Adaptive Radiation in the Hawaiian Endemic Genus <em>Schiedea</em></@s.a></li>
                 <li><@s.a href="%{article0000000}" title="Read Open Access Article">PLoS ONE Sandbox: A Place to Learn and Play</@s.a></li>
-                <li><@s.a href="%{article0000007}" title="Read Open Access Article">A Single Basis for Developmental Buffering of <em>Drosophila</em> Wing Shape</@s.aa></li>
+                <li><@s.a href="%{article0000007}" title="Read Open Access Article">A Single Basis for Developmental Buffering of <em>Drosophila</em> Wing Shape</@s.a></li>
               </ul>
             </div><!-- end : block recent -->
             <!-- begin : browse widget block -->
