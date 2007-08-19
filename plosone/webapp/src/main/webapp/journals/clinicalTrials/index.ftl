@@ -12,7 +12,7 @@
           <div class="col last">
           <!-- SWT removed horizontalTabs -->
             <div id="new" class="block">
-            	<@s.url action="information" namespace="/static" includeParams="none" id="info"/>
+              <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
               <h2><img class="badgenew" src="images/pone_home_new_badge.gif" alt="NEW!" />What is the PLoS Hub for Clinical Trials?</h2>
               <p>Launched in August 2007, the PLoS Hub for Clinical Trials collects PLoS journal articles that relate to clinical trials. The Hub is a destination site for researchers to share their views and build a dynamic, interactive community.</p>
               <p>Currently, the PLoS Hub for Clinical Trials features articles originally published in <em>PLoS Clinical Trials</em>, along with clinical trials articles from <em>PLoS ONE</em>.</p>
@@ -21,16 +21,16 @@
             </div>
             <!-- end block new -->
             <!-- begin : calls to action blocks -->
-						<div id="alerts">
-							<a href="#"><span><strong>Sign up</strong>
-							Sign up for clinical trials content alerts by e-mail</span></a>
-						</div>
-						<div id="rss">
-							<@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/>
-							<a href="#"><span><strong>Subscribe</strong>
-							Subscribe to the clinical trials RSS content feed</span></a>
-							<a href="${rssinfo}" class="adInfo">What is RSS?</a>
-						</div>
+            <div id="alerts">
+              <a href="#"><span><strong>Sign up</strong>
+              Sign up for clinical trials content alerts by e-mail</span></a>
+            </div>
+            <div id="rss">
+              <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/>
+              <a href="#"><span><strong>Subscribe</strong>
+              Subscribe to the clinical trials RSS content feed</span></a>
+              <a href="${rssinfo}" class="adInfo">What is RSS?</a>
+            </div>
             <!-- end : calls to action blocks -->
             <div class="block recent">
               <h2>Recently Added Clinical Trials</h2>
@@ -56,12 +56,12 @@
             <div class="info block">
               <@s.url action="commentGuidelines" anchor="annotation" namespace="/static" includeParams="none" id="annotation"/>
               <@s.url action="commentGuidelines" anchor="discussion" namespace="/static" includeParams="none" id="discussion"/>
- 							<@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
- 							<@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
+              <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
+              <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
               <h3>Join the Community</h3>
               <p><a href="${freemarker_config.registrationURL}" title="Register">Register now</a> and share your views on clinical trials research. Only registrants can <a href="${rating}" title="Rating Guidelines">rate</a>, <a href="${discussion}" title="Learn how to start a discussion">discuss</a> and <a href="${annotation}" title="Learn how to add an annotation">annotate</a> articles in the Hub.</p>
               <h3>Submit Your Work</h3>
-							<p>PLoS is committed to publishing the results of all clinical trials, regardless of outcome, and making this essential information freely and publicly available. <a href="${checklist}" title="Submission Info">Find out how to submit your work</a>.</p>
+              <p>PLoS is committed to publishing the results of all clinical trials, regardless of outcome, and making this essential information freely and publicly available. <a href="${checklist}" title="Submission Info">Find out how to submit your work</a>.</p>
             </div><!-- end : info block -->
             <!-- begin : advocacy blocks -->
             <script language='JavaScript' type='text/javascript'>
@@ -107,13 +107,13 @@
             <!-- end : advocacy blocks -->
             <div class="info block">
               <h3>Highlights From Other Open Access Journals</h3>
-							<p>Links to relevant content that is not currently in the Hub. We will be adding content in coming months.</p>
-							<dl class="category">
-								<dt><em>PLoS Medicine</em></dt>
-								<dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040201">Liver Fluke Induces Cholangiocarcinoma</a></dd>
-								<dt><em>Trials</em> (BioMed Central)</dt>
-								<dd><a href="http://www.trialsjournal.com/content/8/1/18">Telecare motivational interviewing for diabetes patient education and support: a randomised controlled trial based in primary care comparing nurse and peer supporter delivery</a></dd>
-							</dl>
+              <p>Links to relevant content that is not currently in the Hub. We will be adding content in coming months.</p>
+              <dl class="category">
+                <dt><em>PLoS Medicine</em></dt>
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040201">Liver Fluke Induces Cholangiocarcinoma</a></dd>
+                <dt><em>Trials</em> (BioMed Central)</dt>
+                <dd><a href="http://www.trialsjournal.com/content/8/1/18">Telecare motivational interviewing for diabetes patient education and support: a randomised controlled trial based in primary care comparing nurse and peer supporter delivery</a></dd>
+              </dl>
             </div><!-- end : info block -->
           </div><!-- end : subcol first -->
           <!-- end : col 3 -->
