@@ -73,22 +73,31 @@
             <div class="block feature">
 
               <h2>New and Noted</h2>
+              <@s.url id="newNoted1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000443"/>
+              <@s.url id="newNoted2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000444"/>
+              <@s.url id="newNoted3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000451"/>                            
+
+              <@s.url id="alsoNoted1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000446"/>
+              <@s.url id="alsoNoted2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000450"/>
+              <@s.url id="alsoNoted3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000447"/>                            
+              <@s.url id="alsoNoted4" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000445"/>
+              
               <div>
-                <a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000443" title="Read Open-Access Article">Order in Spontaneous Behavior</a>
+                <@s.a href="${newNoted1}" title="Read Open-Access Article">Order in Spontaneous Behavior</@s.a>
                 <p>Animals are usually considered to behave as complex automata, responding predictably to external stimuli. This study suggests otherwise, showing that even the humble fruit fly can behave spontaneously. The flight paths of flies in a completely featureless environment were neither random nor predictable, but followed a complicated fractal pattern generated within the fly's brain.</p>
 
-                <a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000444" title="Read Open-Access Article">Economic Inequality Predicts Biodiversity Loss</a>
+                <@s.a href="${newNoted2}" title="Read Open-Access Article">Economic Inequality Predicts Biodiversity Loss</@s.a>
                 <p>Human activity is causing high rates of biodiversity loss, but how socioeconomics feeds into this decline is poorly understood. This research explores how economic inequality, the gap between a country's rich and its poor, is related to biodiversity loss. Looking at both countries and individual U.S. states, it shows that inequality and increased biodiversity loss go hand-in-hand.</p>
 
-                <a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000451" title="Read Open-Access Article">Immunity against <em>Ixodes scapularis</em> Salivary Proteins Expressed within 24 Hours of Attachment Thwarts Tick Feeding and Impairs <em>Borrelia</em> Transmission</a>
+                <@s.a href="${newNoted3}" title="Read Open-Access Article">Immunity against <em>Ixodes scapularis</em> Salivary Proteins Expressed within 24 Hours of Attachment Thwarts Tick Feeding and Impairs <em>Borrelia</em> Transmission</@s.a>
                 <p>In North America, the black-legged tick, <em>Ixodes scapularis</em>, spreads several human diseases. This study shows that, in guinea pigs, immunity against proteins that ticks produce in the first day after their attachment inhibited the ticks' subsequent feeding. It also reduced transmission of the Lyme disease agent <em>Borrelia burgdorferi</em>, suggesting new strategies for the control tick-borne diseases.</p>
 
                 <h3>Also of Note</h3>
                 <ul class="articles">
-                  <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000446" title="Read Open-Access Article">Calculation of the Free Energy and Cooperativity of Protein Folding</a></li>
-                  <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000450" title="Read Open-Access Article">Conditional Expression of <em>Wnt4</em> during Chondrogenesis Leads to Dwarfism in Mice</a></li>
-                  <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000447" title="Read Open-Access Article">Genetic Evidence for a Link Between Glycolysis and DNA Replication</a></li>
-                  <li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000445" title="Read Open-Access Article">A Model of Late Long-Term Potentiation Simulates Aspects of Memory Maintenance</a></li>
+                  <li><@s.a href="${alsoNoted1}" title="Read Open-Access Article">Calculation of the Free Energy and Cooperativity of Protein Folding</@s.a></li>
+                  <li><@s.a href="${alsoNoted2}" title="Read Open-Access Article">Conditional Expression of <em>Wnt4</em> during Chondrogenesis Leads to Dwarfism in Mice</@s.a></li>
+                  <li><@s.a href="${alsoNoted3}" title="Read Open-Access Article">Genetic Evidence for a Link Between Glycolysis and DNA Replication</@s.a></li>
+                  <li><@s.a href="${alsoNoted4}" title="Read Open-Access Article">A Model of Late Long-Term Potentiation Simulates Aspects of Memory Maintenance</@s.a></li>
                 </ul>
               </div>
             </div>
@@ -110,16 +119,19 @@
                 <p>A new way of communicating peer-reviewed science and medicine.</p>
                 <ul>
                   <li>Try out <a href="${annotation}" title="Learn how to add an annotation">annotations</a> and <a href="${discussion}" title="Learn how to start a discussion">discussions</a> in the <a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000000" title="PLoS ONE Sandbox: A Play to Learn and Play"><em>PLoS ONE</em> Sandbox</a>.</li>
-                <li><a href="${freemarker_config.context}/article/browse.action?field=date" title="PLoS ONE | Browse by Publication Date">Browse articles by Publication Date</a> and try our improved <a href="/article/browse.action" title="PLoS ONE | Browse by Subject">Browse by Subject</a>.</li>
-                <li><a href="${freemarker_config.context}/static/rssFeeds.action" title="PLoS ONE | RSS Feeds">RSS Feeds</a> by Subject</li>
+                  <li><a href="${browseDateURL}" title="PLoS ONE | Browse by Publication Date">Browse articles by Publication Date</a> and try our improved <a href="/article/browse.action" title="PLoS ONE | Browse by Subject">Browse by Subject</a>.</li>
+                  <li><a href="${browseSubjectURL}" title="PLoS ONE | RSS Feeds">RSS Feeds</a> by Subject</li>
                 </ul>
                 <p><em>More functionality coming soon</em></p>
                 <p><a href="${feedbackURL}" title="Send us your feedback">Your feedback</a> will help us shape <em>PLoS ONE</em>.</p>
                 <h3>Journal Clubs - New Discussion</h3>
                 <p><em>PLoS ONE</em> regularly sends out papers in advance of publication to interested labs to debate them and post their comments online. </p>
+                <#assign jClubArticleDOI="info:doi/10.1371/journal.pone.0000343"/>
+                <@s.url id="jClubArticle" namespace="/article" action="fetchArticle" articleURI="${jClubArticleDOI}"/>
+                <@s.url id="jClubComment" namespace="/annotation" action="getCommentary" target="${jClubArticleDOI}"/>
                 <ul>
-                  <li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000343" title="Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">This recent paper</a> was discussed by the <a href="${freemarker_config.context}/user/showUser.action?userId=info:doi/10.1371/account/39755" title="Potsdam University Eye-Movement Group">Potsdam University Eye-Movement Group</a>.</li>
-                  <li>Add your own comments to <a href="${freemarker_config.context}/annotation/getCommentary.action?target=info:doi/10.1371/journal.pone.0000343" title="Annotations and Discussions Re: Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">the discussion</a>.</li>
+                  <li><@s.a href="${jClubArticle}" title="Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">This recent paper</a> was discussed by the <a href="${freemarker_config.context}/user/showUser.action?userId=info:doi/10.1371/account/39755" title="Potsdam University Eye-Movement Group">Potsdam University Eye-Movement Group</@s.a>.</li>
+                  <li>Add your own comments to <a href="${jClubComment}" title="Annotations and Discussions Re: Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">the discussion</a>.</li>
                   <li><a href="${feedbackURL}" title="Send us your feedback">Nominate your lab</a> for a future journal club.</li>
                 </ul>
               </div>
@@ -185,7 +197,6 @@
             //-->
             </script><noscript><a href='http://ads.plos.org/adclick.php?n=a58966f8' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:160&amp;source=ONE&amp;n=a58966f8' border='0' alt='' /></a></noscript>
 
-
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
@@ -217,7 +228,6 @@
             </script><noscript><a href='http://ads.plos.org/adclick.php?n=a08b8fff' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:162&amp;source=ONE&amp;n=a08b8fff' border='0' alt='' /></a></noscript>
           </div><!-- end : col first -->
         </div><!-- end : lower -->
-
       </div><!-- end : col -->
     </div><!-- end : home -->
   </div><!-- end : wrap -->
