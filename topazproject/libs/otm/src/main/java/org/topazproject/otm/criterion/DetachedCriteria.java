@@ -53,6 +53,8 @@ import org.topazproject.otm.mapping.Mapper;
 @UriPrefix(Criterion.NS)
 public class DetachedCriteria implements PreInsertEventListener, PostLoadEventListener {
   private static final Log        log               = LogFactory.getLog(DetachedCriteria.class);
+  private static final String     NL                = System.getProperty("line.separator");
+
   private           String        alias;
   private DetachedCriteria        parent;
   private Integer                 maxResults;
@@ -496,6 +498,28 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
       paramNames.addAll(c.getParamNames());
 
     return paramNames;
+  }
+
+  public String toString() {
+    return toString("");
+  }
+
+  /**
+   * @param indent the string to prefix every line with
+   * @return a string representation of this detached-criteria
+   */
+  public String toString(String indent) {
+    StringBuilder sb = new StringBuilder(50);
+    sb.append(getAlias()).append(": ");
+
+    for (Criterion c : getCriterionList())
+      sb.append(NL).append(indent).append(c);
+    for (DetachedCriteria c : getChildCriteriaList())
+      sb.append(NL).append(indent).append(c.toString(indent + "  "));
+    for (Order o : getOrderList())
+      sb.append(NL).append(indent).append(o);
+
+    return sb.toString();
   }
 
   @UriPrefix(Criterion.NS)

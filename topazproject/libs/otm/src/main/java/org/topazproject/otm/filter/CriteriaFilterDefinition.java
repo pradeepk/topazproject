@@ -55,23 +55,7 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
   }
 
   public String toString() {
-    return "CriteriaFilterDefinition[" + toString(crit, "  ") + "]";
-  }
-
-  private static String NL = System.getProperty("line.separator");
-
-  private static String toString(DetachedCriteria dc, String indent) {
-    StringBuilder sb = new StringBuilder(50);
-    sb.append(dc.getAlias()).append(": ");
-
-    for (Criterion c : dc.getCriterionList())
-      sb.append(NL).append(indent).append(c);
-    for (DetachedCriteria c : dc.getChildCriteriaList())
-      sb.append(NL).append(indent).append(toString(c, indent + "  "));
-    for (Order o : dc.getOrderList())
-      sb.append(NL).append(indent).append(o);
-
-    return sb.toString();
+    return "CriteriaFilterDefinition[" + crit.toString("  ") + "]";
   }
 
   private static class CriteriaFilter extends AbstractFilterImpl {
