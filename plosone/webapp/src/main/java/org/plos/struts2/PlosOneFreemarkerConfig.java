@@ -15,7 +15,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
+import org.plos.web.VirtualJournalContextFilter;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -235,6 +237,9 @@ public class PlosOneFreemarkerConfig {
         jc.setTitles(titles);
       }
     }
+    
+    processVirtualJournalConfig(myConfig);
+    
     if (log.isTraceEnabled()){
       Set<Entry<String, JournalConfig>> allJournals = journals.entrySet();
       Iterator<Entry<String, JournalConfig>> iter = allJournals.iterator();
@@ -242,6 +247,7 @@ public class PlosOneFreemarkerConfig {
         Entry<String, JournalConfig> e = iter.next();
         JournalConfig j = e.getValue();
         log.trace("Journal: " + e.getKey());
+        log.trace("Journal url: " + j.getUrl());
         log.trace("Default Title: " + j.getDefaultTitle());
         log.trace("Default CSS: " + printArray(j.getDefaultCss()));
         log.trace("Default JavaScript: " + printArray(j.getDefaultCss()));
@@ -296,7 +302,30 @@ public class PlosOneFreemarkerConfig {
     }
     return s.toString();
   }
-  
+
+  private void processVirtualJournalConfig (Configuration configuration) {
+    final Collection<String> virtualJournals = configuration.getList(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_JOURNALS);
+    String defaultVirtualJournal = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
+    JournalConfig jour = null;
+
+    if ((defaultVirtualJournal != null) && (!"".equals(defaultVirtualJournal))) {
+      jour = journals.get(defaultVirtualJournal);
+      if (jour != null) {
+        jour.setUrl(configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT +
+                                            ".url"));
+      }
+    }
+
+    final Iterator allJournals = virtualJournals.iterator();
+    while(allJournals.hasNext()) {
+      final String journalName = (String) allJournals.next();
+      jour = journals.get(journalName);
+      if (jour != null) {
+        jour.setUrl(configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS +
+                                            "." + journalName + ".url"));
+      }
+    }
+  }
   
   /**
    * Gets the title for the given template and journal name. 
@@ -619,18 +648,35 @@ public class PlosOneFreemarkerConfig {
   }
 
   /**
-   * @return Returns the 
+   * @return Returns the journalContextAttributeKey
    */
   public String getJournalContextAttributeKey() {
     return org.plos.web.VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT;
   }
 
   /**
-   * @return Returns the 
+   * @return Returns the user attribute key 
    */
   public String getUserAttributeKey() {
     return org.plos.Constants.PLOS_ONE_USER_KEY;
   }
+  
+
+  /**
+   * Returns the URL for a given journal given its key
+   * 
+   * @param journalKey
+   * @return URL of journal
+   */
+  public String getJournalUrl (String journalKey) {
+    JournalConfig jc = journals.get(journalKey);
+    String url = "";
+    if (jc != null) {
+      url = jc.getUrl();
+    }
+    return url;
+  }
+  
   
   private class JournalConfig {
     private HashMap<String, String[]> cssFiles;
@@ -645,7 +691,8 @@ public class PlosOneFreemarkerConfig {
     private String metaDescription;
     private String articleTitlePrefix;
     private String displayName;
-    
+    private String url;
+
     public JournalConfig () {
     }
     /**
@@ -768,6 +815,19 @@ public class PlosOneFreemarkerConfig {
     public void setDisplayName(String displayName) {
       this.displayName = displayName;
     }
-  }
 
+    /**
+     * @return Returns the url.
+     */
+    public String getUrl() {
+      return url;
+    }
+    
+    /**
+     * @param url The url to set.
+     */
+    public void setUrl(String url) {
+      this.url = url;
+    }
+  }
 }

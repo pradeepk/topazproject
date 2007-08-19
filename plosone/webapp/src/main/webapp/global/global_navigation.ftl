@@ -60,9 +60,10 @@
           <li><a href="http://www.plos.org/connect.html" title="PLoS.org | Stay Connected">Stay Connected</a></li>
         </ul>
       </li>
-      <li class="journalnav"><a href="${homeURL}" tabindex="109">Hubs</a>
+			<#assign hubUrl = freemarker_config.getJournalUrl("PLoSClinicalTrials")/>
+      <li class="journalnav"><a href="${hubUrl}" tabindex="109">Hubs</a>
         <ul>
-          <li><a href="${homeURL}" title="PLoS Hub for Clinical Trials">Clinical Trials</a></li>
+          <li><a href="${hubUrl}" title="PLoS Hub for Clinical Trials">Clinical Trials</a></li>
         </ul>
       </li>
       <li class="journalnav"><a href="http://www.plosjournals.org" tabindex="108">Journals</a>

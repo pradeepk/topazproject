@@ -1,7 +1,6 @@
 <#assign publisher=""/>
 <#if Request[freemarker_config.journalContextAttributeKey]?exists>
-  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey
-].journal>
+  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
 <#else>
   <#assign journalContext = "">
 </#if>
@@ -13,14 +12,17 @@
     </#if>
   <#else>
     <#if (articleInfo.EIssn = jour.EIssn) && (jour.key != journalContext) >
-      <#assign publisher = "Published in <em>" + jour.dublinCore.title + "</em>" />
+      <#assign publisher = "Published in <em><a href=\"" + freemarker_config.getJournalUrl(jour.key) +
+                           "\">"+ jour.dublinCore.title + "</a></em>" />
       <#break/>
     <#else>
       <#if jour.key != journalContext> 
         <#if publisher?length gt 0>
-          <#assign publisher = publisher + ", " + jour.dublinCore.title />
+          <#assign publisher = publisher + ", <a href=\"" + freemarker_config.getJournalUrl(jour.key) + 
+           										"\">" + jour.dublinCore.title + "</a>" />
         <#else>
-          <#assign publisher = publisher + "Featured in " + jour.dublinCore.title />
+          <#assign publisher = publisher + "Featured in <a href=\"" + freemarker_config.getJournalUrl(jour.key) +
+                               "\">" + jour.dublinCore.title + "</a>" />
         </#if>
         </#if>
     </#if>

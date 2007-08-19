@@ -52,6 +52,7 @@
         <journal>PLoSONE</journal>
         <description></description>
         <mappingPrefix></mappingPrefix>
+        <url>http://www.plosone.org</url>
       </default>
       <!-- entries to config each virtual journal -->
       <!-- comma separated list of virtual journal names -->
@@ -62,6 +63,7 @@
         <rules>
           <host>clinicaltrials\..*</host>
         </rules>
+        <url>http://clinicaltrials.ploshubs.org</url>
       </PLoSClinicalTrials>
       <!-- virtual journal config entry
       <${journalName}>
