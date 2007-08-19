@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.regex.Pattern;
 import java.util.Arrays;
 
@@ -139,8 +140,16 @@ public class ResolverServlet extends HttpServlet{
           Arrays.sort(rdfTypes);
           if (Arrays.binarySearch(rdfTypes, RDF_TYPE_ARTICLE) >= 0) {
             redirectURL = new StringBuilder(urls[i]);
-            redirectURL.append(myConfig.getString("pub.article-action"))
-                       .append("info:doi").append(doi);
+            try {
+              redirectURL.append(myConfig.getString("pub.article-action"))
+                         .append(URLEncoder.encode("info:doi", "UTF-8")).append(URLEncoder.encode(doi, "UTF-8"));
+            } catch (UnsupportedEncodingException uee) {
+              if (log.isDebugEnabled()) {
+                log.debug("Couldn't encode URL with UTF-8 encoding", uee); 
+              }
+              redirectURL.append(myConfig.getString("pub.article-action"))
+                         .append(URLEncoder.encode("info:doi")).append(URLEncoder.encode(doi));
+            }
             if (log.isDebugEnabled()) {
               log.debug ("Matched: " + doi + "; redirecting to: " + redirectURL.toString());
             }
