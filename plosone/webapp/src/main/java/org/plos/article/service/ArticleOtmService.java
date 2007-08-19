@@ -194,25 +194,32 @@ public class ArticleOtmService {
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void delete(final String article)
-    throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
+      throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
-    Transaction txn = null;
+    ctx.activate();
     try {
-      ctx.activate();
-      txn = session.beginTransaction();
-      ArticleUtil.delete(article, txn);
-      txn = null;
-      jrnlSvc.objectWasDeleted(URI.create(article));
+      TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
+        public Void run(Transaction tx) throws Exception {
+          ArticleUtil.delete(article, tx);
+          jrnlSvc.objectWasDeleted(URI.create(article));
+          return null;
+        }
+      });
+    } catch (ServiceException se) {
+      throw se;
+    } catch (NoSuchArticleIdException nsaie) {
+      throw nsaie;
+    } catch (IOException ioe) {
+      throw ioe;
+    } catch (RuntimeException re) {
+      throw re;
+    } catch (Exception e) {
+      throw new Error("Unexpected exception", e);
     } finally {
-      try {
-        if (txn != null)
-          txn.rollback();
-      } catch (Throwable t) {
-        log.debug("rollback failed", t);
-      }
+      ctx.passivate();
     }
   }
 
