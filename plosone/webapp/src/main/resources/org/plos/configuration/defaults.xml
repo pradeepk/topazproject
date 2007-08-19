@@ -705,12 +705,6 @@
         <title>Clinical Trials @ PLoS</title>
       </default>
       <page>
-        <name>/static/information.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/clinicalTrials/index.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -727,8 +721,10 @@
           <file>/javascript/init_navigation.js</file>
         </javascript>
       </page>
+      <page>
+        <name>/article/article_body.ftl</name>
+        <title>CODE_ARTICLE_TITLE</title>
+      </page>
     </journal>
-
   </freemarker>
-
 </config>
