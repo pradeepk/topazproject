@@ -133,6 +133,8 @@
       </then>
     </if>
 
+    <echo file="${temp.file}"
+      append="true">org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true</echo>
     <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
         log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
       <extraClasspath>
