@@ -115,7 +115,8 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   <filter-mapping>
     <filter-name>VirtualJournalContextFilter</filter-name>
     <url-pattern>/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>REQUEST</dispatcher>  
+    <dispatcher>ERROR</dispatcher> 
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
@@ -143,7 +144,8 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
     <url-pattern>/static/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>REQUEST</dispatcher>  
+    <dispatcher>ERROR</dispatcher> 
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
@@ -237,7 +239,8 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   <filter-mapping>
     <filter-name>struts2</filter-name>
     <url-pattern>/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>REQUEST</dispatcher>  
+    <dispatcher>ERROR</dispatcher>  
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 
@@ -328,6 +331,6 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <error-page>
     <error-code>404</error-code>
-    <location>/404.html</location>
+    <location>/static/pageNotFound.action</location>
   </error-page>
 </web-app>
