@@ -8,7 +8,8 @@
   <#-- Special Case -->
   <#if (journalList?size == 1) && (jour.key == journalContext)>
     <#if jour.key == "PLoSClinicalTrials">
-      <#assign publisher="Published in <em>PLoS Clinical Trials</em>" />
+      <#assign jourAnchor = "<a href=\"" + freemarker_config.getJournalUrl(jour.key) + "/faq.action\">"/>    
+      <#assign publisher="Published in <em>" + jourAnchor + "PLoS Clinical Trials</a></em>" />
     </#if>
   <#else>
     <#if (articleInfo.EIssn = jour.EIssn) && (jour.key != journalContext) >
@@ -17,14 +18,13 @@
       <#break/>
     <#else>
       <#if jour.key != journalContext> 
+        <#assign jourAnchor = "<a href=\"" + freemarker_config.getJournalUrl(jour.key) + "\">"/>
         <#if publisher?length gt 0>
-          <#assign publisher = publisher + ", <a href=\"" + freemarker_config.getJournalUrl(jour.key) + 
-           										"\">" + jour.dublinCore.title + "</a>" />
+          <#assign publisher = publisher + ", " + jourAnchor + jour.dublinCore.title + "</a>" />
         <#else>
-          <#assign publisher = publisher + "Featured in <a href=\"" + freemarker_config.getJournalUrl(jour.key) +
-                               "\">" + jour.dublinCore.title + "</a>" />
+          <#assign publisher = publisher + "Featured in " + jourAnchor + jour.dublinCore.title + "</a>" />
         </#if>
-        </#if>
+      </#if>
     </#if>
   </#if>
 </#list>
