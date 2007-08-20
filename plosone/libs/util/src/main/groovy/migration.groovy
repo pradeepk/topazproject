@@ -48,6 +48,8 @@ CONF = ToolHelper.loadConfiguration(opt.c)
 // Get the article doi from the command line
 def doi = opt.a
 
+log.info("$doi started")
+
 // Create the slurper object and add entity resolver (so reading articles are reasonably fast)
 def slurper = new XmlSlurper()
 slurper.setEntityResolver(CachedSource.getResolver())
@@ -136,6 +138,20 @@ def findInt(value, fieldName, minLength) {
   }
 }
 
+def getXml(element) {
+  String s = element?.toString()
+  if (s == null || s.size() == 0)
+    return null
+  def xml = new StreamingMarkupBuilder().bind { mkp.yield(element) }
+  def match = xml =~ />(.*)</
+  try {
+    return match[0][1] // Strip element being retrieved - we just want its content
+  } catch (IndexOutOfBoundsException e) {
+    log.warn("Unable to strip xml elements from '$xml': $match")
+    return xml
+  }
+}
+
 // Build lists of affiliations and authors (TODO: ordered contributors too?)
 Set affiliations = new HashSet()
 articleMeta.aff.institution.each() { aff -> affiliations.add(aff.toString()) }
@@ -159,7 +175,7 @@ articleMeta.'contrib-group'.contrib.each() { contrib ->
 }
 
 // Log what we are doing
-log.info("Migrating $doi")
+log.info("$doi migrating")
 
 // Update article
 def dc = article.dublinCore
@@ -243,7 +259,7 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
   cit.month             = tostr(src.citation.month)
   cit.volume            = findInt(src.citation.volume, "$name:volume", 0)
   cit.issue             = tostr(src.citation.issue)
-  cit.title             = new StreamingMarkupBuilder().bind { mkp.yield(src.citation.'article-title') }
+  cit.title             = getXml(src.citation.'article-title'[0])
   cit.publisherLocation = tostr(src.citation.'publisher-loc')
   cit.publisherName     = tostr(src.citation.'publisher-name')
   cit.pages             = pages
@@ -329,13 +345,13 @@ if (DUMP) {
 }
 if (!DRYRUN) {
   println "Updating mulgara..."
+  log.info("$doi updating mulgara")
   try {
     session.saveOrUpdate(article)
     tx.commit()
     session.close()
   } catch (Throwable t) {
     log.error("Unable to save article", t);
-    println "Unable to save article: " + t
   }
 }
 
