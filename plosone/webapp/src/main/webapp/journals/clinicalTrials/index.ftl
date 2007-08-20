@@ -22,12 +22,12 @@
             <!-- end block new -->
             <!-- begin : calls to action blocks -->
             <div id="alerts">
-              <a href="#"><span><strong>Sign up</strong>
+              <a href="${freemarker_config.registrationURL}"><span><strong>Sign up</strong>
               Sign up for clinical trials content alerts by e-mail</span></a>
             </div>
             <div id="rss">
               <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/>
-              <a href="#"><span><strong>Subscribe</strong>
+              <a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><span><strong>Subscribe</strong>
               Subscribe to the clinical trials RSS content feed</span></a>
               <a href="${rssinfo}" class="adInfo">What is RSS?</a>
             </div>

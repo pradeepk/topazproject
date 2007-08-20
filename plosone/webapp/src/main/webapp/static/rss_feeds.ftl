@@ -6,7 +6,7 @@
 <p><em>PLoS ONE</em> provides the following <a href="/static/rssInfo.action">RSS feeds</a> which are updated as new articles are published:</p>
 
 <ul>
-        <li><a href="/rss/PLoSONE.xml">New Articles (All Subjects)</a></li>
+    <li><a href="/rss/">New Articles (All Subjects)</a></li>
 		<li><a href="/rss/AnesthesiologyandPainManagement.xml">Anesthesiology and Pain Management</a></li>
 		<li><a href="/rss/Biochemistry.xml">Biochemistry</a></li>
 		<li><a href="/rss/Biophysics.xml">Biophysics</a></li>

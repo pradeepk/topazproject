@@ -97,7 +97,7 @@
         <namespace>http://www.plos.org/atom/ns#plos</namespace> <!-- custom element namespace -->
       </extended>
       <basePath>/rss/</basePath>              <!-- Path to rss feeds after journal context -->
-      <defaultFile>PLoSONE.xml</defaultFile>  <!-- Default rss feed if none other specified -->
+      <defaultFile></defaultFile>  <!-- Default rss feed if none other specified -->
       <categoryPrefix></categoryPrefix>       <!-- File prefix for a specific category -->
       <defaultName>New Articles</defaultName> <!-- Name of default feed (prefixed by journal) -->
     </feed>
