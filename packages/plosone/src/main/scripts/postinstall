@@ -12,13 +12,4 @@ rm -f $LINK
 DIR=`ls -td /usr/local/topaz/*"$PKG"-* 2>/dev/null | head -1`
 [ -n "$DIR" ] && ln -s `basename $DIR` $LINK
 
-# Dynamically create /etc/sysconfig/... if it doesn't exist
-if [ ! -e /etc/sysconfig/$PKG ]; then
-  MEM=`free -mo | grep Mem | awk '{print $2-128}'`
-  cat >/etc/sysconfig/$PKG <<EOF
-export ${PKG}_TOMCAT_OPTS="-Xmx${MEM}m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
-EOF
-  chmod 755 /etc/sysconfig/$PKG
-fi
-
 exit 0

@@ -172,6 +172,17 @@
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
+                  <directory>/etc/sysconfig</directory>
+                  <filemode>755</filemode>
+                  <username>root</username>
+                  <groupname>root</groupname>
+                  <sources>
+                    <source>
+                      <location>src/main/resources/plosone</location>
+                    </source>
+                  </sources>
+                </mapping>
+                <mapping>
                   <directory>/etc/rc.d/init.d/</directory>
                   <filemode>755</filemode>
                   <username>root</username>
