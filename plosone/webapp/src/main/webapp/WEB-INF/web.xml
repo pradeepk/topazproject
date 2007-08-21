@@ -241,6 +241,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>  
     <dispatcher>FORWARD</dispatcher>
+    <dispatcher>ERROR</dispatcher>    
   </filter-mapping>
 
   <!-- The configuration WebAppListner to pull in the configuration stuff automatically. -->
@@ -330,6 +331,6 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <error-page>
     <error-code>404</error-code>
-    <location>/static/404.html</location>
+    <location>/static/pageNotFound.action</location>
   </error-page>
 </web-app>

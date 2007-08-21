@@ -20,7 +20,7 @@
   </div>
   <!-- end : top banner external ad space -->
 
-  <#if Session[freemarker_config.userAttributeKey]?exists>
+  <#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
   <!-- begin : header -->
   <div id="hdr">
   <#else>

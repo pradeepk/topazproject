@@ -5,7 +5,7 @@
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
   <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
   <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
-  <#if Session[freemarker_config.userAttributeKey]?exists>
+  <#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
   <div id="user">
     <div>
     <@s.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile" tabId="preferences"/>

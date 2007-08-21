@@ -40,8 +40,8 @@
       </interceptor>
       <interceptor name="plosUserLookup" class="org.plos.user.UserAccountsInterceptor"/>
       <interceptor name="json" class="com.googlecode.jsonplugin.JSONInterceptor"/>
-
-      <interceptor-stack name="plosBaseStack">
+      
+      <interceptor-stack name="strutsBaseStack">
         <interceptor-ref name="exception">
           <param name="logEnabled">true</param>
           <param name="logCategory">org.plos.UnhandledException</param>
@@ -66,6 +66,10 @@
         <interceptor-ref name="workflow">
            <param name="excludeMethods">input,back,cancel,browse</param>
         </interceptor-ref>
+      </interceptor-stack>
+
+      <interceptor-stack name="plosBaseStack">
+        <interceptor-ref name="strutsBaseStack"/>
         <interceptor-ref name="journalSessionSetup"/>
         <interceptor-ref name="plosUserLookup"/>
       </interceptor-stack>
@@ -360,6 +364,7 @@
     </action>
 
     <action name="pageNotFound" class="org.plos.action.NoOpAction">
+      <interceptor-ref name="strutsBaseStack"/>
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/pageNotFound.ftl</param>
       </result>

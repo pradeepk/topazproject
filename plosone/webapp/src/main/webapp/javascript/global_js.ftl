@@ -1,6 +1,6 @@
 <script type="text/javascript">
   var _namespace="${freemarker_config.getContext()}";
-	<#if Session[freemarker_config.userAttributeKey]?exists>
+	<#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
 		var loggedIn = true;
 	<#else>
   	var loggedIn = false;
