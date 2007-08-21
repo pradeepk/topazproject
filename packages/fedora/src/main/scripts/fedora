@@ -13,6 +13,18 @@ FEDORA_FCFG=/usr/local/topaz/fedora/server/config/fedora.fcfg
 LOG_XML=/usr/local/topaz/fedora/server/jakarta-tomcat-5.0.28/common/classes/log4j.xml
 [ -e $LOG_XML ] && ! xmllint --noout $LOG_XML && exit 1
 
+# Validate XACML
+MYIP=`hostname -i`
+XACML_DIR=/usr/local/topaz/fedora/data
+LH_RULE=$XACML_DIR/fedora-xacml-policies/repository-policies/default/deny-apim-if-not-localhost.xml
+if [ -e "$XACML_DIR" ]; then
+  if ! grep -q "$MYIP" "$LH_RULE"; then
+    echo -e "WARNING: IP Address ($MYIP) not configured in $LH_RULE\n"
+  fi
+else
+  echo -e "WARNING: Don't forget to set IP ($MYIP) in $LH_RULE\n"
+fi
+
 # Chown keystore
 TRUST_STORE=/etc/topaz/keystore.jks
 [ -e "$TRUST_STORE" ] && chown topaz.topaz $TRUST_STORE
