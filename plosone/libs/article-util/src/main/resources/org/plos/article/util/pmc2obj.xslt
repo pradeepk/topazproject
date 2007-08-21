@@ -328,7 +328,10 @@
               select="if (citation/page-range) then citation/page-range[1]
                       else if (citation/lpage) then concat(citation/fpage, '-', citation/lpage)
                       else citation/fpage"/>
-          <xsl:with-param name="journal"  select="citation/source[1]"/>
+          <xsl:with-param name="journal"
+              select="if (citation/@citation-type = 'journal' or
+                          citation/@citation-type = 'conf-proceedings')
+                        then citation/source[1] else ()"/>
           <xsl:with-param name="note"     select="citation/comment[1]"/>
           <xsl:with-param name="editors"
               select="$citation-editors[@cit-id = $id]/rdf:Description/@rdf:about"/>
