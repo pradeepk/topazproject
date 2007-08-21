@@ -118,7 +118,8 @@
               <div>
                 <p>A new way of communicating peer-reviewed science and medicine.</p>
                 <ul>
-                  <li>Try out <a href="${annotation}" title="Learn how to add an annotation">annotations</a> and <a href="${discussion}" title="Learn how to start a discussion">discussions</a> in the <a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000000" title="PLoS ONE Sandbox: A Play to Learn and Play"><em>PLoS ONE</em> Sandbox</a>.</li>
+                  <@s.url id="sandbox" namespace="/article" action="fetchArticle" includeParams="none" articleURI="info:doi/10.1371/journal.pone.0000000"/>
+                  <li>Try out <a href="${annotation}" title="Learn how to add an annotation">annotations</a> and <a href="${discussion}" title="Learn how to start a discussion">discussions</a> in the <a href="${sandbox}" title="PLoS ONE Sandbox: A Play to Learn and Play"><em>PLoS ONE</em> Sandbox</a>.</li>
                   <li><a href="${browseDateURL}" title="PLoS ONE | Browse by Publication Date">Browse articles by Publication Date</a> and try our improved <a href="/article/browse.action" title="PLoS ONE | Browse by Subject">Browse by Subject</a>.</li>
                   <li><a href="${browseSubjectURL}" title="PLoS ONE | RSS Feeds">RSS Feeds</a> by Subject</li>
                 </ul>
