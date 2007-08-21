@@ -173,6 +173,7 @@
                 </mapping>
                 <mapping>
                   <directory>/etc/sysconfig</directory>
+                  <configuration>true</configuration>
                   <filemode>755</filemode>
                   <username>root</username>
                   <groupname>root</groupname>
