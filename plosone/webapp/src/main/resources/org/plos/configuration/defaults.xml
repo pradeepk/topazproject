@@ -128,6 +128,7 @@
       <defaultFile>feed</defaultFile>          <!-- Default rss feed if none other specified -->
       <categoryPrefix>feed?category=</categoryPrefix> <!-- File prefix for a specific category -->
       <defaultName>New Articles</defaultName>  <!-- Name of default feed (prefixed by journal) -->
+      <defaultDuration>3</defaultDuration>     <!-- Default duraiton in months -->
     </feed>
 
     <!-- Define defaults for spring - must be redone soon -->

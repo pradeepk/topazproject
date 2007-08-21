@@ -112,6 +112,8 @@ public class ArticleFeed extends BaseActionSupport {
 
   private static final String ATOM_NS = "http://www.w3.org/2005/Atom"; // Tmp hack for categories
   
+  final int DEFAULT_FEED_DURATION = configuration.getInteger("pub.feed.defaultDuration", 3);
+  
   /**
    * Returns a feed based on interpreting the URI.
    *
@@ -138,10 +140,13 @@ public class ArticleFeed extends BaseActionSupport {
 
     // Compute startDate default as it is needed to compute cache-key (its default is tricky)
     if (startDate == null) {
-        // default is to go back <= 3 months
-        GregorianCalendar threeMonthsAgo = new GregorianCalendar();
-        threeMonthsAgo.add(Calendar.MONTH, -3);
-        startDate = threeMonthsAgo.getTime().toString();
+        // default is to go back <= N months
+        GregorianCalendar monthsAgo = new GregorianCalendar();
+        monthsAgo.add(Calendar.MONTH, -DEFAULT_FEED_DURATION);
+        monthsAgo.set(Calendar.HOUR_OF_DAY, 0);
+        monthsAgo.set(Calendar.MINUTE, 0);
+        monthsAgo.set(Calendar.SECOND, 0);
+        startDate = monthsAgo.getTime().toString();
     }
     if (startDate.length() == 0)
       startDate = null; // shortuct for no startDate, show all articles
@@ -152,11 +157,18 @@ public class ArticleFeed extends BaseActionSupport {
     // Get feed if cached or generate feed by querying OTM
     String cacheKey = getCacheKey();
     net.sf.ehcache.Element e = feedCache.get(cacheKey);
-    if (e != null)
+    if (e != null) {
+      if (log.isDebugEnabled())
+        log.debug("Retrieved feed " + cacheKey + " from cache." +
+                  " Created " + new Date(e.getCreationTime()) +
+                  " last access " + new Date(e.getLastAccessTime()) +
+                  " hit count " + e.getHitCount());
       wireFeed = (WireFeed) e.getObjectValue();
-    else {
+    } else {
       wireFeed = getFeed(uri);
       feedCache.put(new net.sf.ehcache.Element(cacheKey, wireFeed));
+      if (log.isDebugEnabled())
+        log.debug("Built feed " + cacheKey);
     }
 
     // Action response type is PlosOneFeedResult, it will return wireFeed as a response.
@@ -291,7 +303,7 @@ public class ArticleFeed extends BaseActionSupport {
       throw new ApplicationException(ex);
     }
     if (log.isDebugEnabled()) {
-      log.debug("feed query returned " + articles.size() + "articles");
+      log.debug("feed query returned " + articles.size() + " articles");
     }
 
     // add each Article as a Feed Entry
