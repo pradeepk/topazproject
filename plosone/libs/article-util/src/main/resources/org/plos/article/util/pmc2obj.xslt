@@ -318,7 +318,10 @@
           <xsl:with-param name="month"    select="citation/month"/>
           <xsl:with-param name="volume"   select="citation/volume"/>
           <xsl:with-param name="issue"    select="citation/issue"/>
-          <xsl:with-param name="title"    select="citation/title"/>
+          <xsl:with-param name="title"
+              select="if (citation/article-title) then citation/article-title[1]
+                      else if (citation/source)   then citation/source[1]
+                      else ()"/>
           <xsl:with-param name="pub-loc"  select="citation/publisher-loc"/>
           <xsl:with-param name="pub-name" select="citation/publisher-name"/>
           <xsl:with-param name="pages"
