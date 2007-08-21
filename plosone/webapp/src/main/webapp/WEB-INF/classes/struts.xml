@@ -87,7 +87,7 @@
 
     <default-interceptor-ref name="plosUserStack" />
 
-    <default-action-ref name="home" />
+    <!-- <default-action-ref name="home" />-->
 
     <global-results>
       <result name="new-profile" type="redirect-action">
