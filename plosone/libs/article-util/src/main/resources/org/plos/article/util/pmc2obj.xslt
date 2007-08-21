@@ -314,22 +314,22 @@
                         xs:anyURI(concat('http://rdf.plos.org/RDF/articleType/', citation/@citation-type))
                       else ()"/>
           <xsl:with-param name="key"      select="label"/>
-          <xsl:with-param name="year"     select="citation/year"/>
-          <xsl:with-param name="month"    select="citation/month"/>
-          <xsl:with-param name="volume"   select="citation/volume"/>
-          <xsl:with-param name="issue"    select="citation/issue"/>
+          <xsl:with-param name="year"     select="citation/year[1]"/>
+          <xsl:with-param name="month"    select="citation/month[1]"/>
+          <xsl:with-param name="volume"   select="citation/volume[1]"/>
+          <xsl:with-param name="issue"    select="citation/issue[1]"/>
           <xsl:with-param name="title"
               select="if (citation/article-title) then citation/article-title[1]
                       else if (citation/source)   then citation/source[1]
                       else ()"/>
-          <xsl:with-param name="pub-loc"  select="citation/publisher-loc"/>
-          <xsl:with-param name="pub-name" select="citation/publisher-name"/>
+          <xsl:with-param name="pub-loc"  select="citation/publisher-loc[1]"/>
+          <xsl:with-param name="pub-name" select="citation/publisher-name[1]"/>
           <xsl:with-param name="pages"
-              select="if (citation/page-range) then citation/page-range
+              select="if (citation/page-range) then citation/page-range[1]
                       else if (citation/lpage) then concat(citation/fpage, '-', citation/lpage)
                       else citation/fpage"/>
-          <xsl:with-param name="journal"  select="citation/source"/>
-          <xsl:with-param name="note"     select="citation/comment"/>
+          <xsl:with-param name="journal"  select="citation/source[1]"/>
+          <xsl:with-param name="note"     select="citation/comment[1]"/>
           <xsl:with-param name="editors"
               select="$citation-editors[@cit-id = $id]/rdf:Description/@rdf:about"/>
           <xsl:with-param name="authors"
