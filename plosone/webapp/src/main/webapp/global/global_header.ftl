@@ -3,15 +3,13 @@
   <!-- end : logo -->
   <!-- begin : user controls -->
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
-  <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
-  <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
-
   <!-- remove duplicate articleURI specification, e.g. /article/doi?articleURL=doi -->
-  <#if thisPageURL?starts_with("/article/info%3Adoi%2F")>
-    <#assign thisPage = thisPageURL?replace("articleURI=info%3Adoi%2F.{30}", "", "r")?replace("&amp;", "&")?url>
+  <#if thisPageURL?matches(r"^(/.+)?/article/info%3Adoi%2F.+")>
+    <#assign thisPage = thisPageURL?replace(r"\??articleURI=info%3Adoi%2F.{30}", "", "r")?replace("&amp;", "&")?url>
   <#else>
     <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
   </#if>
+  <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPage}" encode="false"/>
 
   <#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
   <div id="user">
