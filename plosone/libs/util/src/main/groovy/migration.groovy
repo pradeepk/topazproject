@@ -242,7 +242,7 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
     }
   }
 
-  def pages = tostr(src.citation.'page-range')
+  def pages = tostr(src.citation.'page-range'[0])
   def fpage = tostr(src.citation.fpage)
   def lpage = tostr(src.citation.lpage)
   if (!pages) {
@@ -255,23 +255,28 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
   def name              = tostr(src.'@id')
   cit.id                = new URI('info:doi/10.1371/reference.' + src.'@id')
   cit.key               = tostr(src.label)
-  cit.year              = findInt(src.citation.year, "$name:year", 4)
-  cit.month             = tostr(src.citation.month)
-  cit.volume            = findInt(src.citation.volume, "$name:volume", 0)
-  cit.issue             = tostr(src.citation.issue)
+  cit.year              = findInt(src.citation.year[0], "$name:year", 4)
+  cit.month             = tostr(src.citation.month[0])
+  cit.volume            = findInt(src.citation.volume[0], "$name:volume", 0)
+  cit.issue             = tostr(src.citation.issue[0])
   cit.title             = getXml(src.citation.'article-title'[0])
-  cit.publisherLocation = tostr(src.citation.'publisher-loc')
-  cit.publisherName     = tostr(src.citation.'publisher-name')
+  if (!cit.title)
+    cit.title           = getXml(src.citation.source[0])
+  cit.publisherLocation = tostr(src.citation.'publisher-loc'[0])
+  cit.publisherName     = tostr(src.citation.'publisher-name'[0])
   cit.pages             = pages
-  cit.journal           = tostr(src.citation.source)
-  cit.note              = tostr(src.citation.comment)
+  cit.note              = tostr(src.citation.comment[0])
   cit.authors           = (authors ? authors : null)
   cit.editors           = (editors ? editors : null)
   cit.url               = tostr(src.citation.@'xlink:role')
 
   def citationType = tostr(src.citation.@'citation-type')
-  if (citationType)
+  if (citationType) {
     cit.citationType    = new URI(PLoS.PLOS_ArticleType + citationType) // Bad? Tired of arguing
+
+    if (citationType.equals('journal') || citationType.equals('conf-proceedings'))
+      cit.journal       = tostr(src.citation.source[0])
+  }
 
   dc.references.add(cit)
 }
