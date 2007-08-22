@@ -29,6 +29,21 @@
     <level value="info"/>
   </logger>
 
+  <!-- logs mapping of virtual journal action mapping, every Request -->
+  <logger name="org.plos.struts2.PlosOneActionMapper">
+    <level value="info"/>
+  </logger>
+
+  <!-- logs setting of virtual journal context, every Request -->
+  <logger name="org.plos.web.VirtualJournalContextFilter">
+    <level value="info"/>
+  </logger>
+
+  <!-- logs mapping of virtual journal resources, every resource -->
+  <logger name="org.plos.web.VirtualJournalMappingFilter">
+    <level value="info"/>
+  </logger>
+
   <logger name="org.plos">
     <level value="debug"/>
   </logger>
