@@ -5,6 +5,14 @@
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
   <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
   <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
+
+  <!-- remove duplicate articleURI specification, e.g. /article/doi?articleURL=doi -->
+  <#if thisPageURL?starts_with("/article/info%3Adoi%2F")>
+    <#assign thisPage = thisPageURL?replace("articleURI=info%3Adoi%2F.{30}", "", "r")?replace("&amp;", "&")?url>
+  <#else>
+    <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
+  </#if>
+
   <#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
   <div id="user">
     <div>

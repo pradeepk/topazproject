@@ -110,12 +110,12 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <filter-name>UrlRewriteFilter</filter-name>
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
+
   <filter-mapping>
     <filter-name>VirtualJournalContextFilter</filter-name>
     <url-pattern>/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>  
+    <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
     <dispatcher>ERROR</dispatcher>
   </filter-mapping>
@@ -144,7 +144,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
     <url-pattern>/static/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>  
+    <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
     <dispatcher>ERROR</dispatcher>
   </filter-mapping>
@@ -192,7 +192,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
-  
+
   <filter-mapping>
     <filter-name>Member Session</filter-name>
     <url-pattern>/annotation/secure/*</url-pattern>
@@ -220,7 +220,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
- 
+
 
   <filter-mapping>
     <filter-name>CacheFilter</filter-name>
@@ -239,9 +239,9 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   <filter-mapping>
     <filter-name>struts2</filter-name>
     <url-pattern>/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>  
+    <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
-    <dispatcher>ERROR</dispatcher>    
+    <dispatcher>ERROR</dispatcher>
   </filter-mapping>
 
   <!-- The configuration WebAppListner to pull in the configuration stuff automatically. -->
@@ -314,7 +314,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     </init-param>
     <!--     <load-on-startup>1</load-on-startup>-->
   </servlet>
-          
+
    <servlet-mapping>
     <servlet-name>freemarker</servlet-name>
     <url-pattern>*.ftl</url-pattern>
