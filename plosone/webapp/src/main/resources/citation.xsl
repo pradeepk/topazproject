@@ -26,7 +26,7 @@
       <startPage><xsl:value-of select="article/front/article-meta/elocation-id"/></startPage>
       <volume><xsl:value-of select="article/front/article-meta/volume"/></volume>
       <issue><xsl:value-of select="article/front/article-meta/issue"/></issue>
-      <xsl:apply-templates select="article/front/article-meta/abstract" />
+      <xsl:apply-templates select="article/front/article-meta/abstract[not(@abstract-type)]" />
       <authors>
         <xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='author']">
           <org.plos.article.service.Author>
