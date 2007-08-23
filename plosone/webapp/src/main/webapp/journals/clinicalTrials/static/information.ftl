@@ -29,8 +29,8 @@
     <a href="http://www.plos.org/journals/clinicaltrials-one.html"
     title="PLoS.org | PLoS Clinical Trials is moving to PLoS ONE">the merger of <em>PLoS
     Clinical Trials</em> with <em>PLoS ONE</em></a>. Authors publishing clinical trials research
-    in PLoS ONE will benefit from very rapid publication (acceptance to publication in less then
-    three weeks), and a more modest publication fee (US$1250). The entire community will benefit
+    in PLoS ONE will benefit from very rapid publication (acceptance to publication in less than
+    three weeks) and a more modest publication fee (US$1250). The entire community will benefit
     from new interactive features: commentary, annotation, and article ratings.
   </p>
 
