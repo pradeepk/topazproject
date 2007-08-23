@@ -21,5 +21,5 @@
 		</fieldset>
 	</@s.form>	
 	<@s.url id="privacyURL" includeParams="none" namespace="/static" action="privacy"/>
-	<p class="citation"><a href="${privacyURL}">PLoS ONE Privacy Statement</a></p>
+	<p class="citation"><a href="${privacyURL}">Privacy Statement</a></p>
 </div>
