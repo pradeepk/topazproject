@@ -13,16 +13,24 @@ FEDORA_FCFG=/usr/local/topaz/fedora/server/config/fedora.fcfg
 LOG_XML=/usr/local/topaz/fedora/server/jakarta-tomcat-5.0.28/common/classes/log4j.xml
 [ -e $LOG_XML ] && ! xmllint --noout $LOG_XML && exit 1
 
-# Validate XACML
+# WARN about XACML if IP not set - Just a warning to try and be helpful.
+# It is possible all is okay (if for instance the IP was also put into the template)
+# The template file is copied to the rule file after fedora is started for the first time
 MYIP=`hostname -i`
 XACML_DIR=/usr/local/topaz/fedora/data
-LH_RULE=$XACML_DIR/fedora-xacml-policies/repository-policies/default/deny-apim-if-not-localhost.xml
+RULE_TEMPLATE=/usr/local/topaz/fedora/server/fedora-internal-use/fedora-internal-use-repository-policies-approximating-2.0/deny-apim-if-not-localhost.xml
+RULE_FILE=/usr/local/topaz/fedora/data/fedora-xacml-policies/repository-policies/default/deny-apim-if-not-localhost.xml
+# See if the directory of xacml rules exists
 if [ -e "$XACML_DIR" ]; then
-  if ! grep -q "$MYIP" "$LH_RULE"; then
-    echo -e "WARNING: IP Address ($MYIP) not configured in $LH_RULE\n"
+  # See if the template and the actual rule in quesiton are different
+  if cmp -s $RULE_TEMPLATE $RULE_FILE; then
+    # They are the same, but see if singleboxinstall-script put our IP in there
+    if ! grep -q "$MYIP" "$RULE_FILE"; then
+      echo -e "WARNING: IP not added to XACML rule - $RULE_FILE\n"
+    fi
   fi
 else
-  echo -e "WARNING: Don't forget to set IP ($MYIP) in $LH_RULE\n"
+  echo -e "WARNING: Don't forget to set IP in $RULE_FILE\n"
 fi
 
 # Chown keystore
