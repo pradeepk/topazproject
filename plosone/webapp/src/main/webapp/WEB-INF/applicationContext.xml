@@ -487,8 +487,7 @@
      </constructor-arg>
   </bean>
 
-  <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
-    destroy-method="shutdown">
+  <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
     <property name="configLocation">
       <value>classpath:ehcache.xml</value>
     </property>
