@@ -76,10 +76,10 @@ public class JournalService {
   private       Session                  session;
   private       boolean                  isLocal;
 
-  /** 
+  /**
    * Create a new journal-service instance. One and only one of these should be created for evey
    * session-factory instance, and this must be done before the first session instance is created.
-   * 
+   *
    * @param sf           the session-factory to use
    * @param journalCache the cache to use for caching journal definitions
    * @param objectCache  the cache to use for caching the list of journals that carry each object
@@ -391,18 +391,18 @@ public class JournalService {
     return res;
   }
 
-  /** 
+  /**
    * Build the set of filter-definitions for the statically-defined list of objects.
    *
    * <p>Ideally this would create filter-definitions based on something like the following OQL
-   * query: 
+   * query:
    * <pre>
    *  select o from java.lang.Object o, Journal j where j.id = :jid and o = j.simpleCollection;
    * </pre>
    * Unfortunately, however, this cannot be turned into a Criteria which currently is needed in
    * order to apply the filter to Criteria-based queries. So instead it creates an explicit list
    * of or'd id's.
-   * 
+   *
    * @param uris the list of id's of the objects
    * @param pfx  the prefix to use for filter-names
    * @param s    the otm session to use
@@ -592,10 +592,10 @@ public class JournalService {
     return ((JournalWrapper) e.getValue()).getJournal();
   }
 
-  /** 
+  /**
    * Get the names of the {@link org.topazproject.otm.Filter session filters} associated with the
    * specified journal.
-   * 
+   *
    * @param jName the journal's name (key)
    * @return the list of filters (which may be empty), or null if no journal by the given name is
    *         known
@@ -606,9 +606,9 @@ public class JournalService {
     }
   }
 
-  /** 
+  /**
    * Get the specified journal. This assumes an active transaction on the session.
-   * 
+   *
    * @param jName  the journal's name
    * @return the journal, or null if no found
    */
@@ -618,9 +618,9 @@ public class JournalService {
     }
   }
 
-  /** 
+  /**
    * Get the set of all the known journals. This assumes an active transaction on the session.
-   * 
+   *
    * @return all the journals, or the empty set if there are none
    */
   public Set<Journal> getAllJournals() {
@@ -632,10 +632,10 @@ public class JournalService {
     return res;
   }
 
-  /** 
+  /**
    * Signal that the given journal was modified (added or changed). The filters and object lists
    * will be updated.  This assumes an active transaction on the session.
-   * 
+   *
    * @param j the journal that was modified.
    */
   public void journalWasModified(Journal j) {
@@ -647,12 +647,16 @@ public class JournalService {
         isLocal = false;
       }
     }
+
+    if (log.isDebugEnabled()) {
+      log.debug("Journal was modified: " + j.getKey() + " (" + j.getEIssn() + ")");
+    }
   }
 
-  /** 
+  /**
    * Signal that the given journal was deleted. The object lists will be updated.
    * This assumes an active transaction on the session.
-   * 
+   *
    * @param j the journal that was deleted.
    */
   public void journalWasDeleted(Journal j) {
@@ -666,9 +670,9 @@ public class JournalService {
     }
   }
 
-  /** 
+  /**
    * Get the list of journals which carry the given object (e.g. article).
-   * 
+   *
    * @param oid the info:&lt;oid&gt; uri of the object
    * @return the list of journals which carry this object; will be empty if this object
    *         doesn't belong to any journal
@@ -697,10 +701,10 @@ public class JournalService {
     return jnlList;
   }
 
-  /** 
+  /**
    * Notify the journal service of a newly added object (e.g. an article). This assumes an active
    * transaction on the session.
-   * 
+   *
    * @param oid the info:&lt;oid&gt; uri of the object
    */
   public void objectWasAdded(URI oid) {
@@ -714,9 +718,9 @@ public class JournalService {
                 objectCarriers.get(oid).getObjectValue());
   }
 
-  /** 
-   * Notify the journal service of a recently deleted object (e.g. article). 
-   * 
+  /**
+   * Notify the journal service of a recently deleted object (e.g. article).
+   *
    * @param oid the info:&lt;oid&gt; uri of the object
    */
   public void objectWasDeleted(URI oid) {
@@ -729,8 +733,8 @@ public class JournalService {
   }
 
   /**
-   * Set the OTM session. Called by spring's bean wiring. 
-   * 
+   * Set the OTM session. Called by spring's bean wiring.
+   *
    * @param session the otm session
    */
   @Required
