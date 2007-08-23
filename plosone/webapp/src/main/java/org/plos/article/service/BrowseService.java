@@ -233,6 +233,15 @@ public class BrowseService {
     return allBrowseObjects.categoryNames;
   }
 
+  /**
+   * Flush the cache for a Journal.
+   *
+   * @param journal Journal key to flush
+   */
+  public void flush(final String journal) {
+    articleCacheAdministrator.flushEntry(ALL_BROWSE_OBJECTS + journal);
+    articleCacheAdministrator.flushEntry(ALL_ARTICLE_CACHE_KEY + journal);
+  }
 
   /**
    * @param articleCacheAdministrator The articleCacheAdministrator to set.

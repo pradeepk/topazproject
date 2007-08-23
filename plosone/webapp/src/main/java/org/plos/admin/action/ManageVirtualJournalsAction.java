@@ -17,6 +17,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.models.Journal;
 
@@ -37,6 +38,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   private String[] articlesToDelete;
   private Session session;
   private JournalService journalService;
+  private BrowseService browseService;
 
   private static final Log log = LogFactory.getLog(ManageVirtualJournalsAction.class);
 
@@ -94,11 +96,13 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
             // Journal was updated
             session.saveOrUpdate(journal);
             journalService.journalWasModified(journal);
+            browseService.flush(journal.getKey());
+            addActionMessage("Browse cache flush for: " + journal.getKey());
           }
 
           // get all Journals
           journals = journalService.getAllJournals();
-          
+
           if (log.isDebugEnabled()) {
             for (final Journal journal : journals) {
               log.debug("execute(): Journal: key:" + journal.getKey() + ", eIssn:" + journal.getEIssn()
@@ -128,7 +132,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
           + ", simpleCollection:" + journal.getSimpleCollection().toString());
       }
     }
-    
+
     return journals;
   }
 
@@ -177,5 +181,12 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
+  }
+
+  /**
+   * @param browseService The browseService to set.
+   */
+  public void setBrowseService(BrowseService browseService) {
+    this.browseService = browseService;
   }
 }
