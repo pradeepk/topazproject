@@ -45,7 +45,7 @@
         <interceptor-ref name="exception">
           <param name="logEnabled">true</param>
           <param name="logCategory">org.plos.UnhandledException</param>
-          <param name="logLevel">WARN</param>
+          <param name="logLevel">ERROR</param>
         </interceptor-ref>
         <interceptor-ref name="timer" />
         <interceptor-ref name="logger"/>
