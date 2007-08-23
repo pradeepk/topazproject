@@ -317,7 +317,7 @@
     
     <action name="releaseNotes" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/clinicalTrials/static/releaseNotes.ftl</param>
+        <param name="templateFile">/static/releaseNotes.ftl</param>
       </result>
     </action>
     
