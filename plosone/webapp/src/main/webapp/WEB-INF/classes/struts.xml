@@ -441,7 +441,7 @@
       </result>
     </action>
 
-    <action name="findArticle">
+    <action name="findArticle" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/article/findArticle.ftl</param>
       </result>
@@ -488,7 +488,7 @@
       </result>
     </action>
 
-    <action name="showImageLarge">
+    <action name="showImageLarge" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="location">/templates/headless_template.ftl</param>
         <param name="templateFile">/article/imageWindowLarge.ftl</param>
@@ -842,7 +842,7 @@
       </result>
     </action>
 
-    <action name="profile">
+    <action name="profile" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/user/profile.ftl</param>
       </result>
