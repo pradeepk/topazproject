@@ -50,7 +50,7 @@ import org.xml.sax.SAXException;
 /**
  * Convenience class to aggregate common methods used to deal with XML transforms on articles.
  * Used to transform article with annotations, captions of tables/figures, and citation information.
- * 
+ *
  * @author Stephen Cheng
  *
  */
@@ -80,7 +80,7 @@ public class ArticleXMLUtils {
   /**
    * Pass in an XML string fragment, and will return back a string representing the document after
    * going through the XSL transform.
-   * 
+   *
    * @param description
    * @return Transformed document as a String
    * @throws ApplicationException
@@ -102,7 +102,7 @@ public class ArticleXMLUtils {
   /**
    * Given an article URI, will retrieve XML of article and apply an XSL transform to it, returning
    * the resulting document as a String.
-   * 
+   *
    * @param articleUri
    * @return XML String
    * @throws SAXException
@@ -120,7 +120,7 @@ public class ArticleXMLUtils {
   /**
    * Given an XML Document as input, will return an XML string representing the document after
    * transformation.
-   * 
+   *
    * @param doc
    * @return XML String of transformed document
    * @throws ApplicationException
@@ -142,7 +142,7 @@ public class ArticleXMLUtils {
 
   /**
    * Convenience method to create a DocumentBuilder with the factory configs
-   * 
+   *
    * @return Document Builder
    * @throws ParserConfigurationException
    */
@@ -184,7 +184,7 @@ public class ArticleXMLUtils {
   /**
    * Setter for XSL Templates.  Takes in a string as the filename and searches for it in resource
    * path and then as a URI.
-   * 
+   *
    * @param xslTemplate The xslTemplate to set.
    */
   public void setXslTemplate(String xslTemplate)  throws URISyntaxException {
@@ -213,7 +213,7 @@ public class ArticleXMLUtils {
 
   /**
    * Setter for article represenation
-   * 
+   *
    * @param articleRep The articleRep to set.
    */
   public void setArticleRep(String articleRep) {
