@@ -37,9 +37,16 @@
     <level value="warn" />
   </logger>
 
+  <logger name="org.topazproject.mulgara.ws">
+    <level value="info" /> <!-- change to 'debug' for bug reports -->
+  </logger>
+
+  <logger name="org.mulgara">
+    <level value="warn" /> <!-- change to 'info' for bug reports -->
+  </logger>
+
   <root>
     <priority value ="info" />
     <appender-ref ref="rolling" />
   </root>
-    
 </log4j:configuration>
