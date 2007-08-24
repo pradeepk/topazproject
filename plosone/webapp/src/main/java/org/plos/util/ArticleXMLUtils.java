@@ -10,6 +10,7 @@
 
 package org.plos.util;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,6 +42,7 @@ import org.plos.ApplicationException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.service.ArticleOtmService;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.xml.transform.cache.CachedSource;
 
@@ -55,6 +58,10 @@ import org.xml.sax.SAXException;
  *
  */
 public class ArticleXMLUtils {
+  /** Pub Configuration */
+  private static final Configuration PUB_CONFIG = ConfigurationStore.getInstance().getConfiguration();
+  private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("pub.app-context", "");
+
   private static final Log log = LogFactory.getLog(ArticleXMLUtils.class);
 
   private Templates translet;
@@ -163,7 +170,9 @@ public class ArticleXMLUtils {
 
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
-    return translet.newTransformer();
+    Transformer transformer = translet.newTransformer();
+    transformer.setParameter("pubAppContext", PUB_APP_CONTEXT);
+    return transformer;
   }
 
   private Document getArticleAsDocument(final String articleUri)

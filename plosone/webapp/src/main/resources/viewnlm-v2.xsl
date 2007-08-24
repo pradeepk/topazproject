@@ -393,7 +393,8 @@
 <!--  Run-time parameters -->
 
 <!--  This stylesheet accepts no run-time parameters.              -->
-
+<!-- Pub Config -->
+<xsl:param name="pubAppContext"></xsl:param>
 
 <!-- Keys -->
 
@@ -740,7 +741,7 @@
   <xsl:variable name="apos">'</xsl:variable>
   <xsl:variable name="imageURI"><xsl:value-of select="graphic/@xlink:href"/></xsl:variable>
   <xsl:variable name="slideshowURL">
-    <xsl:value-of select="concat('slideshow.action?uri=',substring($imageURI, 1, (string-length($imageURI)-5)),'&amp;imageURI=',$imageURI)"/>
+    <xsl:value-of select="concat($pubAppContext,'/article/slideshow.action?uri=',substring($imageURI, 1, (string-length($imageURI)-5)),'&amp;imageURI=',$imageURI)"/>
   </xsl:variable>
   <xsl:variable name="jsWindow">
     <xsl:value-of select="concat('window.open(this.href,',$apos,'plosSlideshow',$apos,',',$apos,
@@ -758,7 +759,7 @@
       <xsl:element name="img">
         <xsl:attribute name="xpathLocation">noSelect</xsl:attribute>
         <xsl:attribute name="border">1</xsl:attribute>
-        <xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$imageURI,'&amp;representation=PNG_S')"/></xsl:attribute>
+        <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$imageURI,'&amp;representation=PNG_S')"/></xsl:attribute>
         <xsl:attribute name="align">left</xsl:attribute>
         <xsl:attribute name="alt">thumbnail</xsl:attribute>
         <xsl:attribute name="class">thumbnail</xsl:attribute>
@@ -1775,7 +1776,7 @@ Make article meta data
  <h5 xpathLocation="noSelect">
    <xsl:element name="a">
      <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-     <xsl:attribute name="href"><xsl:value-of select="concat('fetchFirstRepresentation.action?uri=',$objURI)"/></xsl:attribute>
+     <xsl:attribute name="href"><xsl:value-of select="concat($pubAppContext,'/article/fetchFirstRepresentation.action?uri=',$objURI)"/></xsl:attribute>
     <strong><xsl:apply-templates select="label"/></strong>
   </xsl:element>
  </h5>
@@ -1866,7 +1867,7 @@ Make article meta data
   <xsl:element name="img">
     <xsl:if test="@xlink:href">
     <xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-    <xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+    <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
     <xsl:attribute name="border">0</xsl:attribute>
     </xsl:if>
   </xsl:element>
@@ -2038,7 +2039,7 @@ Make article meta data
   <xsl:element name="img">
     <xsl:if test="@xlink:href">
     <xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-    <xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+    <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
     </xsl:if>
   </xsl:element>
 </xsl:template>
@@ -3877,7 +3878,7 @@ Make article meta data
           <xsl:variable name="apos">'</xsl:variable>
           <xsl:variable name="artTitle"><xsl:value-of select="citation/article-title"/></xsl:variable>
           <xsl:variable name="author"><xsl:value-of select="citation/person-group[@person-group-type='author'][1]/name[1]/surname"/></xsl:variable>
-          <xsl:variable name="findURL"><xsl:value-of select="concat('findArticle.action?author=', $author, '&amp;title=', $artTitle)"/></xsl:variable>
+          <xsl:variable name="findURL"><xsl:value-of select="concat($pubAppContext,'/article/findArticle.action?author=', $author, '&amp;title=', $artTitle)"/></xsl:variable>
           <xsl:element name="a"><xsl:attribute name="class">find</xsl:attribute><xsl:attribute name="href"><xsl:value-of select="$findURL"/></xsl:attribute>Find this article online</xsl:element>
         </xsl:if>
       </li>
