@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.dispatcher.mapper.ActionMapping;
 import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
+import org.plos.configuration.ConfigurationStore;
 import org.plos.web.VirtualJournalContext;
 import org.plos.web.VirtualJournalMappingFilter;
 
@@ -36,6 +37,11 @@ import org.plos.web.VirtualJournalMappingFilter;
  *
  */
 public class PlosOneActionMapper extends DefaultActionMapper {
+
+  /** Pub Configuration */
+  private static final org.apache.commons.configuration.Configuration PUB_CONFIG =
+    ConfigurationStore.getInstance().getConfiguration();
+  private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("pub.app-context", "");
 
   private static final Log log = LogFactory.getLog(PlosOneActionMapper.class);
 
@@ -132,7 +138,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
 
     // ATOM feed hook: only care about "/article/feed"
     // will factor out with comprehensive REST URI mapping
-    if (origUri.startsWith("/article/feed")) {
+    if (origUri.startsWith(PUB_APP_CONTEXT + "/article/feed")) {
       return mapUriToAction();
     }
 
@@ -148,7 +154,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
     if ("getFeed".equals(mapping.getName())
       && "/article/feed".equals(mapping.getNamespace())
       && "execute".equals(mapping.getMethod())) {
-      return("/article/feed");
+      return(PUB_APP_CONTEXT + "/article/feed");
     }
 
     // use default
