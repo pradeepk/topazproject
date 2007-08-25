@@ -127,7 +127,7 @@ public class TrackbackAction extends BaseActionSupport {
         LinkbackExtractor linkback = new LinkbackExtractor(url,
                                      getArticleUrl(journalContext.getBaseUrl(), trackbackId));
         if (linkback.getExcerpt() == null) {
-          if (log.isErrorEnabled()) {
+          if (log.isDebugEnabled()) {
             log.debug("Trackback failed verification: " + permalink);
           }
           tx.commit(); // Flush happens automatically
@@ -224,7 +224,7 @@ public class TrackbackAction extends BaseActionSupport {
       tx = session.beginTransaction();
 
       if (log.isDebugEnabled()) {
-        log.debug("retrieving rating summaries for: " + trackbackId);
+        log.debug("retrieving trackbacks for: " + trackbackId);
       }
 
       List<Trackback> trackbacks = session
@@ -388,9 +388,15 @@ public class TrackbackAction extends BaseActionSupport {
     } catch (UnsupportedEncodingException ue) {
       escapedURI = articleURI;
     }
-
-    return new StringBuilder(baseURL).append (myConfig.getString("pub.article-action"))
-                                     .append(escapedURI).toString();
+    
+    StringBuilder url = new StringBuilder(baseURL).append("/").append (myConfig.getString("pub.article-action"))
+    .append(escapedURI);
+    
+    if (log.isDebugEnabled()) {
+      log.debug("article url to find is: " + url.toString());
+    }
+    
+    return url.toString();
   }
 
   /**
