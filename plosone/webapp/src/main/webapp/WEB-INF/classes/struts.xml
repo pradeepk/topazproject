@@ -893,7 +893,7 @@
   <package name="admin" extends="default" namespace="/admin">
     <default-interceptor-ref name="plosAdminStack" />
 
-    <action name="oldMenu">
+    <action name="oldMenu" class="org.plos.action.NoOpAction">
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
