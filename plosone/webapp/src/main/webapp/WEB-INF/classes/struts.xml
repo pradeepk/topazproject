@@ -185,7 +185,7 @@
   </package>
 
   <package name="search" extends="default" namespace="/search">
-    <action name="searchStart">
+    <action name="searchStart" class="org.plos.action.NoOpAction">
       <result>/WEB-INF/pages/search/searchStart.ftl</result>
     </action>
 
@@ -717,7 +717,7 @@
       <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
     </action>
 
-    <action name="assignAdminRole">
+    <action name="assignAdminRole" class="org.plos.action.NoOpAction">
       <result>/WEB-INF/pages/user/assignAdminRole.ftl</result>
     </action>
 
@@ -928,7 +928,7 @@
         <result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
     </action>
 
-    <action name="findUser">
+    <action name="findUser" class="org.plos.action.NoOpAction">
         <result>/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
 
