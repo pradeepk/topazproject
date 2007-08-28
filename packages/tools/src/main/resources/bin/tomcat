@@ -41,6 +41,7 @@ Environment:
   TOMCAT_OPTS   -Xmx400m -XX:MaxPermSize=256m -- These are the options to be
                 used for starting tomcat. <basename>_TOMCAT_OPTS overrides
                 these.
+  TOMCAT_START_OPTS Command line options only passed when starting tomcat.
   STARTUP       jsvc -- This can be "jsvc" or "java". If set to jsvc and jsvc
                 is not found, we revert ot running via java. If starting or
                 stopping with jsvc, must be root
@@ -253,7 +254,7 @@ jsvc() {
 jsvc_start() {
   test_root
   # Start and wait a while for it to start properly
-  jsvc -wait 10
+  jsvc ${TOMCAT_START_OPTS} -wait 10
   chmod ugo+r ${PIDFILE}
 }
 
@@ -282,7 +283,7 @@ su_cmd() {
 }
 
 java_start() {
-  su_cmd start $JAVA_HOME/bin/java -$JVM $TOMCAT_OPTS $TOMCAT_TRUST_OPTS $CATALINA_OPTS start
+  su_cmd start $JAVA_HOME/bin/java -$JVM $TOMCAT_OPTS $TOMCAT_START_OPTS $TOMCAT_TRUST_OPTS $CATALINA_OPTS start
   # Give it a few seconds to start (to create PID file)
   PID=`cat ${PIDFILE} 2>/dev/null`
   i=1
