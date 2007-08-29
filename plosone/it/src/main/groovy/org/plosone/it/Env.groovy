@@ -90,7 +90,10 @@ public class Env {
    *
    */
   public void restore() {
-    stop()
+    if (active != null) 
+      active.stop()
+    else
+       stop()
     ant.delete(dir: install + "/data")
     load()
   }
@@ -234,7 +237,7 @@ public class Env {
      return 'file://' + resource('/mulgaraLog4j.xml')
   }
 
-  private String resource(String name) {
+  public String resource(String name) {
      String input = install + name
      def out = new BufferedOutputStream(new FileOutputStream(input))
      out << getClass().getResourceAsStream(name)
