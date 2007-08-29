@@ -40,7 +40,7 @@ public class HomePageTest extends AbstractPlosOneTest {
   public void setUp() {
     installEnvs();
     initTesters();
-    env[0].start();
+    envs[0].start();
   }
 
   /**

@@ -9,18 +9,15 @@
  */
 package org.plosone.it;
 
-
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plosone.it.jwebunit.PlosOneWebTester;
 import org.plosone.it.jwebunit.PlosOneTestContext;
+import org.plosone.it.jwebunit.PlosOneWebTester;
 import static org.testng.AssertJUnit.*;
-
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 
@@ -49,10 +46,14 @@ public abstract class AbstractPlosOneTest {
    */
   public static final Map<String, BrowserVersion> browsers = new HashMap();
 
+  public static final String IE7 = "Internet Explorer 7";
+  public static final String IE6 = "Internet Explorer 6";
+  public static final String FIREFOX2 = "Firefox 2";
+
   static {
-    browsers.put("ie6", BrowserVersion.INTERNET_EXPLORER_6_0);
-    browsers.put("ie7", BrowserVersion.INTERNET_EXPLORER_7_0);
-    browsers.put("firefox2", BrowserVersion.FIREFOX_2);
+    browsers.put(IE6, BrowserVersion.INTERNET_EXPLORER_6_0);
+    browsers.put(IE7, BrowserVersion.INTERNET_EXPLORER_7_0);
+    browsers.put(FIREFOX2, BrowserVersion.FIREFOX_2);
 
     // Note: Point the browser to emulate at http://htmlunit.sourceforge.net/cgi-bin/browserVersion 
     //       for the code to generate to add to the list of browsers above.
@@ -69,8 +70,8 @@ public abstract class AbstractPlosOneTest {
    */
   protected final Env[] envs =
     new Env[] {
-    // new Env("install/07", "org.plosone:plosone-it-data:0.7"),
-    new Env("install/basic", "org.plosone:plosone-it-data-basic:0.8"), // new Env("install/empty", null)
+                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.8"),
+                new Env("install/empty", null)
     };
 
   /**
