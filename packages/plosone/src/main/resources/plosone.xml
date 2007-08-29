@@ -111,11 +111,11 @@
      -->
     <doi-journals>
       <journal>
-        <url>http://www.plosone.org/${pub.app-context}/</url>
+        <url>http://www.plosone.org/</url>
         <regex>10\.1371/journal\.pone\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://clinicaltrials.plos.org/${pub.app-context}/</url>
+        <url>http://clinicaltrials.plos.org/</url>
         <regex>10\.1371/journal\.pctr\.\d{7}</regex>
       </journal>
     </doi-journals>
