@@ -87,7 +87,7 @@
 
     <default-interceptor-ref name="plosUserStack" />
 
-    <!-- <default-action-ref name="home" />-->
+    <default-action-ref name="pageNotFound" />
 
     <global-results>
       <result name="new-profile" type="redirect-action">
@@ -140,7 +140,13 @@
       </result>
     </action>
 
-
+    <action name="pageNotFound" class="org.plos.action.NoOpAction">
+      <interceptor-ref name="strutsBaseStack"/>
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/pageNotFound.ftl</param>
+      </result>
+    </action>
+    
     <action name="home" class="org.plos.action.HomePageAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/index.ftl</param>
