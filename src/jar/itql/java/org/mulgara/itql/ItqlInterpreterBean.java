@@ -830,8 +830,7 @@ public class ItqlInterpreterBean {
                 throws QueryException {
 
     return interpreter.load(inputStream, destinationURI);
-
-   }
+  }
 
   /**
    * Load the contents of an InputStream or a URI into a database/model.
@@ -950,12 +949,15 @@ public class ItqlInterpreterBean {
           }
           else if (object instanceof LiteralImpl) {
 
-            LiteralImpl lit = (LiteralImpl) object;
-            if (lit.getDatatypeURI() != null)
-              variable.setAttribute("datatype", lit.getDatatypeURI().toString());
-            if (lit.getLanguage() != null)
-              variable.setAttribute("language", lit.getLanguage());
-            variable.appendChild(doc.createTextNode(lit.getLexicalForm()));
+            LiteralImpl literal = (LiteralImpl)object;
+            if (literal.getDatatypeURI() != null) {
+              variable.setAttribute("datatype", literal.getDatatypeURI().toString());
+            }
+            String language = literal.getLanguage();
+            if (language != null && language.length() != 0) {
+              variable.setAttribute("language", language);
+            }
+            variable.appendChild(doc.createTextNode(literal.getLexicalForm()));
           }
           else if (object instanceof URIReference) {
 
