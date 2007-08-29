@@ -117,8 +117,7 @@ public class SPXMLLiteralImpl extends AbstractSPTypedLiteral
       RdfXmlParser parser = new RdfXmlParser(jrdfMem.getElementFactory());
       parser.parse(new StringReader(document), URI.create("urn:foo:bar").
           toString());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new IllegalArgumentException("Failed to validate: " + str, e);
     }
   }
