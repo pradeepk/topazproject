@@ -3,7 +3,7 @@
   <groupId>org.mulgara</groupId>
   <artifactId>mulgara</artifactId>
   <name>Mulgara package</name>
-  <version>1.0.1-t2</version>
+  <version>1.0.1-t3</version>
   <description>The Mulgara package.</description>
   <licenses>
     <license>
