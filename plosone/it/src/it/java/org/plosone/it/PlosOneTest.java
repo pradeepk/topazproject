@@ -15,6 +15,8 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.plosone.it.pages.HomePage;
 import static org.testng.AssertJUnit.*;
 
 import org.testng.annotations.BeforeClass;
@@ -28,6 +30,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import net.sourceforge.jwebunit.junit.WebTester;
 import net.sourceforge.jwebunit.util.TestingEngineRegistry;
+
+import org.plosone.it.jwebunit.PlosOneWebTester;
 
 /**
  * PlosOne Tests
@@ -43,7 +47,8 @@ public class PlosOneTest {
     // new Env("install/07", "org.plosone:plosone-it-data:0.7"),
     new Env("install/basic", "org.plosone:plosone-it-data-basic:0.8"), // new Env("install/empty", null)
     };
-  private WebTester           tester;
+
+  private PlosOneWebTester tester;
 
   /**
    * DOCUMENT ME!
@@ -56,17 +61,17 @@ public class PlosOneTest {
       env.install();
 
     envs[0].start();
+
     try {
       TestingEngineRegistry.addTestingEngine(TEST_ENGINE, TEST_ENGINE);
     } catch (Throwable t) {
       throw new Error("Registration of test-engine failed", t);
     }
 
-    tester                                = new WebTester();
+    tester = new PlosOneWebTester();
     tester.setTestingEngineKey(TEST_ENGINE);
 
     tester.getTestContext().setBaseUrl("http://localhost:8080/plosone-webapp");
-    log.info("Test setup complete");
   }
 
   /**
@@ -74,22 +79,21 @@ public class PlosOneTest {
    */
   @Test
   public void testHome() {
-    tester.beginAt("/home.action");
-    tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
+    HomePage hp = new HomePage(tester);
+    hp.beginAt();
+    hp.verifyPage();
   }
 
   /**
    * DOCUMENT ME!
-   *
-   * @throws IOException DOCUMENT ME!
    */
   @Test
-  public void testWithHtmlUnit() throws IOException {
-    final WebClient webClient = new WebClient();
-    URL             url       = new URL("http://localhost:8080/plosone-webapp/home.action");
-    WebWindow       window    = webClient.openWindow(url, "main");
-
-    final HtmlPage  page      = (HtmlPage) window.getEnclosedPage();
-    assertEquals("PLoS ONE : Publishing science, accelerating research", page.getTitleText());
+  public void testLogin() {
+    HomePage hp = new HomePage(tester);
+    hp.beginAt();
+    hp.loginAs("admin", "plosadmin@gmail.com");
+    hp.verifyPage();
+    hp.logOut();
+    hp.verifyPage();
   }
 }
