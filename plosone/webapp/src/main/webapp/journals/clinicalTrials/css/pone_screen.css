@@ -208,13 +208,14 @@ div#hdr 			{ height: 150px; position: relative; z-index: 997;}
 ----------------------------------------------------------
 */
 
-	ul#nav 		{ font-size: .85em; height:1.9em; margin: 0; padding: 0; position: absolute; bottom: 0; left: 14px; top:129px; list-style-type: none; z-index: 800; width: 100%; }
+ul#nav 		{ font-size: .85em; height:1.9em; margin: 0; padding: 0; position: absolute; bottom: 0; left: 14px; top:129px; list-style-type: none; z-index: 800; width: 100%; }
 ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; padding: 0; }
-	#nav li a, #nav li a:visited
-			{ font-weight: bold;display:block; text-decoration:none; width: auto; padding: 5px .6em 0 .6em; float:left; height: 1.6em; line-height:normal; color:#fff; }
+#nav li a, 
+#nav li a:visited
+			{ font-weight: bold;display:block; text-decoration:none; width: auto; padding: 5px .6em .1em .6em; float:left; height: 1.6em; line-height:normal; color:#fff; }
 #nav li li	{ width: 100%; position: relative; z-index: 802;}
 #nav li ul 	{ visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; margin: 0; padding: 0; background-color: #fff; z-index: 801;}
-	/*#nav table 	{ margin:-1px; border-collapse:collapse; } what table? -SWT */
+/*#nav table 	{ margin:-1px; border-collapse:collapse; } what table? -SWT */
 /* fist line style for IE7 and non-IE browsers and the second line for IE5.5 and IE6 */
 /* Note that class li.over is dynamically written into html from init_navigation.js -SWT */
 #nav li.over a,
