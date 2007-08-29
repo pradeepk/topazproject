@@ -931,18 +931,12 @@ public class ItqlInterpreterBean {
 
           if (object instanceof Answer) {
 
-            Answer tmpAnswer = null;
+            Answer tmpAnswer = (Answer) object;
             try {
-
-              tmpAnswer = (Answer) object;
               appendSolution(tmpAnswer, variable);
             }
             finally {
-
-              if (tmpAnswer == null) {
-
-                tmpAnswer.close();
-              }
+              tmpAnswer.close();
             }
 
             continue;
