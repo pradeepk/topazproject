@@ -9,27 +9,14 @@
  */
 package org.plosone.it.jwebunit;
 
-import java.io.IOException;
 
-import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import org.plosone.it.pages.HomePage;
 import static org.testng.AssertJUnit.*;
 
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeGroups;
-import org.testng.annotations.Test;
 
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebWindow;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import net.sourceforge.jwebunit.junit.WebTester;
-import net.sourceforge.jwebunit.util.TestingEngineRegistry;
 
 /**
  * An extension for WebTester for keeping some plosone specific states.
@@ -75,4 +62,12 @@ public class PlosOneWebTester extends WebTester {
   public void setAdmin(boolean admin) {
     this.admin = admin;
   }
+
+  public void beginAt(String aRelativeURL) {
+    super.beginAt(aRelativeURL);
+    // need to reset our states since this is a new browser session
+    admin = false;
+    loggedIn = false;
+  }
+
 }
