@@ -83,7 +83,6 @@ import net.sourceforge.jwebunit.javascript.JavascriptAlert;
 import net.sourceforge.jwebunit.javascript.JavascriptConfirm;
 import net.sourceforge.jwebunit.javascript.JavascriptPrompt;
 import net.sourceforge.jwebunit.util.TestContext;
-import net.sourceforge.jwebunit.util.TestingEngineRegistry;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.HttpState;
@@ -94,6 +93,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.jaxen.JaxenException;
+
+import org.plosone.it.jwebunit.PlosOneTestContext;
 
 /**
  * Acts as the wrapper for HtmlUnit access. A dialog is initialized with a given URL, and maintains conversational state
@@ -633,7 +634,9 @@ public class PlosOneHtmlUnitDialog implements IJWebUnitDialog {
         BrowserVersion bv = new BrowserVersion(BrowserVersion.INTERNET_EXPLORER,
                 "4.0", testContext.getUserAgent(), "1.2", 6);
         */
-        BrowserVersion bv = BrowserVersion.getDefault();
+        BrowserVersion bv = (getTestContext() instanceof PlosOneTestContext) ?
+          ((PlosOneTestContext)getTestContext()).getBrowser() :
+          BrowserVersion.getDefault();
         if (getTestContext().getProxyHost()!=null && getTestContext().getProxyPort()>0) {
             //Proxy
             wc = new WebClient(bv, getTestContext().getProxyHost(), getTestContext().getProxyPort());
