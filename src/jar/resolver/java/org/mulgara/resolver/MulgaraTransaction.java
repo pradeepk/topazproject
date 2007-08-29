@@ -102,9 +102,7 @@ public class MulgaraTransaction {
   // Need to clarify semantics and ensure the error conditions are 
   // properly handled.
   private synchronized void activate() throws MulgaraTransactionException {
-    if (currentThread == null) {
-      currentThread = Thread.currentThread();
-    } else if (!currentThread.equals(Thread.currentThread())) {
+    if (currentThread != null && !currentThread.equals(Thread.currentThread())) {
       throw new MulgaraTransactionException("Concurrent access attempted to transaction: Transaction has NOT been rolledback.");
     }
 
@@ -116,6 +114,10 @@ public class MulgaraTransaction {
         failTransaction();
         throw new MulgaraTransactionException("Error resuming transaction", th);
       }
+    }
+
+    if (currentThread == null) {
+      currentThread = Thread.currentThread();
     }
 
     inuse++;
@@ -135,17 +137,20 @@ public class MulgaraTransaction {
     }
 
     if (inuse == 0) {
-      if (using == 0) {
-        // END TRANSACTION HERE.  But commit might fail.
-        manager.transactionComplete(this);
-      } else {
-        // What happens if suspend fails?
-        // Rollback and terminate transaction.
-        // JTA isn't entirely unambiguous as to the long-term stability of the original
-        // transaction object - can suspend return a new object?
-        this.transaction = manager.transactionSuspended(this);
+      try {
+        if (using == 0) {
+          // END TRANSACTION HERE.  But commit might fail.
+          manager.transactionComplete(this);
+        } else {
+          // What happens if suspend fails?
+          // Rollback and terminate transaction.
+          // JTA isn't entirely unambiguous as to the long-term stability of the original
+          // transaction object - can suspend return a new object?
+          this.transaction = manager.transactionSuspended(this);
+        }
+      } finally {
+        currentThread = null;
       }
-      currentThread = null;
     }
   }
 
