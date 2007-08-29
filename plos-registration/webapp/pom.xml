@@ -166,6 +166,12 @@
       <version>${pom.parent.version}</version>
     </dependency>
 
+    <!-- Try to force maven to use the version of commons-collections that we want -->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2</version>
+    </dependency>
   </dependencies>
 
   <build>
