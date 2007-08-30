@@ -17,6 +17,7 @@ public class Env {
   private String data;
   private String opts;
   private static Env active = null;
+  private String mvnExec = null;
 
   public static boolean stopOnExit = true;
 
@@ -116,7 +117,7 @@ public class Env {
   }
   
   private void antTask(task) {
-    ant.exec(executable: 'mvn') {
+    ant.exec(executable: mavenExecutable) {
       arg(line: 'ant-tasks:' + task + opts)
     }
   }
@@ -124,7 +125,7 @@ public class Env {
   private void mulgara() {
     ant.echo 'Starting mulgara'
     ant.forget {
-      ant.exec(executable: 'mvn') {
+      ant.exec(executable: mavenExecutable) {
         arg(line: '-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install
          + ' -Dtopaz.mulgara.databaseDir=' + install + '/data/mulgara -Dlog4j.configuration='
          + mulgaraLog4j())
@@ -135,7 +136,7 @@ public class Env {
 
   private void fedora() {
     ant.delete(file: install + '/fedora-2.1.1/server/status')
-    ant.exec(executable: 'mvn') {
+    ant.exec(executable: mavenExecutable) {
       arg(line: 'ant-tasks:fedora-start -DSPAWN=true' + opts)
     }
   }
@@ -143,7 +144,7 @@ public class Env {
   private void publishingApp() {
     ant.echo 'Starting publishing app'
     ant.forget {
-      ant.exec(executable: 'mvn') {
+      ant.exec(executable: mavenExecutable) {
         arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
          + ' -Dorg.plos.configuration.overrides=defaults-dev.xml -Dlog4j.configuration=' 
          + publishingAppLog4j() 
@@ -188,7 +189,7 @@ public class Env {
 
   private void load() {
     if (data != null) {
-      ant.exec(executable: 'mvn', failonerror:true) {
+      ant.exec(executable: mavenExecutable, failonerror:true) {
         arg(line: '-f ' + pom() + ' ant-tasks:tgz-explode -Dlocation=' + install 
           + ' -Dtype=tgz -Ddependencies=' + data)
       }
@@ -218,7 +219,7 @@ public class Env {
     if (!l.exists())
       l.mkdir()
 
-    ant.exec(executable: 'mvn') {
+    ant.exec(executable: mavenExecutable) {
       arg(line: 'ant-tasks:fedora-rebuild ' + opts
        + ' -DFEDORA_REBUILD_STDIN=' + rebuildInput()
        + ' -DFEDORA_REBUILD_FROM=' + install + '/data/fedora')
@@ -255,5 +256,16 @@ public class Env {
     println 'executing script ' + res + ' with args ' + sargs
     GroovyShell shell = new GroovyShell();
     shell.run(new File(res), sargs)
+  }
+
+  private String getMavenExecutable() {
+    if (mvnExec == null) {
+      if (System.properties.'os.name'.toLowerCase().indexOf('windows') > -1) {
+        mvnExec = 'mvn.bat'
+      } else {
+        mvnExec = 'mvn'
+      }
+    }
+    return mvnExec
   }
 }
