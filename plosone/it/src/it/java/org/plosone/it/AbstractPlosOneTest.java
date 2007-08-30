@@ -68,7 +68,7 @@ public abstract class AbstractPlosOneTest {
   /**
    * DOCUMENT ME!
    */
-  protected final Env[] envs =
+  private final Env[] envs =
     new Env[] {
                 new Env("install/basic", "org.plosone:plosone-it-data-basic:0.8"),
                 new Env("install/empty", null)
@@ -99,4 +99,13 @@ public abstract class AbstractPlosOneTest {
       testers.put(key, tester);
     }
   }
+
+  public Env getBasicEnv() {
+    return envs[0];
+  }
+
+  public Env getEmptyEnv() {
+    return envs[1];
+  }
+
 }

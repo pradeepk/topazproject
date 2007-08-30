@@ -9,30 +9,25 @@
  */
 package org.plosone.it.pages;
 
-
-
-import static org.testng.AssertJUnit.*;
-
-
-
+import java.net.URLEncoder;
 
 import org.plosone.it.jwebunit.PlosOneWebTester;
 
 /**
- * PlosOne Home page
+ * PlosOne Article Display Page
  *
  * @author Pradeep Krishnan
  */
-public class HomePage extends CommonBasePage {
+public class ArticlePage extends CommonBasePage {
 
-  public static final String PAGE_URL = "/home.action";
+  public static final String PAGE_URL = "/article/";
 
-  public HomePage(PlosOneWebTester tester, String journal) {
-    super(tester,journal, PAGE_URL);
+  public ArticlePage(PlosOneWebTester tester, String journal, String doi) {
+    super(tester,journal, PAGE_URL + URLEncoder.encode(doi));
   }
 
   public void verifyPage() {
-    tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
+    //tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
     super.verifyPage();
   }
 

@@ -26,8 +26,8 @@ import org.plosone.it.jwebunit.PlosOneWebTester;
 public abstract class CommonBasePage extends AbstractPage {
 
 
-  public CommonBasePage(PlosOneWebTester tester, String url) {
-    super(tester,url);
+  public CommonBasePage(PlosOneWebTester tester, String journal, String url) {
+    super(tester, journal, url);
   }
 
   public void verifyPage() {

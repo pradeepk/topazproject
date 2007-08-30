@@ -29,10 +29,18 @@ public abstract class AbstractPage {
 
   protected final PlosOneWebTester tester;
   protected final String url;
+  protected final String journal;
+  public static final String J_PONE = "pone";
+  public static final String J_CT = "ct";
 
-  public AbstractPage(PlosOneWebTester tester, String url) {
+  public AbstractPage(PlosOneWebTester tester, String journal, String url) {
     this.tester = tester;
-    this.url = url;
+    this.journal = journal;
+    this.url = createJournalUrl(journal, url);;
+  }
+
+  public String getJournal() {
+    return journal;
   }
 
   public String getUrl() {
@@ -48,5 +56,18 @@ public abstract class AbstractPage {
     tester.beginAt(url);
   }
 
+  public void gotoPage() {
+    tester.gotoPage(url);
+  }
+
   public abstract void verifyPage();
+
+
+  public static String createJournalUrl(String journal, String url) {
+    if (J_CT.equals(journal))
+      url = url + "?virtualJournal=clinicalTrials&mappingPrefix=/journals/clinicalTrials";
+
+    return url;
+  }
+
 }

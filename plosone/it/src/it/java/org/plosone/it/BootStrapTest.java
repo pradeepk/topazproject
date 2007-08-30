@@ -40,8 +40,8 @@ public class BootStrapTest extends AbstractPlosOneTest {
   public void setUp() {
     installEnvs();
     initTesters();
-    envs[1].restore();
-    envs[1].start();
+    getEmptyEnv().restore();
+    getEmptyEnv().start();
   }
 
   /**
@@ -49,19 +49,20 @@ public class BootStrapTest extends AbstractPlosOneTest {
    */
   @Test
   public void testJournalInstall() {
-    String script = envs[1].resource("/createjournal.groovy");
-    String plosone = envs[1].resource("/journal-plosone.xml");
-    String ct = envs[1].resource("/journal-clinicaltrials.xml");
-    envs[1].script(new String[]{script, "-j", plosone});
-    envs[1].script(new String[]{script, "-j", ct});
-    envs[1].stop();
-    envs[1].start();
+    Env env = getEmptyEnv();
+    String script = env.resource("/createjournal.groovy");
+    String plosone = env.resource("/journal-plosone.xml");
+    String ct = env.resource("/journal-clinicaltrials.xml");
+    env.script(new String[]{script, "-j", plosone});
+    env.script(new String[]{script, "-j", ct});
+    env.stop();
+    env.start();
   }
 
   @Test(dependsOnMethods={"testJournalInstall"})
   public void testPlosOneHomePage() {
     log.info("Testing home-page after journal install  ... ");
-    HomePage hp = new HomePage(testers.get(IE7));
+    HomePage hp = new HomePage(testers.get(IE7), HomePage.J_PONE);
     hp.beginAt();
     hp.verifyPage();
   }
