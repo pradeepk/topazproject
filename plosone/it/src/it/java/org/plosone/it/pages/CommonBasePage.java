@@ -44,11 +44,13 @@ public abstract class CommonBasePage extends AbstractPage {
 
 
   public void loginAs(String authId, String email) {
-    if (tester.isLoggedIn())
-      logOut();
+    if (!isLoginPage()) {
+      if (tester.isLoggedIn())
+        logOut();
 
-    beginAt();
-    tester.clickLinkWithText("Login");
+      tester.clickLinkWithText("Login");
+    }
+
     tester.setFormElement("sso.auth.id", authId);
     tester.setFormElement("sso.email", email);
     tester.submit();
@@ -60,6 +62,7 @@ public abstract class CommonBasePage extends AbstractPage {
     if (tester.isLoggedIn()) {
       tester.clickLinkWithText("Logout");
       tester.setLoggedIn(false);
+      gotoPage();  // logout takes you to home page. so come-back here again
       verifyPage();
     }
   }

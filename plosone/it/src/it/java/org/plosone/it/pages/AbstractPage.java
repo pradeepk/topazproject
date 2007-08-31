@@ -70,4 +70,8 @@ public abstract class AbstractPage {
     return url;
   }
 
+  public boolean isLoginPage() {
+    return "Dummy-SSO Login".equals(tester.getDialog().getPageTitle());
+  }
+
 }
