@@ -9,12 +9,8 @@
  */
 package org.plosone.it.pages;
 
-
-
-import static org.testng.AssertJUnit.*;
-
-
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.plosone.it.jwebunit.PlosOneWebTester;
 
@@ -24,7 +20,7 @@ import org.plosone.it.jwebunit.PlosOneWebTester;
  * @author Pradeep Krishnan
  */
 public abstract class CommonBasePage extends AbstractPage {
-
+  private static final Log    log         = LogFactory.getLog(CommonBasePage.class);
 
   public CommonBasePage(PlosOneWebTester tester, String journal, String url) {
     super(tester, journal, url);
@@ -44,26 +40,30 @@ public abstract class CommonBasePage extends AbstractPage {
 
 
   public void loginAs(String authId, String email) {
-    if (!isLoginPage()) {
+    boolean onLoginPage = isLoginPage();
+    if (!onLoginPage) {
       if (tester.isLoggedIn())
         logOut();
 
+      log.debug("Going to login page ...");
       tester.clickLinkWithText("Login");
     }
 
+    log.debug("Logging in as (" + authId + ", " + email + ") ...");
     tester.setFormElement("sso.auth.id", authId);
     tester.setFormElement("sso.email", email);
     tester.submit();
     tester.setLoggedIn(true);
-    verifyPage();
+    if (onLoginPage)
+      gotoPage();
   }
 
   public void logOut() {
     if (tester.isLoggedIn()) {
+      log.debug("Logging out ...");
       tester.clickLinkWithText("Logout");
       tester.setLoggedIn(false);
       gotoPage();  // logout takes you to home page. so come-back here again
-      verifyPage();
     }
   }
 }

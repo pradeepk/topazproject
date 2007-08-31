@@ -9,16 +9,10 @@
  */
 package org.plosone.it.pages;
 
-
-
-import static org.testng.AssertJUnit.*;
-
-
-
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.plosone.it.jwebunit.PlosOneWebTester;
-
 
 /**
  * An abstract base class for PlosOne pages.
@@ -26,6 +20,7 @@ import org.plosone.it.jwebunit.PlosOneWebTester;
  * @author Pradeep Krishnan
  */
 public abstract class AbstractPage {
+  private static final Log    log         = LogFactory.getLog(AbstractPage.class);
 
   protected final PlosOneWebTester tester;
   protected final String url;
@@ -53,10 +48,12 @@ public abstract class AbstractPage {
 
 
   public void beginAt() {
+    log.debug("New browser to " + url + " ...");
     tester.beginAt(url);
   }
 
   public void gotoPage() {
+    log.debug("Going to " + url + " ...");
     tester.gotoPage(url);
   }
 

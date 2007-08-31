@@ -22,6 +22,21 @@ public class ArticlePage extends CommonBasePage {
 
   public static final String PAGE_URL = "/article/";
 
+  public static final String ANNOTATION_LINK        = "Add your annotation";
+  public static final String DISCUSSION_LINK        = "Start a discussion";
+  public static final String DOWNLOAD_XML_LINK      = "Download Article XML";
+  public static final String DOWNLOAD_PDF_LINK      = "Download Article PDF";
+  public static final String DOWNLOAD_CITATION_LINK = "Download Citation";
+  public static final String EMAIL_THIS_LINK        = "E-mail this Article";
+  public static final String ORDER_REPRINTS_LINK    = "Order Reprints";
+  public static final String PRINT_THIS_LINK        = "Print this Article";
+
+  private static final String[] links = new String[] {
+    ANNOTATION_LINK, DISCUSSION_LINK,
+    DOWNLOAD_XML_LINK, DOWNLOAD_PDF_LINK, DOWNLOAD_CITATION_LINK,
+    EMAIL_THIS_LINK, ORDER_REPRINTS_LINK, PRINT_THIS_LINK,
+  };
+
   public ArticlePage(PlosOneWebTester tester, String journal, String doi) {
     super(tester,journal, PAGE_URL + URLEncoder.encode(doi));
   }
@@ -29,10 +44,21 @@ public class ArticlePage extends CommonBasePage {
   public void verifyPage() {
     //tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
     super.verifyPage();
+    for (String link : links)
+      tester.assertLinkPresentWithText(link);
   }
 
   public void createAnnotation(String title, String body) {
-     tester.clickLinkWithText("Add your annotation");
+     tester.clickLinkWithText(ANNOTATION_LINK);
+     if (!tester.isLoggedIn() && isLoginPage())
+       return;
+     // TODO : Can't figure out a way to higlight an area to annotate.
+     // So may be we emulate the submission part only by replaying 
+     // a recorded POST.
+  }
+
+  public void startDiscussion(String title, String body) {
+     tester.clickLinkWithText(DISCUSSION_LINK);
      if (!tester.isLoggedIn() && isLoginPage())
        return;
      // TODO : Can't figure out a way to higlight an area to annotate.

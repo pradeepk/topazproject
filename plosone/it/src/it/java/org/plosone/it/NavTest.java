@@ -65,7 +65,15 @@ public class NavTest extends AbstractPlosOneTest {
   public Object[][] articlesTestData(Method m) {
     ArrayList l = new ArrayList();
 
-    Set<String> dois = (m.getName().indexOf("Annotation") > 0) ? 
+    String methodsThatUseSmallSet[] = new String[] {"Annotation", "Discussion"};
+    boolean useSmallSet = false;
+    String mName = m.getName();
+
+    for (String name : methodsThatUseSmallSet)
+      if (mName.indexOf(name) > 0)
+        useSmallSet = true;
+
+    Set<String> dois = useSmallSet ?
       Collections.singleton("info:doi/10.1371/journal.pone.0000021") :
       articles.keySet();
 
@@ -136,6 +144,21 @@ public class NavTest extends AbstractPlosOneTest {
     ap.gotoPage();
     ap.logOut();
     ap.createAnnotation("Test title", "Test Body");
+    ap.loginAs("test", "plostest@gmail.com");
+    ap.verifyPage();
+    ap.logOut();
+    ap.verifyPage();
+  }
+
+  @Test(dataProvider="articles")
+  public void testDiscussionLoginRedirect(String article, String journal, String browser) {
+    log.info("Testing discussion-login-redirect [article=" + article + ", journal=" + journal 
+        + ", browser=" + browser + "] ... ");
+    PlosOneWebTester tester = testers.get(browser);
+    ArticlePage ap = new ArticlePage(tester, journal, article);
+    ap.gotoPage();
+    ap.logOut();
+    ap.startDiscussion("Test title", "Test Body");
     ap.loginAs("test", "plostest@gmail.com");
     ap.verifyPage();
     ap.logOut();
