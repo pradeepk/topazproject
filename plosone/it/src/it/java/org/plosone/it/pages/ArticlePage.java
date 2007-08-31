@@ -31,4 +31,13 @@ public class ArticlePage extends CommonBasePage {
     super.verifyPage();
   }
 
+  public void createAnnotation(String title, String body) {
+     tester.clickLinkWithText("Add your annotation");
+     if (!tester.isLoggedIn() && isLoginPage())
+       return;
+     // TODO : Can't figure out a way to higlight an area to annotate.
+     // So may be we emulate the submission part only by replaying 
+     // a recorded POST.
+  }
+
 }
