@@ -26,6 +26,7 @@ import net.sourceforge.jwebunit.junit.WebTester;
 public class PlosOneWebTester extends WebTester {
   private boolean loggedIn = false;
   private boolean admin    = false;
+  private boolean initialized = false;
 
   /**
    * Gets the login state.
@@ -68,6 +69,14 @@ public class PlosOneWebTester extends WebTester {
     // need to reset our states since this is a new browser session
     admin = false;
     loggedIn = false;
+    initialized = true;
+  }
+
+  public void gotoPage(String aRelativeURL) {
+    if (!initialized)
+      beginAt(aRelativeURL);
+    else
+      super.gotoPage(aRelativeURL);
   }
 
 }
