@@ -17,11 +17,17 @@
     <level value="warn" />
   </logger>
 
-  <!--
   <logger name="org.plosone.it">
-    <level value="debug" />
+    <level value="info" />
   </logger>
-  -->
+  
+  <logger name="org.plosone.it.PlosOneHtmlUnitDialog">
+    <level value="warn" />
+  </logger>
+  
+  <logger name="com.gargoylesoftware">
+    <level value="fatal" />
+  </logger>
 
   <root>
     <priority value ="info" />
