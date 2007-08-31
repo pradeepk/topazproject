@@ -72,7 +72,7 @@ public class Env {
    * 
    */
   public void install() {
-    File f = new File(install + '/installed');
+    File f = new File(path(install, '/installed'));
     if (f.exists())
       return;
 
@@ -83,7 +83,7 @@ public class Env {
    
     load()
 
-    ant.touch(file: install + '/installed')
+    ant.touch(file: path(install, '/installed'))
   }
 
   /**
@@ -95,7 +95,7 @@ public class Env {
       active.stop()
     else
        stop()
-    ant.delete(dir: install + "/data")
+    ant.delete(dir: path(install, "/data"))
     load()
   }
 
@@ -127,15 +127,15 @@ public class Env {
     ant.forget {
       ant.exec(executable: mavenExecutable) {
         arg(line: '-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install
-         + ' -Dtopaz.mulgara.databaseDir=' + install + '/data/mulgara -Dlog4j.configuration='
-         + mulgaraLog4j())
+         + ' -Dtopaz.mulgara.databaseDir=' + path(install, '/data/mulgara') 
+         + ' -Dlog4j.configuration='+ mulgaraLog4j())
       }
       ant.echo 'Mulgara stopped'
     }
   }
 
   private void fedora() {
-    ant.delete(file: install + '/fedora-2.1.1/server/status')
+    ant.delete(file: path(install, '/fedora-2.1.1/server/status'))
     ant.exec(executable: mavenExecutable) {
       arg(line: 'ant-tasks:fedora-start -DSPAWN=true' + opts)
     }
@@ -148,9 +148,9 @@ public class Env {
         arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
          + ' -Dorg.plos.configuration.overrides=defaults-dev.xml -Dlog4j.configuration=' 
          + publishingAppLog4j() 
-         + ' -Dpub.spring.ingest.source=' + install + '/data/ingestion-queue'
-         + ' -Dpub.spring.ingest.destination=' + install + '/data/ingested'
-         + ' -Dtopaz.search.indexpath=' + install + '/data/lucene'
+         + ' -Dpub.spring.ingest.source=' + path(install, '/data/ingestion-queue')
+         + ' -Dpub.spring.ingest.destination=' + path(install, '/data/ingested')
+         + ' -Dtopaz.search.indexpath=' + path(install, '/data/lucene')
          + ' -Dtopaz.search.defaultfields=description,title,body,creator'      
        )
       }
@@ -222,7 +222,7 @@ public class Env {
     ant.exec(executable: mavenExecutable) {
       arg(line: 'ant-tasks:fedora-rebuild ' + opts
        + ' -DFEDORA_REBUILD_STDIN=' + rebuildInput()
-       + ' -DFEDORA_REBUILD_FROM=' + install + '/data/fedora')
+       + ' -DFEDORA_REBUILD_FROM=' + path(install, '/data/fedora'))
     }
   }
 
@@ -231,15 +231,17 @@ public class Env {
   }
   
   private String publishingAppLog4j() {
-     return 'file://' + resource('/plosoneLog4j.xml')
+    File f = new File(resource('/plosoneLog4j.xml'))
+    return f.toURL().toString()
   }
   
   private String mulgaraLog4j() {
-     return 'file://' + resource('/mulgaraLog4j.xml')
+     File f = new File(resource('/mulgaraLog4j.xml'))
+     return f.toURL().toString()
   }
 
   public String resource(String name) {
-     String input = install + name
+     String input = path(install, name)
      def out = new BufferedOutputStream(new FileOutputStream(input))
      out << getClass().getResourceAsStream(name)
      out.close()
@@ -268,4 +270,20 @@ public class Env {
     }
     return mvnExec
   }
+
+  private String path(String dir, String file) {
+    String sep = System.properties.'file.separator'
+        
+    if (!file.startsWith('/'))
+      file = '/' + file
+
+    file =  dir + file
+    if (!sep.equals('/')) {
+      int pos;
+      while ((pos = file.indexOf('/')) > -1)
+         file = file.substring(0, pos) + sep + file.substring(pos+1)     
+    }
+    return file
+  }
+
 }
