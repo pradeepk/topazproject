@@ -62,6 +62,7 @@
         <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
         <rules>
           <host>clinicaltrials\..*</host>
+          <plosJournal>clinicaltrials</plosJournal>
         </rules>
         <url>http://clinicaltrials.ploshubs.org</url>
       </PLoSClinicalTrials>
