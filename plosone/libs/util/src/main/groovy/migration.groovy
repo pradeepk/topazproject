@@ -201,7 +201,7 @@ bc.authors               = (authors ? authors : null)
 // dc.confirmsTo should scrape from the article, but for migration from 0.7, this works
 dc.conformsTo            = new URI('http://dtd.nlm.nih.gov/publishing/2.0/journalpublishing.dtd')
 dc.copyrightYear         = toint(articleMeta.'copyright-year')
-dc.references            = new HashSet()
+dc.references            = []
 // TODO: Set dc.license -- doc has article.article-meta.copyright-statement, but no bloody URI!
 
 def articleType = new URI(PLoS.PLOS_ArticleType + tostr(slurpedArticle.'@article-type'))
