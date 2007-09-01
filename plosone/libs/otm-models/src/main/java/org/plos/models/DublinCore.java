@@ -101,7 +101,7 @@ public class DublinCore {
   private Date modified;
 
   @Predicate(uri = Rdf.dc_terms + "references")
-  private Set<Citation> references;
+  private List<Citation> references;
 
   @Predicate(uri = Rdf.dc_terms + "conformsTo")
   private URI conformsTo;
@@ -575,7 +575,7 @@ public class DublinCore {
    *
    * @return the set of objects referred to by this object
    */
-  public Set<Citation> getReferences() {
+  public List<Citation> getReferences() {
     return references;
   }
 
@@ -585,7 +585,7 @@ public class DublinCore {
    * @param references the set of objects referred to by this object
    * @see #getReferences
    */
-  public void setReferences(Set<Citation> references) {
+  public void setReferences(List<Citation> references) {
     this.references = references;
   }
 

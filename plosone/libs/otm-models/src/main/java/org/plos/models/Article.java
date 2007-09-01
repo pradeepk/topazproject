@@ -39,7 +39,7 @@ public class Article extends ObjectInfo {
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
   @Predicate(uri = Rdf.dc_terms + "hasPart")
-  private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
+  private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
   // This will be used to indicate the different types the article conforms to
   @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")
   private Set<URI> articleType;
@@ -55,14 +55,14 @@ public class Article extends ObjectInfo {
   /** 
    * @return the different parts of the article 
    */
-  public Set<ObjectInfo> getParts() {
+  public List<ObjectInfo> getParts() {
     return parts;
   }
 
   /** 
    * @param parts the different parts of the article 
    */
-  public void setParts(Set<ObjectInfo> parts) {
+  public void setParts(List<ObjectInfo> parts) {
     this.parts = parts;
   }
 
