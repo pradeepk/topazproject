@@ -15,7 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plosone.it.pages.HomePage;
-import static org.testng.AssertJUnit.*;
+import org.plosone.it.jwebunit.PlosOneWebTester;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -62,7 +62,8 @@ public class BootStrapTest extends AbstractPlosOneTest {
   @Test(dependsOnMethods={"testJournalInstall"})
   public void testPlosOneHomePage() {
     log.info("Testing home-page after journal install  ... ");
-    HomePage hp = new HomePage(testers.get(IE7), HomePage.J_PONE);
+    PlosOneWebTester tester = getTester(HomePage.J_PONE, IE7);
+    HomePage hp = new HomePage(tester, HomePage.J_PONE);
     hp.beginAt();
     hp.verifyPage();
   }

@@ -31,7 +31,7 @@ public abstract class AbstractPage {
   public AbstractPage(PlosOneWebTester tester, String journal, String url) {
     this.tester = tester;
     this.journal = journal;
-    this.url = createJournalUrl(journal, url);;
+    this.url = url;
   }
 
   public String getJournal() {
@@ -59,13 +59,6 @@ public abstract class AbstractPage {
 
   public abstract void verifyPage();
 
-
-  public static String createJournalUrl(String journal, String url) {
-    if (J_CT.equals(journal))
-      url = url + "?virtualJournal=clinicalTrials&mappingPrefix=/journals/clinicalTrials";
-
-    return url;
-  }
 
   public boolean isLoginPage() {
     return "Dummy-SSO Login".equals(tester.getDialog().getPageTitle());

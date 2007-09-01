@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plosone.it.jwebunit.PlosOneTestContext;
 import org.plosone.it.jwebunit.PlosOneWebTester;
-import static org.testng.AssertJUnit.*;
+import org.plosone.it.pages.AbstractPage;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 
@@ -50,6 +50,8 @@ public abstract class AbstractPlosOneTest {
   public static final String IE6 = "Internet Explorer 6";
   public static final String FIREFOX2 = "Firefox 2";
 
+  public static final Map<String, Map<String,String>> journals = new HashMap();
+
   static {
     browsers.put(IE6, BrowserVersion.INTERNET_EXPLORER_6_0);
     browsers.put(IE7, BrowserVersion.INTERNET_EXPLORER_7_0);
@@ -62,8 +64,12 @@ public abstract class AbstractPlosOneTest {
     } catch (Throwable t) {
       throw new Error("Registration of test-engine failed", t);
     }
+
+    HashMap ctHeaders = new HashMap();
+    ctHeaders.put("plosJournal", "clinicaltrials");   // add this HttpHeader in every request
+    journals.put(AbstractPage.J_PONE, new HashMap());
+    journals.put(AbstractPage.J_CT, ctHeaders);
   }
-  ;
 
   /**
    * DOCUMENT ME!
@@ -77,7 +83,7 @@ public abstract class AbstractPlosOneTest {
   /**
    * DOCUMENT ME!
    */
-  protected final Map<String, PlosOneWebTester> testers = new HashMap();
+  private final Map<TesterId, PlosOneWebTester> testers = new HashMap();
 
   /**
    * DOCUMENT ME!
@@ -91,12 +97,14 @@ public abstract class AbstractPlosOneTest {
    * DOCUMENT ME!
    */
   public void initTesters() {
-    for (String key : browsers.keySet()) {
-      PlosOneWebTester tester  = new PlosOneWebTester();
-      tester.setTestContext(new PlosOneTestContext(browsers.get(key)));
-      tester.setTestingEngineKey(TEST_ENGINE);
-      tester.getTestContext().setBaseUrl("http://localhost:8080/plosone-webapp");
-      testers.put(key, tester);
+    for (String journal : journals.keySet()) {
+      for (String browser : browsers.keySet()) {
+        PlosOneWebTester tester  = new PlosOneWebTester();
+        tester.setTestContext(new PlosOneTestContext(browsers.get(browser), journals.get(journal)));
+        tester.setTestingEngineKey(TEST_ENGINE);
+        tester.getTestContext().setBaseUrl("http://localhost:8080/plosone-webapp");
+        testers.put(new TesterId(journal, browser), tester);
+      }
     }
   }
 
@@ -108,4 +116,30 @@ public abstract class AbstractPlosOneTest {
     return envs[1];
   }
 
+  public PlosOneWebTester getTester(String journal, String browser) {
+    return testers.get(new TesterId(journal, browser));
+  }
+
+  public static class TesterId {
+    private final String browser;
+    private final String journal;
+
+    public TesterId(String journal, String browser) {
+      this.browser = browser;
+      this.journal = journal;
+    }
+
+    public int hashCode() {
+      return browser.hashCode() + journal.hashCode();
+    }
+
+    public boolean equals(Object other) {
+      if (!(other instanceof TesterId))
+        return false;
+      if (other == this)
+        return true;
+      return browser.equals(((TesterId)other).browser) 
+        && journal.equals(((TesterId)other).journal);
+    }
+  }
 }

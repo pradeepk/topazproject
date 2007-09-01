@@ -32,7 +32,10 @@ public class HomePage extends CommonBasePage {
   }
 
   public void verifyPage() {
-    tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
+    if (J_PONE.equals(getJournal()))
+       tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
+    if (J_CT.equals(getJournal()))
+       tester.assertTitleEquals("PLoS Hub - Clinical Trials: Connecting communities with open-access research");
     super.verifyPage();
   }
 
