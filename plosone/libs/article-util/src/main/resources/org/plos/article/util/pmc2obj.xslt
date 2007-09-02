@@ -83,9 +83,13 @@
       as="element(user)*"/>
 
   <xsl:variable name="initial-state" select="1" as="xs:integer"/>
-  <xsl:variable name="rdf-ns" select="'http://www.w3.org/1999/02/22-rdf-syntax-ns#'"
+
+  <xsl:variable name="rdf-ns"  select="'http://www.w3.org/1999/02/22-rdf-syntax-ns#'"
       as="xs:string"/>
-  <xsl:variable name="xs-ns" select="'http://www.w3.org/2001/XMLSchema#'" as="xs:string"/>
+  <xsl:variable name="xs-ns"   select="'http://www.w3.org/2001/XMLSchema#'" as="xs:string"/>
+  <xsl:variable name="bib-ns"  select="'http://purl.org/net/nknouf/ns/bibtex#'" as="xs:string"/>
+  <xsl:variable name="plos-ns" select="'http://rdf.plos.org/RDF/'" as="xs:string"/>
+  <xsl:variable name="ct-ns"   select="concat($plos-ns, 'citation/type#')" as="xs:string"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
@@ -170,6 +174,9 @@
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
     <rdf:type rdf:resource="http://rdf.plos.org/RDF/articleType/{$fixed-article/@article-type}"/>
+    <xsl:for-each select="$meta/article-categories/subj-group[@subj-group-type = 'heading']/subject">
+      <rdf:type rdf:resource="http://rdf.plos.org/RDF/articleType/{encode-for-uri(.)}"/>
+    </xsl:for-each>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($article-doi)"/></dc:identifier>
     <xsl:if test="$jnl-meta/issn[@pub-type = 'ppub']">
@@ -260,18 +267,21 @@
           select="if ($meta/pub-date) then my:format-date(my:select-date($meta/pub-date)) else ()"/>
       <xsl:call-template name="gen-citation">
         <xsl:with-param name="id"
-            select="xs:anyURI(concat(my:doi-to-uri($article-doi), '#bibliographicCitation'))"/>
+            select="xs:anyURI(concat(my:doi-to-uri($article-doi), '/bibliographicCitation'))"/>
         <xsl:with-param name="type"
-            select="xs:anyURI(
-                concat('http://rdf.plos.org/RDF/articleType/', $fixed-article/@article-type))"/>
+            select="xs:anyURI(concat($bib-ns, 'Article'))"/>
         <xsl:with-param name="key"
             select="()"/>
         <xsl:with-param name="year"
+            select="if ($pub-date) then xs:integer(substring($pub-date, 1, 4)) else ()"/>
+        <xsl:with-param name="dispYear"
             select="if ($pub-date) then substring($pub-date, 1, 4) else ()"/>
         <xsl:with-param name="month"
             select="if ($pub-date) then substring($pub-date, 6, 2) else ()"/>
         <xsl:with-param name="volume"
             select="$meta/volume"/>
+        <xsl:with-param name="volNum"
+            select="xs:integer($meta/volume)"/>
         <xsl:with-param name="issue"
             select="$meta/issue"/>
         <xsl:with-param name="title"
@@ -308,15 +318,16 @@
       <dc_terms:references>
         <xsl:call-template name="gen-citation">
           <xsl:with-param name="id"
-              select="xs:anyURI(concat('info:doi/10.1371/reference.', $id))"/>
+              select="xs:anyURI(concat(my:doi-to-uri($article-doi), '/reference#', $id))"/>
           <xsl:with-param name="type"
-              select="if (citation/@citation-type) then
-                        xs:anyURI(concat('http://rdf.plos.org/RDF/articleType/', citation/@citation-type))
+              select="if (citation/@citation-type) then my:map-cit-type(citation/@citation-type)
                       else ()"/>
           <xsl:with-param name="key"      select="label"/>
-          <xsl:with-param name="year"     select="citation/year[1]"/>
+          <xsl:with-param name="year"     select="my:find-int(citation/year[1], 4)"/>
+          <xsl:with-param name="dispYear" select="citation/year[1]"/>
           <xsl:with-param name="month"    select="citation/month[1]"/>
           <xsl:with-param name="volume"   select="citation/volume[1]"/>
+          <xsl:with-param name="volNum"   select="my:find-int(citation/volume[1], 1)"/>
           <xsl:with-param name="issue"    select="citation/issue[1]"/>
           <xsl:with-param name="title"
               select="if (citation/article-title) then citation/article-title[1]
@@ -330,7 +341,7 @@
                       else citation/fpage"/>
           <xsl:with-param name="journal"
               select="if (citation/@citation-type = 'journal' or
-                          citation/@citation-type = 'conf-proceedings')
+                          citation/@citation-type = 'confproc')
                         then citation/source[1] else ()"/>
           <xsl:with-param name="note"     select="citation/comment[1]"/>
           <xsl:with-param name="editors"
@@ -347,15 +358,19 @@
   <xsl:template name="gen-citation"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/"
                 xmlns:plos="http://rdf.plos.org/RDF/"
+                xmlns:ptmp="http://rdf.plos.org/RDF/temporal#"
                 xmlns:bibtex="http://purl.org/net/nknouf/ns/bibtex#"
+                xmlns:prism="http://prismstandard.org/namespaces/1.2/basic/"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
     <xsl:param name="id"       as="xs:anyURI"/>
     <xsl:param name="type"     as="xs:anyURI?"/>
     <xsl:param name="key"      as="xs:string?"/>
-    <xsl:param name="year"     as="xs:string?"/>
+    <xsl:param name="year"     as="xs:integer?"/>
+    <xsl:param name="dispYear" as="xs:string?"/>
     <xsl:param name="month"    as="xs:string?"/>
     <xsl:param name="volume"   as="xs:string?"/>
+    <xsl:param name="volNum"   as="xs:integer?"/>
     <xsl:param name="issue"    as="xs:string?"/>
     <xsl:param name="title"/>
     <xsl:param name="pub-loc"  as="xs:string?"/>
@@ -369,7 +384,7 @@
     <xsl:param name="summary"/>
 
     <rdf:Description rdf:about="{$id}">
-      <rdf:type rdf:resource="http://purl.org/net/nknouf/ns/bibtex#Entry"/>
+      <rdf:type rdf:resource="{$bib-ns}Entry"/>
       <xsl:if test="$type">
         <rdf:type rdf:resource="{$type}"/>
       </xsl:if>
@@ -381,11 +396,17 @@
       <xsl:if test="$year">
         <bibtex:hasYear rdf:datatype="{$xs-ns}double"><xsl:value-of select="$year"/></bibtex:hasYear>
       </xsl:if>
+      <xsl:if test="$dispYear">
+        <ptmp:displayYear rdf:datatype="{$xs-ns}string"><xsl:value-of select="$dispYear"/></ptmp:displayYear>
+      </xsl:if>
       <xsl:if test="$month">
         <bibtex:hasMonth rdf:datatype="{$xs-ns}string"><xsl:value-of select="$month"/></bibtex:hasMonth>
       </xsl:if>
       <xsl:if test="$volume">
-        <bibtex:hasVolume rdf:datatype="{$xs-ns}double"><xsl:value-of select="$volume"/></bibtex:hasVolume>
+        <prism:volume rdf:datatype="{$xs-ns}string"><xsl:value-of select="$volume"/></prism:volume>
+      </xsl:if>
+      <xsl:if test="$volNum">
+        <bibtex:hasVolume rdf:datatype="{$xs-ns}double"><xsl:value-of select="$volNum"/></bibtex:hasVolume>
       </xsl:if>
       <xsl:if test="$issue">
         <bibtex:hasNumber rdf:datatype="{$xs-ns}string"><xsl:value-of select="$issue"/></bibtex:hasNumber>
@@ -1126,6 +1147,40 @@
       else if ($mime-type = 'application/vnd.ms-excel') then xs:anyURI('http://purl.org/dc/dcmitype/Dataset')
       else ()
       "/>
+  </xsl:function>
+
+  <!-- NLM citation-type to (bibtex or PLoS) URI mapping -->
+  <xsl:function name="my:map-cit-type" as="xs:anyURI">
+    <xsl:param name="cit-type" as="xs:string"/>
+    <xsl:variable name="uri" as="xs:string" select="
+      if      ($cit-type = 'book')       then concat($bib-ns, 'Book')
+      else if ($cit-type = 'commun')     then concat($ct-ns,  'Informal')
+      else if ($cit-type = 'confproc')   then concat($bib-ns, 'Conference')
+      else if ($cit-type = 'discussion') then concat($ct-ns,  'Discussion')
+      else if ($cit-type = 'gov')        then concat($ct-ns,  'Government')
+      else if ($cit-type = 'journal')    then concat($bib-ns, 'Article')
+      else if ($cit-type = 'list')       then concat($ct-ns,  'List')
+      else if ($cit-type = 'other')      then concat($bib-ns, 'Misc')
+      else if ($cit-type = 'patent')     then concat($ct-ns,  'Patent')
+      else if ($cit-type = 'thesis')     then concat($ct-ns,  'Thesis')
+      else if ($cit-type = 'web')        then concat($ct-ns,  'Web')
+      else concat($bib-ns, 'Misc')
+      "/>
+    <xsl:sequence select="xs:anyURI($uri)"/>
+  </xsl:function>
+
+  <!-- Find the first integer with given minimal length in the string -->
+  <xsl:function name="my:find-int" as="xs:integer?">
+    <xsl:param name="str" as="xs:string?"/>
+    <xsl:param name="min" as="xs:integer"/>
+    <!-- this should simply be replace($str, '(.*?(\d{$min,}))?.*', '$2', 's') but that is not
+       - allowed in xpath because the regexp can match the zero-length string. So we have to do
+       - this in two steps. -->
+    <xsl:variable name="tmp" as="xs:string"
+        select="replace($str, concat('.*?(\d{', $min, ',})'), '$1', 's')"/>
+    <xsl:variable name="num" as="xs:string"
+        select="replace($tmp, '\D.*', '', 's')"/>
+    <xsl:sequence select="if ($num) then xs:integer($num) else ()"/>
   </xsl:function>
 
   <!-- find all the hyperlinks pointing to the given doi -->
