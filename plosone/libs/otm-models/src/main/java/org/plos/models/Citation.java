@@ -40,12 +40,18 @@ public class Citation {
   @Predicate(uri = PLoS.bibtex + "hasYear", dataType = Rdf.xsd + "double")
   private Integer year;
 
+  @Predicate(uri=PLoS.PLoS_Temporal + "displayYear", dataType = Rdf.xsd + "string")
+  private String displayYear;
+
   @Predicate(uri = PLoS.bibtex + "hasMonth", dataType = Rdf.xsd + "string")
   private String month;
 
   /* TODO: Restore to correct datatype .Stored as double because of bug in Mulgara */
   @Predicate(uri = PLoS.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
-  private Integer volume;
+  private Integer volumeNumber;
+
+  @Predicate(uri=PLoS.prism + "volume", dataType = Rdf.xsd + "string")
+  private String volume;
 
   @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.xsd + "string")
   private String issue;
@@ -136,6 +142,25 @@ public class Citation {
   }
 
   /**
+   * The year of publication or, for an unpublished work, the year it was
+   * written. The reason for this predicate is because of misuse of this field
+   * in references. This field should only be used if the data cannot be mapped
+   * to Integer.
+   *
+   * @returns the year of the citation (if available)
+   */
+  public String getDisplayYear() {
+    return displayYear;
+  }
+
+  /**
+   * @param year the year of the citation
+   */
+  public void setDisplayYear(String displayYear) {
+    this.displayYear = displayYear;
+  }
+
+  /**
    * @returns the month of the citation (if available)
    */
   public String getMonth() {
@@ -152,14 +177,30 @@ public class Citation {
   /**
    * @return the volume this citation is in
    */
-  public Integer getVolume() {
-    return volume;
+  public Integer getVolumeNumber() {
+    return volumeNumber;
   }
 
   /**
    * @param volume the volume of this citation
    */
-  public void setVolume(Integer volume) {
+  public void setVolumeNumber(Integer volumeNumber) {
+    this.volumeNumber = volumeNumber;
+  }
+
+  /**
+   * This should be used only if volumeNumber cannot be used.
+   * 
+   * @returns the volume this citation is in 
+   */
+  public String getVolume() {
+    return volume;
+  }
+
+  /**
+   * @param volume the volume of the journal
+   */
+  public void setVolume(String volume) {
     this.volume = volume;
   }
 

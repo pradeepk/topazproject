@@ -77,6 +77,19 @@ factory.preload(UserProfile.class);
 def session = factory.openSession();
 def tx = session.beginTransaction();
 
+// Citation Map -> Map NLM Citation type to RDF types
+def citationMap = [ 'book':PLoS.bibtex + "Book",
+                    'commun':PLoS.PLoS_CitationTypes + "Informal",
+                    'confproc':PLoS.bibtex + "Conference",
+                    'discussion':PLoS.PLoS_CitationTypes + "Discussion",
+                    'gov':PLoS.PLoS_CitationTypes + "Government",
+                    'journal':PLoS.bibtex + "Article",
+                    'list':PLoS.PLoS_CitationTypes + "List",
+                    'other':PLoS.bibtex + "Misc",
+                    'patent':PLoS.PLoS_CitationTypes + "Patent",
+                    'thesis':PLoS.PLoS_CitationTypes + "Thesis",
+                    'web':PLoS.PLoS_CitationTypes + "Web" ]
+
 // Read article from mulgara
 def article = session.get(Article.class, doi)
 
@@ -181,10 +194,12 @@ log.info("$doi migrating")
 def dc = article.dublinCore
 def bc = dc.bibliographicCitation = new Citation()
 
-bc.id                    = new URI(tostr(article.id.toString() + "#bibliographicCitation"))
+bc.id                    = new URI(tostr(article.id.toString() + "/bibliographicCitation"))
 bc.year                  = toint(articleMeta.'pub-date'[0].year)
+bc.displayYear           = articleMeta.'pub-date'[0].year
 bc.month                 = toint(articleMeta.'pub-date'[0].month)
-bc.volume                = toint(articleMeta.volume)
+bc.volumeNumber          = toint(articleMeta.volume)
+bc.volume                = articleMeta.volume
 bc.issue                 = tostr(articleMeta.issue)
 bc.title                 = dc.title
 bc.publisherLocation     = tostr(journalMeta.publisher.'publisher-loc')
@@ -197,6 +212,7 @@ bc.summary               = dc.description
 bc.url                   = "http://dx.plos.org/${dc.identifier.substring(9)}"
 bc.editors               = (editors ? editors : null)
 bc.authors               = (authors ? authors : null)
+bc.citationType          = PLoS.bibtex + "Article"
 
 // dc.confirmsTo should scrape from the article, but for migration from 0.7, this works
 dc.conformsTo            = new URI('http://dtd.nlm.nih.gov/publishing/2.0/journalpublishing.dtd')
@@ -204,10 +220,20 @@ dc.copyrightYear         = toint(articleMeta.'copyright-year')
 dc.references            = []
 // TODO: Set dc.license -- doc has article.article-meta.copyright-statement, but no bloody URI!
 
-def articleType = new URI(PLoS.PLOS_ArticleType + tostr(slurpedArticle.'@article-type'))
+// Add the different types the article conforms to
 article.articleType = new HashSet()
+// PMC type
+def articleType = new URI(PLoS.PLOS_ArticleType + tostr(slurpedArticle.'@article-type'))
 article.articleType.add(articleType)
-bc.citationType = articleType
+// PLoS type
+articleMeta.'article-categories'.'subj-group'.each() { subj_group ->
+  if (subj_group.'@subj-group-type' == "heading") {
+    subj_group.subject.each() { subj ->
+      article.articleType.add(new URI(PLoS.PLOS_ArticleType +
+         URLEncoder.encode(tostr(subj), "UTF-8").replace("+", "%20")))
+    }
+  }
+}
 
 // add issn/eIssn
 def addIssn = { field, val ->
@@ -253,11 +279,15 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
   }
 
   def name              = tostr(src.'@id')
-  cit.id                = new URI('info:doi/10.1371/reference.' + src.'@id')
+  cit.id                = new URI(article.id.toString() + '/reference#' + src.'@id')
   cit.key               = tostr(src.label)
+  // Try providing both String and Integer type of years
   cit.year              = findInt(src.citation.year[0], "$name:year", 4)
+  cit.displayYear       = src.citation.year[0]
   cit.month             = tostr(src.citation.month[0])
-  cit.volume            = findInt(src.citation.volume[0], "$name:volume", 0)
+  // Try providing both String and Integer type for volume
+  cit.volumeNumber      = findInt(src.citation.volume[0], "$name:volume", 0)
+  cit.volume            = src.citation.volume[0]
   cit.issue             = tostr(src.citation.issue[0])
   cit.title             = getXml(src.citation.'article-title'[0])
   if (!cit.title)
@@ -272,10 +302,14 @@ slurpedArticle.back.'ref-list'.ref.each() { src ->
 
   def citationType = tostr(src.citation.@'citation-type')
   if (citationType) {
-    cit.citationType    = new URI(PLoS.PLOS_ArticleType + citationType) // Bad? Tired of arguing
+    // Get the RDF type associated with the NLM citation type
+    def citRdfType = citationMap.get(citationType)
+    if (!citRdfType)
+      citRdfType = PLoS.bibtex + "Misc"
+    cit.citationType = citRdfType
 
-    if (citationType.equals('journal') || citationType.equals('conf-proceedings'))
-      cit.journal       = tostr(src.citation.source[0])
+    if (citationType.equals('journal') || citationType.equals('confproc'))
+      cit.journal = tostr(src.citation.source[0])
   }
 
   dc.references.add(cit)
