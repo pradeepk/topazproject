@@ -13,6 +13,8 @@ import java.net.URLEncoder;
 
 import org.plosone.it.jwebunit.PlosOneWebTester;
 
+import org.plos.models.Article;
+
 /**
  * PlosOne Article Display Page
  *
@@ -37,8 +39,11 @@ public class ArticlePage extends CommonBasePage {
     EMAIL_THIS_LINK, ORDER_REPRINTS_LINK, PRINT_THIS_LINK,
   };
 
+  private final String doi;
+
   public ArticlePage(PlosOneWebTester tester, String journal, String doi) {
     super(tester,journal, PAGE_URL + URLEncoder.encode(doi));
+    this.doi = doi;
   }
 
   public static String getArticleUrl(String doi) {
@@ -47,10 +52,18 @@ public class ArticlePage extends CommonBasePage {
 
 
   public void verifyPage() {
-    //tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
     super.verifyPage();
     for (String link : links)
       tester.assertLinkPresentWithText(link);
+    Article article = tester.getDao().getArticle(doi);
+    String prefix = "";
+    if (J_PONE.equals(getJournal()))
+      prefix = "PLoS ONE: ";
+    else if (J_CT.equals(getJournal()))
+      prefix = "PLoS Hub - Clinical Trials: ";
+
+    tester.assertTitleEquals(prefix + article.getDublinCore().getTitle());
+    tester.assertTextPresent(article.getDublinCore().getTitle());
   }
 
   public void createAnnotation(String title, String body) {

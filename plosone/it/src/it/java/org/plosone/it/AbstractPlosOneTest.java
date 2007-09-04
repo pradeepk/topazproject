@@ -97,12 +97,14 @@ public abstract class AbstractPlosOneTest {
    * DOCUMENT ME!
    */
   public void initTesters() {
+    PlosOneDAO dao = new PlosOneDAO();
     for (String journal : journals.keySet()) {
       for (String browser : browsers.keySet()) {
         PlosOneWebTester tester  = new PlosOneWebTester();
         tester.setTestContext(new PlosOneTestContext(browsers.get(browser), journals.get(journal)));
         tester.setTestingEngineKey(TEST_ENGINE);
         tester.getTestContext().setBaseUrl("http://localhost:8080/plosone-webapp");
+        tester.setDao(dao);
         testers.put(new TesterId(journal, browser), tester);
       }
     }

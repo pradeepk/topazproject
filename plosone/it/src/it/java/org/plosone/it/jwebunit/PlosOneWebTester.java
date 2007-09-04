@@ -9,14 +9,9 @@
  */
 package org.plosone.it.jwebunit;
 
-
-
-
-import static org.testng.AssertJUnit.*;
-
-
-
 import net.sourceforge.jwebunit.junit.WebTester;
+
+import org.plosone.it.PlosOneDAO;
 
 /**
  * An extension for WebTester for keeping some plosone specific states.
@@ -27,6 +22,8 @@ public class PlosOneWebTester extends WebTester {
   private boolean loggedIn = false;
   private boolean admin    = false;
   private boolean initialized = false;
+
+  private PlosOneDAO dao;
 
   /**
    * Gets the login state.
@@ -79,4 +76,11 @@ public class PlosOneWebTester extends WebTester {
       super.gotoPage(aRelativeURL);
   }
 
+  public PlosOneDAO getDao() {
+    return dao;
+  }
+
+  public void setDao(PlosOneDAO dao) {
+    this.dao = dao;
+  }
 }
