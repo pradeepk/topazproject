@@ -277,6 +277,80 @@ public class OqlTest extends GroovyTestCase {
     }
   }
 
+  void testProjectionWildcard() {
+    Class cls = rdf.class('Test1') {
+      name  ()
+      age   (type:'xsd:int', javaType:Integer)
+      birth (type:'xsd:date')
+    }
+
+    // all fields set
+    def o1 = cls.newInstance(name:'Bob',  age:5,   birth:new Date("6 Jun 1860"))
+    doInTx { s ->
+      s.saveOrUpdate(o1)
+    }
+
+    def checker = new ResultChecker(test:this)
+    Results r
+
+    doInTx { s ->
+      r = s.createQuery("select t.* p from Test1 t order by p;").execute()
+      checker.verify(r) {
+        row { uri ("http://rdf.topazproject.org/RDF/age".toURI()) }
+        row { uri ("http://rdf.topazproject.org/RDF/birth".toURI()) }
+        row { uri ("http://rdf.topazproject.org/RDF/name".toURI()) }
+        row { uri ("http://www.w3.org/1999/02/22-rdf-syntax-ns#type".toURI()) }
+      }
+    }
+
+    // only some fields set
+    def o2 = cls.newInstance(name:'Jack')
+    doInTx { s ->
+      s.delete(o1)
+      s.saveOrUpdate(o2)
+    }
+
+    doInTx { s ->
+      r = s.createQuery("select t.* p from Test1 t order by p;").execute()
+      checker.verify(r) {
+        row { uri ("http://rdf.topazproject.org/RDF/name".toURI()) }
+        row { uri ("http://www.w3.org/1999/02/22-rdf-syntax-ns#type".toURI()) }
+      }
+    }
+
+    // nested classes
+    Class cls2 = rdf.class('Test2') {
+      name  ()
+      info1 () {
+        address()
+      }
+      info2 (embedded:true) {
+        sig ()
+      }
+    }
+
+    def o3 = cls2.newInstance(name:'Bob', info1:[address:'easy st'], info2:[sig:'good day'])
+    doInTx { s ->
+      s.saveOrUpdate(o3)
+    }
+
+    doInTx { s ->
+      r = s.createQuery("select t.* p from Test2 t order by p;").execute()
+      checker.verify(r) {
+        row { uri ("http://rdf.topazproject.org/RDF/info1".toURI()) }
+        row { uri ("http://rdf.topazproject.org/RDF/name".toURI()) }
+        row { uri ("http://rdf.topazproject.org/RDF/sig".toURI()) }
+        row { uri ("http://www.w3.org/1999/02/22-rdf-syntax-ns#type".toURI()) }
+      }
+
+      r = s.createQuery("select t.* p from Info1 t order by p;").execute()
+      checker.verify(r) {
+        row { uri ("http://rdf.topazproject.org/RDF/address".toURI()) }
+        row { uri ("http://www.w3.org/1999/02/22-rdf-syntax-ns#type".toURI()) }
+      }
+    }
+  }
+
   void testFunctions() {
     // test lt, gt, le, ge
     Class cls = rdf.class('Test1') {
