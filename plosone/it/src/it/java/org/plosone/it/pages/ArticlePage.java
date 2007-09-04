@@ -41,6 +41,11 @@ public class ArticlePage extends CommonBasePage {
     super(tester,journal, PAGE_URL + URLEncoder.encode(doi));
   }
 
+  public static String getArticleUrl(String doi) {
+    return PAGE_URL + URLEncoder.encode(doi);
+  }
+
+
   public void verifyPage() {
     //tester.assertTitleEquals("PLoS ONE : Publishing science, accelerating research");
     super.verifyPage();

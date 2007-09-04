@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plosone.it.pages.HomePage;
 import org.plosone.it.pages.ArticlePage;
+import org.plosone.it.pages.SearchResultsPage;
 import org.plosone.it.jwebunit.PlosOneWebTester;
 
 import org.testng.annotations.BeforeClass;
@@ -131,6 +132,16 @@ public class NavTest extends AbstractPlosOneTest {
     hp.verifyPage();
     hp.logOut();
     hp.verifyPage();
+  }
+
+  @Test(dataProvider="journals")
+  public void testSearch(String journal, String browser) {
+    log.info("Testing search [journal=" + journal + ", browser=" + browser + "] ... ");
+    HomePage hp = new HomePage(getTester(journal, browser), journal);
+    hp.gotoPage();
+    SearchResultsPage srp = hp.search("Natural", 
+        new String[]{"info:doi/10.1371/journal.pone.0000021"});
+    srp.verifyPage();
   }
 
   @Test(dataProvider="articles")

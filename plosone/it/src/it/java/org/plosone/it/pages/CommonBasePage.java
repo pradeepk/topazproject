@@ -97,4 +97,12 @@ public abstract class CommonBasePage extends AbstractPage {
       gotoPage();  // logout takes you to home page. so come-back here again
     }
   }
+
+  public SearchResultsPage search(String query, String expected[]) {
+    tester.setWorkingForm("searchForm");
+    tester.setFormElement("query", query);
+    tester.submit();
+    return new SearchResultsPage(tester, getJournal(), query, expected);
+  }
+
 }
