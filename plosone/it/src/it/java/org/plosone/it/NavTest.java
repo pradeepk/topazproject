@@ -49,7 +49,7 @@ public class NavTest extends AbstractPlosOneTest {
   public void setUp() {
     installEnvs();
     initTesters();
-    //getBasicEnv().start();
+    getBasicEnv().start();
     setUpArticles();
   }
 
