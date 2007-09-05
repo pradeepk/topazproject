@@ -1,0 +1,32 @@
+#!/bin/sh
+
+p5="0\\.7"
+r5="0.8-SNAPSHOT"
+pt="-t00700"
+rt="-t00800-SNAPSHOT"
+rel=SNAPSHOT
+
+for f in \
+    build/archetypes/webservice/src/main/resources/archetype-resources/pom.xml \
+    build/archetypes/webservice/src/main/resources/archetype-resources/*/pom.xml \
+  ; do
+  perl -p -i -e "s/$p5/$r5/g" "$f"
+done
+
+for f in \
+    pom.xml \
+    topazproject/webservices/search/ws-server-impl/pom.xml \
+    topazproject/webservices/search/topaz-lucene-impl/pom.xml \
+    build/ant-tasks-plugin/src/main/scripts/ecqs.mojos.xml \
+    build/ant-tasks-plugin/src/main/scripts/fedora.mojos.xml \
+    packages/cas/pom.xml \
+    packages/fedora/pom.xml \
+  ; do
+  perl -p -i -e "s/$pt/$rt/g" "$f"
+done
+
+perl -p -i -e "s/webwork\.devMode=false/webwork\.devMode=true/g" plosone/webapp/src/main/webapp/WEB-INF/classes/webwork.properties
+
+for f in packages/*/pom.xml ; do
+  perl -p -i -e "s/<release>.*?<\/release>/<release>$rel<\/release>/g" "$f"
+done
