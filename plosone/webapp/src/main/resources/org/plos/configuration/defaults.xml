@@ -56,7 +56,7 @@
       </default>
       <!-- entries to config each virtual journal -->
       <!-- comma separated list of virtual journal names -->
-      <journals>PLoSClinicalTrials</journals>
+      <journals>PLoSClinicalTrials,PLoSNTD</journals>
       <PLoSClinicalTrials>
         <description>Clinical Trials</description>
         <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
@@ -66,6 +66,15 @@
         </rules>
         <url>http://clinicaltrials.ploshubs.org</url>
       </PLoSClinicalTrials>
+      <PLoSNTD>
+        <description>Neglected Tropical Diseases</description>
+        <mappingPrefix>/journals/ntd</mappingPrefix>
+        <rules>
+          <host>plosntds\..*</host>
+          <plosJournal>ntd</plosJournal>
+        </rules>
+        <url>http://plosntds.org</url>
+      </PLoSNTD>
       <!-- virtual journal config entry
       <${journalName}>
         <description>${display for Admin, etc.}</description>
@@ -689,6 +698,37 @@
       </default>
       <page>
         <name>/journals/clinicalTrials/index.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_home.css</file>
+        </css>
+        <javascript>
+          <file>/javascript/dojo/dojo_home.js</file>
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/domUtil.js</file>
+          <file>/javascript/topaz/htmlUtil.js</file>
+          <file>/javascript/dojoRequire_default.ftl</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+        </javascript>
+      </page>
+      <page>
+        <name>/article/article_body.ftl</name>
+        <title>CODE_ARTICLE_TITLE</title>
+      </page>
+    </journal>
+    <journal>
+      <name>PLoSNTD</name>
+      <metaKeywords>neglected tropical diseases, medical publishing\, plos\, public library of science\, open access\, open-access\, science\, medical research\, clinical research\, human studies\, experimental treatment\, disease\, drug\, drugs\, device\, devices\, vaccine\, vaccines\, phase I\, phase II\, phase III\, phase IV\, journal\, portal\, gateway\, resource</metaKeywords>
+      <metaDescription>PLoS Hub â Neglected Tropical Diseases: Connecting the community with open-access\, peer-reviewed research.</metaDescription>
+      <articleTitlePrefix>PLoS Hub - Clinical Trials:  </articleTitlePrefix>
+      <displayName>PLoS Hub - Neglected Tropical Diseases</displayName>
+      <default>
+        <title>PLoS Hub - Neglected Tropical Diseases: Connecting communities with open-access research</title>
+      </default>
+      <page>
+        <name>/journals/ntd/index.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
