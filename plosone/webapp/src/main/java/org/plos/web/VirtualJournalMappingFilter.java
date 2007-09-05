@@ -48,7 +48,8 @@ import org.plos.configuration.ConfigurationStore;
  */
 public class VirtualJournalMappingFilter implements Filter {
 
-  private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
+  private static final Configuration configuration =
+                                              ConfigurationStore.getInstance().getConfiguration();
 
   private static ServletContext servletContext = null;
 
@@ -87,7 +88,8 @@ public class VirtualJournalMappingFilter implements Filter {
     // settings & overrides are in the Configuration
     if (configuration == null) {
       // should never happen
-      final String errorMessage = "No Configuration is available to set Virtual Journal mappingPrefix";
+      final String errorMessage =
+          "No Configuration is available to set Virtual Journal mappingPrefix";
       log.error(errorMessage);
       throw new ServletException(errorMessage);
     }
@@ -100,7 +102,6 @@ public class VirtualJournalMappingFilter implements Filter {
    * @see javax.servlet.Filter#destroy
    */
   public void destroy() {
-
     // nothing to do
   }
 
