@@ -1,34 +1,28 @@
 #!/bin/sh
 
-
-p5="0\\.7-SNAPSHOT"
-r5="0.7"
-pt="-t00700-SNAPSHOT"
-rt="-t00700"
+p5="0\\.8\\.1-SNAPSHOT"
+r5="0.8.1"
+pt="-t00801-SNAPSHOT"
+rt="-t00801"
 rel="1"
 
-#p5="0\\.5-rc1"
-#r5="0.5-rc2-SNAPSHOT"
-#pt="-t1"
-#rt="-t2-SNAPSHOT"
-#rel=SNAPSHOT
-
 for f in \
-  build/archetypes/webservice/src/main/resources/archetype-resources/pom.xml \
-  build/archetypes/webservice/src/main/resources/archetype-resources/*/pom.xml \
-  ; do
-  perl -p -i -e "s/$p5/$r5/g" "$f"
-done
-for f in \
+    pom.xml \
+    plosone/search/fedoragsearch-server/pom.xml \
+    plosone/search/ws-server-impl/pom.xml \
+    plosone/search/topaz-lucene-impl/pom.xml \
     build/ant-tasks-plugin/src/main/scripts/ecqs.mojos.xml \
     build/ant-tasks-plugin/src/main/scripts/fedora.mojos.xml \
-    pom.xml \
+    re-package/fedora/pom.xml \
+    re-package/ecqs/pom.xml \
+    packages/cas/pom.xml \
+    packages/fedora/pom.xml \
   ; do
   perl -p -i -e "s/$pt/$rt/g" "$f"
 done
 
 # edit these
-#    topazproject/webservices/search/ws-server-impl/pom.xml \
+#    plosone/search/ws-server-impl/pom.xml
 #    packages/cas/pom.xml \
 
 perl -p -i -e "s/struts\.devMode=true/struts\.devMode=false/g" plosone/webapp/src/main/webapp/WEB-INF/classes/struts.properties
