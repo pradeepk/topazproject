@@ -46,3 +46,19 @@ static Configuration loadConfiguration(xmlConfigFileOverride) {
   conf.addConfiguration(ConfigurationStore.instance.configuration)
   return conf
 }
+
+/**
+ * Extract integers from a string
+ *
+ * @param value the string to extract integers from
+ * @param minLen minimum length of integer string
+ * @param maxLen maximum lenght of integer string
+ */
+static String[] findInt(value, minLen, maxLen) {
+ def matches = []
+ (value?.toString() =~ "[0-9]{$minLen,$maxLen}").each { match ->
+  matches.add(match)
+ }
+
+ matches.size() == 0 ? null : matches
+}
