@@ -18,6 +18,7 @@ public class Env {
   private String opts;
   private static Env active = null;
   private String mvnExec = null;
+  private String fedoraHome;
 
   public static boolean stopOnExit = true;
 
@@ -43,6 +44,7 @@ public class Env {
     opts  = ' -DECQS_INSTALL_DIR=' + install + 
             ' -DFEDORA_INSTALL_DIR=' + install + 
             ' -DDEST_DIR=' + install
+    fedoraHome = path(install, "fedora-2.1.1")
 
     String url = '/net/sf/antcontrib/antlib.xml'
     url = this.getClass().getResource(url)
@@ -135,7 +137,7 @@ public class Env {
   }
 
   private void fedora() {
-    ant.delete(file: path(install, '/fedora-2.1.1/server/status'))
+    ant.delete(file: path(fedoraHome, '/server/status'))
     ant.exec(executable: mavenExecutable) {
       arg(line: 'ant-tasks:fedora-start -DSPAWN=true' + opts)
     }
@@ -219,16 +221,39 @@ public class Env {
     if (!l.exists())
       l.mkdir()
 
-    ant.exec(executable: mavenExecutable) {
-      arg(line: 'ant-tasks:fedora-rebuild ' + opts
-       + ' -DFEDORA_REBUILD_STDIN=' + rebuildInput()
-       + ' -DFEDORA_REBUILD_FROM=' + path(install, '/data/fedora'))
-    }
+    fedoraRebuild();
   }
 
-  private String rebuildInput() {
-     return resource('/fedora-rebuild-input')
+  // mvn ant-tasks:fedora-rebuild hangs in windows. So inline-it here.
+  private void fedoraRebuild() {
+    ant.echo("Rebuilding fedora data ...")
+    ant.echo("Starting mckoi ...")
+    ant.forget {
+       ant.exec(dir: fedoraHome, executable:path(fedoraHome, "/server/bin/mckoi-start") + ext()) {
+         env(key:"FEDORA_HOME", file:fedoraHome)
+       }
+    }
+    ant.sleep(seconds:2)
+    ant.echo("Replacing fedora objects and datastreams ...")
+    ant.delete(dir: path(fedoraHome, "/data/datastreams"))
+    ant.delete(dir: path(fedoraHome, "/data/objects"))
+    ant.copy(todir:path(fedoraHome, "/data")) {
+      fileset(dir:path(install, "/data/fedora"))
+    }
+    ant.echo("Invoking fedora-rebuild ...")
+    ant.exec(dir: fedoraHome, executable:path(fedoraHome, "/server/bin/fedora-rebuild") + ext(),
+             input: resource('/fedora-rebuild-input')) {
+      arg(line:"mckoi")
+      env(key:"FEDORA_HOME", file:fedoraHome)
+    }
+    ant.echo("Stopping mckoi ...")
+    ant.exec(dir: fedoraHome, executable:path(fedoraHome, "/server/bin/mckoi-stop") + ext()) {
+      arg(line:"fedoraAdmin fedoraAdmin")
+      env(key:"FEDORA_HOME", file:fedoraHome)
+    }
+    ant.echo("Fedora rebuild completed.")
   }
+
   
   private String publishingAppLog4j() {
     File f = new File(resource('/plosoneLog4j.xml'))
@@ -258,6 +283,10 @@ public class Env {
     println 'executing script ' + res + ' with args ' + sargs
     GroovyShell shell = new GroovyShell();
     shell.run(new File(res), sargs)
+  }
+
+  private String ext() {
+    return (System.properties.'os.name'.toLowerCase().indexOf('windows') > -1) ? '.bat' : '';
   }
 
   private String getMavenExecutable() {
