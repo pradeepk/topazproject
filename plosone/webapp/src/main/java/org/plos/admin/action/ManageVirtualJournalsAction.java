@@ -34,6 +34,8 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
   private Set<Journal> journals;
   private String journalToModify;
+  private URI image;
+  private URI currentIssue;
   private String articlesToAdd;
   private String[] articlesToDelete;
   private Session session;
@@ -58,9 +60,11 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
         public Void run(Transaction tx) {
 
-          // process any pending adds, deletes
+          // process any pending modifications, adds, deletes
           if (journalToModify != null
-            && ((articlesToAdd != null && articlesToAdd.length() != 0)
+            && (image != null
+              || currentIssue != null
+              || (articlesToAdd != null && articlesToAdd.length() != 0)
               || articlesToDelete != null)) {
             // get the Journal
             Journal journal = journalService.getJournal(journalToModify);
@@ -73,6 +77,23 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
             // current Journal Articles
             List<URI> articles = journal.getSimpleCollection();
+
+            // process modifications
+            if (image != null) {
+              if (image.toString().length() == 0) {
+                image = null;
+              }
+              journal.setImage(image);
+              addActionMessage("Image set to: " + image);
+            }
+
+            if (currentIssue != null) {
+              if (currentIssue.toString().length() == 0) {
+                currentIssue = null;
+              }
+              journal.setCurrentIssue(currentIssue);
+              addActionMessage("Current Issue set to: " + currentIssue);
+            }
 
             // process adds
             if (articlesToAdd != null && articlesToAdd.length() != 0) {
@@ -143,6 +164,42 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    */
   public void setJournalToModify(String journalToModify) {
     this.journalToModify = journalToModify;
+  }
+
+  /**
+   * Get current issue.
+   *
+   * @return current issue.
+   */
+  public String getCurrentIssue() {
+    return currentIssue.toString();
+  }
+
+  /**
+   * Set current issue.
+   *
+   * @param currentIssue the current issue for this journal.
+   */
+  public void setCurrentIssue(String currentIssue) {
+    this.currentIssue = URI.create(currentIssue);
+  }
+
+  /**
+   * Get image.
+   *
+   * @return image.
+   */
+  public String getImage() {
+    return image.toString();
+  }
+
+  /**
+   * Set image.
+   *
+   * @param image the image for this journal.
+   */
+  public void setImage(String image) {
+    this.image = URI.create(image);
   }
 
   /**

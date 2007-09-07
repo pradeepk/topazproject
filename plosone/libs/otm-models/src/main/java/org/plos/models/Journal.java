@@ -9,6 +9,8 @@
  */
 package org.plos.models;
 
+import java.net.URI;
+
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -24,6 +26,12 @@ public class Journal extends Aggregation {
 
   @Predicate(uri = "http://prismstandard.org/namespaces/1.2/basic/eIssn")
   private String  eIssn;
+
+  @Predicate(uri = PLoS.plos + "Journal/currentIssue")
+  private URI currentIssue;
+
+  @Predicate(uri = PLoS.plos + "Journal/image")
+  private URI image;
 
   /**
    * Get the internal key used to identify this journal.
@@ -59,5 +67,41 @@ public class Journal extends Aggregation {
    */
   public void setEIssn(String eIssn) {
     this.eIssn = eIssn;
+  }
+
+  /**
+   * Get the image for this journal.
+   *
+   * @return the image, may be null.
+   */
+  public URI getImage() {
+    return image;
+  }
+
+  /**
+   * Set the image for this journal.
+   *
+   * @param image the image, may be null.
+   */
+  public void setImage(URI image) {
+    this.image = image;
+  }
+
+  /**
+   * Get the current issue for this journal.
+   *
+   * @return the current issue, may be null.
+   */
+  public URI getCurrentIssue() {
+    return currentIssue;
+  }
+
+  /**
+   * Set the current issue for this journal.
+   *
+   * @param currentIssue the current issue, may be null.
+   */
+  public void setCurrentIssue(URI currentIssue) {
+    this.currentIssue = currentIssue;
   }
 }

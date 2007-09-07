@@ -36,8 +36,30 @@
           namespace="/admin">
           <@s.hidden name="journalToModify" label="Journal to Modify" required="true"
             value="${journal.key}"/>
-          <@s.submit value="Modify Articles In ${journal.key}"/>
+          <@s.submit value="Modify ${journal.key}"/>
           <table border="1" cellpadding="2" cellspacing="0">
+            <tr>
+              <td>
+                <#if journal.image?exists>
+                  <@s.url id="journalImage" value="${journal.image}" />
+                  <#assign altText="Journal Image" />
+                <#else>
+                  <@s.url id="journalImage" value="" />
+                  <#assign altText="Journal Image null" />
+                </#if>
+                <img src="${journalImage}" alt="${altText}" height="120" width="120"/>
+              </td>
+              <td>
+                <@s.textfield name="journalImage" value="${journal.image!''}"
+                  label="Image (URI)" size="42" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <@s.textfield name="currentIssue" value="${journal.currentIssue!''}"
+                  label="Current Issue (DOI)" size="42" />
+              </td>
+            </tr>
             <tr><th colspan="2">Simple Collection</th></tr>
             <tr>
               <td colspan="2"><@s.textfield name="articlesToAdd" label="Add" size="100"/></td>
@@ -55,6 +77,9 @@
           </table>
         </@s.form>
       </fieldset>
+      <br />
+
+      <hr />
     </#list>
   </body>
 </html>
