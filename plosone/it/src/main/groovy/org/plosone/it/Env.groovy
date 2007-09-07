@@ -113,7 +113,11 @@ public class Env {
     active = this
     mulgara()
     fedora()
+    waitFor('http://localhost:9091/mulgara-service/')
+    ant.echo 'Mulgara started'
     publishingApp()
+    waitFor('http://localhost:9090/userdocs/')
+    ant.echo 'Fedora started'
     waitFor('http://localhost:8080/plosone-webapp/')
     ant.echo 'Publishing app started'
   }
@@ -137,9 +141,20 @@ public class Env {
   }
 
   private void fedora() {
+    ant.echo("Starting mckoi ...")
+    ant.forget {
+       ant.exec(dir: fedoraHome, executable:path(fedoraHome, "/server/bin/mckoi-start") + ext()) {
+         env(key:"FEDORA_HOME", file:fedoraHome)
+       }
+    }
+    ant.sleep(seconds:"10")
+    ant.echo("Starting fedora ...")
     ant.delete(file: path(fedoraHome, '/server/status'))
-    ant.exec(executable: mavenExecutable) {
-      arg(line: 'ant-tasks:fedora-start -DSPAWN=true' + opts)
+    ant.forget {
+       ant.exec(dir: fedoraHome, executable:path(fedoraHome, "/server/bin/fedora-start") + ext()) {
+         arg(line: "mckoi")
+         env(key:"FEDORA_HOME", file:fedoraHome)
+       }
     }
   }
 
@@ -233,7 +248,7 @@ public class Env {
          env(key:"FEDORA_HOME", file:fedoraHome)
        }
     }
-    ant.sleep(seconds:2)
+    ant.sleep(seconds:"10")
     ant.echo("Replacing fedora objects and datastreams ...")
     ant.delete(dir: path(fedoraHome, "/data/datastreams"))
     ant.delete(dir: path(fedoraHome, "/data/objects"))
