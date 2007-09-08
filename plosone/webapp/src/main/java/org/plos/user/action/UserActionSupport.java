@@ -15,6 +15,9 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.user.service.UserService;
 
+import org.springframework.beans.factory.annotation.Required;
+import com.googlecode.jsonplugin.annotations.JSON;
+
 import java.util.Map;
 
 /**
@@ -24,14 +27,14 @@ import java.util.Map;
  * 
  */
 public class UserActionSupport extends BaseActionSupport {
-  private UserService userService;
   private static final Log log = LogFactory.getLog(UserActionSupport.class);
+  private UserService userService;
+
   /**
-   * Note: The visibility of this method is default so that the JSON serializer does not get into
-   * an infinite circular loop when trying to serialize the action.
-   * @return Returns the userService.
+   * @return the userService.
    */
-  UserService getUserService() {
+  @JSON(serialize = false)
+  protected UserService getUserService() {
     return userService;
   }
 
@@ -39,6 +42,7 @@ public class UserActionSupport extends BaseActionSupport {
    * @param userService
    *          The userService to set.
    */
+  @Required
   public void setUserService(UserService userService) {
     this.userService = userService;
   }
