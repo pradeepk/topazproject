@@ -230,16 +230,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the otm session.
-   *
-   * @return Returns the otm session.
-   */
-  @JSON(serialize = false)
-  public Session getOtmSession() {
-    return session;
-  }
-
-  /**
    * Set the OTM session. Called by spring's bean wiring.
    *
    * @param session The otm session to set.
@@ -247,17 +237,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
-  }
-
-  /**
-   * Gets the ArticleOtmService.
-   * Use ArticleOtmService v native OTM as it's aware of Article semantics.
-   *
-   * @return The ArticleOtmService.
-   */
-  @JSON(serialize = false)
-  public ArticleOtmService getArticleOtmService() {
-    return articleOtmService;
   }
 
   /**

@@ -236,16 +236,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the otm session.
-   *
-   * @return Returns the otm session.
-   */
-  @JSON(serialize = false)
-  public Session getOtmSession() {
-    return session;
-  }
-
-  /**
    * Set the OTM session. Called by spring's bean wiring.
    *
    * @param session The otm session to set.

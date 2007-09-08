@@ -429,16 +429,6 @@ public class RateAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the otm session.
-   *
-   * @return Returns the otm session.
-   */
-  @JSON(serialize = false)
-  public Session getOtmSession() {
-    return session;
-  }
-
-  /**
    * Sets the otm util.
    *
    * @param session The otm session to set.
