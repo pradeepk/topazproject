@@ -44,7 +44,7 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
   }
 
   public Set<String> getParameterNames() {
-    return Collections.EMPTY_SET;
+    return Collections.<String>emptySet();
   }
 
   /** 
