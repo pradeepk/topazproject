@@ -12,8 +12,11 @@ package org.topazproject.mulgara.itql;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.jrdf.graph.BlankNode;
 import org.jrdf.graph.GraphElementFactory;
 import org.jrdf.graph.GraphElementFactoryException;
 
@@ -70,6 +73,7 @@ public class Answer extends AbstractAnswer {
    */
   public static class QueryAnswer extends AbstractQueryAnswer {
     private final List rows;
+    private final Map<String, BlankNode> bnodes = new HashMap<String, BlankNode>();
 
     protected QueryAnswer(Element query, GraphElementFactory gef)
         throws URISyntaxException, GraphElementFactoryException, AnswerException {
@@ -90,8 +94,12 @@ public class Answer extends AbstractAnswer {
       if (res.length() > 0)
         return gef.createResource(new URI(res));
 
-      if (v.hasAttribute(BNODE_ATTR))
-        return gef.createResource();
+      if (v.hasAttribute(BNODE_ATTR)) {
+        BlankNode bn = bnodes.get(v.getAttribute(BNODE_ATTR));
+        if (bn == null)
+          bnodes.put(v.getAttribute(BNODE_ATTR), bn = gef.createResource());
+        return bn;
+      }
 
       if (v.getFirstChild() instanceof Element)
         return new QueryAnswer(v, gef);
