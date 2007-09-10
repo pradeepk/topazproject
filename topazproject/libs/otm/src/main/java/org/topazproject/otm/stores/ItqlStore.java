@@ -669,9 +669,6 @@ public class ItqlStore extends AbstractTripleStore {
           rev.put(next, node);
           updateTypeMap(qa.getSubQueryResults(3), assoc, types);
         }
-        log.debug("forward list: " + fwd);
-        log.debug("reverse list: " + rev);
-        log.debug("object  list: " + objs);
 
         if (objs.size() == 0)
           return res;
