@@ -174,13 +174,16 @@ public class Env {
   /**
    * Start up mulgara.
    */
-  private void mulgara() {
+  public void mulgara() {
     ant.echo 'Starting mulgara ...'
     ant.forget {
+      String argLine = ('-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install 
+      + ' -Dtopaz.mulgara.databaseDir=' + unixPath(install, '/data/mulgara') 
+      + ' -Dlog4j.configuration='+ pathUrl(install, '/mulgaraLog4j.xml'))
+      ant.echo 'Starting mulgara with arguments: ' +argLine
+      
       exec(executable: 'mvn' + ext, failonerror:true) {
-        arg(line: '-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install
-         + ' -Dtopaz.mulgara.databaseDir=' + path(install, '/data/mulgara') 
-         + ' -Dlog4j.configuration='+ pathUrl(install, '/mulgaraLog4j.xml'))
+        arg(line: argLine)
       }
       echo 'Mulgara stopped'
     }
@@ -221,9 +224,9 @@ public class Env {
         arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
          + ' -Dorg.plos.configuration.overrides=defaults-dev.xml -Dlog4j.configuration=' 
          + pathUrl(install, '/plosoneLog4j.xml') 
-         + ' -Dpub.spring.ingest.source=' + path(install, '/data/ingestion-queue')
-         + ' -Dpub.spring.ingest.destination=' + path(install, '/data/ingested')
-         + ' -Dtopaz.search.indexpath=' + path(install, '/data/lucene')
+         + ' -Dpub.spring.ingest.source=' + unixPath(install, '/data/ingestion-queue')
+         + ' -Dpub.spring.ingest.destination=' + unixPath(install, '/data/ingested')
+         + ' -Dtopaz.search.indexpath=' + unixPath(install, '/data/lucene')
          + ' -Dtopaz.search.defaultfields=description,title,body,creator'      
        )
       }
@@ -274,8 +277,10 @@ public class Env {
     if (dir == null)
       return null;
     File f = new File(dir, 'pom.xml');
-    if (f.exists())
+    if (f.exists()) {
+      println 'Using Pom: ' + f.absoluteFile.canonicalPath;
       return f.absoluteFile.canonicalPath;
+    }
     return pom(dir.parentFile)
   }
 
@@ -429,6 +434,21 @@ public class Env {
     return file
   }
 
+  private String unixPath(String dir, String file) {
+  	String platformSep = System.properties.'file.separator'
+    String sep = '/'
+        
+    if (!file.startsWith('/'))
+      file = '/' + file
+
+    file =  dir + file
+      int pos;
+      while ((pos = file.indexOf(platformSep)) > -1) {
+         file = file.substring(0, pos) + sep + file.substring(pos+1)
+      }
+    return file
+  }
+  
   /**
    * Convert a path to a file: URL.
    *
