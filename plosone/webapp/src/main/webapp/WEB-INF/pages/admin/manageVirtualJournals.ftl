@@ -25,18 +25,19 @@
 
     <#list journals as journal>
       <fieldset>
-        <legend><b>${journal.key}</b></legend>
-        eIssn: ${journal.getEIssn()!"null"}<br />
-
+        <legend><b>${journal.key}</b> (${journal.getEIssn()!""})</legend>
+        <@s.url id="manageVolumesIssues" namespace="/admin" action="manageVolumesIssues"
+          journalKey="${journal.key}" journalEIssn="${journal.getEIssn()}"/>
+        <@s.a href="${manageVolumesIssues}">Manage Volumes and Issues</@s.a><br />
+        <br />
         <!-- TODO: display rules in a meaningful way  -->
-        Smart Collection Rules: ${journal.smartCollectionRules!"null"}
-
+        Smart Collection Rules: ${journal.smartCollectionRules!""}<br />
+        <br />
         <@s.form id="manageVirtualJournals_${journal.key}"
           name="manageVirtualJournals_${journal.key}" action="manageVirtualJournals" method="post"
           namespace="/admin">
           <@s.hidden name="journalToModify" label="Journal to Modify" required="true"
             value="${journal.key}"/>
-          <@s.submit value="Modify ${journal.key}"/>
           <table border="1" cellpadding="2" cellspacing="0">
             <tr>
               <td>
@@ -75,6 +76,8 @@
               </tr>
             </#list>
           </table>
+          <br />
+          <@s.submit value="Modify ${journal.key}"/>
         </@s.form>
       </fieldset>
       <br />

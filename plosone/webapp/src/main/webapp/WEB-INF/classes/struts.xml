@@ -1018,6 +1018,13 @@
         <param name="templateFile">/WEB-INF/pages/admin/manageVirtualJournals.ftl</param>
       </result>
     </action>
+
+    <action name="manageVolumesIssues" class="org.plos.admin.action.ManageVolumesIssuesAction">
+      <result name="success">/WEB-INF/pages/admin/manageVolumesIssues.ftl</result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/admin/manageVolumesIssues.ftl</param>
+      </result>
+    </action>
   </package>
 
   <!-- make Clinical Trial Actions and configs available  -->

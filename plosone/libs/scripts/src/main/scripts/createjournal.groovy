@@ -11,10 +11,12 @@
 import groovy.xml.StreamingMarkupBuilder
 
 import org.plos.util.ToolHelper
+import org.plos.models.Article
 import org.plos.models.DublinCore
 import org.plos.models.EditorialBoard
+import org.plos.models.Issue
 import org.plos.models.Journal
-import org.plos.models.Article
+import org.plos.models.Volume
 
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.SessionFactory
@@ -72,7 +74,9 @@ factory.addModel(cModel);
 factory.preload(DetachedCriteria.class);
 factory.preload(EQCriterion.class);
 factory.preload(EditorialBoard.class);
+factory.preload(Issue.class);
 factory.preload(Journal.class);
+factory.preload(Volume.class);
 factory.preload(Article.class);
 def session = factory.openSession();
 def tx = session.beginTransaction();
@@ -100,14 +104,24 @@ journal.dublinCore.title = slurpedJournal.dublinCore.title
 EQCriterion eqEIssn = (EQCriterion)Restrictions.eq("eIssn", journal.eIssn)
 eqEIssn.setSerializedValue(journal.eIssn)
 DetachedCriteria filterByEIssn = (new DetachedCriteria("Article")).add(eqEIssn)
-journal.setSmartCollectionRules([filterByEIssn])
+
+// create a filter, include Volumes for this Journal
+EQCriterion eqVolume = (EQCriterion)Restrictions.eq("journal", journal.eIssn)
+eqVolume.setSerializedValue(journal.eIssn)
+DetachedCriteria filterForVolume = (new DetachedCriteria("Volume")).add(eqVolume)
+
+// create a filter, include Issues for this Journal
+EQCriterion eqIssue = (EQCriterion)Restrictions.eq("journal", journal.eIssn)
+eqIssue.setSerializedValue(journal.eIssn)
+DetachedCriteria filterForIssue = (new DetachedCriteria("Issue")).add(eqIssue)
+
+journal.setSmartCollectionRules([filterByEIssn, filterForVolume, filterForIssue])
 
 println "Journal.key:   " + journal.key
 println "Journal.eIssn: " + journal.eIssn
 println "Journal.dublinCore.title: " + journal.dublinCore.title
 println "Journal.simpleCollection: " + journal.simpleCollection
-
-
+println "Journal.smartCollectionRules: " + journal.smartCollectionRules
 
 if (!DRYRUN) {
   try {

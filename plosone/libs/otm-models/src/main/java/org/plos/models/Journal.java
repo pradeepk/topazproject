@@ -27,6 +27,7 @@ public class Journal extends Aggregation {
   @Predicate(uri = "http://prismstandard.org/namespaces/1.2/basic/eIssn")
   private String  eIssn;
 
+  /** DOI of "current issue" */
   @Predicate(uri = PLoS.plos + "Journal/currentIssue")
   private URI currentIssue;
 
@@ -88,18 +89,20 @@ public class Journal extends Aggregation {
   }
 
   /**
-   * Get the current issue for this journal.
+   * Get the current Issue for this journal.
    *
-   * @return the current issue, may be null.
+   * @return the current Issue's DOI, may be null.
    */
   public URI getCurrentIssue() {
     return currentIssue;
   }
 
   /**
-   * Set the current issue for this journal.
+   * Set the current Issue's DOI for this journal.
    *
-   * @param currentIssue the current issue, may be null.
+   * The DOI is arbitrary, treated as opaque and encouraged to be human friendly.
+   *
+   * @param currentIssue the current Issue, may be null.
    */
   public void setCurrentIssue(URI currentIssue) {
     this.currentIssue = currentIssue;

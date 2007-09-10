@@ -412,6 +412,7 @@
         <value>org.plos.models.UserPreferences</value>
         <value>org.plos.models.UserProfile</value>
         <value>org.plos.models.UserRole</value>
+        <value>org.plos.models.Volume</value>
         <value>org.topazproject.otm.criterion.Conjunction</value>
         <value>org.topazproject.otm.criterion.Criterion</value>
         <value>org.topazproject.otm.criterion.DetachedCriteria</value>

@@ -327,8 +327,9 @@ public class JournalService {
       put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
     }
     if (addSelf) {      // FIXME: use the addSelf below instead when queries are fixed
+      // FIXME: note use of Journal v. Aggregation
       DetachedCriteria dc =
-          new DetachedCriteria("Aggregation").add(new SubjectCriterion(a.getId().toString()));
+          new DetachedCriteria("Journal").add(new SubjectCriterion(a.getId().toString()));
       put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
     }
 
