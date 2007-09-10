@@ -113,9 +113,9 @@ class ItqlResults extends Results {
   private Object getResult(int idx, Type type) throws OtmException, AnswerException {
     switch (type) {
       case LITERAL:
-        // FIXME: need lang from AnswerSet
         String dt = qas.getLiteralDataType(idx);
-        return new Literal(qas.getString(idx), null, (dt != null) ? URI.create(dt) : null);
+        return new Literal(qas.getString(idx), qas.getLiteralLangTag(idx),
+                           (dt != null) ? URI.create(dt) : null);
 
       case URI:
         return qas.getURI(idx);

@@ -186,11 +186,26 @@ public class AnswerSet extends AbstractAnswer {
      * @throws AnswerException if the column refers to a non Literal
      */
     public String getLiteralDataType(int idx) throws AnswerException {
+      return getLiteralAttribute(idx, "datatype");
+    }
+
+    /** 
+     * Get the language tag of the specified Literal column in the current row as a String.
+     * 
+     * @param idx the column index (0-based)
+     * @return the language tag, or null if there was none
+     * @throws AnswerException if the column refers to a non Literal
+     */
+    public String getLiteralLangTag(int idx) throws AnswerException {
+      return getLiteralAttribute(idx, "language");
+    }
+
+    private String getLiteralAttribute(int idx, String attr) throws AnswerException {
       if (!isLiteral(idx))
         throw new AnswerException("is not a literal");
 
       Element v = (Element) ((Object[]) rows.get(curPos))[idx];
-      String res = v.getAttribute("datatype");
+      String res = v.getAttribute(attr);
       return (res.length() > 0) ? res : null;
     }
 
