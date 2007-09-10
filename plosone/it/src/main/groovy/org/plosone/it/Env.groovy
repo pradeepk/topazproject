@@ -227,7 +227,7 @@ public class Env {
          + ' -Dpub.spring.ingest.source=' + unixPath(install, '/data/ingestion-queue')
          + ' -Dpub.spring.ingest.destination=' + unixPath(install, '/data/ingested')
          + ' -Dtopaz.search.indexpath=' + unixPath(install, '/data/lucene')
-         + ' -Dtopaz.search.defaultfields=description,title,body,creator'      
+         + ' -Dtopaz.search.defaultfields=description,title,body,creator'
        )
       }
       echo 'Plosone Stopped'
@@ -435,17 +435,16 @@ public class Env {
   }
 
   private String unixPath(String dir, String file) {
-  	String platformSep = System.properties.'file.separator'
     String sep = '/'
         
     if (!file.startsWith('/'))
       file = '/' + file
 
     file =  dir + file
-      int pos;
-      while ((pos = file.indexOf(platformSep)) > -1) {
-         file = file.substring(0, pos) + sep + file.substring(pos+1)
-      }
+    int pos;
+    while ((pos = file.indexOf('\\')) > -1) {
+      file = file.substring(0, pos) + sep + file.substring(pos+1)
+    }
     return file
   }
   
