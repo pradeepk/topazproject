@@ -193,13 +193,13 @@ public class SerializerFactory {
    *
    * @return a serializer or null
    */
-  public Serializer getSerializer(Class clazz, String dataType) {
+  public <T> Serializer<T> getSerializer(Class<T> clazz, String dataType) {
     if (dataType == null)
       dataType = Predicate.UNTYPED;
 
     Map<String, Serializer> m = serializers.get(clazz);
 
-    return (m != null) ? m.get(dataType) : null;
+    return (m != null) ? (Serializer<T>) m.get(dataType) : null;
   }
 
   /**
@@ -211,7 +211,7 @@ public class SerializerFactory {
    *
    * @return previous serializer if any
    */
-  public Serializer setSerializer(Class clazz, String dataType, Serializer serializer) {
+  public <T> Serializer<T> setSerializer(Class<T> clazz, String dataType, Serializer<T> serializer) {
     if (dataType == null)
       dataType = Predicate.UNTYPED;
 
@@ -220,7 +220,7 @@ public class SerializerFactory {
     if (m == null)
       serializers.put(clazz, m = new HashMap<String, Serializer>());
 
-    return m.put(dataType, serializer);
+    return (Serializer<T>) m.put(dataType, serializer);
   }
 
   /**
@@ -229,7 +229,7 @@ public class SerializerFactory {
    * @param clazz the class
    * @param serializer the serializer to set
    */
-  public void setSerializer(Class clazz, Serializer serializer) {
+  public <T> void setSerializer(Class<T> clazz, Serializer<T> serializer) {
     String dataType = typeMap.get(clazz);
 
     if (dataType != null)
