@@ -32,7 +32,7 @@ class ItqlResults extends Results {
 
   private ItqlResults(AnswerSet.QueryAnswerSet qas, QueryInfo qi, String[] warnings, Session sess)
       throws OtmException {
-    super(getVariables(qi), getTypes(qi), warnings);
+    super(getVariables(qi), getTypes(qi), warnings, sess.getSessionFactory());
     this.qas  = qas;
     this.qi   = qi;
     this.sess = sess;

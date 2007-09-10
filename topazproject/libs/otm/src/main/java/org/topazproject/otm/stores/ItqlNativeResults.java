@@ -15,6 +15,7 @@ import java.net.URI;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.Results;
 
@@ -25,14 +26,16 @@ import org.topazproject.otm.query.Results;
  */
 class ItqlNativeResults extends Results {
   private final AnswerSet.QueryAnswerSet qas;
+  private final Session                  sess;
 
-  private ItqlNativeResults(AnswerSet.QueryAnswerSet qas) throws OtmException {
-    super(qas.getVariables(), null);
+  private ItqlNativeResults(AnswerSet.QueryAnswerSet qas, Session sess) throws OtmException {
+    super(qas.getVariables(), null, sess.getSessionFactory());
     this.qas  = qas;
+    this.sess = sess;
   }
 
-  public ItqlNativeResults(String a) throws OtmException {
-    this(getQAS(a));
+  public ItqlNativeResults(String a, Session sess) throws OtmException {
+    this(getQAS(a), sess);
   }
 
   private static AnswerSet.QueryAnswerSet getQAS(String a) throws OtmException {
@@ -93,7 +96,7 @@ class ItqlNativeResults extends Results {
 
     if (qas.isSubQueryResults(idx)) {
       types[idx] = Type.SUBQ_RESULTS;
-      return new ItqlNativeResults(qas.getSubQueryResults(idx));
+      return new ItqlNativeResults(qas.getSubQueryResults(idx), sess);
     }
 
     types[idx] = Type.UNKNOWN;

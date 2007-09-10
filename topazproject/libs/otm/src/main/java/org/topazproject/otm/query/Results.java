@@ -13,6 +13,8 @@ package org.topazproject.otm.query;
 import java.net.URI;
 import java.util.Arrays;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.mapping.Serializer;
 
 /** 
  * This holds the results from a query. It is structured similar to a jdbc ResultSet.
@@ -20,12 +22,13 @@ import org.topazproject.otm.OtmException;
  * @author Ronald Tschalär
  */
 public abstract class Results {
-  private final String[] variables;
-  protected Type[]   types;
-  private final String[] warnings;
+  private final String[]       variables;
+  private final String[]       warnings;
+  private final SessionFactory sf;
 
   protected int      pos = -1;
   protected boolean  eor = false;
+  protected Type[]   types;
   protected Object[] curRow;
 
   /** possible result types */
@@ -85,7 +88,7 @@ public abstract class Results {
     }
   }
 
-  protected Results(String[] variables, Type[] types, String[] warnings) {
+  protected Results(String[] variables, Type[] types, String[] warnings, SessionFactory sf) {
     if (variables.length != types.length)
       throw new IllegalArgumentException("the number variables does not match the number of " +
 
@@ -93,12 +96,14 @@ public abstract class Results {
     this.variables = variables;
     this.types     = types;
     this.warnings  = (warnings != null && warnings.length > 0) ? warnings : null;
+    this.sf        = sf;
   }
 
-  protected Results(String[] variables, String[] warnings) {
+  protected Results(String[] variables, String[] warnings, SessionFactory sf) {
     this.variables = variables;
     this.warnings  = (warnings != null && warnings.length > 0) ? warnings : null;
-    this.types = new Type[variables.length];
+    this.sf        = sf;
+    this.types     = new Type[variables.length];
     Arrays.fill(this.types, Type.UNKNOWN);
   }
 
@@ -258,6 +263,18 @@ public abstract class Results {
       default:
         throw new Error("unknown type " + types[idx] + " encountered");
     }
+  }
+
+  public <T> T getLiteralAs(String var, Class<T> type) throws Exception {
+    return getLiteralAs(findVariable(var), type);
+  }
+
+  public <T> T getLiteralAs(int idx, Class<T> type) throws Exception {
+    Literal lit = getLiteral(idx);
+    String  dt  = (lit.getDatatype() != null) ? lit.getDatatype().toString() : null;
+
+    Serializer<T> serializer = sf.getSerializerFactory().getSerializer(type, dt);
+    return (serializer != null) ? serializer.deserialize(lit.getValue()) : null;
   }
 
   public URI getURI(String var) throws OtmException {
