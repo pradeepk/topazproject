@@ -60,11 +60,11 @@ options {
     // TODO: get these from the list of registered functions
     private static final String[] binaryComparisonFuncs = new String[] { "lt", "le", "gt", "ge" };
 
-    private Map<String, ExprType> vars = new HashMap<String, ExprType>();
-    private Map<String, ExprType> prms = new HashMap<String, ExprType>();
-    private Set<String>           prjs = new HashSet<String>();
-    private SessionFactory        sessFactory;
-    private int                   varCnt = 0;
+    private final Map<String, ExprType> vars = new HashMap<String, ExprType>();
+    private final Map<String, ExprType> prms = new HashMap<String, ExprType>();
+    private final Set<String>           prjs = new HashSet<String>();
+    private SessionFactory              sessFactory;
+    private int                         varCnt = 0;
 
     /** 
      * Create a new translator instance.
@@ -313,8 +313,7 @@ options {
           reportWarning("type mismatch in expression '" + expr.toStringTree() + "': parameter" +
                         " is not comparable to " + et2);
 
-        et1 = et2;
-        addParam(ex1, et1);
+        addParam(ex1, et2);
         return;
       } else if (ex2.getType() == PARAM) {
         if (et1 != null && et1.getType() != ExprType.Type.URI &&
@@ -322,8 +321,7 @@ options {
           reportWarning("type mismatch in expression '" + expr.toStringTree() + "': parameter" +
                         " is not comparable to " + et1);
 
-        et2 = et1;
-        addParam(ex2, et2);
+        addParam(ex2, et1);
         return;
       }
 
