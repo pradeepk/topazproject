@@ -86,7 +86,7 @@ public class OqlFilterDefinition extends AbstractFilterDefinition {
     }
 
     public GenericQueryImpl getQuery() throws OtmException {
-      query.applyParameterValues(paramValues);
+      query.applyParameterValues(paramValues, sess.getSessionFactory());
       return query;
     }
   }

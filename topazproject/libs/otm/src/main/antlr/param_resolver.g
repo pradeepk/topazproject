@@ -25,11 +25,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.mapping.Serializer;
 import org.topazproject.otm.query.Results;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 }
 
 /**
@@ -45,6 +49,19 @@ options {
 }
 
 {
+    private static final Log log = LogFactory.getLog(ParameterResolver.class);
+    private SessionFactory sessFactory;
+
+    /** 
+     * Create a new parameter-resolver instance.
+     *
+     * @param sessionFactory the session-factory to use to look up class-metatdata, models, etc
+     */
+    public ParameterResolver(SessionFactory sessionFactory) {
+      this();
+      sessFactory = sessionFactory;
+    }
+
     private void resolveParams(AST node, Map<String, Object> paramValues)
         throws RecognitionException {
       if (node.getType() == PARAM) {
@@ -68,6 +85,10 @@ options {
         if (type != null && type.getType() != ExprType.Type.URI)
           reportWarning("type mismatch in parameter '" + name + "': parsed type is '" +
                         type + "' but parameter value is a URI");
+
+        if (log.isDebugEnabled())
+          log.debug("resolved parameter '" + name + "', type '" + type + "', to <" + val + ">");
+
         makeUriref(node, (URI) val);
       } else if (val instanceof Results.Literal) {
         Results.Literal lit = (Results.Literal) val;
@@ -87,6 +108,11 @@ options {
           }
         }
 
+        if (log.isDebugEnabled())
+          log.debug("resolved parameter '" + name + "', type='" + type + "', to '" +
+                    lit.getValue() + "', dt='" + lit.getDatatype() + "', lang='" +
+                    lit.getLanguage() + "'");
+
         makeLiteral(node, lit.getValue(), lit.getDatatype(), lit.getLanguage());
       } else {
         if (type == null)
@@ -95,8 +121,13 @@ options {
                                          ") is neither a URI nor a literal");
 
         try {
-          Serializer s = ((OqlAST) node).getSerializer();
+          Serializer s =
+              sessFactory.getSerializerFactory().getSerializer(val.getClass(), type.getDataType());
           String txt = (s != null) ? s.serialize(val) : val.toString();
+
+          if (log.isDebugEnabled())
+            log.debug("resolved parameter '" + name + "', type='" + type + "', serializer='" +
+                      s + "', val='" + val + "', to '" + txt);
 
           if (type.getType() == ExprType.Type.URI)
             makeUriref(node, new URI(txt));

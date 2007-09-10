@@ -82,7 +82,7 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
 
       GenericQueryImpl q = new GenericQueryImpl(qry.toString(), CriteriaFilterDefinition.log);
       q.prepareQuery(sess.getSessionFactory());
-      q.applyParameterValues(paramValues);
+      q.applyParameterValues(paramValues, sess.getSessionFactory());
       return q;
     }
 

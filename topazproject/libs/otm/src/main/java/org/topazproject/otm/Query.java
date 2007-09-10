@@ -64,7 +64,7 @@ public class Query extends AbstractParameterizable<Query> {
 
     TripleStore store = sess.getSessionFactory().getTripleStore();
 
-    query.applyParameterValues(paramValues);
+    query.applyParameterValues(paramValues, sess.getSessionFactory());
     return store.doQuery(query, filters, sess.getTransaction());
   }
 

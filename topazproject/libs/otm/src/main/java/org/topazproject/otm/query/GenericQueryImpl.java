@@ -65,7 +65,7 @@ public class GenericQueryImpl extends QueryImplBase implements Cloneable {
    * @param sf the session-factory to use
    * @throws OtmException if an error occurred
    */
-  public void prepareQuery(final SessionFactory sf) throws OtmException {
+  public void prepareQuery(SessionFactory sf) throws OtmException {
     if (preparedQuery != null)
       return;
 
@@ -82,17 +82,19 @@ public class GenericQueryImpl extends QueryImplBase implements Cloneable {
    * Apply the given parameter values to the current query.
    *
    * @param params a map of parameter-name to parameter-value
+   * @param sf     the session-factory to use
    * @throws OtmException if an error occurred setting a parameter value
    * @throws IllegalStateException if {@link #prepareQuery prepareQuery()} hasn't been invoked yet
    */
-  public void applyParameterValues(final Map<String, Object> params) throws OtmException {
+  public void applyParameterValues(final Map<String, Object> params, SessionFactory sf)
+      throws OtmException {
     if (preparedQuery == null)
       throw new IllegalStateException("prepareQuery() hasn't been invoked yet");
 
     warnings.clear();
     warnings.addAll(prepareWarnings);
 
-    resolvedQuery = doStep("setting parameter values for", new ParameterResolver(),
+    resolvedQuery = doStep("setting parameter values for", new ParameterResolver(sf),
                            new QueryStep<ParameterResolver>() {
       final FieldTranslator pq = preparedQuery;
       public void run(ParameterResolver pr) throws Exception {
