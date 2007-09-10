@@ -137,6 +137,16 @@ public class OqlTest extends GroovyTestCase {
         row { object (class:PublicAnnotation.class, id:id3) }
       }
 
+      // typed/untyped literal
+      r = s.createQuery("select a.title, a.description from Article a where a.title = 'Yo ho ho';").
+            execute()
+      checker.verify(r) {
+        row {
+          literal ('Yo ho ho');
+          literal ('A bottle of Rum', dt:'http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral')
+        }
+      }
+
       // subquery
       r = s.createQuery("""
             select art,
@@ -1664,6 +1674,24 @@ class ResultChecker extends BuilderSupport {
 
       case 'uri':
         test.assertEquals((value instanceof URI) ? value : value.toURI(), res.getURI(col++));
+        break;
+
+      case 'literal':
+        def lit = res.getLiteral(col++);
+        test.assertEquals(value, lit.getValue());
+
+        if (attributes?.dt)
+          test.assertEquals(
+              (attributes.dt instanceof URI) ? attributes.dt : attributes.dt.toURI(),
+              lit.getDatatype());
+        else
+          test.assertNull(lit.getDatatype());
+
+        if (attributes?.lang)
+          test.assertEquals(attributes.lang, lit.getLanguage());
+        else
+          test.assertNull(lit.getLanguage());
+
         break;
 
       case 'nul':

@@ -114,7 +114,8 @@ class ItqlResults extends Results {
     switch (type) {
       case LITERAL:
         // FIXME: need lang from AnswerSet
-        return new Literal(qas.getString(idx), qas.getLiteralDataType(idx), null);
+        String dt = qas.getLiteralDataType(idx);
+        return new Literal(qas.getString(idx), null, (dt != null) ? URI.create(dt) : null);
 
       case URI:
         return qas.getURI(idx);
