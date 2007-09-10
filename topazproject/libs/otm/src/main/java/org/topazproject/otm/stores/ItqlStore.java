@@ -662,8 +662,8 @@ public class ItqlStore extends AbstractTripleStore {
         Map<String, String> objs = new HashMap<String, String>();
         while (qa.next()) {
           String assoc = qa.getString("o");
-          String node  = qa.isBlankNode(1) ? qa.getBlankNode(1) : qa.getString(1);
-          String next  = qa.isBlankNode(2) ? qa.getBlankNode(2) : qa.getString(2);
+          String node  = qa.getString(1);
+          String next  = qa.getString(2);
           objs.put(node, assoc);
           fwd.put(node, next);
           rev.put(next, node);

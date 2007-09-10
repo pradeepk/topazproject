@@ -199,7 +199,7 @@ public class AnswerSet extends AbstractAnswer {
      * 
      * @param idx the column index (0-based)
      * @return if the value is a URI then the URI as a string; if the value is literal then the
-     *         literal's value; if the value is a blank-node then null.
+     *         literal's value; if the value is a blank-node then a temporary internal id.
      * @throws AnswerException if the column refers to a subquery answer
      */
     public String getString(int idx) throws AnswerException {
@@ -213,7 +213,7 @@ public class AnswerSet extends AbstractAnswer {
         return res;
 
       if (v.hasAttribute(BNODE_ATTR))
-        return null;
+        return v.getAttribute(BNODE_ATTR);
 
       if (v.getFirstChild() instanceof Element)
         throw new AnswerException("is a subquery result");
