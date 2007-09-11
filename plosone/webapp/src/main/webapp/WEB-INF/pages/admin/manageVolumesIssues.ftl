@@ -56,17 +56,56 @@
         </@s.form>
       </fieldset>
 
-      <#list volumes as volume>
-        <fieldset>
-          <legend><b>${volume.displayName}</b> (${volume.key})</legend>
-
-          <#list getIssues(volume.key) as issue>
-            <fieldset>
-              <legend><b>${issue.displayName}</b> (${issue.key})</legend>
-            </fieldset>
+      <!-- list Volumes -->
+      <fieldset>
+        <legend><b>Existing Volumes</b></legend>
+        <table border="1" cellpadding="2" cellspacing="0">
+          <tr>
+            <th>Display Name</th>
+            <th>DOI</th>
+            <th>Image</th>
+            <th>Previous</th>
+            <th>Next</th>
+            <th>Issues</th>
+          </tr>
+          <#list volumes as volume>
+            <tr>
+              <th>${volume.displayName}</th>
+              <td>${volume.id}</td>
+              <td>${volume.image!""}</td>
+              <td>${volume.prevVolume!""}</td>
+              <td>${volume.nextVolume!""}</td>
+              <td>${volume.simpleCollection!""}</td>
+            </tr>
           </#list>
-        </fieldset>
-      </#list>
+        </table>
+      </fieldset>
+
+      <!-- list Issues -->
+      <fieldset>
+        <legend><b>Existing Issues</b></legend>
+        <table border="1" cellpadding="2" cellspacing="0">
+          <tr>
+            <th>Display Name</th>
+            <th>DOI</th>
+            <th>Image</th>
+            <th>Previous</th>
+            <th>Next</th>
+            <th>Articles</th>
+          </tr>
+          <#list issues as issue>
+            <tr>
+              <th>${issue.displayName}</th>
+              <td>${issue.id}</td>
+              <td>${issue.image!""}</td>
+              <td>${issue.prevIssue!""}</td>
+              <td>${issue.nextIssue!""}</td>
+              <td>${issue.simpleCollection!""}</td>
+            </tr>
+          </#list>
+        </table>
+      </fieldset>
+
     </fieldset>
 
   </body>

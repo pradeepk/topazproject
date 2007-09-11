@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.models.DublinCore;
+import org.plos.models.Issue;
 import org.plos.models.Journal;
 import org.plos.models.Volume;
 
@@ -45,6 +46,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private String manageVolumesIssuesAction;
   private Journal journal;
   private List<Volume> volumes;
+  private List<Issue> issues;
   private URI doi;
   private String displayName;
   private URI image;
@@ -85,6 +87,14 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
             addActionMessage(errorMessage);
             log.error(errorMessage);
             return null;
+          }
+
+          // get Issues for this Journal
+          issues = session.createCriteria(Issue.class)
+                      .add(Restrictions.eq("journal", journal.getEIssn()))
+                      .list();
+          if (log.isDebugEnabled()) {
+            log.debug(issues.size() + " Issue(s) for Journal " + journal.getEIssn());
           }
 
           // get Volumes for this Journal
@@ -164,6 +174,16 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   }
 
   /**
+   * Gets all Issues for a Journal.
+   *
+   * @return all Issues for the Journal.
+   */
+  public List<Issue> getIssues() {
+
+    return issues;
+  }
+
+  /**
    * Set key of Journal.
    *
    * Enable Struts Form to set the Journal key from URI param and Form.
@@ -236,7 +256,12 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * @param image the image for this journal.
    */
   public void setImage(String image) {
-    this.image = URI.create(image);
+
+    if (image == null || image.length() == 0) {
+      this.image = null;
+    } else {
+      this.image = URI.create(image);
+    }
   }
 
   /**
@@ -247,7 +272,12 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * @param doi DOI of previous.
    */
   public void setPrev(String prevDoi) {
-    this.prev = URI.create(prevDoi);
+
+    if (prevDoi == null || prevDoi.length() == 0) {
+      this.prev = null;
+    } else {
+      this.prev = URI.create(prevDoi);
+    }
   }
 
   /**
@@ -258,7 +288,12 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * @param doi DOI of next.
    */
   public void setNext(String nextDoi) {
-    this.next = URI.create(nextDoi);
+
+    if (nextDoi == null || nextDoi.length() == 0) {
+      this.next = null;
+    } else {
+      this.next = URI.create(nextDoi);
+    }
   }
 
   /**
