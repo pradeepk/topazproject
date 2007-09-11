@@ -277,10 +277,8 @@ public class Env {
     if (dir == null)
       return null;
     File f = new File(dir, 'pom.xml');
-    if (f.exists()) {
-      println 'Using Pom: ' + f.absoluteFile.canonicalPath;
+    if (f.exists())
       return f.absoluteFile.canonicalPath;
-    }
     return pom(dir.parentFile)
   }
 
