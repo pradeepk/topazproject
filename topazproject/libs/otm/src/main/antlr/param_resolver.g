@@ -121,8 +121,12 @@ options {
                                          ") is neither a URI nor a literal");
 
         try {
-          Serializer s =
-              sessFactory.getSerializerFactory().getSerializer(val.getClass(), type.getDataType());
+          Class cls = val.getClass();
+          Serializer s = null;
+          while (s == null && cls != Object.class) {
+            s = sessFactory.getSerializerFactory().getSerializer(cls, type.getDataType());
+            cls = cls.getSuperclass();
+          }
           String txt = (s != null) ? s.serialize(val) : val.toString();
 
           if (log.isDebugEnabled())
