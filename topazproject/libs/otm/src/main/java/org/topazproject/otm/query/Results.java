@@ -265,16 +265,28 @@ public abstract class Results {
     }
   }
 
-  public <T> T getLiteralAs(String var, Class<T> type) throws Exception {
+  public <T> T getLiteralAs(String var, Class<T> type) throws OtmException {
     return getLiteralAs(findVariable(var), type);
   }
 
-  public <T> T getLiteralAs(int idx, Class<T> type) throws Exception {
+  public <T> T getLiteralAs(int idx, Class<T> type) throws OtmException {
     Literal lit = getLiteral(idx);
     String  dt  = (lit.getDatatype() != null) ? lit.getDatatype().toString() : null;
 
     Serializer<T> serializer = sf.getSerializerFactory().getSerializer(type, dt);
-    return (serializer != null) ? serializer.deserialize(lit.getValue()) : null;
+    if (serializer == null)
+      throw new OtmException("No serializer found for class '" + type.getName() +
+                             "' and datatype '" + dt + "'");
+
+    try {
+      return serializer.deserialize(lit.getValue());
+    } catch (OtmException oe) {
+      throw oe;
+    } catch (RuntimeException re) {
+      throw re;
+    } catch (Exception e) {
+      throw new OtmException("Error deserializing '" + lit.getValue() + "'", e);
+    }
   }
 
   public URI getURI(String var) throws OtmException {
