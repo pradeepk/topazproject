@@ -378,6 +378,19 @@
             </bean>
           </constructor-arg>
         </bean>
+        <bean name="prefixModel" class="org.topazproject.otm.ModelConfig">
+          <constructor-arg index="0" value="prefix" />
+          <constructor-arg index="1">
+            <bean class="java.net.URI">
+              <constructor-arg value="local:///topazproject#prefix"/>
+            </bean>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <bean class="java.net.URI">
+              <constructor-arg value="http://mulgara.org/mulgara#PrefixModel" />
+            </bean>
+          </constructor-arg>
+        </bean>
       </list>
     </property>
 
@@ -504,6 +517,12 @@
   <bean id="carrierCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName">
       <value>ArticleCarriers</value>
+    </property>
+  </bean>
+
+  <bean id="browseCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>BrowseCache</value>
     </property>
   </bean>
 

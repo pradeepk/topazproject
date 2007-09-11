@@ -1,7 +1,6 @@
 <#macro pagination>
-  <#assign totalResults = articleList?size>
-  <#assign totalPages = (totalResults/pageSize)?int>
-  <#if totalResults % pageSize != 0>
+  <#assign totalPages = (totalArticles/pageSize)?int>
+  <#if totalArticles % pageSize != 0>
     <#assign totalPages = totalPages + 1>
   </#if>
   <#if (totalPages gt 1) >
@@ -58,32 +57,23 @@
     <#include "browseNavSubject.ftl">
   </#if>
 
-  <#assign totalResults = articleList?size>
-
-  <#assign startIndex = totalResults - startPage * pageSize - 1>
-  <#assign endIndex = startIndex - pageSize + 1>
-  <#if endIndex lt 0>
-    <#assign endIndex = 0 >
-  </#if>
-
   <#assign startPgIndex = startPage * pageSize>
   <#assign endPgIndex = startPgIndex + pageSize - 1>
-  <#if endPgIndex gte totalResults>
-    <#assign endPgIndex = totalResults - 1 >
+  <#if endPgIndex gte totalArticles>
+    <#assign endPgIndex = totalArticles - 1 >
   </#if>
 
   <div id="search-results">
-    <p><strong>${startPgIndex + 1} - ${endPgIndex + 1}</strong> of <strong>${totalResults}</strong> article<#if totalResults != 1>s</#if> published ${infoText}.</p>
+    <p><strong>${startPgIndex + 1} - ${endPgIndex + 1}</strong> of <strong>${totalArticles}</strong> article<#if totalArticles != 1>s</#if> published ${infoText}.</p>
     <@pagination />
     <ul>
-      <#list startIndex .. endIndex as idx>
-        <#assign art = articleList[idx]>
+      <#list articleList as art>
         <li>
-          <span class="date">Published ${art.dublinCore.date?string("dd MMM yyyy")}</span>
+          <span class="date">Published ${art.date?string("dd MMM yyyy")}</span>
           <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${art.id}" includeParams="none"/>
-          <span class="article"><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${art.dublinCore.title}</@s.a></span>
+          <span class="article"><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${art.title}</@s.a></span>
           <span class="authors">
-            <#list art.dublinCore.bibliographicCitation.authorsRealNames as auth><#if auth_index gt 0>, </#if>${auth}</#list>
+            <#list art.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list>
           </span>
         </li>
       </#list>

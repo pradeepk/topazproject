@@ -13,7 +13,7 @@
 		</div>
 
 		<ul>
-			<#if year == -1 &&  month == -1 && day == -1>
+			<#if year == -1 && month == -1 && day == -1>
 			<#assign infoText = "in the <strong>past week</strong>">
 			<li class="current">Past week</li>
 			<#else>
@@ -37,6 +37,7 @@
 		</ul>
 
 		<ol>
+    <#if (articleDates?size gt 0)>
 		<#list articleDates?size-1 .. 0 as i>
 			<#assign oneYear = articleDates[i]>
 			<#assign aDay = oneYear[0][0]>
@@ -45,28 +46,29 @@
 			  <#assign oneMonth = oneYear[j]>
 				<ol>
 				<#assign oneDay = oneMonth[0]>
-					<#if i == year && j == month && day == -1>
+					<#if oneDay?string("yyyy")?number == year && oneDay?string("MM")?number == month && day == -1>
 						<li class="current">
 		  			<#assign infoText = "in <strong>" + oneDay?string("MMM") + " " + oneDay?string("yyyy") + "</strong>">
 					<#else>
 						<li>
 					</#if>						
-				  <@s.url id="monthURL" action="browse" namespace="/article" field="${field}" year="${i}" month="${j}" includeParams="none"/>								
+				  <@s.url id="monthURL" action="browse" namespace="/article" field="${field}" year="${oneDay?string('yyyy')}" month="${oneDay?string('MM')}" includeParams="none"/>								
 					<@s.a href="%{monthURL}">${oneDay?string("MMM")}</@s.a></li>
 				<#list oneMonth as oneDay>
-					<#if i == year && j == month && oneDay_index == day>
+					<#if oneDay?string("yyyy")?number == year && oneDay?string("MM")?number == month && oneDay?string("dd")?number == day>
 					<li class="current">
 	  			<#assign infoText = "on <strong>" + oneDay?string("dd") + " " + oneDay?string("MMM") + " " + oneDay?string("yyyy") + "</strong>">
 					<#else>
 					<li>
 					</#if>
-				  <@s.url id="dayURL" action="browse" namespace="/article" field="${field}" year="${i}" month="${j}" day="${oneDay_index}" includeParams="none"/>													
+				  <@s.url id="dayURL" action="browse" namespace="/article" field="${field}" year="${oneDay?string('yyyy')}" month="${oneDay?string('MM')}" day="${oneDay?string('dd')}" includeParams="none"/>													
 					<@s.a href="%{dayURL}">${oneDay?string("dd")}</@s.a></li>
 				</#list>
 				</ol>
 			</#list>
 			</li>
 		</#list>
+    </#if>
 		</ol>
 
 	</div> <!-- browse nav-->

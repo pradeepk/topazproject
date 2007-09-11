@@ -117,7 +117,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
             // Journal was updated
             session.saveOrUpdate(journal);
             journalService.journalWasModified(journal);
-            browseService.flush(journal.getKey());
+            browseService.notifyJournalModified(journal.getKey());
             addActionMessage("Browse cache flush for: " + journal.getKey());
           }
 

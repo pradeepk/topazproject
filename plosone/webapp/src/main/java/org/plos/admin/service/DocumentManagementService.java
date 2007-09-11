@@ -55,8 +55,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 
-import static org.plos.action.HomePageAction.WEEK_ARTICLE_CACHE_KEY;
-import static org.plos.article.service.BrowseService.ALL_ARTICLE_CACHE_GROUP_KEY;
+import org.plos.article.service.BrowseService;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
@@ -103,6 +102,8 @@ public class DocumentManagementService {
 
   private GeneralCacheAdministrator articleCacheAdministrator;
 
+  private BrowseService browseService;
+
   private JournalService journalService;
 
   private Session session;
@@ -125,14 +126,17 @@ public class DocumentManagementService {
    * @param articleOtmService
    *          articleOtmService
    */
+  @Required
   public void setArticleOtmService(final ArticleOtmService articleOtmService) {
     this.articleOtmService = articleOtmService;
   }
 
+  @Required
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
     this.fetchArticleService = fetchArticleService;
   }
 
+  @Required
   public void setDocumentDirectory(final String documentDirectory) {
     this.documentDirectory = documentDirectory;
   }
@@ -141,14 +145,17 @@ public class DocumentManagementService {
     return documentDirectory;
   }
 
+  @Required
   public void setIngestedDocumentDirectory(final String ingestedDocumentDirectory) {
     this.ingestedDocumentDirectory = ingestedDocumentDirectory;
   }
 
+  @Required
   public void setCrossRefPosterService(final CrossRefPosterService crossRefPosterService) {
     this.crossRefPosterService = crossRefPosterService;
   }
 
+  @Required
   public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
     File file = getAsFile(xslTemplate);
     if (!file.exists()) {
@@ -209,9 +216,8 @@ public class DocumentManagementService {
       }
     }
 
-    articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
-    articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
-    for (String objectURI : objectURIs)
+    browseService.notifyArticlesDeleted(objectURIs);
+    for (String objectURI : objectURIs)   // for annotations service
       articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
     ServletCacheAdministrator.getInstance(servletContext).flushAll();
 
@@ -586,9 +592,8 @@ public class DocumentManagementService {
       }
     });
 
-    // flush caches
-    articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
-    articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
+    // notify browse service
+    browseService.notifyArticlesAdded(uris);
 
     return msgs;
   }
@@ -628,17 +633,19 @@ public class DocumentManagementService {
   }
 
   /**
-   * @return Returns the articleCacheAdministrator.
+   * @param articleCacheAdministrator The articleCacheAdministrator to set.
    */
-  public GeneralCacheAdministrator getArticleCacheAdministrator() {
-    return articleCacheAdministrator;
+  @Required
+  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
+    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 
   /**
-   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   * @param browseService The BrowseService to set.
    */
-  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
-    this.articleCacheAdministrator = articleCacheAdministrator;
+  @Required
+  public void setBrowseService(BrowseService browseService) {
+    this.browseService = browseService;
   }
 
   /**
@@ -664,6 +671,7 @@ public class DocumentManagementService {
   /**
    * @param plosDxUrl The plosDxUrl to set.
    */
+  @Required
   public void setPlosDoiUrl(String plosDoiUrl) {
     this.plosDoiUrl = plosDoiUrl;
   }
@@ -671,6 +679,7 @@ public class DocumentManagementService {
   /**
    * @param sendToXref The sendToXref to set.
    */
+  @Required
   public void setSendToXref(boolean sendToXref) {
     this.sendToXref = sendToXref;
   }
@@ -678,6 +687,7 @@ public class DocumentManagementService {
   /**
    * @param plosEmail The plosEmail to set.
    */
+  @Required
   public void setPlosEmail(String plosEmail) {
     this.plosEmail = plosEmail;
   }

@@ -143,17 +143,12 @@
               <h2>Explore by Subject</h2>
               <dl class="category">
               <#list categoryNames as category>
-              <#assign categoryId = category?replace("\\s|\'","","r")>
-              <#if categoryId?length lt 8>
-                <#assign index = categoryId?length>
-              <#else>
-                  <#assign index = 8>
-              </#if>
-              <@s.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
-              <dt>
-                <a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${articlesByCategory[category_index]?size})</a>&nbsp;
-                <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-12x12.gif" /></a>
-              </dt>
+                <#assign categoryId = category?replace("\\s|\'","","r")>
+                <@s.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
+                <dt>
+                  <a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
+                  <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-12x12.gif" /></a>
+                </dt>
               </#list>
               </dl>
             </div><!-- end : subject block -->

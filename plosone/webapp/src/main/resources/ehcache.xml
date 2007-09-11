@@ -520,6 +520,21 @@
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
     <!--
+    Browse cache
+    This cache stores browse information
+    -->
+    <cache name="BrowseCache"
+           maxElementsInMemory="10000"
+           eternal="true"
+           timeToIdleSeconds="86400"
+           timeToLiveSeconds="86400"
+           overflowToDisk="false">
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    </cache>
+    <!--
     Article Feed cache
     This cache stores rss feeds
     An entire feed could be quite big (~100k), but guess 2-5K is average?

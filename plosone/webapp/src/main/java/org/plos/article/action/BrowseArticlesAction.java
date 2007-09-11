@@ -10,56 +10,59 @@
 
 package org.plos.article.action;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 import java.net.URLEncoder;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
-import org.plos.models.Article;
 
 import org.apache.commons.configuration.Configuration;
 import org.plos.configuration.ConfigurationStore;
 
+import org.springframework.beans.factory.annotation.Required;
+
 /**
  * @author stevec
- *
  */
-public class BrowseArticlesAction extends BaseActionSupport  {
+public class BrowseArticlesAction extends BaseActionSupport {
 
   private static final Log           log  = LogFactory.getLog(BrowseArticlesAction.class);
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
-  
-  private static final String feedCategoryPrefix = CONF.getString("pub.feed.categoryPrefix", "feed?category=");
-  
-  private String field;
-  private int catId;
-  private int startPage;
-  private int pageSize;
-  private int year = -1;
-  private int month = -1;
-  private int day = -1;
-  private BrowseService browseService;
-  private String[] categoryNames;
-  private ArrayList<ArrayList<Article>> articlesByCategory;
-  private ArrayList<ArrayList<ArrayList<ArrayList<Article>>>> articlesByDate;
-  private ArrayList<ArrayList<ArrayList<Date>>> articleDates;
-  private ArrayList<Article> articleList;
 
-  private static final int PAGE_SIZE = 10;
+  private static final String feedCategoryPrefix =
+                                      CONF.getString("pub.feed.categoryPrefix", "feed?category=");
+
+  private static final int    PAGE_SIZE  = 10;
   private static final String DATE_FIELD = "date";
 
+  private static final int UNSET      = -1;
+  private static final int PAST_MONTH = -2;
+  private static final int PAST_3MON  = -3;
+
+  private String field;
+  private int    catId;
+  private int    startPage;
+  private int    pageSize = PAGE_SIZE;
+  private int    year     = UNSET;
+  private int    month    = UNSET;
+  private int    day      = UNSET;
+
+  private BrowseService                   browseService;
+  private String[]                        categoryNames;
+  private SortedMap<String, Integer>      categoryInfos;
+  private List<List<List<Date>>>          articleDates;
+  private List<BrowseService.ArticleInfo> articleList;
+  private int                             totalArticles;
 
   public String execute() throws Exception {
-    articlesByCategory = browseService.getArticlesByCategory();
-    articlesByDate = browseService.getArticlesByDate();
-    articleDates = browseService.getArticleDates();
-    categoryNames = browseService.getCategoryNames();
     if (DATE_FIELD.equals(getField())) {
       return browseDate();
     } else {
@@ -68,68 +71,61 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   }
 
   private String browseCategory () {
-    articleList = articlesByCategory.get(catId);
+    categoryNames = browseService.getCategoryNames();
+    categoryInfos = browseService.getCategoryInfos();
+
+    int[] numArt = new int[1];
+    articleList = catId < categoryNames.length ?
+        browseService.getArticlesByCategory(categoryNames[catId], startPage, pageSize, numArt) :
+        Collections.<BrowseService.ArticleInfo>emptyList();
+    totalArticles = numArt[0];
+
     return SUCCESS;
   }
 
   private String browseDate() {
-    if (getYear() > -1 && getMonth() > -1 && getDay () > -1) {
-      articleList = articlesByDate.get(getYear()).get(getMonth()).get(getDay());
-    } else if (getYear() > -1 && getMonth() > -1) {
-      articleList = new ArrayList<Article>();
-      Iterator <ArrayList<Article>> iter = articlesByDate.get(getYear()).get(getMonth()).iterator();
-      while (iter.hasNext()) {
-        articleList.addAll(iter.next());
-      }
-    } else if (getMonth() == -2) {
-      int sizeA = articlesByDate.size();
-      int sizeB = articlesByDate.get(sizeA - 1).size();
-      articleList = new ArrayList<Article>();
-      Iterator <ArrayList<Article>> iter = articlesByDate.get(sizeA - 1).get(sizeB - 1).iterator();
-      while (iter.hasNext()) {
-        articleList.addAll(iter.next());
-      }
-    } else if (getMonth() == -3) {
-      int sizeA = articlesByDate.size();
-      int sizeB = articlesByDate.get(sizeA - 1).size();
-      articleList = new ArrayList<Article>();
-      int i = 3;
-      int indexA = sizeA - 1;
-      int indexB = sizeB - 1;
-      while (i > 0) {
-        if (indexB >= 0) {
-          //do nothing
-        } else if (indexA > 0) {
-          indexA --;
-          indexB = articlesByDate.get(indexA).size() - 1;
-        } else {
-          break;
-        }
-        Iterator <ArrayList<Article>> iter = articlesByDate.get(indexA).get(indexB).iterator();
-        ArrayList<Article> tempArrayList = new ArrayList<Article>();
-        while (iter.hasNext()) {
-          tempArrayList.addAll(iter.next());
-        }
-        articleList.addAll(0, tempArrayList);
-        indexB--;
-        i--;
-      }
-    } else {
-      int sizeA = articlesByDate.size();
-      int sizeB = articlesByDate.get(sizeA - 1).size();
-      int sizeC = articlesByDate.get(sizeA - 1).get(sizeB - 1).size();
-      articleList = articlesByDate.get(sizeA - 1).get(sizeB - 1).get(sizeC - 1);
-    }
-    return SUCCESS;
-  }
+    Calendar startDate = Calendar.getInstance();
+    startDate.set(Calendar.HOUR_OF_DAY, 0);
+    startDate.set(Calendar.MINUTE,      0);
+    startDate.set(Calendar.SECOND,      0);
+    startDate.set(Calendar.MILLISECOND, 0);
 
-  /**
-   * return a set of the articleDates broken down by year, month, and day.
-   * 
-   * @return Collection of dates
-   */
-  public Collection<ArrayList<ArrayList<Date>>> getArticleDates() {
-    return articleDates;
+    Calendar endDate;
+
+    if (getYear() > UNSET && getMonth() > UNSET && getDay () > UNSET) {
+      startDate.set(getYear(), getMonth() - 1, getDay());
+      endDate = (Calendar) startDate.clone();
+      endDate.add(Calendar.DATE, 1);
+
+    } else if (getYear() > UNSET && getMonth() > UNSET) {
+      startDate.set(getYear(), getMonth() - 1, 1);
+      endDate = (Calendar) startDate.clone();
+      endDate.add(Calendar.MONTH, 1);
+
+    } else if (getMonth() == PAST_MONTH) {
+      endDate = (Calendar) startDate.clone();
+      startDate.add(Calendar.MONTH, -1);
+      endDate.add(Calendar.DATE, 1);
+
+    } else if (getMonth() == PAST_3MON) {
+      endDate = (Calendar) startDate.clone();
+      startDate.add(Calendar.MONTH, -3);
+      endDate.add(Calendar.DATE, 1);
+
+    } else {
+      endDate = (Calendar) startDate.clone();
+      startDate.add(Calendar.DATE, -7);
+      endDate.add(Calendar.DATE, 1);
+    }
+
+    int[] numArt = new int[1];
+    articleList =
+        browseService.getArticlesByDate(startDate, endDate, startPage, pageSize, numArt);
+    totalArticles = numArt[0];
+
+    articleDates = browseService.getArticleDates();
+
+    return SUCCESS;
   }
 
   /**
@@ -178,20 +174,6 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   }
 
   /**
-   * @return Returns the categoryNames.
-   */
-  public String[] getCategoryNames() {
-    return categoryNames;
-  }
-
-  /**
-   * @return Returns the articlesByCategory.
-   */
-  public ArrayList<ArrayList<Article>> getArticlesByCategory() {
-    return articlesByCategory;
-  }
-
-  /**
    * @return Returns the day.
    */
   public int getDay() {
@@ -234,19 +216,9 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   }
 
   /**
-   * @return Returns the articleList.
-   */
-  public Collection<Article> getArticleList() {
-    return articleList;
-  }
-
-  /**
    * @return Returns the pageSize.
    */
   public int getPageSize() {
-    if (pageSize == 0) {
-      pageSize = PAGE_SIZE;
-    }
     return pageSize;
   }
 
@@ -258,15 +230,55 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   }
 
   /**
+   * return a set of the articleDates broken down by year, month, and day.
+   * 
+   * @return Collection of dates
+   */
+  public List<List<List<Date>>> getArticleDates() {
+    return articleDates;
+  }
+
+  /**
+   * @return the sorted category names for articles.
+   */
+  public String[] getCategoryNames() {
+    return categoryNames;
+  }
+
+  /**
+   * @return Returns the category infos (currently just number of articles per category) for all
+   *         categories
+   */
+  public SortedMap<String, Integer> getCategoryInfos() {
+    return categoryInfos;
+  }
+
+  /**
+   * @return Returns the article list for this page.
+   */
+  public Collection<BrowseService.ArticleInfo> getArticleList() {
+    return articleList;
+  }
+
+  /**
+   * @return Returns the total number of articles in the category or date-range
+   */
+  public int getTotalArticles() {
+    return totalArticles;
+  }
+
+  /**
    * @param browseService The browseService to set.
    */
+  @Required
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
   }
 
   @Override
   public String getRssName() {
-    return categoryNames.length > catId ? categoryNames[catId] : super.getRssName();
+    return (categoryNames != null && catId < categoryNames.length) ? categoryNames[catId] :
+                                                                     super.getRssName();
   }
 
   private static String canonicalCategoryPath(String categoryName) {
@@ -275,7 +287,7 @@ public class BrowseArticlesAction extends BaseActionSupport  {
 
   @Override
   public String getRssPath() {
-    return categoryNames.length > catId
+    return (categoryNames != null && catId < categoryNames.length)
       ? feedBasePath + feedCategoryPrefix + canonicalCategoryPath(categoryNames[catId])
       : super.getRssPath();
   }
