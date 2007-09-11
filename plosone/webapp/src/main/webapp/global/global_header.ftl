@@ -4,7 +4,7 @@
   <!-- begin : user controls -->
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
   <!-- remove duplicate articleURI specification, e.g. /article/doi?articleURL=doi -->
-  <#if thisPageURL?matches(r"^(/.+)?/article/info%3Adoi%2F.+")>
+  <#if thisPageURL?matches(r"^(/.+)?/article/info(:|%3A)doi(/|%2F).+")>
     <#assign thisPage = thisPageURL?replace(r"\??articleURI=info%3Adoi%2F.{30}", "", "r")?replace("&amp;", "&")?url>
   <#else>
     <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
