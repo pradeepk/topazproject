@@ -27,42 +27,63 @@
 
     <hr />
 
+    <h2>${journal.key} (${journal.getEIssn()!""})</h2>
+
+    <!-- create a Volume -->
     <fieldset>
-      <legend><b>${journal.key}</b> (${journal.getEIssn()!""})</legend>
+      <legend><b>Create Volume</b></legend>
 
-      <!-- create a Volume -->
-      <fieldset>
-        <legend><b>Create Volume</b></legend>
+      <@s.form id="manageVolumesIssues_createVolume" name="manageVolumesIssues_createVolume"
+        namespace="/admin" action="manageVolumesIssues" method="post">
 
-        <@s.form id="manageVolumesIssues_createVolume" name="manageVolumesIssues_createVolume"
-          namespace="/admin" action="manageVolumesIssues" method="post">
+        <@s.hidden name="journalKey" label="Journal Key" required="true"
+          value="${journal.key}"/>
+        <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
+          value="${journal.getEIssn()}"/>
+        <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
+          value="CREATE_VOLUME"/>
 
-          <@s.hidden name="journalKey" label="Journal Key" required="true"
-            value="${journal.key}"/>
-          <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
-            value="${journal.getEIssn()}"/>
-          <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
-            value="CREATE_VOLUME"/>
-
-          <@s.textfield name="doi"         label="DOI (human friendly)"  size="72" required="true"/><br />
-          <@s.textfield name="displayName" label="DisplayName"           size="72" required="true"/><br />
-          <@s.textfield name="image"       label="Image (URI)"           size="72" /><br />
-          <@s.textfield name="prev"        label="Previous Volume (DOI)" size="72" /><br />
-          <@s.textfield name="next"        label="Next Volume (DOI)"     size="72" /><br />
-          <br />
-          <@s.textfield name="aggregation" label="Issues"                size="100"/><br />
-          <br />
-          <@s.submit value="Create Volume"/>
-        </@s.form>
-      </fieldset>
-
-      <!-- list Volumes -->
-      <fieldset>
-        <legend><b>Existing Volumes</b></legend>
         <table border="1" cellpadding="2" cellspacing="0">
           <tr>
-            <th>Display Name</th>
+            <th align="right">DOI<br/>(Human Friendly)</th>
+            <td><@s.textfield name="doi" size="72" required="true"/></td>
+          </tr>
+          <tr>
+            <th align="right">Display Name</th>
+            <td><@s.textfield name="displayName" size="72" required="true"/></td>
+          </tr>
+          <tr>
+            <th align="right">Image (URI)</th>
+            <td><@s.textfield name="image" size="72"/></td>
+          </tr>
+          <tr>
+            <th align="right">Previous Volume (DOI)</th>
+            <td><@s.textfield name="prev" size="72"/></td>
+          </tr>
+          <tr>
+            <th align="right">Next Volume (DOI)</th>
+            <td><@s.textfield name="next" size="72"/></td>
+          </tr>
+          <tr>
+            <th align="right">Issues</th>
+            <td><@s.textfield name="aggregation" size="100"/></td>
+          </tr>
+        </table>
+        <br/>
+        <@s.submit value="Create Volume"/>
+      </@s.form>
+    </fieldset>
+
+    <!-- list Volumes -->
+    <fieldset>
+      <legend><b>Existing Volumes</b></legend>
+
+        <table border="1" cellpadding="2" cellspacing="0">
+          <tr>
+            <th>Update</th>
+            <th>Delete</th>
             <th>DOI</th>
+            <th>Display Name</th>
             <th>Image</th>
             <th>Previous</th>
             <th>Next</th>
@@ -70,42 +91,173 @@
           </tr>
           <#list volumes as volume>
             <tr>
-              <th>${volume.displayName}</th>
-              <td>${volume.id}</td>
-              <td>${volume.image!""}</td>
-              <td>${volume.prevVolume!""}</td>
-              <td>${volume.nextVolume!""}</td>
-              <td>${volume.simpleCollection!""}</td>
+              <@s.form id="manageVolumesIssues_updateVolume"
+                name="manageVolumesIssues_updateVolume"
+                namespace="/admin" action="manageVolumesIssues" method="post">
+
+                <@s.hidden name="journalKey" label="Journal Key" required="true"
+                  value="${journal.key}"/>
+                <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
+                  value="${journal.getEIssn()}"/>
+                <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
+                  value="UPDATE_VOLUME"/>
+
+                <td align="center">
+                  <#if volume.image?exists>
+                    <@s.url id="volumeImage" value="${volume.image}" />
+                    <#assign altText="Volume Image" />
+                  <#else>
+                    <@s.url id="volumeImage" value="" />
+                    <#assign altText="Submit (Volume Image null)" />
+                  </#if>
+                  <@s.submit type="image" value="${altText}" src="${volumeImage}"/>
+                </td>
+                <td align="center">
+                  <@s.checkbox name="aggregationToDelete" fieldValue="${volume.id}"/>
+                </td>
+                <td>
+                  <@s.textfield name="doi" required="true" readonly="true" value="${volume.id}"/>
+                </td>
+                <td>
+                  <@s.textfield name="displayName" size="24" required="true"
+                    value="${volume.displayName}"/>
+                </td>
+                <td>
+                  <@s.textfield name="image" size="32" value="${volume.image!''}"/>
+                </td>
+                <td>
+                  <@s.textfield name="prev" size="32" value="${volume.prevVolume!''}"/>
+                </td>
+                <td>
+                  <@s.textfield name="next" size="32" value="${volume.nextVolume!''}"/>
+                </td>
+                <td>
+                  <@s.textfield name="aggregation" size="96"
+                    value="${volume.simpleCollection!''}"/>
+                </td>
+              </@s.form>
             </tr>
           </#list>
         </table>
-      </fieldset>
+    </fieldset>
 
-      <!-- list Issues -->
-      <fieldset>
-        <legend><b>Existing Issues</b></legend>
+    <!-- create a Issue -->
+    <fieldset>
+      <legend><b>Create Issue</b></legend>
+
+      <@s.form id="manageVolumesIssues_createIssue" name="manageVolumesIssues_createIssue"
+        namespace="/admin" action="manageVolumesIssues" method="post">
+
+        <@s.hidden name="journalKey" label="Journal Key" required="true"
+          value="${journal.key}"/>
+        <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
+          value="${journal.getEIssn()}"/>
+        <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
+          value="CREATE_ISSUE"/>
+
         <table border="1" cellpadding="2" cellspacing="0">
           <tr>
-            <th>Display Name</th>
-            <th>DOI</th>
-            <th>Image</th>
-            <th>Previous</th>
-            <th>Next</th>
-            <th>Articles</th>
+            <th align="right">DOI<br/>(Human Friendly)</th>
+            <td><@s.textfield name="doi" size="72" required="true"/></td>
           </tr>
-          <#list issues as issue>
-            <tr>
-              <th>${issue.displayName}</th>
-              <td>${issue.id}</td>
-              <td>${issue.image!""}</td>
-              <td>${issue.prevIssue!""}</td>
-              <td>${issue.nextIssue!""}</td>
-              <td>${issue.simpleCollection!""}</td>
-            </tr>
-          </#list>
+          <tr>
+            <th align="right">Display Name</th>
+            <td><@s.textfield name="displayName" size="72" required="true"/></td>
+          </tr>
+          <tr>
+            <th align="right">Volume</th>
+            <td><@s.textfield name="volume" size="72"/></td>
+          </tr>
+          <tr>
+            <th align="right">Image (URI)</th>
+            <td><@s.textfield name="image" size="72"/></td>
+          </tr>
+          <tr>
+            <th align="right">Previous Issue (DOI)</th>
+            <td><@s.textfield name="prev" size="72"/></td>
+          </tr>
+          <tr>
+            <th align="right">Next Issue (DOI)</th>
+            <td><@s.textfield name="next" size="72"/></td>
+          </tr>
+          <tr>
+            <th align="right">Articles</th>
+            <td><@s.textfield name="aggregation" size="100"/></td>
+          </tr>
         </table>
-      </fieldset>
+        <br/>
+        <@s.submit value="Create Issue"/>
+      </@s.form>
+    </fieldset>
 
+    <!-- list Issues -->
+    <fieldset>
+      <legend><b>Existing Issues</b></legend>
+      <table border="1" cellpadding="2" cellspacing="0">
+        <tr>
+          <th>Update</th>
+          <th>Delete</th>
+          <th>DOI</th>
+          <th>Display Name</th>
+          <th>Volume</th>
+          <th>Image</th>
+          <th>Previous</th>
+          <th>Next</th>
+          <th>Articles</th>
+        </tr>
+        <#list issues as issue>
+          <tr>
+            <@s.form id="manageVolumesIssues_updateIssue"
+              name="manageVolumesIssues_updateIssue"
+              namespace="/admin" action="manageVolumesIssues" method="post">
+
+              <@s.hidden name="journalKey" label="Journal Key" required="true"
+                value="${journal.key}"/>
+              <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
+                value="${journal.getEIssn()}"/>
+              <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
+                value="UPDATE_ISSUE"/>
+
+              <td align="center">
+                <#if issue.image?exists>
+                  <@s.url id="issueImage" value="${issue.image}" />
+                  <#assign altText="Issue Image" />
+                <#else>
+                  <@s.url id="issueImage" value="" />
+                  <#assign altText="Submit (Issue Image null)" />
+                </#if>
+                <@s.submit type="image" value="${altText}" src="${issueImage}"/>
+              </td>
+              <td align="center">
+                <@s.checkbox name="aggregationToDelete" fieldValue="${issue.id}"/>
+              </td>
+              <td>
+                <@s.textfield name="doi" required="true" readonly="true" value="${issue.id}"/>
+              </td>
+              <td>
+                <@s.textfield name="displayName" size="24" required="true"
+                  value="${issue.displayName}"/>
+              </td>
+              <td>
+                <@s.textfield name="volume" size="32" value="${issue.volume!''}"/>
+              </td>
+              <td>
+                <@s.textfield name="image" size="32" value="${issue.image!''}"/>
+              </td>
+              <td>
+                <@s.textfield name="prev" size="32" value="${issue.prevIssue!''}"/>
+              </td>
+              <td>
+                <@s.textfield name="next" size="32" value="${issue.nextIssue!''}"/>
+              </td>
+              <td>
+                <@s.textfield name="aggregation" size="96"
+                  value="${issue.simpleCollection!''}"/>
+              </td>
+            </@s.form>
+          </tr>
+        </#list>
+      </table>
     </fieldset>
 
   </body>

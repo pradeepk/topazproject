@@ -161,4 +161,13 @@ public class Issue extends Aggregation {
   public void setNextIssue(URI nextIssue) {
     this.nextIssue = nextIssue;
   }
+
+  /**
+   * String representation of an Issue for debugging.
+   */
+  public String toString() {
+    return this.getClass().getName() + ", doi: " + getId() + ", display name: " + displayName
+      + ", journal: " + journal + ", volume: " + volume + ", image: " + image
+      + ", nextIssue: " + nextIssue + ", prevIssue: " + prevIssue;
+  }
 }

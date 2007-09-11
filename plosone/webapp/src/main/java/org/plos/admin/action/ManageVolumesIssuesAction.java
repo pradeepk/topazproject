@@ -18,7 +18,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.models.DublinCore;
 import org.plos.models.Issue;
@@ -40,11 +39,15 @@ import org.topazproject.otm.util.TransactionHelper;
 public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   public static final String CREATE_VOLUME = "CREATE_VOLUME";
+  public static final String UPDATE_VOLUME = "UPDATE_VOLUME";
+  public static final String CREATE_ISSUE  = "CREATE_ISSUE";
+  public static final String UPDATE_ISSUE  = "UPDATE_ISSUE";
 
   private String journalKey;
   private String journalEIssn;
   private String manageVolumesIssuesAction;
   private Journal journal;
+  private URI volume;
   private List<Volume> volumes;
   private List<Issue> issues;
   private URI doi;
@@ -53,6 +56,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private URI prev;
   private URI next;
   private String aggregation;
+  private URI aggregationToDelete;
 
   private Session session;
   private JournalService journalService;
@@ -71,6 +75,12 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     if (manageVolumesIssuesAction != null) {
       if (manageVolumesIssuesAction.equals(CREATE_VOLUME)) {
         createVolume();
+      } else if (manageVolumesIssuesAction.equals(UPDATE_VOLUME)) {
+        updateVolume();
+      } else if (manageVolumesIssuesAction.equals(CREATE_ISSUE)) {
+        createIssue();
+      } else if (manageVolumesIssuesAction.equals(UPDATE_ISSUE)) {
+        updateIssue();
       }
     }
 
@@ -154,13 +164,163 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
           session.saveOrUpdate(newVolume);
 
-          addActionMessage("Created Volume: (" + doi + ") " + newVolume.toString());
+          addActionMessage("Created Volume: " + newVolume.toString());
 
           return null;
         }
       });
 
     return SUCCESS;
+  }
+
+  /**
+   * Update a Volume.
+   *
+   * Volume values taken from Struts Form.
+   */
+  private String updateVolume() {
+
+    // OTM usage wants to be in a Transaction
+    return TransactionHelper.doInTx(session,
+      new TransactionHelper.Action<String>() {
+
+        public String run(Transaction tx) {
+
+          // the Volume to update
+          Volume volume = session.get(Volume.class, doi.toString());
+
+          // delete the Volume?
+          if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
+            session.delete(volume);
+            addActionMessage("Deleted Volume: " + volume.toString());
+            return SUCCESS;
+          }
+
+          // assume updating the Volume
+          volume.setDisplayName(displayName);
+          volume.setImage(image);
+          volume.setNextVolume(next);
+          volume.setPrevVolume(prev);
+
+          // process Issues
+          List<URI> volumeIssues = new ArrayList();
+          if (aggregation != null && aggregation.length() != 0) {
+            for (final String issueToAdd : aggregation.split(",")) {
+              volumeIssues.add(URI.create(issueToAdd.trim()));
+            }
+          } else {
+            volumeIssues = null;
+          }
+          volume.setSimpleCollection(volumeIssues);
+
+          session.saveOrUpdate(volume);
+
+          addActionMessage("Updated Volume: " + volume.toString());
+
+          return SUCCESS;
+        }
+      });
+  }
+
+  /**
+   * Create a Issue.
+   *
+   * Issue values taken from Struts Form.
+   */
+  private String createIssue() {
+
+    // OTM usage wants to be in a Transaction
+    TransactionHelper.doInTx(session,
+      new TransactionHelper.Action<String>() {
+
+        public String run(Transaction tx) {
+
+          // the DOI must be unique
+          if (session.get(Issue.class, doi.toString()) != null) {
+            addActionMessage("Duplicate DOI, Issue, " + doi + ", already exists.");
+            return ERROR;
+          }
+
+          Issue newIssue = new Issue();
+          newIssue.setId(doi);
+          DublinCore newDublinCore = new DublinCore();
+          newDublinCore.setCreated(new Date());
+          newIssue.setDublinCore(newDublinCore);
+          newIssue.setJournal(journalEIssn);
+          newIssue.setVolume(volume);
+          newIssue.setDisplayName(displayName);
+          newIssue.setImage(image);
+          newIssue.setPrevIssue(prev);
+          newIssue.setNextIssue(next);
+
+          // process Articles
+          if (aggregation != null && aggregation.length() != 0) {
+            List<URI> articles = new ArrayList();
+            for (final String articleToAdd : aggregation.split(",")) {
+              articles.add(URI.create(articleToAdd.trim()));
+            }
+            newIssue.setSimpleCollection(articles);
+          }
+
+          session.saveOrUpdate(newIssue);
+
+          addActionMessage("Created Issue: " + newIssue.toString());
+
+          return null;
+        }
+      });
+
+    return SUCCESS;
+  }
+
+  /**
+   * Update an Issue.
+   *
+   * Issue values taken from Struts Form.
+   */
+  private String updateIssue() {
+
+    // OTM usage wants to be in a Transaction
+    return TransactionHelper.doInTx(session,
+      new TransactionHelper.Action<String>() {
+
+        public String run(Transaction tx) {
+
+          // the Issue to update
+          Issue issue = session.get(Issue.class, doi.toString());
+
+          // delete the Issue?
+          if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
+            session.delete(issue);
+            addActionMessage("Deleted Issue: " + issue.toString());
+            return SUCCESS;
+          }
+
+          // assume updating the Issue
+          issue.setDisplayName(displayName);
+          issue.setVolume(volume);
+          issue.setImage(image);
+          issue.setNextIssue(next);
+          issue.setPrevIssue(prev);
+
+          // process Issues
+          List<URI> issueArticles = new ArrayList();
+          if (aggregation != null && aggregation.length() != 0) {
+            for (final String articleToAdd : aggregation.split(",")) {
+              issueArticles.add(URI.create(articleToAdd.trim()));
+            }
+          } else {
+            issueArticles = null;
+          }
+          issue.setSimpleCollection(issueArticles);
+
+          session.saveOrUpdate(issue);
+
+          addActionMessage("Updated Issue: " + issue.toString());
+
+          return SUCCESS;
+        }
+      });
   }
 
   /**
@@ -217,6 +377,17 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   }
 
   /**
+   * Set Aggregation to delete.
+   *
+   * Enable Struts Form to set the Aggregation to delete as a String.
+   *
+   * @param aggregationToDelete the Aggregation to delete.
+   */
+  public void setAggregationToDelete(String aggregationToDelete) {
+    this.aggregationToDelete = URI.create(aggregationToDelete);
+  }
+
+  /**
    * Get the Journal.
    *
    * @return the Journal.
@@ -235,6 +406,17 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    */
   public void setDoi(String doi) {
     this.doi = URI.create(doi);
+  }
+
+  /**
+   * Set Issue's Volume DOI.
+   *
+   * Enable Struts Form to set the Issue's Volume DOI as a String.
+   *
+   * @param volumeDoi the Issue's Volume DOI.
+   */
+  public void setVolume(String volumeDoi) {
+    this.volume = URI.create(volumeDoi);
   }
 
   /**
@@ -300,10 +482,19 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * Set aggregation, comma separated list of Issue DOIs.
    *
    * Enable Struts Form to set the aggregation as a String.
+   * Note that toString() artifacts, "[]" may exist, trim them.
    *
    * @param aggregation comma separated list of Issue DOIs.
    */
   public void setAggregation(String aggregation) {
+
+    if (aggregation.startsWith("[")) {
+      aggregation = aggregation.substring(1);
+      if (aggregation.endsWith("]")) {
+        aggregation = aggregation.substring(0, aggregation.length() - 1);
+      }
+    }
+
     this.aggregation = aggregation;
   }
 
