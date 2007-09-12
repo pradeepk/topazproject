@@ -138,13 +138,13 @@
               </div>
             </div><!-- end : info block -->
 
-            <#if categoryNames?size gt 0>
+            <#if categoryInfos?size gt 0>
             <div class="subject block">
               <h2>Explore by Subject</h2>
               <dl class="category">
-              <#list categoryNames as category>
+              <#list categoryInfos?keys as category>
                 <#assign categoryId = category?replace("\\s|\'","","r")>
-                <@s.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
+                <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
                 <dt>
                   <a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
                   <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-12x12.gif" /></a>

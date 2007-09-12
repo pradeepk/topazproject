@@ -33,7 +33,6 @@ public class HomePageAction extends BaseActionSupport {
 
   private BrowseService                   browseService;
   private List<BrowseService.ArticleInfo> recentArticles;
-  private String[]                        categoryNames;
   private SortedMap<String, Integer>      categoryInfos;
 
   /**
@@ -52,7 +51,6 @@ public class HomePageAction extends BaseActionSupport {
 
     recentArticles = browseService.getArticlesByDate(startDate, endDate, 0, -1, new int[1]);
 
-    categoryNames = browseService.getCategoryNames();
     categoryInfos = browseService.getCategoryInfos();
 
     return SUCCESS;
@@ -73,13 +71,6 @@ public class HomePageAction extends BaseActionSupport {
    */
   public SortedMap<String, Integer> getCategoryInfos() {
     return categoryInfos;
-  }
-
-  /**
-   * @return the sorted category names for articles.
-   */
-  public String[] getCategoryNames() {
-    return categoryNames;
   }
 
   /**

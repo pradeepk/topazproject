@@ -13,12 +13,12 @@
 
 		<ul class="subjects">
       <#assign infoText = "">
-			<#list categoryNames as subjectName>
-			<#if catId == subjectName_index>
+			<#list categoryInfos?keys as subjectName>
+			<#if catName == subjectName>
 				<li class="current">${subjectName} (${categoryInfos[subjectName]})</li>
 				<#assign infoText = "in <strong>" + subjectName+ "</strong>">
 			<#else>
-			  <@s.url id="browseURL" action="browse" namespace="/article" field="${field}" catId="${subjectName_index}" includeParams="none"/>						
+			  <@s.url id="browseURL" action="browse" namespace="/article" field="${field}" catName="${subjectName}" includeParams="none"/>						
 			  <li><@s.a href="%{browseURL}">${subjectName} (${categoryInfos[subjectName]})</@s.a></li>
 			</#if>
 

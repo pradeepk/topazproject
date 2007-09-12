@@ -48,7 +48,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private static final int PAST_3MON  = -3;
 
   private String field;
-  private int    catId;
+  private String catName;
   private int    startPage;
   private int    pageSize = PAGE_SIZE;
   private int    year     = UNSET;
@@ -56,7 +56,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private int    day      = UNSET;
 
   private BrowseService                   browseService;
-  private String[]                        categoryNames;
   private SortedMap<String, Integer>      categoryInfos;
   private List<List<List<Date>>>          articleDates;
   private List<BrowseService.ArticleInfo> articleList;
@@ -71,12 +70,11 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   private String browseCategory () {
-    categoryNames = browseService.getCategoryNames();
     categoryInfos = browseService.getCategoryInfos();
 
     int[] numArt = new int[1];
-    articleList = catId < categoryNames.length ?
-        browseService.getArticlesByCategory(categoryNames[catId], startPage, pageSize, numArt) :
+    articleList = (catName != null) ?
+        browseService.getArticlesByCategory(catName, startPage, pageSize, numArt) :
         Collections.<BrowseService.ArticleInfo>emptyList();
     totalArticles = numArt[0];
 
@@ -160,17 +158,17 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the catId.
+   * @return Returns the category name.
    */
-  public int getCatId() {
-    return catId;
+  public String getCatName() {
+    return catName;
   }
 
   /**
-   * @param catId The catId to set.
+   * @param catName The category name to set.
    */
-  public void setCatId(int catId) {
-    this.catId = catId;
+  public void setCatName(String catName) {
+    this.catName = catName;
   }
 
   /**
@@ -239,13 +237,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   /**
-   * @return the sorted category names for articles.
-   */
-  public String[] getCategoryNames() {
-    return categoryNames;
-  }
-
-  /**
    * @return Returns the category infos (currently just number of articles per category) for all
    *         categories
    */
@@ -277,8 +268,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
   @Override
   public String getRssName() {
-    return (categoryNames != null && catId < categoryNames.length) ? categoryNames[catId] :
-                                                                     super.getRssName();
+    return (catName != null) ? catName : super.getRssName();
   }
 
   private static String canonicalCategoryPath(String categoryName) {
@@ -287,8 +277,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
   @Override
   public String getRssPath() {
-    return (categoryNames != null && catId < categoryNames.length)
-      ? feedBasePath + feedCategoryPrefix + canonicalCategoryPath(categoryNames[catId])
-      : super.getRssPath();
+    return (catName != null) ? feedBasePath + feedCategoryPrefix + canonicalCategoryPath(catName) :
+                               super.getRssPath();
   }
 }

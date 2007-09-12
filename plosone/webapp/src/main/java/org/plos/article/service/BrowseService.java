@@ -55,7 +55,6 @@ public class BrowseService {
 
   private static final String CAT_INFO_LOCK       = "CatLock-";
   private static final String CAT_INFO_KEY        = "CatInfo-";
-  private static final String CAT_NAMES_KEY       = "CatNames-";
   private static final String ARTBYCAT_LIST_KEY   = "ArtByCat-";
 
   private static final String DATE_LIST_LOCK      = "DateLock-";
@@ -181,15 +180,6 @@ public class BrowseService {
     cal.add(Calendar.DATE,        1);
 
     return (int) ((cal.getTimeInMillis() - now) / 1000);
-  }
-
-  /**
-   * Get the list of categories for which at least one article exists.
-   *
-   * @return the sorted category names.
-   */
-  public String[] getCategoryNames() {
-    return (String[]) getCatInfo(CAT_NAMES_KEY, "category names", true);
   }
 
   /**
@@ -331,7 +321,6 @@ public class BrowseService {
   public void notifyJournalModified(final String jnlName) {
     synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
       browseCache.remove(CAT_INFO_KEY + jnlName);
-      browseCache.remove(CAT_NAMES_KEY + jnlName);
       browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
     }
 
@@ -384,13 +373,9 @@ public class BrowseService {
     for (Map.Entry<String, List<URI>> e : artByCat.entrySet())
       catSizes.put(e.getKey(), e.getValue().size());
 
-    // generate category-name list as array
-    String[] names = catSizes.keySet().toArray(new String[catSizes.size()]);
-
     // save in cache
     browseCache.put(new Element(ARTBYCAT_LIST_KEY + jnlName, artByCat));
     browseCache.put(new Element(CAT_INFO_KEY + jnlName, catSizes));
-    browseCache.put(new Element(CAT_NAMES_KEY + jnlName, names));
   }
 
   private ArticleInfo loadArticleInfo(final URI id) {
