@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedMap;
+import java.util.SortedSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,11 +56,11 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private int    month    = UNSET;
   private int    day      = UNSET;
 
-  private BrowseService                   browseService;
-  private SortedMap<String, Integer>      categoryInfos;
-  private List<List<List<Date>>>          articleDates;
-  private List<BrowseService.ArticleInfo> articleList;
-  private int                             totalArticles;
+  private BrowseService                                              browseService;
+  private SortedMap<String, Integer>                                 categoryInfos;
+  private SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> articleDates;
+  private List<BrowseService.ArticleInfo>                            articleList;
+  private int                                                        totalArticles;
 
   public String execute() throws Exception {
     if (DATE_FIELD.equals(getField())) {
@@ -232,7 +233,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
    * 
    * @return Collection of dates
    */
-  public List<List<List<Date>>> getArticleDates() {
+  public SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> getArticleDates() {
     return articleDates;
   }
 

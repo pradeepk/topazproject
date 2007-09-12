@@ -12,6 +12,7 @@
 			</form>
 		</div>
 
+    <#assign infoText = "">
 		<ul>
 			<#if year == -1 && month == -1 && day == -1>
 			<#assign infoText = "in the <strong>past week</strong>">
@@ -37,38 +38,35 @@
 		</ul>
 
 		<ol>
-    <#if (articleDates?size gt 0)>
-		<#list articleDates?size-1 .. 0 as i>
-			<#assign oneYear = articleDates[i]>
-			<#assign aDay = oneYear[0][0]>
-			<li>${aDay?string("yyyy")}
-			<#list oneYear?size-1 .. 0 as j>
-			  <#assign oneMonth = oneYear[j]>
+		<#list articleDates?keys?reverse as curYear>
+      <#assign curYearStr = curYear?string("#") >
+			<li>${curYearStr}
+			<#list articleDates(curYear)?keys?reverse as curMon>
+        <#assign curMonStr = curMon?date("MM")?string("MMM") >
 				<ol>
-				<#assign oneDay = oneMonth[0]>
-					<#if oneDay?string("yyyy")?number == year && oneDay?string("MM")?number == month && day == -1>
+					<#if curYear == year && curMon == month && day == -1>
 						<li class="current">
-		  			<#assign infoText = "in <strong>" + oneDay?string("MMM") + " " + oneDay?string("yyyy") + "</strong>">
+		  			<#assign infoText = "in <strong>" + curMonStr + " " + curYearStr + "</strong>">
 					<#else>
 						<li>
 					</#if>						
-				  <@s.url id="monthURL" action="browse" namespace="/article" field="${field}" year="${oneDay?string('yyyy')}" month="${oneDay?string('MM')}" includeParams="none"/>								
-					<@s.a href="%{monthURL}">${oneDay?string("MMM")}</@s.a></li>
-				<#list oneMonth as oneDay>
-					<#if oneDay?string("yyyy")?number == year && oneDay?string("MM")?number == month && oneDay?string("dd")?number == day>
+				  <@s.url id="monthURL" action="browse" namespace="/article" field="${field}" year="${curYear?c}" month="${curMon?c}" includeParams="none"/>								
+					<@s.a href="%{monthURL}">${curMonStr}</@s.a></li>
+				<#list articleDates(curYear)(curMon) as curDay>
+          <#assign curDayStr = curDay?string("00") >
+					<#if curYear == year && curMon == month && curDay == day>
 					<li class="current">
-	  			<#assign infoText = "on <strong>" + oneDay?string("dd") + " " + oneDay?string("MMM") + " " + oneDay?string("yyyy") + "</strong>">
+	  			<#assign infoText = "on <strong>" + curDayStr + " " + curMonStr + " " + curYearStr + "</strong>">
 					<#else>
 					<li>
 					</#if>
-				  <@s.url id="dayURL" action="browse" namespace="/article" field="${field}" year="${oneDay?string('yyyy')}" month="${oneDay?string('MM')}" day="${oneDay?string('dd')}" includeParams="none"/>													
-					<@s.a href="%{dayURL}">${oneDay?string("dd")}</@s.a></li>
+				  <@s.url id="dayURL" action="browse" namespace="/article" field="${field}" year="${curYear?c}" month="${curMon?c}" day="${curDay?c}" includeParams="none"/>													
+					<@s.a href="%{dayURL}">${curDayStr}</@s.a></li>
 				</#list>
 				</ol>
 			</#list>
 			</li>
 		</#list>
-    </#if>
 		</ol>
 
 	</div> <!-- browse nav-->

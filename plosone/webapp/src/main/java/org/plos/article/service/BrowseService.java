@@ -79,24 +79,24 @@ public class BrowseService {
   }
 
   /**
-   * Get the dates of all articles. The outer list is an list of years, the next inner list a list
+   * Get the dates of all articles. The outer map is a map of years, the next inner map a map
    * of months, and finally the innermost is a list of days.
    *
    * @return the article dates.
    */
-  public List<List<List<Date>>> getArticleDates() {
+  public SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> getArticleDates() {
     return getArticleDates(true);
   }
 
-  private List<List<List<Date>>> getArticleDates(boolean load) {
+  private SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> getArticleDates(boolean load) {
     String jnlName = getCurrentJournal();
     String key     = DATE_LIST_KEY + jnlName;
     Object lock    = (DATE_LIST_LOCK + jnlName).intern();
 
     return
       CacheAdminHelper.getFromCache(browseCache, key, -1, lock, "article dates",
-                            load ? new CacheAdminHelper.EhcacheUpdater<List<List<List<Date>>>>() {
-        public List<List<List<Date>>> lookup() {
+                                    load ? new CacheAdminHelper.EhcacheUpdater<SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>>>() {
+        public SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> lookup() {
           return loadArticleDates();
         }
       } : null);
@@ -299,7 +299,7 @@ public class BrowseService {
 
     // update date lists
     synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
-      List<List<List<Date>>> dates = getArticleDates(false);
+      SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> dates = getArticleDates(false);
       if (dates != null) {
         for (NewArtInfo nai: nais)
           insertDate(dates, nai.date);
@@ -411,7 +411,7 @@ public class BrowseService {
       });
   }
 
-  private List<List<List<Date>>> loadArticleDates() {
+  private SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> loadArticleDates() {
     SortedSet<String> dates =
       TransactionHelper.doInTx(session, new TransactionHelper.Action<SortedSet<String>>() {
         public SortedSet<String> run(Transaction tx) {
@@ -431,120 +431,59 @@ public class BrowseService {
     return parseDates(dates);
   }
 
-  private static List<List<List<Date>>> parseDates(SortedSet<String> dates) {
-    List<List<List<Date>>> res = new ArrayList<List<List<Date>>>(2);
-
-    int y            = -1;
-    int m            = -1;
-    int currentYear  = -1;
-    int currentMonth = -1;
-
-    Calendar oneDate = Calendar.getInstance();
-    oneDate.set(Calendar.HOUR_OF_DAY, 0);
-    oneDate.set(Calendar.MINUTE,      0);
-    oneDate.set(Calendar.SECOND,      0);
-    oneDate.set(Calendar.MILLISECOND, 0);
+  private static SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>>
+        parseDates(SortedSet<String> dates) {
+    SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> res =
+          new TreeMap<Integer, SortedMap<Integer, SortedSet<Integer>>>();
 
     for (String date : dates) {
-      oneDate.set(getYear(date), getMonth(date), getDay(date));
-
-      if (currentYear != oneDate.get(Calendar.YEAR)) {
-        res.add(++y, new ArrayList<List<Date>>(12));
-        currentYear = oneDate.get(Calendar.YEAR);
-        m           = -1;
-      }
-
-      if (currentMonth != oneDate.get(Calendar.MONTH)) {
-        res.get(y).add(++m, new ArrayList<Date>());
-        currentMonth = oneDate.get(Calendar.MONTH);
-      }
-
-      res.get(y).get(m).add(oneDate.getTime());
+      Integer y = getYear(date);
+      Integer m = getMonth(date);
+      Integer d = getDay(date);
+      getMonth(getYear(res, y), m).add(d);
     }
 
     return res;
   }
 
-  private static final int getYear(String date) {
-    return Integer.parseInt(date.substring(0, 4));
+  private static SortedMap<Integer, SortedSet<Integer>>
+      getYear(SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> years, Integer year) {
+    SortedMap<Integer, SortedSet<Integer>> months = years.get(year);
+    if (months == null)
+      years.put(year, months = new TreeMap<Integer, SortedSet<Integer>>());
+    return months;
   }
 
-  private static final int getMonth(String date) {
-    return Integer.parseInt(date.substring(5, 7)) - 1;
+  private static SortedSet<Integer> getMonth(SortedMap<Integer, SortedSet<Integer>> months,
+                                             Integer mon) {
+    SortedSet<Integer> days = months.get(mon);
+    if (days == null)
+      months.put(mon, days = new TreeSet<Integer>());
+    return days;
   }
 
-  private static final int getDay(String date) {
-    return Integer.parseInt(date.substring(8, 10));
+  private static final Integer getYear(String date) {
+    return Integer.valueOf(date.substring(0, 4));
   }
 
-  /* Is this worth it? Maybe we should just flush the whole article-by-date cache */
-  private static void insertDate(List<List<List<Date>>> dates, Date newDate) {
+  private static final Integer getMonth(String date) {
+    return Integer.valueOf(date.substring(5, 7));
+  }
+
+  private static final Integer getDay(String date) {
+    return Integer.valueOf(date.substring(8, 10));
+  }
+
+  private static void insertDate(SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> dates,
+                                 Date newDate) {
     Calendar newCal = Calendar.getInstance();
     newCal.setTime(newDate);
 
-    Calendar tmp = Calendar.getInstance();
+    int y = newCal.get(Calendar.YEAR);
+    int m = newCal.get(Calendar.MONTH) + 1;
+    int d = newCal.get(Calendar.DATE);
 
-    for (ListIterator<List<List<Date>>> yearIter = dates.listIterator(); yearIter.hasNext(); ) {
-      List<List<Date>> year = yearIter.next();
-      tmp.setTime(year.get(0).get(0));
-
-      if (tmp.get(Calendar.YEAR) < newCal.get(Calendar.YEAR))
-        continue;
-
-      if (tmp.get(Calendar.YEAR) > newCal.get(Calendar.YEAR)) {
-        year = new ArrayList<List<Date>>();
-        year.add(new ArrayList<Date>());
-        year.get(0).add(newDate);
-        yearIter.previous();
-        yearIter.add(year);
-        return;
-      }
-
-      for (ListIterator<List<Date>> monIter = year.listIterator(); monIter.hasNext(); ) {
-        List<Date> month = monIter.next();
-        tmp.setTime(month.get(0));
-
-        if (tmp.get(Calendar.MONTH) < newCal.get(Calendar.MONTH))
-          continue;
-
-        if (tmp.get(Calendar.MONTH) > newCal.get(Calendar.MONTH)) {
-          month = new ArrayList<Date>();
-          month.add(newDate);
-          monIter.previous();
-          monIter.add(month);
-          return;
-        }
-
-        for (ListIterator<Date> dayIter = month.listIterator(); dayIter.hasNext(); ) {
-          Date day = dayIter.next();
-          tmp.setTime(day);
-
-          if (tmp.get(Calendar.DATE) < newCal.get(Calendar.DATE))
-            continue;
-
-          if (tmp.get(Calendar.DATE) > newCal.get(Calendar.DATE)) {
-            dayIter.previous();
-            dayIter.add(newDate);
-            return;
-          }
-
-          return;
-        }
-
-        month.add(newDate);
-        return;
-      }
-
-      List<Date> month = new ArrayList<Date>();
-      month.add(newDate);
-      year.add(month);
-      return;
-    }
-
-    List<List<Date>> year = new ArrayList<List<Date>>();
-    year.add(new ArrayList<Date>());
-    year.get(0).add(newDate);
-    dates.add(year);
+    getMonth(getYear(dates, y), m).add(d);
   }
 
   private List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate) {
