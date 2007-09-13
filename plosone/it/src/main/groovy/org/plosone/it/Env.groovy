@@ -10,6 +10,8 @@
 
 package org.plosone.it;
 import org.apache.tools.ant.taskdefs.Antlib;
+import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.fedora.client.APIMStubFactory;
 
 /**
  * An integration test environment for PlosOne. The environment runs
@@ -138,7 +140,7 @@ public class Env {
   * Start all services. If another environment is currently running, that is stopped first.
   */
   public void start() {
-    ant.echo 'Starting services for ...'
+    ant.echo 'Starting services ...'
     if (active != null) {
       if (active.install.equals(install))
          return
@@ -150,10 +152,7 @@ public class Env {
     waitFor('http://localhost:9091/mulgara-service/')
     ant.echo 'Mulgara started'
     plosone()
-    // FIXME: mvn seems to have registered an auth-handler that is sending
-    // out the repository password for topaz instead of the ones from here 
-    //waitFor('http://fedoraAdmin:fedoraAdmin@localhost:9090/fedora/')
-    waitFor('http://localhost:9090/')
+    waitForFedora()
     ant.echo 'Fedora started'
     waitFor('http://localhost:8080/plosone-webapp/')
     ant.echo 'Plosone started'
@@ -181,7 +180,7 @@ public class Env {
       + ' -Dtopaz.mulgara.databaseDir=' + unixPath(install, '/data/mulgara') 
       + ' -Dlog4j.configuration='+ pathUrl(install, '/mulgaraLog4j.xml'))
       ant.echo 'Starting mulgara with arguments: ' +argLine
-      
+
       exec(executable: 'mvn' + ext, failonerror:true) {
         arg(line: argLine)
       }
@@ -241,6 +240,26 @@ public class Env {
     Throwable saved = null;
     for (i in 1..120) {
       try {return uri.toURL().text} catch (Throwable e)  {saved = e}
+      ant.echo i + ' Waiting for ' + uri + ' ...'
+      sleep 1000
+    }
+    ant.echo 'Failed to start the service at ' + uri
+    throw saved
+  }
+
+  private String waitForFedora() {
+    String uri    = "http://localhost:9090/fedora/services/management"
+    String uname  = "fedoraAdmin"
+    String passwd = "fedoraAdmin"
+    FedoraAPIM apim = APIMStubFactory.create(uri, uname, passwd)
+    apim.getNextPID(new org.apache.axis.types.NonNegativeInteger("1"), "test")[0];
+    Throwable saved = null;
+    for (i in 1..120) {
+      try {
+        return apim.getNextPID(new org.apache.axis.types.NonNegativeInteger("1"), "test")[0]
+      } catch (Throwable e)  {
+        saved = e
+      }
       ant.echo i + ' Waiting for ' + uri + ' ...'
       sleep 1000
     }
