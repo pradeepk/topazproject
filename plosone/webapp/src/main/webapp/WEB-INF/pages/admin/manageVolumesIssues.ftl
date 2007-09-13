@@ -45,7 +45,7 @@
 
         <table border="1" cellpadding="2" cellspacing="0">
           <tr>
-            <th align="right">DOI<br/>(Human Friendly)</th>
+            <th align="right">Id<br/>(Human Friendly)</th>
             <td><@s.textfield name="doi" size="72" required="true"/></td>
           </tr>
           <tr>
@@ -57,11 +57,11 @@
             <td><@s.textfield name="image" size="72"/></td>
           </tr>
           <tr>
-            <th align="right">Previous Volume (DOI)</th>
+            <th align="right">Previous Volume (Id)</th>
             <td><@s.textfield name="prev" size="72"/></td>
           </tr>
           <tr>
-            <th align="right">Next Volume (DOI)</th>
+            <th align="right">Next Volume (Id)</th>
             <td><@s.textfield name="next" size="72"/></td>
           </tr>
           <tr>
@@ -82,7 +82,7 @@
           <tr>
             <th>Update</th>
             <th>Delete</th>
-            <th>DOI</th>
+            <th>Id</th>
             <th>Display Name</th>
             <th>Image</th>
             <th>Previous</th>
@@ -157,7 +157,7 @@
 
         <table border="1" cellpadding="2" cellspacing="0">
           <tr>
-            <th align="right">DOI<br/>(Human Friendly)</th>
+            <th align="right">Id<br/>(Human Friendly)</th>
             <td><@s.textfield name="doi" size="72" required="true"/></td>
           </tr>
           <tr>
@@ -173,11 +173,11 @@
             <td><@s.textfield name="image" size="72"/></td>
           </tr>
           <tr>
-            <th align="right">Previous Issue (DOI)</th>
+            <th align="right">Previous Issue (Id)</th>
             <td><@s.textfield name="prev" size="72"/></td>
           </tr>
           <tr>
-            <th align="right">Next Issue (DOI)</th>
+            <th align="right">Next Issue (Id)</th>
             <td><@s.textfield name="next" size="72"/></td>
           </tr>
           <tr>
@@ -197,7 +197,7 @@
         <tr>
           <th>Update</th>
           <th>Delete</th>
-          <th>DOI</th>
+          <th>Id</th>
           <th>Display Name</th>
           <th>Volume</th>
           <th>Image</th>

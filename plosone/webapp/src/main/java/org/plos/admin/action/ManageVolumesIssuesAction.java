@@ -488,11 +488,12 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    */
   public void setAggregation(String aggregation) {
 
+    // check for both pre/postfix, e.g. user may delete one or another
     if (aggregation.startsWith("[")) {
       aggregation = aggregation.substring(1);
-      if (aggregation.endsWith("]")) {
-        aggregation = aggregation.substring(0, aggregation.length() - 1);
-      }
+    }
+    if (aggregation.endsWith("]")) {
+      aggregation = aggregation.substring(0, aggregation.length() - 1);
     }
 
     this.aggregation = aggregation;
