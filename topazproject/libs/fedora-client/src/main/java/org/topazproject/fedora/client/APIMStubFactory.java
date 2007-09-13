@@ -16,6 +16,7 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.Stub;
 
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.PasswordProtectedService;
 import org.topazproject.authentication.UnProtectedService;
 import org.topazproject.authentication.reauth.AbstractReAuthStubFactory;
 
@@ -47,7 +48,7 @@ public class APIMStubFactory extends AbstractReAuthStubFactory {
     return stub;
   }
 
-  private FedoraAPIM createStub(ProtectedService service) 
+  private FedoraAPIM createStub(ProtectedService service)
                            throws MalformedURLException, ServiceException {
     URL                      url      = new URL(service.getServiceUri());
     String                   protocol = url.getProtocol();
@@ -86,6 +87,21 @@ public class APIMStubFactory extends AbstractReAuthStubFactory {
    */
   public static FedoraAPIM create(String serviceUri) throws MalformedURLException, ServiceException {
     return create(new UnProtectedService(serviceUri));
+  }
+
+  /**
+   * Creates a client that require a username/password authentication.
+   *
+   * @param serviceUri the uri for Fedora API-M service
+   *
+   * @return Returns a Fedora API-M client stub.
+   *
+   * @throws MalformedURLException If the service url is misconfigured
+   * @throws ServiceException If there is an error in creating the stub
+   */
+  public static FedoraAPIM create(String serviceUri, String username, String password) 
+      throws MalformedURLException, ServiceException {
+    return create(new PasswordProtectedService(serviceUri, username, password));
   }
 
   /*
