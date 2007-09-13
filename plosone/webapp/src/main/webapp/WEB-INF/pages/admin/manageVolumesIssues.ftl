@@ -45,7 +45,7 @@
 
         <table border="1" cellpadding="2" cellspacing="0">
           <tr>
-            <th align="right">Id<br/>(Human Friendly)</th>
+            <th align="right">Id<br/>(PLoS DOI syntax)</th>
             <td><@s.textfield name="doi" size="72" required="true"/></td>
           </tr>
           <tr>
@@ -157,7 +157,7 @@
 
         <table border="1" cellpadding="2" cellspacing="0">
           <tr>
-            <th align="right">Id<br/>(Human Friendly)</th>
+            <th align="right">Id<br/>(PLoS DOI syntax)</th>
             <td><@s.textfield name="doi" size="72" required="true"/></td>
           </tr>
           <tr>
