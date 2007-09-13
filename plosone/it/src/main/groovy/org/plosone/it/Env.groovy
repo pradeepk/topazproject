@@ -252,7 +252,6 @@ public class Env {
     String uname  = "fedoraAdmin"
     String passwd = "fedoraAdmin"
     FedoraAPIM apim = APIMStubFactory.create(uri, uname, passwd)
-    apim.getNextPID(new org.apache.axis.types.NonNegativeInteger("1"), "test")[0];
     Throwable saved = null;
     for (i in 1..120) {
       try {
