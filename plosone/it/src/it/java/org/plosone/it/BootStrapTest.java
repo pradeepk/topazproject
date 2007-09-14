@@ -38,26 +38,44 @@ public class BootStrapTest extends AbstractPlosOneTest {
    */
   @BeforeClass
   public void setUp() {
+	log.info("BootStrapTest.setUp() --> installEnvs()");
     installEnvs();
+	log.info("BootStrapTest.setUp() --> initTesters()");
     initTesters();
+    log.info("BootStrapTest.setUp() --> restoring environment...");
     getEmptyEnv().restore();
+    try {
+    	log.info("BootStrapTest.setUp() --> sleeping...");
+		Thread.sleep(3000);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	log.info("BootStrapTest.setUp() --> starting env services...");
     getEmptyEnv().start();
   }
 
   /**
-   * DOCUMENT ME!
-   */
-  @Test
-  public void testJournalInstall() {
-    Env env = getEmptyEnv();
-    String script = env.resource("/createjournal.groovy");
-    String plosone = env.resource("/journal-plosone.xml");
-    String ct = env.resource("/journal-clinicaltrials.xml");
-    env.script(new String[]{script, "-j", plosone});
-    env.script(new String[]{script, "-j", ct});
-    env.stop();
-    env.start();
-  }
+	 * DOCUMENT ME!
+	 */
+	@Test
+	public void testJournalInstall() {
+		log.info("\n\n\n\nStarting Test: testJournalInstall...");
+		Env env = getEmptyEnv();
+		String script = env.resource("/createjournal.groovy");
+		String plosone = env.resource("/journal-plosone.xml");
+		String ct = env.resource("/journal-clinicaltrials.xml");
+		env.script(new String[] { script, "-j", plosone });
+		env.script(new String[] { script, "-j", ct });
+		env.stop();
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		env.start();
+	}
 
   @Test(dependsOnMethods={"testJournalInstall"})
   public void testPlosOneHomePage() {

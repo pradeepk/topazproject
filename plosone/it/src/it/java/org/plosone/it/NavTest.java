@@ -13,6 +13,7 @@ package org.plosone.it;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plosone.it.pages.AbstractPage;
 import org.plosone.it.pages.HomePage;
 import org.plosone.it.pages.ArticlePage;
 import org.plosone.it.pages.SearchResultsPage;
@@ -49,7 +51,9 @@ public class NavTest extends AbstractPlosOneTest {
   public void setUp() {
     installEnvs();
     initTesters();
-    getBasicEnv().start();
+    if (!("true".equalsIgnoreCase(System.getProperty("skipStartEnv")))) {
+    	getBasicEnv().start();
+    }
     setUpArticles();
   }
 
@@ -182,5 +186,104 @@ public class NavTest extends AbstractPlosOneTest {
     ap.verifyPage();
     ap.logOut();
     ap.verifyPage();
+  }
+
+  /**
+   * testBrowseByDate verifies that browse by date is working for all supported browsers. 
+   * The browse by date page is navigated to via the drop down menu on the home page. 
+   * The article retrieved is common to both PLos and CT Journals. 
+   */
+  @Test
+  public void testBrowseByDate() {
+  	for (String browser : browsers.keySet()) {
+	  	log.info("Testing Browse Atricles by Date [browser="+browser);
+	  	PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+	  	HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+	  	hp.gotoPage();
+	  	hp.getTester().clickLinkWithExactText("By Publication Date");
+	  	// Click on the Dec -> 20 link
+	  	hp.getTester().clickLinkWithExactText("20");
+	  	hp.getTester().assertTextPresent("Isolation of Non-Tuberculous Mycobacteria in Children Investigated for Pulmonary Tuberculosis");
+  	}
+  }
+  
+  /**
+   * testBrowseBySubject verifies that browse by subject is working for all supported browsers. 
+   * The browse by subject page is navigated to via the drop down menu on the home page. 
+   * The article retrieved is common to both PLos and CT Journals. 
+   */
+  @Test
+  public void testBrowseBySubject() {
+  	for (String browser : browsers.keySet()) {
+	  	log.info("Testing Browse Atricles by Subject [browser="+browser);
+	  	PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+	  	HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+	  	hp.gotoPage();
+	  	hp.getTester().clickLinkWithExactText("By Subject");
+	  	hp.getTester().clickLinkWithExactText("Infectious Diseases (1)");
+	  	hp.getTester().assertTextPresent("Isolation of Non-Tuberculous Mycobacteria in Children Investigated for Pulmonary Tuberculosis");
+  	}
+  }
+  
+  /**
+   * testBrowseByDateJournalFilter verifies that articles in the CT Journal are not
+   * retrieved using browse by date within the PLoS Journal. 
+   */
+  @Test
+  public void testBrowseByDateJournalFilterPLoS() {
+  	String browser = browsers.keySet().iterator().next(); // just grab the first browser
+  	log.info("Testing that CT-only articles are not presented when using browse by date in PLoS Journal [browser="+browser+"]");
+  	PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+  	HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+  	hp.gotoPage();
+  	hp.getTester().clickLinkWithExactText("By Publication Date");
+  	hp.getTester().assertLinkNotPresentWithExactText("15"); // The date for Jun 15th 2007
+  }
+  
+
+  /**
+   * testBrowseByDateJournalFilter verifies that articles in the CT Journal are not
+   * retrieved using browse by date within the PLoS Journal. 
+   */
+  @Test
+  public void testBrowseByDateJournalFilterCT() {
+  	String browser = browsers.keySet().iterator().next(); // just grab the first browser
+  	log.info("Testing that PLoS-only articles are not presented when using browse by date in CT Journal [browser="+browser+"]");
+  	PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
+  	HomePage hp = new HomePage(tester, AbstractPage.J_CT);
+  	hp.gotoPage();
+  	hp.getTester().clickLinkWithExactText("By Publication Date");
+  	hp.getTester().assertLinkNotPresentWithExactText("17"); // The date for Jan 17th 2007
+  }
+  
+  /**
+   * testBrowseByDateJournalFilter verifies that articles in the CT Journal are not
+   * retrieved using browse by subject within the PLoS Journal. 
+   */
+  @Test
+  public void testBrowseBySubjectJournalFilterPLoS() {
+  	String browser = browsers.keySet().iterator().next(); // just grab the first browser
+  	log.info("Testing that CT-only articles are not presented when browse by subject in PLoS Journal [browser="+browser+"]");
+  	PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+  	HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+  	hp.gotoPage();
+  	hp.getTester().clickLinkWithExactText("By Subject");
+  	hp.getTester().assertLinkNotPresentWithExactText("Women's Health (1)"); // The date for Jun 15th 2007
+  }
+  
+  /**
+   * testBrowseByDateJournalFilter verifies that articles in the PLoS Journal are not
+   * retrieved using browse by subject within the CT Journal. 
+   */
+  @Test
+  public void testBrowseBySubjectJournalFilterCT() {
+  	String browser = browsers.keySet().iterator().next(); // just grab the first browser
+  	log.info("Testing that PLoS-only articles are not presented when browse by subject in CT Journal [browser="+browser+"]");
+  	PlosOneWebTester testerCt = getTester(AbstractPage.J_CT, browser);
+  	HomePage hpCt = new HomePage(testerCt, AbstractPage.J_CT);
+  	hpCt.gotoPage();
+  	hpCt.getTester().clickLinkWithExactText("By Subject");
+  	hpCt.getTester().assertLinkNotPresentWithExactText("Evolutionary Biology (1)"); // The date for Jun 15th 2007
+  	
   }
 }

@@ -44,6 +44,12 @@ public class Env {
 
   static {
     ext = (System.properties.'os.name'.toLowerCase().indexOf('windows') > -1) ? '.bat' : '';
+    if (System.properties.containsKey('stopOnExit')) {
+      stopOnExit = Boolean.valueOf(System.properties.getProperty("stopOnExit")).booleanValue();
+    }
+    if (System.properties.containsKey('stopOnStart')) {
+      stopOnStart = Boolean.valueOf(System.properties.getProperty('stopOnStart')).booleanValue();
+    }
     def shutdownHook = new Thread( {
         if ((active != null) && stopOnExit)
           active.stop();
@@ -86,8 +92,10 @@ public class Env {
    * Stop all services.
    */ 
   public void stop() {
-    if ((active == null) && (stopOnStart == false))
+    if ( ((active == null) && (stopOnStart == false)) || (stopOnExit == false)) {
+      ant.exho 'skipping stop() of services.'
       return
+    }
     Env env = (active == null) ? this : active
 
     ant.echo 'Stopping all services on ...'
