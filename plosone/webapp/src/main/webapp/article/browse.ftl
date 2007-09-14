@@ -20,7 +20,7 @@
       </#list>
       <#if (startPage lt totalPages - 1 )>
         <@s.url id="nextPageURL" action="browse" namespace="/article" startPage="${startPage + 1}" pageSize="${pageSize}" field="${field}" includeParams="get"/>
-        <@s.a href="%{nextPageURL}">Next &gt;</@s.a> 
+        <@s.a href="%{nextPageURL}">Next &gt;</@s.a>
       </#if>
     </div> <!-- results tab-->
   </#if>
@@ -33,7 +33,7 @@
     <script language='JavaScript' type='text/javascript'>
       <!--
         if (!document.phpAds_used) document.phpAds_used = ',';
-        phpAds_random = new String (Math.random()); 
+        phpAds_random = new String (Math.random());
         phpAds_random = phpAds_random.substring(2,11);
 
         document.write ("<" + "script language='JavaScript'   type='text/javascript' src='");
