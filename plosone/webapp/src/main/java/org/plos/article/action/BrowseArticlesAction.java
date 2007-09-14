@@ -162,7 +162,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
    * @return Returns the category name.
    */
   public String getCatName() {
-    return catName;
+    return (catName != null) ? catName : "";
   }
 
   /**
