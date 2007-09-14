@@ -56,11 +56,11 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private int    month    = UNSET;
   private int    day      = UNSET;
 
-  private BrowseService                                              browseService;
-  private SortedMap<String, Integer>                                 categoryInfos;
-  private SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> articleDates;
-  private List<BrowseService.ArticleInfo>                            articleList;
-  private int                                                        totalArticles;
+  private BrowseService                   browseService;
+  private SortedMap<String, Integer>      categoryInfos;
+  private BrowseService.Years             articleDates;
+  private List<BrowseService.ArticleInfo> articleList;
+  private int                             totalArticles;
 
   public String execute() throws Exception {
     if (DATE_FIELD.equals(getField())) {
@@ -233,7 +233,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
    * 
    * @return Collection of dates
    */
-  public SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> getArticleDates() {
+  public BrowseService.Years getArticleDates() {
     return articleDates;
   }
 

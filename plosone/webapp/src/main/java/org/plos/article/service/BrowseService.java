@@ -19,11 +19,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -84,22 +82,22 @@ public class BrowseService {
    *
    * @return the article dates.
    */
-  public SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> getArticleDates() {
+  public Years getArticleDates() {
     return getArticleDates(true);
   }
 
-  private SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> getArticleDates(boolean load) {
+  private Years getArticleDates(boolean load) {
     String jnlName = getCurrentJournal();
     String key     = DATE_LIST_KEY + jnlName;
     Object lock    = (DATE_LIST_LOCK + jnlName).intern();
 
     return
       CacheAdminHelper.getFromCache(browseCache, key, -1, lock, "article dates",
-                                    load ? new CacheAdminHelper.EhcacheUpdater<SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>>>() {
-        public SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> lookup() {
+                                    !load ? null : new CacheAdminHelper.EhcacheUpdater<Years>() {
+        public Years lookup() {
           return loadArticleDates();
         }
-      } : null);
+      });
   }
 
   /**
@@ -299,7 +297,7 @@ public class BrowseService {
 
     // update date lists
     synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
-      SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> dates = getArticleDates(false);
+      Years dates = getArticleDates(false);
       if (dates != null) {
         for (NewArtInfo nai: nais)
           insertDate(dates, nai.date);
@@ -411,55 +409,26 @@ public class BrowseService {
       });
   }
 
-  private SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> loadArticleDates() {
-    SortedSet<String> dates =
-      TransactionHelper.doInTx(session, new TransactionHelper.Action<SortedSet<String>>() {
-        public SortedSet<String> run(Transaction tx) {
-          Results r = tx.getSession().createQuery(
-              "select a.dublinCore.date from Article a;").execute();
+  private Years loadArticleDates() {
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<Years>() {
+      public Years run(Transaction tx) {
+        Results r = tx.getSession().createQuery(
+            "select a.dublinCore.date from Article a;").execute();
 
-          SortedSet<String> dates = new TreeSet<String>();
+        Years dates = new Years();
 
-          r.beforeFirst();
-          while (r.next())
-            dates.add(r.getString(0));
-
-          return dates;
+        r.beforeFirst();
+        while (r.next()) {
+          String  date = r.getString(0);
+          Integer y    = getYear(date);
+          Integer m    = getMonth(date);
+          Integer d    = getDay(date);
+          dates.getMonths(y).getDays(m).add(d);
         }
-      });
 
-    return parseDates(dates);
-  }
-
-  private static SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>>
-        parseDates(SortedSet<String> dates) {
-    SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> res =
-          new TreeMap<Integer, SortedMap<Integer, SortedSet<Integer>>>();
-
-    for (String date : dates) {
-      Integer y = getYear(date);
-      Integer m = getMonth(date);
-      Integer d = getDay(date);
-      getMonth(getYear(res, y), m).add(d);
-    }
-
-    return res;
-  }
-
-  private static SortedMap<Integer, SortedSet<Integer>>
-      getYear(SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> years, Integer year) {
-    SortedMap<Integer, SortedSet<Integer>> months = years.get(year);
-    if (months == null)
-      years.put(year, months = new TreeMap<Integer, SortedSet<Integer>>());
-    return months;
-  }
-
-  private static SortedSet<Integer> getMonth(SortedMap<Integer, SortedSet<Integer>> months,
-                                             Integer mon) {
-    SortedSet<Integer> days = months.get(mon);
-    if (days == null)
-      months.put(mon, days = new TreeSet<Integer>());
-    return days;
+        return dates;
+      }
+    });
   }
 
   private static final Integer getYear(String date) {
@@ -474,8 +443,7 @@ public class BrowseService {
     return Integer.valueOf(date.substring(8, 10));
   }
 
-  private static void insertDate(SortedMap<Integer, SortedMap<Integer, SortedSet<Integer>>> dates,
-                                 Date newDate) {
+  private static void insertDate(Years dates, Date newDate) {
     Calendar newCal = Calendar.getInstance();
     newCal.setTime(newDate);
 
@@ -483,7 +451,7 @@ public class BrowseService {
     int m = newCal.get(Calendar.MONTH) + 1;
     int d = newCal.get(Calendar.DATE);
 
-    getMonth(getYear(dates, y), m).add(d);
+    dates.getMonths(y).getDays(m).add(d);
   }
 
   private List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate) {
@@ -638,5 +606,41 @@ public class BrowseService {
     public List<String> getAuthors() {
       return authors;
     }
+  }
+
+  /**
+   * An ordered list of years (as year numbers). Each year has a list of months.
+   */
+  public static class Years extends TreeMap<Integer, Months> {
+    /**
+     * @return the list of months (possibly emtpy, but always non-null)
+     */
+    public Months getMonths(Integer year) {
+      Months months = get(year);
+      if (months == null)
+        put(year, months = new Months());
+      return months;
+    }
+  }
+
+  /**
+   * An ordered list of months (as month numbers, from 1 to 12). Each month has a list of days.
+   */
+  public static class Months extends TreeMap<Integer, Days> {
+    /**
+     * @return the list of days (possibly emtpy, but always non-null)
+     */
+    public Days getDays(Integer mon) {
+      Days days = get(mon);
+      if (days == null)
+        put(mon, days = new Days());
+      return days;
+    }
+  }
+
+  /**
+   * An ordered list of days.
+   */
+  public static class Days extends TreeSet<Integer> {
   }
 }
