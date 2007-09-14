@@ -24,59 +24,59 @@ import org.testng.annotations.Test;
  * @author Pradeep Krishnan
  */
 public class BootStrapTest extends AbstractPlosOneTest {
-	private static final Log log = LogFactory.getLog(BootStrapTest.class);
+  private static final Log log = LogFactory.getLog(BootStrapTest.class);
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @throws Error
-	 *           DOCUMENT ME!
-	 */
-	@BeforeClass
-	public void setUp() {
-		installEnvs();
-		initTesters();
-		getEmptyEnv().restore();
-		try {
-			log.info("BootStrapTest.setUp() --> sleeping...");
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		log.info("BootStrapTest.setUp() --> starting env services...");
-		getEmptyEnv().start();
-	}
+  /**
+   * DOCUMENT ME!
+   * 
+   * @throws Error
+   *           DOCUMENT ME!
+   */
+  @BeforeClass
+  public void setUp() {
+    installEnvs();
+    initTesters();
+    getEmptyEnv().restore();
+    try {
+      log.info("BootStrapTest.setUp() --> sleeping...");
+      Thread.sleep(3000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    log.info("BootStrapTest.setUp() --> starting env services...");
+    getEmptyEnv().start();
+  }
 
-	/**
-	 * DOCUMENT ME!
-	 */
-	@Test
-	public void testJournalInstall() {
-		log.info("Starting Test: testJournalInstall...");
-		Env env = getEmptyEnv();
-		String script = env.resource("/createjournal.groovy");
-		String plosone = env.resource("/journal-plosone.xml");
-		String ct = env.resource("/journal-clinicaltrials.xml");
-		env.script(new String[] { script, "-j", plosone });
-		env.script(new String[] { script, "-j", ct });
-		env.stop();
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		env.start();
-	}
+  /**
+   * DOCUMENT ME!
+   */
+  @Test
+  public void testJournalInstall() {
+    log.info("Starting Test: testJournalInstall...");
+    Env env = getEmptyEnv();
+    String script = env.resource("/createjournal.groovy");
+    String plosone = env.resource("/journal-plosone.xml");
+    String ct = env.resource("/journal-clinicaltrials.xml");
+    env.script(new String[] { script, "-j", plosone });
+    env.script(new String[] { script, "-j", ct });
+    env.stop();
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    env.start();
+  }
 
-	@Test(dependsOnMethods = { "testJournalInstall" })
-	public void testPlosOneHomePage() {
-		log.info("Testing home-page after journal install  ... ");
-		PlosOneWebTester tester = getTester(HomePage.J_PONE, IE7);
-		HomePage hp = new HomePage(tester, HomePage.J_PONE);
-		hp.beginAt();
-		hp.verifyPage();
-	}
+  @Test(dependsOnMethods = { "testJournalInstall" })
+  public void testPlosOneHomePage() {
+    log.info("Testing home-page after journal install  ... ");
+    PlosOneWebTester tester = getTester(HomePage.J_PONE, IE7);
+    HomePage hp = new HomePage(tester, HomePage.J_PONE);
+    hp.beginAt();
+    hp.verifyPage();
+  }
 
 }
