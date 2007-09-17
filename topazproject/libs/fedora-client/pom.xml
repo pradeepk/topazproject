@@ -2,14 +2,14 @@
   <parent>
     <artifactId>topazproject-libs</artifactId>
     <groupId>org.topazproject</groupId>
-    <version>0.8-SNAPSHOT</version>
+    <version>0.8-rc1</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>fedora-client</artifactId>
   <name>Fedora client stub</name>
-  <version>0.8-SNAPSHOT</version>
+  <version>0.8-rc1</version>
 
   <dependencies>
     <dependency>

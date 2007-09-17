@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.8-SNAPSHOT</version>
+  <version>0.8-rc1</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -67,9 +67,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/head/</developerConnection>
-    <connection>scm:svn:http://gandalf.topazproject.org/svn/head/</connection>
-    <url>http://gandalf.topazproject.org/svn/</url>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc1</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc1</connection>
+    <url>http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc1</url>
   </scm>
 
   <distributionManagement>
@@ -528,8 +528,7 @@
                 <goals><goal>run</goal></goals>
                 <configuration>
                   <tasks>
-                    <jar destfile="${project.build.directory}/test-classes.jar"
-                      basedir="${project.build.directory}/test-classes" />
+                    <jar destfile="${project.build.directory}/test-classes.jar" basedir="${project.build.directory}/test-classes" />
                     <delete dir="${project.build.directory}/test-classes" />
                   </tasks>
                 </configuration>
