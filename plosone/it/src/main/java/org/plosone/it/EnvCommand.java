@@ -29,7 +29,7 @@ public class EnvCommand {
       return;
     }
 
-    String cmd = (args.length > 1) ? args[1].toLowerCase() : "start";
+    String cmd = (args.length > 1) ? args[1] : "start";
     String data = (args.length > 2) ? args[2] : null;
     // simple space seperated for now
     String cmdArgs[] = ((args.length > 3) && (args[3] != null)) ? args[3].split(" ") : new String[0];
