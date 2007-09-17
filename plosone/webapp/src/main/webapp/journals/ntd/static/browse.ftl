@@ -6,9 +6,12 @@
   <p class="intro">Neglected Topical Diseases posts new content as often as once 
   per week. You can browse articles three ways:</p>
 
-  <@s.url action="browse"    namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
-  <@s.url action="browse"    namespace="/article"              includeParams="none" id="browseSubjectURL"/>
-  <@s.url action="browseToc" namespace="/article" field="toc"  includeParams="none" id="browseTocURL"/>
+  <@s.url action="browse"      namespace="/article" field="date"  includeParams="none"
+    id="browseDateURL"/>
+  <@s.url action="browse"      namespace="/article"               includeParams="none"
+    id="browseSubjectURL"/>
+  <@s.url action="browseIssue" namespace="/article" field="issue" includeParams="none"
+    id="browseIssueURL"/>
 
   <ul>
     <li>
@@ -21,7 +24,7 @@
       - Browse articles published in a specific subject area.
     </li>
     <li>
-      <a href="${browseTocURL}" title="NTDs | Browse by Table of Contents">By Table of Contents</a>
+      <a href="${browseIssueURL}" title="NTDs | Browse by Table of Contents">By Table of Contents</a>
       -  Browse articles published in a specific volume/issue.
     </li>
   </ul>

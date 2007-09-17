@@ -3,12 +3,12 @@
     <@s.url action="browse" namespace="/static" includeParams="none" id="browseURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubjectURL"/>
     <@s.url action="browse" namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
-    <@s.url action="browseToc" namespace="/article" field="toc"  includeParams="none" id="browseTocURL"/>
+    <@s.url action="browseIssue" namespace="/article" field="issue"  includeParams="none" id="browseIssueURL"/>
     <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
-          <li><a href="${browseTocURL}">By Table of Contents</a></li>
+          <li><a href="${browseIssueURL}">By Table of Contents</a></li>
         </ul>
     </li>
     <@s.url action="about" namespace="/static" includeParams="none" id="about"/>

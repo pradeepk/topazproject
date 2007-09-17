@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
@@ -42,6 +43,7 @@ import org.topazproject.otm.util.TransactionHelper;
 import org.plos.models.Aggregation;
 import org.plos.models.Journal;
 import org.plos.models.UserProfile;
+import org.plos.web.VirtualJournalContext;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -617,6 +619,19 @@ public class JournalService {
     synchronized (journalCache) {
       return getJournalInternal(jName);
     }
+  }
+
+  /**
+   * Get the current journal. This assumes an active transaction on the session.
+   *
+   * @return the journal, or null if none found.
+   * @see #getJournal(String jName).
+   */
+  public Journal getJournal() {
+    final String jName = ((VirtualJournalContext) ServletActionContext.getRequest()
+      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
+
+    return getJournal(jName);
   }
 
   /**

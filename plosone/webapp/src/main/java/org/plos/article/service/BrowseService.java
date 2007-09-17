@@ -30,6 +30,10 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.struts2.ServletActionContext;
 
+import org.plos.models.Article;
+import org.plos.models.Issue;
+import org.plos.models.PLoS;
+import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
 
@@ -187,6 +191,132 @@ public class BrowseService {
    */
   public SortedMap<String, Integer> getCategoryInfos() {
     return (SortedMap<String, Integer>) getCatInfo(CAT_INFO_KEY, "category infos", true);
+  }
+
+  /**
+   * Get Issue information.
+   *
+   * @param issue DOI of Issue.
+   * @return the Issue information.
+   */
+  public IssueInfo getIssueInfo(final URI doi) {
+
+    // XXX look up IssueInfo in Cache
+
+    // OTM usage wants to be in a Transaction
+    return TransactionHelper.doInTx(session,
+      new TransactionHelper.Action<IssueInfo>() {
+
+        // TODO should all of this be in a tx???
+
+        public IssueInfo run(Transaction tx) {
+
+          // get the Issue
+          final Issue issue = session.get(Issue.class, doi.toString());
+          if (issue == null) { return null; }
+
+          // get the image Article
+          URI imageURISm = null;
+          URI imageURILg = null;
+          String description = null;
+          if (issue.getImage().toString() != null) {
+            final Article imageArticle = session.get(Article.class, issue.getImage().toString());
+            if (imageArticle != null) {
+              // XXX TODO build URI with Struts
+              imageURISm = URI.create("/article/slideshow.action?uri=" + imageArticle.getId()
+                + "&imageURI=" + imageArticle.getId() + ".g001");
+              imageURILg = URI.create("/article/showImageLarge.action?uri="
+                + imageArticle.getId() + ".g001");
+              description = imageArticle.getDublinCore().getDescription();
+            }
+          }
+
+          // display is by Article type
+          List<ArticleInfo> editorials = new ArrayList();
+          List<ArticleInfo> researchArticles = new ArrayList();
+          List<ArticleInfo> corrections = new ArrayList();
+
+          for (final ArticleInfo articleInIssue : getArticles(issue.getSimpleCollection(), 0, 0)) {
+            boolean articleAdded = false;
+            if (articleInIssue.getArticleTypes()
+                  .contains(URI.create(PLoS.PLOS_ArticleType + "research-article"))) {
+              researchArticles.add(articleInIssue);
+              articleAdded = true;
+            }
+            if (articleInIssue.getArticleTypes()
+                  .contains(URI.create(PLoS.PLOS_ArticleType + "editorial"))) {
+              editorials.add(articleInIssue);
+              articleAdded = true;
+            }
+            if (articleInIssue.getArticleTypes()
+                  .contains(URI.create(PLoS.PLOS_ArticleType + "correction"))) {
+              corrections.add(articleInIssue);
+              articleAdded = true;
+            }
+            // insure Article is displayed
+            if (!articleAdded) {
+              researchArticles.add(articleInIssue);
+            }
+          }
+
+          return new IssueInfo(issue.getId(), issue.getDisplayName(), issue.getPrevIssue(),
+            issue.getNextIssue(), imageURISm, imageURILg, description, editorials, researchArticles,
+            corrections);
+        }
+      });
+  }
+
+  /**
+   * Get VolumeInfos.
+   *
+   * @return volumeInfos.
+   */
+  public List<VolumeInfo> getVolumeInfos() {
+
+    // XXX look up VolumeInfos in Cache
+
+    // OTM usage wants to be in a Transaction
+    return TransactionHelper.doInTx(session,
+      new TransactionHelper.Action<List<VolumeInfo>>() {
+
+        // TODO should all of this be in a tx???
+
+        public List<VolumeInfo> run(Transaction tx) {
+
+          List<VolumeInfo> volumeInfos = new ArrayList();
+          // get the Volumes
+          for (final Volume volume : session.createCriteria(Volume.class).list()) {
+
+            // get the image Article, may be null
+            URI imageURISm = null;
+            URI imageURILg = null;
+            String description = null;
+            if (volume.getImage() != null) {
+              final Article imageArticle = session.get(Article.class, volume.getImage().toString());
+              if (imageArticle != null) {
+                // XXX TODO build URI with Struts
+                imageURISm = URI.create("/article/slideshow.action?uri=" + imageArticle.getId()
+                  + "&imageURI=" + imageArticle.getId() + ".g001");
+                imageURILg = URI.create("/article/showImageLarge.action?uri="
+                  + imageArticle.getId() + ".g001");
+                description = imageArticle.getDublinCore().getDescription();
+              }
+            }
+
+            List<IssueInfo> issueInfos = new ArrayList();
+            for (final URI issueDoi : volume.getSimpleCollection()) {
+              issueInfos.add(getIssueInfo(issueDoi));
+            }
+
+            final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
+              volume.getPrevVolume(), volume.getNextVolume(), imageURISm, imageURILg, description,
+              issueInfos);
+            volumeInfos.add(volumeInfo);
+          }
+
+          return volumeInfos;
+        }
+      });
   }
 
   private Object getCatInfo(String key, String desc, boolean load) {
@@ -381,7 +511,7 @@ public class BrowseService {
       TransactionHelper.doInTx(session, new TransactionHelper.Action<ArticleInfo>() {
         public ArticleInfo run(Transaction tx) {
           Results r = tx.getSession().createQuery(
-              "select a.id, dc.date, dc.title, " +
+              "select a.id, a.articleTypes, dc.date, dc.title, " +
               "(select dc.bibliographicCitation.authors.realName from Article aa) from Article a " +
               "where a.id = :id and dc := a.dublinCore;").
               setParameter("id", id).execute();
@@ -392,17 +522,19 @@ public class BrowseService {
 
           ArticleInfo ai = new ArticleInfo();
           ai.id    = id;
-          ai.date  = r.getLiteralAs(1, Date.class);
-          ai.title = r.getString(2);
+          ai.articleTypes = r.getLiteralAs(1, Set.class);
+          ai.date  = r.getLiteralAs(2, Date.class);
+          ai.title = r.getString(3);
 
-          Results sr = r.getSubQueryResults(3);
+          Results sr = r.getSubQueryResults(4);
           // XXX: preserve author order
           while (sr.next())
             ai.authors.add(sr.getString(0));
 
           if (log.isDebugEnabled())
-            log.debug("loaded ArticleInfo: id='" + ai.id + "', date='" + ai.date + "', title='" +
-                      ai.title + "', authors='" + ai.authors + "'");
+            log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
+                      + "', date='" + ai.date + "', title='" + ai.title
+                      + "', authors='" + ai.authors + "'");
 
           return ai;
         }
@@ -567,6 +699,7 @@ public class BrowseService {
    */
   public static class ArticleInfo implements Serializable {
     public URI          id;
+    public Set<URI>     articleTypes;
     public Date         date;
     public String       title;
     public List<String> authors = new ArrayList<String>();
@@ -578,6 +711,15 @@ public class BrowseService {
      */
     public URI getId() {
       return id;
+    }
+
+    /**
+     * Get the Article types.
+     *
+     * @return the Article types.
+     */
+    public Set<URI> getArticleTypes() {
+      return articleTypes;
     }
 
     /**
@@ -605,6 +747,234 @@ public class BrowseService {
      */
     public List<String> getAuthors() {
       return authors;
+    }
+  }
+
+  /**
+   * The info about a single Issue that the UI needs.
+   */
+  public static class IssueInfo implements Serializable {
+
+    private URI          id;
+    private String       displayName;
+    private URI          prevIssue;
+    private URI          nextIssue;
+    private URI          imageUriSm;
+    private URI          imageUriLg;
+    private String       description;
+    private List<ArticleInfo> editorials;
+    private List<ArticleInfo> researchArticles;
+    private List<ArticleInfo> corrections;
+
+    // XXX TODO, List<URI> w/Article DOI vs. List<ArticleInfo>???
+
+    public IssueInfo(URI id, String displayName, URI prevIssue, URI nextIssue, URI imageUriSm,
+      URI imageUriLg, String description, List<ArticleInfo> editorials,
+      List<ArticleInfo> researchArticles, List<ArticleInfo> corrections) {
+
+      this.id = id;
+      this.displayName = displayName;
+      this.prevIssue = prevIssue;
+      this.nextIssue = nextIssue;
+      this.imageUriSm = imageUriSm;
+      this.imageUriLg = imageUriLg;
+      this.description = description;
+      this.editorials = editorials;
+      this.researchArticles = researchArticles;
+      this.corrections = corrections;
+    }
+
+    /**
+     * Get the id.
+     *
+     * @return the id.
+     */
+    public URI getId() {
+      return id;
+    }
+
+    /**
+     * Get the displayName.
+     *
+     * @return the displayName.
+     */
+    public String getDisplayName() {
+      return displayName;
+    }
+
+    /**
+     * Get the previous Issue.
+     *
+     * @return the previous Issue.
+     */
+    public URI getPrevIssue() {
+      return prevIssue;
+    }
+
+    /**
+     * Get the next Issue.
+     *
+     * @return the next Issue.
+     */
+    public URI getNextIssue() {
+      return nextIssue;
+    }
+
+    /**
+     * Get the small image URI.
+     *
+     * @return the small image URI.
+     */
+    public URI getImageUriSm() {
+      return imageUriSm;
+    }
+
+    /**
+     * Get the large image URI.
+     *
+     * @return the large image URI.
+     */
+    public URI getImageUriLg() {
+      return imageUriLg;
+
+    }
+
+    /**
+     * Get the description.
+     *
+     * @return the description.
+     */
+    public String getDescription() {
+      return description;
+    }
+
+    /**
+     * Get the editorials.
+     *
+     * @return the editorials.
+     */
+    public List<ArticleInfo> getEditorials() {
+      return editorials;
+    }
+
+    /**
+     * Get the research articles.
+     *
+     * @return the research articles.
+     */
+    public List<ArticleInfo> getResearchArticles() {
+      return researchArticles;
+    }
+    /**
+     * Get the corrections.
+     *
+     * @return the corrections.
+     */
+    public List<ArticleInfo> getCorrections() {
+      return corrections;
+    }
+  }
+
+  /**
+   * The info about a single Volume that the UI needs.
+   */
+  public static class VolumeInfo implements Serializable {
+
+    private URI          id;
+    private String       displayName;
+    private URI          prevVolume;
+    private URI          nextVolume;
+    private URI          imageUriSm;
+    private URI          imageUriLg;
+    private String       description;
+    private List<IssueInfo> issueInfos;
+
+    // XXX TODO, List<URI> w/Issue DOI vs. List<IssueInfo>???
+
+    public VolumeInfo(URI id, String displayName, URI prevVolume, URI nextVolume, URI imageUriSm,
+      URI imageUriLg, String description, List<IssueInfo> issueInfos) {
+
+      this.id = id;
+      this.displayName = displayName;
+      this.prevVolume = prevVolume;
+      this.nextVolume = nextVolume;
+      this.imageUriSm = imageUriSm;
+      this.imageUriLg = imageUriLg;
+      this.description = description;
+      this.issueInfos = issueInfos;
+    }
+
+    /**
+     * Get the id.
+     *
+     * @return the id.
+     */
+    public URI getId() {
+      return id;
+    }
+
+    /**
+     * Get the displayName.
+     *
+     * @return the displayName.
+     */
+    public String getDisplayName() {
+      return displayName;
+    }
+
+    /**
+     * Get the previous Volume.
+     *
+     * @return the previous Volume.
+     */
+    public URI getPrevVolume() {
+      return prevVolume;
+    }
+
+    /**
+     * Get the next Volume.
+     *
+     * @return the next Volume.
+     */
+    public URI getNextVolume() {
+      return nextVolume;
+    }
+
+    /**
+     * Get the small image URI.
+     *
+     * @return the small image URI.
+     */
+    public URI getImageUriSm() {
+      return imageUriSm;
+    }
+
+    /**
+     * Get the large image URI.
+     *
+     * @return the large image URI.
+     */
+    public URI getImageUriLg() {
+      return imageUriLg;
+
+    }
+
+    /**
+     * Get the description.
+     *
+     * @return the description.
+     */
+    public String getDescription() {
+      return description;
+    }
+
+    /**
+     * Get the issueInfos.
+     *
+     * @return the issueInfos.
+     */
+    public List<IssueInfo> getIssueInfos() {
+      return issueInfos;
     }
   }
 
