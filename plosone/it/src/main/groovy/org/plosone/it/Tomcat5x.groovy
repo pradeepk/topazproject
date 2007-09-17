@@ -62,8 +62,8 @@ public abstract class Tomcat5x extends Service {
                   String shutdownPort, String jvmargs) {
     super(installDir)
 
-    def confDir = Env.path(installDir, '/tomcat/config')
-    def logDir  = Env.path(installDir, '/tomcat/log')
+    confDir = Env.path(installDir, '/tomcat/config')
+    logDir  = Env.path(installDir, '/tomcat/log')
 
     config = new Tomcat5xStandaloneLocalConfiguration(confDir)
     config.setProperty("cargo.servlet.port", port);
