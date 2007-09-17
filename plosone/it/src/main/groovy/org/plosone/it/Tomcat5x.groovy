@@ -35,6 +35,7 @@ public abstract class Tomcat5x extends Service {
   private final Installer installer
   private final AbstractLocalConfiguration config
   private final def extraClasspath = []
+  private final def confDir, logDir
 
   /**
    * Create a new Tomcat5x object.
@@ -63,10 +64,6 @@ public abstract class Tomcat5x extends Service {
 
     def confDir = Env.path(installDir, '/tomcat/config')
     def logDir  = Env.path(installDir, '/tomcat/log')
-    def ant     = new AntBuilder()
-    ant.delete(dir:confDir)
-    ant.mkdir(dir:confDir)
-    ant.mkdir(dir:logDir)
 
     config = new Tomcat5xStandaloneLocalConfiguration(confDir)
     config.setProperty("cargo.servlet.port", port);
@@ -93,11 +90,17 @@ public abstract class Tomcat5x extends Service {
    */
   public void start(Map deployables) {
     echo 'Starting Tomcat ...'
+
+    def ant     = new AntBuilder()
+    ant.delete(dir:confDir)
+    ant.mkdir(dir:confDir)
+    ant.mkdir(dir:logDir)
+
     Tomcat5xInstalledLocalContainer container = new Tomcat5xInstalledLocalContainer(config)
     container.home = installer.home
     container.systemProperties = sysProperties
     container.extraClasspath = extraClasspath
-    container.output = Env.path(installDir, '/tomcat/log/output.log')
+    container.output = Env.path(logDir, '/output.log')
     //container.logger = new FileLogger(Env.path(installDir, '/tomcat/log/cargo.log')
     container.logger = new SimpleLogger()
     container.start();
