@@ -96,7 +96,7 @@ public class Env {
    * Stop all services.
    */
   public void stop() {
-    if ( ((active == null) && (stopOnStart == false)) || (stopOnExit == false)) {
+    if ((active == null) && (stopOnStart == false)) {
       ant.echo 'skipping stop() of services.'
       return
     }
