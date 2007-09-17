@@ -3,7 +3,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-it</artifactId>
-  <version>0.8.1-SNAPSHOT</version>
   <name>PLoS ONE Web Application Integration Tests</name>
 
   <parent>
@@ -67,6 +66,17 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>fedora-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.cargo</groupId>
+      <artifactId>cargo-core-uberjar</artifactId>
+      <version>0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>tomcat</groupId>
+      <artifactId>apache-tomcat</artifactId>
+      <version>5.5.23</version>
+      <type>zip</type>
     </dependency>
   </dependencies>
 

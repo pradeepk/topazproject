@@ -9,9 +9,6 @@
  */
 
 package org.plosone.it;
-import org.apache.tools.ant.taskdefs.Antlib;
-import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.fedora.client.APIMStubFactory;
 
 /**
  * An integration test environment for PlosOne. The environment runs
@@ -31,16 +28,17 @@ import org.topazproject.fedora.client.APIMStubFactory;
  * @author Pradeep Krishnan
  */
 public class Env {
-  private AntBuilder ant = new AntBuilder();
-  private String install;
-  private String data;
-  private String opts;
+  private final AntBuilder ant = new AntBuilder();
+  private final String install;
+  private final String data;
   private static Env active = null;
-  private String fedoraHome;
+  private final Mulgara mulgara;
+  private final Fedora  fedora;
+  private final PubApp  pubApp;
 
   public static boolean stopOnExit = true;
   private static boolean stopOnStart = true;
-  private static String ext; 
+  private static String ext;
 
   static {
     ext = (System.properties.'os.name'.toLowerCase().indexOf('windows') > -1) ? '.bat' : '';
@@ -68,21 +66,27 @@ public class Env {
     File f = new File(install);
     this.install = install = f.absoluteFile.canonicalPath;
     this.data = data;
-    opts  = ' -DECQS_INSTALL_DIR=' + install + 
-            ' -DFEDORA_INSTALL_DIR=' + install + 
-            ' -DDEST_DIR=' + install
-    fedoraHome = path(install, "fedora-2.1.1")
 
-    String url = '/net/sf/antcontrib/antlib.xml'
-    url = this.getClass().getResource(url)
-    Antlib.createAntlib(ant.antProject, url.toURL(), null).execute()
+    mulgara = new Mulgara(Env.path(install, '/mulgara-service'))
+    mulgara.sysProperties.'log4j.configuration'       = Env.pathUrl(install, '/mulgaraLog4j.xml')
+    mulgara.sysProperties.'topaz.mulgara.databaseDir' = Env.path(install, '/data/mulgara')
+
+    fedora = new Fedora(install)
+
+    pubApp = new PubApp(Env.path(install, '/plosone-webapp'))
+    pubApp.sysProperties.'log4j.configuration'           = Env.pathUrl(install, '/plosoneLog4j.xml')
+    pubApp.sysProperties.'org.plos.configuration.overrides' = 'defaults-dev.xml'
+    pubApp.sysProperties.'pub.spring.ingest.source'      = Env.path(install, '/data/ingestion-queue')
+    pubApp.sysProperties.'pub.spring.ingest.destination' = Env.path(install, '/data/ingested')
+    pubApp.sysProperties.'topaz.search.indexpath'        = Env.path(install, '/data/lucene')
+    pubApp.sysProperties.'topaz.search.defaultfields'    = 'description,title,body,creator'
   }
 
   /**
    * Stop all services and clean the install directory.
    */
   public void clean() {
-    ant.echo 'Cleaning ...' 
+    ant.echo 'Cleaning ...'
     stop();
     ant.delete(dir:install)
     ant.echo 'Finished cleaning'
@@ -90,17 +94,20 @@ public class Env {
 
   /**
    * Stop all services.
-   */ 
+   */
   public void stop() {
     if ( ((active == null) && (stopOnStart == false)) || (stopOnExit == false)) {
-      ant.exho 'skipping stop() of services.'
+      ant.echo 'skipping stop() of services.'
       return
     }
     Env env = (active == null) ? this : active
 
-    ant.echo 'Stopping all services on ...'
-    for (task in ['plosone-stop', 'fedora-stop', 'mulgara-stop'])
-      try { env.antTask(task) } catch (Throwable t) { } 
+    ant.echo 'Stopping all services ...'
+
+    try { pubApp.stop() } catch (Throwable t) { }
+    try { fedora.stop() } catch (Throwable t) { }
+    try { mulgara.stop() } catch (Throwable t) { }
+
     active = null
     stopOnStart = false
     ant.echo 'Stopped all services'
@@ -111,7 +118,7 @@ public class Env {
    * so that subsequent calls to install can bypass the actual install.
    */
   public void install() {
-    File f = new File(path(install, '/installed'));
+    File f = new File(Env.path(install, '/installed'));
     if (f.exists())
       return;
 
@@ -119,8 +126,9 @@ public class Env {
 
     clean()  // clean any previous partial installs
 
-    for (task in ['ecqs-install', 'fedora-install', 'mulgara-install', 'plosone-install'])
-      antTask(task)
+    fedora.install()
+    mulgara.install()
+    pubApp.install()
 
     load()  // load data
 
@@ -129,7 +137,7 @@ public class Env {
     resource('/mulgaraLog4j.xml')
 
     // finally create the marker file
-    ant.touch(file: path(install, '/installed'))
+    ant.touch(file: Env.path(install, '/installed'))
     ant.echo 'Finished installation'
   }
 
@@ -139,7 +147,7 @@ public class Env {
   public void restore() {
     ant.echo 'Restoring data ...'
     stop()
-    ant.delete(dir: path(install, "/data"))
+    ant.delete(dir: Env.path(install, "/data"))
     load()
     ant.echo 'Finished restoring data'
   }
@@ -153,127 +161,20 @@ public class Env {
       if (active.install.equals(install))
          return
       active.stop()
-    }  
+    }
     active = this
-    mulgara()
-    fedora()
-    waitFor('http://localhost:9091/mulgara-service/')
+    mulgara.start()
+    fedora.start()
+    mulgara.waitFor()
     ant.echo 'Mulgara started'
-    plosone()
-    waitForFedora()
+    pubApp.start()
+    fedora.waitFor()
     ant.echo 'Fedora started'
-    waitFor('http://localhost:8080/plosone-webapp/')
+    pubApp.waitFor()
     ant.echo 'Plosone started'
     ant.echo 'All services are up and running'
   }
-  
-  /**
-   * Execute an ant-tasks plugin task. 
-   */
-  private void antTask(task) {
-    ant.echo 'Executing ant-tasks:' + task + ' ...'
-    ant.exec(executable: 'mvn' + ext, failonerror:true) {
-      arg(line: 'ant-tasks:' + task + opts)
-    }
-    ant.echo 'Finished execution of ant-tasks:' + task
-  }
 
-  /**
-   * Start up mulgara.
-   */
-  public void mulgara() {
-    ant.echo 'Starting mulgara ...'
-    ant.forget {
-      String argLine = ('-f ' + pom() + ' ant-tasks:mulgara-start -DDEST_DIR=' + install 
-      + ' -Dtopaz.mulgara.databaseDir=' + unixPath(install, '/data/mulgara') 
-      + ' -Dlog4j.configuration='+ pathUrl(install, '/mulgaraLog4j.xml'))
-      ant.echo 'Starting mulgara with arguments: ' +argLine
-
-      exec(executable: 'mvn' + ext, failonerror:true) {
-        arg(line: argLine)
-      }
-      echo 'Mulgara stopped'
-    }
-  }
-
-  /**
-   * Start up fedora. mvn ant-tasks:fedora-start hangs in windows. So inline it here.
-   */
-  private void fedora() {
-    ant.echo("Starting mckoi ...")
-    ant.forget {
-       exec(dir: fedoraHome, 
-            executable:path(fedoraHome, "/server/bin/mckoi-start") + ext,
-            failonerror:true) {
-         env(key:"FEDORA_HOME", file:fedoraHome)
-       }
-    }
-    ant.sleep(seconds:"10")
-    ant.echo("Starting fedora ...")
-    ant.delete(file: path(fedoraHome, '/server/status'))
-    ant.forget {
-       exec(dir: fedoraHome,
-            executable:path(fedoraHome, "/server/bin/fedora-start") + ext,
-            failonerror:true) {
-         arg(line: "mckoi")
-         env(key:"FEDORA_HOME", file:fedoraHome)
-       }
-    }
-  }
-
-  /**
-   * Start up plosone.
-   */
-  private void plosone() {
-    ant.echo 'Starting plosone ...'
-    ant.forget {
-      exec(executable: 'mvn' + ext, failonerror:true) {
-        arg(line: '-f ' + pom() + ' ant-tasks:plosone-start -DDEST_DIR=' + install
-         + ' -Dorg.plos.configuration.overrides=defaults-dev.xml -Dlog4j.configuration=' 
-         + pathUrl(install, '/plosoneLog4j.xml') 
-         + ' -Dpub.spring.ingest.source=' + unixPath(install, '/data/ingestion-queue')
-         + ' -Dpub.spring.ingest.destination=' + unixPath(install, '/data/ingested')
-         + ' -Dtopaz.search.indexpath=' + unixPath(install, '/data/lucene')
-         + ' -Dtopaz.search.defaultfields=description,title,body,creator'
-       )
-      }
-      echo 'Plosone Stopped'
-    }
-  }
-
-  /**
-   * Wait for the service to start up. Tries for over 2 minutes before giving up.
-   */
-  private String waitFor(String uri) {
-    Throwable saved = null;
-    for (i in 1..120) {
-      try {return uri.toURL().text} catch (Throwable e)  {saved = e}
-      ant.echo i + ' Waiting for ' + uri + ' ...'
-      sleep 1000
-    }
-    ant.echo 'Failed to start the service at ' + uri
-    throw saved
-  }
-
-  private String waitForFedora() {
-    String uri    = "http://localhost:9090/fedora/services/management"
-    String uname  = "fedoraAdmin"
-    String passwd = "fedoraAdmin"
-    FedoraAPIM apim = APIMStubFactory.create(uri, uname, passwd)
-    Throwable saved = null;
-    for (i in 1..120) {
-      try {
-        return apim.getNextPID(new org.apache.axis.types.NonNegativeInteger("1"), "test")[0]
-      } catch (Throwable e)  {
-        saved = e
-      }
-      ant.echo i + ' Waiting for ' + uri + ' ...'
-      sleep 1000
-    }
-    ant.echo 'Failed to start the service at ' + uri
-    throw saved
-  }
-  
   /**
    * Locate a pom.xml file to pass to mvn.  Only for the tasks that require a pom.
    * Looks up the pom in the current working directory or its parents. If a
@@ -284,9 +185,9 @@ public class Env {
    * project source tree.
    */
   private String pom () {
-    String p = pom(new File(System.properties.'user.dir'))
+    String p = Env.pom(new File(System.properties.'user.dir'))
     if (p == null)
-      p = pom(new File(install))
+      p = Env.pom(new File(install))
     if (p == null)
       throw new FileNotFoundException('a pom.xml was not found')
     return p
@@ -299,13 +200,13 @@ public class Env {
    *
    * @return the full path of the pom.xml file found or null
    */
-  private String pom(File dir) {
+  private static String pom(File dir) {
     if (dir == null)
       return null;
     File f = new File(dir, 'pom.xml');
     if (f.exists())
       return f.absoluteFile.canonicalPath;
-    return pom(dir.parentFile)
+    return Env.pom(dir.parentFile)
   }
 
   /**
@@ -346,7 +247,7 @@ public class Env {
     File f = new File(d, 'fedora')
     if (!f.exists())
       f.mkdir()
-    
+
     File iq = new File(d, 'ingestion-queue')
     if (!iq.exists())
       iq.mkdir()
@@ -359,48 +260,9 @@ public class Env {
     if (!l.exists())
       l.mkdir()
 
-    fedoraRebuild();
+    fedora.rebuild()
 
     ant.echo 'Finished loading data'
-  }
-
-  /**
-   * Rebuild the fedora database. mvn ant-tasks:fedora-rebuild hangs in windows. So inline-it here.
-   */
-  private void fedoraRebuild() {
-    ant.echo("Rebuilding fedora data ...")
-    ant.echo("Starting mckoi ...")
-    ant.forget {
-       exec(dir: fedoraHome, 
-            executable:path(fedoraHome, "/server/bin/mckoi-start") + ext,
-            failonerror:true) {
-         env(key:"FEDORA_HOME", file:fedoraHome)
-       }
-    }
-    ant.sleep(seconds:"10")
-    ant.echo("Replacing fedora objects and datastreams ...")
-    ant.delete(dir: path(fedoraHome, "/data/datastreams"))
-    ant.delete(dir: path(fedoraHome, "/data/objects"))
-    ant.copy(todir:path(fedoraHome, "/data")) {
-      fileset(dir:path(install, "/data/fedora"))
-    }
-    ant.echo("Invoking fedora-rebuild ...")
-    ant.exec(dir: fedoraHome, 
-             executable:path(fedoraHome, "/server/bin/fedora-rebuild") + ext,
-             failonerror:true,
-             input: resource('/fedora-rebuild-input')) {
-      arg(line:"mckoi")
-      env(key:"FEDORA_HOME", file:fedoraHome)
-    }
-    ant.echo("Stopping mckoi ...")
-    ant.exec(dir: fedoraHome,
-            executable:path(fedoraHome, "/server/bin/mckoi-stop") + ext,
-            failonerror:true) {
-      arg(line:"fedoraAdmin fedoraAdmin")
-      env(key:"FEDORA_HOME", file:fedoraHome)
-    }
-    ant.sleep(seconds:"5")
-    ant.echo("Fedora rebuild completed.")
   }
 
   /**
@@ -411,9 +273,23 @@ public class Env {
    * @return the filename where the resource was copied into.
    */
   public String resource(String name) {
-     String input = path(install, name)
+    return Env.resource(install, name)
+  }
+
+  /**
+   * Copy a resource from class-path and return the file-name.
+   *
+   * @param tmpDir the directory to copy the resource to
+   * @param name the resource to find in class-path
+   * 
+   * @return the filename where the resource was copied into.
+   */
+  public static String resource(String tmpDir, String name) {
+     String input = Env.path(tmpDir, name)
      def out = new BufferedOutputStream(new FileOutputStream(input))
-     out << getClass().getResourceAsStream(name)
+     def is = Env.class.getResourceAsStream(name)
+     assert is != null, "resource '" + name + "' not found in classpath"
+     out << is
      out.close()
      return input
   }
@@ -443,9 +319,9 @@ public class Env {
    *
    * @return platform specific file path
    */
-  private String path(String dir, String file) {
+  public static String path(String dir, String file) {
     String sep = System.properties.'file.separator'
-        
+
     if (!file.startsWith('/'))
       file = '/' + file
 
@@ -453,25 +329,11 @@ public class Env {
     if (!sep.equals('/')) {
       int pos;
       while ((pos = file.indexOf('/')) > -1)
-         file = file.substring(0, pos) + sep + file.substring(pos+1)     
+         file = file.substring(0, pos) + sep + file.substring(pos+1)
     }
     return file
   }
 
-  private String unixPath(String dir, String file) {
-    String sep = '/'
-        
-    if (!file.startsWith('/'))
-      file = '/' + file
-
-    file =  dir + file
-    int pos;
-    while ((pos = file.indexOf('\\')) > -1) {
-      file = file.substring(0, pos) + sep + file.substring(pos+1)
-    }
-    return file
-  }
-  
   /**
    * Convert a path to a file: URL.
    *
@@ -480,8 +342,67 @@ public class Env {
    *
    * @return the file: URL for the path
    */
-  private String pathUrl(String dir, String file) {
-    File f = new File(path(dir, file))
+  private static String pathUrl(String dir, String file) {
+    File f = new File(Env.path(dir, file))
     return f.toURL().toString()
+  }
+
+  /**
+   * Gets the version of the pom in the current working directory (or its parent(s))
+   *
+   * @return the pom versio
+   */
+  public static String pomVersion() {
+    String p = Env.pom(new File(System.properties.'user.dir'))
+    if (p == null)
+       throw new FileNotFoundException('No pom.xml file found in ' + System.properties.'user.dir')
+
+    def doc = new XmlSlurper().parse(new File(p))
+    String version = doc.version?.text()
+    if ((version == null) || "".equals(version))
+      version = doc.parent?.version?.text()
+    if ((version == null) || "".equals(version))
+       throw new Exception("Couldn't find a pom version in " + p)
+
+    return version
+  }
+
+  /**
+   * Gets the path to the dependency in the local maven repository.
+   */
+  public static String dependencyPath(def groupId, def artifactId, def version, def type) {
+    def p = groupId.replaceAll('\\.', '/') + '/' +
+                  artifactId + '/' +
+                  version + '/' +
+                  artifactId + '-' + version + '.' + type
+
+    return Env.path(Env.mavenLocalRepository(), p)
+  }
+
+  /**
+   * Gets the path to the dependency in the local maven repository as a URL.
+   */
+  public static String dependencyURL(def groupId, def artifactId, def version, def type) {
+    def p = groupId.replaceAll('\\.', '/') + '/' +
+                  artifactId + '/' +
+                  version + '/' +
+                  artifactId + '-' + version + '.' + type
+    return Env.pathUrl(Env.mavenLocalRepository(), p)
+  }
+
+  /**
+   * Gets the maven local repository.
+   */
+  public static String mavenLocalRepository() {
+    File settingsFile = new File(System.properties.'user.home', ".m2/settings.xml");
+    String localRepository = null;
+    if (settingsFile.exists()) {
+       def doc = new XmlSlurper().parse(settingsFile);
+       localRepository = doc.localRepository?.text()
+    }
+    if ((localRepository == null) || "".equals(localRepository))
+       localRepository = Env.path(System.properties.'user.home', '/.m2/repository')
+
+    return localRepository
   }
 }
