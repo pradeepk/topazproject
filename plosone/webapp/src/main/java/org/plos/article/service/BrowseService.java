@@ -236,7 +236,7 @@ public class BrowseService {
           List<ArticleInfo> researchArticles = new ArrayList();
           List<ArticleInfo> corrections = new ArrayList();
 
-          for (final ArticleInfo articleInIssue : getArticles(issue.getSimpleCollection(), 0, 0)) {
+          for (final ArticleInfo articleInIssue : (List<ArticleInfo>) getArticles(issue.getSimpleCollection(), 0, 0)) {
             boolean articleAdded = false;
             if (articleInIssue.getArticleTypes()
                   .contains(URI.create(PLoS.PLOS_ArticleType + "research-article"))) {
@@ -285,7 +285,7 @@ public class BrowseService {
 
           List<VolumeInfo> volumeInfos = new ArrayList();
           // get the Volumes
-          for (final Volume volume : session.createCriteria(Volume.class).list()) {
+          for (final Volume volume : (List<Volume>) session.createCriteria(Volume.class).list()) {
 
             // get the image Article, may be null
             URI imageURISm = null;
