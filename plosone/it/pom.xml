@@ -64,6 +64,12 @@
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>plosone-scripts</artifactId>
+      <version>${pom.parent.version}</version>
+      <classifier>scripts</classifier>
+    </dependency>
+    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>fedora-client</artifactId>
     </dependency>
