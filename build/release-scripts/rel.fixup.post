@@ -1,9 +1,9 @@
 #!/bin/sh
 
-p5="0\\.8\\.1"
-r5="0.8.2-SNAPSHOT"
-pt="-t00801"
-rt="-t00802-SNAPSHOT"
+p5="0\\.8-rc1"
+r5="0.8-rc2-SNAPSHOT"
+pt="-t00800"
+rt="-t00801-SNAPSHOT"
 rel=SNAPSHOT
 
 for f in \
