@@ -511,9 +511,10 @@ public class BrowseService {
       TransactionHelper.doInTx(session, new TransactionHelper.Action<ArticleInfo>() {
         public ArticleInfo run(Transaction tx) {
           Results r = tx.getSession().createQuery(
-              "select a.id, a.articleType, dc.date, dc.title, " +
-              "(select dc.bibliographicCitation.authors.realName from Article aa) from Article a " +
-              "where a.id = :id and dc := a.dublinCore;").
+              "select a.id, dc.date, dc.title, " +
+              "(select dc.bibliographicCitation.authors.realName from Article aa), " +
+              "(select a.articleType from Article aa2) " +
+              "from Article a where a.id = :id and dc := a.dublinCore;").
               setParameter("id", id).execute();
 
           r.beforeFirst();
@@ -522,14 +523,17 @@ public class BrowseService {
 
           ArticleInfo ai = new ArticleInfo();
           ai.id    = id;
-          ai.articleTypes = r.getLiteralAs(1, Set.class);
-          ai.date  = r.getLiteralAs(2, Date.class);
-          ai.title = r.getString(3);
+          ai.date  = r.getLiteralAs(1, Date.class);
+          ai.title = r.getString(2);
 
-          Results sr = r.getSubQueryResults(4);
+          Results sr = r.getSubQueryResults(3);
           // XXX: preserve author order
           while (sr.next())
             ai.authors.add(sr.getString(0));
+
+          sr = r.getSubQueryResults(4);
+          while (sr.next())
+            ai.articleTypes.add(sr.getURI(0));
 
           if (log.isDebugEnabled())
             log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
@@ -699,7 +703,7 @@ public class BrowseService {
    */
   public static class ArticleInfo implements Serializable {
     public URI          id;
-    public Set<URI>     articleTypes;
+    public Set<URI>     articleTypes = new HashSet<URI>();
     public Date         date;
     public String       title;
     public List<String> authors = new ArrayList<String>();
