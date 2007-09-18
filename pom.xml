@@ -67,9 +67,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc1</developerConnection>
-    <connection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc1</connection>
-    <url>http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc1</url>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/branches/0.8</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/branches/0.8</connection>
+    <url>http://gandalf.topazproject.org/svn/branches/0.8</url>
   </scm>
 
   <distributionManagement>
