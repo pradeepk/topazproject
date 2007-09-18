@@ -511,7 +511,7 @@ public class BrowseService {
       TransactionHelper.doInTx(session, new TransactionHelper.Action<ArticleInfo>() {
         public ArticleInfo run(Transaction tx) {
           Results r = tx.getSession().createQuery(
-              "select a.id, a.articleTypes, dc.date, dc.title, " +
+              "select a.id, a.articleType, dc.date, dc.title, " +
               "(select dc.bibliographicCitation.authors.realName from Article aa) from Article a " +
               "where a.id = :id and dc := a.dublinCore;").
               setParameter("id", id).execute();
