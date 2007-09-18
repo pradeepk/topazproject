@@ -431,7 +431,7 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">");
     if (filterObj)
       applyObjectFilters(qry, cm.getSourceClass(), "$s", filters, sf);
-    applyFieldFilters(qry, assoc, "$s", "$o", filters, sf);
+    applyFieldFilters(qry, assoc, true, id, filters, sf);
 
     qry.append("; select $s $p $o subquery (select $t from ").append(models).append(" where ");
     qry.append("$s <rdf:type> $t) ");
@@ -439,7 +439,7 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
     if (filterObj)
       applyObjectFilters(qry, cm.getSourceClass(), "$o", filters, sf);
-    applyFieldFilters(qry, assoc, "$o", "$s", filters, sf);
+    applyFieldFilters(qry, assoc, false, id, filters, sf);
     qry.append(";");
 
     return qry.toString();
@@ -478,7 +478,7 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append(")");
   }
 
-  private void applyFieldFilters(StringBuilder qry, List<Mapper> assoc, String objVar, String fVar,
+  private void applyFieldFilters(StringBuilder qry, List<Mapper> assoc, boolean fwd, String id,
                                  List<Filter> filters, SessionFactory sf)
         throws OtmException {
     // avoid work if possible
@@ -537,7 +537,7 @@ public class ItqlStore extends AbstractTripleStore {
       qry.append(") and ((");
 
       for (Filter f : fset) {
-        ItqlCriteria.buildFilter((AbstractFilterImpl) f, qry, fVar, "$gff" + idx++);
+        ItqlCriteria.buildFilter((AbstractFilterImpl) f, qry, fwd ? "$o" : "$s", "$gff" + idx++);
         qry.append(") and (");
       }
       qry.setLength(qry.length() - 7);
@@ -545,8 +545,11 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     predList.setLength(predList.length() - 4);
-    qry.append("(").append(objVar).append(" $p ").append(fVar).append(" minus (").
-        append(predList).append(")))");
+    if (fwd)
+      qry.append("(<").append(id).append("> $p $o minus (");
+    else
+      qry.append("($s $p <").append(id).append("> minus (");
+    qry.append(predList).append(")))");
   }
 
   private static String getModelsExpr(Set<ClassMetadata> cmList, Transaction txn)
