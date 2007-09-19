@@ -316,6 +316,34 @@ public class JournalService {
     }
   }
 
+  /**
+   * This creates filter definitions from all the simple- and smart-collection-rules, and'ing
+   * together the individual smart rules and then or'ing the result with all the simple rules
+   * (so that an object passes the filters if its id matches any of the given id's or if the
+   * object satisfies all the smart rules). Filters are grouped by class, i.e. for each class
+   * all the smart- and simple-rules for that class are collected into a filter definition
+   * (and'ing and or'ing as descibed above). The filters are then expanded: any aggregation
+   * objects they select are in recursively run through this method and the resulting filters
+   * or'd with the current filters (again on a per-class basis). This way nested aggregations
+   * are resolved into the their final rules.
+   *
+   * <p>Problem: The rules for journals don't usually specify the Aggregation class, but
+   * subclasses thereof. Because filters are not applied for subclasses, listing all
+   * Aggregations therefore does not get filtered and returns all Aggregations in the db.
+   * A hack was added where list-self was done via an Aggregation filter, but that then
+   * filtered all other aggregations such as Volumes and Issues. But changing that to filter
+   * Journal's then causes all Aggregations to be loaded.
+   *
+   * <p>However, fixing the filter-application alone is not enough. Because we can't (shouldn't)
+   * rely on a journal config having filters for all subclasses of Aggregation, we need to ensure
+   * there's a rule for Aggregation itself (this scenario is likely when a strict nesting of
+   * Aggregations is used, e.g. Journal containing Volume's, and Volume's containing Issue's, so
+   * the Journal def does not contain rules for Issue and hence the first round of retrieving
+   * Aggregation objects will retrieve all issues for all journals).
+   *
+   * <p>So, another hack for now: assume aggregations don't contain further aggregations, i.e.
+   * that Journal contains rules for all Aggregation subclasses.
+   */
   private Map<String, FilterDefinition> getAggregationFilters(Aggregation a, String pfx, Session s,
                                                               Set<Aggregation> processed,
                                                               boolean addSelf) {
@@ -348,6 +376,7 @@ public class JournalService {
         mergeFilterDefs(smartFilterDefs, staticFilterDefs, pfx + "-of-");
 
     // recursively resolve aggregations selected by the filters
+    /* disabled for now
     Set<String> oldFilters = s.listFilters();
     for (String fn : oldFilters)
       s.disableFilter(fn);
@@ -370,6 +399,7 @@ public class JournalService {
           mergeFilterDefs(afds, getAggregationFilters(ag, pfx + "-ag-" + idx, s, processed, false),
                           pfx + "-mf-" + idx++);
     }
+    */
 
     // done
     return afds;
