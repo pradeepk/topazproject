@@ -80,6 +80,7 @@ public class Env {
     pubApp.sysProperties.'pub.spring.ingest.destination' = Env.path(install, '/data/ingested')
     pubApp.sysProperties.'topaz.search.indexpath'        = Env.path(install, '/data/lucene')
     pubApp.sysProperties.'topaz.search.defaultfields'    = 'description,title,body,creator'
+    pubApp.sysProperties.'org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH' = 'true'
   }
 
   /**
