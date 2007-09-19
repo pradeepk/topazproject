@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.8-rc1</version>
+  <version>0.8-rc2</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -67,9 +67,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/branches/0.8</developerConnection>
-    <connection>scm:svn:http://gandalf.topazproject.org/svn/branches/0.8</connection>
-    <url>http://gandalf.topazproject.org/svn/branches/0.8</url>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc2</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc2</connection>
+    <url>http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.8-rc2</url>
   </scm>
 
   <distributionManagement>
@@ -649,8 +649,8 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t00800</fedora-version>
-                  <ecqs-version>2.0.6-1-t00800</ecqs-version>
+                  <fedora-version>2.1.1-t00800-rc2</fedora-version>
+                  <ecqs-version>2.0.6-1-t00800-rc2</ecqs-version>
                 </configuration>
               </execution>
               <execution>

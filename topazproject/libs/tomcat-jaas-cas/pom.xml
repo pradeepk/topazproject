@@ -3,13 +3,13 @@
   <groupId>org.topazproject</groupId>
   <artifactId>tomcat-jaas-cas</artifactId>
   <packaging>jar</packaging>
-  <version>0.8-rc1</version>
+  <version>0.8-rc2</version>
   <name>Tomcat CAS authentication valve</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.8-rc1</version>
+    <version>0.8-rc2</version>
   </parent>
 
   <dependencies>
