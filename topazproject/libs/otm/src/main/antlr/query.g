@@ -154,7 +154,9 @@ expr
 cexpr
     :   (var ASGN)         => var ASGN^ (selector|constant)     // alias
     |   (selector (EQ|NE)) => selector (EQ^|NE^) (selector|constant)  // equality comparisons
-    |                         constant (EQ^|NE^) selector       // equality comparisons, part 2
+    |                         c:constant! (EQ^|NE^) selector {  // equality comparisons, part 2
+                                astFactory.addASTChild(currentAST, #c);         // reorder
+                              }
     |                         cfunc                             // boolean functions
     ;
 

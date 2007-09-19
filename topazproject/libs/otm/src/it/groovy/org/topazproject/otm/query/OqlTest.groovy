@@ -137,6 +137,22 @@ public class OqlTest extends GroovyTestCase {
         row { object (class:PublicAnnotation.class, id:id3) }
       }
 
+      r = s.createQuery("""
+          select ann from Annotation ann where <foo:1> != ann.annotates order by ann;
+          """).execute()
+      checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id3) }
+      }
+
+      /* FIXME
+      r = s.createQuery("""
+          select ann from Annotation ann where x := ann.annotates and <foo:1> != x order by ann;
+          """).execute()
+      checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id3) }
+      }
+      */
+
       // typed/untyped literal
       r = s.createQuery("select a.title, a.description from Article a where a.title = 'Yo ho ho';").
             execute()
