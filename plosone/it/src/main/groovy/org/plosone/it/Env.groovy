@@ -42,12 +42,8 @@ public class Env {
 
   static {
     ext = (System.properties.'os.name'.toLowerCase().indexOf('windows') > -1) ? '.bat' : '';
-    if (System.properties.containsKey('stopOnExit')) {
-      stopOnExit = Boolean.valueOf(System.properties.getProperty("stopOnExit")).booleanValue();
-    }
-    if (System.properties.containsKey('stopOnStart')) {
-      stopOnStart = Boolean.valueOf(System.properties.getProperty('stopOnStart')).booleanValue();
-    }
+    stopOnExit = Env.boolPropValue('stopOnExit', true);
+    stopOnStart = Env.boolPropValue('stopOnStart', true);
     def shutdownHook = new Thread( {
         if ((active != null) && stopOnExit)
           active.stop();
@@ -406,4 +402,20 @@ public class Env {
 
     return localRepository
   }
+
+  private static boolean boolPropValue(String name, boolean defaultVal) {
+    String val = System.properties[name]
+    if ((val == null) || "".equals(val))
+      return defaultVal
+    val = val.toLowerCase()
+
+    if (val.equals("true") || val.equals("yes"))
+      return true
+
+    if (val.equals("false") || val.equals("no"))
+      return false
+
+    return defaultVal
+  }
+
 }
