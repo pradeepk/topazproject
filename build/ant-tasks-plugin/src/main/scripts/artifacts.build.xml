@@ -52,7 +52,7 @@
     </for>
   </target>
   <!-- Fetch the list of dependencies and untar it -->
-  <target name="tgz-explode">
+  <target name="untar">
     <!-- Get Tomcat and unjar it in classes -->
     <mkdir dir="${location}"/>
 
@@ -75,7 +75,7 @@
             version="${version}" type="${type}"/>
         </artifact:dependencies>
 
-        <untar dest="${location}" overwrite="false" compression="gzip">
+        <untar dest="${location}" overwrite="false" compression="${compression}">
           <fileset refid="${fileSet}" />
         </untar>
 

@@ -41,16 +41,9 @@
     </dependency>
     <dependency>
       <groupId>org.plosone</groupId>
-      <artifactId>plosone-it-data</artifactId>
-      <version>0.7</version>
-      <type>tgz</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.plosone</groupId>
       <artifactId>plosone-it-data-basic</artifactId>
-      <version>0.8</version>
-      <type>tgz</type>
+      <version>0.8-SNAPSHOT</version>
+      <type>tbz</type>
       <scope>test</scope>
     </dependency>
     <dependency>

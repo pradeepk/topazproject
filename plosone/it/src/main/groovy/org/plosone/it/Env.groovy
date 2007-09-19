@@ -230,8 +230,8 @@ public class Env {
 
     if (data != null) {
       ant.exec(executable: 'mvn' + ext, failonerror:true) {
-        arg(line: '-f ' + pom() + ' ant-tasks:tgz-explode -Dlocation=' + install 
-          + ' -Dtype=tgz -Ddependencies=' + data)
+        arg(line: '-f ' + pom() + ' ant-tasks:untar -Dlocation=' + install 
+          + ' -Dtype=tbz -Dcompression=bzip2 -Ddependencies=' + data)
       }
     }
 
