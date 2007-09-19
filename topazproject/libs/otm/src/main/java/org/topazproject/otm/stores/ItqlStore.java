@@ -546,9 +546,9 @@ public class ItqlStore extends AbstractTripleStore {
 
     predList.setLength(predList.length() - 4);
     if (fwd)
-      qry.append("(<").append(id).append("> $p $o minus (");
+      qry.append("(<").append(id).append("> $p $any1 minus (");
     else
-      qry.append("($s $p <").append(id).append("> minus (");
+      qry.append("($any1 $p <").append(id).append("> minus (");
     qry.append(predList).append(")))");
   }
 
