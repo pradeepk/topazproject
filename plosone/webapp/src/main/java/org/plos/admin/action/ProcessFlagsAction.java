@@ -146,7 +146,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       for (Flag flag: flags) {
         if (flag.isDeleted())
           continue;
-        deleteFlag(reply.getId(), flag.getId(), targetType);
+        deleteFlag(reply.getId(), flag.getId(), "Reply");
       }
     }
 
