@@ -197,7 +197,7 @@ expr[QueryBuilder qb]
            e.setLength(e.length() - 4);
        }
 
-    | #(OR { e.append('('); }
+    | #(OR { e.append('('); len++; }
          (expr[qb] {
            if (e.length() > len) {
              e.append("or ");
