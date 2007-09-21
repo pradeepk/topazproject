@@ -83,7 +83,7 @@ public class DublinCore {
   private Date accepted;
 
   @Predicate(uri = Rdf.dc_terms + "dateCopyrighted")
-  private int copyrightYear;
+  private Integer copyrightYear;
 
   @Predicate(uri = Rdf.dc_terms + "abstract")
   private Set<String> summary;
@@ -440,7 +440,7 @@ public class DublinCore {
    *
    * @return the year of the copyright
    */
-  public int getCopyrightYear() {
+  public Integer getCopyrightYear() {
     return copyrightYear;
   }
 
@@ -450,7 +450,7 @@ public class DublinCore {
    * @param copyrightYear the year of the copyright
    * @see #getCopyrightYear
    */
-  public void setCopyrightYear(int copyrightYear) {
+  public void setCopyrightYear(Integer copyrightYear) {
     this.copyrightYear = copyrightYear;
   }
 
