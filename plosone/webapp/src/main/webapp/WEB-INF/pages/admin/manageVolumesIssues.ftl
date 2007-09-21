@@ -53,7 +53,7 @@
             <td><@s.textfield name="displayName" size="72" required="true"/></td>
           </tr>
           <tr>
-            <th align="right">Image (URI)</th>
+            <th align="right">Image Article (DOI)</th>
             <td><@s.textfield name="image" size="72"/></td>
           </tr>
           <tr>
@@ -169,7 +169,7 @@
             <td><@s.textfield name="volume" size="72"/></td>
           </tr>
           <tr>
-            <th align="right">Image (URI)</th>
+            <th align="right">Image Article (DOI)</th>
             <td><@s.textfield name="image" size="72"/></td>
           </tr>
           <tr>
