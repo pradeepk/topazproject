@@ -211,59 +211,79 @@ public class BrowseService {
 
         public IssueInfo run(Transaction tx) {
 
-          // get the Issue
-          final Issue issue = session.get(Issue.class, doi.toString());
-          if (issue == null) { return null; }
-
-          // get the image Article
-          URI imageURISm = null;
-          URI imageURILg = null;
-          String description = null;
-          if (issue.getImage().toString() != null) {
-            final Article imageArticle = session.get(Article.class, issue.getImage().toString());
-            if (imageArticle != null) {
-              // XXX TODO build URI with Struts
-              imageURISm = URI.create("/article/slideshow.action?uri=" + imageArticle.getId()
-                + "&imageURI=" + imageArticle.getId() + ".g001");
-              imageURILg = URI.create("/article/showImageLarge.action?uri="
-                + imageArticle.getId() + ".g001");
-              description = imageArticle.getDublinCore().getDescription();
-            }
-          }
-
-          // display is by Article type
-          List<ArticleInfo> editorials = new ArrayList();
-          List<ArticleInfo> researchArticles = new ArrayList();
-          List<ArticleInfo> corrections = new ArrayList();
-
-          for (final ArticleInfo articleInIssue : getArticles(issue.getSimpleCollection(), 0, 0)) {
-            boolean articleAdded = false;
-            if (articleInIssue.getArticleTypes()
-                  .contains(URI.create(PLoS.PLOS_ArticleType + "research-article"))) {
-              researchArticles.add(articleInIssue);
-              articleAdded = true;
-            }
-            if (articleInIssue.getArticleTypes()
-                  .contains(URI.create(PLoS.PLOS_ArticleType + "editorial"))) {
-              editorials.add(articleInIssue);
-              articleAdded = true;
-            }
-            if (articleInIssue.getArticleTypes()
-                  .contains(URI.create(PLoS.PLOS_ArticleType + "correction"))) {
-              corrections.add(articleInIssue);
-              articleAdded = true;
-            }
-            // insure Article is displayed
-            if (!articleAdded) {
-              researchArticles.add(articleInIssue);
-            }
-          }
-
-          return new IssueInfo(issue.getId(), issue.getDisplayName(), issue.getPrevIssue(),
-            issue.getNextIssue(), imageURISm, imageURILg, description, editorials, researchArticles,
-            corrections);
+          return getIssueInfoInTx(session, doi);
         }
       });
+  }
+
+  /**
+   * Get Issue information inside of a Transaction.
+   *
+   * @param issue DOI of Issue.
+   * @return the Issue information.
+   */
+  private IssueInfo getIssueInfoInTx(Session session, final URI doi) {
+
+    // XXX look up IssueInfo in Cache
+
+    // get the Issue
+    final Issue issue = session.get(Issue.class, doi.toString());
+    if (issue == null) { return null; }
+
+    // get the image Article
+    URI imageURISm = null;
+    URI imageURILg = null;
+    String description = null;
+    if (issue.getImage().toString() != null) {
+      final Article imageArticle = session.get(Article.class, issue.getImage().toString());
+      if (imageArticle != null) {
+        // XXX TODO build URI with Struts
+        imageURISm = URI.create("/article/slideshow.action?uri=" + imageArticle.getId()
+          + "&imageURI=" + imageArticle.getId() + ".g001");
+        imageURILg = URI.create("/article/showImageLarge.action?uri="
+          + imageArticle.getId() + ".g001");
+        description = imageArticle.getDublinCore().getDescription();
+      }
+    }
+
+    // display is by Article type
+    List<ArticleInfo> editorials = new ArrayList();
+    List<ArticleInfo> researchArticles = new ArrayList();
+    List<ArticleInfo> corrections = new ArrayList();
+    for (final URI articleDoi : issue.getSimpleCollection()) {
+      final Article article = session.get(Article.class, articleDoi.toString());
+      ArticleInfo articleInIssue = new ArticleInfo();
+      articleInIssue.articleTypes = article.getArticleType();
+      articleInIssue.authors =
+              article.getDublinCore().getBibliographicCitation().getAuthorsRealNames();
+      articleInIssue.date = article.getDublinCore().getDate();
+      articleInIssue.id = article.getId();
+      articleInIssue.title = article.getDublinCore().getTitle();
+      boolean articleAdded = false;
+      if (articleInIssue.getArticleTypes()
+          .contains(URI.create(PLoS.PLOS_ArticleType + "research-article"))) {
+        researchArticles.add(articleInIssue);
+        articleAdded = true;
+      }
+      if (articleInIssue.getArticleTypes()
+          .contains(URI.create(PLoS.PLOS_ArticleType + "editorial"))) {
+        editorials.add(articleInIssue);
+        articleAdded = true;
+      }
+      if (articleInIssue.getArticleTypes()
+          .contains(URI.create(PLoS.PLOS_ArticleType + "correction"))) {
+        corrections.add(articleInIssue);
+        articleAdded = true;
+      }
+      // insure Article is displayed
+      if (!articleAdded) {
+        researchArticles.add(articleInIssue);
+      }
+    }
+
+    return new IssueInfo(issue.getId(), issue.getDisplayName(), issue.getPrevIssue(),
+      issue.getNextIssue(), imageURISm, imageURILg, description, editorials, researchArticles,
+      corrections);
   }
 
   /**
@@ -305,7 +325,7 @@ public class BrowseService {
 
             List<IssueInfo> issueInfos = new ArrayList();
             for (final URI issueDoi : volume.getSimpleCollection()) {
-              issueInfos.add(getIssueInfo(issueDoi));
+              issueInfos.add(getIssueInfoInTx(session, issueDoi));
             }
 
             final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
