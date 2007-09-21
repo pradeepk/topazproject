@@ -63,6 +63,9 @@ public class Transaction {
    * @throws OtmException on an error in commit
    */
   public void commit() throws OtmException {
+    if (session == null)
+      throw new OtmException("Attempt to use a closed transaction");
+
     session.flush();
 
     if (conn != null)

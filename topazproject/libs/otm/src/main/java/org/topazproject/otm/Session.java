@@ -88,6 +88,8 @@ public class Session {
   public Transaction beginTransaction() throws OtmException {
     if (txn == null)
       txn = new Transaction(this);
+    else
+      throw new OtmException("A transaction is already active on this session");
 
     return txn;
   }
