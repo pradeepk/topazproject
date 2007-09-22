@@ -165,7 +165,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     // if still no issue, create an IssueInfo
     if (issue == null || issue.length() == 0) {
       issueInfo = new BrowseService.IssueInfo(null, "No current Issue is defined for this Journal",
-        null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null);
 
       return SUCCESS;
     }

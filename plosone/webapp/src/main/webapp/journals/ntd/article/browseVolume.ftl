@@ -30,11 +30,16 @@
       <#list volumeInfos as volumeInfo>
         <fieldset>
           <legend>${volumeInfo.displayName}</legend>
-          <#if volumeInfo.imageUriSm?exists>
+          <#if volumeInfo.imageArticle?exists>
+            <@s.url id="imageSmURL" action="fetchObject" namespace="/article"
+              uri="${volumeInfo.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
+            <@s.url id="imageLgURL" action="slideshow" namespace="/article"
+              uri="${volumeInfo.imageArticle}" imageURI="${volumeInfo.imageArticle}.g001"
+              includeParams="none"/>
             <p>
-              <img src="${volumeInfo.imageUriSm} height="120" width="120" />
+              <img class="thumbnail" border="1" align="left" alt="thumbnail" src="${imageSmURL}""/>
               ${volumeInfo.description}<br/>
-              <a href="${volumeInfo.imageUriLg}">View larger image</a>
+              <a href="${imageLgURL}">View larger image</a>
             </p>
           </#if>
           <#if volumeInfo.description?exists>
@@ -43,9 +48,11 @@
 
           <#if volumeInfo.issueInfos?exists>
             <#list volumeInfo.issueInfos as issueInfo>
-              <#if issueInfo.imageUriSm?exists>
+              <#if issueInfo.imageArticle?exists>
+                <@s.url id="imageSmURL" action="fetchObject" namespace="/article"
+                  uri="${issueInfo.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
                 <p>
-                  <img src="${issueInfo.imageUriSm} height="120" width="120" />
+                  <img class="thumbnail" border="1" align="left" alt="thumbnail" src="${imageSmURL}""/>
                 </p>
               </#if>
               <@s.url id="issueURL" action="browseIssue" namespace="/journals/ntd/article"

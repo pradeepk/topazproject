@@ -231,18 +231,13 @@ public class BrowseService {
     if (issue == null) { return null; }
 
     // get the image Article
-    URI imageURISm = null;
-    URI imageURILg = null;
+    URI imageArticle = null;
     String description = null;
     if (issue.getImage().toString() != null) {
-      final Article imageArticle = session.get(Article.class, issue.getImage().toString());
-      if (imageArticle != null) {
-        // XXX TODO build URI with Struts
-        imageURISm = URI.create("/article/slideshow.action?uri=" + imageArticle.getId()
-          + "&imageURI=" + imageArticle.getId() + ".g001");
-        imageURILg = URI.create("/article/showImageLarge.action?uri="
-          + imageArticle.getId() + ".g001");
-        description = imageArticle.getDublinCore().getDescription();
+      final Article article = session.get(Article.class, issue.getImage().toString());
+      if (article != null) {
+        imageArticle = issue.getImage();
+        description = article.getDublinCore().getDescription();
       }
     }
 
@@ -282,7 +277,7 @@ public class BrowseService {
     }
 
     return new IssueInfo(issue.getId(), issue.getDisplayName(), issue.getPrevIssue(),
-      issue.getNextIssue(), imageURISm, imageURILg, description, editorials, researchArticles,
+      issue.getNextIssue(), imageArticle, description, editorials, researchArticles,
       corrections);
   }
 
@@ -308,18 +303,13 @@ public class BrowseService {
           for (final Volume volume : (List<Volume>) session.createCriteria(Volume.class).list()) {
 
             // get the image Article, may be null
-            URI imageURISm = null;
-            URI imageURILg = null;
+            URI imageArticle = null;
             String description = null;
             if (volume.getImage() != null) {
-              final Article imageArticle = session.get(Article.class, volume.getImage().toString());
-              if (imageArticle != null) {
-                // XXX TODO build URI with Struts
-                imageURISm = URI.create("/article/slideshow.action?uri=" + imageArticle.getId()
-                  + "&imageURI=" + imageArticle.getId() + ".g001");
-                imageURILg = URI.create("/article/showImageLarge.action?uri="
-                  + imageArticle.getId() + ".g001");
-                description = imageArticle.getDublinCore().getDescription();
+              final Article article = session.get(Article.class, volume.getImage().toString());
+              if (article != null) {
+                imageArticle = volume.getImage();
+                description = article.getDublinCore().getDescription();
               }
             }
 
@@ -329,7 +319,7 @@ public class BrowseService {
             }
 
             final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
-              volume.getPrevVolume(), volume.getNextVolume(), imageURISm, imageURILg, description,
+              volume.getPrevVolume(), volume.getNextVolume(), imageArticle, description,
               issueInfos);
             volumeInfos.add(volumeInfo);
           }
@@ -783,8 +773,7 @@ public class BrowseService {
     private String       displayName;
     private URI          prevIssue;
     private URI          nextIssue;
-    private URI          imageUriSm;
-    private URI          imageUriLg;
+    private URI          imageArticle;
     private String       description;
     private List<ArticleInfo> editorials;
     private List<ArticleInfo> researchArticles;
@@ -792,16 +781,15 @@ public class BrowseService {
 
     // XXX TODO, List<URI> w/Article DOI vs. List<ArticleInfo>???
 
-    public IssueInfo(URI id, String displayName, URI prevIssue, URI nextIssue, URI imageUriSm,
-      URI imageUriLg, String description, List<ArticleInfo> editorials,
+    public IssueInfo(URI id, String displayName, URI prevIssue, URI nextIssue, URI imageArticle,
+      String description, List<ArticleInfo> editorials,
       List<ArticleInfo> researchArticles, List<ArticleInfo> corrections) {
 
       this.id = id;
       this.displayName = displayName;
       this.prevIssue = prevIssue;
       this.nextIssue = nextIssue;
-      this.imageUriSm = imageUriSm;
-      this.imageUriLg = imageUriLg;
+      this.imageArticle = imageArticle;
       this.description = description;
       this.editorials = editorials;
       this.researchArticles = researchArticles;
@@ -845,22 +833,12 @@ public class BrowseService {
     }
 
     /**
-     * Get the small image URI.
+     * Get the image Article DOI.
      *
-     * @return the small image URI.
+     * @return the image Article DOI.
      */
-    public URI getImageUriSm() {
-      return imageUriSm;
-    }
-
-    /**
-     * Get the large image URI.
-     *
-     * @return the large image URI.
-     */
-    public URI getImageUriLg() {
-      return imageUriLg;
-
+    public URI getImageArticle() {
+      return imageArticle;
     }
 
     /**
@@ -908,22 +886,20 @@ public class BrowseService {
     private String       displayName;
     private URI          prevVolume;
     private URI          nextVolume;
-    private URI          imageUriSm;
-    private URI          imageUriLg;
+    private URI          imageArticle;
     private String       description;
     private List<IssueInfo> issueInfos;
 
     // XXX TODO, List<URI> w/Issue DOI vs. List<IssueInfo>???
 
-    public VolumeInfo(URI id, String displayName, URI prevVolume, URI nextVolume, URI imageUriSm,
-      URI imageUriLg, String description, List<IssueInfo> issueInfos) {
+    public VolumeInfo(URI id, String displayName, URI prevVolume, URI nextVolume, URI imageArticle,
+      String description, List<IssueInfo> issueInfos) {
 
       this.id = id;
       this.displayName = displayName;
       this.prevVolume = prevVolume;
       this.nextVolume = nextVolume;
-      this.imageUriSm = imageUriSm;
-      this.imageUriLg = imageUriLg;
+      this.imageArticle = imageArticle;
       this.description = description;
       this.issueInfos = issueInfos;
     }
@@ -965,22 +941,12 @@ public class BrowseService {
     }
 
     /**
-     * Get the small image URI.
+     * Get the image Article DOI.
      *
-     * @return the small image URI.
+     * @return the image Article DOI.
      */
-    public URI getImageUriSm() {
-      return imageUriSm;
-    }
-
-    /**
-     * Get the large image URI.
-     *
-     * @return the large image URI.
-     */
-    public URI getImageUriLg() {
-      return imageUriLg;
-
+    public URI getImageArticle() {
+      return imageArticle;
     }
 
     /**
