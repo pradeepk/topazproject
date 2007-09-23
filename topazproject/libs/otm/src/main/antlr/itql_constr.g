@@ -261,7 +261,7 @@ tokens {
       AST pexpr = astFactory.dupTree(arg);
       if (!var.equals(resVar))
         pexpr.addChild(makeTriple(var, "<mulgara:equals>", resVar));
-      applyFilters(pexpr);
+      applyFilters(pexpr, tmpVarPfx + varCnt++ + "_");
 
       // create subquery
       AST from  = #([FROM, "from"], #([ID, "dummy"]), #([ID, "dummy"]));
@@ -361,7 +361,7 @@ tokens {
     }
 
 
-    private void applyFilters(AST root) {
+    private void applyFilters(AST root, String pfx) {
       // avoid work if possible
       if (filters == null || filters.size() == 0)
         return;
@@ -372,13 +372,14 @@ tokens {
       findVarsAndTypes(root, new ArrayList<AST>(), varTypes);
 
       // process each variable
+      int idx = 0;
       for (Map.Entry<String, Map<ExprType, Collection<ASTPair>>> ve : varTypes.entrySet()) {
         if (ve.getValue().size() == 1) {         // single type - add globally
           Collection<ItqlFilter> flist = findFilters(ve.getValue().keySet().iterator().next());
           if (flist == null)
             continue;
           for (ItqlFilter f : flist)
-            root.addChild(getFilterAST(f, ve.getKey()));
+            root.addChild(getFilterAST(f, ve.getKey(), pfx + idx++ + "_"));
 
         } else {                                // multiple types - add locally
           for (Map.Entry<ExprType, Collection<ASTPair>> te : ve.getValue().entrySet()) {
@@ -389,7 +390,7 @@ tokens {
               if (p.root.getType() != AND)
                 insertAnd(p);
               for (ItqlFilter f : flist)
-                p.root.addChild(getFilterAST(f, ve.getKey()));
+                p.root.addChild(getFilterAST(f, ve.getKey(), pfx + idx++ + "_"));
             }
           }
         }
@@ -444,22 +445,26 @@ tokens {
       return list;
     }
 
-    private AST getFilterAST(ItqlFilter f, String var) {
+    private AST getFilterAST(ItqlFilter f, String var, String pfx) {
       AST res;
+      int idx = 0;
+
       switch (f.getType()) {
         case PLAIN:
-          return renameVariable(astFactory.dupTree(f.getDef()), f.getVar(), var);
+          Map renMap = new HashMap<String, String>();
+          renMap.put(f.getVar(), var);
+          return renameVariables(astFactory.dupTree(f.getDef()), renMap, pfx + "f");
 
         case AND:
           res = #([AND, "and"]);
           for (ItqlFilter cf : f.getFilters())
-            res.addChild(getFilterAST(cf, var));
+            res.addChild(getFilterAST(cf, var, pfx + "a" + idx++ + "_"));
           return res;
 
         case OR:
           res = #([OR, "or"]);
           for (ItqlFilter cf : f.getFilters())
-            res.addChild(getFilterAST(cf, var));
+            res.addChild(getFilterAST(cf, var, pfx + "o" + idx++ + "_"));
           return res;
 
         default:
@@ -484,14 +489,29 @@ tokens {
       parents.root = and;
     }
 
-    private static AST renameVariable(AST node, String from, String to) {
+    /**
+     * Rename all the variables in the filter. This is to ensure uniqueness when the same filter
+     * gets applied more than once due to multiple variables having the same type. For each
+     * variable found, if a variable is already in the rename-map then it is renamed accordingly;
+     * otherwise a new entry is created in the map, mapping the variable to a new unique name.
+     *
+     * @param node   the filter on which to perform the renames
+     * @param renMap the map of variable renamings; this may be preloaded with mappings, and
+     *               will be expanded with new ones as needed
+     * @param pfx    the prefix to use for new variables
+     */
+    private static AST renameVariables(AST node, Map<String, String> renMap, String pfx) {
       OqlAST n = (OqlAST) node;
       if (n.isVar()) {
-        if (n.getText().equals(from))
-          n.setText(to);
+        String f = n.getText()
+        String t = renMap.get(f);
+        if (t == null)
+          renMap.put(f, t = pfx);
+        n.setText(t);
       } else {
+        int idx = 0;
         for (AST nn = node.getFirstChild(); nn != null; nn = nn.getNextSibling())
-          renameVariable(nn, from, to);
+          renameVariables(nn, renMap, pfx + idx++ + "_");
       }
       return node;
     }
@@ -501,7 +521,7 @@ tokens {
 query
 { OqlAST tc = (OqlAST) #([AND, "and"]); }
     :   #(SELECT #(FROM fclause[tc]) #(WHERE w:wclause[tc]) #(PROJ sclause[#w]) (oclause)?  (lclause)? (tclause)?) {
-          applyFilters(tc);
+          applyFilters(tc, tmpVarPfx + varCnt++ + "_");
         }
     ;
 
