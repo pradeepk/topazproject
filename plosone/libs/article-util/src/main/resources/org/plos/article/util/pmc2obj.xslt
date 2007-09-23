@@ -230,7 +230,7 @@
     <dc_terms:conformsTo
         rdf:resource="&nlmpub;{$fixed-article/@dtd-version}/journalpublishing.dtd"/>
     <xsl:if test="$meta/copyright-year">
-      <dc_terms:dateCopyrighted><xsl:value-of select="$meta/copyright-year"/></dc_terms:dateCopyrighted>
+      <dc_terms:dateCopyrighted rdf:datatype="&xsd;int"><xsl:value-of select="$meta/copyright-year"/></dc_terms:dateCopyrighted>
     </xsl:if>
 
     <xsl:for-each 
