@@ -26,6 +26,7 @@ import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.query.ErrorCollector;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.ItqlConstraintGenerator;
+import org.topazproject.otm.query.ItqlFilterApplicator;
 import org.topazproject.otm.query.ItqlRedux;
 import org.topazproject.otm.query.ItqlWriter;
 import org.topazproject.otm.query.QueryException;
@@ -66,7 +67,7 @@ class ItqlQuery extends QueryImplBase {
     ErrorCollector curParser = null;
 
     try {
-      ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true, fInfos);
+      ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true);
       curParser = cg;
       cg.query(query.getResolvedQuery());
       checkMessages(cg.getErrors(), cg.getWarnings(), query);
@@ -76,9 +77,14 @@ class ItqlQuery extends QueryImplBase {
       ir.query(cg.getAST());
       checkMessages(ir.getErrors(), ir.getWarnings(), query);
 
+      ItqlFilterApplicator fa = new ItqlFilterApplicator(sess, "oqltmp3_", fInfos);
+      curParser = fa;
+      fa.query(ir.getAST());
+      checkMessages(fa.getErrors(), fa.getWarnings(), query);
+
       ItqlWriter wr = new ItqlWriter();
       curParser = wr;
-      QueryInfo qi = wr.query(ir.getAST());
+      QueryInfo qi = wr.query(fa.getAST());
       checkMessages(wr.getErrors(), wr.getWarnings(), query);
 
       if (log.isDebugEnabled())
@@ -117,18 +123,29 @@ class ItqlQuery extends QueryImplBase {
     if (log.isDebugEnabled())
       log.debug("parsing filter '" + fqry + "'");
 
-    ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, pfx, false, null);
+    ErrorCollector curParser = null;
     try {
+      ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, pfx, false);
+      curParser = cg;
       cg.query(fqry.getResolvedQuery());
       checkMessages(cg.getErrors(), cg.getWarnings(), fqry);
-      return new ItqlFilter(f, cg.getAST());
+
+      ItqlRedux ir = new ItqlRedux();
+      curParser = ir;
+      ir.query(cg.getAST());
+      checkMessages(ir.getErrors(), ir.getWarnings(), query);
+
+      if (log.isDebugEnabled())
+        log.debug("parsed filter '" + fqry + "': ast='" + ir.getAST().toStringTree() + "'");
+
+      return new ItqlFilter(f, ir.getAST());
     } catch (OtmException oe) {
       throw oe;
     } catch (Exception e) {
-      if (cg != null && cg.getErrors().size() > 0) {
+      if (curParser != null && curParser.getErrors().size() > 0) {
         // exceptions are usually the result of aborted parsing due to errors
-        log.debug("error parsing query: " + cg.getErrors(null), e);
-        throw new QueryException("error parsing query '" + query + "'", cg.getErrors());
+        log.debug("error parsing query: " + curParser.getErrors(null), e);
+        throw new QueryException("error parsing query '" + query + "'", curParser.getErrors());
       } else
         throw new QueryException("error parsing query '" + query + "'", e);
     }

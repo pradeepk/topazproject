@@ -218,7 +218,7 @@ public class QueryTest extends TestCase {
     pr.query(ft.getAST(), Collections.EMPTY_MAP);
     printErrorsAndWarnings(pr, "transforming translated query");
 
-    ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true, null);
+    ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true);
     cg.query(pr.getAST());
     printErrorsAndWarnings(cg, "transforming translated query");
 
@@ -226,8 +226,12 @@ public class QueryTest extends TestCase {
     ir.query(cg.getAST());
     printErrorsAndWarnings(cg, "reducing query");
 
+    ItqlFilterApplicator fa = new ItqlFilterApplicator();
+    fa.query(ir.getAST());
+    printErrorsAndWarnings(fa, "applying filters");
+
     ItqlWriter wr = new ItqlWriter();
-    QueryInfo qi = wr.query(ir.getAST());
+    QueryInfo qi = wr.query(fa.getAST());
     printErrorsAndWarnings(wr, "writing query");
 
     /*
@@ -296,7 +300,7 @@ public class QueryTest extends TestCase {
     t0 = System.currentTimeMillis();
     ItqlConstraintGenerator cg = null;
     for (int idx = 0; idx < iter; idx++) {
-      cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true, null);
+      cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true);
       cg.query(pr.getAST());
     }
     t1 = System.currentTimeMillis();
@@ -312,10 +316,20 @@ public class QueryTest extends TestCase {
     System.out.println("itql-redux time: " + (t1 -t0) * 1.0 / iter);
 
     t0 = System.currentTimeMillis();
+    ItqlFilterApplicator fa = null;
+    for (int idx = 0; idx < iter; idx++) {
+      // FIXME: create some filters
+      fa = new ItqlFilterApplicator();
+      fa.query(ir.getAST());
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println("itql-filter time: " + (t1 -t0) * 1.0 / iter);
+
+    t0 = System.currentTimeMillis();
     ItqlWriter wr = null;
     for (int idx = 0; idx < iter; idx++) {
       wr = new ItqlWriter();
-      QueryInfo qi = wr.query(ir.getAST());
+      QueryInfo qi = wr.query(fa.getAST());
     }
     t1 = System.currentTimeMillis();
     System.out.println("itql-write time: " + (t1 -t0) * 1.0 / iter);

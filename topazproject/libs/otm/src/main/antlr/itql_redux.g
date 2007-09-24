@@ -68,6 +68,11 @@ options {
      * the current subtree in the where clause, all variables in the projections, as well as in
      * all the projections and where clauses of subqueries (recursively).</p>
      *
+     * <p>For each group of variables that are equal (and hence are being replaced with the same 
+     * variable) a common type for the replacement variable is determined, and during replacement
+     * the node's type is changed to this common type. This is needed for correct filter
+     * application.</p>
+     *
      * <p>Fun, isn't it?</p>
      */
     private void simplifyQuery(AST select, Set<String> ctxtVars) {
@@ -142,6 +147,10 @@ options {
       }
     }
 
+    /**
+     * Finds all projection and order variables, and all where clauses, in all subqueries
+     * (recursively).
+     */
     private int findVarsAndWClausesInProj(AST sclause, List<AST> vars, List<AST> wcls) {
       // #(COMMA sclause sclause) | ID pexpr
       if (sclause.getType() == COMMA) {
@@ -228,13 +237,14 @@ options {
           log.trace("simplifying: " + node.toStringTree());
 
         // find all $a = $b
-        Map<String, Set<String>> eqls = new HashMap<String, Set<String>>();
-        Map<String, String>      is   = new HashMap<String, String>();
-        findEqualities(node, eqls, is);
+        Map<String, Set<String>> eqls  = new HashMap<String, Set<String>>();
+        Map<String, String>      is    = new HashMap<String, String>();
+        Map<String, ExprType>    types = new HashMap<String, ExprType>();
+        findEqualities(node, eqls, is, types);
 
         // find replacements, transitively
         Map<String, String> repl = new HashMap<String, String>();
-        findReplacements(eqls, repl, is, ctxtVars);
+        findReplacements(eqls, repl, is, types, ctxtVars);
 
         if (log.isTraceEnabled()) {
           log.trace("replacements:  " + repl);
@@ -243,9 +253,9 @@ options {
 
         // rewrite our expression tree
         if (repl.size() > 0 || is.size() > 0) {
-          applyReplacements(node, null, null, repl, is);
+          applyReplacements(node, null, null, repl, is, types);
           for (AST n : extWcls)
-            applyReplacements(n, null, null, repl, is);
+            applyReplacements(n, null, null, repl, is, types);
           for (AST var : extVars)
             applyReplacements(var, repl, is);
         }
@@ -309,7 +319,8 @@ options {
       }
     }
 
-    private void findEqualities(AST node, Map<String, Set<String>> eqls, Map<String, String> is) {
+    private void findEqualities(AST node, Map<String, Set<String>> eqls, Map<String, String> is,
+                                Map<String, ExprType> types) {
       if (node.getType() == TRIPLE) {
         OqlAST s = (OqlAST) node.getFirstChild();
         OqlAST p = (OqlAST) s.getNextSibling();
@@ -318,6 +329,10 @@ options {
         if (p.getText().equals("<mulgara:equals>")) {
           addValToList(eqls, s.getText(), o.getText());
           addValToList(eqls, o.getText(), s.getText());
+
+          ExprType commonType = getCommonType(s.getExprType(), o.getExprType());
+          types.put(s.getText(), commonType);
+          types.put(o.getText(), commonType);
         } else if (p.getText().equals("<mulgara:is>")) {
           is.put(s.getText(), o.getText());
         }
@@ -325,7 +340,7 @@ options {
         for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
           // equality can only be propagated up past an AND
           if (n.getType() == AND || n.getType() == TRIPLE)
-            findEqualities(n, eqls, is);
+            findEqualities(n, eqls, is, types);
         }
       }
     }
@@ -337,8 +352,49 @@ options {
       vals.add(val);
     }
 
+    /**
+     * Determine the common type for the types of two nodes being merged. Class wins over known
+     * type which wins over unknown. In case of two classes, the superclass wins. These rules are
+     * so filters get properly attached.
+     */
+    private static ExprType getCommonType(ExprType t1, ExprType t2) {
+      // if either is unknown, the other wins
+      if (t1 == null)
+        return t2;
+      if (t2 == null)
+        return t1;
+
+      boolean is1Class =
+          t1.getType() == ExprType.Type.CLASS || t1.getType() == ExprType.Type.EMB_CLASS;
+      boolean is2Class =
+          t2.getType() == ExprType.Type.CLASS || t2.getType() == ExprType.Type.EMB_CLASS;
+
+      // if neither is a class, then we pick a random type
+      if (!is1Class && !is2Class)
+        return t1;
+
+      // class always wins over non-class
+      if (is1Class && !is2Class)
+        return t1;
+      if (!is1Class && is2Class)
+        return t2;
+
+      // both are class-types: choose super-class
+      Class c1 = t1.getExprClass();
+      Class c2 = t2.getExprClass();
+
+      if (c1.isAssignableFrom(c2))
+        return t1;
+      else
+        return t2;
+    }
+
+    /**
+     * Build a map of replacements to apply.
+     */
     private void findReplacements(Map<String, Set<String>> eqls, Map<String, String> repl,
-                                  Map<String, String> is, Set<String> ctxtVars) {
+                                  Map<String, String> is, Map<String, ExprType> types,
+                                  Set<String> ctxtVars) {
       // create complete groups of equal nodes
       List<Set<String>> eqlSets = new ArrayList<Set<String>>();
       while (eqls.size() > 0) {
@@ -379,12 +435,14 @@ options {
         eqlSet.remove(surv);
       }
 
-      // build replacement map, excluding context vars
+      // build replacement map, excluding context vars; figure out the survivor's type too.
       for (int idx = 0; idx < eqlSets.size(); idx++) {
         String surv = srvs.get(idx);
         for (String node : eqlSets.get(idx)) {
-          if (!ctxtVars.contains(node))
+          if (!ctxtVars.contains(node)) {
             repl.put(node, surv);
+            types.put(surv, getCommonType(types.get(node), types.get(surv)));
+          }
 
           String c = is.remove(node);
           if (c != null && !ctxtVars.contains(surv))
@@ -396,8 +454,13 @@ options {
       ctxtVars.addAll(srvs);
     }
 
+    /**
+     * Apply the replacements to the subject, predicate, and object of all triples. Resulting
+     * tautologies are removed, as are empty logical nodes; logical nodes with a single child
+     * are flattened. The types of the replaced nodes are updated too.
+     */
     private boolean applyReplacements(AST node, AST prnt, AST prev, Map<String, String> repl,
-                                      Map<String, String> is) {
+                                      Map<String, String> is, Map<String, ExprType> types) {
       boolean removed = false;
 
       if (node.getType() == TRIPLE) {
@@ -409,16 +472,19 @@ options {
         String r = repl.get(s.getText());
         if (r != null) {
           s.setText(r);
+          s.setExprType(types.get(r));
         }
 
         r = repl.get(p.getText());
         if (r != null) {
           p.setText(r);
+          p.setExprType(types.get(r));
         }
 
         r = repl.get(o.getText());
         if (r != null) {
           o.setText(r);
+          o.setExprType(types.get(r));
         }
 
         r = is.get(s.getText());
@@ -446,7 +512,7 @@ options {
         }
       } else {
         for (AST n = node.getFirstChild(), p = null; n != null; n = n.getNextSibling()) {
-          if (applyReplacements(n, node, p, repl, is))
+          if (applyReplacements(n, node, p, repl, is, types))
             ;
           else if (p == null)
             p = node.getFirstChild();
@@ -465,6 +531,9 @@ options {
       return removed;
     }
 
+    /**
+     * Apply the replacements to the projection variables (types are not changed).
+     */
     private void applyReplacements(AST var, Map<String, String> repl, Map<String, String> is) {
       String r = repl.get(var.getText());
       if (r != null)
