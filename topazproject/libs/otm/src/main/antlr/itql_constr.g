@@ -503,7 +503,7 @@ tokens {
     private static AST renameVariables(AST node, Map<String, String> renMap, String pfx) {
       OqlAST n = (OqlAST) node;
       if (n.isVar()) {
-        String f = n.getText()
+        String f = n.getText();
         String t = renMap.get(f);
         if (t == null)
           renMap.put(f, t = pfx);
