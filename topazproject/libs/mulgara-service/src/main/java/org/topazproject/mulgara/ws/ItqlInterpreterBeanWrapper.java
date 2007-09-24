@@ -88,8 +88,10 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
 
     interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
 
-    if (interpreter == null)
+    if (interpreter == null) {
+      log.warn("close rcvd - but no interceptor in session");
       return;
+    }
 
     session.removeAttribute(INTERPRETER_KEY);
 
@@ -125,7 +127,9 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
     HttpSession         session     = context.getHttpSession();
     ItqlInterpreterBean interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
 
-    if (interpreter != null) {
+    if (interpreter == null)
+      log.warn("rollback(" + name + ") rcvd - but no interceptor in session");
+    else {
       if (log.isDebugEnabled())
         log.debug("commit(" + name + ") on " + interpreter);
 
@@ -147,7 +151,9 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
     HttpSession         session     = context.getHttpSession();
     ItqlInterpreterBean interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
 
-    if (interpreter != null) {
+    if (interpreter == null)
+      log.warn("rollback(" + name + ") rcvd - but no interceptor in session");
+    else {
       if (log.isDebugEnabled())
         log.debug("rollback(" + name + ") on " + interpreter);
 
