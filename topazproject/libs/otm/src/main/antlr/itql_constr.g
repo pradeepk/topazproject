@@ -256,7 +256,7 @@ tokens {
     private AST handleCompare(String f, AST args) throws RecognitionException {
       // parse args
       if (args.getNumberOfChildren() != 4)
-        throw new RecognitionException("count() must have exactly 2 arguments, but found " +
+        throw new RecognitionException(f + "() must have exactly 2 arguments, but found " +
                                        (args.getNumberOfChildren() / 2));
       AST lvar = args.getFirstChild();
       AST larg = lvar.getNextSibling();
