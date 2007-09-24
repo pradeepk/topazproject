@@ -106,7 +106,7 @@ class ItqlQuery extends QueryImplBase {
     Set<ItqlFilter> filters = new HashSet<ItqlFilter>();
     int idx = 0;
     for (AbstractFilterImpl cf : jf.getFilters())
-      filters.add(parseItqlFilter(cf, pfx + "j" + idx++));
+      filters.add(parseItqlFilter(cf, pfx + "j" + idx++ + "_"));
 
     return new ItqlFilter(jf, filters);
   }
