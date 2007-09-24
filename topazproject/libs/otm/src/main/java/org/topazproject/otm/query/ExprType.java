@@ -157,6 +157,24 @@ class ExprType {
       return colType;
   }
 
+  /** 
+   * Get the class of this type. For non class or embedded-class types this returns null.
+   * 
+   * @return the class, or null if not a class type
+   */
+  public Class getExprClass() {
+    switch (type) {
+      case CLASS:
+        return meta.getSourceClass();
+
+      case EMB_CLASS:
+        return embFields.get(embFields.size() - 1).getType();
+
+      default:
+        return null;
+    }
+  }
+
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof ExprType))

@@ -156,7 +156,8 @@ options {
       }
 
       // nope, nothing found, must be a user error
-      throw new RecognitionException("no field '" + field.getText() + "' in " + getClass(type));
+      throw new RecognitionException("no field '" + field.getText() + "' in " +
+                                     type.getExprClass());
     }
 
     private static OqlAST getCurAST(ASTPair cur) {
@@ -180,18 +181,6 @@ options {
           m = ecfm.getFieldMapper();
         }
       }
-      return null;
-    }
-
-    private static Class getClass(ExprType type) {
-      if (type.getType() == ExprType.Type.CLASS)
-        return type.getMeta().getSourceClass();
-
-      if (type.getType() == ExprType.Type.EMB_CLASS) {
-        List<EmbeddedClassMapper> ecm = type.getEmbeddedFields();
-        return ecm.get(ecm.size() - 1).getType();
-      }
-
       return null;
     }
 
