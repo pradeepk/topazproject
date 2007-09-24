@@ -220,6 +220,10 @@ expr[QueryBuilder qb]
 constr[QueryBuilder qb]
 { StringBuilder e = qb.where; }
     : #(TRIPLE s:ID p:ID o:ID (m:ID)?) {
+        if (#p.getText().equals("<mulgara:equals>"))
+          throw new RecognitionException("failed to reduce a <mulgara:equals> - " +
+                                         "please try a simpler query");
+
         e.append(toItqlStr(#s)).append(' ').append(toItqlStr(#p)).append(' ').append(toItqlStr(#o));
         if (#m != null) {
           e.append(" in <").append(#m.getText()).append('>');
