@@ -182,8 +182,14 @@ public class OqlTest extends GroovyTestCase {
 
       // count
       r = s.createQuery("""
-            select art, count(art.publicAnnotations) from Article art 
-            where p := art.publicAnnotations order by art;
+            select art, count(art.publicAnnotations) from Article art order by art;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:Article.class, uri:id4); string ("2.0") }
+      }
+
+      r = s.createQuery("""
+            select art, count(art.publicAnnotations) c from Article art order by art;
             """).execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); string ("2.0") }

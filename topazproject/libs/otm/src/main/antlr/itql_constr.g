@@ -231,24 +231,21 @@ tokens {
       AST var = args.getFirstChild();
       AST arg = var.getNextSibling();
 
+      // result is always of type double
+      ((OqlAST) resVar).setExprType(ExprType.literalType("xsd:double", null));
+
       // handle count(<constant>)
       if (arg.getType() == TRIPLE)
         return #([QSTRING, "'1'"]);
 
       assert arg.getType() == AND;
 
-      // need to equate the expression's end var with the expected result var
-      ((OqlAST) resVar).setExprType(((OqlAST) var).getExprType());
-
-      AST pexpr = astFactory.dupTree(arg);
-      if (!var.equals(resVar))
-        pexpr.addChild(makeTriple(var, "<mulgara:equals>", resVar));
-      applyFilters(pexpr, tmpVarPfx + varCnt++ + "_");
-
       // create subquery
+      AST pexpr = astFactory.dupTree(arg);
+
       AST from  = #([FROM, "from"], #([ID, "dummy"]), #([ID, "dummy"]));
       AST where = #([WHERE, "where"], pexpr);
-      AST proj  = #([PROJ, "projection"], astFactory.dup(resVar), astFactory.dup(resVar));
+      AST proj  = #([PROJ, "projection"], astFactory.dup(var), astFactory.dup(var));
 
       return #([COUNT, "count"], #([SELECT, "select"], from, where, proj));
     }
