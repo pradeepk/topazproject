@@ -396,8 +396,10 @@ options {
       ctxtVars.addAll(srvs);
     }
 
-    private void applyReplacements(AST node, AST prnt, AST prev, Map<String, String> repl,
-                                   Map<String, String> is) {
+    private boolean applyReplacements(AST node, AST prnt, AST prev, Map<String, String> repl,
+                                      Map<String, String> is) {
+      boolean removed = false;
+
       if (node.getType() == TRIPLE) {
         OqlAST s = (OqlAST) node.getFirstChild();
         OqlAST p = (OqlAST) s.getNextSibling();
@@ -439,18 +441,28 @@ options {
 
         // remove eliminated nodes
         if (p.getText().equals("<mulgara:equals>") || p.getText().equals("<mulgara:is>")) {
-          if (s.getText().equals(o.getText())) {
-            if (prev != null)
-              prev.setNextSibling(node.getNextSibling());
-            else if (prnt != null)
-              prnt.setFirstChild(node.getNextSibling());
-          }
+          if (s.getText().equals(o.getText()))
+            removed = removeNode(node, prnt, prev);
         }
       } else {
-        prev = null;
-        for (AST n = node.getFirstChild(); n != null; prev = n, n = n.getNextSibling())
-          applyReplacements(n, node, prev, repl, is);
+        for (AST n = node.getFirstChild(), p = null; n != null; n = n.getNextSibling()) {
+          if (applyReplacements(n, node, p, repl, is))
+            ;
+          else if (p == null)
+            p = node.getFirstChild();
+          else
+            p = p.getNextSibling();
+        }
+
+        // remove empty nodes and flatten single-child AND/OR nodes
+        if (node.getFirstChild() == null)
+          removed = removeNode(node, prnt, prev);
+        else if (node.getFirstChild().getNextSibling() == null &&
+                 (node.getType() == AND || node.getType() == OR))
+          flattenNode(node, prnt, prev);
       }
+
+      return removed;
     }
 
     private void applyReplacements(AST var, Map<String, String> repl, Map<String, String> is) {
@@ -465,19 +477,46 @@ options {
       }
     }
 
+    private static boolean removeNode(AST node, AST prnt, AST prev) {
+      if (prev == null && prnt == null)
+        return false;
+
+      if (prev != null)
+        prev.setNextSibling(node.getNextSibling());
+      else
+        prnt.setFirstChild(node.getNextSibling());
+
+      return true;
+    }
+
+    private static void flattenNode(AST node, AST prnt, AST prev) {
+      if (prev == null && prnt == null)
+        return;
+
+      AST chld = node.getFirstChild();
+      chld.setNextSibling(node.getNextSibling());
+
+      if (prev != null)
+        prev.setNextSibling(chld);
+      else
+        prnt.setFirstChild(chld);
+    }
+
     private void removeConstFromOrder(AST order) {
       // (ID (ASC|DESC)?)+
-      for (AST oitem = order.getFirstChild(), prev = null; oitem != null;
-           prev = oitem, oitem = oitem.getNextSibling()) {
+      for (AST oitem = order.getFirstChild(), prev = null; oitem != null; ) {
         if (oitem.getType() == ID && !((OqlAST) oitem).isVar()) {
-          AST nxt = oitem.getNextSibling();
-          if (nxt != null && nxt.getType() != ID)
-            nxt = nxt.getNextSibling();
+          oitem = oitem.getNextSibling();
+          if (oitem != null && oitem.getType() != ID)
+            oitem = oitem.getNextSibling();
 
           if (prev != null)
-            prev.setNextSibling(nxt);
+            prev.setNextSibling(oitem);
           else
-            order.setFirstChild(nxt);
+            order.setFirstChild(oitem);
+        } else {
+          prev  = oitem;
+          oitem = oitem.getNextSibling();
         }
       }
     }

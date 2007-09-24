@@ -189,13 +189,40 @@ public class OqlTest extends GroovyTestCase {
         row { object (class:Article.class, uri:id4); string ("2.0") }
       }
 
-      // multiple orders, one by a constant
+      // multiple orders, one or more by a constant
       r = s.createQuery("""
             select art, foo from Article art 
             where art.<rdf:type> = <topaz:Article> and foo := 'yellow' order by art, foo;
             """).execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); string ('yellow') }
+      }
+
+      r = s.createQuery("""
+            select art, foo, bar from Article art 
+            where art.<rdf:type> = <topaz:Article> and foo := 'yellow' and bar := 'black'
+            order by art, foo, bar;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:Article.class, uri:id4); string ('yellow'); string ('black') }
+      }
+
+      r = s.createQuery("""
+            select art, foo, bar from Article art 
+            where art.<rdf:type> = <topaz:Article> and foo := 'yellow' and bar := 'black'
+            order by foo, art, bar;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:Article.class, uri:id4); string ('yellow'); string ('black') }
+      }
+
+      r = s.createQuery("""
+            select art, foo, bar from Article art 
+            where art.<rdf:type> = <topaz:Article> and foo := 'yellow' and bar := 'black'
+            order by foo, bar, art;
+            """).execute()
+      checker.verify(r) {
+        row { object (class:Article.class, uri:id4); string ('yellow'); string ('black') }
       }
 
       // id field
