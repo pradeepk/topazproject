@@ -127,7 +127,8 @@ fclause // from clause
 oclass  // object class
 { StringBuilder cls = new StringBuilder(); }
     :   ID          { cls.append(#ID.getText()); }
-        (DOT! e:ID! { cls.append('.').append(#e.getText()); } )*
+        (DOT! e1:ID! { cls.append('.').append(#e1.getText()); } |
+         DLR! e2:ID! { cls.append('$').append(#e2.getText()); } )*
                     { #oclass.setText(cls.toString()); }
     ;
 
@@ -236,7 +237,7 @@ parameter
 class QueryLexer extends Lexer;
 
 options {
-    k = 2;      // needed for newline junk
+    k = 2;      // needed for newline junk, ASGN, PTR
     charVocabulary = '\u0000'..'\uFFFE'; // allow unicode
 }
 
@@ -249,6 +250,7 @@ DOT    : '.' ;
 COLON  : ':' ;
 SEMI   : ';' ;
 STAR   : '*' ;
+DLR    : '$' ;
 DHAT   : "^^" ;
 AT     : '@' ;
 EQ     : '=' ;
