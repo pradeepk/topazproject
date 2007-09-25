@@ -456,8 +456,7 @@ public class ItqlStore extends AbstractTripleStore {
     for (Iterator<Filter> iter = filters.iterator(); iter.hasNext(); ) {
       Filter f = iter.next();
       ClassMetadata fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
-      if (!fcm.getSourceClass().isAssignableFrom(cls) &&
-          !cls.isAssignableFrom(fcm.getSourceClass()))
+      if (!fcm.getSourceClass().isAssignableFrom(cls))
         iter.remove();
     }
 
@@ -496,7 +495,7 @@ public class ItqlStore extends AbstractTripleStore {
           continue;       // bug???
 
         Class fc = cm.getSourceClass();
-        if (mc.isAssignableFrom(fc) || fc.isAssignableFrom(mc)) {
+        if (fc.isAssignableFrom(mc)) {
           Set<Filter> fset = applicFilters.get(m.getUri());
           if (fset == null)
             applicFilters.put(m.getUri(), fset = new HashSet<Filter>());
