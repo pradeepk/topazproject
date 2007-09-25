@@ -78,7 +78,7 @@ public abstract class Service {
     for (i in 1..120) {
       try {return uri.toURL().text} catch (Throwable e)  {saved = e}
       echo i + ' Waiting for ' + uri + ' ...'
-      sleep 1000
+      sleep 10000
     }
     echo 'Failed to start the service at ' + uri
     throw saved
