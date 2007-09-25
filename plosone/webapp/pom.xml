@@ -102,14 +102,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
-      <!-- allow log4j, PLoS explicitly uses API(s)
-      <exclusions>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
-      -->
     </dependency>
 
     <dependency>
@@ -276,11 +268,12 @@
       <version>${pom.parent.version}</version>
     </dependency>
 
-    <!-- PLoS explictly uses log4j API(s) -->
+    <!-- Please keep the scope 'provided' to avoid packaging in the war -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.14</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -289,13 +282,6 @@
       <version>3.0.4</version>
     </dependency>
   </dependencies>
-
-  <!--
-    <modules>
-    <module>../topazproject/webservices/articles/ws-client-impl</module>
-    <module>../topazproject/webservices/annotations/ws-client-impl</module>
-    </modules>
-  -->
 
   <build>
     <finalName>plosone</finalName>
