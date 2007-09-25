@@ -241,6 +241,7 @@ public class TrackbackAction extends BaseActionSupport {
           t.getBlog_name();  //for lazy load
         trackbackList.add(t);
       }
+      tx.commit();
     } catch (OtmException e) {
       try {
         if (tx != null)
