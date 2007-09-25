@@ -585,12 +585,26 @@ public class ItqlStore extends AbstractTripleStore {
   private static List<Mapper> listAssociations(ClassMetadata cm, SessionFactory sf) {
     List<Mapper> mappers = new ArrayList<Mapper>();
 
-    for (Mapper p : cm.getFields()) {
-      if (p.getSerializer() == null && p.getMapperType() == Mapper.MapperType.PREDICATE)
-        mappers.add(p);
+    for (ClassMetadata c : allSubClasses(cm, sf)) {
+      for (Mapper p : c.getFields()) {
+        if (p.getSerializer() == null && p.getMapperType() == Mapper.MapperType.PREDICATE)
+          mappers.add(p);
+      }
     }
 
     return mappers;
+  }
+
+  private static Set<ClassMetadata> allSubClasses(ClassMetadata top, SessionFactory sf) {
+    Set<ClassMetadata> classes = new HashSet<ClassMetadata>();
+    classes.add(top);
+
+    for (ClassMetadata cm : sf.listClassMetadata()) {
+      if (cm.getSourceClass().isAssignableFrom(top.getSourceClass()))
+        classes.add(cm);
+    }
+
+    return classes;
   }
 
   private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn, 
