@@ -42,6 +42,11 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.util.TransactionHelper;
 
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Rdf;
+
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
@@ -521,10 +526,10 @@ public class BrowseService {
       TransactionHelper.doInTx(session, new TransactionHelper.Action<ArticleInfo>() {
         public ArticleInfo run(Transaction tx) {
           Results r = tx.getSession().createQuery(
-              "select a.id, dc.date, dc.title, " +
-              "(select dc.bibliographicCitation.authors.realName from Article aa), " +
+              "select a.id, dc.date, dc.title, ci, " +
               "(select a.articleType from Article aa2) " +
-              "from Article a where a.id = :id and dc := a.dublinCore;").
+              "from Article a, BrowseService$CitationInfo ci " +
+              "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;").
               setParameter("id", id).execute();
 
           r.beforeFirst();
@@ -536,12 +541,12 @@ public class BrowseService {
           ai.date  = r.getLiteralAs(1, Date.class);
           ai.title = r.getString(2);
 
-          Results sr = r.getSubQueryResults(3);
-          // XXX: preserve author order
-          while (sr.next())
-            ai.authors.add(sr.getString(0));
+          for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
+            upi.hashCode();     // force load
+            ai.authors.add(upi.realName);
+          }
 
-          sr = r.getSubQueryResults(4);
+          Results sr = r.getSubQueryResults(4);
           while (sr.next())
             ai.articleTypes.add(sr.getURI(0));
 
@@ -762,6 +767,30 @@ public class BrowseService {
     public List<String> getAuthors() {
       return authors;
     }
+  }
+
+  /**
+   * Just the list of authors.
+   */
+  @Entity(type = PLoS.bibtex + "Entry", model = "ri")
+  public static class CitationInfo {
+    @Id
+    public URI id;
+
+    @Predicate(uri = PLoS.plos + "hasAuthorList", storeAs = Predicate.StoreAs.rdfSeq)
+    public List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();
+  }
+
+  /**
+   * Just the full name.
+   */
+  @Entity(type = Rdf.foaf + "Person", model = "profiles")
+  public static class UserProfileInfo {
+    @Id
+    public URI id;
+
+    @Predicate(uri = Rdf.foaf + "name")
+    public String realName;
   }
 
   /**

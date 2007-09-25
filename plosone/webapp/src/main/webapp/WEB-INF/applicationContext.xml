@@ -444,6 +444,8 @@
         <value>org.topazproject.otm.criterion.Parameter</value>
         <value>org.topazproject.otm.criterion.TransCriterion</value>
         <value>org.topazproject.otm.criterion.WalkCriterion</value>
+        <value>org.plos.article.service.BrowseService$CitationInfo</value>
+        <value>org.plos.article.service.BrowseService$UserProfileInfo</value>
       </list>
     </property>
   </bean>
