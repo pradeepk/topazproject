@@ -238,7 +238,8 @@ public class BrowseService {
     // get the image Article
     URI imageArticle = null;
     String description = null;
-    if (issue.getImage().toString() != null) {
+    if (issue.getImage() != null
+        && issue.getImage().toString().length() != 0) {
       final Article article = session.get(Article.class, issue.getImage().toString());
       if (article != null) {
         imageArticle = issue.getImage();
