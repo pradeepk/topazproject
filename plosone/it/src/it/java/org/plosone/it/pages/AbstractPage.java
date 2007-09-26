@@ -55,6 +55,7 @@ public abstract class AbstractPage {
   public void gotoPage() {
     log.debug("Going to " + url + " ...");
     tester.gotoPage(url);
+    verifyPage();
   }
 
   public abstract void verifyPage();

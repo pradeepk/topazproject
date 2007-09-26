@@ -107,13 +107,24 @@ public class NavTest extends AbstractPlosOneTest {
 
     return (Object[][]) l.toArray(new Object[0][]);
   }
+  
+  @DataProvider(name= "browsers")
+  public Object[][] browserTestData() {
+    ArrayList l = new ArrayList();
+    for (String browser : browsers.keySet()) {
+      l.add(new String[] {browser});
+    }
+    
+    Object[][] dataArray = (Object[][])l.toArray(new Object[0][]);
+    return (dataArray); 
+  }
 
   /**
    * DOCUMENT ME!
    */
   @Test(dataProvider = "journals")
   public void testHome(String journal, String browser) {
-    log.info("Testing home page [journal=" + journal + ", browser=" + browser + "] ... ");
+    log.info("Testing home page [journal='" + journal + "', browser='" + browser + "'] ... ");
     HomePage hp = new HomePage(getTester(journal, browser), journal);
     hp.gotoPage();
     hp.verifyPage();
@@ -124,7 +135,7 @@ public class NavTest extends AbstractPlosOneTest {
    */
   @Test(dataProvider = "journals")
   public void testLogin(String journal, String browser) {
-    log.info("Testing login [journal=" + journal + ", browser=" + browser + "] ... ");
+    log.info("Testing login [journal='" + journal + "', browser='" + browser + "'] ... ");
     HomePage hp = new HomePage(getTester(journal, browser), journal);
     hp.gotoPage();
     hp.loginAs("admin", "plosadmin@gmail.com");
@@ -135,16 +146,23 @@ public class NavTest extends AbstractPlosOneTest {
 
   @Test(dataProvider = "journals")
   public void testSearch(String journal, String browser) {
-    log.info("Testing search [journal=" + journal + ", browser=" + browser + "] ... ");
+    log.info("Testing search [journal='" + journal + "', browser='" + browser + "'] ... ");
     HomePage hp = new HomePage(getTester(journal, browser), journal);
     hp.gotoPage();
     SearchResultsPage srp = hp.search("Natural", new String[] { "info:doi/10.1371/journal.pone.0000021" });
     srp.verifyPage();
   }
 
+  /**
+   * Verifies that it is possible to navigate directly to an article. 
+   * 
+   * @param article
+   * @param journal
+   * @param browser
+   */
   @Test(dataProvider = "articles")
   public void testArticle(String article, String journal, String browser) {
-    log.info("Testing article-view [article=" + article + ", journal=" + journal + ", browser=" + browser + "] ... ");
+    log.info("Testing article-view [article='" + article + "', journal='" + journal + "', browser='" + browser + "'] ... ");
     PlosOneWebTester tester = getTester(journal, browser);
     ArticlePage ap = new ArticlePage(tester, journal, article);
     ap.gotoPage();
@@ -153,8 +171,8 @@ public class NavTest extends AbstractPlosOneTest {
 
   @Test(dataProvider = "articles")
   public void testAnnotationLoginRedirect(String article, String journal, String browser) {
-    log.info("Testing annotation-login-redirect [article=" + article + ", journal=" + journal + ", browser=" + browser
-        + "] ... ");
+    log.info("Testing annotation-login-redirect [article='" + article + "', journal='" + journal + "', browser='" + browser
+        + "'] ... ");
     PlosOneWebTester tester = getTester(journal, browser);
     ArticlePage ap = new ArticlePage(tester, journal, article);
     ap.gotoPage();
@@ -168,8 +186,8 @@ public class NavTest extends AbstractPlosOneTest {
 
   @Test(dataProvider = "articles")
   public void testDiscussionLoginRedirect(String article, String journal, String browser) {
-    log.info("Testing discussion-login-redirect [article=" + article + ", journal=" + journal + ", browser=" + browser
-        + "] ... ");
+    log.info("Testing discussion-login-redirect [article='" + article + "', journal='" + journal + "', browser='" + browser
+        + "'] ... ");
     PlosOneWebTester tester = getTester(journal, browser);
     ArticlePage ap = new ArticlePage(tester, journal, article);
     ap.gotoPage();
@@ -187,19 +205,44 @@ public class NavTest extends AbstractPlosOneTest {
    * the home page. The article retrieved is common to both PLos and CT
    * Journals.
    */
-  @Test
-  public void testBrowseByDate() {
-    for (String browser : browsers.keySet()) {
-      log.info("Testing Browse Atricles by Date [browser=" + browser);
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
-      HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
-      hp.gotoPage();
-      hp.getTester().clickLinkWithExactText("By Publication Date");
-      // Click on the Dec -> 20 link
-      hp.getTester().clickLinkWithExactText("20");
-      hp.getTester().assertTextPresent("Isolation of Non-Tuberculous Mycobacteria in " +
-      		                             "Children Investigated for Pulmonary Tuberculosis");
+  @Test(dataProvider = "browsers")
+  public void testBrowseBySubjectToPlosArticle(String browser) {
+    if (AbstractPlosOneTest.FIREFOX2.equals(browser)) {
+      // TODO - need to fix FIREFOX2 javascript simulation
+      log.info("Skipping test with browser type [browser='" + 
+               AbstractPlosOneTest.FIREFOX2 + "'] since the javascript engine is broken.");
+      return;
     }
+    log.info("Testing Browse PLOS Atricle by Subject [browser='" + browser + "']");
+    PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+    HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+    hp.gotoPage();
+    hp.getTester().clickLinkWithExactText("By Subject");
+    // Click on the Dec -> 20 link
+    hp.getTester().clickLinkWithExactText("Ecology (1)");
+    hp.getTester().clickLinkWithExactText("No Intra-Locus Sexual Conflict over Reproductive " +
+    		"Fitness or Ageing in Field Crickets");
+    hp.getTester().assertTextPresent("Differences in the ways in which " +
+    		"males and females maximize evolutionary fitness");
+  }
+  
+  /**
+   * testBrowseByDate verifies that browse by date is working for all supported
+   * browsers. The browse by date page is navigated to via the drop down menu on
+   * the home page. The article retrieved is common to both PLos and CT
+   * Journals.
+   */
+  @Test(dataProvider = "browsers")
+  public void testBrowseByDate(String browser) {
+    log.info("Testing Browse Atricles by Date [browser='" + browser + "']");
+    PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+    HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+    hp.gotoPage();
+    hp.getTester().clickLinkWithExactText("By Publication Date");
+    // Click on the Dec -> 20 link
+    hp.getTester().clickLinkWithExactText("20");
+    hp.getTester().assertTextPresent("Isolation of Non-Tuberculous Mycobacteria in "
+        + "Children Investigated for Pulmonary Tuberculosis");
   }
 
   /**
@@ -208,18 +251,16 @@ public class NavTest extends AbstractPlosOneTest {
    * down menu on the home page. The article retrieved is common to both PLos
    * and CT Journals.
    */
-  @Test
-  public void testBrowseBySubject() {
-    for (String browser : browsers.keySet()) {
-      log.info("Testing Browse Atricles by Subject [browser=" + browser);
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
-      HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
-      hp.gotoPage();
-      hp.getTester().clickLinkWithExactText("By Subject");
-      hp.getTester().clickLinkWithExactText("Infectious Diseases (1)");
-      hp.getTester().assertTextPresent("Isolation of Non-Tuberculous Mycobacteria in " +
-      		                             "Children Investigated for Pulmonary Tuberculosis");
-    }
+  @Test(dataProvider = "browsers")
+  public void testBrowseBySubject(String browser) {
+    log.info("Testing Browse Atricles by Subject [browser='" + browser + "']");
+    PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+    HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+    hp.gotoPage();
+    hp.getTester().clickLinkWithExactText("By Subject");
+    hp.getTester().clickLinkWithExactText("Infectious Diseases (1)");
+    hp.getTester().assertTextPresent("Isolation of Non-Tuberculous Mycobacteria in "
+        + "Children Investigated for Pulmonary Tuberculosis");
   }
 
   /**
@@ -228,27 +269,29 @@ public class NavTest extends AbstractPlosOneTest {
    */
   @Test
   public void testBrowseByDateJournalFilterPLoS() {
-    String browser = browsers.keySet().iterator().next(); // just grab the first
-    // browser
-    log.info("Testing that CT-only articles are not presented when using browse by date in PLoS Journal [browser="
-        + browser + "]");
+    // just grab the first browser
+    String browser = browsers.keySet().iterator().next();
+    log.info("Testing that CT-only articles are not presented when using " +
+    		"browse by date in PLoS Journal [browser='"
+        + browser + "']");
     PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
     hp.gotoPage();
     hp.getTester().clickLinkWithExactText("By Publication Date");
-    hp.getTester().assertLinkNotPresentWithExactText("15"); // The date for Jun
+    hp.getTester().assertLinkNotPresentWithExactText("15"); // The date for Jun 15th
   }
 
   /**
-   * testBrowseByDateJournalFilter verifies that articles in the CT Journal are
-   * not retrieved using browse by date within the PLoS Journal.
+   * testBrowseByDateJournalFilter verifies that articles in the PONE Journal are
+   * not retrieved using browse by date within the CT Journal.
    */
   @Test
   public void testBrowseByDateJournalFilterCT() {
-    String browser = browsers.keySet().iterator().next(); // just grab the first
-    // browser
-    log.info("Testing that PLoS-only articles are not presented when using browse by date in CT Journal [browser="
-        + browser + "]");
+    // just grab the first browser
+    String browser = browsers.keySet().iterator().next();
+    log.info("Testing that PLoS-only articles are not presented when using " +
+    		"browse by date in CT Journal [browser='"
+        + browser + "']");
     PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_CT);
     hp.gotoPage();
@@ -263,10 +306,11 @@ public class NavTest extends AbstractPlosOneTest {
    */
   @Test
   public void testBrowseBySubjectJournalFilterPLoS() {
-    String browser = browsers.keySet().iterator().next(); // just grab the first
-    // browser
-    log.info("Testing that CT-only articles are not presented when browse by subject in PLoS Journal [browser="
-        + browser + "]");
+    // just grab the first browser
+    String browser = browsers.keySet().iterator().next();
+    log.info("Testing that CT-only articles are not presented when " +
+             "browse by subject in PLoS Journal [browser='"
+             + browser + "']");
     PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
     hp.gotoPage();
@@ -280,10 +324,11 @@ public class NavTest extends AbstractPlosOneTest {
    */
   @Test
   public void testBrowseBySubjectJournalFilterCT() {
-    String browser = browsers.keySet().iterator().next(); // just grab the first
-    // browser
-    log.info("Testing that PLoS-only articles are not presented when browse by subject in CT Journal [browser="
-        + browser + "]");
+    // just grab the first browser
+    String browser = browsers.keySet().iterator().next();
+    log.info("Testing that PLoS-only articles are not presented when " + 
+             "browse by subject in CT Journal [browser='" 
+             + browser + "']");
     PlosOneWebTester testerCt = getTester(AbstractPage.J_CT, browser);
     HomePage hpCt = new HomePage(testerCt, AbstractPage.J_CT);
     hpCt.gotoPage();
@@ -295,11 +340,12 @@ public class NavTest extends AbstractPlosOneTest {
    * Verify that we can navigate to an annotation via the "See all commentary" side bar. 
    * Verify that the annotation is from the correct user
    */
-  @Test
-  public void testNavigateAnnotationNonAjax() {
-    for (String browser : browsers.keySet()) {
-      if ("Firefox 2".equals(browser)) {
-        continue;
+  @Test(dataProvider="browsers")
+  public void testNavigateAnnotationNonAjax(String browser) {
+      if (AbstractPlosOneTest.FIREFOX2.equals(browser)) {
+        log.info("Skipping test with browser type [browser='" + 
+                 AbstractPlosOneTest.FIREFOX2 + "'] since the javascript engine is broken.");
+        return;
       }
       log.info("Testing view annotation on [browser=" + browser);
       PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
@@ -315,7 +361,6 @@ public class NavTest extends AbstractPlosOneTest {
       tester.assertTextPresent("This is some test text for sputum");
       tester.clickLinkWithExactText("plostest");
       tester.assertTextPresent("San Francisco, Uganda");
-    }
   }
 
   /**
@@ -326,8 +371,8 @@ public class NavTest extends AbstractPlosOneTest {
    */
   @Test
   public void testNavigateAnnotationNonAjaxFromCT() {
-    String browser = "Internet Explorer 7";
-    log.info("Testing view annotation on [browser=" + browser);
+    String browser = AbstractPlosOneTest.IE7;
+    log.info("Testing view annotation on [browser='" + browser + "']");
     PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_CT);
     hp.gotoPage();
@@ -347,66 +392,66 @@ public class NavTest extends AbstractPlosOneTest {
    * Verify that we can navigate to an annotation (created by plostest) via the "See all commentary" 
    * side bar and that a response to the annotation is available from plosuser. 
    */
-  @Test
-  public void testNavigateAnnotationReply() {
-    for (String browser : browsers.keySet()) {
-      if ("Firefox 2".equals(browser)) {
-        continue;
-      }
-      log.info("Testing view annotation on [browser=" + browser);
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
-      HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
-      hp.gotoPage();
-      tester.clickLinkWithExactText("By Publication Date");
-      // Click on the Dec -> 20 link
-      tester.clickLinkWithExactText("20");
-      tester.clickLinkWithExactText("Isolation of Non-Tuberculous Mycobacteria in " +
-                                    "Children Investigated for Pulmonary Tuberculosis");
-      tester.clickLinkWithText("See all commentary");
-      tester.clickLinkWithText("Mycobacterial culture test annotation");
-      tester.assertTextPresent("Some test annotation text for Mycobacterial culture added from the PLOS journal");
-      tester.assertTextPresent("response from plosuser");
-      tester.clickLinkWithExactText("plosuser");
-      tester.assertTextPresent("plos user");
+  @Test(dataProvider = "browsers")
+  public void testNavigateAnnotationReply(String browser) {
+    if (AbstractPlosOneTest.FIREFOX2.equals(browser)) {
+      log.info("Skipping test with browser type [browser='" + 
+               AbstractPlosOneTest.FIREFOX2 + "'] since the javascript engine is broken.");
+      return;
     }
+    log.info("Testing view annotation on [browser=" + browser);
+    PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+    HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+    hp.gotoPage();
+    tester.clickLinkWithExactText("By Publication Date");
+    // Click on the Dec -> 20 link
+    tester.clickLinkWithExactText("20");
+    tester.clickLinkWithExactText("Isolation of Non-Tuberculous Mycobacteria in "
+        + "Children Investigated for Pulmonary Tuberculosis");
+    tester.clickLinkWithText("See all commentary");
+    tester.clickLinkWithText("Mycobacterial culture test annotation");
+    tester.assertTextPresent("Some test annotation text for Mycobacterial culture added from the PLOS journal");
+    tester.assertTextPresent("response from plosuser");
+    tester.clickLinkWithExactText("plosuser");
+    tester.assertTextPresent("plos user");
   }
   
   /**
    * Verify that we can navigate to and see a discussion on an article.
    */
-  @Test
-  public void testNavigateDiscussion() {
-    for (String browser : browsers.keySet()) {
-      if ("Firefox 2".equals(browser)) {
-        continue;
-      }
-      log.info("Testing view annotation on [browser=" + browser);
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
-      HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
-      hp.gotoPage();
-      tester.clickLinkWithExactText("By Publication Date");
-      // Click on the Dec -> 20 link
-      tester.clickLinkWithExactText("20");
-      tester.clickLinkWithExactText("Isolation of Non-Tuberculous Mycobacteria in " +
-      		                          "Children Investigated for Pulmonary Tuberculosis");
-      tester.clickLinkWithText("See all commentary");
-      tester.clickLinkWithText("This is a test discussion started by plostest");
-      tester.assertTextPresent("Some discussion test text entered by plostest regarding " +
-      		                     "Isolation of Non-Tuberculous Mycobacteria article...");
-      tester.assertTextPresent("RE: This is a test discussion started by plostest");
-      tester.assertTextPresent("test response from plostest");
+  @Test(dataProvider="browsers")
+  public void testNavigateDiscussion(String browser) {
+    if (AbstractPlosOneTest.FIREFOX2.equals(browser)) {
+      log.info("Skipping test with browser type [browser='" + 
+               AbstractPlosOneTest.FIREFOX2 + "'] since the javascript engine is broken.");
+      return;
     }
+    log.info("Testing view annotation on [browser=" + browser);
+    PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+    HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+    hp.gotoPage();
+    tester.clickLinkWithExactText("By Publication Date");
+    // Click on the Dec -> 20 link
+    tester.clickLinkWithExactText("20");
+    tester.clickLinkWithExactText("Isolation of Non-Tuberculous Mycobacteria in "
+        + "Children Investigated for Pulmonary Tuberculosis");
+    tester.clickLinkWithText("See all commentary");
+    tester.clickLinkWithText("This is a test discussion started by plostest");
+    tester.assertTextPresent("Some discussion test text entered by plostest regarding "
+        + "Isolation of Non-Tuberculous Mycobacteria article...");
+    tester.assertTextPresent("RE: This is a test discussion started by plostest");
+    tester.assertTextPresent("test response from plostest");
   }
 
   /**
    * Verify that we can navigate to and see a discussion on an article from CT
-   * journal. We don't need to test all browsers since this navigation has
-   * been covered by testNavigateDiscussion()
+   * journal. We don't need to test all browsers since this navigation has been
+   * covered by testNavigateDiscussion()
    */
   @Test
   public void testNavigateDiscussionFromCT() {
-    String browser = "Internet Explorer 7";
-    log.info("Testing view annotation on [browser=" + browser);
+    String browser = AbstractPlosOneTest.IE7;
+    log.info("Testing view annotation on [browser='" + browser + "']");
     PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_CT);
     hp.gotoPage();
@@ -426,40 +471,40 @@ public class NavTest extends AbstractPlosOneTest {
   /**
    * Verify that we can navigate a user rating and see the comments
    */
-  @Test
-  public void testNavigateRating() {
-    for (String browser : browsers.keySet()) {
-      // TODO - The javascript sim engine for Firefox 2 appears to be broken, 
-      // Need to investigate. 
-      if ("Firefox 2".equals(browser)) {
-        continue;
-      }
-      log.info("Testing view annotation on [browser=" + browser);
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
-      HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
-      hp.gotoPage();
-      tester.clickLinkWithExactText("By Publication Date");
-      // Click on the Dec -> 20 link
-      tester.clickLinkWithExactText("20");
-      tester.clickLinkWithExactText("Isolation of Non-Tuberculous Mycobacteria in " +
-      		                          "Children Investigated for Pulmonary Tuberculosis");
-      tester.assertTextPresent("Currently 3.5/5 Stars.");
-      tester.clickLinkWithText("(1 User Rating)");
-      tester.assertLinkPresentWithExactText("plosuser");
-      tester.assertTextPresent("Test rating title from user test");
-      tester.assertTextPresent("Test rating comment text from user test");
+  @Test(dataProvider = "browsers")
+  public void testNavigateRating(String browser) {
+    // TODO - The javascript sim engine for Firefox 2 appears to be broken,
+    // Need to investigate.
+    if (AbstractPlosOneTest.FIREFOX2.equals(browser)) {
+      log.info("Skipping test with browser type [browser='" + 
+               AbstractPlosOneTest.FIREFOX2 + "'] since the javascript engine is broken.");
+      return;
     }
+    log.info("Testing view annotation on [browser=" + browser);
+    PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+    HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
+    hp.gotoPage();
+    tester.clickLinkWithExactText("By Publication Date");
+    // Click on the Dec -> 20 link
+    tester.clickLinkWithExactText("20");
+    tester.clickLinkWithExactText("Isolation of Non-Tuberculous Mycobacteria in "
+        + "Children Investigated for Pulmonary Tuberculosis");
+    tester.assertTextPresent("Currently 3.5/5 Stars.");
+    tester.clickLinkWithText("(1 User Rating)");
+    tester.assertLinkPresentWithExactText("plosuser");
+    tester.assertTextPresent("Test rating title from user test");
+    tester.assertTextPresent("Test rating comment text from user test");
   }
   
   /**
-   * Verify that we can navigate a user rating and see the comments from CT journal. 
-   * The original rating was added from the PLOS journal. We only test IE7 since other
-   * browser types were covered in testNavigateRating()
+   * Verify that we can navigate a user rating and see the comments from CT
+   * journal. The original rating was added from the PLOS journal. We only test
+   * IE7 since other browser types were covered in testNavigateRating()
    */
   @Test
   public void testNavigateRatingFromCT() {
-    String browser = "Internet Explorer 7";
-    log.info("Testing view annotation on [browser=" + browser);
+    String browser = AbstractPlosOneTest.IE7;
+    log.info("Testing view annotation on [browser='" + browser + "']");
     PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
     hp.gotoPage();
