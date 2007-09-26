@@ -23,7 +23,7 @@
         </ul>
       </li>
     <@s.url action="users" namespace="/static" includeParams="none" id="users"/>
-    <li><a href="${users}" tabindex="104">For Users</a>
+    <li><a href="${users}" tabindex="104">For Readers</a>
         <ul>
         <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="comment"/>
         <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
