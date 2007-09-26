@@ -17,13 +17,13 @@
 	<@s.url action="faq" namespace="/static" includeParams="none" id="faq"/>
         <@s.url action="contact" namespace="/static" includeParams="none" id="contact"/>
           <li><a href="${info}">Information</a></li>
-          <li><a href="${license}">Open Access License</a></li>
+          <li><a href="${license}">Open-Access License</a></li>
           <li><a href="${faq}">FAQ</a></li>
           <li><a href="${contact}">Contact Us</a></li>
         </ul>
       </li>
     <@s.url action="users" namespace="/static" includeParams="none" id="users"/>
-    <li><a href="${users}" tabindex="104">For Users</a>
+    <li><a href="${users}" tabindex="104">For Readers</a>
         <ul>
         <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="comment"/>
         <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
