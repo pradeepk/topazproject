@@ -18,9 +18,10 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.PDP;
 
-import org.plos.models.Article;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.util.TransactionHelper;
 
 import java.security.Guard;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -205,24 +206,31 @@ public class Results {
       SearchHit    hit = (SearchHit) object;
       final String uri = hit.getPid();
 
-      try {
-        // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
-        pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
+      TransactionHelper.doInTxE(otmSession,
+                                new TransactionHelper.ActionE<Void, SecurityException>() {
+        public Void run(Transaction tx) throws SecurityException {
+          try {
+            // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
+            pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
 
-        // Verify otm returns one record...
-        if (!otmSession.createQuery("select a.id from Article a where a.id = <" + uri + ">;")
-            .execute().next())
-          throw new SecurityException("Article '" + uri + "' not in active session");
+            // Verify otm returns one record...
+            if (!tx.getSession().createQuery("select a.id from Article a where a.id = :id;")
+                 .setParameter("id", uri).execute().next())
+              throw new SecurityException("Article '" + uri + "' not in current journal");
 
-        if (log.isDebugEnabled())
-          log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
-      } catch (OtmException oe) {
-        throw (SecurityException)
-          new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
-      } catch (URISyntaxException us) {
-        throw (SecurityException)
-          new SecurityException("HitGuard: Unable to create URI '" + uri + "'").initCause(us);
-      }
+            if (log.isDebugEnabled())
+              log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
+          } catch (OtmException oe) {
+            throw (SecurityException)
+              new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
+          } catch (URISyntaxException us) {
+            throw (SecurityException)
+              new SecurityException("HitGuard: Unable to create URI '" + uri + "'").initCause(us);
+          }
+
+          return null;
+        }
+      });
     }
   }
 }
