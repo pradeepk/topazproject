@@ -38,7 +38,7 @@
         </ul>
       </li>
     <@s.url action="authors" namespace="/static" includeParams="none" id="authors"/>
-    <li><a href="${authors}" tabindex="105">For Authors</a>
+    <li><a href="${authors}" tabindex="105">For Authors and Reviewers</a>
         <ul>
         <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
           <li><a href="${checklist}">Submit Your Paper</a></li>
