@@ -12,9 +12,7 @@ package org.plos.search.service;
 import org.plos.ApplicationException;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
-import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,25 +50,16 @@ public class SearchService {
       PlosOneUser   user     = PlosOneUser.getCurrentUser();
       final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
 
-      /* Wrap all otm checks (that happen in the HitGuard) in one transaction. (Warning:
-       * this means iterator-chain *cannot* be used outside this context.) Session may change
-       * between invocations (and we want to be in a transaction anyway) so session and/or
-       * transaction objects must be passed per call and not in Results constructor.
-       */
-      return TransactionHelper.doInTx(otmSession, new TransactionHelper.Action<SearchResultPage>() {
-          public SearchResultPage run(Transaction tx) {
-            Results results  = (Results) cache.get(cacheKey);
-            if (results == null) {
-              results = new Results(query, searchWebService);
-              cache.put(cacheKey, results);
-              if (log.isDebugEnabled())
-                log.debug("Created search cache for '" + cacheKey + "' of " +
-                          results.getTotalHits(tx.getSession()));
-            }
+      Results results  = (Results) cache.get(cacheKey);
+      if (results == null) {
+        results = new Results(query, searchWebService);
+        cache.put(cacheKey, results);
+        if (log.isDebugEnabled())
+          log.debug("Created search cache for '" + cacheKey + "' of " +
+                    results.getTotalHits(otmSession));
+      }
 
-            return results.getPage(startPage, pageSize, tx.getSession());
-          }
-        });
+      return results.getPage(startPage, pageSize, otmSession);
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
