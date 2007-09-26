@@ -53,13 +53,10 @@
                 <img src="images/article_image2.gif" alt="article image" /><p>Nostrud tum accumsan si vulpes utinam ibidem. Dolore in gemino acsi accumsan, metuo exerci amet praesent iriure praesent odio ulciscor obruo. Commodo accumsan immitto in quadrum dolus, melior pagus camur, fatua.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
-              <div class="article section">
+              <div class="article section lastSection">
                 <h3><a href="#">Increasing Coverage and Decreasing Inequity in Insecticide-Treated Bed Net Use among Rural Kenyan Children</a></h3>
                 <img src="images/article_image3.jpg" alt="article image" /><p>Inexpensive and efficacious interventions that avert childhood deaths in sub-Saharan Africa have failed to reach effective coverage, especially among the poorest rural sectors.</p>
                 <div class="clearer">&nbsp;</div>
-              </div>
-              <div class="section lastSection">
-                <p>How to <a href="#">add your comments to an article</a> on <em>PLoS NTDs</em>.</p>
               </div>
             </div><!-- end : block -->
             <div class="other block">
@@ -98,15 +95,15 @@
             <!-- end : issue block -->
             <!-- begin : mission block -->
             <div id="mission" class="block">
-              <p><strong>Welcome to <em>PLoS NTDs</em></strong> populus saluto eum genitus, praemitto quod utrum aliquip. Ideo similis ut, veniam, laoreet augue mos. <a href="#">Populus commodo</a> iustum singularis, <a href="#">iriure ut populus quia, foras</a>.</p>
+              <p><strong>Welcome to <em>PLoS Neglected Tropical Diseases</em></strong>, the first open-access journal devoted to the world's most <a href="#">neglected tropical diseases</a>. Learn how to <a href="#">add comments and start discussions</a> on articles.</p>
             </div>
             <!-- end : mission block -->
             <!-- begin : stay-connected block -->
             <div id="connect" class="block">
               <h3>Stay Connected</h3>
               <ul>
-                  <li><img src="images/icon_alerts_small.gif" alt="email alerts icon" /><a href="#"><strong>E-mail Alerts</strong></a><br />Sign up for NTDs alerts by e-mail</li>
-                  <li><img src="images/icon_rss_small.gif" alt="rss icon" /><a href="#"><strong>RSS</strong></a> (<a href="#">What is RSS?</a>)<br />Subscribe to NTDs RSS content feed</li>
+                  <li><img src="images/icon_alerts_small.gif" alt="email alerts icon" /><a href="#"><strong>E-mail Alerts</strong></a><br />Sign up for alerts by e-mail</li>
+                  <li><img src="images/icon_rss_small.gif" alt="rss icon" /><a href="#"><strong>RSS</strong></a> (<a href="#">What is RSS?</a>)<br />Subscribe to content feed</li>
               </ul>
             </div>
             <!-- end : stay-connected block -->
@@ -187,11 +184,12 @@
         <div id="lower">&nbsp;</div> <!-- displays lower background image -->
       </div><!-- end : col -->
       <div class="partner">
-        <a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
-        <a href="http://fedora.info/" title="Fedora.info"><img src="images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
-        <a href="http://www.mulgara.org/" title="Mulgara.org"><img src="images/pone_home_mulgara.gif" alt="Mulgara.org"/></a>
-        <a href="http://www.sciencecommons.org/" title="Science Commons"><img src="images/pone_home_sciencecommons.gif"  alt="Science Commons"/></a>
-        <a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="images/pone_home_moore.gif" alt="Moore Foundation"/></a>
+        <a href="http://www.gatesfoundation.org" title="Bill and Melinda Gates Foundation"><img src="${freemarker_config.context}/images/pone_home_gatesFound.png" alt="Bill and Melinda Gates Foundation"/></a>
+        <a href="http://www.fedora-commons.org" title="Fedora-Commons.org"><img src="${freemarker_config.context}/images/pone_home_fedoracommons.png" alt="Fedora-Commons.org"/></a>
+				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.gif" alt="Moore Foundation"/></a>
+        <a href="http://www.mulgara.org/" title="Mulgara.org"><img src="${freemarker_config.context}/images/pone_home_mulgara.gif" alt="Mulgara.org"/></a>
+        <a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.gif"  alt="Science Commons"/></a>
+				<a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="${freemarker_config.context}/images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
       </div><!-- end : block partners -->
     </div><!-- end : home -->
   </div><!-- end : wrap -->
