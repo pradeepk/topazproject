@@ -88,16 +88,6 @@ public class VirtualJournalContextFilter implements Filter {
     String virtualJournal = null;
     String mappingPrefix  = null;
 
-    // allow a URI param to set context, useful for debugging
-    virtualJournal = request.getParameter(URI_PARAM_VIRTUALJOURNAL);
-    mappingPrefix  = request.getParameter(URI_PARAM_MAPPINGPREFIX);
-    if (virtualJournal != null) {
-      if (log.isDebugEnabled()) {
-        log.debug("virtual journal from URI params: journal = \"" + virtualJournal + "\""
-          + ", mappingPrefix = \"" + mappingPrefix + "\"");
-      }
-    }
-
     // need to do <rule> based processing?
     if (virtualJournal == null) {
       final VirtualJournalContext ruleValues = processVirtualJournalRules(
