@@ -76,7 +76,7 @@ public abstract class AbstractPlosOneTest {
    */
   private final Env[] envs =
     new Env[] {
-                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.9-SNAPSHOT"),
+                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.81.1"),
                 new Env("install/empty", null)
     };
 

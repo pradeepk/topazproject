@@ -492,8 +492,8 @@ public class NavTest extends AbstractPlosOneTest {
     tester.assertTextPresent("Currently 3.5/5 Stars.");
     tester.clickLinkWithText("(1 User Rating)");
     tester.assertLinkPresentWithExactText("plosuser");
-    tester.assertTextPresent("Test rating title from user test");
-    tester.assertTextPresent("Test rating comment text from user test");
+    tester.assertTextPresent("Test rating title from plosuser");
+    tester.assertTextPresent("Test rating comment text from plosuser");
   }
   
   /**
@@ -515,7 +515,7 @@ public class NavTest extends AbstractPlosOneTest {
         + "Children Investigated for Pulmonary Tuberculosis");
     tester.assertTextPresent("Currently 3.5/5 Stars.");
     tester.clickLinkWithText("(1 User Rating)");
-    tester.assertTextPresent("Test rating title from user test");
-    tester.assertTextPresent("Test rating comment text from user test");
+    tester.assertTextPresent("Test rating title from plosuser");
+    tester.assertTextPresent("Test rating comment text from plosuser");
   }
 }
