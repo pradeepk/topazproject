@@ -10,6 +10,22 @@
   - http://opensource.org/licenses/ecl1.php
   -->
 <struts>
+
+  <constant name="struts.objectFactory"
+      value="org.apache.struts2.spring.StrutsSpringObjectFactory"/>
+  <constant name="struts.objectFactory.spring.autoWire" value="name"/>
+  <constant name="struts.devMode" value="false"/>
+  <constant name="struts.freemarker.manager.classname" value="plosOneFreemarkerManager"/>
+  <constant name="struts.i18n.encoding" value="UTF-8"/>
+  <constant name="struts.ui.theme" value="plosone-theme"/>
+  <constant name="struts.ui.templateDir" value="template"/>
+  <constant name="struts.ui.templateSuffix" value="ftl"/>
+  <!--
+  allow the mapping of friendly URIs, 
+  e.g. "/article/feed" v. requiring "/article/articleFeed.action?parms"
+  -->
+  <constant name="struts.mapper.class" value="org.plos.struts2.PlosOneActionMapper"/>
+
   <include file="struts-default.xml" />
 
   <package name="default" extends="struts-default">

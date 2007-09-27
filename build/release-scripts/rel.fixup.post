@@ -21,8 +21,6 @@ for f in \
   perl -p -i -e "s/$pt/$rt/g" "$f"
 done
 
-perl -p -i -e "s/struts\.devMode=false/struts\.devMode=true/g" plosone/webapp/src/main/webapp/WEB-INF/classes/struts.properties
-
 for f in packages/*/pom.xml ; do
   perl -p -i -e "s/<release>.*?<\/release>/<release>$rel<\/release>/g" "$f"
 done
