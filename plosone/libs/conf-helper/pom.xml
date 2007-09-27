@@ -16,6 +16,7 @@
     <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
+     <version>1.4</version>
     </dependency>
 
     <dependency>

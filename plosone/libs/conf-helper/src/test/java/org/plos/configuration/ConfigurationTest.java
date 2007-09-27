@@ -40,8 +40,7 @@ public class ConfigurationTest extends TestCase {
     assertEquals("defaults override", "override", conf.getString("plosconf.def"));
   }
 
-  public void testExpandedDefaultsOverride() {
-    List l = conf.getList("exptest.overrides.item");
+  private void checkExpTest(List l) {
     assertNotNull(l);
     assertEquals(3, l.size());
     assertEquals("http://test1:8080/", l.get(0));
@@ -49,12 +48,31 @@ public class ConfigurationTest extends TestCase {
     assertEquals("http://test1:8080/", l.get(2));
   }
 
+  public void testExpandedDefaultsOverride() {
+    checkExpTest(conf.getList("exptest.overrides.item"));
+  }
+
   public void testExpandedDefaults() {
-    List l = conf.getList("exptest.local.item");
-    assertNotNull(l);
-    assertEquals(3, l.size());
-    assertEquals("http://test1:8080/", l.get(0));
-    assertEquals("http://test2:8080/", l.get(1));
-    assertEquals("http://test1:8080/", l.get(2));
+    checkExpTest(conf.getList("exptest.local.item"));
+  }
+
+  public void testSubsetDefaults1() {
+    Configuration conf = this.conf.subset("exptest.local");
+    checkExpTest(conf.getList("item"));
+  }
+
+  public void testSubsetDefaults2() {
+    Configuration conf = this.conf.subset("exptest");
+    checkExpTest(conf.getList("local.item"));
+  }
+
+  public void testSubsetDefaultsOverride1() {
+    Configuration conf = this.conf.subset("exptest.overrides");
+    checkExpTest(conf.getList("item"));
+  }
+
+  public void testSubsetDefaultsOverride2() {
+    Configuration conf = this.conf.subset("exptest");
+    checkExpTest(conf.getList("overrides.item"));
   }
 }
