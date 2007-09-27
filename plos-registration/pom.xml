@@ -4,14 +4,14 @@
   <groupId>org.plos</groupId>
   <artifactId>plos-registration</artifactId>
   <packaging>pom</packaging>
-  <version>0.8_rc3</version>
+  <version>0.8_rc4-SNAPSHOT</version>
   <name>Plos Registration</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.8_rc3</version>
+    <version>0.8_rc4-SNAPSHOT</version>
   </parent>
 
   <dependencies>

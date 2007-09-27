@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>jdk2log4j-proxy</artifactId>
   <packaging>jar</packaging>
-  <version>0.8_rc3</version>
+  <version>0.8_rc4-SNAPSHOT</version>
   <name>Proxy jdk LogManager to log4j</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.8_rc3</version>
+    <version>0.8_rc4-SNAPSHOT</version>
   </parent>
   
   <dependencies>

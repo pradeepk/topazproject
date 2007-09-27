@@ -3,14 +3,14 @@
   <parent>
     <artifactId>topazproject-libs</artifactId>
     <groupId>org.topazproject</groupId>
-    <version>0.8_rc3</version>
+    <version>0.8_rc4-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>fedora-patches</artifactId>
   <name>Fedora Patches</name>
-  <version>0.8_rc3</version>
+  <version>0.8_rc4-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
