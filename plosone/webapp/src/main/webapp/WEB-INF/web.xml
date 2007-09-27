@@ -90,7 +90,10 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <filter>
     <filter-name>struts2</filter-name>
+    <!--
     <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
+    -->
+    <filter-class>org.plos.struts2.PlosStruts2Dispatcher</filter-class>
   </filter>
 
   <filter>

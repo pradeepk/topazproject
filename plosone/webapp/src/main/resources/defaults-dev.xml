@@ -20,6 +20,10 @@
       <enabled>true</enabled>
     </sso>
   </dummy>
+  <!-- See the PlosStruts2Filter dispatcher on how struts constants are configured -->
+  <struts>
+    <devMode>true</devMode>
+  </struts>
   <freemarker>
     <journal>
       <name>PLoSONE</name>
