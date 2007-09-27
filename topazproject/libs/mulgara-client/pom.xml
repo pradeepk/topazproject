@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>mulgara-client</artifactId>
   <packaging>jar</packaging>
-  <version>0.8-rc3-SNAPSHOT</version>
+  <version>0.8_rc3</version>
   <name>Mulgara Webservice Client</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.8-rc3-SNAPSHOT</version>
+    <version>0.8_rc3</version>
   </parent>
 
   <dependencies>
