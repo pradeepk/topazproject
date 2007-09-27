@@ -18,7 +18,8 @@ for f in \
     packages/cas/pom.xml \
     packages/fedora/pom.xml \
   ; do
-  perl -p -i -e "s/$pt/$rt/g" "$f"
+#  perl -p -i -e "s/$pt/$rt/g" "$f"
+   echo "skipped $f"
 done
 
 # edit these
