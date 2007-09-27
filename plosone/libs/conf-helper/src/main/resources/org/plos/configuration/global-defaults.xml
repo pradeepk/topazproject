@@ -153,6 +153,7 @@
     <utilities>
       <image-magick>
         <executable-path>/usr/bin/convert</executable-path>
+        <identify-path>/usr/bin/identify</identify-path>
         <temp-directory>/tmp</temp-directory>
       </image-magick>
     </utilities>
