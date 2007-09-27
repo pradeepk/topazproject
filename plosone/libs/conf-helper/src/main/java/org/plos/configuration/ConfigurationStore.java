@@ -15,12 +15,14 @@ import java.util.Enumeration;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.SystemConfiguration;
-import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.tree.OverrideCombiner;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
 public class ConfigurationStore {
   private static final Log                log       = LogFactory.getLog(ConfigurationStore.class);
   private static final ConfigurationStore instance  = new ConfigurationStore();
-  private CompositeConfiguration          composite = null;
+  private CombinedConfiguration          root = null;
 
   /**
    * A property used to define the location of the master set of configuration overrides.
@@ -113,8 +115,8 @@ public class ConfigurationStore {
    * @throws RuntimeException if the configuration factory is not initialized
    */
   public Configuration getConfiguration() {
-    if (composite != null)
-      return composite;
+    if (root != null)
+      return root;
 
     throw new RuntimeException("ERROR: Configuration not loaded or initialized.");
   }
@@ -126,15 +128,15 @@ public class ConfigurationStore {
    * @throws ConfigurationException when the config factory configuration has an error
    */
   public void loadConfiguration(URL configURL) throws ConfigurationException {
-    composite = new CompositeConfiguration();
+    root = new CombinedConfiguration(new OverrideCombiner());
 
     // System properties override everything
-    composite.addConfiguration(new SystemConfiguration());
+    root.addConfiguration(new SystemConfiguration());
 
     // Load from org.plos.configuration -- /etc/... (optional)
     if (configURL != null) {
       try {
-        composite.addConfiguration(getConfigurationFromUrl(configURL));
+        root.addConfiguration(getConfigurationFromUrl(configURL));
         log.info("Added URL '" + configURL + "'");
       } catch (ConfigurationException ce) {
         if (!(ce.getCause() instanceof FileNotFoundException))
@@ -147,19 +149,19 @@ public class ConfigurationStore {
     String overrides = System.getProperty(OVERRIDES_URL);
     if (overrides != null) {
       try {
-        composite.addConfiguration(getConfigurationFromUrl(new URL(overrides)));
+        root.addConfiguration(getConfigurationFromUrl(new URL(overrides)));
         log.info("Added override URL '" + overrides + "'");
       } catch (MalformedURLException mue) {
         // Must not be a URL, so it must be a resource
-        addResources(composite, overrides);
+        addResources(root, overrides);
       }
     }
 
     // Add defaults.xml found in classpath
-    addResources(composite, DEFAULTS_RESOURCE);
+    addResources(root, DEFAULTS_RESOURCE);
 
     // Add global-defaults.xml (presumably found in this jar)
-    addResources(composite, GLOBAL_DEFAULTS_RESOURCE);
+    addResources(root, GLOBAL_DEFAULTS_RESOURCE);
   }
 
   /**
@@ -185,14 +187,15 @@ public class ConfigurationStore {
    * Unload the current configuration.
    */
   public void unloadConfiguration() {
-    composite = null;
+    root = null;
   }
 
   /**
    * Given a URL, determine whether it represents properties or xml and load it as a
    * commons-config Configuration instance.
    */
-  private static Configuration getConfigurationFromUrl(URL url) throws ConfigurationException {
+  private static AbstractConfiguration getConfigurationFromUrl(URL url)
+      throws ConfigurationException {
     if (url.getFile().endsWith("properties"))
       return new PropertiesConfiguration(url);
     else
@@ -200,21 +203,21 @@ public class ConfigurationStore {
   }
 
   /**
-   * Iterate over all the resources of the given name and add them to our composite
+   * Iterate over all the resources of the given name and add them to our root
    * configuration.
    */
-  private static void addResources(CompositeConfiguration composite, String resource)
+  private static void addResources(CombinedConfiguration root, String resource)
       throws ConfigurationException {
     Class klass = ConfigurationStore.class;
     if (resource.startsWith("/")) {
-      composite.addConfiguration(getConfigurationFromUrl(klass.getResource(resource)));
+      root.addConfiguration(getConfigurationFromUrl(klass.getResource(resource)));
       log.info("Added resource '" + resource + "'");
     } else {
       try {
         int cnt = 0;
         Enumeration<URL> rs = klass.getClassLoader().getResources(resource);
         while (rs.hasMoreElements()) {
-          composite.addConfiguration(getConfigurationFromUrl(rs.nextElement()));
+          root.addConfiguration(getConfigurationFromUrl(rs.nextElement()));
           cnt++;
         }
         log.info("Added " + cnt + " instances of resource '" + resource + "' to configuration");

@@ -9,6 +9,8 @@
  */
 package org.plos.configuration;
 
+import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -36,5 +38,23 @@ public class ConfigurationTest extends TestCase {
 
   public void testDefaultsOverrideGlobal() {
     assertEquals("defaults override", "override", conf.getString("plosconf.def"));
+  }
+
+  public void testExpandedDefaultsOverride() {
+    List l = conf.getList("exptest.overrides.item");
+    assertNotNull(l);
+    assertEquals(3, l.size());
+    assertEquals("http://test1:8080/", l.get(0));
+    assertEquals("http://test2:8080/", l.get(1));
+    assertEquals("http://test1:8080/", l.get(2));
+  }
+
+  public void testExpandedDefaults() {
+    List l = conf.getList("exptest.local.item");
+    assertNotNull(l);
+    assertEquals(3, l.size());
+    assertEquals("http://test1:8080/", l.get(0));
+    assertEquals("http://test2:8080/", l.get(1));
+    assertEquals("http://test1:8080/", l.get(2));
   }
 }
