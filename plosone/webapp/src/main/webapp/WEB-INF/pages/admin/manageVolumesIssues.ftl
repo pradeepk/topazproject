@@ -1,3 +1,16 @@
+<#macro trimBrackets bracketedString>
+  <#if bracketedString??>
+    <#assign unbracketedString=bracketedString>
+    <#if unbracketedString?starts_with("[")>
+      <#assign unbracketedString=unbracketedString?substring(1)>
+    </#if>
+    <#if unbracketedString?ends_with("]")>
+      <#assign unbracketedString=unbracketedString?substring(0, unbracketedString?length - 1)>
+    </#if>
+  <#else>
+    <#assign unbracketedString="">
+  </#if>
+</#macro>
 <html>
   <head>
     <title>PLoS ONE: Administration: Manage Virtual Journals : Volumes / Issues</title>
@@ -132,8 +145,9 @@
                   <@s.textfield name="next" size="32" value="${volume.nextVolume!''}"/>
                 </td>
                 <td>
+                  <@trimBrackets volume.simpleCollection!'' />
                   <@s.textfield name="aggregation" size="96"
-                    value="${volume.simpleCollection!''}"/>
+                    value="${unbracketedString}"/>
                 </td>
               </@s.form>
             </tr>
@@ -251,8 +265,9 @@
                 <@s.textfield name="next" size="32" value="${issue.nextIssue!''}"/>
               </td>
               <td>
+                <@trimBrackets issue.simpleCollection!'' />
                 <@s.textfield name="aggregation" size="96"
-                  value="${issue.simpleCollection!''}"/>
+                  value="${unbracketedString}"/>
               </td>
             </@s.form>
           </tr>

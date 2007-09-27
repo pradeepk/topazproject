@@ -55,7 +55,7 @@
       includeParams="none"/>
     <p>
       <img class="thumbnail" border="1" align="left" alt="thumbnail" src="${imageSmURL}""/>
-      ${issueInfo.description}<br/>
+      ${issueInfo.description!''}<br/>
       <a href="${imageLgURL}">View larger image</a>
     </p>
   </#if>

@@ -42,6 +42,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   public static final String UPDATE_VOLUME = "UPDATE_VOLUME";
   public static final String CREATE_ISSUE  = "CREATE_ISSUE";
   public static final String UPDATE_ISSUE  = "UPDATE_ISSUE";
+  
+  private static final String SEPARATORS = "[ ,;]";
 
   private String journalKey;
   private String journalEIssn;
@@ -156,7 +158,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           // process Issues
           if (aggregation != null && aggregation.length() != 0) {
             List<URI> issues = new ArrayList();
-            for (final String issueToAdd : aggregation.split(",")) {
+            for (final String issueToAdd : aggregation.split(SEPARATORS)) {
+              if (issueToAdd.length() == 0) { continue; }
               issues.add(URI.create(issueToAdd.trim()));
             }
             newVolume.setSimpleCollection(issues);
@@ -205,7 +208,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           // process Issues
           List<URI> volumeIssues = new ArrayList();
           if (aggregation != null && aggregation.length() != 0) {
-            for (final String issueToAdd : aggregation.split(",")) {
+            for (final String issueToAdd : aggregation.split(SEPARATORS)) {
+              if (issueToAdd.length() == 0) { continue; }
               volumeIssues.add(URI.create(issueToAdd.trim()));
             }
           } else {
@@ -256,7 +260,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           // process Articles
           if (aggregation != null && aggregation.length() != 0) {
             List<URI> articles = new ArrayList();
-            for (final String articleToAdd : aggregation.split(",")) {
+            for (final String articleToAdd : aggregation.split(SEPARATORS)) {
+              if (articleToAdd.length() == 0) { continue; }
               articles.add(URI.create(articleToAdd.trim()));
             }
             newIssue.setSimpleCollection(articles);
@@ -306,7 +311,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           // process Issues
           List<URI> issueArticles = new ArrayList();
           if (aggregation != null && aggregation.length() != 0) {
-            for (final String articleToAdd : aggregation.split(",")) {
+            for (final String articleToAdd : aggregation.split(SEPARATORS)) {
+              if (articleToAdd.length() == 0) { continue; }
               issueArticles.add(URI.create(articleToAdd.trim()));
             }
           } else {
