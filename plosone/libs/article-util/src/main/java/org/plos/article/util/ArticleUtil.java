@@ -175,15 +175,26 @@ public class ArticleUtil {
   private static void delete(String article, Transaction tx, FedoraAPIM apim, FgsOperations[] fgs)
       throws NoSuchArticleIdException, RemoteException {
     Session session = tx.getSession();
+
+    // load article and objects
     Article a = (Article) session.get(Article.class, article);
     if (a == null)
       throw new NoSuchArticleIdException(article);
 
+    ObjectInfo oi = a;
+    while (oi != null)
+      oi = oi.getNextObject();
+    for (Category c : a.getCategories())
+      ;
+
     if (log.isDebugEnabled())
       log.debug("deleting all objects for uri '" + article + "'");
-      
-    ObjectInfo oi = a;
-    while(oi != null) {
+
+    // delete the article from mulgara first (in case of problems)
+    session.delete(a);
+
+    oi = a;
+    while (oi != null) {
       if (log.isDebugEnabled())
         log.debug("deleting uri '" + oi.getId() + "'");
 
@@ -231,9 +242,6 @@ public class ArticleUtil {
         log.warn("Tried to remove non-existent object '" + c.getPid() + "'");
       }
     }
-
-    // finally delete the article
-    session.delete(a);
   }
 
   public static String getFedoraDataStreamURL(String pid, String ds) {
