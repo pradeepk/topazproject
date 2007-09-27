@@ -35,6 +35,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -72,8 +73,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    * @return WebWork action status
    */
   public String execute() throws Exception {
-    Transaction tx  = null;
-
     getPEP().checkAccess(RatingsPEP.GET_RATINGS, URI.create(articleURI));
 
     // fill in Article title if necessary
@@ -90,76 +89,67 @@ public class GetArticleRatingsAction extends BaseActionSupport {
       articleDescription = article.getDublinCore().getDescription();
     }
 
-    try {
-      tx = session.beginTransaction();
+    return TransactionHelper.doInTx(session,
+                              new TransactionHelper.Action<String>() {
+      public String run(Transaction tx) {
 
-      // assume if valid RatingsPEP.GET_RATINGS, OK to GET_STATS
-      // RatingSummary for this Article
-      List<RatingSummary> summaryList = session
-        .createCriteria(RatingSummary.class)
-        .add(Restrictions.eq("annotates", article.getId()))
-        .list();
-      if (summaryList.size() == 1) {
-        articleOverall = summaryList.get(0).getBody().getOverall();
-      } else {
-        // unexpected
-        log.warn("Unexpected: " + summaryList.size() + " RatingSummary for " + article.getId());
-        articleOverall = 0;
-      }
-
-      // list of Ratings that annotate this article
-      List<Rating> articleRatings = session
-        .createCriteria(Rating.class)
-        .add(Restrictions.eq("annotates", articleURI))
-        .addOrder(new Order("created", true))
-        .list();
-
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved all ratings, " + articleRatings.size() + ", for: " + articleURI);
-      }
-
-      // create ArticleRatingSummary(s)
-      Iterator iter = articleRatings.iterator();
-      while (iter.hasNext()) {
-        Rating rating = (Rating) iter.next();
-        ArticleRatingSummary summary = new ArticleRatingSummary(getArticleURI(),getArticleTitle());
-        summary.addRating(rating);
-        summary.setCreated(rating.getCreated());
-        summary.setArticleURI(getArticleURI());
-        summary.setArticleTitle(getArticleTitle());
-        summary.setCreatorURI(rating.getCreator());
-        // get public 'name' for user
-        UserAccount ua = session.get(UserAccount.class, rating.getCreator());
-        if (ua != null) {
-          summary.setCreatorName(ua.getProfile().getDisplayName());
+        // assume if valid RatingsPEP.GET_RATINGS, OK to GET_STATS
+        // RatingSummary for this Article
+        List<RatingSummary> summaryList = session
+          .createCriteria(RatingSummary.class)
+          .add(Restrictions.eq("annotates", articleURI))
+          .list();
+        if (summaryList.size() == 1) {
+          articleOverall = summaryList.get(0).getBody().getOverall();
         } else {
-          summary.setCreatorName("Unknown");
-          log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
+          // unexpected
+          log.warn("Unexpected: " + summaryList.size() + " RatingSummary for " + articleURI);
+          articleOverall = 0;
         }
-        articleRatingSummaries.add(summary);
+
+        // list of Ratings that annotate this article
+        List<Rating> articleRatings = session
+          .createCriteria(Rating.class)
+          .add(Restrictions.eq("annotates", articleURI))
+          .addOrder(new Order("created", true))
+          .list();
+
+        if (log.isDebugEnabled()) {
+          log.debug("retrieved all ratings, " + articleRatings.size() + ", for: " + articleURI);
+        }
+
+        // create ArticleRatingSummary(s)
+        Iterator iter = articleRatings.iterator();
+        while (iter.hasNext()) {
+          Rating rating = (Rating) iter.next();
+          ArticleRatingSummary summary = new ArticleRatingSummary(getArticleURI(),getArticleTitle());
+          summary.addRating(rating);
+          summary.setCreated(rating.getCreated());
+          summary.setArticleURI(getArticleURI());
+          summary.setArticleTitle(getArticleTitle());
+          summary.setCreatorURI(rating.getCreator());
+          // get public 'name' for user
+          UserAccount ua = session.get(UserAccount.class, rating.getCreator());
+          if (ua != null) {
+            summary.setCreatorName(ua.getProfile().getDisplayName());
+          } else {
+            summary.setCreatorName("Unknown");
+            log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
+          }
+          articleRatingSummaries.add(summary);
+        }
+    
+        if (articleRatingSummaries.size() > 0) {
+          hasRated = true;
+        }
+
+        if (log.isDebugEnabled()) {
+          log.debug("created ArticleRatingSummaries, " + articleRatingSummaries.size() + ", for: " + articleURI);
+        }
+
+        return SUCCESS;
       }
-
-      tx.commit(); // Flush happens automatically
-    } catch (OtmException e) {
-      try {
-        if (tx != null)
-          tx.rollback();
-      } catch (OtmException re) {
-        log.warn("rollback failed", re);
-      }
-
-      throw e; // or display error message
-    }
-
-    if (articleRatingSummaries.size() > 0) {
-      hasRated = true;
-    }
-
-    if (log.isDebugEnabled()) {
-      log.debug("created ArticleRatingSummaries, " + articleRatingSummaries.size() + ", for: " + articleURI);
-    }
-
-    return SUCCESS;
+    });
   }
 
   /**

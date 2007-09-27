@@ -36,6 +36,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -75,14 +76,9 @@ public class RateAction extends BaseActionSupport {
    * @return WebWork action status
    */
   public String rateArticle() {
-    Transaction       tx                 = null;
-    PlosOneUser       user               = PlosOneUser.getCurrentUser();
-    Date              now                = new Date(System.currentTimeMillis());
-
-    URI           annotatedArticle     = null;
-    Rating        articleRating        = null;
-    RatingSummary articleRatingSummary = null;
-    boolean       newRating            = false;
+    final PlosOneUser       user               = PlosOneUser.getCurrentUser();
+    final Date              now                = new Date(System.currentTimeMillis());
+    final URI               annotatedArticle;
 
 
     try {
@@ -118,127 +114,120 @@ public class RateAction extends BaseActionSupport {
       return INPUT;
     }
 
-    try {
-      tx = session.beginTransaction();
+    return TransactionHelper.doInTx(session,
+                              new TransactionHelper.Action<String>() {
+      public String run(Transaction tx) {
+        Rating        articleRating        = null;
+        RatingSummary articleRatingSummary = null;
+        boolean       newRating            = false;
 
-      if (log.isDebugEnabled()) {
-        log.debug("Retrieving user Ratings for article: " + articleURI + " and user: "
+        if (log.isDebugEnabled()) {
+          log.debug("Retrieving user Ratings for article: " + articleURI + " and user: "
                   + user.getUserId());
-      }
+        }
 
-      // Ratings by this User for Article
-      List<Rating> ratingsList = session
-        .createCriteria(Rating.class)
-        .add(Restrictions.eq("annotates", articleURI))
-        .add(Restrictions.eq("creator", user.getUserId()))
-        .list();
-      if (ratingsList.size() == 0) {
-        newRating = true;
-        articleRating = new Rating();
-        articleRating.setAnnotates(annotatedArticle);
-        articleRating.setContext("");
-        articleRating.setCreator(user.getUserId());
-        articleRating.setCreated(now);
-        articleRating.setBody(new RatingContent());
-      } else if (ratingsList.size() == 1) {
-        articleRating = ratingsList.get(0);
-      } else {
-        // should never happen
-        String errorMessage = "Multiple Ratings, " + ratingsList.size() + ", for Article, " + articleURI + ", for user, " + user.getUserId();
-        log.error(errorMessage);
-        throw new RuntimeException(errorMessage);
-      }
+        // Ratings by this User for Article
+        List<Rating> ratingsList = session
+          .createCriteria(Rating.class)
+          .add(Restrictions.eq("annotates", articleURI))
+          .add(Restrictions.eq("creator", user.getUserId()))
+          .list();
+        if (ratingsList.size() == 0) {
+          newRating = true;
+          articleRating = new Rating();
+          articleRating.setAnnotates(annotatedArticle);
+          articleRating.setContext("");
+          articleRating.setCreator(user.getUserId());
+          articleRating.setCreated(now);
+          articleRating.setBody(new RatingContent());
+        } else if (ratingsList.size() == 1) {
+          articleRating = ratingsList.get(0);
+        } else {
+          // should never happen
+          String errorMessage = "Multiple Ratings, " + ratingsList.size() + ", for Article, " + articleURI + ", for user, " + user.getUserId();
+          log.error(errorMessage);
+          throw new RuntimeException(errorMessage);
+        }
 
-      // RatingsSummary for Article
-      List<RatingSummary> summaryList = session
-        .createCriteria(RatingSummary.class)
-        .add(Restrictions.eq("annotates", articleURI))
-        .list();
-      if (summaryList.size() == 0) {
+        // RatingsSummary for Article
+        List<RatingSummary> summaryList = session
+          .createCriteria(RatingSummary.class)
+          .add(Restrictions.eq("annotates", articleURI))
+          .list();
+        if (summaryList.size() == 0) {
           articleRatingSummary = new RatingSummary();
           articleRatingSummary.setAnnotates(annotatedArticle);
           articleRatingSummary.setContext("");
           articleRatingSummary.setCreated(now);
           articleRatingSummary.setBody(new RatingSummaryContent());
-      } else if (summaryList.size() == 1) {
-        articleRatingSummary = summaryList.get(0);
-      } else {
-        // should never happen
-        String errorMessage = "Multiple RatingsSummary, " + summaryList.size() + ", for Article " + articleURI;
-        log.error(errorMessage);
-        throw new RuntimeException(errorMessage);
+        } else if (summaryList.size() == 1) {
+          articleRatingSummary = summaryList.get(0);
+        } else {
+          // should never happen
+          String errorMessage = "Multiple RatingsSummary, " + summaryList.size() + ", for Article " + articleURI;
+          log.error(errorMessage);
+          throw new RuntimeException(errorMessage);
+        }
+
+        // update Rating + RatingSummary with new values
+        articleRating.setCreated(now);
+        articleRatingSummary.setCreated(now);
+
+        // if they had a prior insight Rating, remove it from the RatingSummary
+        if (articleRating.getBody().getInsightValue() > 0) {
+          articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE, articleRating.getBody().getInsightValue());
+        }
+
+        // update insight Article Rating, don't care if new, update or 0
+        articleRating.getBody().setInsightValue((int) insight);
+
+        // if user rated insight, add to to Article RatingSummary
+        if (insight > 0) {
+          articleRatingSummary.getBody().addRating(Rating.INSIGHT_TYPE, (int) insight);
+        }
+
+        // if they had a prior reliability Rating, remove it from the RatingSummary
+        if (articleRating.getBody().getReliabilityValue() > 0) {
+          articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE, articleRating.getBody().getReliabilityValue());
+        }
+
+        // update reliability Article Rating, don't care if new, update or 0
+        articleRating.getBody().setReliabilityValue((int) reliability);
+
+        // if user rated reliability, add to to Article RatingSummary
+        if (reliability > 0) {
+          articleRatingSummary.getBody().addRating(Rating.RELIABILITY_TYPE, (int) reliability);
+        }
+
+        // if they had a prior style Rating, remove it from the RatingSummary
+        if (articleRating.getBody().getStyleValue() > 0) {
+          articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE, articleRating.getBody().getStyleValue());
+        }
+
+        // update style Article Rating, don't care if new, update or 0
+        articleRating.getBody().setStyleValue((int) style);
+
+        // if user rated style, add to to Article RatingSummary
+        if (style > 0) {
+          articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE, (int) style);
+        }
+
+        // Rating comment
+        articleRating.getBody().setCommentTitle(commentTitle);
+        articleRating.getBody().setCommentValue(comment);
+
+        // if this is a new Rating, the summary needs to know
+        if (newRating) {
+          articleRatingSummary.getBody().setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() + 1);
+        }
+
+        // PLoS states that ratings can never be deleted once created,
+        // so always do a Session.saveOrUpdate(), no delete
+        session.saveOrUpdate(articleRating);
+        session.saveOrUpdate(articleRatingSummary);
+        return SUCCESS;
       }
-
-      // update Rating + RatingSummary with new values
-      articleRating.setCreated(now);
-      articleRatingSummary.setCreated(now);
-
-      // if they had a prior insight Rating, remove it from the RatingSummary
-      if (articleRating.getBody().getInsightValue() > 0) {
-        articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE, articleRating.getBody().getInsightValue());
-      }
-
-      // update insight Article Rating, don't care if new, update or 0
-      articleRating.getBody().setInsightValue((int) insight);
-
-      // if user rated insight, add to to Article RatingSummary
-      if (insight > 0) {
-        articleRatingSummary.getBody().addRating(Rating.INSIGHT_TYPE, (int) insight);
-      }
-
-      // if they had a prior reliability Rating, remove it from the RatingSummary
-      if (articleRating.getBody().getReliabilityValue() > 0) {
-        articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE, articleRating.getBody().getReliabilityValue());
-      }
-
-      // update reliability Article Rating, don't care if new, update or 0
-      articleRating.getBody().setReliabilityValue((int) reliability);
-
-      // if user rated reliability, add to to Article RatingSummary
-      if (reliability > 0) {
-        articleRatingSummary.getBody().addRating(Rating.RELIABILITY_TYPE, (int) reliability);
-      }
-
-      // if they had a prior style Rating, remove it from the RatingSummary
-      if (articleRating.getBody().getStyleValue() > 0) {
-        articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE, articleRating.getBody().getStyleValue());
-      }
-
-      // update style Article Rating, don't care if new, update or 0
-      articleRating.getBody().setStyleValue((int) style);
-
-      // if user rated style, add to to Article RatingSummary
-      if (style > 0) {
-        articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE, (int) style);
-      }
-
-      // Rating comment
-      articleRating.getBody().setCommentTitle(commentTitle);
-      articleRating.getBody().setCommentValue(comment);
-
-      // if this is a new Rating, the summary needs to know
-      if (newRating) {
-        articleRatingSummary.getBody().setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() + 1);
-      }
-
-      // PLoS states that ratings can never be deleted once created,
-      // so always do a Session.saveOrUpdate(), no delete
-      session.saveOrUpdate(articleRating);
-      session.saveOrUpdate(articleRatingSummary);
-
-      tx.commit(); // Flush happens automatically
-    } catch (OtmException e) {
-      try {
-        if (tx != null)
-          tx.rollback();
-      } catch (OtmException re) {
-        log.warn("rollback failed", re);
-      }
-
-      throw e; // or display error message
-    }
-
-    return SUCCESS;
+    });
   }
 
   /**
@@ -247,57 +236,46 @@ public class RateAction extends BaseActionSupport {
    * @return WebWork action status
    */
   public String retrieveRatingsForUser() {
-    Transaction tx      = null;
+    final PlosOneUser user = PlosOneUser.getCurrentUser();
 
-    try {
-      PlosOneUser user = PlosOneUser.getCurrentUser();
+    if (user == null) {
+      log.info("User is null for retrieving user ratings");
+      addActionError("Must be logged in");
 
-      if (user == null) {
-        log.info("User is null for retrieving user ratings");
-        addActionError("Must be logged in");
-
-        return ERROR;
-      }
-
-      getPEP().checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
-                                                    URI.create(articleURI));
-
-      tx = session.beginTransaction();
-
-      List<Rating> ratingsList = session
-        .createCriteria(Rating.class)
-        .add(Restrictions.eq("annotates", articleURI))
-        .add(Restrictions.eq("creator", user.getUserId())).list();
-
-      if (ratingsList.size() < 1) {
-        log.debug("didn't find any matching ratings for user: " + user.getUserId());
-        addActionError("No ratings for user");
-
-        return ERROR;
-      }
-
-      Rating rating = ratingsList.get(0);
-
-      setInsight(rating.getBody().getInsightValue());
-      setReliability(rating.getBody().getReliabilityValue());
-      setStyle(rating.getBody().getStyleValue());
-
-      setCommentTitle(rating.getBody().getCommentTitle());
-      setComment(rating.getBody().getCommentValue());
-
-      tx.commit(); // Flush happens automatically
-    } catch (OtmException e) {
-      try {
-        if (tx != null)
-          tx.rollback();
-      } catch (OtmException re) {
-        log.warn("rollback failed", re);
-      }
-
-      throw e; // or display error message
+      return ERROR;
     }
 
-    return SUCCESS;
+    getPEP().checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
+                                                    URI.create(articleURI));
+
+    return TransactionHelper.doInTx(session,
+                              new TransactionHelper.Action<String>() {
+      public String run(Transaction tx) {
+
+        List<Rating> ratingsList = session
+          .createCriteria(Rating.class)
+          .add(Restrictions.eq("annotates", articleURI))
+          .add(Restrictions.eq("creator", user.getUserId())).list();
+
+        if (ratingsList.size() < 1) {
+          log.debug("didn't find any matching ratings for user: " + user.getUserId());
+          addActionError("No ratings for user");
+          return ERROR;
+        }
+
+        Rating rating = ratingsList.get(0);
+
+        setInsight(rating.getBody().getInsightValue());
+        setReliability(rating.getBody().getReliabilityValue());
+        setStyle(rating.getBody().getStyleValue());
+
+        setCommentTitle(rating.getBody().getCommentTitle());
+        setComment(rating.getBody().getCommentValue());
+
+        return SUCCESS;
+      }
+    });
+
   }
 
   /**

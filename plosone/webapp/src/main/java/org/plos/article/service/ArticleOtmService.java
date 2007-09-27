@@ -103,34 +103,36 @@ public class ArticleOtmService {
 
     // create an Ingester using the values from the WSTopazContext
 
-    Transaction txn = null;
+    ctx.activate();
     try {
-      ctx.activate();
-      txn = session.beginTransaction();
-      ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
-      Ingester ingester = new Ingester(itql, ctx.getFedoraAPIM(), ctx.getFedoraUploader(),
+      return TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<String, Exception>() {
+        public String run(Transaction txn) throws Exception {
+          ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
+          Ingester ingester = new Ingester(itql, ctx.getFedoraAPIM(), ctx.getFedoraUploader(),
                                        getFgsOperations());
-      String ret = ingester.ingest(
-        new Zip.DataSourceZip(
-          new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
+          String ret = ingester.ingest(
+            new Zip.DataSourceZip(
+              new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
                                                 8192, "application/octet-stream", true)));
 
-      jrnlSvc.objectWasAdded(URI.create(ret));
+          jrnlSvc.objectWasAdded(URI.create(ret));
 
-      txn.commit();
-      txn = null;
-      return ret;
-    } catch(IOException ioe) {
+          return ret;
+        }
+      });
+    } catch (ServiceException se) {
+      throw se;
+    } catch (DuplicateArticleIdException daie) {
+      throw daie;
+    } catch (IOException ioe) {
       log.error("Ingestion failed: ", ioe);
       throw new IngestException("Ingestion failed: ", ioe);
+    } catch (RuntimeException re) {
+      throw re;
+    } catch (Exception e) {
+      throw new Error("Unexpected exception", e);
     } finally {
       ctx.passivate();
-      try {
-        if (txn != null)
-          txn.rollback();
-      } catch (Throwable t) {
-        log.debug("rollback failed", t);
-      }
     }
   }
 

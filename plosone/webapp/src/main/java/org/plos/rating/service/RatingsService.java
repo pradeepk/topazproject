@@ -71,15 +71,22 @@ public class RatingsService {
   public void saveOrUpdateRating(final PlosOneUser user,
                                  final String articleURIStr,
                                  final Rating values) throws RatingsServiceException {
-    final Date now = Calendar.getInstance().getTime();
+    final URI articleURI;
 
     try {
-      final URI articleURI = new URI(articleURIStr);
-      final Rating articleRating;
-      final RatingSummary articleRatingSummary;
-      final Transaction tx = session.beginTransaction();
+      articleURI = new URI(articleURIStr);
+    } catch (URISyntaxException e) {
+      throw new RatingsServiceException("", e);
+    }
 
-      try {
+    TransactionHelper.doInTxE(session,
+                               new TransactionHelper.ActionE<Void, RatingsServiceException>() {
+      public Void run(Transaction tx) throws RatingsServiceException {
+
+        final Date now = Calendar.getInstance().getTime();
+        final Rating articleRating;
+        final RatingSummary articleRatingSummary;
+
         if (log.isDebugEnabled()) {
           log.debug("Retrieving user Ratings for article: " + articleURIStr +
                     " and user: " + user.getUserId());
@@ -116,8 +123,8 @@ public class RatingsService {
         }
 
         final List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class)
-                                                 .add(Restrictions.eq("annotates",articleURIStr))
-                                                 .list();
+                                               .add(Restrictions.eq("annotates",articleURIStr))
+                                               .list();
         final boolean newRatingSummary;
 
         if (summaryList.size() == 0) {
@@ -192,18 +199,10 @@ public class RatingsService {
 
         session.saveOrUpdate(articleRating);
         session.saveOrUpdate(articleRatingSummary);
-        tx.commit();
-      } catch (OtmException e) {
-        log.error("",e);
-        tx.rollback();
+
+        return null;
       }
-    } catch (OtmException e) {
-      log.error("",e);
-      throw new RatingsServiceException(e);
-    } catch (URISyntaxException e) {
-      log.error("",e);
-      throw new RatingsServiceException(e);
-    }
+    });
   }
 
   /**
