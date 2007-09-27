@@ -21,7 +21,7 @@ public class ConfigurationTest extends TestCase {
 
   protected void setUp() throws ConfigurationException {
     ConfigurationStore store = ConfigurationStore.getInstance();
-    store.loadDefaultConfiguration();
+    store.loadConfiguration(null);
     conf = store.getConfiguration();
   }
 
