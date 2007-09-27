@@ -227,7 +227,7 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 
 #nav li.over li a,
 #nav li:hover ul li a,
-#nav li a:hover ul li a 		{ display:block; font-weight:normal!important; background:transparent; text-decoration:none; height:auto; line-height: 1.7em;padding:0.2em 0.2em 0.2em 0.6em; width:15.8em; border-top: 0; color:#060!important; }
+#nav li a:hover ul li a 		{ display:block; font-weight:normal!important; background:transparent; text-decoration:none; height:auto; line-height: 1.5em;padding:0.2em 0.2em 0.2em 0.6em; width:15.8em; border-top: 0; color:#060!important; }
 
 #nav li.over ul li a:hover,
 #nav li:hover ul li a:hover,
@@ -294,8 +294,8 @@ div#ftr 		{ background: #FFF url(../images/pone_html_bg.gif) repeat-x 0px -128px
 div#ftr ul 		{ margin: 0; padding: 0; list-style-type: none; }
 div#ftr ul li 	{ margin: 0 5px; display: inline; }
 div#ftr ul a,
-div#ftr ul a:visited { color: #060;}
-div#ftr ul a:hover { color: #0c0;}
+div#ftr ul a:visited { color: #fff;}
+div#ftr ul a:hover { color: #fff;}
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p 		{ margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #003956; white-space: nowrap; }
 div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
@@ -307,13 +307,14 @@ div.powered a:hover { color: #ccc; font-weight: bold;}
 ----------------------------------------------------------=
 */
 div#rhc			{ float: right; width: 240px; position: relative; padding-top: 20px;}
+div.browse div#rhc { padding:0; }
 div.content 	{ margin-right: 255px; }
 
 div.static h1,
 div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em; margin: 10px 0 0 0;font-weight: normal; }
 
 
-div.static h1		{ padding-top: 10px; border-top: 6px solid #67a96d; }
+div.static h1 { padding-top: 10px; border-top: 6px solid #67a96d; }
 div.pageerror h1	{ background-color: #67a96d; color:#fff; padding: 8px;}
 div.pageerror p		{ margin-left: 8px; }
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
@@ -367,7 +368,7 @@ div.box			{ color: #000; padding: 10px; background-color: #edffe8; }
 #rhc ul li a,
 #rhc ul li a:visited 	{ background-color: transparent; background-position: 5% 50%; background-repeat: no-repeat; padding:1px 0 2px 0; padding-left:30px; border-bottom: 1px solid #ccc; margin: 0 3px; }
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
-#rhc ul li a.last		{ border-bottom-width: 0; }
+#rhc ul li a.last		{ border-bottom:0!important; }
 
 /* correction styles */
 div.correction span#oa { /* open access image */ background: #3D3D3D url(../images/pone_correction_oa.gif) no-repeat 0 0; }
@@ -557,7 +558,7 @@ div.trackback p.header span.timestamp { white-space:nowrap; }
 div.trackback p.excerpt	{margin:0; line-height: 1.5em;}
 
 /* ------ Browse Styles ----*/
-div.browse h1 		{ margin-bottom: 20px; margin-right: 140px;}
+div.browse h1 		{ width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #67a96d; }
 div.browse #search-results { margin-left: 0; margin-right: 140px; padding-left: 20px; border-left: 240px solid #eee;}
 div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  padding: 0; background: #eee; margin-bottom: 20px; padding-bottom: 20px; min-height: 480px;}
 #browseNav li 		{ font-size: .9em; font-weight: bold; padding: 0;margin: 0; }
@@ -577,8 +578,10 @@ div.browse div#search-results	{ z-index: 69; position: relative;}
 #browseNav ol a:link,
 #browseNav ol a:visited 	{ display: block; border-right: 1px solid #999; width: 32px; margin: 4px 0; text-align: center;}
 
-/*--- Browse Form ---- */
+/*--- Browse by TOC ---*/
+p#issueNav { margin:0; padding:0; position:relative; top:-12px }
 
+/*--- Browse Form ---- */
 div#browseNav form.browseForm { margin: 0; background: #fff url(../images/pone_tools_bg.gif) no-repeat top left; padding: 10px 0 0 0; color: #666; position: relative; }
 div#browseNav form.browseForm fieldset { margin: 0; padding: 0 0 10px 0; border: none; background: #fff url(../images/pone_tools_bg.gif) no-repeat bottom left; width: 100%; position: relative; }
 
