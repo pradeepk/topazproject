@@ -207,8 +207,8 @@ private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest
       }
     }
 
-    // test existence with == for static Object
-    if (cachedVirtualResourceElement.getObjectValue() == RESOURCE_EXISTS) {
+    // does resource override exist?
+    if (cachedVirtualResourceElement.getObjectValue().equals(RESOURCE_EXISTS)) {
       // use virtual journal resource
       return wrapRequest(request,
         virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri);
