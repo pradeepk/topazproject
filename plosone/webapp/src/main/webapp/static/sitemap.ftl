@@ -13,7 +13,12 @@
 	<@s.url namespace="/user/secure" includeParams="none" id="loginURL" action="secureRedirect" goTo="${thisPage}"/>
 	<li><a href="${feedbackURL}" title="PLoS ONE | Send Us Your Feedback">Send Us Feedback</a></li>
 	<li><a href="${freemarker_config.registrationURL}" title="PLoS ONE | Create a New Account">Create Account</a></li>
-	<li><a href="${loginURL}" title="PLoS ONE | Account Login">Login</a></li>	
+
+    <#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
+      <li><a id="loginLogoutLink" href="${logoutURL}" title="Logout">Logout</a></li>
+    <#else>
+	  <li><a id="loginLogoutLink" href="${loginURL}" title="PLoS ONE | Account Login">Login</a></li>
+    </#if>
 </ul>
 
 <h2>About</h2>

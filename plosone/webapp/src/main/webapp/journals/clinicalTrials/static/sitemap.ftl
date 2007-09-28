@@ -10,7 +10,11 @@
     <@s.url namespace="/user/secure" includeParams="none" id="loginURL" action="secureRedirect" goTo="${thisPage}"/>
     <li><@s.a href="${homeURL}" title="PLoS Hub | Home page">Home page</@s.a></li>
     <li><@s.a href="${rssFeedURL}" title="PLoS Hub | RSS Feeds">PLoS RSS Feeds</@s.a></li>
-    <li><@s.a href="${loginURL}" title="PLoS Hub | Account Login">Login</@s.a></li>
+    <#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
+      <li><a id="loginLogoutLink" href="${logoutURL}" title="Logout">Logout</a></li>
+    <#else>
+      <li><a id="loginLogoutLink" href="${loginURL}" title="PLoS ONE | Account Login">Login</a></li>
+    </#if>
     <li><@s.a href="${freemarker_config.registrationURL}" title="PLoS Hub | Create a New Account">Create Account</@s.a></li>
     <li><@s.a href="${feedbackURL}" title="PLoS Hub | Send Us Your Feedback">Send Us Feedback</@s.a></li>
     <li><@s.a href="${releaseURL}" title="PLoS Hub | Release Notes">Release Notes</@s.a></li>
