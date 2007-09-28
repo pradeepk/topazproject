@@ -560,13 +560,13 @@ div.trackback p.excerpt	{margin:0; line-height: 1.5em;}
 /* ------ Browse Styles ----*/
 div.browse h1 		{ width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #67a96d; }
 div.browse #search-results { margin-left: 0; margin-right: 140px; padding-left: 20px; border-left: 240px solid #eee;}
+div.browse div#search-results	{ z-index: 69; position: relative;}
 div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  padding: 0; background: #eee; margin-bottom: 20px; padding-bottom: 20px; min-height: 480px;}
 #browseNav li 		{ font-size: .9em; font-weight: bold; padding: 0;margin: 0; }
 #browseNav li input { position: relative; }
 #browseNav ul		{ padding: 0; }
 #browseNav ul li	{ background: url(../images/pone_browsenav_li.gif) no-repeat 0 8px; list-style-type: none; padding-left: 10px; }
 #browseNav ul.subjects li { float:none; } /* fix for wrapping problem in IE7 -SWT */
-div.browse div#search-results	{ z-index: 69; position: relative;}
 
 /*--- Browse By Publication Date ----*/
 #browseNav ol 		{ list-style-type: none; padding: 0 6px 0 15px; margin: 0; float: left;clear: left; width: auto;margin-top: 5px;}
@@ -580,6 +580,20 @@ div.browse div#search-results	{ z-index: 69; position: relative;}
 
 /*--- Browse by TOC ---*/
 p#issueNav { margin:0; padding:0; position:relative; top:-12px }
+/*div.toc #search-results { margin:0; padding:0; }*/
+div.toc h1 		{ width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #67a96d; }
+div.toc #search-results { margin:20px 0 0 0; padding:0; }
+div.toc #search-results h2 { font-size:170%; font-style:normal; border-bottom:1px solid #060 }
+div.toc #search-results div.article { padding-bottom:20px; border-bottom:1px solid #ccc; background:white; } /* white background allows bottom border to render in IE6 */
+div.toc #search-results div.article h3 { font-size:110%; font-weight:bold; border:0; line-height:1.3em; }
+div.toc #search-results div.article h3 a:link { text-decoration:none; }
+div.toc #search-results div.article h3 a:hover { text-decoration:underline; }
+div.toc #search-results div.article p { margin-top:0; }
+div.toc #search-results div.article p.authors { margin-bottom:.7em; font-weight:normal; font-size:.9em; line-height:1.5em; }
+div.toc #search-results div.article dl.related { margin:0; }
+div.toc #search-results div.article dl.related dt,
+div.toc #search-results div.article dl.related dd { margin-bottom:.2em; font-size:.9em; line-height:1.5em; }
+div.toc #search-results div.article dl.related dt { color:#666 }
 
 /*--- Browse Form ---- */
 div#browseNav form.browseForm { margin: 0; background: #fff url(../images/pone_tools_bg.gif) no-repeat top left; padding: 10px 0 0 0; color: #666; position: relative; }
