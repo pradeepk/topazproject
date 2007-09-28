@@ -1,3 +1,4 @@
+<!-- begin : toc content -->
 <div id="content" class="toc">
 	<!-- begin : right-hand column -->
 	<div id="rhc">
@@ -24,15 +25,20 @@
 				</#if>
 			</p>
 		<!--</div>-->
-		<div id="sectionNavTop" class="tools">
-			<ul>
+		<div id="floatMarker">&nbsp;</div><!-- For floating nav menu need floatingMenu.js -->
+		<div id="postcomment">
+		<div id="sectionNavTopFloat" class="tools">
+			<ul> <!-- This list nees to be automatically generated - see navigationUtil.js -->
 				<li><a href="#top">Top</a></li>
 				<li><a href="#">Editorial</a></li>
 				<li><a href="#">Research Articles</a></li>
 				<li><a class="last" href="#">Corrections</a></li>
 			</ul>
 		</div>
-	</div><!-- end : right-hand column -->
+		</div>
+	</div>
+	<!-- end : right-hand column -->
+	<!-- begin : primary content area -->
 	<div class="content">
 	<h1>Table of Contents | ${issueInfo.displayName}</h1>
 		<#if issueInfo.imageArticle?exists>
@@ -41,13 +47,16 @@
 			<@s.url id="imageLgURL" action="slideshow" namespace="/article"
 				uri="${issueInfo.imageArticle}" imageURI="${issueInfo.imageArticle}.g001"
 				includeParams="none"/>
-			<p>
-				<img class="thumbnail" border="1" align="left" alt="thumbnail" src="${imageSmURL}""/>
-				${issueInfo.description}<br/>
-				<a href="${imageLgURL}">View larger image</a>
-			</p>
+			<div id="issueImage">
+				<div id="thumbnail">
+					<img alt="Issue Image" src="${imageSmURL}"/>
+					<a href="${imageLgURL}">View large image</a>
+				</div>
+				<p id="about"><em>About This Image:</em> ${issueInfo.description}</p>
+				<p id="credit"><em>Image Credit:</em> Credit information goes here.</p>
+			</div>
 		</#if>
-	
+		<!-- begin : search results -->
 		<div id="search-results">
 			<#if issueInfo.editorials?exists>
 				<h2>Editorial</h2>
@@ -98,6 +107,6 @@
 					</div>
 				</#list>
 			</#if>
-		</div> <!-- search results -->
+		</div> <!-- end : search results -->
 	</div>
-</div> <!--content-->
+</div> <!-- end : toc content-->

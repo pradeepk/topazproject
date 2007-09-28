@@ -580,11 +580,20 @@ div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  p
 
 /*--- Browse by TOC ---*/
 p#issueNav { margin:0; padding:0; position:relative; top:-12px }
-/*div.toc #search-results { margin:0; padding:0; }*/
+div.toc div#rhc { padding-top:0; }
+div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:hidden; } /* see floatingMenu.js */
 div.toc h1 		{ width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #67a96d; }
+div.toc div#issueImage { margin:30px 0 0 0; }
+div.toc div#issueImage p { font-size:.9em; line-height:1.5em; }
+div.toc div#issueImage p#about em { font-weight:bold; font-style:normal; color:#666; }
+div.toc div#issueImage p#credit,
+div.toc div#issueImage p#credit a { font-style:italic; }
+div.toc div#issueImage div#thumbnail { width:122px; float:left; margin-right:15px; }
+div.toc div#issueImage div#thumbnail img { width:120px; height:120px;/*sizes temp*/ margin:0; border: 1px solid #999; display:block; }
+div.toc div#issueImage div#thumbnail a:link { font-size:.9em; margin:0; padding:0; }
 div.toc #search-results { margin:20px 0 0 0; padding:0; }
 div.toc #search-results h2 { font-size:170%; font-style:normal; border-bottom:1px solid #060 }
-div.toc #search-results div.article { padding-bottom:20px; border-bottom:1px solid #ccc; background:white; } /* white background allows bottom border to render in IE6 */
+div.toc #search-results div.article { padding-bottom:20px; border-bottom:1px solid #ccc; background:white; } /* white background allows bottom border to render in IE6 - wierd */
 div.toc #search-results div.article h3 { font-size:110%; font-weight:bold; border:0; line-height:1.3em; }
 div.toc #search-results div.article h3 a:link { text-decoration:none; }
 div.toc #search-results div.article h3 a:hover { text-decoration:underline; }
