@@ -32,7 +32,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -63,6 +62,7 @@ import org.plos.models.Citation;
 import org.plos.models.Category;
 import org.plos.models.UserProfile;
 import org.plos.util.FileUtils;
+import org.plos.web.VirtualJournalContext;
 
 import org.topazproject.xml.transform.cache.CachedSource;
 
@@ -486,6 +486,8 @@ public class ArticleFeed extends BaseActionSupport {
 
   private String getCacheKey() {
     Map<String, String> key = new TreeMap<String, String>();
+    key.put("journal", ((VirtualJournalContext) ServletActionContext.getRequest()
+      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal());
     if (startDate != null)
       key.put("sd", startDate);
     if (endDate != null)
