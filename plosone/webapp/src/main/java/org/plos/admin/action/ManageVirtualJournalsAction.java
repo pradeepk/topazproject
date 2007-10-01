@@ -11,6 +11,7 @@
 package org.plos.admin.action;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 
@@ -97,17 +98,23 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
             // process adds
             if (articlesToAdd != null && articlesToAdd.length() != 0) {
-              for (final String articleToAdd : articlesToAdd.split(",")) {
-                  articles.add(URI.create(articleToAdd));
+              for (final String articleToAdd : articlesToAdd.split("[,\\s]+")) {
+                URI art = getURI(articleToAdd);
+                if (art != null) {
+                  articles.add(art);
                   addActionMessage("Added: " + articleToAdd);
+                }
               }
             }
 
             // process deletes
             if (articlesToDelete != null) {
               for (final String articleToDelete : articlesToDelete) {
-                  articles.remove(URI.create(articleToDelete));
+                URI art = getURI(articleToDelete);
+                if (art != null) {
+                  articles.remove(art);
                   addActionMessage("Deleted: " + articleToDelete);
+                }
               }
             }
 
@@ -138,6 +145,20 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
     // default action is just to display the template
     return SUCCESS;
+  }
+
+  private URI getURI(String uriStr) {
+    try {
+      URI uri = new URI(uriStr);
+      if (uri.isAbsolute())
+        return uri;
+
+      addActionMessage("Not an absolute URI: '" + uriStr + "'");
+    } catch (URISyntaxException use) {
+      addActionMessage("Not a valid URI (" + use.getMessage() + "): '" + uriStr + "'");
+    }
+
+    return null;
   }
 
   /**
