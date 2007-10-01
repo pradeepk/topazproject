@@ -66,7 +66,7 @@ public class NavTest extends AbstractPlosOneTest {
 
   @DataProvider(name = "articles")
   public Object[][] articlesTestData(Method m) {
-    ArrayList l = new ArrayList();
+    ArrayList<String[]> l = new ArrayList<String[]>();
 
     String methodsThatUseSmallSet[] = new String[] { "Annotation", "Discussion" };
     boolean useSmallSet = false;
@@ -92,31 +92,6 @@ public class NavTest extends AbstractPlosOneTest {
       }
     }
     return (Object[][]) l.toArray(new Object[0][]);
-  }
-
-  @DataProvider(name = "journals")
-  public Object[][] journalsTestData() {
-    ArrayList l = new ArrayList();
-    for (String journal : journals.keySet())
-      for (String browser : browsers.keySet()) {
-        // TODO: fix java script for IE6 on CT
-        if (IE6.equals(browser) && HomePage.J_CT.equals(journal))
-          continue;
-        l.add(new String[] { journal, browser });
-      }
-
-    return (Object[][]) l.toArray(new Object[0][]);
-  }
-  
-  @DataProvider(name= "browsers")
-  public Object[][] browserTestData() {
-    ArrayList l = new ArrayList();
-    for (String browser : browsers.keySet()) {
-      l.add(new String[] {browser});
-    }
-    
-    Object[][] dataArray = (Object[][])l.toArray(new Object[0][]);
-    return (dataArray); 
   }
 
   /**

@@ -9,6 +9,7 @@
  */
 package org.plosone.it;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,8 @@ import org.apache.commons.logging.LogFactory;
 import org.plosone.it.jwebunit.PlosOneTestContext;
 import org.plosone.it.jwebunit.PlosOneWebTester;
 import org.plosone.it.pages.AbstractPage;
+import org.plosone.it.pages.HomePage;
+import org.testng.annotations.DataProvider;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 
@@ -120,6 +123,31 @@ public abstract class AbstractPlosOneTest {
 
   public PlosOneWebTester getTester(String journal, String browser) {
     return testers.get(new TesterId(journal, browser));
+  }
+
+  @DataProvider(name = "browsers")
+  public Object[][] browserTestData() {
+    ArrayList<String[]> l = new ArrayList<String[]>();
+    for (String browser : browsers.keySet()) {
+      l.add(new String[] {browser});
+    }
+    
+    Object[][] dataArray = (Object[][])l.toArray(new Object[0][]);
+    return (dataArray); 
+  }
+
+  @DataProvider(name = "journals")
+  public Object[][] journalsTestData() {
+    ArrayList l = new ArrayList();
+    for (String journal : journals.keySet())
+      for (String browser : browsers.keySet()) {
+        // TODO: fix java script for IE6 on CT
+        if (IE6.equals(browser) && HomePage.J_CT.equals(journal))
+          continue;
+        l.add(new String[] { journal, browser });
+      }
+  
+    return (Object[][]) l.toArray(new Object[0][]);
   }
 
   public static class TesterId {
