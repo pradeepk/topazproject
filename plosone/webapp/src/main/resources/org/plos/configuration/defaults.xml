@@ -746,6 +746,26 @@
         </javascript>
       </page>
       <page>
+        <name>/journals/ntd/article/browseIssue.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_home.css</file>
+        </css>
+        <javascript>
+          <file>/javascript/dojo/dojo_home.js</file>
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/domUtil.js</file>
+          <file>/javascript/topaz/htmlUtil.js</file>
+          <file>/javascript/dojoRequire_default.ftl</file>
+          <file>/javascript/topaz/horizontalTabs.js</file>
+          <file>/javascript/topaz/navigationUtil.js</file>
+          <file>/javascript/topaz/floatingMenu.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+        </javascript>
+      </page>
+      <page>
         <name>/article/article_body.ftl</name>
         <title>CODE_ARTICLE_TITLE</title>
       </page>
