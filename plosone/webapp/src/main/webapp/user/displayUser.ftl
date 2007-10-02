@@ -91,9 +91,23 @@
 
 <li><span class="heading">Interests</span><span class="text">${interests}</span></li>
 
-<li><span class="heading">Home Page</span><span class="text">${homePage}</span></li>
+<li><span class="heading">Home Page</span>
+<#if pou.homePage?has_content>
+    <@s.url id="homePageLink" value="${homePage}"/>
+    <span class="text"><a href="${homePageLink}">${homePage}</a></span>
+<#else>
+    <span class="text">${homePage}</span>
+</#if>
+</li>
 
-<li><span class="heading">Weblog</span><span class="text">${weblog}</span></li>
+<li><span class="heading">Weblog</span>
+<#if pou.weblog?has_content>
+    <@s.url id="weblogLink" value="${weblog}"/>
+    <span class="text"><a href="${weblogLink}">${weblog}</a></span>
+<#else>
+    <span class="text">${weblog}</span>
+</#if>
+</li>
 </ol>
 
 </div>
