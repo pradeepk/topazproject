@@ -2,7 +2,7 @@
 <div id="content" class="toc">
 	<!-- begin : right-hand column -->
 	<div id="rhc">
-		<!--<div id="sideNav">-->
+		<div id="sideNav">
 			<@s.url id="archiveURL" action="browseVolume" namespace="/journals/ntd/article"
 				field="volume" includeParams="none"/>
 			<p id="issueNav">
@@ -24,24 +24,23 @@
 					<#assign needSpacer=true/>
 				</#if>
 			</p>
-		<!--</div>-->
-		<div id="floatMarker">&nbsp;</div><!-- For floating nav menu need floatingMenu.js -->
-		<div id="postcomment">
-		<div id="sectionNavTopFloat" class="tools">
-			<ul> <!-- This list nees to be automatically generated - see navigationUtil.js -->
-				<li><a href="#top">Top</a></li>
-				<li><a href="#">Editorial</a></li>
-				<li><a href="#">Research Articles</a></li>
-				<li><a class="last" href="#">Corrections</a></li>
-			</ul>
-		</div>
-		</div>
-	</div>
-	<!-- end : right-hand column -->
+      <div id="floatMarker"></div>
+      <div id="postcomment">
+        <div id="sectionNavTopFloat" class="tools">
+          <ul>
+            <li><a class="first" href="#top">Top</a></li>
+            <#if issueInfo.editorials?has_content><li><a href="#">Editorial</a></li></#if>
+            <#if issueInfo.researchArticles?has_content><li><a href="#">Research Articles</a></li></#if>
+            <#if issueInfo.corrections?has_content><li><a href="#">Corrections</a></li></#if>
+          </ul>
+        </div><!-- end : sectionNav -->
+      </div><!-- end : postcomment -->
+    </div><!-- end : sideNav -->
+	</div><!-- end : right-hand column -->
 	<!-- begin : primary content area -->
 	<div class="content">
 	<h1>Table of Contents | ${issueInfo.displayName}</h1>
-		<#if issueInfo.imageArticle?exists>
+		<#if issueInfo.imageArticle?has_content>
 			<@s.url id="imageSmURL" action="fetchObject" namespace="/article"
 				uri="${issueInfo.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
 			<@s.url id="imageLgURL" action="slideshow" namespace="/article"
@@ -58,7 +57,7 @@
 		</#if>
 		<!-- begin : search results -->
 		<div id="search-results">
-			<#if issueInfo.editorials?exists>
+			<#if issueInfo.editorials?has_content>
 				<h2>Editorial</h2>
 				<#list issueInfo.editorials as articleInfo>
 					<div class="article">
@@ -74,7 +73,7 @@
 				</#list>
 			</#if>
 	
-			<#if issueInfo.researchArticles?exists>
+			<#if issueInfo.researchArticles?has_content>
 				<h2>Research Articles</h2>
 				<#list issueInfo.researchArticles as articleInfo>
 					<div class="article">
@@ -91,7 +90,7 @@
 				</#list>
 			</#if>
 	
-			<#if issueInfo.corrections?exists>
+			<#if issueInfo.corrections?has_content>
 				<h2>Corrections</h2>
 				<#list issueInfo.corrections as articleInfo>
 					<div class="article">

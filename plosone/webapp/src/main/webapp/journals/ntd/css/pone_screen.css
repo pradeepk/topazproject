@@ -369,6 +369,10 @@ div.box			{ color: #000; padding: 10px; background-color: #edffe8; }
 #rhc ul li a:visited 	{ background-color: transparent; background-position: 5% 50%; background-repeat: no-repeat; padding:1px 0 2px 0; padding-left:30px; border-bottom: 1px solid #ccc; margin: 0 3px; }
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
 #rhc ul li a.last		{ border-bottom:0!important; }
+/* temp styles for TOC floating nav - these should be removed when menu uses same js as the menu in articles */
+div.toc div#sectionNavTopFloat ul li a,
+div.toc div#sectionNavTopFloat ul li a:visited { border-bottom:0; border-top:1px solid #ccc; }
+div.toc div#sectionNavTopFloat ul li a.first { border-top:0; }
 
 /* correction styles */
 div.correction span#oa { /* open access image */ background: #3D3D3D url(../images/pone_correction_oa.gif) no-repeat 0 0; }
@@ -593,7 +597,7 @@ div.toc div#issueImage div#thumbnail img { width:120px; height:120px;/*sizes tem
 div.toc div#issueImage div#thumbnail a:link { font-size:.9em; margin:0; padding:0; }
 div.toc #search-results { margin:20px 0 0 0; padding:0; }
 div.toc #search-results h2 { font-size:170%; font-style:normal; border-bottom:1px solid #060 }
-div.toc #search-results div.article { padding-bottom:20px; border-bottom:1px solid #ccc; background:white; } /* white background allows bottom border to render in IE6 - wierd */
+div.toc #search-results div.article { margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid #ccc; background:white; } /* white background allows bottom border to render in IE6 - wierd */
 div.toc #search-results div.article h3 { font-size:110%; font-weight:bold; border:0; line-height:1.3em; }
 div.toc #search-results div.article h3 a:link { text-decoration:none; }
 div.toc #search-results div.article h3 a:hover { text-decoration:underline; }
