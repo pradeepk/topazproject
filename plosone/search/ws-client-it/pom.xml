@@ -69,7 +69,7 @@
           <!-- deploy for integration testing -->
           <!-- This just steals the configuration from our super-pom -->
           <plugin>
-            <groupId>org.topazproject.patch.cargo</groupId>
+            <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
             <configuration>
               <configuration>

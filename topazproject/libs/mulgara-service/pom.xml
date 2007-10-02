@@ -141,9 +141,9 @@
         <plugins>
           
           <plugin>
-            <groupId>org.topazproject.patch.cargo</groupId>
+            <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
-            <version>0.2</version>
+            <version>0.3.1</version>
             <configuration>
               <container>
                 <containerId>jetty6x</containerId>
