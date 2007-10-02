@@ -559,13 +559,11 @@
                   <phase>pre-integration-test</phase>
                   <goals><goal>start</goal></goals>
                 </execution>
-                <!-- doesn't work properly (yet)
                 <execution>
                   <id>jetty-stop</id>
                   <phase>post-integration-test</phase>
                   <goals><goal>stop</goal></goals>
                 </execution>
-                -->
               </executions>
             </plugin>
           
