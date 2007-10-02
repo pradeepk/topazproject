@@ -29,7 +29,7 @@ public abstract class CommonBasePage extends AbstractPage {
   public static final String PREFERENCES_LINK    = "Preferences";
 
   private static final String commonLinks[] = new String[] {
-    "Browse", "RSS", "Home", "Browse Articles", "About", "For Users",
+    "Browse", "RSS", "Home", "Browse Articles", "About", "For Readers",
       "Journals", "Hubs", "PLoS.org"
   };
 
