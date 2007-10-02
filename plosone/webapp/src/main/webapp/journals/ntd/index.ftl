@@ -14,7 +14,7 @@
             <div class="horizontalTabs">
               <ul id="tabsContainer">
                 <li id="recentlyPublished" class="published active"><span>Recent Research</span></li>
-                <li id="mostCommented" class="annotated"><span>Readers' Comments</span></li>
+                <li id="mostCommented" class="annotated"><span>Featured Comments</span></li>
               </ul>
               <div id="tabPaneSet" class="contentwrap">
                 <ul class="articles">
@@ -47,7 +47,7 @@
             </div>
             <!-- end block -->
             <div class="block">
-              <h2>Editors' Picks</h2>
+              <h2>New and Noted</h2>
               <div class="article section">
                 <h3><a href="#">Surprisingly High Specificity of the PPD Skin Test for M. tuberculosis Infection from Recent Exposure in The Gambia</a></h3>
                 <img src="images/article_image2.gif" alt="article image" /><p>Nostrud tum accumsan si vulpes utinam ibidem. Dolore in gemino acsi accumsan, metuo exerci amet praesent iriure praesent odio ulciscor obruo. Commodo accumsan immitto in quadrum dolus, melior pagus camur, fatua.</p>
@@ -60,7 +60,7 @@
               </div>
             </div><!-- end : block -->
             <div class="other block">
-              <h2>From the Other PLoS Journals</h2>
+              <h2>From Other PLoS Journals</h2>
               <div class="section">
                 <h3><a href="#"><em>PLoS Medicine</em></a> and <a href="#"><em>PLoS Pathogens</em></a></h3>
                 <p>These three related papers employ open access, web-based applications and downloadable source code from Microsoft Research to generate new statistical methods for studying Maleria.</p>
