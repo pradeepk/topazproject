@@ -103,8 +103,13 @@ public abstract class AbstractTripleStore implements TripleStore {
 
           Set<String> t = types.get(val);
 
-          if (t != null)
+          if ((t != null) && (t.size() > 0))
             clazz = sf.mostSpecificSubClass(clazz, t);
+          else {
+            ClassMetadata c = sf.getClassMetadata(clazz);
+            if ((c != null) && (c.getType() != null))
+              clazz = null;
+          }
 
           if (clazz != null) {
             Object a = session.load(clazz, val);
