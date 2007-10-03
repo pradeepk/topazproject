@@ -156,7 +156,7 @@
       </result>
     </action>
 
-    <action name="pageNotFound" class="org.plos.action.NoOpAction">
+    <action name="pageNotFound" class="org.plos.action.PageNotFoundAction">
       <interceptor-ref name="strutsBaseStack"/>
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/pageNotFound.ftl</param>
