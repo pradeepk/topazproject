@@ -319,19 +319,21 @@
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
-          <file>/css/pone_home.css</file>
         </css>
         <javascript>
-          <file>/javascript/dojo/dojo_home.js</file>
+          <file>/javascript/browserDetection.js</file>
+          <file>/javascript/config_article.js</file>
+          <file>/javascript/dojo/dojo_plosone.js</file>
           <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/annotation.js</file>
+          <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/htmlUtil.js</file>
-          <file>/javascript/dojoRequire_default.ftl</file>
-          <file>/javascript/topaz/horizontalTabs.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
           <file>/javascript/topaz/floatingMenu.js</file>
+          <file>/javascript/topaz/navigationUtil.js</file>
+          <file>/javascript/dojoRequire_article.ftl</file>
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
+          <file>/javascript/init_article.js</file>
         </javascript>
       </page>
       <page>
