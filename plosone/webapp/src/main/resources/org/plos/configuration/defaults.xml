@@ -69,6 +69,7 @@
         <pub>
           <feed>
             <title>PLoS Clinical Trials</title>
+            <id>info:doi/10.1371/feed.clinicaltrials</id>
           </feed>
         </pub>
       </PLoSClinicalTrials>
@@ -84,6 +85,7 @@
         <pub>
           <feed>
             <title>PLoS NTDs</title>
+            <id>info:doi/10.1371/feed.ntd</id>
           </feed>
         </pub>
       </PLoSNTD>
