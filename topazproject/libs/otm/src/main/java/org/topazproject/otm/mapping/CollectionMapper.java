@@ -50,13 +50,14 @@ public class CollectionMapper extends AbstractMapper {
    * @param mapperType the mapper type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
    * @param generator if there is a generator for this field
+   * @param cascade cascade options for this field
    */
   public CollectionMapper(String uri, Field field, Method getter, Method setter,
                           Serializer serializer, Class componentType, String dataType,
                           String rdfType, boolean inverse, String model, MapperType mapperType,
-                          boolean entityOwned, IdentifierGenerator generator) {
+                          boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade) {
     super(uri, field, getter, setter, serializer, componentType, dataType, rdfType, inverse, model,
-          mapperType, entityOwned, generator);
+          mapperType, entityOwned, generator, cascade);
   }
 
   /**

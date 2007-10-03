@@ -24,6 +24,11 @@ import org.topazproject.otm.OtmException;
  */
 public interface Mapper {
   public static enum MapperType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT, PREDICATE_MAP};
+  /**
+   * Enum defining how operations should cascade to associations.
+   */
+  static enum CascadeType {all, saveOrUpdate, delete, merge, refresh};
+
 
   /**
    * Get a value from a field of an object.
@@ -181,4 +186,17 @@ public interface Mapper {
    * @return the generator to use for this field (or null if there isn't one)
    */
   public IdentifierGenerator getGenerator();
+
+  /**
+   * Get the cascading options for this field.
+   *
+   * @return the cascading options.
+   */
+  public CascadeType[] getCascade();
+
+  /**
+   * Tests if an operation is cascaded for this field
+   */
+  public boolean isCascadable(CascadeType op);
+
 }

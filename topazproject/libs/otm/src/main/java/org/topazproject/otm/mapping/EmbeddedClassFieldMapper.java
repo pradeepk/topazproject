@@ -201,6 +201,22 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
+  public CascadeType[] getCascade() {
+    return field.getCascade();
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public boolean isCascadable(CascadeType op) {
+    return field.isCascadable(op);
+  }
+
+  /**
+   * Run a value through the serializer. If no serializer is defined, the value is returned
+  /*
+   * inherited javadoc
+   */
   public String toString() {
     return "EmbeddedClassFieldMapper[container=" + container + ", field=" + field + "]";
   }

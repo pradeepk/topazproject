@@ -40,6 +40,7 @@ public abstract class AbstractMapper implements Mapper {
   private MapperType          mapperType;
   private boolean             entityOwned;
   private IdentifierGenerator generator;
+  private CascadeType[]       cascade;
 
   /**
    * Creates a new AbstractMapper object.
@@ -57,11 +58,12 @@ public abstract class AbstractMapper implements Mapper {
    * @param mapperType the mapper type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
    * @param generator if there is a generator for this field
+   * @param cascade cascade options for this field
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType, String dataType,
                         String rdfType, boolean inverse, String model, MapperType mapperType,
-                        boolean entityOwned, IdentifierGenerator generator) {
+                        boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade) {
     this.uri             = uri;
     this.field           = field;
     this.getter          = getter;
@@ -77,6 +79,7 @@ public abstract class AbstractMapper implements Mapper {
     this.mapperType      = mapperType;
     this.entityOwned     = entityOwned;
     this.generator       = generator;
+    this.cascade         = cascade;
   }
 
   /*
@@ -227,6 +230,23 @@ public abstract class AbstractMapper implements Mapper {
    */
   public boolean isEntityOwned() {
     return entityOwned;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public CascadeType[] getCascade() {
+    return cascade;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public boolean isCascadable(CascadeType op) {
+    for (CascadeType ct : cascade)
+      if (ct.equals(CascadeType.all) || ct.equals(op))
+        return true;
+    return false;
   }
 
   /**

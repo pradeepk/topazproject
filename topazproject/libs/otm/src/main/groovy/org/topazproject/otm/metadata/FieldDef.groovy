@@ -22,6 +22,7 @@ import org.topazproject.otm.mapping.EmbeddedClassMapper;
 import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Mapper.CascadeType;
 import org.topazproject.otm.mapping.Serializer;
 
 import org.apache.commons.logging.Log;
@@ -68,6 +69,8 @@ public class FieldDef {
    * 'RdfList', 'RdfSeq', 'RdfBag', or 'RdfAlt'.
    */
   String   colMapping
+  /** the cascading options */
+  String[] cascade = ['all']
   /** if false this field is never saved, only loaded */
   boolean  owned       = true
   /**
@@ -149,6 +152,7 @@ public class FieldDef {
     Method get = cls.getMethod('get' + RdfBuilder.capitalize(name))
     Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
     Mapper.MapperType mt = getMapperType(rdf)
+    CascadeType[] ct = getCascadeType(rdf)
 
     String dtype = (type?.startsWith(xsdURI) && type != xsdURI + 'anyURI') ? type : null
 
@@ -160,7 +164,8 @@ public class FieldDef {
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       String rt = (ser == null) ? getRdfType(rdf, f.getType()) : null;
-      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, rt, inverse, model, mt, owned, idGen)]
+      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, rt, inverse, model, mt, owned, idGen,
+ct)]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
@@ -168,10 +173,10 @@ public class FieldDef {
       String rt = (ser == null) ? getRdfType(rdf, compType) : null;
       if (collType.toLowerCase() == 'array')
         m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt, owned,
-                             idGen)]
+                             idGen, ct)]
       else
         m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt,
-                                  owned, idGen)]
+                                  owned, idGen, ct)]
     }
 
     // done
@@ -294,6 +299,31 @@ public class FieldDef {
         throw new OtmException("Unknown collection-mapping type '${cm}' - must be one of " +
                                "'Predicate', 'RdfList', 'RdfBag', 'RdfSeq', or 'RdfAlt'");
     }
+  }
+
+  private CascadeType[] getCascadeType(RdfBuilder rdf) {
+    def ct = []
+    for (String c in cascade) {
+      switch(c?.toLowerCase()) {
+        case null:
+        case 'all':
+           ct.add(CascadeType.all)
+           break;
+        case 'delete':
+           ct.add(CascadeType.delete)
+           break;
+        case 'saveorupdate':
+           ct.add(CascadeType.saveOrUpdate)
+           break;
+        case 'refresh':
+           ct.add(CascadeType.refresh)
+           break;
+        case 'merge':
+           ct.add(CascadeType.merge)
+           break;
+      }
+    }
+    return ct.toArray(new CascadeType[0])
   }
 
   private String getRdfType(RdfBuilder rdf, Class clazz) {

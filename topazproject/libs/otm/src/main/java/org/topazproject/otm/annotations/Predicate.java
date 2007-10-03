@@ -14,6 +14,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.topazproject.otm.mapping.Mapper.CascadeType;
+
 /**
  * Annotation for fields to specify the necessary config for controlling persistence to an RDF
  * triplestore.
@@ -67,4 +69,9 @@ public @interface Predicate {
    * Storage preference for this field. Defaults based on the type.
    */
   StoreAs storeAs() default StoreAs.undefined;
+
+  /**
+   * Cascading preferences for this field. 
+   */
+  CascadeType[] cascade() default {CascadeType.all};
 }

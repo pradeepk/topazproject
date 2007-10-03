@@ -48,6 +48,7 @@ import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.EmbeddedClassMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Mapper.CascadeType;
 import org.topazproject.otm.mapping.PredicateMapMapper;
 import org.topazproject.otm.mapping.Serializer;
 
@@ -257,7 +258,7 @@ public class AnnotationClassMetaFactory {
 
       Mapper     p          =
         new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
-                             Mapper.MapperType.PREDICATE, true, generator);
+                             Mapper.MapperType.PREDICATE, true, generator, null);
 
       return Collections.singletonList(p);
     }
@@ -299,17 +300,19 @@ public class AnnotationClassMetaFactory {
       boolean           notOwned = (rdf != null) && rdf.notOwned();
 
       Mapper.MapperType mt       = getMapperType(f, rdf, isArray);
+      CascadeType ct[] = (rdf != null) ? rdf.cascade()
+                                   : new CascadeType[]{CascadeType.all};
       Mapper            p;
 
       if (isArray)
         p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse, model,
-                            mt, !notOwned, generator);
+                            mt, !notOwned, generator, ct);
       else if (isCollection)
         p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
-                                 model, mt, !notOwned, generator);
+                                 model, mt, !notOwned, generator, ct);
       else
         p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
-                                 mt, !notOwned, generator);
+                                 mt, !notOwned, generator, ct);
 
       return Collections.singletonList(p);
     }

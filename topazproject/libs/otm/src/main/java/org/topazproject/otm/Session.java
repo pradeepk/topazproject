@@ -32,6 +32,7 @@ import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Mapper.CascadeType;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -171,7 +172,7 @@ public class Session {
    */
   public String saveOrUpdate(Object o) throws OtmException {
     Id id = checkObject(o);
-    sync(o, id, false, true, true);
+    sync(o, id, false, true, CascadeType.saveOrUpdate);
 
     return id.getId();
   }
@@ -203,6 +204,10 @@ public class Session {
 
       for (Mapper p : cm.getFields()) {
         if ((p.getSerializer() != null) || (p.getUri() == null))
+          continue;
+
+        // ignore this association if delete does not cascade
+        if (!p.isCascadable(CascadeType.delete))
           continue;
 
         for (Object ao : p.get(o))
@@ -306,7 +311,7 @@ public class Session {
         // If those associations are loaded from the store even before
         // we complete this get() operation, there will be an instance
         // in our cache for this same Id.
-        o = sync(o, id, true, false, false);
+        o = sync(o, id, true, false, null);
       }
     }
 
@@ -353,7 +358,7 @@ public class Session {
       o = ao;
     }
 
-    ao = (T) sync(o, id, true, true, true);
+    ao = (T) sync(o, id, true, true, CascadeType.merge);
 
     return ao;
   }
@@ -370,7 +375,7 @@ public class Session {
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
       o = getFromStore(id, checkClass(o.getClass()), o, true);
-      sync(o, id, true, false, false);
+      sync(o, id, true, false, CascadeType.refresh);
     }
   }
 
@@ -581,7 +586,7 @@ public class Session {
   }
 
   private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
-                      final boolean cascade) throws OtmException {
+                      final CascadeType cascade) throws OtmException {
     if (currentIds.contains(id))
       return null; // loop and hence the return value is unused
 
@@ -621,14 +626,16 @@ public class Session {
         if (log.isDebugEnabled())
           log.debug("Checking object '" + cm.getName() + "' field '" + p.getName() +
                     "' literal type '" + p.getDataType() + "' rdf type '" + p.getRdfType() + "'");
+        boolean deep = ((cascade != null) && p.isCascadable(cascade));
+        boolean deepDelete = p.isCascadable(CascadeType.delete);
         for (Object ao : p.get(o)) {
           Id aid = checkObject(ao);
 
           // note: sync() here will not return a merged object. see copy()
-          if (cascade)
+          if (deep)
             sync(ao, aid, merge, update, cascade);
-
-          assocs.add(new Wrapper(aid, ao));
+          if (deepDelete)
+            assocs.add(new Wrapper(aid, ao));
         }
       }
 

@@ -13,6 +13,7 @@ package org.topazproject.otm.metadata;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Mapper.CascadeType;
 
 /**
  * Groovy-builder offline tests.
@@ -685,5 +686,54 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cls.name         == 'Test2'
     assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
+  }
+
+  void testCascadeType() {
+    Class cls = rdf.class('Test1', type:'foo:Test1', model:'m1') {
+      sel (pred:'foo:p1', type:'Test1', cascade:['delete','saveOrUpdate'])
+      all (pred:'foo:p2', type:'Test1')
+      none (pred:'foo:p3', type:'Test1', cascade:[])
+    }
+    ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
+
+    assert cm.type          == 'foo:Test1'
+    assert cm.model         == 'm1'
+    assert cm.fields.size() == 3
+
+    Mapper m = cm.fields.asList()[0]
+    assert m.name     == 'sel'
+    assert m.type     == cls
+    assert m.dataType == null
+    assert m.uri      == 'foo:p1'
+    assert !m.hasInverseUri()
+    assert m.model    == null
+    assert m.isCascadable(CascadeType.delete)
+    assert m.isCascadable(CascadeType.saveOrUpdate)
+    assert !m.isCascadable(CascadeType.merge)
+    assert !m.isCascadable(CascadeType.refresh)
+
+    m = cm.fields.asList()[1]
+    assert m.name     == 'all'
+    assert m.type     == cls
+    assert m.dataType == null
+    assert m.uri      == 'foo:p2'
+    assert !m.hasInverseUri()
+    assert m.model    == null
+    assert m.isCascadable(CascadeType.delete)
+    assert m.isCascadable(CascadeType.saveOrUpdate)
+    assert m.isCascadable(CascadeType.merge)
+    assert m.isCascadable(CascadeType.refresh)
+
+    m = cm.fields.asList()[2]
+    assert m.name     == 'none'
+    assert m.type     == cls
+    assert m.dataType == null
+    assert m.uri      == 'foo:p3'
+    assert !m.hasInverseUri()
+    assert m.model    == null
+    assert !m.isCascadable(CascadeType.delete)
+    assert !m.isCascadable(CascadeType.saveOrUpdate)
+    assert !m.isCascadable(CascadeType.merge)
+    assert !m.isCascadable(CascadeType.refresh)
   }
 }

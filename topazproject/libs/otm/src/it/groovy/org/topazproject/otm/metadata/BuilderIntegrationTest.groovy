@@ -292,16 +292,16 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     Class wrong = rdf.class("WrongOne", extendsClass:"BaseClass") {
       name 'Test2'
     }
-    
+
     Class right = rdf.class("RightOne", type:'sub:type', extendsClass:"BaseClass") {
     }
- 
+
     Class p = rdf.sessFactory.mostSpecificSubClass(base, ['base:type', 'sub:type'])
     assert right == p
-    
+
     p = rdf.sessFactory.mostSpecificSubClass(wrong, ['base:type', 'sub:type'])
     assert wrong == p;
-    
+
     p = rdf.sessFactory.mostSpecificSubClass(right, ['base:type', 'sub:type'])
     assert right == p;
 
@@ -319,6 +319,78 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     p = rdf.sessFactory.mostSpecificSubClass(base, [])
     assert base == p;
+  }
+
+  void testCascade() {
+    Class cls = rdf.class('Test1', type:'foo:Test1') {
+      sel (pred:'foo:p1', type:'Test1', cascade:['saveOrUpdate'])
+      all (pred:'foo:p2', type:'Test1')
+      none (pred:'foo:p3', type:'Test1', cascade:[])
+    }
+
+    def obj = cls.newInstance(id:'foo:obj'.toURI())
+    def sel = cls.newInstance(id:'foo:sel'.toURI())
+    def all = cls.newInstance(id:'foo:all'.toURI())
+    def none = cls.newInstance(id:'foo:none'.toURI())
+    obj.sel = sel
+    obj.all = all
+    obj.none = none
+    doInTx { s-> s.saveOrUpdate(obj) }
+    doInTx { s ->
+      assertNotNull s.get(cls, 'foo:sel')
+      assertNotNull s.get(cls, 'foo:all')
+      assertNull s.get(cls, 'foo:none')
+      def o = s.get(cls, 'foo:obj')
+      assertNotNull o.sel
+      assertNotNull o.all
+      assertNull o.none
+      o.none = none
+      s.saveOrUpdate(o)
+      s.saveOrUpdate(none)
+    }
+    doInTx { s ->
+      assertNotNull s.get(cls, 'foo:sel')
+      assertNotNull s.get(cls, 'foo:all')
+      assertNotNull s.get(cls, 'foo:none')
+      def o = s.get(cls, 'foo:obj')
+      assertNotNull o.sel
+      assertNotNull o.all
+      assertNotNull o.none
+      o.sel = null
+      o.all = null
+      o.none = null
+      s.saveOrUpdate(o)
+    }
+    doInTx { s ->
+      assertNotNull s.get(cls, 'foo:sel')
+      assertNull s.get(cls, 'foo:all')
+      assertNotNull s.get(cls, 'foo:none')
+      def o = s.get(cls, 'foo:obj')
+      assertNull o.sel
+      assertNull o.all
+      assertNull o.none
+      o.sel = s.get(cls, 'foo:sel')
+      o.all = all
+      o.none = s.get(cls, 'foo:none')
+      s.saveOrUpdate(o)
+    }
+    doInTx { s ->
+      assertNotNull s.get(cls, 'foo:sel')
+      assertNotNull s.get(cls, 'foo:all')
+      assertNotNull s.get(cls, 'foo:none')
+      def o = s.get(cls, 'foo:obj')
+      assertNotNull o.sel
+      assertNotNull o.all
+      assertNotNull o.none
+      s.delete(o)
+    }
+    doInTx { s ->
+      assertNotNull s.get(cls, 'foo:sel')
+      assertNull s.get(cls, 'foo:all')
+      assertNotNull s.get(cls, 'foo:none')
+      assertNull s.get(cls, 'foo:obj')
+    }
+
   }
 
   private def doInTx(Closure c) {

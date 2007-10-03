@@ -39,13 +39,14 @@ public class FunctionalMapper extends AbstractMapper {
    * @param mapperType the mapper type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
    * @param generator if there is a generator for this field
+   * @param cascade cascade options for this field
    */
   public FunctionalMapper(String uri, Field field, Method getter, Method setter,
                           Serializer serializer, String dataType, String rdfType, boolean inverse,
                           String model, MapperType mapperType, boolean entityOwned,
-                          IdentifierGenerator generator) {
+                          IdentifierGenerator generator, CascadeType[] cascade) {
     super(uri, field, getter, setter, serializer, field.getType(), dataType, rdfType, inverse,
-          model, mapperType, entityOwned, generator);
+          model, mapperType, entityOwned, generator, cascade);
   }
 
   /**
