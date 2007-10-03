@@ -24,9 +24,9 @@
 					<#assign needSpacer=true/>
 				</#if>
 			</p>
-      <!--<div id="floatMarker" style="line-height:1em; background:red">&nbsp;</div>-->
+     <div id="floatMarker">&nbsp;</div>
       <div id="postcomment" class="fixed"> <!-- class of 'fixed' is what floats the menu -->
-        <div id="sectionNavTop" class="tools" style="position:relative;top:285px;"> <!-- these styles need to be moved into screen_css -->
+        <div id="sectionNavTop" class="tools">
           <ul>
             <li><a class="first" href="#top">Top</a></li>
             <#if issueInfo.editorials?has_content><li><a href="#">Editorial</a></li></#if>
