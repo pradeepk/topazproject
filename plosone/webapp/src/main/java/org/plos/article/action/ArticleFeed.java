@@ -22,10 +22,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -111,9 +113,9 @@ public class ArticleFeed extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
   private static final String ATOM_NS = "http://www.w3.org/2005/Atom"; // Tmp hack for categories
-  
+
   final int DEFAULT_FEED_DURATION = configuration.getInteger("pub.feed.defaultDuration", 3);
-  
+
   /**
    * Returns a feed based on interpreting the URI.
    *
@@ -187,8 +189,12 @@ public class ArticleFeed extends BaseActionSupport {
 
     // get default values from config file
     final String journal = getCurrentJournal();
-    final String PLOSONE_URI  = journalConfGetString(configuration, journal,
-            "pub.webserver-url", "http://plosone.org/");
+    // must end w/trailing slash
+    String PLOSONE_URI  = configuration.getString("pub.virtualJournals." + journal + ".url",
+      configuration.getString("pub.webserver-url", "http://plosone.org/"));
+    if (!PLOSONE_URI.endsWith("/")) {
+        PLOSONE_URI += "/";
+    }
     final String PLOSONE_NAME = journalConfGetString(configuration, journal,
             "pub.name", "Public Library of Science");
     final String PLOSONE_EMAIL_GENERAL = journalConfGetString(configuration, journal,
@@ -211,7 +217,6 @@ public class ArticleFeed extends BaseActionSupport {
 
     // use WebWorks to get Action URIs
     // TODO: WebWorks ActionMapper is broken, hand-code URIs
-    final String fetchArticleAction = "article/fetchArticle.action";
     final String fetchObjectAttachmentAction = "article/fetchObjectAttachment.action";
 
     // Atom 1.0 is default
@@ -221,8 +226,13 @@ public class ArticleFeed extends BaseActionSupport {
     feed.setXmlBase(PLOSONE_URI);
 
     String xmlBase = (relativeLinks ? "" : PLOSONE_URI);
-    if (selfLink == null || selfLink.equals(""))
-      selfLink = PLOSONE_URI + uri;
+    if (selfLink == null || selfLink.equals("")) {
+      if (uri.toString().startsWith("/")) {
+        selfLink = PLOSONE_URI.substring(0, PLOSONE_URI.length() - 1) + uri;
+      } else {
+        selfLink = PLOSONE_URI + uri;
+      }
+    }
 
     // must link to self
     Link self = new Link();
@@ -347,7 +357,12 @@ public class ArticleFeed extends BaseActionSupport {
       // must link to self, do it first so link is favored
       Link entrySelf = new Link();
       entrySelf.setRel("alternate");
-      entrySelf.setHref(xmlBase + fetchArticleAction + "?articleURI=" + dc.getIdentifier());
+      try {
+        entrySelf.setHref(xmlBase + "article/" + URLEncoder.encode(dc.getIdentifier(), "UTF-8"));
+      } catch(UnsupportedEncodingException uee) {
+        entrySelf.setHref(xmlBase + "article/" + dc.getIdentifier());
+        log.error("UTF-8 not supported?", uee);
+      }
       entrySelf.setTitle(dc.getTitle());
       altLinks.add(entrySelf);
 
@@ -456,7 +471,7 @@ public class ArticleFeed extends BaseActionSupport {
       // Add foreign markup
       if (extended && foreignMarkup.size() > 0)
         entry.setForeignMarkup(foreignMarkup);
-      
+
       // atom:content
       List <Content> contents = new ArrayList();
       Content description = new Content();
@@ -600,7 +615,7 @@ public class ArticleFeed extends BaseActionSupport {
   public void setSelfLink(final String selfLink) {
     this.selfLink = selfLink;
   }
-  
+
   /**
    * Representation to return results in.
    */
@@ -663,10 +678,10 @@ public class ArticleFeed extends BaseActionSupport {
     builder.setEntityResolver(CachedSource.getResolver());
     return builder;
   }
-  
+
   /**
    *  Get a String from the Configuration looking first for a Journal override.
-   * 
+   *
    * @param configuration to use.
    * @param journal name.
    * @param key to lookup.
@@ -678,7 +693,7 @@ public class ArticleFeed extends BaseActionSupport {
     return configuration.getString("pub.virtualJournals." + journal + "." + key,
             configuration.getString(key, defaultValue));
   }
-  
+
   private String getCurrentJournal() {
     return ((VirtualJournalContext) ServletActionContext.getRequest().
       getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
