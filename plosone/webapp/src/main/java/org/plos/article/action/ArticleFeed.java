@@ -186,17 +186,28 @@ public class ArticleFeed extends BaseActionSupport {
   private WireFeed getFeed(URI uri) throws ApplicationException {
 
     // get default values from config file
-    final String PLOSONE_URI           = configuration.getString("pub.webserver-url", "http://plosone.org/");
-    final String PLOSONE_NAME          = configuration.getString("pub.name",          "Public Library of Science");
-    final String PLOSONE_EMAIL_GENERAL = configuration.getString("pub.email.general", "webmaster@plos.org");
-    final String PLOSONE_COPYRIGHT     = configuration.getString("pub.copyright",
-      "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
-    final String FEED_TITLE            = configuration.getString("pub.feed.title",    "PLoS ONE");
-    final String FEED_TAGLINE          = configuration.getString("pub.feed.tagline",  "Publishing science, accelerating research");
-    final String FEED_ICON             = configuration.getString("pub.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
-    final String FEED_ID               = configuration.getString("pub.feed.id",       "info:doi/10.1371/feed.pone");
-    final String FEED_EXTENDED_NS      = configuration.getString("pub.feed.extended.namespace", "http://www.plos.org/atom/ns#plos");
-    final String FEED_EXTENDED_PREFIX  = configuration.getString("pub.feed.extended.prefix",    "plos");
+    final String journal = getCurrentJournal();
+    final String PLOSONE_URI  = journalConfGetString(configuration, journal,
+            "pub.webserver-url", "http://plosone.org/");
+    final String PLOSONE_NAME = journalConfGetString(configuration, journal,
+            "pub.name", "Public Library of Science");
+    final String PLOSONE_EMAIL_GENERAL = journalConfGetString(configuration, journal,
+            "pub.email.general", "webmaster@plos.org");
+    final String PLOSONE_COPYRIGHT = journalConfGetString(configuration, journal,
+            "pub.copyright",
+            "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
+    final String FEED_TITLE = journalConfGetString(configuration, journal,
+            "pub.feed.title", "PLoS ONE");
+    final String FEED_TAGLINE = journalConfGetString(configuration, journal,
+            "pub.feed.tagline", "Publishing science, accelerating research");
+    final String FEED_ICON = journalConfGetString(configuration, journal,
+            "pub.feed.icon", PLOSONE_URI + "images/pone_favicon.ico");
+    final String FEED_ID = journalConfGetString(configuration, journal,
+            "pub.feed.id", "info:doi/10.1371/feed.pone");
+    final String FEED_EXTENDED_NS = journalConfGetString(configuration, journal,
+            "pub.feed.extended.namespace", "http://www.plos.org/atom/ns#plos");
+    final String FEED_EXTENDED_PREFIX = journalConfGetString(configuration, journal,
+            "pub.feed.extended.prefix", "plos");
 
     // use WebWorks to get Action URIs
     // TODO: WebWorks ActionMapper is broken, hand-code URIs
@@ -486,8 +497,7 @@ public class ArticleFeed extends BaseActionSupport {
 
   private String getCacheKey() {
     Map<String, String> key = new TreeMap<String, String>();
-    key.put("journal", ((VirtualJournalContext) ServletActionContext.getRequest()
-      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal());
+    key.put("journal", getCurrentJournal());
     if (startDate != null)
       key.put("sd", startDate);
     if (endDate != null)
@@ -652,5 +662,25 @@ public class ArticleFeed extends BaseActionSupport {
     final DocumentBuilder builder = factory.newDocumentBuilder();
     builder.setEntityResolver(CachedSource.getResolver());
     return builder;
+  }
+  
+  /**
+   *  Get a String from the Configuration looking first for a Journal override.
+   * 
+   * @param configuration to use.
+   * @param journal name.
+   * @param key to lookup.
+   * @param defaultValue if key is not found.
+   * @return value for key.
+   */
+  private String journalConfGetString(Configuration configuration, String journal, String key,
+          String defaultValue) {
+    return configuration.getString("pub.virtualJournals." + journal + "." + key,
+            configuration.getString(key, defaultValue));
+  }
+  
+  private String getCurrentJournal() {
+    return ((VirtualJournalContext) ServletActionContext.getRequest().
+      getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
   }
 }

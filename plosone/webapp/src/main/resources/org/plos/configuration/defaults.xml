@@ -65,6 +65,12 @@
           <plosJournal>clinicaltrials</plosJournal>
         </rules>
         <url>http://clinicaltrials.ploshubs.org</url>
+        <!-- Atom feed overrides -->
+        <pub>
+          <feed>
+            <title>PLoS Clinical Trials</title>
+          </feed>
+        </pub>
       </PLoSClinicalTrials>
       <PLoSNTD>
         <description>Neglected Tropical Diseases</description>
@@ -74,6 +80,12 @@
           <plosJournal>ntd</plosJournal>
         </rules>
         <url>http://plosntds.org</url>
+        <!-- Atom feed overrides -->
+        <pub>
+          <feed>
+            <title>PLoS NTDs</title>
+          </feed>
+        </pub>
       </PLoSNTD>
       <!-- virtual journal config entry
       <${journalName}>
