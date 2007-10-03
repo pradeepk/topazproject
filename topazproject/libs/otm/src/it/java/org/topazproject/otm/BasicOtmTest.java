@@ -264,6 +264,35 @@ public class BasicOtmTest extends AbstractOtmTest {
           r = replies.get(0);
           assertNotNull(r);
           assertEquals(URI.create("http://localhost/reply/1/1"), r.getId());
+
+          // set up for next test - perform implicit delete
+          a.getReplies().clear();
+          session.saveOrUpdate(a);
+        }
+      });
+  }
+
+  @Test(dependsOnMethods =  {
+    "testInverse"}
+  )
+  public void testImplicitDelete() throws OtmException {
+    log.info("Testing implicit delete of associations ...");
+
+    // see testInverse for the data setup
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+
+          assertNotNull(a);
+
+          List<ReplyThread> replies = a.getReplies();
+          assertNotNull(replies);
+          assertEquals(0, replies.size());
+
+          ReplyThread r = session.get(ReplyThread.class, "http://localhost/reply/1");
+          assertNull(r);
+          r = session.get(ReplyThread.class, "http://localhost/reply/1/1");
+          assertNull(r);
         }
       });
   }
@@ -274,7 +303,7 @@ public class BasicOtmTest extends AbstractOtmTest {
    * @throws OtmException DOCUMENT ME!
    */
   @Test(dependsOnMethods =  {
-    "testInverse"}
+    "testImplicitDelete"}
   )
   public void testSpecialMappers() throws OtmException {
     log.info("Testing special mappers (rdf:list etc.) ...");
