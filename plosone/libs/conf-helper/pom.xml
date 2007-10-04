@@ -2,13 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>conf-helper</artifactId>
   <packaging>jar</packaging>
-  <version>0.8.1-SNAPSHOT</version>
+  <version>0.8.2-SNAPSHOT</version>
   <name>Configuration Helper</name>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone-libs</artifactId>
-    <version>0.8.1-SNAPSHOT</version>
+    <version>0.8.2-SNAPSHOT</version>
   </parent>
 
   <dependencies>
