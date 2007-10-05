@@ -284,6 +284,58 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
   }
 
+  void testCollTypeLookAhead() {
+    Class cls = rdf.class('Test1', type:'foo:Test1') {
+      col (pred:'foo:p1', type:'Test1', colMapping: 'RdfSeq', maxCard:-1)
+      label()
+    }
+    def obj = cls.newInstance(id:'foo:obj'.toURI(), label:'obj')
+    def col = cls.newInstance(id:'foo:col'.toURI(), label:'col')
+    obj.col = [col]
+    doInTx { s-> s.saveOrUpdate(obj) }
+    doInTx { s ->
+      def o = s.get(cls, 'foo:obj')
+      def c = s.get(cls, 'foo:col')
+      assertNotNull o
+      assertNotNull c
+      assert o.label.equals('obj')
+      assert c.label.equals('col')
+      assertNotNull o.col
+      assert o.col.size() == 1
+      assert o.col[0] == c
+      o.col.add(cls.newInstance(id:'foo:col2'.toURI(), label:'col2'))
+      s.saveOrUpdate(o)
+    }
+    doInTx { s ->
+      def o = s.get(cls, 'foo:obj')
+      def c = s.get(cls, 'foo:col')
+      def c2 = s.get(cls, 'foo:col2')
+      assertNotNull o
+      assertNotNull c
+      assertNotNull o.col
+      assert o.label.equals('obj')
+      assert c.label.equals('col')
+      assert c2.label.equals('col2')
+      assert o.col.size() == 2
+      assert o.col[0] == c
+      assert o.col[1] == c2
+      o.col = [c2]
+      s.saveOrUpdate(o)
+    }
+    doInTx { s ->
+      def o = s.get(cls, 'foo:obj')
+      def c = s.get(cls, 'foo:col')
+      def c2 = s.get(cls, 'foo:col2')
+      assertNotNull o
+      assertNull c
+      assertNotNull o.col
+      assert o.label.equals('obj')
+      assert c2.label.equals('col2')
+      assert o.col.size() == 1
+      assert o.col[0] == c2
+    }
+  }
+
   void testCascade() {
     Class cls = rdf.class('Test1', type:'foo:Test1') {
       sel (pred:'foo:p1', type:'Test1', cascade:['saveOrUpdate'])
