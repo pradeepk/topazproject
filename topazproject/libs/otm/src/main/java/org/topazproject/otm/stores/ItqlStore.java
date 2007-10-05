@@ -611,8 +611,11 @@ public class ItqlStore extends AbstractTripleStore {
                                   Map<String, Set<String>> types, Mapper m, SessionFactory sf,
                                   List<Filter> filters)
         throws OtmException {
+    String tmodel = modelUri;
+    if (m.getSerializer() == null)
+      tmodel = getModelUri(sf.getClassMetadata(m.getComponentType()).getModel(), txn);
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o $s $n subquery (select $t from <").append(modelUri)
+    qry.append("select $o $s $n subquery (select $t from <").append(tmodel)
        .append("> where $o <rdf:type> $t) from <").append(modelUri).append("> where ")
        .append("(trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <")
        .append(sub).append("> <").append(pred).append("> $s) and <")
@@ -629,8 +632,11 @@ public class ItqlStore extends AbstractTripleStore {
                                  Map<String, Set<String>> types, Mapper m, SessionFactory sf,
                                  List<Filter> filters)
         throws OtmException {
+    String tmodel = modelUri;
+    if (m.getSerializer() == null)
+      tmodel = getModelUri(sf.getClassMetadata(m.getComponentType()).getModel(), txn);
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o $p subquery (select $t from <").append(modelUri)
+    qry.append("select $o $p subquery (select $t from <").append(tmodel)
        .append("> where $o <rdf:type> $t) from <")
        .append(modelUri).append("> where ")
        .append("($s $p $o minus $s <rdf:type> $o) and <")

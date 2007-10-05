@@ -31,11 +31,19 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     def ri = new ModelConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
     rdf.sessFactory.addModel(ri);
 
+    def m2 = new ModelConfig("m2", "local:///topazproject#otmtest2".toURI(), null)
+    rdf.sessFactory.addModel(m2);
+
     try {
       store.dropModel(ri)
     } catch (Throwable t) {
     }
+    try {
+      store.dropModel(m2)
+    } catch (Throwable t) {
+    }
     store.createModel(ri)
+    store.createModel(m2)
   }
 
   void testSimple() {
@@ -285,54 +293,45 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   }
 
   void testCollTypeLookAhead() {
+    Class ass = rdf.class('Assoc0', type:'foo:Assoc0', model:'m2') {
+      label()
+    }
     Class cls = rdf.class('Test1', type:'foo:Test1') {
       col (pred:'foo:p1', type:'Test1', colMapping: 'RdfSeq', maxCard:-1)
+      seq (pred:'foo:p2', type:'foo:Assoc0', colMapping: 'RdfSeq', maxCard:-1)
+      lis (pred:'foo:p3', type:'foo:Assoc0', colMapping: 'RdfList', maxCard:-1)
       label()
     }
     def obj = cls.newInstance(id:'foo:obj'.toURI(), label:'obj')
     def col = cls.newInstance(id:'foo:col'.toURI(), label:'col')
+    def seq = ass.newInstance(id:'foo:seq'.toURI(), label:'seq')
+    def lis = ass.newInstance(id:'foo:lis'.toURI(), label:'lis')
     obj.col = [col]
+    obj.seq = [seq]
+    obj.lis = [lis]
     doInTx { s-> s.saveOrUpdate(obj) }
     doInTx { s ->
       def o = s.get(cls, 'foo:obj')
       def c = s.get(cls, 'foo:col')
+      def e = s.get(ass, 'foo:seq')
+      def l = s.get(ass, 'foo:lis')
       assertNotNull o
       assertNotNull c
+      assertNotNull e
+      assertNotNull l
       assert o.label.equals('obj')
       assert c.label.equals('col')
+      assert e.label.equals('seq')
+      assert l.label.equals('lis')
       assertNotNull o.col
       assert o.col.size() == 1
       assert o.col[0] == c
-      o.col.add(cls.newInstance(id:'foo:col2'.toURI(), label:'col2'))
-      s.saveOrUpdate(o)
-    }
-    doInTx { s ->
-      def o = s.get(cls, 'foo:obj')
-      def c = s.get(cls, 'foo:col')
-      def c2 = s.get(cls, 'foo:col2')
-      assertNotNull o
-      assertNotNull c
-      assertNotNull o.col
-      assert o.label.equals('obj')
-      assert c.label.equals('col')
-      assert c2.label.equals('col2')
-      assert o.col.size() == 2
-      assert o.col[0] == c
-      assert o.col[1] == c2
-      o.col = [c2]
-      s.saveOrUpdate(o)
-    }
-    doInTx { s ->
-      def o = s.get(cls, 'foo:obj')
-      def c = s.get(cls, 'foo:col')
-      def c2 = s.get(cls, 'foo:col2')
-      assertNotNull o
-      assertNull c
-      assertNotNull o.col
-      assert o.label.equals('obj')
-      assert c2.label.equals('col2')
-      assert o.col.size() == 1
-      assert o.col[0] == c2
+      assertNotNull o.seq
+      assert o.seq.size() == 1
+      assert o.seq[0] == e
+      assertNotNull o.lis
+      assert o.lis.size() == 1
+      assert o.lis[0] == l
     }
   }
 
