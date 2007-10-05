@@ -2,24 +2,12 @@
 <div id="rhc">
 
 <div id="sideNav">
-  <div class="links">
-    <ul>
-      <@s.url id="articleArticleRepXML"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
-        <@s.param name="representation" value="%{'XML'}"/>
-      </@s.url>
-      <li><a href="${articleArticleRepXML}" class="xml" title="Download XML">Download Article XML</a></li>
-      <@s.url id="articleArticleRepPDF"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
-        <@s.param name="representation" value="%{'PDF'}"/>
-      </@s.url>
-      <li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>
-      <@s.url id="articleCitationURL"  namespace="/article" action="citationList" includeParams="none" articleURI="${articleURI}" />
-      <li><@s.a href="%{articleCitationURL}"  cssClass="citation" title="Download Citation">Download Citation</@s.a></li>
-      <@s.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/>
-      <li><@s.a href="%{emailArticleURL}"  cssClass="email" title="E-mail This Article to a Friend or Colleague">E-mail this Article</@s.a></li>
-      <li><a href="http://www.plos.org/journals/print.html" title="Order reprinted versions of this article" class="reprints icon">Order Reprints</a></li>
-      <li><a href="#" onclick="window.print();return false;" class="print last" title="Print this article">Print this Article</a></li>
-    </ul>
-  </div>
+
+  <dl id="relatedArticles"> <!-- This section needs to be made dynamic -->
+    <dt>RELATED PLoS ARTICLES</dt>
+    <dd><a href="#">National Mass Drug Administration Costs for Lymphatic Filariasis Elimination</a></dd>
+    <dd><a href="#">A Turning Point in the History of Humanity's Oldest Diseases: Guest Commentary by WHO Director-General Margaret Chan</a></dd>
+  </dl>
 
   <div id="floatMarker"></div>
 
