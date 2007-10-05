@@ -253,6 +253,10 @@ public class BrowseService {
     List<ArticleInfo> corrections = new ArrayList();
     for (final URI articleDoi : issue.getSimpleCollection()) {
       final Article article = session.get(Article.class, articleDoi.toString());
+      if (article == null) {
+        log.warn("Article " + articleDoi.toString() + " missing; member of Issue " + doi.toString());
+        continue;
+      }
       ArticleInfo articleInIssue = new ArticleInfo();
       articleInIssue.articleTypes = article.getArticleType();
       articleInIssue.authors =
