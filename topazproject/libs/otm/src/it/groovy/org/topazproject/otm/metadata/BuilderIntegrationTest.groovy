@@ -293,46 +293,46 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   }
 
   void testCollTypeLookAhead() {
-    Class ass = rdf.class('Assoc0', type:'foo:Assoc0', model:'m2') {
-      label()
-    }
-    Class cls = rdf.class('Test1', type:'foo:Test1') {
-      col (pred:'foo:p1', type:'foo:Test1',  colMapping: 'RdfSeq',  maxCard:-1)
-      seq (pred:'foo:p2', type:'foo:Assoc0', colMapping: 'RdfSeq',  maxCard:-1)
-      lis (pred:'foo:p3', type:'foo:Assoc0', colMapping: 'RdfList', maxCard:-1)
-      label()
-    }
-    def obj = cls.newInstance(id:'foo:obj'.toURI(), label:'obj')
-    def col = cls.newInstance(id:'foo:col'.toURI(), label:'col')
-    def seq = ass.newInstance(id:'foo:seq'.toURI(), label:'seq')
-    def lis = ass.newInstance(id:'foo:lis'.toURI(), label:'lis')
-    obj.col = [col]
-    obj.seq = [seq]
-    obj.lis = [lis]
-    doInTx { s-> s.saveOrUpdate(obj) }
-    doInTx { s ->
-      def o = s.get(cls, 'foo:obj')
-      def c = s.get(cls, 'foo:col')
-      def e = s.get(ass, 'foo:seq')
-      def l = s.get(ass, 'foo:lis')
-      assertNotNull o
-      assertNotNull c
-      assertNotNull e
-      assertNotNull l
-      assert o.label.equals('obj')
-      assert c.label.equals('col')
-      assert e.label.equals('seq')
-      assert l.label.equals('lis')
-      assertNotNull o.col
-      assert o.col.size() == 1
-      assert o.col[0] == c
-      assertNotNull o.seq
-      assert o.seq.size() == 1
-      assert o.seq[0] == e
-      assertNotNull o.lis
-      assert o.lis.size() == 1
-      assert o.lis[0] == l
-    }
+   def mc = 0
+   for (model in ['ri', 'm2']) {
+     def type = 'foo:Assoc' + mc
+     Class ass = rdf.class('Assoc' + mc, type:type, model:model) {
+       label()
+      }
+     def cnt = mc * 10
+     for (colType in ['Predicate', 'RdfList', 'RdfBag', 'RdfSeq', 'RdfAlt']) {
+       Class cls = rdf.class('Test' + cnt, type:'foo:Test' + cnt) {
+         col (pred:'foo:p1', type:'foo:Test' + cnt, colMapping: colType, maxCard:-1)
+         lis (pred:'foo:p2', type:type, colMapping: colType, maxCard:-1)
+         label()
+       }
+       def obj = cls.newInstance(id:'foo:obj'.toURI(), label:'obj')
+       def col = cls.newInstance(id:'foo:col'.toURI(), label:'col')
+       def lis = ass.newInstance(id:'foo:lis'.toURI(), label:'lis')
+       obj.col = [col]
+       obj.lis = [lis]
+       doInTx { s-> s.saveOrUpdate(obj) }
+       doInTx { s ->
+         def o = s.get(cls, 'foo:obj')
+         def c = s.get(cls, 'foo:col')
+         def l = s.get(ass, 'foo:lis')
+         assertNotNull o
+         assertNotNull c
+         assertNotNull l
+         assert o.label.equals('obj')
+         assert c.label.equals('col')
+         assert l.label.equals('lis')
+         assertNotNull o.col
+         assert o.col.size() == 1
+         assert o.col[0] == c
+         assertNotNull o.lis
+         assert o.lis.size() == 1
+         assert o.lis[0] == l
+       }
+       cnt++
+     }
+     mc++
+   }
   }
 
   void testCascade() {
