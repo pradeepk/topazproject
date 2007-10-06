@@ -68,7 +68,7 @@
 
     <!-- For scripts -->
     <dependency>
-      <groupId>groovy</groupId>
+      <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
     </dependency>
 

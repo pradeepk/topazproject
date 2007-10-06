@@ -76,7 +76,7 @@
       <artifactId>otm</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>groovy</groupId>
+          <groupId>org.codehaus.groovy</groupId>
           <artifactId>groovy-all</artifactId>
         </exclusion>
       </exclusions>
