@@ -688,6 +688,34 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
   }
 
+  void testErrorHandling() {
+    rdf.class('Test1') {
+    }
+
+    rdf.class('Test2') {
+      foo (type:'Test1')
+    }
+
+    shouldFail(OtmException, {
+      rdf.class('Test3') {
+        foo (type:'Test4')
+      }
+    });
+
+    shouldFail(OtmException, {
+      rdf.class('Test5') {
+        foo (type:'Test3')
+      }
+    });
+
+    shouldFail(OtmException, {
+      rdf.class('Test6') {
+        foo (type:'Test4')
+      }
+    });
+  }
+
+
   void testMostSpecificSubClass() {
     Class base = rdf.class("BaseClass", type:'base:type') {
       uri   (isId:true)
@@ -727,9 +755,9 @@ public class BuilderTest extends GroovyTestCase {
 
   void testCascadeType() {
     Class cls = rdf.class('Test1', type:'foo:Test1', model:'m1') {
-      sel (pred:'foo:p1', type:'Test1', cascade:['delete','saveOrUpdate'])
-      all (pred:'foo:p2', type:'Test1')
-      none (pred:'foo:p3', type:'Test1', cascade:[])
+      sel  (pred:'foo:p1', type:'foo:Test1', cascade:['delete','saveOrUpdate'])
+      all  (pred:'foo:p2', type:'foo:Test1')
+      none (pred:'foo:p3', type:'foo:Test1', cascade:[])
     }
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 

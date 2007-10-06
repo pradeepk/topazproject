@@ -53,6 +53,11 @@ public class RdfBuilder extends BuilderSupport {
   /** the default uri-prefix to use */
   String         defUriPrefix
 
+  protected final Map classDefsByName = [:]
+  protected final Map classDefsByType = [:]
+
+  protected final GroovyClassLoader gcl = new GroovyClassLoader()
+
   protected static String capitalize(String str) {
     return str[0].toUpperCase() + (str.size() > 1 ? str[1..-1] : "")
   }
@@ -77,6 +82,7 @@ public class RdfBuilder extends BuilderSupport {
    *  3. if the node is itself is structured (has { }) then step 1. is
    *     called recursively for all items in the structure
    *  4. nodeCompleted is invoked
+   *  5. if a (default-) value is present, call(val) is invoked on the node
    *
    * One of the consequences of the above sequence of calls is that you
    * don't know whether a node is simple or structured until step 3
@@ -85,27 +91,28 @@ public class RdfBuilder extends BuilderSupport {
    */
 
   /**
-   * This is overrriden because we need to use a different class while building the
-   * structures (a ClassDef) than what we return to the user (a java.lang.Class).
+   * This is overrriden so we can clean up the class-defs maps if necessary.
    */
   protected Object doInvokeMethod(String methodName, Object name, Object args) {
     if (log.traceEnabled)
       log.trace "doInvokeMethod called with methodName = '${methodName}', name = '${name}'"
 
-    Object node = super.doInvokeMethod(methodName, name, args);
+    Map savedClassDefsByName = null, savedClassDefsByType = null
+    if (getCurrent() == null) {
+      savedClassDefsByName = classDefsByName.clone()
+      savedClassDefsByType = classDefsByType.clone()
+    }
 
-    if (node instanceof ClassDef) {
-      ClassMetadata md = node.toClass(this)
-      if (md.isEntity())
-        sessFactory.setClassMetadata(md)
-      return md.getSourceClass()
-    } else if (node instanceof FieldDef && node.classType) {
-      ClassMetadata md = node.classType.toClass(this)
-      if (md.isEntity())
-        sessFactory.setClassMetadata(md)
-      return node
-    } else {
-      return node;
+    try {
+      return super.doInvokeMethod(methodName, name, args);
+    } catch (Throwable t) {
+      if (savedClassDefsByName != null) {
+        classDefsByName.clear();
+        classDefsByType.clear();
+        classDefsByName.putAll(savedClassDefsByName);
+        classDefsByType.putAll(savedClassDefsByType);
+      }
+      throw t;
     }
   }
 
@@ -133,7 +140,7 @@ public class RdfBuilder extends BuilderSupport {
           throw new OtmException("at least a class-name is required")
         if (value)
           attributes['className'] = value
-        return new ClassDef(attributes)
+        return new ClassDef(this, attributes)
 
       default:
         // create predicate
@@ -148,7 +155,9 @@ public class RdfBuilder extends BuilderSupport {
 
     // nested class
     if (!node.classType)
-      node.classType = new ClassDef([className:capitalize(node.name), *:node.classAttrs])
+      node.classType = new ClassDef(this, [className:capitalize(node.name),
+                                           parentClass:getClassDef(node.parent),
+                                           *:node.classAttrs])
     return node.classType
   }
 
@@ -157,13 +166,29 @@ public class RdfBuilder extends BuilderSupport {
       log.trace "setParent called with parent = '${parent}', child = '${child}'"
 
     getClassDef(parent).fields << child
+
+    if (child instanceof ClassDef)
+      child.parentClass = getClassDef(parent);
+    else
+      child.parent = parent
   }
 
-  protected void nodeCompleted(Object parent, Object node) {
+  protected Object postNodeCompletion(Object parent, Object node) {
     if (log.traceEnabled)
-      log.trace "nodeCompleted called with parent = '${parent}', node = '${node}'"
+      log.trace "postNodeCompletion called with parent = '${parent}', node = '${node}'"
 
-    if (node instanceof FieldDef && node.classType)
-      node.classType.parentClass = getClassDef(parent);
+    if (node instanceof ClassDef) {
+      ClassMetadata md = node.toClass(this)
+      if (md.isEntity())
+        sessFactory.setClassMetadata(md)
+      return md.getSourceClass()
+    } else if (node instanceof FieldDef && node.classType) {
+      ClassMetadata md = node.classType.toClass(this)
+      if (md.isEntity())
+        sessFactory.setClassMetadata(md)
+      return node
+    } else {
+      return node;
+    }
   }
 }

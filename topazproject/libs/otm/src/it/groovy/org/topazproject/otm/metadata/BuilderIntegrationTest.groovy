@@ -297,8 +297,8 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       label()
     }
     Class cls = rdf.class('Test1', type:'foo:Test1') {
-      col (pred:'foo:p1', type:'Test1', colMapping: 'RdfSeq', maxCard:-1)
-      seq (pred:'foo:p2', type:'foo:Assoc0', colMapping: 'RdfSeq', maxCard:-1)
+      col (pred:'foo:p1', type:'foo:Test1',  colMapping: 'RdfSeq',  maxCard:-1)
+      seq (pred:'foo:p2', type:'foo:Assoc0', colMapping: 'RdfSeq',  maxCard:-1)
       lis (pred:'foo:p3', type:'foo:Assoc0', colMapping: 'RdfList', maxCard:-1)
       label()
     }
@@ -337,9 +337,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
   void testCascade() {
     Class cls = rdf.class('Test1', type:'foo:Test1') {
-      sel (pred:'foo:p1', type:'Test1', cascade:['saveOrUpdate'])
-      all (pred:'foo:p2', type:'Test1')
-      none (pred:'foo:p3', type:'Test1', cascade:[])
+      sel  (pred:'foo:p1', type:'foo:Test1', cascade:['saveOrUpdate'])
+      all  (pred:'foo:p2', type:'foo:Test1')
+      none (pred:'foo:p3', type:'foo:Test1', cascade:[])
     }
 
     def obj = cls.newInstance(id:'foo:obj'.toURI())
