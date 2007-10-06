@@ -328,6 +328,15 @@ public class BuilderIntegrationTest extends GroovyTestCase {
          assertNotNull o.lis
          assert o.lis.size() == 1
          assert o.lis[0] == l
+         s.delete(o)
+         assertNull s.get(cls, 'foo:obj')
+         assertNull s.get(cls, 'foo:col')
+         assertNull s.get(ass, 'foo:lis')
+       }
+       doInTx { s ->
+         assertNull s.get(cls, 'foo:obj')
+         assertNull s.get(cls, 'foo:col')
+         assertNull s.get(ass, 'foo:lis')
        }
        cnt++
      }
