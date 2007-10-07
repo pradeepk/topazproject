@@ -73,6 +73,10 @@ public class BrowseService {
   private static final String ARTICLE_LOCK        = "ArticleLock-";
   private static final String ARTICLE_KEY         = "Article-";
 
+  private static final URI    RESEARCH_ART = URI.create(PLoS.PLOS_ArticleType + "research-article");
+  private static final URI    EDITORIAL    = URI.create(PLoS.PLOS_ArticleType + "editorial");
+  private static final URI    CORRECTION   = URI.create(PLoS.PLOS_ArticleType + "correction");
+
   private final ArticlePEP pep;
   private       Session    session;
   private       Ehcache    browseCache;
@@ -252,35 +256,26 @@ public class BrowseService {
     List<ArticleInfo> researchArticles = new ArrayList();
     List<ArticleInfo> corrections = new ArrayList();
     for (final URI articleDoi : issue.getSimpleCollection()) {
-      final Article article = session.get(Article.class, articleDoi.toString());
-      if (article == null) {
-        log.warn("Article " + articleDoi.toString() + " missing; member of Issue " + doi.toString());
+      ArticleInfo articleInIssue = getArticleInfo(articleDoi, session.getTransaction());
+      if (articleInIssue == null) {
+        log.warn("Article " + articleDoi + " missing; member of Issue " + doi);
         continue;
       }
-      ArticleInfo articleInIssue = new ArticleInfo();
-      articleInIssue.articleTypes = article.getArticleType();
-      articleInIssue.authors =
-              article.getDublinCore().getBibliographicCitation().getAuthorsRealNames();
-      articleInIssue.date = article.getDublinCore().getDate();
-      articleInIssue.id = article.getId();
-      articleInIssue.title = article.getDublinCore().getTitle();
+
       boolean articleAdded = false;
-      if (articleInIssue.getArticleTypes()
-          .contains(URI.create(PLoS.PLOS_ArticleType + "research-article"))) {
+      if (articleInIssue.getArticleTypes().contains(RESEARCH_ART)) {
         researchArticles.add(articleInIssue);
         articleAdded = true;
       }
-      if (articleInIssue.getArticleTypes()
-          .contains(URI.create(PLoS.PLOS_ArticleType + "editorial"))) {
+      if (articleInIssue.getArticleTypes().contains(EDITORIAL)) {
         editorials.add(articleInIssue);
         articleAdded = true;
       }
-      if (articleInIssue.getArticleTypes()
-          .contains(URI.create(PLoS.PLOS_ArticleType + "correction"))) {
+      if (articleInIssue.getArticleTypes().contains(CORRECTION)) {
         corrections.add(articleInIssue);
         articleAdded = true;
       }
-      // insure Article is displayed
+      // ensure Article is displayed
       if (!articleAdded) {
         researchArticles.add(articleInIssue);
       }
@@ -526,43 +521,38 @@ public class BrowseService {
     browseCache.put(new Element(CAT_INFO_KEY + jnlName, catSizes));
   }
 
-  private ArticleInfo loadArticleInfo(final URI id) {
-    return
-      TransactionHelper.doInTx(session, new TransactionHelper.Action<ArticleInfo>() {
-        public ArticleInfo run(Transaction tx) {
-          Results r = tx.getSession().createQuery(
-              "select a.id, dc.date, dc.title, ci, " +
-              "(select a.articleType from Article aa2) " +
-              "from Article a, BrowseService$CitationInfo ci " +
-              "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;").
-              setParameter("id", id).execute();
+  private ArticleInfo loadArticleInfo(final URI id, Transaction tx) {
+    Results r = tx.getSession().createQuery(
+        "select a.id, dc.date, dc.title, ci, " +
+        "(select a.articleType from Article aa2) " +
+        "from Article a, BrowseService$CitationInfo ci " +
+        "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;").
+        setParameter("id", id).execute();
 
-          r.beforeFirst();
-          if (!r.next())
-            return null;
+    r.beforeFirst();
+    if (!r.next())
+      return null;
 
-          ArticleInfo ai = new ArticleInfo();
-          ai.id    = id;
-          ai.date  = r.getLiteralAs(1, Date.class);
-          ai.title = r.getString(2);
+    ArticleInfo ai = new ArticleInfo();
+    ai.id    = id;
+    ai.date  = r.getLiteralAs(1, Date.class);
+    ai.title = r.getString(2);
 
-          for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
-            upi.hashCode();     // force load
-            ai.authors.add(upi.realName);
-          }
+    for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
+      upi.hashCode();     // force load
+      ai.authors.add(upi.realName);
+    }
 
-          Results sr = r.getSubQueryResults(4);
-          while (sr.next())
-            ai.articleTypes.add(sr.getURI(0));
+    Results sr = r.getSubQueryResults(4);
+    while (sr.next())
+      ai.articleTypes.add(sr.getURI(0));
 
-          if (log.isDebugEnabled())
-            log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
-                      + "', date='" + ai.date + "', title='" + ai.title
-                      + "', authors='" + ai.authors + "'");
+    if (log.isDebugEnabled())
+      log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
+                + "', date='" + ai.date + "', title='" + ai.title
+                + "', authors='" + ai.authors + "'");
 
-          return ai;
-        }
-      });
+    return ai;
   }
 
   private Years loadArticleDates() {
@@ -635,36 +625,44 @@ public class BrowseService {
     });
   }
 
-  private List<ArticleInfo> getArticles(List<URI> ids, int pageNum, int pageSize) {
-    List<ArticleInfo> res = new ArrayList<ArticleInfo>();
+  private List<ArticleInfo> getArticles(final List<URI> ids, int pageNum, int pageSize) {
+    final int beg = (pageSize > 0) ? pageNum * pageSize : 0;
+    final int end = (pageSize > 0) ? Math.min((pageNum + 1) * pageSize, ids.size()) : ids.size();
 
-    int beg = (pageSize > 0) ? pageNum * pageSize : 0;
-    int end = (pageSize > 0) ? Math.min((pageNum + 1) * pageSize, ids.size()) : ids.size();
-    for (int idx = beg; idx < end; idx++) {
-      final URI id = ids.get(idx);
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<List<ArticleInfo>>() {
+      public List<ArticleInfo> run(Transaction tx) {
+        List<ArticleInfo> res = new ArrayList<ArticleInfo>();
 
-      try {
-        pep.checkAccess(ArticlePEP.READ_META_DATA, id);
-      } catch (SecurityException se) {
-        if (log.isDebugEnabled())
-          log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
-        continue;
-      }
+        for (int idx = beg; idx < end; idx++) {
+          URI id = ids.get(idx);
 
-      ArticleInfo ai =
-        CacheAdminHelper.getFromCache(browseCache, ARTICLE_KEY + id, -1, ARTICLE_LOCK + id,
-                                      "article " + id,
-                                      new CacheAdminHelper.EhcacheUpdater<ArticleInfo>() {
-        public ArticleInfo lookup() {
-          return loadArticleInfo(id);
+          ArticleInfo ai = getArticleInfo(id, tx);
+          if (ai != null)
+            res.add(ai);
         }
-      });
 
-      if (ai != null)
-        res.add(ai);
+        return res;
+      }
+    });
+  }
+
+  private ArticleInfo getArticleInfo(final URI id, final Transaction tx) {
+    try {
+      pep.checkAccess(ArticlePEP.READ_META_DATA, id);
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled())
+        log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
+      return null;
     }
 
-    return res;
+    return
+      CacheAdminHelper.getFromCache(browseCache, ARTICLE_KEY + id, -1, ARTICLE_LOCK + id,
+                                    "article " + id,
+                                    new CacheAdminHelper.EhcacheUpdater<ArticleInfo>() {
+        public ArticleInfo lookup() {
+          return loadArticleInfo(id, tx);
+        }
+      });
   }
 
   private List<NewArtInfo> getNewArticleInfos(final String[] uris) {
