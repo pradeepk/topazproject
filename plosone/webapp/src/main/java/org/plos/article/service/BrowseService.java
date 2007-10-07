@@ -524,7 +524,9 @@ public class BrowseService {
   private ArticleInfo loadArticleInfo(final URI id, Transaction tx) {
     Results r = tx.getSession().createQuery(
         "select a.id, dc.date, dc.title, ci, " +
-        "(select a.articleType from Article aa2) " +
+        "(select a.articleType from Article aa), " +
+        "(select aa2.id, aa2.dublinCore.title from Article aa2 " +
+        "   where aa2 = a.relatedArticles.article) " +
         "from Article a, BrowseService$CitationInfo ci " +
         "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;").
         setParameter("id", id).execute();
@@ -547,10 +549,15 @@ public class BrowseService {
     while (sr.next())
       ai.articleTypes.add(sr.getURI(0));
 
+    sr = r.getSubQueryResults(5);
+    while (sr.next())
+      ai.relatedArticles.add(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
+
     if (log.isDebugEnabled())
       log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
                 + "', date='" + ai.date + "', title='" + ai.title
-                + "', authors='" + ai.authors + "'");
+                + "', authors='" + ai.authors + "', related-articles='" + ai.relatedArticles +
+                "'");
 
     return ai;
   }
@@ -720,11 +727,12 @@ public class BrowseService {
    * The info about a single article that the UI needs.
    */
   public static class ArticleInfo implements Serializable {
-    public URI          id;
-    public Set<URI>     articleTypes = new HashSet<URI>();
-    public Date         date;
-    public String       title;
-    public List<String> authors = new ArrayList<String>();
+    public URI                     id;
+    public Set<URI>                articleTypes = new HashSet<URI>();
+    public Date                    date;
+    public String                  title;
+    public List<String>            authors = new ArrayList<String>();
+    public Set<RelatedArticleInfo> relatedArticles = new HashSet<RelatedArticleInfo>();
 
     /**
      * Get the id.
@@ -769,6 +777,53 @@ public class BrowseService {
      */
     public List<String> getAuthors() {
       return authors;
+    }
+
+    /**
+     * Get the related articles.
+     *
+     * @return the related articles.
+     */
+    public Set<RelatedArticleInfo> getRelatedArticles() {
+      return relatedArticles;
+    }
+  }
+
+  public static class RelatedArticleInfo implements Serializable {
+    public final URI    uri;
+    public final String title;
+
+    /**
+     * Create a new related-article-info object.
+     *
+     * @param uri   the uri of the article
+     * @param title the article's title
+     */
+    public RelatedArticleInfo(URI uri, String title) {
+      this.uri   = uri;
+      this.title = title;
+    }
+
+    /**
+     * Get the article uri.
+     *
+     * @return the article uri.
+     */
+    public URI getUri() {
+      return uri;
+    }
+
+    /**
+     * Get the title.
+     *
+     * @return the title.
+     */
+    public String getTitle() {
+      return title;
+    }
+
+    public String toString() {
+      return "RelatedArticleInfo[uri='" + uri + "', title='" + title + "']";
     }
   }
 
