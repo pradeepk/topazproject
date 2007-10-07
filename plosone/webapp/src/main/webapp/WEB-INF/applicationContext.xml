@@ -416,6 +416,7 @@
         <value>org.plos.models.RatingContent</value>
         <value>org.plos.models.RatingSummary</value>
         <value>org.plos.models.RatingSummaryContent</value>
+        <value>org.plos.models.RelatedArticle</value>
         <value>org.plos.models.Reply</value>
         <value>org.plos.models.ReplyThread</value>
         <value>org.plos.models.Trackback</value>

@@ -257,6 +257,7 @@
     <xsl:call-template name="gen-bib-cit"/>
     <xsl:call-template name="gen-ref"/>
     <xsl:call-template name="gen-lic"/>
+    <xsl:call-template name="gen-rel-art"/>
   </xsl:template>
 
   <xsl:template name="gen-bib-cit" xmlns:topaz="&topaz;" xmlns:bibtex="&bibtex;"
@@ -460,6 +461,18 @@
       </rdf:Description>
     </dc_terms:license>
     -->
+  </xsl:template>
+
+  <xsl:template name="gen-rel-art" xmlns:dc_terms="&dcterms;" xmlns:plos="&plos;">
+    <xsl:for-each select="$meta/related-article">
+      <plos:relatedArticle>
+        <rdf:Description rdf:about="{concat('info:doi/10.1371/relatedArticle/', my:gen-uuid())}">
+          <rdf:type rdf:resource="&plos;RelatedArticle"/>
+          <dc_terms:references rdf:resource="{@xlink:href}"/>
+          <plos:articleRelationType><xsl:value-of select="@related-article-type"/></plos:articleRelationType>
+        </rdf:Description>
+      </plos:relatedArticle>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- generate the propagate-permissions rdf statements for the article -->
