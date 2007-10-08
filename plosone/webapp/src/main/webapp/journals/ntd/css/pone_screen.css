@@ -293,16 +293,14 @@ span.new { color: #fff; float: left; display: block; }
 div#ftr 		{ background: #FFF url(../images/pone_html_bg.gif) repeat-x 0px -128px; font-size: .85em; width: 100%; border-top: 1px solid #003956; margin: 20px 0 0 0; padding: 0; text-align: center; clear: both; }
 div#ftr ul 		{ margin: 0; padding: 0; list-style-type: none; }
 div#ftr ul li 	{ margin: 0 5px; display: inline; }
-div#ftr ul a,
-div#ftr ul a:visited { color: #fff;}
-div#ftr ul a:hover { color: #fff;}
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p 		{ margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #003956; white-space: nowrap; }
 div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
 div#ftr div.powered { background-color: #202020; color: #bbb; font-size: .9em; padding: 10px 0 4px 0; letter-spacing: .03em; margin-top: 10px; border-top: 1px solid #fff;}
 div.powered a:link,
-div.powered a:visited,
-div.powered a:hover { color: #ccc; font-weight: bold;}
+div.powered a:visited { color: #fff; font-weight: bold; }
+div.powered a:hover { text-decoration:none; }
+
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
@@ -580,7 +578,7 @@ div.trackback p.header span.timestamp { white-space:nowrap; }
 div.trackback p.excerpt	{margin:0; line-height: 1.5em;}
 
 /* ------ Browse Styles ----*/
-div.browse h1 		{ /*width:99%;*/ margin-bottom: 20px; margin-right:140px; padding-top: 10px; border-top: 6px solid #67a96d; }
+div.browse h1 		{ margin-bottom: 20px; margin-right: 140px;}
 div.browse #search-results { margin-left: 0; margin-right: 140px; padding-left: 20px; border-left: 240px solid #eee;}
 div.browse div#search-results	{ z-index: 69; position: relative;}
 div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  padding: 0; background: #eee; margin-bottom: 20px; padding-bottom: 20px; min-height: 480px;}
