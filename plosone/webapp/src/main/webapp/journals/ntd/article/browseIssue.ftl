@@ -1,3 +1,15 @@
+<#macro related articleInfo>
+	<#if articleInfo.relatedArticles?size gt 0>
+						<dl class="related">
+							<dt>Related PLoS Articles</dt>
+							<#list articleInfo.relatedArticles as ra>
+							<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
+							<dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
+							</#list>
+						</dl>
+	</#if>
+</#macro>
+
 <!-- begin : toc content -->
 <div id="content" class="toc">
 	<!-- begin : right-hand column -->
@@ -64,11 +76,7 @@
 						<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
 						<h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
 						<p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-						<dl class="related"> <!-- Definition list for related articles should only appear if there are one or more related articles -->
-							<dt>Related PLoS Articles</dt>
-							<dd><a href="#">Lorem Ipsum Dolor sit Amet Consectetuer Adipiscing Elit Sed Diam Nonummy</a></dd>
-							<dd><a href="#">Duis Autem vel Eum Iriure Dolor in Hendrerit in Vulputate Velit Esse Molestie Consequat</a></dd>
-						</dl>
+						<@related articleInfo=articleInfo/>
 					</div>
 				</#list>
 			</#if>
@@ -80,12 +88,8 @@
 						<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
 						<h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
 						<p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-						<p><a href="#">Author Summary</a></p> <!-- This should only appear if there is an author summary -->
-						<dl class="related"> <!-- Definition list for related articles should only appear if there are one or more related articles -->
-							<dt>Related PLoS Articles</dt>
-							<dd><a href="#">Lorem Ipsum Dolor sit Amet Consectetuer Adipiscing Elit Sed Diam Nonummy</a></dd>
-							<dd><a href="#">Duis Autem vel Eum Iriure Dolor in Hendrerit in Vulputate Velit Esse Molestie Consequat</a></dd>
-						</dl>
+						<!-- ??? <p><a href="#">Author Summary</a></p> This should only appear if there is an author summary -->
+						<@related articleInfo=articleInfo/>
 					</div>
 				</#list>
 			</#if>
@@ -97,12 +101,8 @@
 						<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
 						<h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
 						<p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-						<p><a href="#">Author Summary</a></p> <!-- This should only appear if there is an author summary -->
-						<dl class="related"> <!-- Definition list for related articles should only appear if there are one or more related articles -->
-							<dt>Related PLoS Articles</dt>
-							<dd><a href="#">Lorem Ipsum Dolor sit Amet Consectetuer Adipiscing Elit Sed Diam Nonummy</a></dd>
-							<dd><a href="#">Duis Autem vel Eum Iriure Dolor in Hendrerit in Vulputate Velit Esse Molestie Consequat</a></dd>
-						</dl>
+						<!-- ??? <p><a href="#">Author Summary</a></p> This should only appear if there is an author summary -->
+						<@related articleInfo=articleInfo/>
 					</div>
 				</#list>
 			</#if>

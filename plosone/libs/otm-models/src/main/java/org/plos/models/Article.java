@@ -40,9 +40,13 @@ public class Article extends ObjectInfo {
 
   @Predicate(uri = Rdf.dc_terms + "hasPart")
   private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
+
   // This will be used to indicate the different types the article conforms to
   @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")
   private Set<URI> articleType;
+
+  @Predicate(uri = PLoS.plos + "relatedArticle")
+  private Set<RelatedArticle> relatedArticles;
 
   /**
    * The categories the article belongs to
@@ -103,5 +107,23 @@ public class Article extends ObjectInfo {
    */
   public void setCategories(Set<Category> categories) {
     this.categories = categories;
+  }
+
+  /**
+   * Get the list of related articles.
+   *
+   * @return the list of related articles
+   */
+  public Set<RelatedArticle> getRelatedArticles() {
+    return relatedArticles;
+  }
+
+  /**
+   * Set the list of related articles.
+   *
+   * @param relatedArticles the set of related articles.
+   */
+  public void setRelatedArticles(Set<RelatedArticle> relatedArticles) {
+    this.relatedArticles = relatedArticles;
   }
 }

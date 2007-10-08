@@ -22,11 +22,7 @@ import org.apache.commons.logging.LogFactory;
  * when done.
  */
 public class ClassDef {
-  private static final Log log             = LogFactory.getLog(ClassDef.class)
-  private static final Map classDefsByName = [:]
-  private static final Map classDefsByType = [:]
-
-  protected static final GroovyClassLoader gcl = new GroovyClassLoader()
+  private static final Log log = LogFactory.getLog(ClassDef.class)
 
   /** the name of the java class */
   String   className
@@ -51,13 +47,15 @@ public class ClassDef {
 
   private ClassMetadata metadata
 
-  ClassMetadata toClass(RdfBuilder rdf) {
-    if (metadata)
-      return metadata
+  protected ClassDef(RdfBuilder rdf, Map attrs) {
+    // apply the attributes
+    attrs.each{ k, v ->
+      setProperty(k, v)
+    }
 
     // set up uriPrefix
     if (!uriPrefix)
-      uriPrefix = inheritField('uriPrefix', true, null)
+      uriPrefix = inheritField('uriPrefix', true, null, rdf)
     if (!uriPrefix)
       uriPrefix = rdf.defUriPrefix
     uriPrefix = rdf.expandAliases(uriPrefix)
@@ -71,22 +69,16 @@ public class ClassDef {
     } else
       type = rdf.expandAliases(type)
 
-    // initialize fields (needs uriPrefix and type to be set up)
-    for (f in fields)
-      f.init(rdf, this, classDefsByType)
-
-    // collect all types and fields
-    def allTypes  = [] as Set
-    def allFields = []
-    ClassDef clsDef = this
-    while (clsDef) {
-      if (clsDef.type) {
-        if (type == "")
+    // find type, inheriting if necessary
+    if (type == "") {
+      ClassDef clsDef = this
+      while (clsDef) {
+        if (clsDef.type) {
           type = clsDef.type
-        allTypes << clsDef.type
+          break
+        }
+        clsDef = rdf.classDefsByName[clsDef.extendsClass]
       }
-      allFields.addAll(clsDef.fields)
-      clsDef = classDefsByName[clsDef.extendsClass]
     }
 
     // default type if necessary
@@ -95,7 +87,46 @@ public class ClassDef {
         throw new OtmException("class '${className}': type is unset, no type in superclass found," +
                                " and no uri-prefix has been configured")
       type = uriPrefix + className
-      allTypes << type;
+    }
+
+    // ensure model is set
+    if (!model)
+      model = inheritField('model', true, null, rdf)
+    if (!model)
+      model = rdf.defModel
+    if (!model)
+      throw new OtmException("No model has been set for class '${className}' and no default " +
+                             "model has been defined either")
+
+    // inherit id-generator
+    if (idGenerator == '')
+      idGenerator = inheritField('idGenerator', false, '', rdf)
+    if (idGenerator == '')
+      idGenerator = 'GUID'
+
+    // register ourselves now so fields and nested classes can refer back to us
+    rdf.classDefsByName[className] = this
+    if (type && !rdf.classDefsByType[type])
+      rdf.classDefsByType[type] = this
+  }
+
+  ClassMetadata toClass(RdfBuilder rdf) {
+    if (metadata)
+      return metadata
+
+    // initialize fields (needs uriPrefix and type to be set up)
+    for (f in fields)
+      f.init(rdf, this)
+
+    // collect all types and fields
+    def allFields = []
+    def allTypes  = [] as Set
+    ClassDef clsDef = this
+    while (clsDef) {
+      if (clsDef.type)
+        allTypes << clsDef.type
+      allFields.addAll(clsDef.fields)
+      clsDef = rdf.classDefsByName[clsDef.extendsClass]
     }
 
     // find the id-field and ensure there's only one; if there's none, create one
@@ -112,28 +143,13 @@ public class ClassDef {
 
     if (idFields.size() == 0 && !isAbstract) {
       def idField = new FieldDef(name:'id', isId:true, type:'xsd:anyURI')
-      idField.init(rdf, this, classDefsByName)
+      idField.init(rdf, this)
       idFields  << idField
       fields    << idField
       allFields << idField
     }
 
     def idField = idFields[0]
-
-    // ensure model is set
-    if (!model)
-      model = inheritField('model', true, null)
-    if (!model)
-      model = rdf.defModel
-    if (!model)
-      throw new OtmException("No model has been set for class '${className}' and no default " +
-                             "model has been defined either")
-
-    // inherit id-generator
-    if (idGenerator == '')
-      idGenerator = inheritField('idGenerator', false, '')
-    if (idGenerator == '')
-      idGenerator = 'GUID'
 
     // generate the groovy class definition
     StringBuffer clsSrc = new StringBuffer(100)
@@ -184,7 +200,7 @@ public class ClassDef {
       log.debug "Class def: ${clsSrc}\n"
 
     // create class
-    Class clazz = gcl.parseClass(clsSrc.toString(), className)
+    Class clazz = rdf.gcl.parseClass(clsSrc.toString(), className)
 
     // create class-metadata
     def mappers = []
@@ -192,12 +208,12 @@ public class ClassDef {
       mappers.addAll(m)
     def idmapper = fields.contains(idField) ? idField.toMapper(rdf, clazz, getIdGen())[0] : null
 
-    clsDef = classDefsByName[extendsClass]
+    clsDef = rdf.classDefsByName[extendsClass]
     while (clsDef) {
       mappers.addAll(clsDef.toClass().getFields())
       if (!idmapper)
         idmapper = clsDef.toClass().getIdField()
-      clsDef = classDefsByName[clsDef.extendsClass]
+      clsDef = rdf.classDefsByName[clsDef.extendsClass]
     }
 
     metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model, uriPrefix,
@@ -206,22 +222,17 @@ public class ClassDef {
     if (log.debugEnabled)
       log.debug "created metadata for class '${clazz.name}': ${metadata}"
 
-    // register and return
-    classDefsByName[className] = this
-    if (type && !classDefsByType[type])
-      classDefsByType[type] = this
-
     return metadata
   }
 
-  private def inheritField(def fname, boolean fromParents, def defVal) {
+  private def inheritField(def fname, boolean fromParents, def defVal, RdfBuilder rdf) {
     ClassDef clsDef = this
     while (clsDef) {            // walk parent classes
       ClassDef supCls = clsDef
       while (supCls) {                  // walk superclasses
         if (supCls."${fname}" != defVal)
           return supCls."${fname}"
-        supCls = classDefsByName[supCls.extendsClass]
+        supCls = rdf.classDefsByName[supCls.extendsClass]
       }
       clsDef = fromParents ? clsDef.parentClass : null
     }

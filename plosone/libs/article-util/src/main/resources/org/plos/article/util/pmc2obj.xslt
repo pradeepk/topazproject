@@ -257,6 +257,7 @@
     <xsl:call-template name="gen-bib-cit"/>
     <xsl:call-template name="gen-ref"/>
     <xsl:call-template name="gen-lic"/>
+    <xsl:call-template name="gen-rel-art"/>
   </xsl:template>
 
   <xsl:template name="gen-bib-cit" xmlns:topaz="&topaz;" xmlns:bibtex="&bibtex;"
@@ -460,6 +461,18 @@
       </rdf:Description>
     </dc_terms:license>
     -->
+  </xsl:template>
+
+  <xsl:template name="gen-rel-art" xmlns:dc_terms="&dcterms;" xmlns:plos="&plos;">
+    <xsl:for-each select="$meta/related-article">
+      <plos:relatedArticle>
+        <rdf:Description rdf:about="{concat('info:doi/10.1371/relatedArticle/', my:gen-uuid(position()))}">
+          <rdf:type rdf:resource="&plos;RelatedArticle"/>
+          <dc_terms:references rdf:resource="{@xlink:href}"/>
+          <plos:articleRelationType><xsl:value-of select="@related-article-type"/></plos:articleRelationType>
+        </rdf:Description>
+      </plos:relatedArticle>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- generate the propagate-permissions rdf statements for the article -->
@@ -1219,7 +1232,7 @@
     <xsl:param name="u"  as="element(name)"/>
     <xsl:param name="id" as="xs:string?"/>
     <user cit-id="{$id}">
-      <rdf:Description rdf:about="{concat('info:doi/10.1371/profile/', my:gen-uuid())}">
+      <rdf:Description rdf:about="{concat('info:doi/10.1371/profile/', my:gen-uuid($id))}">
         <rdf:type rdf:resource="&foaf;Person"/>
         <foaf:name><xsl:value-of select="my:format-name($u)"/></foaf:name>
         <xsl:if test="$u/given-names">
@@ -1233,6 +1246,7 @@
   </xsl:function>
 
   <xsl:function name="my:gen-uuid" as="xs:string">
+    <xsl:param name="dummy"/>
     <!-- no rng in xslt or xpath, so we have to cheat... -->
     <xsl:value-of xmlns:uuid="java:java.util.UUID" select="uuid:randomUUID()"/>
   </xsl:function>

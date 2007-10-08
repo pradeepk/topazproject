@@ -56,7 +56,7 @@
                 </p>
               </#if>
               <@s.url id="issueURL" action="browseIssue" namespace="/journals/ntd/article"
-                issue="${issueInfo.id}" includeParams="none"/>
+                issue="${issueInfo.id}" field="issue" includeParams="none"/>
               <a href="${issueURL}">${issueInfo.displayName}</a>
             </#list>
           </#if>

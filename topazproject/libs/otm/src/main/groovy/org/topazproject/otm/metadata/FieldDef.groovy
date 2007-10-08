@@ -81,6 +81,8 @@ public class FieldDef {
 
   protected ClassDef classType          // the class-def if this has a class type
   protected Map      classAttrs = [:]   // save class attributes for later
+  protected Object   parent             // save for later
+
   protected def      defaultValue
 
   /**
@@ -88,7 +90,7 @@ public class FieldDef {
    * the per-field ones. Needed because we don't know whether this is a nested class definition
    * or not at this time.
    */
-  FieldDef(Map attrs) {
+  protected FieldDef(Map attrs) {
     attrs.each{ k, v ->
       boolean inCls = ClassDef.class.declaredFields.any{it.name == k}
       if (inCls)
@@ -105,7 +107,7 @@ public class FieldDef {
   /**
    * Resolve any defaults
    */
-  protected init(RdfBuilder rdf, ClassDef clsDef, def classDefsByType) {
+  protected init(RdfBuilder rdf, ClassDef clsDef) {
     // fix up predicate if needed
     if (!pred && !isId && !embedded)
       pred = name;
@@ -128,7 +130,7 @@ public class FieldDef {
 
     // and resolve any references to classes defined earlier
     if (!classType)
-      classType = classDefsByType[type]
+      classType = rdf.classDefsByType[type]
     if (classType)
       type = classType.type
 
@@ -277,7 +279,7 @@ ct)]
       case 'double':
         return Double.TYPE
       default:
-        return ClassDef.gcl.loadClass(name)
+        return rdf.gcl.loadClass(name)
     }
   }
 

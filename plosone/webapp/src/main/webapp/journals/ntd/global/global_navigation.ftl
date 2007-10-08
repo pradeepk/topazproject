@@ -4,10 +4,12 @@
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubjectURL"/>
     <@s.url action="browse" namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
     <@s.url action="browseIssue" namespace="/article" field="issue"  includeParams="none" id="browseIssueURL"/>
+    <@s.url action="browseVolume" namespace="/article" field="volume" includeParams="none" id="archiveURL"/>
+
     <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
 					<li><a href="${browseIssueURL}">Current Issue</a></li>
-					<li><a href="#">Journal Archive</a></li>
+					<li><a href="${archiveURL}">Journal Archive</a></li>
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
 					<li><a href="#">Collections</a></li>
