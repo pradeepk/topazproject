@@ -17,9 +17,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -36,7 +34,6 @@ import org.plos.web.VirtualJournalContext;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Order;

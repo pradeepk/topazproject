@@ -15,11 +15,8 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
-import com.googlecode.jsonplugin.annotations.JSON;
-
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,7 +29,6 @@ import org.plos.rating.service.RatingsPEP;
 import org.plos.user.PlosOneUser;
 import org.plos.util.ProfanityCheckingService;
 
-import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;

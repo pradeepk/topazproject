@@ -16,8 +16,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.googlecode.jsonplugin.annotations.JSON;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,7 +28,6 @@ import org.plos.models.RatingSummary;
 import org.plos.models.UserAccount;
 import org.plos.rating.service.RatingsPEP;
 
-import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Order;

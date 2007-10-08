@@ -10,20 +10,16 @@
 
 package org.plos.article.service;
 
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.article.util.ArticleUtil;
-import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.ObjectInfo;
 import org.topazproject.otm.annotations.Rdf;
 
