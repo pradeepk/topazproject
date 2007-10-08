@@ -28,16 +28,16 @@ import java.util.Set;
  * Class to configure the FreeMarker templates with css and javascript files and the title of page.
  * Used so that we can have just one or two main templates and swap out the body section with
  * a Struts 2 result.
- * 
+ *
  * @author Stephen Cheng
  */
 public class PlosOneFreemarkerConfig {
   private static final Log log = LogFactory.getLog(PlosOneFreemarkerConfig.class);
-  
+
   private static final String[] DEFAULT_CSS_FILES = {"/css/pone_iepc.css", "/css/pone_screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
-  private static final String DEFAULT_TITLE = "Journal";  
-  
+  private static final String DEFAULT_TITLE = "Journal";
+
   private HashMap<String, JournalConfig> journals;
   private String dirPrefix;
   private String subdirPrefix;
@@ -53,7 +53,7 @@ public class PlosOneFreemarkerConfig {
    * Constructor that loads the list of css and javascript files and page titles for pages which
    * follow the standard templates.  Creates its own composite configuration by iterating over each
    * of the configs in the config to assemble a union of pages defined.
-   * 
+   *
    */
   public PlosOneFreemarkerConfig() {
     Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
@@ -79,7 +79,7 @@ public class PlosOneFreemarkerConfig {
     for (int c = 0; c < numConfigs; c++) {
       if (numConfigs > 1) {
         oneConfig = ((CombinedConfiguration)myConfig).getConfiguration(c);
-      } else { 
+      } else {
         oneConfig = myConfig;
       }
       int numJournals = oneConfig.getList("freemarker.journal.name").size();
@@ -95,41 +95,41 @@ public class PlosOneFreemarkerConfig {
             log.debug("journal Not found, creating: " + journalName);
           }
           jc = new JournalConfig();
-          journals.put(journalName, jc);          
+          journals.put(journalName, jc);
         }
-        
+
         if (jc.getDefaultTitle() == null) {
           final String title = oneConfig.getString(journal + ".default.title");
           if (title != null) {
             jc.setDefaultTitle(title);
           }
         }
-        
+
         if (jc.getMetaDescription() == null) {
           final String metaDescription = oneConfig.getString(journal + ".metaDescription");
           if (metaDescription != null) {
-            jc.setMetaDescription(metaDescription);            
+            jc.setMetaDescription(metaDescription);
           }
         }
 
         if (jc.getMetaKeywords() == null) {
           final String metaKeywords= oneConfig.getString(journal + ".metaKeywords");
           if (metaKeywords != null) {
-            jc.setMetaKeywords(metaKeywords);            
+            jc.setMetaKeywords(metaKeywords);
           }
         }
-        
+
         if (jc.getDisplayName() == null) {
           final String displayName = oneConfig.getString(journal + ".displayName");
           if (displayName != null) {
-            jc.setDisplayName(displayName);            
+            jc.setDisplayName(displayName);
           }
         }
-        
+
         if (jc.getArticleTitlePrefix() == null) {
           final String articleTitlePrefix= oneConfig.getString(journal + ".articleTitlePrefix");
           if (articleTitlePrefix != null) {
-            jc.setArticleTitlePrefix(articleTitlePrefix);            
+            jc.setArticleTitlePrefix(articleTitlePrefix);
           }
         }
 
@@ -143,9 +143,9 @@ public class PlosOneFreemarkerConfig {
               defaultCss[i] = dirPrefix + subdirPrefix + (String)iter.next();
             }
             jc.setDefaultCss(defaultCss);
-          } 
+          }
         }
-        
+
         if (jc.getDefaultJavaScript() == null) {
           final List fileList = oneConfig.getList(journal + ".default.javascript.file");
           String javascriptFile;
@@ -164,11 +164,11 @@ public class PlosOneFreemarkerConfig {
             jc.setDefaultJavaScript(defaultJavaScript);
           }
         }
-    
+
         final int numPages = oneConfig.getList(journal + ".page.name").size();
         int numCss, numJavaScript, j;
         String pageName, page;
-        
+
         HashMap<String, String> titles = jc.getTitles();
         if (titles == null) {
           titles = new HashMap<String, String>();
@@ -181,16 +181,16 @@ public class PlosOneFreemarkerConfig {
         if (javaScriptFiles == null) {
           javaScriptFiles = new HashMap<String, String[]>();
         }
-    
+
         String[] cssArray = null;
         String[] javaScriptArray = null;
-    
+
         for (int i = 0; i < numPages; i++) {
           page = journal + ".page(" + i + ")";
           pageName = oneConfig.getString(page + ".name");
-          if (log.isDebugEnabled()) 
+          if (log.isDebugEnabled())
             log.debug("Reading config for page name: " + pageName);
-          
+
           if (!titles.containsKey(pageName)) {
             final String title = oneConfig.getString(page + ".title");
             if (title != null) {
@@ -210,13 +210,13 @@ public class PlosOneFreemarkerConfig {
               cssFiles.put(pageName, cssArray);
             }
           }
-          
+
           if (!javaScriptFiles.containsKey(pageName)) {
             Object obj = oneConfig.getProperty(page+".javascript");
-            final boolean isDefined = (obj != null); 
+            final boolean isDefined = (obj != null);
             numJavaScript = oneConfig.getList(page + ".javascript.file").size();
             javaScriptArray = new String[numJavaScript];
-          
+
             for (j = 0; j < numJavaScript; j++) {
               String fileName = oneConfig.getString(page + ".javascript.file(" + j + ")");
               String filePath;
@@ -237,9 +237,9 @@ public class PlosOneFreemarkerConfig {
         jc.setTitles(titles);
       }
     }
-    
+
     processVirtualJournalConfig(myConfig);
-    
+
     if (log.isTraceEnabled()){
       Set<Entry<String, JournalConfig>> allJournals = journals.entrySet();
       Iterator<Entry<String, JournalConfig>> iter = allJournals.iterator();
@@ -267,7 +267,7 @@ public class PlosOneFreemarkerConfig {
           log.trace("PageName: " + name);
           log.trace("JS FILES: " + printArray(map.get(name)));
         }
-        
+
         HashMap<String, String> m = j.getTitles();
         pageNames = m.keySet();
         pgIter = pageNames.iterator();
@@ -291,7 +291,7 @@ public class PlosOneFreemarkerConfig {
       log.debug("End FreeMarker Configuration Reading");
     }
   }
-  
+
   private String printArray(String[] in) {
     StringBuilder s = new StringBuilder();
     if (in != null) {
@@ -326,20 +326,20 @@ public class PlosOneFreemarkerConfig {
       }
     }
   }
-  
+
   /**
-   * Gets the title for the given template and journal name. 
+   * Gets the title for the given template and journal name.
    * Return the default value if not defined
-   * 
-   * @param templateName 
+   *
+   * @param templateName
    * @param journalName
    * @return Returns the title given a template name.
    */
   public String getTitle(String templateName, String journalName) {
     JournalConfig jc = journals.get(journalName);
-    boolean usingDefault = false; 
+    boolean usingDefault = false;
     if (jc == null) {
-      usingDefault = true; 
+      usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
     String retVal = jc.getTitles().get(templateName);
@@ -349,7 +349,7 @@ public class PlosOneFreemarkerConfig {
         jc = journals.get(defaultJournalName);
         retVal = jc.getTitles().get(templateName);
         if (retVal == null) {
-          retVal = jc.getDefaultTitle();          
+          retVal = jc.getDefaultTitle();
         }
       }
     }
@@ -358,18 +358,18 @@ public class PlosOneFreemarkerConfig {
 
   /**
    * Gets title for page defined in templateName and uses the defaultJournal name
-   * 
+   *
    * @param templateName
    * @return page title
    */
   public String getTitle(String templateName) {
     return getTitle (templateName, defaultJournalName);
   }
-  
+
   /**
-   * Gets the array of CSS files associated with templateName and journalName 
+   * Gets the array of CSS files associated with templateName and journalName
    * or returns the default values if not available.
-   * 
+   *
    * @param templateName
    * @param journalName
    * @return Returns list of css files given a template name.
@@ -388,7 +388,7 @@ public class PlosOneFreemarkerConfig {
         jc = journals.get(defaultJournalName);
         retVal = jc.getCssFiles().get(templateName);
         if (retVal == null) {
-          retVal = jc.getDefaultCss();          
+          retVal = jc.getDefaultCss();
         }
       }
     }
@@ -397,19 +397,19 @@ public class PlosOneFreemarkerConfig {
 
   /**
    * Retrieves css files for given page in the default journal
-   * 
+   *
    * @param templateName
    * @return array of css filename for the page
    */
   public String[] getCss (String templateName){
-    return getCss(templateName, defaultJournalName); 
+    return getCss(templateName, defaultJournalName);
   }
-  
+
   /**
    * Gets the array of JavaScript files associated with templateName and journalName
    * or returns the default values if not available.
-   * 
-   * @param templateName 
+   *
+   * @param templateName
    * @param journalName
    * @return Returns the list of JavaScript files given a template name.
    */
@@ -427,34 +427,34 @@ public class PlosOneFreemarkerConfig {
         jc = journals.get(defaultJournalName);
         retVal = jc.getJavaScriptFiles().get(templateName);
         if (retVal == null) {
-          retVal = jc.getDefaultJavaScript();          
+          retVal = jc.getDefaultJavaScript();
         }
       }
     }
     return retVal != null ? retVal : DEFAULT_JS_FILES;
   }
-  
+
   /**
    * Gets the array of javascript files for the default journal and the specificed page name
-   * 
+   *
    * @param templateName
    * @return list of javascript files for the given page
    */
   public String[] getJavaScript (String templateName){
     return getJavaScript (templateName, defaultJournalName);
   }
-  
+
   /**
    * Gets meta keywords for journal
-   * 
+   *
    * @param journalName
    * @return meta keywords
    */
   public String getMetaKeywords(String journalName) {
     JournalConfig jc = journals.get(journalName);
-    boolean usingDefault = false; 
+    boolean usingDefault = false;
     if (jc == null) {
-      usingDefault = true; 
+      usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
     String retVal = jc.getMetaKeywords();
@@ -467,15 +467,15 @@ public class PlosOneFreemarkerConfig {
 
   /**
    * gets meta description for journal
-   * 
+   *
    * @param journalName
    * @return meta description
    */
   public String getMetaDescription(String journalName) {
     JournalConfig jc = journals.get(journalName);
-    boolean usingDefault = false; 
+    boolean usingDefault = false;
     if (jc == null) {
-      usingDefault = true; 
+      usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
     String retVal = jc.getMetaDescription();
@@ -485,18 +485,18 @@ public class PlosOneFreemarkerConfig {
     }
     return retVal != null ? retVal : "";
   }
-  
+
   /**
    * Gets display name for journal
-   * 
+   *
    * @param journalName
    * @return display name
    */
   public String getDisplayName(String journalName) {
     JournalConfig jc = journals.get(journalName);
-    boolean usingDefault = false; 
+    boolean usingDefault = false;
     if (jc == null) {
-      usingDefault = true; 
+      usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
     String retVal = jc.getDisplayName();
@@ -506,19 +506,19 @@ public class PlosOneFreemarkerConfig {
     }
     return retVal != null ? retVal : "";
   }
-  
-  
+
+
   /**
    * gets prefix for article title
-   * 
+   *
    * @param journalName
    * @return article title prefix
    */
   public String getArticleTitlePrefix (String journalName) {
     JournalConfig jc = journals.get(journalName);
-    boolean usingDefault = false; 
+    boolean usingDefault = false;
     if (jc == null) {
-      usingDefault = true; 
+      usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
     String retVal = jc.getArticleTitlePrefix();
@@ -528,7 +528,7 @@ public class PlosOneFreemarkerConfig {
     }
     return retVal != null ? retVal : "";
   }
-  
+
   public String getContext() {
     return dirPrefix + subdirPrefix;
   }
@@ -655,16 +655,16 @@ public class PlosOneFreemarkerConfig {
   }
 
   /**
-   * @return Returns the user attribute key 
+   * @return Returns the user attribute key
    */
   public String getUserAttributeKey() {
     return org.plos.Constants.PLOS_ONE_USER_KEY;
   }
-  
+
 
   /**
    * Returns the URL for a given journal given its key
-   * 
+   *
    * @param journalKey
    * @return URL of journal
    */
@@ -676,8 +676,8 @@ public class PlosOneFreemarkerConfig {
     }
     return url;
   }
-  
-  
+
+
   private class JournalConfig {
     private HashMap<String, String[]> cssFiles;
     private HashMap<String, String[]> javaScriptFiles;
@@ -822,7 +822,7 @@ public class PlosOneFreemarkerConfig {
     public String getUrl() {
       return url;
     }
-    
+
     /**
      * @param url The url to set.
      */
