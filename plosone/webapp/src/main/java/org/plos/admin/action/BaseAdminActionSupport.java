@@ -31,9 +31,15 @@ public class BaseAdminActionSupport  extends BaseActionSupport {
   private FlagManagementService flagManagementService;
 
   protected String base() throws RemoteException, ApplicationException {
-    uploadableFiles = documentManagementService.getUploadableFiles();
-    publishableFiles = documentManagementService.getPublishableFiles();
-    flaggedComments = flagManagementService.getFlaggedComments();
+    // catch all Exceptions to keep Admin console active (vs. Site Error)
+    try {
+      uploadableFiles = documentManagementService.getUploadableFiles();
+      publishableFiles = documentManagementService.getPublishableFiles();
+      flaggedComments = flagManagementService.getFlaggedComments();
+    } catch (Exception e) {
+      log.error("Admin console Exception", e);
+      addActionMessage("Exception: " + e);
+    }
     return SUCCESS;
   }
 
