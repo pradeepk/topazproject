@@ -82,23 +82,6 @@
         </parameter>
         
         <parameter>
-          <name>ECQS_INSTALL_DIR</name>
-          <property>ECQS_INSTALL_DIR</property>
-          <required>true</required>
-          <defaultValue>${topazproject.install.dir}</defaultValue>
-          <expression>${ECQS_INSTALL_DIR}</expression>
-          <type>java.lang.String</type>
-          <description>ecqs installed here</description>
-        </parameter>
-
-        <parameter>
-          <name>ECQS_KEYSTORE</name>
-          <property>ECQS_KEYSTORE</property>
-          <required>true</required>
-          <defaultValue>esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
-        </parameter>
-
-        <parameter>
           <name>TOMCAT</name>
           <property>TOMCAT</property>
           <required>true</required>
@@ -405,18 +388,6 @@
         <parameter>
           <name>TOMCAT</name>
           <property>TOMCAT</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>CAS_AUTHENTICATOR</name>
-          <property>CAS_AUTHENTICATOR</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>CAS_CLIENT</name>
-          <property>CAS_CLIENT</property>
           <required>true</required>
         </parameter>
 

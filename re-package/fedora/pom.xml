@@ -17,7 +17,6 @@
 
   <properties>
     <fedoraVersion>2.1.1</fedoraVersion>
-    <casVersion>2.1.1</casVersion>
   </properties>
   
   <build>
@@ -31,8 +30,6 @@
           <SRC_CLIENT_TAR>${settings.localRepository}/info/fedora/client-distribution/${fedoraVersion}/client-distribution-${fedoraVersion}.tar</SRC_CLIENT_TAR>
           <SRC_SERVER_TAR>${settings.localRepository}/info/fedora/server-distribution/${fedoraVersion}/server-distribution-${fedoraVersion}.tar</SRC_SERVER_TAR>
           <TOMCAT>jakarta-tomcat-5.0.28</TOMCAT>
-          <CAS_AUTHENTICATOR>${settings.localRepository}/org/topazproject/tomcat-jaas-cas/${pom.parent.version}/tomcat-jaas-cas-${pom.parent.version}.jar</CAS_AUTHENTICATOR>
-          <CAS_CLIENT>${settings.localRepository}/cas/casclient/${casVersion}/casclient-${casVersion}.jar</CAS_CLIENT>
           <FEDORA_PATCHES>${settings.localRepository}/org/topazproject/fedora-patches/${pom.parent.version}/fedora-patches-${pom.parent.version}.jar</FEDORA_PATCHES>
         </configuration>
         <executions>
@@ -55,16 +52,6 @@
             <artifactId>client-distribution</artifactId>
             <version>${fedoraVersion}</version>
             <type>tar</type>
-          </dependency>
-          <dependency>
-            <groupId>cas</groupId>
-            <artifactId>casclient</artifactId>
-            <version>${casVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.topazproject</groupId>
-            <artifactId>tomcat-jaas-cas</artifactId>
-            <version>${pom.parent.version}</version>
           </dependency>
           <dependency>
             <groupId>org.topazproject</groupId>

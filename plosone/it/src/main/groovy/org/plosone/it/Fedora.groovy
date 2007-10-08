@@ -33,8 +33,7 @@ public class Fedora extends Service {
   public Fedora(String installDir) {
     super(installDir)
     fedoraHome = Env.path(installDir, "fedora-2.1.1")
-    opts  = ' -DECQS_INSTALL_DIR=' + installDir +
-            ' -DFEDORA_INSTALL_DIR=' + installDir
+    opts  = ' -DFEDORA_INSTALL_DIR=' + installDir
     String url = '/net/sf/antcontrib/antlib.xml'
     url = this.getClass().getResource(url)
     Antlib.createAntlib(ant.antProject, url.toURL(), null).execute()
@@ -44,8 +43,7 @@ public class Fedora extends Service {
    * inherited javadoc
    */
   public void install() {
-    for (task in ['ecqs-install', 'fedora-install'])
-      antTask(task)
+    antTask 'fedora-install'
   }
 
   /*

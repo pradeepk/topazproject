@@ -24,7 +24,6 @@
   </parent>
 
   <modules>
-    <module>tomcat-jaas-cas</module>
     <module>filter-resolver</module>
     <module>string-compare-resolver</module>
     <module>conf-helper</module>

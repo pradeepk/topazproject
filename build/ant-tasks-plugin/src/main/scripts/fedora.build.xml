@@ -42,15 +42,7 @@
     <property name="antext" value=""/>
   </target>
 
-  <target name="keytool">
-    <condition property="keytool" value="keytool.exe">
-      <os family="windows"/>
-    </condition>
-    <property name="keytool" value="keytool"/>
-  </target>
-
-
-  <target name="fedora-install" depends="exec-ext,keytool">
+  <target name="fedora-install" depends="exec-ext">
     <property name="FEDORA_JAR"
       value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/>
 
@@ -76,21 +68,6 @@
         </exec>
       </then>
     </if>
-    <!-- install CAS server root cert in tomcat keystore -->
-    <exec
-      dir="${FEDORA_HOME}/server"
-      executable="${keytool}">
-      <arg line="-export -alias jakarta-tomcat -keystore ${ECQS_INSTALL_DIR}/${ECQS_KEYSTORE} -file
-        ecqs.cert"/>
-    </exec>
-    <exec
-      dir="${FEDORA_HOME}/server"
-      executable="${keytool}">
-      <arg line="-import -alias jakarta-tomcat -keystore truststore -storepass
-        tomcat -file ecqs.cert -noprompt"/>
-    </exec>
-
-    <delete file="${FEDORA_HOME}/server/ecqs.cert"/>
     
   </target>
 
@@ -231,47 +208,9 @@
       tofile="${FEDORA_HOME}/server/mckoi1.0.3/db.conf"
       overwrite="true"/>
     
-    <!-- configure CAS -->
-    <copy file="CAS/CAS.properties"
-      tofile="${TOMCAT_HOME}/server/classes/CAS.properties" overwrite="true"/>
-
-    <copy file="CAS/jaas.config"
-      tofile="${TOMCAT_HOME}/conf/jaas.config" overwrite="true"/>
-
-    <!-- copy jar files for CAS-BASIC -->
-    <copy file="${CAS_AUTHENTICATOR}" todir="${TOMCAT_HOME}/server/lib"
-      overwrite="true" flatten="true"/>
-
-    <copy file="${CAS_CLIENT}" todir="${TOMCAT_HOME}/server/lib"
-      overwrite="true" flatten="true"/>
-
-    <!-- make an entry for CAS-BASIC in catalina.jar -->
-    <mkdir dir="${TOMCAT_HOME}/catalina-jar-edit"/>
-    <unjar src="${TOMCAT_HOME}/server/lib/catalina.jar"
-      dest="${TOMCAT_HOME}/catalina-jar-edit"/>
-    <echo
-      file="${TOMCAT_HOME}/catalina-jar-edit/org/apache/catalina/startup/Authenticators.properties"
-      append ="yes"
-      message="CAS-BASIC=org.topazproject.tomcat.catalina.authenticator.CASBasicAuthenticator"
-      />
-    <jar destfile="${TOMCAT_HOME}/server/lib/catalina.jar"
-      basedir="${TOMCAT_HOME}/catalina-jar-edit"/>
-
-    <delete dir="${TOMCAT_HOME}/catalina-jar-edit"/>
-
     <!-- Get rid of log4j.xml file -->
     <delete file="${TOMCAT_HOME}/common/classes/log4j.xml"/>
 
-    <!-- replace BASIC auth with CAS-BASIC -->
-    <xslt basedir="${TOMCAT_HOME}/webapps" destdir="${TOMCAT_HOME}/web-xml-temp"
-      includes="**/web.xml" style="CAS/web-xml-convert.xslt" extension=".xml"/>
-
-    <copy todir="${TOMCAT_HOME}/webapps" overwrite="yes">
-      <fileset dir="${TOMCAT_HOME}/web-xml-temp"/>
-    </copy>
-
-    <delete dir="${TOMCAT_HOME}/web-xml-temp"/>
-    
     <!-- copy fedora patches -->
     <unjar src="${FEDORA_PATCHES}" 
       dest="${TOMCAT_HOME}/webapps/fedora/WEB-INF/classes" overwrite="true">
