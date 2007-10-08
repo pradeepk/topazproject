@@ -19,11 +19,11 @@ body		{ background-color: transparent;}
 ----------------------------------------------------------
 */
 #home			{ position: relative; background:  url(../images/pone_home_bg.gif) no-repeat 0 9px!important; margin: 0; margin-top: -30px; border:0;}/* removed border to fix 1px vertical alignment discrepency in IE7*/
-img,
+#home img,
 #home object		{ display: inline; position: relative;}
-a:hover 	{ text-decoration: underline; } /* apply a border in hover state */
-a:hover h1{ color: inherit; } /* this ensures that the headings in the ad blocks will highlight appropriately */
-h2		{ margin: 10px 0; font-size: 1.8em; color: #333; border: none; padding-left: 24px; background-repeat: no-repeat; background-position: left center;}
+#home a:hover 	{ text-decoration: underline; } /* apply a border in hover state */
+#home a:hover h1{ color: inherit; } /* this ensures that the headings in the ad blocks will highlight appropriately */
+#home h2		{ margin: 10px 0; font-size: 1.8em; color: #333; border: none; padding-left: 24px; background-repeat: no-repeat; background-position: left center;}
 /*div.feature h2	{ background-image: url(../images/pone_home_newnoted_bg.gif); }*/
 div.recent h2	{ padding-left:6px; margin-bottom:0}
 /*div.subject h2 	{ background-image: url(../images/pone_home_subject_bg.gif); }*/
@@ -90,6 +90,13 @@ div.recent a:visited		{ font-weight: bold; }*/
 
 /* lower contains lower background image */
 #lower  { width:100%; margin:0; height:50px; padding-top:40px; clear:both; font-size:.9em; background:url(../images/pone_home_lower_bg.gif) no-repeat bottom center;}
+
+/* self clear floated parent containers This is critical for proper display in IE7 */
+#lower:after,
+.col:after 					{content:".";display:block;height:0;clear:both;visibility:hidden;}	
+#lower,
+.col 						{zoom:1;} /* IE */
+#lower h3					{ background-color: #ddd; letter-spacing: normal; font-size: 1em; margin-right: 10px 0; padding: 1px 5px; font-family: Verdana, Arial, Helvetica, sans-serif; }
 
 /* all homepage content blocks are wrapped in class block for padding to avoid ie box model */
 div.block 				{ margin:0; padding:0; clear: both; position: relative;}
@@ -282,7 +289,7 @@ div.horizontalTabs:after {
 ul#tabsContainer  		{
   float:left;
   margin:0!important; 
-  padding:0 0 0 10px!important; 
+  padding:0 0 0 10px!important; /* "!important" required for IE7 */
   line-height:normal;
   background:transparent url("../images/tab_bg.gif") repeat-x bottom;
   width:480px;
@@ -300,13 +307,13 @@ ul#tabsContainer li		{
   list-style:none;
   font-size:.9em;
   font-weight:bold; 
-  color:#666; 
+  color:#666;
 }
 ul#tabsContainer li span {
   display:block;
   float:left;
   background:url("../images/tab_right.gif") no-repeat 100% 0%;
-  padding:8px 16px 8px 8px;
+  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */
   background-color:#f3f3f3; /* temp hack to keep bkg image from showing on right side of active tab in IE6 */
 }
 ul#tabsContainer li.active {
@@ -314,7 +321,7 @@ ul#tabsContainer li.active {
 }
 ul#tabsContainer li.active span { 
   background-position:100% -40px;
-	padding-bottom: 9px;  
+	padding-bottom: 9px!important;  
 }
 ul#tabsContainer li.published,
 ul#tabsContainer li.annotated	{ 
@@ -345,9 +352,9 @@ ul#tabsContainer li.annotated	{
   padding-bottom:1em!important;
   line-height:1.5em;
 }
+
 .horizontalTabs .contentwrap li.more	{ border-top:1px solid #ccc!important; padding-top:.4em!important; }
 .horizontalTabs .contentwrap li.more a	{ font-weight:normal!important; text-decoration:underline!important; }
-}
 
 /* apply to all article lists on homepage */
 ul.articles,
