@@ -95,7 +95,7 @@
             <!-- end : issue block -->
             <!-- begin : mission block -->
             <div id="mission" class="block">
-              <p><strong>Welcome to <em>PLoS Neglected Tropical Diseases</em></strong>, the first open-access journal devoted to the world's most <a href="#">neglected tropical diseases</a>. Learn how to <a href="#">add comments and start discussions</a> on articles.</p>
+              <p><strong>Welcome to <em>PLoS Neglected Tropical Diseases</em></strong>, the first open-access journal devoted to the world's most <a href="#">neglected tropical diseases</a>. We encourage you to participate and <a href="#">add your comments</a> to articles.</p>
             </div>
             <!-- end : mission block -->
             <!-- begin : stay-connected block -->
