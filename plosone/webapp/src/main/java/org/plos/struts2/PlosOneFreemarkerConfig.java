@@ -10,7 +10,7 @@
 
 package org.plos.struts2;
 
-import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,13 +72,13 @@ public class PlosOneFreemarkerConfig {
     journals = new HashMap<String, JournalConfig>();
 
     int numConfigs = 1;
-    if (myConfig instanceof CompositeConfiguration) {
-      numConfigs = ((CompositeConfiguration)myConfig).getNumberOfConfigurations();
+    if (myConfig instanceof CombinedConfiguration) {
+      numConfigs = ((CombinedConfiguration)myConfig).getNumberOfConfigurations();
     }
     Configuration oneConfig;
     for (int c = 0; c < numConfigs; c++) {
       if (numConfigs > 1) {
-        oneConfig = ((CompositeConfiguration)myConfig).getConfiguration(c);
+        oneConfig = ((CombinedConfiguration)myConfig).getConfiguration(c);
       } else { 
         oneConfig = myConfig;
       }
