@@ -12,14 +12,14 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
-  <artifactId>topazproject-utils</artifactId>
+  <artifactId>topaz-utils</artifactId>
   <version>0.8.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>TopazProject Utils</name>
+  <name>Topaz Utils</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
-    <artifactId>the-whole-shebang</artifactId>
+    <artifactId>topaz</artifactId>
     <version>0.8.2-SNAPSHOT</version>
   </parent>
 

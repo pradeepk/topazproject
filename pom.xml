@@ -81,12 +81,10 @@
 
   <modules>
     <module>build/ant-tasks-plugin</module>
-    <module>util</module>
     <module>mulgara</module>
     <module>fedora</module>
-    <module>otm</module>
-    <module>plos-registration</module>
-    <module>plosone</module>
+    <module>topaz</module>
+    <module>plos</module>
   </modules>
 
   <properties>

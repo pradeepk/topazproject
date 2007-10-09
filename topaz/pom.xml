@@ -12,10 +12,10 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
-  <artifactId>otm-libs</artifactId>
+  <artifactId>topaz</artifactId>
   <version>0.8.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>OTM Libs</name>
+  <name>Toapz Libs</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
@@ -26,5 +26,6 @@
   <modules>
     <module>core</module>
     <module>extras</module>
+    <module>util</module>
   </modules>
 </project>
