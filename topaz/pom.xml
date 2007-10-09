@@ -15,7 +15,7 @@
   <artifactId>topaz</artifactId>
   <version>0.8.2-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Toapz Libs</name>
+  <name>Topaz Libs</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
