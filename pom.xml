@@ -81,10 +81,12 @@
 
   <modules>
     <module>build/ant-tasks-plugin</module>
-    <module>topazproject</module>
-    <module>plosone</module>
+    <module>util</module>
+    <module>mulgara</module>
+    <module>fedora</module>
+    <module>otm</module>
     <module>plos-registration</module>
-    <module>re-package</module>
+    <module>plosone</module>
   </modules>
 
   <properties>
@@ -351,12 +353,12 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.topazproject</groupId>
+        <groupId>org.plosone</groupId>
         <artifactId>dom-ranges-helper</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.topazproject</groupId>
+        <groupId>org.plosone</groupId>
         <artifactId>entity-resolver</artifactId>
         <version>${pom.version}</version>
       </dependency>

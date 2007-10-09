@@ -32,7 +32,7 @@
       <artifactId>saxon-dom</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
+      <groupId>org.plosone</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
     <dependency>

@@ -36,7 +36,7 @@
       <artifactId>ws-search-client-impl</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
+      <groupId>org.plosone</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
     <dependency>
@@ -45,7 +45,7 @@
       <version>1.2-t1</version>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
+      <groupId>org.plosone</groupId>
       <artifactId>dom-ranges-helper</artifactId>
     </dependency>
     <dependency>
