@@ -106,6 +106,14 @@ ${MVN} ${MVNARGS} ant-tasks:mulgara-stop > /dev/null 2>&1
 echo "Making sure search is stopped: mvn ant-tasks:search-stop"
 ${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
 
+#Run plosone integration tests
+if [ ${N} -eq 0 ]; then
+  echo "Running plosone-integration tests: mvn clean -Pit-helper install --batch-mode"
+  export MAVEN_OPTS=-XX:MaxPermSize=128m
+  (cd plos/it; ${MVN} ${MVNARGS} -Pit-helper clean install --batch-mode)
+  N=$?
+fi
+
 # Build RPMs if integration tests succeeded
 if [ ${N} -eq 0 -a -x /usr/bin/rpmbuild ]; then
   echo "Build RPMs"
