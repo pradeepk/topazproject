@@ -22,8 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
-import org.plos.permission.service.PermissionWebService;
-import org.plos.user.PlosOneUser;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
@@ -33,7 +31,6 @@ import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;

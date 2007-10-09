@@ -14,7 +14,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,18 +27,12 @@ import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyInfo;
 import org.plos.annotation.service.ReplyWebService;
-import org.plos.models.Comment;
-import org.plos.models.Rating;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * @author alan

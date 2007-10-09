@@ -22,7 +22,6 @@ import org.apache.struts2.ServletActionContext;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.Query;
