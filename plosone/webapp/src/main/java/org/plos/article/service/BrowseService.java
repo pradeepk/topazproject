@@ -653,7 +653,7 @@ public class BrowseService {
     });
   }
 
-  private ArticleInfo getArticleInfo(final URI id, final Transaction tx) {
+  public ArticleInfo getArticleInfo(final URI id, final Transaction tx) {
     try {
       pep.checkAccess(ArticlePEP.READ_META_DATA, id);
     } catch (SecurityException se) {
