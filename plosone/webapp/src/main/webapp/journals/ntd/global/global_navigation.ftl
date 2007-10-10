@@ -9,7 +9,7 @@
     <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
 					<li><a href="${browseIssueURL}">Current Issue</a></li>
-					<li><a href="${archiveURL}">Journal Archive</a></li>
+					<!-- <li><a href="${archiveURL}">Journal Archive</a></li> Commented out until we have the Archive page in place. Remember to uncomment link in TOC rhc too! -->
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
 					<li><a href="#">Collections</a></li>
