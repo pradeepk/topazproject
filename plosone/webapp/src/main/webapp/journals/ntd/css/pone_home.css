@@ -130,6 +130,7 @@ div.article img {
   float:left;
   margin:10px 10px 0 0;
   border: 1px solid #ccc;
+	position:static!important; /* static position required to fix wierd image displacement bug in IE6 when tabs are written into page */
 }
 
 /* wraps banner ads */
