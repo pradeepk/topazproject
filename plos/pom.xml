@@ -23,6 +23,7 @@
     <module>search</module>
     <module>registration</module>
     <module>ecqs-bundle</module>
+    <module>it</module>
   </modules>
 
 </project>
