@@ -14,7 +14,7 @@
           <input type="hidden" name="commentTitle" id="commentTitle" value="" />
           <input type="hidden" name="comment" id="commentArea" value="" />
           <fieldset>
-            <legend>Compose Your Annotation</legend>
+            <legend>Compose Your Comment</legend>
 
             <span id="submitRatingMsg" class="error"></span>
               
@@ -51,14 +51,14 @@
 			</ul>		
 	      	<input type="hidden" name="style" title="style" value="" />
 				
-            <label for="cTitle" class="commentPublic"><span class="none">Enter your comment title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
+            <label for="cTitle" class="commentPublic"><span class="none">Enter your comment title</span><!-- error message text <em>A title is required for all public comments</em>--></label>
 
             <input type="text" name="cTitle" id="cTitle" value="Enter your comment title..." class="title commentPublic" alt="Enter your comment title..." />
             
-            <label for="cArea"><span class="none">Enter your comment</span><!-- error message text <em>Please enter your annotation</em>--></label>
+            <label for="cArea"><span class="none">Enter your comment</span><!-- error message text <em>Please enter your comment</em>--></label>
             <textarea name="cArea" id="cArea" value="Enter your comment..." alt="Enter your comment...">Enter your comment...</textarea>
             
-            <div class="btnwrap commentPublic"><input type="button" value="Post" class="commentPublic" title="Click to post your annotation publicly" id="btn_post_rating"/></div>
+            <div class="btnwrap commentPublic"><input type="button" value="Post" class="commentPublic" title="Click to post your comment publicly" id="btn_post_rating"/></div>
           </fieldset>
 
         </form>

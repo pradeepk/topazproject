@@ -1,5 +1,5 @@
 <div id="content">
-	<h1>Annotations and Discussions</h1>
+	<h1>Comments and Discussions</h1>
 	<@s.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.id}"/>
 	<@s.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.id}"/>
 
@@ -8,8 +8,8 @@
 	</div>
 	<table class="directory" cellpadding="0" cellspacing="0">
 	<#if allCommentary?size == 0>
-	<p>There are currently no annotations or discussions yet on this article. 
-	You can <a href="${startDiscussionUrl}" title="Click to start a discussion on this article" class="discuss icon">start a discussion</a> or return to the original article to add an annotation.<p>
+	<p>There are currently no comments or discussions yet on this article. 
+	You can <a href="${startDiscussionUrl}" title="Click to start a discussion on this article" class="discuss icon">start a discussion</a> or return to the original article to add a comment.<p>
 	<#else>
 
 

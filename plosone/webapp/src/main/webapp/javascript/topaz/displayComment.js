@@ -103,7 +103,7 @@ topaz.displayComment = {
     var titleLink = document.createElement('a');
     titleLink.href = _namespace + '/annotation/listThread.action?inReplyTo=' + jsonObj.annotationId + '&root=' + jsonObj.annotationId; 
     titleLink.className = "discuss icon";
-    titleLink.title="View full annotation";
+    titleLink.title="View full comment";
     //alert("jsonObj.annotation.commentTitle = " + jsonObj.annotation.commentTitle);
     titleLink.innerHTML = jsonObj.annotation.commentTitle;
     titleDocFrag.appendChild(titleLink);
