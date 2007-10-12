@@ -28,8 +28,6 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.PartSource;
 
-import org.topazproject.authentication.ProtectedService;
-
 /**
  * Fedora uploader client.
  *
@@ -41,7 +39,7 @@ public class Uploader {
 
   //
   private HttpClient       client;
-  private ProtectedService service;
+  private String           serviceUri;
 
   static {
     // xxx: tune this
@@ -52,17 +50,19 @@ public class Uploader {
   /**
    * Creates a new Uploader object.
    *
-   * @param service The uploader service configuration
+   * @param serviceUri The uploader service uri
+   * @param uname   The uploader user name or null
+   * @param passwd  The uploader service passwd
    */
-  public Uploader(ProtectedService service) {
-    this.service   = service;
-    client         = new HttpClient(connectionManager);
+  public Uploader(String serviceUri, String uname, String passwd) {
+    this.serviceUri   = serviceUri;
+    client            = new HttpClient(connectionManager);
 
-    if (service.requiresUserNamePassword()) {
+    if (uname != null) {
       client.getParams().setAuthenticationPreemptive(true);
 
       Credentials defaultcreds =
-        new UsernamePasswordCredentials(service.getUserName(), service.getPassword());
+        new UsernamePasswordCredentials(uname, passwd);
 
       client.getState().setCredentials(AuthScope.ANY, defaultcreds);
     }
@@ -186,26 +186,11 @@ public class Uploader {
   }
 
   private String upload(Part part) throws IOException {
-    MultipartPostMethod post = new MultipartPostMethod(service.getServiceUri());
+    MultipartPostMethod post = new MultipartPostMethod(serviceUri);
     post.addPart(part);
 
     try {
       int resultCode = client.executeMethod(post);
-
-      // renew credentials if auth failure
-      if ((resultCode == 401) && part.isRepeatable() && service.renew()) {
-        if (service.requiresUserNamePassword()) {
-          Credentials defaultcreds =
-            new UsernamePasswordCredentials(service.getUserName(), service.getPassword());
-
-          client.getState().setCredentials(AuthScope.ANY, defaultcreds);
-        }
-
-        post.releaseConnection();
-        post = new MultipartPostMethod(service.getServiceUri());
-        post.addPart(part);
-        resultCode = client.executeMethod(post);
-      }
 
       if (resultCode != 201)
         throw new IOException(HttpStatus.getStatusText(resultCode) + ":"

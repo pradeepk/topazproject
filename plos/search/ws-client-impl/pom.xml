@@ -17,10 +17,6 @@
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>auth-helper</artifactId>
-    </dependency>
   </dependencies>
   
   <build>

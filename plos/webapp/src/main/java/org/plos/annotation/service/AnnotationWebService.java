@@ -36,6 +36,7 @@ import org.plos.permission.service.PermissionWebService;
 
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.FileUtils;
+import org.plos.user.PlosOneUser;
 import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -113,17 +114,9 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String bodyUri;
-    String user;
-
-    try {
-      fedora.getContext().activate();
-      user      = fedora.getContext().getUserName();
-      bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()), "Annotation",
-                                    "Annotation Body");
-    } finally {
-      fedora.getContext().passivate();
-    }
+    String user      = PlosOneUser.getCurrentUser().getUserId();
+    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()), 
+        "Annotation", "Annotation Body");
 
     if (log.isDebugEnabled())
       log.debug("created fedora object " + bodyUri + " for annotation ");
@@ -254,13 +247,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (a != null) {
       articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(a.getAnnotates()));
-
-      try {
-        fedora.getContext().activate();
-        fedora.purgeObjects(new String[] { fedora.uri2PID(a.getBody().toString()) });
-      } finally {
-        fedora.getContext().passivate();
-      }
+      fedora.purgeObjects(new String[] { fedora.uri2PID(a.getBody().toString()) });
     }
   }
 

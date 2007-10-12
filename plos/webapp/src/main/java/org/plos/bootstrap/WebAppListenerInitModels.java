@@ -9,6 +9,7 @@
  */
 package org.plos.bootstrap;
 
+import java.net.URI;
 import java.util.Iterator;
 
 import javax.servlet.ServletContextEvent;
@@ -17,9 +18,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
 
 import org.plos.configuration.ConfigurationStore;
 
@@ -55,16 +53,13 @@ public class WebAppListenerInitModels implements ServletContextListener {
     ItqlHelper itql = null;
 
     try {
-      Configuration    conf = ConfigurationStore.getInstance().getConfiguration();
+      Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
+      URI           service = new URI(conf.getString("topaz.services.itql-admin.uri"));
+      itql                  = new ItqlHelper(service);
 
-      ProtectedService service =
-        ProtectedServiceFactory.createService(conf.subset("topaz.services.itql-admin"), null);
+      conf                  = conf.subset("topaz.models");
 
-      itql   = new ItqlHelper(service);
-
-      conf = conf.subset("topaz.models");
-
-      Iterator it = conf.getKeys();
+      Iterator it           = conf.getKeys();
 
       while (it.hasNext()) {
         String key = (String) it.next();

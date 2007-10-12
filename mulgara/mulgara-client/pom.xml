@@ -23,8 +23,8 @@
       <version>0.3.4</version>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>auth-helper</artifactId>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
     </dependency>
   </dependencies>
 

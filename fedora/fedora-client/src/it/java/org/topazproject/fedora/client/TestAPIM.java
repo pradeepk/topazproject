@@ -9,9 +9,6 @@
  */
 package org.topazproject.fedora.client;
 
-import org.topazproject.authentication.PasswordProtectedService;
-import org.topazproject.authentication.ProtectedService;
-
 import junit.framework.TestCase;
 
 /**
@@ -45,8 +42,7 @@ public class TestAPIM extends TestCase {
    * @throws Exception on failure
    */
   public void setUp() throws Exception {
-    ProtectedService svc = new ReAuthProtectedService(uri, uname, passwd);
-    apim = APIMStubFactory.create(svc);
+    apim = APIMStubFactory.create(uri, uname, passwd);
   }
 
   /**
@@ -69,29 +65,4 @@ public class TestAPIM extends TestCase {
     assertTrue(pid.startsWith("test:"));
   }
 
-  private static class ReAuthProtectedService extends PasswordProtectedService {
-    boolean reload = true;
-
-    public ReAuthProtectedService(String uri, String uname, String pswd) {
-      super(uri, uname, pswd);
-    }
-
-    public String getPassword() {
-      if (reload)
-        return "";
-
-      return super.getPassword();
-    }
-
-    public boolean hasRenewableCredentials() {
-      return reload;
-    }
-
-    public boolean renew() {
-      boolean status = reload;
-      reload = false;
-
-      return status;
-    }
-  }
 }

@@ -31,6 +31,7 @@ import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
 import org.plos.models.Reply;
 import org.plos.models.ReplyThread;
+import org.plos.user.PlosOneUser;
 
 import org.plos.permission.service.PermissionWebService;
 
@@ -99,17 +100,9 @@ public class ReplyWebService extends BaseAnnotationService {
       pep.checkAccess(pep.CREATE_REPLY, URI.create(inReplyTo));
 
     final String contentType = getContentType(mimeType);
-    String       bodyUri;
-    String       user;
-
-    try {
-      fedora.getContext().activate();
-      user                   = fedora.getContext().getUserName();
-      bodyUri                = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
+    String user      = PlosOneUser.getCurrentUser().getUserId();
+    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
                                                  "Reply", "Reply Body");
-    } finally {
-      fedora.getContext().passivate();
-    }
 
     if (log.isDebugEnabled())
       log.debug("created fedora object " + bodyUri + " for reply ");

@@ -24,7 +24,6 @@
   </parent>
 
   <modules>
-    <module>auth-helper</module>
     <module>jdk2log4j-proxy</module>
   </modules>
 </project>

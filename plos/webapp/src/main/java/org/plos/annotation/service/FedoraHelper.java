@@ -12,21 +12,29 @@ package org.plos.annotation.service;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.rmi.RemoteException;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.rpc.ServiceException;
+
 import org.apache.axis.types.NonNegativeInteger;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.service.WSTopazContext;
-import org.plos.service.TopazContext;
+import org.plos.configuration.ConfigurationStore;
 
+import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.fedora.client.Uploader;
+
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 /**
@@ -51,8 +59,36 @@ public class FedoraHelper {
     + "</foxml:datastream></foxml:digitalObject>";
 
   //
-  private final WSTopazContext ctx = new WSTopazContext(FedoraHelper.class.getName());
+  private final FedoraAPIM apim;
+  private final Uploader   upld;
+  private final URI        fedoraBaseUri;
 
+  /**
+   * Creates a new FedoraHelper object.
+   */
+  public FedoraHelper() throws IOException, URISyntaxException, ServiceException {
+    Configuration conf = ConfigurationStore.getInstance().getConfiguration();
+    apim               = APIMStubFactory.create(conf.getString("topaz.services.fedora.uri"),
+                                                conf.getString("topaz.services.fedora.userName"),
+                                                conf.getString("topaz.services.fedora.password"));
+    upld               = new Uploader(conf.getString("topaz.services.fedoraUploader.uri"),
+                                      conf.getString("topaz.services.fedoraUploader.userName"),
+                                      conf.getString("topaz.services.fedoraUploader.password"));
+
+    String serverName  = conf.getString("topaz.server.hostname");
+    String fedoraBase  = conf.getString("topaz.services.fedora.uri");
+    URI    uri         = ItqlHelper.validateUri(fedoraBase, "topaz.services.fedora.uri");
+
+    if (uri.getHost().equals("localhost")) {
+      try {
+        uri = new URI(uri.getScheme(), null, serverName, uri.getPort(), uri.getPath(), null, null);
+      } catch (URISyntaxException use) {
+        throw new Error(use); // Can't happen
+      }
+    }
+
+    fedoraBaseUri = uri;
+  }
 
   /**
    * Creates a body URI by uploading the content to fedora.
@@ -70,7 +106,7 @@ public class FedoraHelper {
   public String createBody(String contentType, byte[] content, String contentModel, String label)
                     throws RemoteException {
     try {
-      String ref = ctx.getFedoraUploader().upload(content);
+      String ref    = upld.upload(content);
 
       Map    values = new HashMap();
       values.put("CONTENTTYPE", xmlAttrEscape(contentType));
@@ -80,7 +116,7 @@ public class FedoraHelper {
 
       String foxml = ItqlHelper.bindValues(FOXML, values);
 
-      return pid2URI(ctx.getFedoraAPIM().ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));
+      return pid2URI(apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));
     } catch (UnsupportedEncodingException e) {
       throw new Error(e);
     } catch (IOException e) {
@@ -92,7 +128,8 @@ public class FedoraHelper {
     /* AttValue ::= '"' ([^<&"] | Reference)* '"'
      *              |  "'" ([^<&'] | Reference)* "'"
      */
-    return val.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;").replaceAll("'", "&apos;");
+    return val.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;")
+               .replaceAll("'", "&apos;");
   }
 
   /**
@@ -130,7 +167,7 @@ public class FedoraHelper {
 
     String path = "/fedora/get/" + uri2PID(uri) + "/BODY";
 
-    return ctx.getFedoraBaseUri().resolve(path).toString();
+    return fedoraBaseUri.resolve(path).toString();
   }
 
   /**
@@ -144,7 +181,7 @@ public class FedoraHelper {
    */
   public String getNextId(String pidNs) throws RemoteException {
     // xxx: cache a bunch of ids
-    return ctx.getFedoraAPIM().getNextPID(new NonNegativeInteger("1"), pidNs)[0];
+    return apim.getNextPID(new NonNegativeInteger("1"), pidNs)[0];
   }
 
   /**
@@ -154,9 +191,6 @@ public class FedoraHelper {
    */
   public void purgeObjects(String[] purgeList) {
     try {
-      ctx.activate();
-      FedoraAPIM apim = ctx.getFedoraAPIM();
-
       for (int i = 0; i < purgeList.length; i++) {
         if (log.isDebugEnabled())
           log.debug("purging " + purgeList[i]);
@@ -173,12 +207,6 @@ public class FedoraHelper {
       // No point reporting this back to the caller since the Annotation is deleted.
       // Admin needs to manually purge these later
       log.error("Failed to purge one or more fedora pids in " + Arrays.asList(purgeList), t);
-    } finally {
-      ctx.passivate();
     }
-  }
-
-  public TopazContext getContext() {
-    return ctx;
   }
 }

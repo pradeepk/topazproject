@@ -37,8 +37,6 @@ import javax.xml.rpc.Stub;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.reauth.AbstractReAuthStubFactory;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterBean;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterBeanServiceLocator;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterException;
@@ -171,68 +169,6 @@ public class ItqlHelper {
     ItqlInterpreterBeanServiceLocator locator = new ItqlInterpreterBeanServiceLocator();
     locator.setMaintainSession(true);
     interpreter = locator.getItqlInterpreterBeanServicePort(database.toURL());
-
-    init();
-  }
-
-  /** 
-   * Create a new instance pointed at the given service. The instance is initialized with the
-   * default set of aliases.
-   * 
-   * @param  service  the database web-service
-   * @throws MalformedURLException if service's uri is not a valid URL
-   * @throws ServiceException if an error occurred locating the web-service
-   * @throws RemoteException if an error occurred talking to the web-service
-   */
-  public ItqlHelper(ProtectedService service)
-      throws MalformedURLException, ServiceException, RemoteException {
-
-    ItqlInterpreterBean stub = createStub(service);
-
-    if (service.hasRenewableCredentials()) {
-      AbstractReAuthStubFactory factory = new AbstractReAuthStubFactory() {
-
-        public Object newStub(ProtectedService service) throws Exception {
-          return createStub(service);
-        }
-
-        public Object rebuildStub(Object old, ProtectedService service, Throwable fault)
-            throws Exception {
-
-          if (inTransaction)
-            throw new Exception("Cannot rebuild a stub in middle of a transaction");
-          return super.rebuildStub(old, service, fault);
-        }
-      };
-
-      stub = (ItqlInterpreterBean)factory.newProxyStub(stub, service);
-    }
-
-    interpreter = stub;
-
-    init();
-
-  }
-
-  private static ItqlInterpreterBean createStub(ProtectedService service)
-      throws MalformedURLException, ServiceException, RemoteException {
-
-    ItqlInterpreterBeanServiceLocator locator = new ItqlInterpreterBeanServiceLocator();
-    locator.setMaintainSession(true);
-
-    ItqlInterpreterBean interpreter;
-    interpreter = locator.getItqlInterpreterBeanServicePort(new URL(service.getServiceUri()));
-
-    if (service.requiresUserNamePassword()) {
-      Stub stub = (Stub)interpreter;
-      stub._setProperty(Stub.USERNAME_PROPERTY, service.getUserName());
-      stub._setProperty(Stub.PASSWORD_PROPERTY, service.getPassword());
-    }
-
-    return interpreter;
-  }
-
-  private void init() throws RemoteException {
     registerInstance(this);
   }
 

@@ -102,10 +102,6 @@
     <constructor-arg value="topaz-plosone"/>
   </bean>
 
-  <bean id="auth-method" class="java.lang.String">
-    <constructor-arg value="NONE"/>
-  </bean>
-
   <bean id="userContext" class="org.plos.web.UserContext" scope="session">
     <aop:scoped-proxy/>
   </bean>
@@ -209,12 +205,6 @@
   </bean>
 
   <bean id="searchWebService" class="org.plos.search.service.SearchWebService" scope="session">
-    <property name="configurationMap">
-      <map>
-        <entry key="uri" value="${pub.spring.service.search}"/>
-        <entry key="auth-method" value-ref="auth-method"/>
-      </map>
-    </property>
     <aop:scoped-proxy/>
   </bean>
 

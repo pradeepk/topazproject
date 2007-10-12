@@ -34,11 +34,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>auth-helper</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>

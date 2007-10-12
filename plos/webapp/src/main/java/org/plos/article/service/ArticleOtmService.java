@@ -44,12 +44,10 @@ import org.plos.models.Category;
 import org.plos.models.Citation;
 import org.plos.models.ObjectInfo;
 import org.plos.models.UserProfile;
-import org.plos.service.WSTopazContext;
 import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.plos.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
@@ -76,11 +74,7 @@ public class ArticleOtmService {
   private Session        session;
   private JournalService jrnlSvc;
 
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
-  private static final List FGS_URLS = CONF.getList("topaz.fedoragsearch.urls.url");
-
-  private final WSTopazContext ctx = new WSTopazContext(getClass().getName());
 
   public ArticleOtmService() throws IOException {
     pep = new ArticlePEP();
@@ -103,14 +97,12 @@ public class ArticleOtmService {
 
     // create an Ingester using the values from the WSTopazContext
 
-    ctx.activate();
     try {
       return TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<String, Exception>() {
         public String run(Transaction txn) throws Exception {
           ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
-          Ingester ingester = new Ingester(itql, ctx.getFedoraAPIM(), ctx.getFedoraUploader(),
-                                       getFgsOperations());
-          String ret = ingester.ingest(
+          ArticleUtil util = new ArticleUtil(itql);
+          String ret = util.ingest(
             new Zip.DataSourceZip(
               new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
                                                 8192, "application/octet-stream", true)));
@@ -131,8 +123,6 @@ public class ArticleOtmService {
       throw re;
     } catch (Exception e) {
       throw new Error("Unexpected exception", e);
-    } finally {
-      ctx.passivate();
     }
   }
 
@@ -201,7 +191,6 @@ public class ArticleOtmService {
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
-    ctx.activate();
     try {
       TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
         public Void run(Transaction tx) throws Exception {
@@ -220,8 +209,6 @@ public class ArticleOtmService {
       throw re;
     } catch (Exception e) {
       throw new Error("Unexpected exception", e);
-    } finally {
-      ctx.passivate();
     }
   }
 
@@ -673,7 +660,7 @@ public class ArticleOtmService {
             ct = "application/octet-stream";
 
           // update fedora
-          long len = setDatastream(obj.getPid(), rep, ct, content);
+          long len = ArticleUtil.setDatastream(obj.getPid(), rep, ct, content);
 
           // update the rdf
           obj.getRepresentations().add(rep);
@@ -700,69 +687,6 @@ public class ArticleOtmService {
     List<T> res = new ArrayList<T>();
     res.add(item);
     return res;
-  }
-
-  private long setDatastream(String pid, String rep, String ct, DataHandler content)
-      throws NoSuchObjectIdException, RemoteException {
-    ctx.activate();
-    try {
-      FedoraAPIM apim = ctx.getFedoraAPIM();
-
-      if (content != null) {
-        CountingInputStream cis = new CountingInputStream(content.getInputStream());
-        String reLoc = ctx.getFedoraUploader().upload(cis);
-        try {
-          apim.modifyDatastreamByReference(pid, rep, null, null, false, ct, null, reLoc, "A",
-                                           "Updated datastream", false);
-        } catch (RemoteException re) {
-          if (!isNoSuchDatastream(re))
-            throw re;
-
-          if (log.isDebugEnabled())
-            log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist yet - " +
-                      "creating it", re);
-
-          apim.addDatastream(pid, rep, new String[0], "Represention", false, ct, null, reLoc, "M",
-                             "A", "New representation");
-        }
-
-        return cis.getByteCount();
-      } else {
-        try {
-          apim.purgeDatastream(pid, rep, null, "Purged datastream", false);
-        } catch (RemoteException re) {
-          if (!isNoSuchDatastream(re))
-            throw re;
-
-          if (log.isDebugEnabled())
-            log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist", re);
-        }
-
-        return 0;
-      }
-    } catch (RemoteException re) {
-      if (isNoSuchObject(re))
-        throw new NoSuchObjectIdException(pid, "object '" + pid + "' doesn't exist in fedora", re);
-      else
-        throw re;
-    } catch (IOException ioe) {
-      throw new RemoteException("Error uploading representation", ioe);
-    } finally {
-      ctx.passivate();
-    }
-  }
-
-  private static boolean isNoSuchObject(RemoteException re) {
-    // Ugh! What a hack...
-    String msg = re.getMessage();
-    return msg != null &&
-           msg.startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException:");
-  }
-
-  private static boolean isNoSuchDatastream(RemoteException re) {
-    // Ugh! What a hack...
-    String msg = re.getMessage();
-    return msg != null && msg.equals("java.lang.Exception: Uncaught exception from Fedora Server");
   }
 
   /**
@@ -807,24 +731,6 @@ public class ArticleOtmService {
   @Required
   public void setJournalService(JournalService service) {
     this.jrnlSvc = service;
-  }
-
-  private static FgsOperations[] getFgsOperations() throws ServiceException {
-    FgsOperations ops[] = new FgsOperations[FGS_URLS.size()];
-
-    for (int i = 0; i < ops.length; i++) {
-      String url = FGS_URLS.get(i).toString();
-      try {
-        ops[i] = new FgsOperationsServiceLocator().getOperations(new URL(url));
-      } catch (MalformedURLException mue) {
-        throw new ServiceException("Invalid fedoragsearch URL '" + url + "'", mue);
-      }
-      if (ops[i] == null)
-        throw new ServiceException(
-          "Unable to create fedoragsearch service at '" + url + "'");
-    }
-
-    return ops;
   }
 
   /**

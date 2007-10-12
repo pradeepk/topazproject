@@ -15,9 +15,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.List;
+import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,9 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.PasswordProtectedService;
-import org.topazproject.authentication.UnProtectedService;
 import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.otm.Session;
@@ -81,31 +80,41 @@ public class ArticleUtil {
    * to article-utils this way is probably just fine.
    */
   public ArticleUtil()
+      throws URISyntaxException, MalformedURLException, ServiceException, RemoteException {
+    this(new ItqlHelper(new URI(CONF.getString("topaz.services.itql.uri"))));
+  }
+
+  public ArticleUtil(ItqlHelper itql)
       throws MalformedURLException, ServiceException, RemoteException {
-    this(new PasswordProtectedService(CONF.getString("topaz.services.fedora.uri"),
-                                      CONF.getString("topaz.services.fedora.userName"),
-                                      CONF.getString("topaz.services.fedora.password")),
-         new PasswordProtectedService(CONF.getString("topaz.services.fedoraUploader.uri"),
-                                      CONF.getString("topaz.services.fedoraUploader.userName"),
-                                      CONF.getString("topaz.services.fedoraUploader.password")),
-         new UnProtectedService(CONF.getString("topaz.services.itql.uri")));
+
+    this(CONF.getString("topaz.services.fedora.uri"),
+         CONF.getString("topaz.services.fedora.userName"),
+         CONF.getString("topaz.services.fedora.password"),
+         CONF.getString("topaz.services.fedoraUploader.uri"),
+         CONF.getString("topaz.services.fedoraUploader.userName"),
+         CONF.getString("topaz.services.fedoraUploader.password"),
+         itql);
   }
 
   /**
    * Create new article utilities.
    *
-   * @param fedoraSvc the fedora service moniker
-   * @param uploadSvc the fedora upload service moniker
-   * @param mulgaraSvc the mulgara service moniker
+   * @param fedoraUri the fedora service uri
+   * @param fedoraUserName the fedora service username
+   * @param fedoraPasswd  the fedora service passwd
+   * @param uploadUri the fedora upload service uri
+   * @param uploadUserName the fedora upload service username
+   * @param uploadPasswd the fedora upload service passwd
+   * @param itql the mulgara service client
    */
-  public ArticleUtil(ProtectedService fedoraSvc,
-                     ProtectedService uploadSvc,
-                     ProtectedService mulgaraSvc)
+  public ArticleUtil(String fedoraUri, String fedoraUserName, String fedoraPasswd,
+                     String uploadUri, String uploadUserName, String uploadPasswd,
+                     ItqlHelper itql)
       throws MalformedURLException, ServiceException, RemoteException {
-    this.uploader = new Uploader(uploadSvc);
-    this.apim     = APIMStubFactory.create(fedoraSvc);
-    this.itql     = new ItqlHelper(mulgaraSvc);
+    this.uploader = new Uploader(uploadUri, uploadUserName, uploadPasswd);
+    this.apim     = APIMStubFactory.create(fedoraUri, fedoraUserName, fedoraPasswd);
     this.fgs      = getFgsOperations();
+    this.itql     = itql;
     this.ingester = new Ingester(itql, apim, uploader, fgs);
   }
 
@@ -124,6 +133,75 @@ public class ArticleUtil {
     return ingester.ingest(zip);
   }
 
+  public static long setDatastream(String pid, String rep, String ct, DataHandler content)
+      throws NoSuchObjectIdException, RemoteException {
+    try {
+      FedoraAPIM apim = APIMStubFactory.create(
+                                      CONF.getString("topaz.services.fedora.uri"),
+                                      CONF.getString("topaz.services.fedora.userName"),
+                                      CONF.getString("topaz.services.fedora.password"));
+      Uploader upld = new Uploader(
+         CONF.getString("topaz.services.fedoraUploader.uri"),
+         CONF.getString("topaz.services.fedoraUploader.userName"),
+         CONF.getString("topaz.services.fedoraUploader.password"));
+
+      if (content != null) {
+        CountingInputStream cis = new CountingInputStream(content.getInputStream());
+        String reLoc = upld.upload(cis);
+        try {
+          apim.modifyDatastreamByReference(pid, rep, null, null, false, ct, null, reLoc, "A",
+                                           "Updated datastream", false);
+        } catch (RemoteException re) {
+          if (!isNoSuchDatastream(re))
+            throw re;
+
+          if (log.isDebugEnabled())
+            log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist yet - " +
+                      "creating it", re);
+
+          apim.addDatastream(pid, rep, new String[0], "Represention", false, ct, null, reLoc, "M",
+                             "A", "New representation");
+        }
+
+        return cis.getByteCount();
+      } else {
+        try {
+          apim.purgeDatastream(pid, rep, null, "Purged datastream", false);
+        } catch (RemoteException re) {
+          if (!isNoSuchDatastream(re))
+            throw re;
+
+          if (log.isDebugEnabled())
+            log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist", re);
+        }
+
+        return 0;
+      }
+    } catch (RemoteException re) {
+      if (isNoSuchObject(re))
+        throw new NoSuchObjectIdException(pid, "object '" + pid + "' doesn't exist in fedora", re);
+      else
+        throw re;
+    } catch (IOException ioe) {
+      throw new RemoteException("Error uploading representation", ioe);
+    } catch (ServiceException se) {
+      throw new RemoteException("Error uploading representation", se);
+    }
+  }
+
+  private static boolean isNoSuchObject(RemoteException re) {
+    // Ugh! What a hack...
+    String msg = re.getMessage();
+    return msg != null &&
+           msg.startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException:");
+  }
+
+  private static boolean isNoSuchDatastream(RemoteException re) {
+    // Ugh! What a hack...
+    String msg = re.getMessage();
+    return msg != null && msg.equals("java.lang.Exception: Uncaught exception from Fedora Server");
+  }
+
   /**
    * Delete an article. Note that it may not be possible to find and therefore erase all traces
    * from the ingest.
@@ -139,9 +217,9 @@ public class ArticleUtil {
     try {
       log.debug("Deleting '" + article + "'");
       delete(article, tx, APIMStubFactory.create(
-                             new PasswordProtectedService(CONF.getString("topaz.services.fedora.uri"),
+                                      CONF.getString("topaz.services.fedora.uri"),
                                       CONF.getString("topaz.services.fedora.userName"),
-                                      CONF.getString("topaz.services.fedora.password"))),
+                                      CONF.getString("topaz.services.fedora.password")),
                             getFgsOperations());
 
       // Clean up spool directories

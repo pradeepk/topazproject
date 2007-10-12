@@ -9,6 +9,8 @@
  */
 package org.plos.bootstrap.permissions;
 
+import java.net.URI;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -16,14 +18,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-
 import org.plos.configuration.ConfigurationStore;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 import org.plos.permission.service.PermissionsImpl;
+
+import org.topazproject.mulgara.itql.ItqlHelper;
 
 /**
  * A listener class for initializing permissions impl.
@@ -50,13 +49,9 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
     ItqlHelper itql = null;
 
     try {
-      Configuration    conf = ConfigurationStore.getInstance().getConfiguration();
-
-      ProtectedService service =
-        ProtectedServiceFactory.createService(conf.subset("topaz.services.itql-admin"), null);
-
-      itql = new ItqlHelper(service);
-
+      Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
+      URI           service = new URI(conf.getString("topaz.services.itql-admin.uri"));
+      itql                  = new ItqlHelper(service);
       PermissionsImpl.initializeModel(itql);
     } catch (Exception e) {
       log.warn("initializing permissions impl failed", e);

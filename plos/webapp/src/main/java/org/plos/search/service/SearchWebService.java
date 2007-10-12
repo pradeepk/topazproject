@@ -9,8 +9,7 @@
  */
 package org.plos.search.service;
 
-import org.plos.service.BaseConfigurableService;
-import org.topazproject.authentication.ProtectedService;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.ws.search.SearchClientFactory;
 import org.topazproject.fedoragsearch.service.FgsOperations;
@@ -26,19 +25,17 @@ import java.rmi.RemoteException;
  * @author Viru
  * @author Eric Brown
  */
-public class SearchWebService extends BaseConfigurableService {
-  private String uri;
-  private FgsOperations fgsOperations;
-
+public class SearchWebService {
+   private final FgsOperations fgsOperations;
   /**
    * Initialize the service
    * @throws java.io.IOException IOException
    * @throws javax.xml.rpc.ServiceException ServiceException
    * @throws java.net.URISyntaxException URISyntaxException
    */
-  public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService permissionProtectedService = getProtectedService();
-    fgsOperations = SearchClientFactory.create(permissionProtectedService);
+  public SearchWebService() throws IOException, URISyntaxException, ServiceException {
+    String uri = ConfigurationStore.getInstance().getConfiguration().getString("pub.spring.service.search");
+    fgsOperations = SearchClientFactory.create(uri);
   }
 
   /**
@@ -47,7 +44,6 @@ public class SearchWebService extends BaseConfigurableService {
   public String find(final String query, final int hitStartPage, final int pageSize,
                      final int snippetsMax, final int fieldMaxLength, final String indexName,
                      final String resultPageXslt) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     return fgsOperations.gfindObjects(query, hitStartPage, pageSize, snippetsMax,
                                       fieldMaxLength, indexName, resultPageXslt);
   }
