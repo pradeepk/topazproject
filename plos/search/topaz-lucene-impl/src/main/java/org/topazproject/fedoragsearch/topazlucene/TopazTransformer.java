@@ -16,17 +16,13 @@
  */
 package org.topazproject.fedoragsearch.topazlucene;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.MalformedURLException;
 
 import java.util.Date;
-import java.util.HashMap;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -39,7 +35,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.sax.SAXSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

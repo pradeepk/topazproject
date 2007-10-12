@@ -23,7 +23,6 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.query.GenericQueryImpl;
 
 /**
  * A common base class for triple-store impls.

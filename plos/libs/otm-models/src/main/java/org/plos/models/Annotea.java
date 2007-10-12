@@ -9,7 +9,6 @@
  */
 package org.plos.models;
 
-import java.net.URI;
 
 import java.util.Date;
 

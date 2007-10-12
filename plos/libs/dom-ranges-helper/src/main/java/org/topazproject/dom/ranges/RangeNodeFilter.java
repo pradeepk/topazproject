@@ -16,7 +16,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
-import org.w3c.dom.ranges.RangeException;
 import org.w3c.dom.traversal.NodeFilter;
 
 /**

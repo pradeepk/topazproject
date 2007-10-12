@@ -10,7 +10,6 @@
 package org.plos.article.service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
@@ -25,15 +24,12 @@ import java.util.Map;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.IngestException;
-import org.plos.article.util.Ingester;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
@@ -48,9 +44,6 @@ import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
-import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;

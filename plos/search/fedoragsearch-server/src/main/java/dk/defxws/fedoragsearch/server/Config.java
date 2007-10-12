@@ -17,8 +17,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -31,14 +29,12 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.client.AdminClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
-import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIMBindingSOAPHTTPStub;
 
 /**
  * Reads and checks the configuration files,

@@ -18,7 +18,6 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.DetachedCriteria;
-import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.query.GenericQueryImpl;
 
 import org.apache.commons.logging.Log;

@@ -13,7 +13,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.rpc.ServiceException;
-import javax.xml.rpc.Stub;
 
 
 /**

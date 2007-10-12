@@ -15,8 +15,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.mapping.Mapper;
 
 /**
  * A base class for all binary operations involving a field and its value. The value could be a

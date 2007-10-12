@@ -13,10 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.rpc.ServiceException;
-import javax.xml.rpc.Stub;
 
 import org.topazproject.fedoragsearch.service.FgsOperations;
-import org.topazproject.fedoragsearch.service.FgsOperationsService;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 
 /**

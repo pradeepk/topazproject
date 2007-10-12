@@ -32,14 +32,10 @@ import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
-import org.topazproject.otm.stores.ItqlStore;
 
 import org.plos.models.Article;
 import org.plos.models.ObjectInfo;
 import org.plos.models.Category;
-import org.plos.models.Citation;
-import org.plos.models.PLoS;
-import org.plos.models.UserProfile;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 

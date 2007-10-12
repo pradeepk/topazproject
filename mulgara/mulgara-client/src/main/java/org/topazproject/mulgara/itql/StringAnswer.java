@@ -9,7 +9,6 @@
  */
 package org.topazproject.mulgara.itql;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.jrdf.graph.GraphElementFactory;

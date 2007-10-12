@@ -15,8 +15,6 @@ import org.apache.commons.logging.LogFactory;
 
 import junit.framework.TestCase;
 
-import java.io.IOException;
-import java.io.FileWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -25,7 +23,6 @@ import javax.xml.rpc.ServiceException;
 
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.DuplicateArticleIdException;
-import org.topazproject.ws.article.NoSuchArticleIdException;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.ArticleClientFactory;
 

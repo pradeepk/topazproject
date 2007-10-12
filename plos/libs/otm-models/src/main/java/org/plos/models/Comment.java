@@ -11,9 +11,7 @@ package org.plos.models;
 
 import java.net.URI;
 
-import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Class that will represent comments by users persisted as comment annotations

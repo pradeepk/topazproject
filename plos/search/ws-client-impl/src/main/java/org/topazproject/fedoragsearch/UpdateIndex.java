@@ -11,8 +11,6 @@
 package org.topazproject.fedoragsearch.service;
 
 import java.net.URL;
-import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
-import org.topazproject.fedoragsearch.service.FgsOperations;
 
 /**
  * Utility to manually update fedoragsearch index.

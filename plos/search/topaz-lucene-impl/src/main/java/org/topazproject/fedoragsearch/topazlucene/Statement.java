@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URLEncoder;
 import java.util.Enumeration;
-import java.util.StringTokenizer;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -41,12 +40,6 @@ import dk.defxws.fedoragsearch.server.errors.GenericSearchException; // Wraps RM
 
 // Stuff added by topaz:
 import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.NoSuchElementException;
 
 import org.apache.lucene.search.Hit;
 

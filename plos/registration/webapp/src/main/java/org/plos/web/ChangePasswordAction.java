@@ -10,7 +10,6 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;

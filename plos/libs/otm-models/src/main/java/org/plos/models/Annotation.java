@@ -11,8 +11,6 @@ package org.plos.models;
 
 import java.net.URI;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;

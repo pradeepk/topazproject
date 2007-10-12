@@ -2,16 +2,10 @@
 
 package dk.defxws.fedoragsearch.server;
 
-import java.net.MalformedURLException;
-import java.rmi.RemoteException;
 
-import org.apache.axis.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIABindingSOAPHTTPStub;
-import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIMBindingSOAPHTTPStub;
-import fedora.server.types.gen.Datastream;
 
 /**
  * @author gsp

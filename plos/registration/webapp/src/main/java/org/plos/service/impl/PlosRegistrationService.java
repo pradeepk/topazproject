@@ -9,7 +9,6 @@
  */
 package org.plos.service.impl;
 
-import java.sql.Timestamp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

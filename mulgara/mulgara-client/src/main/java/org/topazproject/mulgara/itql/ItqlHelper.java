@@ -15,7 +15,6 @@ import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import java.text.SimpleDateFormat;
 
@@ -32,7 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.rpc.ServiceException;
-import javax.xml.rpc.Stub;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

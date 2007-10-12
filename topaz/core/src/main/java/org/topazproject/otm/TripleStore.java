@@ -10,13 +10,9 @@
 package org.topazproject.otm;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
-import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
 

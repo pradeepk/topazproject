@@ -37,7 +37,6 @@ import org.mulgara.resolver.spi.TuplesWrapperResolution;
 import org.mulgara.store.stringpool.SPObject;
 import org.mulgara.store.stringpool.SPObjectFactory;
 import org.mulgara.store.stringpool.StringPoolException;
-import org.mulgara.store.stringpool.xa.SPObjectFactoryImpl;
 import org.mulgara.store.tuples.Tuples;
 import org.mulgara.store.tuples.TuplesOperations;
 

@@ -11,15 +11,10 @@ package org.plosone.it;
 
 import java.net.URI;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plosone.it.jwebunit.PlosOneTestContext;
-import org.plosone.it.jwebunit.PlosOneWebTester;
-import org.plosone.it.pages.AbstractPage;
 
 import org.plos.models.Aggregation;
 import org.plos.models.Annotation;
@@ -76,9 +71,7 @@ import org.topazproject.otm.criterion.TransCriterion;
 import org.topazproject.otm.criterion.WalkCriterion;
 import org.topazproject.otm.stores.ItqlStore;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
 
-import net.sourceforge.jwebunit.util.TestingEngineRegistry;
 
 /**
  * A mostly read-only access to the otm persistence store to cross

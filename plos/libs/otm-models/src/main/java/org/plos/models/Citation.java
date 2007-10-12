@@ -14,7 +14,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;

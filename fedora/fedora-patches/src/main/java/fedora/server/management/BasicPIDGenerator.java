@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import fedora.common.PID;
 import fedora.server.Module;
 import fedora.server.Server;
-import fedora.server.errors.ConnectionPoolNotFoundException;
 import fedora.server.errors.ModuleInitializationException;
 import fedora.server.storage.ConnectionPoolManager;
 

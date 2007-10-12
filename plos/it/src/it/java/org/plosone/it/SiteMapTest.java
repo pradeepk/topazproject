@@ -2,14 +2,11 @@ package org.plosone.it;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plosone.it.NavTest;
 import org.plosone.it.jwebunit.PlosOneWebTester;
-import org.plosone.it.pages.AbstractPage;
 import org.plosone.it.pages.SiteMapPage;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 public class SiteMapTest extends AbstractPlosOneTest {
   private static final Log log = LogFactory.getLog(SiteMapTest.class);

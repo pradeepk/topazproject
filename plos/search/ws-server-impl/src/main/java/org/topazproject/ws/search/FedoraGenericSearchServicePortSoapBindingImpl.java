@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
-import javax.xml.rpc.server.ServletEndpointContext;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;

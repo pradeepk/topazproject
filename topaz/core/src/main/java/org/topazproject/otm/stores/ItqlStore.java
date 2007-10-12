@@ -40,7 +40,6 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
-import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
