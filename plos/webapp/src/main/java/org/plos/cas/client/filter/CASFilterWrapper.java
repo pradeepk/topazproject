@@ -46,7 +46,6 @@ public class CASFilterWrapper extends CASFilter {
     final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
     final String plosServerHost = configuration.getString("pub.host");
-    final String plosCallbackUrl = configuration.getString("pub.url.proxy-callback");
     final String casProxyValidateUrl = configuration.getString("cas.url.proxy-validate");
     final String casLoginUrl = configuration.getString("cas.url.login");
 
@@ -56,8 +55,6 @@ public class CASFilterWrapper extends CASFilter {
             casProxyValidateUrl, initParamProvider, params);
     ConfigWrapperUtil.setInitParamValue(CASFilter.SERVERNAME_INIT_PARAM,
             plosServerHost, initParamProvider, params);
-    ConfigWrapperUtil.setInitParamValue(CASFilter.PROXY_CALLBACK_INIT_PARAM,
-            plosCallbackUrl, initParamProvider, params);
 
     final FilterConfig customFilterConfig = new ConfigWrapper(filterConfig, params);
     super.init(customFilterConfig);

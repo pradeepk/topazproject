@@ -40,8 +40,6 @@
       <https>${network.ports.plosone-ssl}</https>
     </port>
 
-    <url><proxy-callback>https://${network.hosts.plosone}:${network.ports.plosone-ssl}${pub.app-context}/CasProxyServlet</proxy-callback></url>
-
     <app-context></app-context> <!-- web application context; leave empty if deployed in root directory  -->
     <resource-sub-dir></resource-sub-dir> <!-- used only if web resources like images/css are deployed in a separate directory; rarely used  -->
 
