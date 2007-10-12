@@ -14,12 +14,11 @@
     <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>otm-models</artifactId>
-      <version>${version}</version>
+      <version>${pom.version}</version>
     </dependency>
     <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>conf-helper</artifactId>
-      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
