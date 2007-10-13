@@ -7,11 +7,23 @@
     applications development project">Topaz</a>. This site is updated regularly as new features 
     become available. This page summarizes features and known bugs in each updated version.
   </p>
-<!--
-  <h2>RC 0.8 beta</h2>
-  <p>Released September 6, 2007</p>
-  <h3>Features implemented in RC 0.8:</h3>
--->
+	<h2>RC 0.8 beta</h2>
+	<p>Released September 20, 2007</p>
+	<h3>Features implemented in RC 0.8:</h3>
+	<ul>
+	<li>Enable multiple journals using a single repository</li>
+	<li>Skins for multiple journals</li>
+	<li>Filter search results by journal using OTM</li>
+	<li>Trackback links for articles</li>
+	<li>Citation download for the published article</li>
+	<li>A fix to a rating display issue in IE7</li>
+	<li>Allow multiple e-mail addresses for "E-mail this Article"</li>
+	<li>Administrative modifications to annotations</li>
+	<li>Administrative interface for multiple journals</li>
+	<li>Migration to the Struts 2 web application framework</li>
+	</ul>
+	<p>For more detail on RC 0.8, see the <a href="https://www.plos.org/cms/node/260" title="PLoS.org | Topaz Release Candidate 0.8">PLoS Blog</a></p>
+
 
   <h2>RC 0.7 beta</h2>
   <p>Released July 9, 2007</p>

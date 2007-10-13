@@ -83,8 +83,8 @@
 <h2 name="status" id="status">Author Status </h2>
 <p>It is the responsibility of the corresponding author on a manuscript to ensure that all authors are aware of and approve the submission to <em>PLoS ONE</em> of the manuscript, its content, authorship, and order of authorship.</p>
 
-<h2 name="prior" id="prior">Prior Publication </h2>
-<p>When submitting their article, all authors are asked to indicate that they have not submitted a similar manuscript for publication elsewhere. If related work has been submitted elsewhere, then a copy must be included with the article submitted to PLoS.   Reviewers will be asked to comment on the overlap between related submissions.</p>
+<h2 name="prior" id="prior">Submission of Related Manuscripts</h2>
+<p>When submitting their article, all authors are asked to indicate that they have not submitted a similar manuscript for publication elsewhere. If related work has been submitted elsewhere, then a copy must be included with the article submitted to PLoS.  Reviewers will be asked to comment on the overlap between related submissions.</p>
 
 <h2 name="competing" id="competing">Competing Interests </h2>
 <p>Authors are asked at submission to declare whether they have any financial, personal, or professional interests that could be construed to have influenced their paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. Read more about the <a href="competing.action" title="PLoS ONE | Competing Interests Policy">policy of PLoS regarding competing interests</a>.</p>
@@ -95,8 +95,8 @@
 <h2 name="confidentiality" id="confidentiality">Confidentiality </h2>
 <p>Editors and reviewers are requested to treat all submitted manuscripts in strict confidence.</p>
 
-<h2 name="embargo" id="embargo">Embargoes and the Media </h2>
-<p>Authors are of course at liberty to present their findings at medical or scientific conferences ahead of publication. We recommend, however, that authors do not contact the media or respond to such contact unless an article has been accepted for publication and an embargo date has been established. Respect for press embargoes will help to ensure that your work is reported accurately in the popular media. If a journalist has covered a piece of work ahead of publication, this will not affect consideration of the work for publication. See also our <a href="http://www.plos.org/journals/embargopolicy.html" title="PLoS.org | Embargo Guidelines">embargo guidelines for journalists</a>.</p>
+<h2 name="embargo" id="embargo">Blogs, Wikis, Embargoes and the Media</h2>
+<p>Authors are of course at liberty to present and discuss their findings ahead of publication: at medical or scientific conferences, on preprint servers, and in blogs, wikis and other informal communication channels. We recommend, however, that authors do not contact the media or respond to such contact unless an article has been accepted for publication and an embargo date has been established. Respect for press embargoes will help to ensure that your work is reported accurately in the popular media, and that the full peer-reviewed paper is freely available to any interested reader when the news item is published. If a journalist has covered a piece of work ahead of publication, this will not affect consideration of the work for publication. See also our <a href="http://www.plos.org/journals/embargopolicy.html" title="PLoS.org | Embargo Guidelines">embargo guidelines for journalists</a>.</p>
 
 </div>
 <!-- end : main contents -->

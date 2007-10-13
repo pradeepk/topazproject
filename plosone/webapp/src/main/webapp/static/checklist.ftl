@@ -10,7 +10,6 @@
 <h2>Information Needed Prior to Submission</h2>
 <ul>
   <li>Have you read the license agreement and are you able to sign it on behalf of all the authors?</li>
-
   <li>Do you have e-mail addresses for all the authors? </li>
   <li>Have you prepared a cover letter explaining the contribution your study will make to the scientific literature?</li>
   <li>Do you have PDF versions of all related manuscripts by any of the authors, submitted or in press elsewhere? </li>
@@ -25,13 +24,11 @@
   <li>Do you know of any competing interests any of the authors may need to report?</li>
   <li>Does your paper conform to the <a href="guidelines.action" title="PLoS ONE | Author Guidelines">Guidelines for Authors</a>?</li>
   <li>Does your title contain fewer than 150 characters?</li>
-
   <li>Does your running title contain fewer than 30 characters? </li>
   <li>Is your summary no more than 300 words and divided into sections called Background, Methodology/Principal Findings, and Conclusions/Significance? </li>
   <li>Have you used standard nomenclature?</li>
   <li>Have your original figures been created as EPS or TIFF files in a high enough resolution to provide for adequate review?</li>
-  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS ONE | Figure Guidelines">Guidelines for Figure Preparation</a>? Has each multipanel figure been combined into a single file?</li>
-
+  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS ONE | Figure and Table Guidelines">Guidelines for Figure and Table Preparation</a>? Has each multipanel figure been combined into a single file?</li>
   <li>Is the manuscript file created in Word or RTF?</li>
   <li>Are tables included at the end of the manuscript file? Is the table title no more than one sentence and has all the rest of the table legend been placed below the table itself?</li>
   <li>Are all figures and tables called out in the manuscript in proper order?</li>
@@ -46,7 +43,6 @@
   <li>Have all appropriate datasets, images, and information been deposited in the relevant public resources and have the accession (and version) numbers been provided in the paper?</li>
   <li>Have all genes, proteins, mutants, diseases, etc., used in the paper been identified by their accession number upon first use, if they appear in a public database?</li>
   <li>Is each supporting information file smaller than 10 MB in size?</li>
-
   <li>Are your supporting information files in a format that can be used best by your research community?</li>
   <li>Do all supporting information files have a title and legend?</li>
 </ul>

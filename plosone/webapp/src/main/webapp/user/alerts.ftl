@@ -26,7 +26,6 @@
   <fieldset id="alert-form">
 		<legend>Choose your alerts</legend>
 		<ol>
-			<li><em>Check back soon for more PLoS ONE alerts</em></li>
         	<li><ol>
         		<li class="alerts-title">&nbsp;</li>
         		<li>

@@ -14,7 +14,7 @@
             <div id="new" class="block">
               <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
               <h2><img class="badgenew" src="images/pone_home_new_badge.gif" alt="NEW!" />What is the PLoS Hub for Clinical Trials?</h2>
-              <p>Launched in August 2007, the PLoS Hub for Clinical Trials collects PLoS journal articles that relate to clinical trials. The Hub is a destination site for researchers to share their views and build a dynamic, interactive community.</p>
+              <p>Launched in September 2007, the PLoS Hub for Clinical Trials collects PLoS journal articles that relate to clinical trials. The Hub is a destination site for researchers to share their views and build a dynamic, interactive community.</p>
               <p>Currently, the PLoS Hub for Clinical Trials features articles originally published in <em>PLoS Clinical Trials</em>, along with clinical trials articles from <em>PLoS ONE</em>.</p>
               <p>In the future, this new resource will expand to include articles from all the PLoS titles that publish clinical trials. It will also feature open-access articles from other journals plus user-generated content.</p>
               <p><a href="${info}">Find out more</a> and <a href="${feedbackURL}">tell us what you think</a>.</p>
@@ -27,7 +27,7 @@
             </div>
             <div id="rss">
               <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/>
-              <a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><span><strong>Subscribe</strong>
+              <a href="${rssURL}"><span><strong>Subscribe</strong>
               Subscribe to the clinical trials RSS content feed</span></a>
               <a href="${rssinfo}" class="adInfo">What is RSS?</a>
             </div>
@@ -35,16 +35,24 @@
             <div class="block recent">
               <h2>Recently Added Clinical Trials</h2>
               <ul class="articles">
-                <@s.url id="article0000000" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000000"/>
-                <@s.url id="article0000007" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000007"/>
-                <@s.url id="article0000008" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000008"/>
-                <@s.url id="article0000012" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000012"/>
+                <@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001018"/>
+                <@s.url id="article2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001023"/>
+                <@s.url id="article3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000991"/>
+                <@s.url id="article4" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000919"/>
 
-                <li><@s.a href="%{article0000012}" title="Read Open Access Article">The Effectiveness of Contact Tracing in Emerging Epidemics</@s.a></li>
-                <li><@s.a href="%{article0000008}" title="Read Open Access Article">Molecular Adaptation during Adaptive Radiation in the Hawaiian Endemic Genus <em>Schiedea</em></@s.a></li>
-                <li><@s.a href="%{article0000000}" title="Read Open Access Article">PLoS ONE Sandbox: A Place to Learn and Play</@s.a></li>
-                <li><@s.a href="%{article0000007}" title="Read Open Access Article">A Single Basis for Developmental Buffering of <em>Drosophila</em> Wing Shape</@s.a></li>
-              </ul>
+               <li><@s.a href="%{article1}" title="Read Open Access Article">
+				A Randomized Placebo-Controlled Phase Ia Malaria Vaccine Trial of Two Virosome-Formulated Synthetic Peptides in Healthy Adult Volunteers
+				</@s.a></li>
+                <li><@s.a href="%{article2}" title="Read Open Access Article">
+				Primaquine Clears Submicroscopic <em>Plasmodium falciparum</em> Gametocytes that Persist after Treatment with Sulphadoxine-Pyrimethamine and Artesunate
+				</@s.a></li>
+                <li><@s.a href="%{article3}" title="Read Open Access Article">
+				Creatine Monohydrate and Conjugated Linoleic Acid Improve Strength and Body Composition Following Resistance Exercise in Older Adults
+				</@s.a></li>
+                <li><@s.a href="%{article4}" title="Read Open Access Article">
+				Naturopathic Care For Chronic Low Back Pain: A Randomized Trial
+				</@s.a></li>
+               </ul>
             </div><!-- end : block recent -->
             <!-- begin : browse widget block -->
             <div id="browseWidget" class="block">
@@ -74,7 +82,7 @@
                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
                document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
                document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&#38;what=zone:184&#38;source=PHUBCT&#38;block=1&#38;blockcampaign=1");
+               document.write ("&#38;what=zone:184&#38;source=PHUBCT&#38;block=1");
                document.write ("&#38;exclude=" + document.phpAds_used);
                if (document.referrer)
                  document.write ("&#38;referer=" + escape(document.referrer));
@@ -88,7 +96,7 @@
 
                document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
                document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&#38;what=zone:185&#38;source=PHUBCT&#38;block=1&#38;blockcampaign=1");
+               document.write ("&#38;what=zone:185&#38;source=PHUBCT&#38;block=1");
                document.write ("&#38;exclude=" + document.phpAds_used);
                if (document.referrer)
                   document.write ("&#38;referer=" + escape(document.referrer));
@@ -114,12 +122,15 @@
               <p>Links to relevant content that is not currently in the Hub. We will be adding content in coming months.</p>
               <dl class="category">
                 <dt><em>PLoS Medicine</em></dt>
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040201">Liver Fluke Induces Cholangiocarcinoma</a></dd>
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040235">South Africa's Experience of the Closure of the Cellulose Sulphate Microbicide Trial</a></dd>
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040184">Factors Associated with Findings of Published Trials of Drug&#8212;Drug Comparisons: Why Some Statins Appear More Efficacious than Others</a></dd>			
                 <dt><em>Trials</em> (BioMed Central)</dt>
-                <dd><a href="http://www.trialsjournal.com/content/8/1/18">Telecare motivational interviewing for diabetes patient education and support: a randomised controlled trial based in primary care comparing nurse and peer supporter delivery</a></dd>
+                <dd><a href="http://www.trialsjournal.com/content/8/1/19">Is looped nasogastric tube feeding more effective than conventional nasogastric tube feeding for dysphagia in acute stroke?</a></dd>
               </dl>
+              <h3>From the Web</h3>
+			  <p><a href="http://www.who.int/ictrp/en/" title="World Health Organization | International Clinical Trials Registry Platform">Why register trials?</a> The World Health Organization Clinical Trial Registry Platform explains why and when to register, and provides a <a href="http://www.who.int/trialsearch/" title="World Health Organization | International Clinical Trials Registry Platform Search Portal">search engine</a> that works across registries.</p>
             </div><!-- end : info block -->
-          </div><!-- end : subcol first -->
+           </div><!-- end : subcol first -->
           <!-- end : col 3 -->
           <!-- begin : col 4 -->
           <div class="subcol last">
@@ -144,7 +155,7 @@
       </div><!-- end : col -->
       <div class="partner">
         <a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
-        <a href="http://fedora.info/" title="Fedora.info"><img src="images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
+        <a href="http://www.fedora-commons.org/" title="Fedora-Commons.org"><img src="images/pone_home_fedoracommons.png" alt="Fedora-Commons.org"/></a>
         <a href="http://www.mulgara.org/" title="Mulgara.org"><img src="images/pone_home_mulgara.gif" alt="Mulgara.org"/></a>
         <a href="http://www.sciencecommons.org/" title="Science Commons"><img src="images/pone_home_sciencecommons.gif"  alt="Science Commons"/></a>
         <a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="images/pone_home_moore.gif" alt="Moore Foundation"/></a>

@@ -5,9 +5,13 @@
 <#include "global_head.ftl">
 </head>
 <body>
+<!-- begin : biocompare -->
+<script src='http://comparenetworks.com/partnerAds/swfobject.js' type='text/javascript'></script>
+<script language="javascript" type="text/javascript" src="http://comparenetworks.com/partnerAds/adSetup.js"></script>
+<!-- end : biocompare -->
+
 <!-- begin : container -->
 <div id="container">
-
   <!-- begin : top banner external ad space -->
   <div id="topBanner">
   <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
@@ -30,4 +34,3 @@
 
   <#include "global_header.ftl">
   </div>
-  <!-- end : header -->

@@ -74,7 +74,7 @@
 <p>It is important that you include a cover letter with your manuscript. Please explain why this manuscript is suitable for publication in <em>PLoS ONE</em>. How does your paper provide a worthwhile addition to the scientific literature? How does your paper relate to previously published work? Which types of scientists do you believe will be most interested in your study?</p>
 
 <h3>Electronic Formats </h3>
-<p>Our publication system supports a limited range of formats for text and graphics. Text files can be submitted in only the following formats: Word or RTF. Please <a href="latex.action" title="PLoS ONE | Converting LaTeX files to Word or RTF format">convert LaTeX files to RTF format</a>. Graphics files can only be submitted in the following formats: EPS or TIFF.</p>
+<p>Our publication system supports a limited range of formats for text and graphics. Text files can be submitted in only the following formats: Word or RTF. Please <a href="latex.action" title="PLoS ONE | Converting LaTeX files to Word or RTF format">convert LaTeX files to Word or RTF format</a>. Graphics files can only be submitted in the following formats: EPS or TIFF.</p>
 <p>If you experience difficulties with the manuscript submission Web site or are concerned about the suitability of your files, please contact the journal (<strong>plosone [at] plos.org</strong>).</p>
 
 <h3>Prior Publication</h3>
@@ -82,18 +82,18 @@
 
 <h3>Funding</h3>
 
-<p>Before submitting your manuscript, please collect information on the sources of funding that have supported the work. When you submit you will be required to provide a statement in the online submission system declaring the funding sources, and also stating the role of the study sponsor(s), if any, in study design; collection, analysis, and interpretation of data; writing of the paper; and decision to submit it for publication. </p>
+<p>Before submitting your manuscript, please collect information on the sources of funding that have supported the work. When you submit, you will be required to provide a statement in the online submission system declaring the funding sources, and also stating the role of the study sponsor(s), if any, in study design; collection, analysis, and interpretation of data; writing of the paper; and decision to submit it for publication. </p>
+<p>Please also include the following statement, if pertinent: "The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript." If this statement is not correct you must amend it as needed.</p>
 
 <h3>Competing Interests </h3>
 
 <p>The submitting author is asked at submission to declare, on behalf of all authors, whether there are any financial, personal, or professional interests that could be construed to have influenced the paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. Read more about the <a href="competing.action" title="PLoS ONE | Competing Interests Policy">policy of PLoS regarding competing interests</a>.</p>
 
 <h3>Abbreviations</h3>
-
 <p>Please keep abbreviations to a minimum and define them upon first use in the text. Non-standard abbreviations should not be used unless they appear at least three times in the text.</p>
 
 <h3>Figures </h3>
-<p>For the article to be accepted for publication, the author will need to supply high-resolution versions of the figures. When preparing your figures, please ensure that the files conform to our Guidelines for Figure Preparation. Please do <strong>not</strong> upload panels for a single figure separately (for example, Figure 1A, Figure 1B-1D, Figure 1E); each figure file should be a single montage of all panels. </p>
+<p>For the article to be accepted for publication, the author will need to supply high-resolution versions of the figures. When preparing your figures, please ensure that the files conform to our  <a href="figureGuidelines.action">Guidelines for Figure and Table Preparation</a>. Please do <strong>not</strong> upload panels for a single figure separately (for example, Figure 1A, Figure 1B-1D, Figure 1E); each figure file should be a single montage of all panels.</p>
 <p>Please note that <em>PLoS ONE</em> can only accept figures submitted as either TIFF or EPS files. </p>
 
 
@@ -128,10 +128,10 @@
 <p>Provide the first names or initials (if used), middle names or initials (if used), surnames, and affiliations&#8212;department, university or organization, city, state/province (if applicable), and country&#8212;for all authors. One of the authors should be designated as the corresponding author. It is the corresponding author’s responsibility to ensure that the author list, and the summary of the author contributions to the study are accurate and complete. If the article has been submitted on behalf of a consortium, all author names and affiliations should be listed at the end of the article.</p>
 
 <h3>Abstract</h3>
-<p>The abstract succinctly introduces the paper. We advise that it should not exceed 250&#8211;300 words. It should mention the techniques used without going into methodological detail and should summarize the most important results. The abstract is conceptually divided into the following three sections: Background, Methodology/Principal Findings, and Conclusions/Significance. Please do not include any citations in the abstract. Avoid specialist abbreviations if possible. </p>
+<p>The abstract succinctly introduces the paper. We advise that it should not exceed 250 - 300 words. It should mention the techniques used without going into methodological detail and should summarize the most important results. The abstract is conceptually divided into the following three sections: Background, Methodology/Principal Findings, and Conclusions/Significance. Please do not include any citations in the abstract. Avoid specialist abbreviations if possible. </p>
 
 <h3>Registration</h3>
-<p>Registration details should be included when reporting results of a clinical trial (see "<a href="#reportingct">Reporting Clinical Trials</a>" for details). For each location that your trial is registered, please list: Name of registry; registry number; URL of your trial in the registry database. </p>
+<p>Registration details should be included when reporting results of a clinical trial (see "<a href="#reportingct">Reporting Clinical Trials</a>" for details). For each location that your trial is registered, please list: name of registry, registry number, and URL of your trial in the registry database. </p>
 
 <h3>Introduction</h3>
 <p>The introduction should put the focus of the manuscript into a broader context. As you compose the introduction, think of readers who are not experts in this field. Include a brief review of the key literature. If there are relevant controversies or disagreements in the field, they should be mentioned so that a non-expert reader can delve into these issues further. The introduction should conclude with a brief statement of the overall aim of the experiments and a comment about whether that aim was achieved. </p>
@@ -208,7 +208,7 @@ Hansen B (1991) New York City epidemics and history for the public. In: Harden V
 <p><em>PLoS ONE</em> fully supports the established standards of the fields that it covers. Some of these are detailed below:</p>
 
 <h3>Nomenclature</h3>
-<p>The use of standardized nomenclature in all fields of science and medicine is an essential step toward the integration and linking of scientific information reported in published literature. We will enforce the use of correct and established nomenclature wherever possible, such as:</p>
+<p>The use of standardized nomenclature in all fields of science and medicine is an essential step toward the integration and linking of scientific information reported in published literature. We will enforce the use of correct and established nomenclature wherever possible:</p>
 
 <ul>
 <li>We strongly encourage the use of <a href="http://www.bipm.org/en/si/" title="BIPM | The International System of Units (SI)">SI units</a>. If you do not use these exclusively, please provide the SI value in parentheses after each value.</li>
@@ -297,10 +297,12 @@ Nomenclature Committee">HUGO</a>. It is sometimes advisable to indicate the syno
 
 <p>Scientific Editing Services (in alphabetical order):</p>
 <ul>
+ <li><a href="http://r.journalexperts.com?rcode=PLOS" title="American Journal Experts">American Journal Experts</a></li>
  <li><a href="http://www.asiascienceediting.com" title="Visit Asia Science Editing">Asia Science Editing</a></li>
  <li><a href="http://www.biomeditor.com" title="Visit BiomEditor">BiomEditor</a></li>
  <li><a href="http://www.biosciencewriters.com" title="Visit BioScience Writers">BioScience Writers</a></li>
- <li><a href="http://www.bostonbioedit.com" title="Visit Boston BioEdit">Boston BioEdit</a></li>
+ <li><a href="http://www.bluepencilscience.com/">Blue Pencil Science</a></li>
+<li><a href="http://www.bostonbioedit.com" title="Visit Boston BioEdit">Boston BioEdit</a></li>
  <li><a href="http://www.sciencemanager.com" title="Visit English Manager Science Editing">English Manager Science Editing</a></li>
 
  <li><a href="http://www.internationalscienceediting.com/" title="Visit International Science Editing">International Science Editing </a></li>
@@ -316,7 +318,7 @@ Nomenclature Committee">HUGO</a>. It is sometimes advisable to indicate the syno
  <li><a href="http://www.writescienceright.com" title="Visit Write Science Righ">Write Science Right</a></li>
 </ul>
 
-<p>Following formal acceptance, manuscripts will be published in approximately two weeks' time in PDF and HTML formats, with an XML download option. Articles will also be archived in PubMed Central. </p>
+<p>Once an article has been accepted for publication, the manuscript files are transferred into our production system and will be published in PDF and HTML formats, with an XML download option. Articles will also be archived in PubMed Central.</p>
 
 </div>
 <!-- end : main contents -->

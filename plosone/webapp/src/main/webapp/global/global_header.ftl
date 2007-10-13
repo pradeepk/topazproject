@@ -41,7 +41,7 @@
 
   <!-- end : user controls -->
   <!-- begin search links -->
-  <ul id="links"><@s.url id="browseURL" includeParams="none" namespace="/article" action="browse"/><li class="browse"><a href="${browseURL}" title="Browse Articles">Browse</a></li><@s.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/><li class="rss"><a href="${rssURL}" title="RSS Feeds">RSS</a></li></ul>
+  <ul id="links"><@s.url id="browseURL" includeParams="none" namespace="/article" action="browse"/><li class="browse"><a href="${browseURL}?field=date" title="Browse Articles">Browse</a></li><@s.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/><li class="rss"><a href="${rssURL}" title="RSS Feeds">RSS</a></li></ul>
   <!-- end : search links -->
   <!-- begin : dashboard -->
   <div id="db">
@@ -61,8 +61,6 @@
   <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
   <#if journalContext = "PLoSClinicalTrials" >
     <#include "/journals/clinicalTrials/global/global_navigation.ftl">
-  <#elseif journalContext = "PLoSNTD">
-    <#include "/journals/ntd/global/global_navigation.ftl">
   <#else>
     <#include "../global/global_navigation.ftl">
   </#if>

@@ -2,6 +2,8 @@
 <div id="content" class="static">
 <h1><em>PLoS ONE</em> Guidelines for Reviewers</h1>
 
+<p class="intro">If you have been invited to review a manuscript, please use the <a href="http://one.plosjms.org" title="PLoS ONE | Online Manuscript Submission and Review System">online manuscript submission system</a>.</p>
+
 <ol>
 <li><a href="#about">About <em>PLoS ONE</em></a></li>
 <li><a href="#criteria">Criteria for Publication</a></li>

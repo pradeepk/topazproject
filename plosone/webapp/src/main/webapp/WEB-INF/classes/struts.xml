@@ -337,6 +337,12 @@
       </result>
     </action>
     
+    <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/ratingGuidelines.ftl</param>
+      </result>
+    </action>
+
     <action name="releaseNotes" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/releaseNotes.ftl</param>
