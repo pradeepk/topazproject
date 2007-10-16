@@ -8,26 +8,26 @@
 
     <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
-					<li><a href="${browseIssueURL}">Current Issue</a></li>
-					<!-- <li><a href="${archiveURL}">Journal Archive</a></li> Commented out until we have the Archive page in place. Remember to uncomment link in TOC rhc too! -->
+          <li><a href="${browseIssueURL}">Current Issue</a></li>
+          <!-- <li><a href="${archiveURL}">Journal Archive</a></li> Commented out until we have the Archive page in place. Remember to uncomment link in TOC rhc too! -->
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
-					<li><a href="http://collections.plos.org/plosntds/">Collections</a></li>
+          <li><a href="http://collections.plos.org/plosntds/">Collections</a></li>
         </ul>
     </li>
     <@s.url action="about" namespace="/static" includeParams="none" id="about"/>
     <li><a href="${about}" tabindex="103">About</a>
         <ul>
         <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
-				<@s.url action="scope" namespace="/static" includeParams="none" id="scope"/>
-				<@s.url action="edboard" namespace="/static" includeParams="none" id="edboard"/>
-				<@s.url action="eic" namespace="/static" includeParams="none" id="eic"/>
+        <@s.url action="scope" namespace="/static" includeParams="none" id="scope"/>
+        <@s.url action="edboard" namespace="/static" includeParams="none" id="edboard"/>
+        <@s.url action="eic" namespace="/static" includeParams="none" id="eic"/>
         <@s.url action="license" namespace="/static" includeParams="none" id="license"/>
         <@s.url action="contact" namespace="/static" includeParams="none" id="contact"/>
           <li><a href="${info}">Journal Information</a></li>
-					<li><a href="${scope}">Journal Scope</a></li>
-					<li><a href="${edboard}">Editorial Board</a></li>
-					<li><a href="${eic}">Editor-in-Chief</a></li>
+          <li><a href="${scope}">Journal Scope</a></li>
+          <li><a href="${edboard}">Editorial Board</a></li>
+          <li><a href="${eic}">Editor-in-Chief</a></li>
           <li><a href="${license}">Open-Access License</a></li>
           <li><a href="${contact}">Contact Us</a></li>
         </ul>
@@ -38,12 +38,12 @@
         <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="comment"/>
         <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
         <@s.url action="help" namespace="/static" includeParams="none" id="help"/>
-				<@s.url action="downloads" namespace="/static" includeParams="none" id="downloads"/>
+        <@s.url action="downloads" namespace="/static" includeParams="none" id="downloads"/>
         <@s.url action="sitemap" namespace="/static" includeParams="none" id="site"/>
           <li><a href="${comment}">Commenting Guidelines</a></li>
           <li><a href="${rating}">Rating Guidelines</a></li>
           <li><a href="${help}">Help Using This Site</a></li>
-					<li><a href="${downloads}">Media Downloads</a></li>
+          <li><a href="${downloads}">Media Downloads</a></li>
           <li><a href="${site}">Site Map</a></li>
         </ul>
       </li>
@@ -51,16 +51,16 @@
     <li><a href="${authors}" tabindex="105">For Authors and Reviewers</a>
         <ul>
         <@s.url action="whypublish" namespace="/static" includeParams="none" id="why"/>
-				<@s.url action="developing" namespace="/static" includeParams="none" id="developing"/>
+        <@s.url action="developing" namespace="/static" includeParams="none" id="developing"/>
         <@s.url action="policies" namespace="/static" includeParams="none" id="policies"/>
         <@s.url action="guidelines" namespace="/static" includeParams="none" id="guidelines"/>
         <@s.url action="figureGuidelines" namespace="/static" includeParams="none" id="figure"/>
         <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
         <@s.url action="reviewerGuidelines" namespace="/static" includeParams="none" id="reviewer"/>
           <li><a href="${why}">Why Publish With Us?</a></li>
-					<li><a href="${developing}">Developing Countries</a></li>
+          <li><a href="${developing}">Developing Countries</a></li>
           <li><a href="${policies}">Editorial and Publishing Policies</a></li>
-					<li><a href="${guidelines}">Author Guidelines</a></li>
+          <li><a href="${guidelines}">Author Guidelines</a></li>
           <li><a href="${figure}">Table and Figure Guidelines</a></li>
           <li><a href="${checklist}">Submit Your Paper</a></li>
           <li><a href="${reviewer}">Reviewer Guidelines</a></li>
