@@ -3,7 +3,6 @@
 	GLOBAL STYLE SHEET FOR : www.plosone.org
 	
 	CREATED ON  : 08-26-2006
-	MODIFIED ON : 08-13-2007
 	
 	CREATED BY	: MARGARET SHEAR
 	MODIFIED BY	: SEBASTIAN TOOMEY
@@ -36,7 +35,7 @@ dt			{ font-weight: bold; }
 dd			{ margin: 0; }
 table		{ margin: 20px; border: none;}
 th			{ padding: 6px; background-color: #ACF1FF; border: 4px solid #FFF; border-width: 0 3px 3px 0; font-weight: bold;}
-td			{ padding: 6px; background-color: #D2F7FF; border: 4px solid #FFF; border-width: 0 3px 3px 0; }
+td			{ padding: 6px; background-color: #edffe8; border: 4px solid #FFF; border-width: 0 3px 3px 0; }
 /* Default Headings */
 h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.04em; color: #333; /*position: relative; Note: this was causing links in floated articleMenu to be covered up and unclickable in Firefox2 */ }
 h1			{ font-size: 2.2em; font-weight: normal; color: #333;}
@@ -545,7 +544,7 @@ div.horizontalTabs		{ position: relative; border-width: 0;}
 
 .edboard dl { text-align: right; margin: 0 240px 0 0; }
 .edboard dt { font-weight: bold; display: block; float: left; padding-left: 5px; margin-top: 5px; position: relative;}
-.edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #D2F7FF; border-top: 6px solid #D2F7FF; font-size: .85em; text-indent: 10px; }
+.edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #edffe8; border-top: 6px solid #edffe8; font-size: .85em; text-indent: 10px; }
 
 .static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}
 
