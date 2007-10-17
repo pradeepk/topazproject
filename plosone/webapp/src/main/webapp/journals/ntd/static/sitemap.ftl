@@ -21,9 +21,11 @@
 
 <h2>Browse Articles</h2>
 <ul>
-    <@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
+	<@s.url action="browseIssue" field="issue" namespace="/article" includeParams="none" id="browseIssueURL"/>
+	<@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubURL"/>
 	
+	<li><@s.a href="${browseIssueURL}" title="PLoS NTDs | Current Issue">Current Issue</@s.a></li>
     <li><@s.a href="${browseDateURL}" title="PLoS NTDs | Browse by Publication Date">By Publication Date</@s.a></li>
     <li><@s.a href="${browseSubURL}" title="PLoS NTDs | Browse by Subject">By Subject</@s.a></li>
     <li><a href="http://collections.plos.org/plosntds/" title="Collections.plos.org | PLoS NTDs Collections">Collections</a></li>
@@ -46,7 +48,7 @@
     <li><@s.a href="${contactURL}" title="PLoS NTDs | Contact Us">Contact Us</@s.a></li>
   </ul>
   
- <h2>For Users</h2>
+ <h2>For Readers</h2>
 <ul>
     <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="commentURL"/>
     <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="ratingURL"/>
@@ -67,6 +69,7 @@
 	<@s.url action="policies" namespace="/static" includeParams="none" id="policiesURL"/>
 	<@s.url action="competing" namespace="/static" includeParams="none" id="competingURL"/>
 	<@s.url action="guidelines" namespace="/static" includeParams="none" id="guidelinesURL"/>
+	<@s.url action="latex" namespace="/static" includeParams="none" id="latexURL"/>
 	<@s.url action="figureGuidelines" namespace="/static" includeParams="none" id="figureGuidelinesURL"/>
 	<@s.url action="checklist" namespace="/static" includeParams="none" id="cklistURL"/>
 	<@s.url action="revisedChecklist" namespace="/static" includeParams="none" id="revisedChecklistURL"/>
@@ -83,7 +86,7 @@
 		<li><@s.a href="${latexURL}" title="PLoS NTDs | Converting LaTeX files to Word or RTF format">Converting LaTeX Files</@s.a></li>
 	</ul>
 	<li><@s.a href="${figureGuidelinesURL}" title="PLoS NTDs | Guidelines for Table and Figure Preparation">Table and Figure Preparation</@s.a></li>
-	<li><@s.a href="${cklistURL}" title="PLoS NTDs | Manuscript Submission Checklist">Manuscript Submission Checklist</@s.a></li>
+	<li><@s.a href="${cklistURL}" title="PLoS NTDs | Manuscript Submission Checklist">Submit Your Manuscript</@s.a></li>
 	<ul>
 		<li><a href="http://ntds.plosjms.org/" title="PLoS NTDs | Online Manuscript Submission and Review System">Submit Manuscript</a></li>
 		<li><@s.a href="${revisedChecklistURL}" title="PLoS NTDs | Checklist for Revised Manuscripts">Revised Manuscript Checklist</@s.a></li>

@@ -1,10 +1,12 @@
 <!-- begin : main content -->
 <div id="content" class="static">
 
-<h1>Manuscript Submission Checklist</h1> 
+<h1>Submit Your Manuscript</h1> 
 
 
 <p class="intro">We strongly encourage authors to send a <a href="guidelines.action#presubmission" title="PLoS NTDs | Author Guidelines: Presubmission Inquiries">presubmission inquiry</a> before making a full submission. Ready to submit your manuscript? Please refer to our submission checklist below and use our <a href="http://ntds.plosjms.org" title="PLoS NTDs |  Manuscript and Peer Review System">online manuscript submission system</a>.</p>
+
+<h2>Manuscript Submission Checklist</h2>
 
 <p>When you submit your article to <em>PLoS Neglected Tropical Diseases</em>, you will be asked to provide some information in addition to the manuscript itself, as well as some associated files. This checklist will ensure that you have gathered all the relevant information and that the manuscript is formatted appropriately. Details can be found in our <a href="guidelines.action">Guidelines for Authors</a>. If you have questions prior to submission, please contact us at <strong>plosntds [at] plos.org</strong>.</p>
 <ul>
@@ -25,7 +27,7 @@ In addition, all authors will be asked to specify the nature of their contributi
 <li>Have you included detailed descriptions of the statistical methods employed in your study and do you provide a measure of error in any data reported?</li> 
 <li>Have non-standard abbreviations been defined in the text?</li> 
 <li>Have you used <a href="http://www.gene.ucl.ac.uk/nomenclature/guidelines.html" title="HGNC Guidelines for Human Genome Nomenclature">standard nomenclature</a>?</li> 
-<li>Have you used SI values?</li>
+<li>Have you used <a href="http://www.bipm.org/en/si/" title="SI units">SI values</a>?</li>
 <li>Is the manuscript file in DOC or RTF?</li> 
 <li>Have your original figures been created as EPS or TIFF files in a high enough resolution to provide for adequate review? Please note that individual files should not exceed 5 MB in size.</li>
 <li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS NTDs | Table and Figure Guidelines">Guidelines for Figure Preparation</a>?</li>

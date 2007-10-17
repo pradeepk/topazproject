@@ -24,7 +24,12 @@
 
 <a name="copyright"></a>
 <h2>1. Copyright and License Policies</h2>
-$copyright_policies
+<p>Upon submission of an article, authors are asked to indicate their agreement to abide by an open-access license. The license permits any user to download, print out, extract, archive, and distribute the article, so long as appropriate credit is given to the authors and source of the work. The license ensures that your article will be as widely available as possible and that your article can be included in any scientific archive.</p>
+
+<p>Upon publication, PLoS also deposits all articles in <a href="http://www.pubmedcentral.nih.gov/" title="PubMed Central">PubMed Central</a>.  This complies with the policies of funding agencies, such as the <a href="http://publicaccess.nih.gov/" title="NIH">NIH</a> in the USA, the <a href="http://www.wellcome.ac.uk/node3302.html" title="Wellcome Trust">Wellcome Trust</a> and the <a href="http://www.rcuk.ac.uk/access/" title="Research Councils in the UK">Research Councils</a> in the UK, and the <a href="http://www.dfg.de/en/news/information_science_research/other_news/info_wissenschaft_04_06.html" title="Deutsche Forschungsgemeinschaft">Deutsche Forschungsgemeinschaft</a> in Germany, which request or require deposition of the published articles that they fund into publicly available databases.</p>
+
+<p>Please read about the <a href="license.action" title="Creative Commons Attribution License">Creative Commons Attribution License</a> before submitting your paper.</p>
+
 
 <a name="publication"></a>
 <h2>2.  Publication Charges</h2>
@@ -57,7 +62,7 @@ $copyright_policies
 
 <h5>Software/Algorithm Sharing</h5>
 
-<p>If new software or a new algorithm is central to a paper, the authors must provide sufficient information to allow interested users to reproduce and build on the authors’ work. In cases where the software/algorithm is not central to the paper, we nevertheless encourage authors to make all relevant materials freely available. Software can be provided under license where necessary, but any restrictions on the availability or on the use of materials might be judged to diminish the significance of a paper and therefore might influence the decision about whether a paper should be published subject to those conditions. These policies have been developed in accordance with the principles established in <a href="http://www.nap.edu/books/0309088593/html/" title="Sharing Publication-Related Data and Materials (National Academies Press, 2003)"><em>Sharing Publication-Related Data and Materials</em></a> (National Academies Press, 2003).</p>
+<p>If new software or a new algorithm is central to a paper, the authors must provide sufficient information to allow interested users to reproduce and build on the authors' work. In cases where the software/algorithm is not central to the paper, we nevertheless encourage authors to make all relevant materials freely available. Software can be provided under license where necessary, but any restrictions on the availability or on the use of materials might be judged to diminish the significance of a paper and therefore might influence the decision about whether a paper should be published subject to those conditions. These policies have been developed in accordance with the principles established in <a href="http://www.nap.edu/books/0309088593/html/" title="Sharing Publication-Related Data and Materials (National Academies Press, 2003)"><em>Sharing Publication-Related Data and Materials</em></a> (National Academies Press, 2003).</p>
 
 
 <a name="reporting"></a>
@@ -70,7 +75,7 @@ $copyright_policies
 
 <p>We require that authors of clinical trials adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types. All reports of the results of randomized clinical trials should include the CONSORT flow diagram as Figure 1, and authors should complete and submit the checklist contained within the CONSORT statement. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported according to the specifications indicated in the Methods section under Preparation of Manuscripts (below).</p>
 
-<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. The trial’s registration number must be provided at the time of submission. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq</a> on trial registration for further details.</p>
+<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. The trial's registration number must be provided at the time of submission. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq</a> on trial registration for further details.</p>
 
 <a name="systematic_reviews"></a>
 <h5>b. Systematic Reviews and Meta-Analyses of Randomized Controlled Trials</h5>
@@ -129,7 +134,7 @@ $copyright_policies
 
 <a name="competing"></a>
 <h2>11. Competing Interests</h2>
-<p>Authors are asked at submission to declare whether they have any financial, personal, or professional interests that could be construed to have influenced their paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. <a href="competing.action" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science’s policy regarding competing interests.</a></p> 
+<p>Authors are asked at submission to declare whether they have any financial, personal, or professional interests that could be construed to have influenced their paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. <a href="competing.action" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science's policy regarding competing interests.</a></p> 
 
 <a name="scientific"></a>
 <h2>12. Scientific and Editorial Misconduct</h2>

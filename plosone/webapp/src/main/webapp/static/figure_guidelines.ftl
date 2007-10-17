@@ -1,5 +1,5 @@
 <!-- begin : main content -->
-<div id="content" class="static"><h1><em>PLoS ONE</em> Guidelines for Table and Figure Preparation</h1>
+<div id="content" class="static"><h1>Guidelines for Table and Figure Preparation</h1>
 
 <ol>
  <li><a href="#color">Select Color Mode </a></li>
@@ -14,7 +14,7 @@
 
 <p class="intro">As part of the process of making scientific and medical literature freely available on the Web, PLoS uses a streamlined production process that takes authors' figures straight to layout. We appreciate every effort authors put toward ensuring that their figures meet our specifications.</p>
 
-<p>The figures that appear with the online version of <em>PLoS ONE</em> articles are provided at the highest quality possible, so authors should submit their figures properly sized, with fonts and labels at an appropriate size, and produced in a high-resolution format. The  following steps will help you meet these criteria; please read them carefully. A summary of <em>PLoS ONE</em> figure requirements follows:</p>
+<p>The figures that appear with the online version of articles are provided at the highest quality possible, so authors should submit their figures properly sized, with fonts and labels at an appropriate size, and produced in a high-resolution format. The  following steps will help you meet these criteria; please read them carefully. A summary of figure requirements follows:</p>
 
 <ul>
 	<li>Color: RGB or Grayscale</li>
@@ -26,7 +26,7 @@
 </ul>
 
 <p><strong>PLEASE REMEMBER</strong><br />
- Simply because a figure looks good on screen, this does not mean it is at an optimal resolution. For reassurance, size figure to intended dimensions, and double-check your specifications or print the image on your personal printer. The online <em>PLoS ONE</em> version should look relatively similar to the home-printer copy.</p>
+ Simply because a figure looks good on screen, this does not mean it is at an optimal resolution. For reassurance, size figure to intended dimensions, and double-check your specifications or print the image on your personal printer. The online version should look relatively similar to the home-printer copy.</p>
 
 <a name="color" id="color"></a>
 <h2>Step 1: Select Color Mode</h2>
@@ -56,7 +56,7 @@
 <a name="format" id="format"></a>
 <h2>Step 4. Choose File Format/Resolution/Size</h2>
 
-<p>TIFF is the preferred format for <em>PLoS ONE</em> figures. Currently <em>PLoS ONE</em> accepts figures in either TIFF or EPS format; however, authors should note that EPS files will be automatically converted to TIFF prior to publication. </p>
+<p>TIFF is the preferred format for figures. Currently we accept figures in either TIFF or EPS format; however, authors should note that EPS files will be automatically converted to TIFF prior to publication. </p>
 
 <p>TIFF files must have a minimum resolution of 600 dpi. Any images placed within EPS files must be at least 300 dpi. </p>
 
@@ -71,7 +71,7 @@
 <a name="video" id="video"></a>
 <h2>Step 5: Upload Audio, Video, and Motion Graphics</h2>
 
-<p>We encourage authors to submit multimedia files that are crucial to  the conclusions of the paper. Multimedia files should be smaller than 10 MB in size because of the difficulties that some users will experience in  loading or downloading files. Preferred formats for <em>PLoS ONE</em> are:</p>
+<p>We encourage authors to submit multimedia files that are crucial to  the conclusions of the paper. Multimedia files should be smaller than 10 MB in size because of the difficulties that some users will experience in  loading or downloading files. Preferred formats are:</p>
 
 <ul>
     <li>Audio: MP3</li>
