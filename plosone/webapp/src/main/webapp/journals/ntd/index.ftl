@@ -70,11 +70,11 @@
         <div id="second" class="col">
           <!-- begin : col 3 -->
           <div class="subcol first">
-            <div id="issue" class="block"><h3><a href="${browseIssueURL}">October 2007 Issue</a></h3><img src="images/issue_image.jpg" alt="issue cover image" /></div><!-- keep div#issue hmtl all on one line to avoid extra space below issue image in IE -->
+            <div id="issue" class="block"><h3><a href="${browseIssueURL}">October 2007 Issue</a></h3><a href="${browseIssueURL}"><img src="images/issue_image.jpg" alt="issue cover image" /></a></div><!-- keep div#issue hmtl all on one line to avoid extra space below issue image in IE -->
             <!-- end : issue block -->
             <!-- begin : mission block -->
             <div id="mission" class="block">
-              <p><strong>Welcome to <em>PLoS Neglected Tropical Diseases</em></strong>, the first open-access journal devoted to the world's most <a href="#"><!-- link to Journal Scope -->neglected tropical diseases</a>. We encourage you to participate and <a href="${comment}">add your comments</a> to articles.</p>
+              <p><strong>Welcome to <em>PLoS Neglected Tropical Diseases</em></strong>, the first open-access journal devoted to the world's most <a href="${scope}">neglected tropical diseases</a>. We encourage you to participate and <a href="${comment}">add your comments</a> to articles.</p>
             </div>
             <!-- end : mission block -->
             <!-- begin : stay-connected block -->
