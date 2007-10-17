@@ -31,8 +31,11 @@ import org.topazproject.otm.util.TransactionHelper;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.net.URI;
+import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -44,6 +47,24 @@ public class FetchArticleAction extends BaseActionSupport {
 
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
+  private static String[] articleTypes = new String[]{
+      "Correction", 
+      "Research Article", 
+      "Retraction", 
+      "Debate", 
+      "Expert Commentary", 
+      "From Innovation to Application", 
+      "Historical Profiles & Perspective", 
+      "Policy Platform", 
+      "Symposium", 
+      "Viewpoint", 
+      "Review", 
+      "Editorial", 
+      "Interview", 
+      "Correspondence"
+  };
+  private static final Set<String> VALID_ARTICLE_TYPES = 
+    new HashSet<String>(Arrays.asList(articleTypes));
   private BrowseService browseService;
   private FetchArticleService fetchArticleService;
   private JournalService journalService;
@@ -79,10 +100,12 @@ public class FetchArticleAction extends BaseActionSupport {
         for (URI artType : artTypes) {
           String artTypeStr = artType.toString();
           if (artTypeStr.startsWith(PLoS.PLOS_ArticleType)) {
-            articleTypeHeading = artTypeStr.substring(PLoS.PLOS_ArticleType.length());
-         // Replace %20 tokens with spaces that were converted by the ingestion.groovy script
-            articleTypeHeading = articleTypeHeading.replaceAll("%20", " "); 
-            break;
+            String heading = artTypeStr.substring(PLoS.PLOS_ArticleType.length());
+            heading = URLDecoder.decode(heading, "UTF-8");
+            if (VALID_ARTICLE_TYPES.contains(heading)) {
+              articleTypeHeading = heading;
+              break;
+            }
           }
         }
       }
