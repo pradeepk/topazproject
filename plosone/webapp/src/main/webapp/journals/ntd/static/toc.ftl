@@ -3,6 +3,7 @@
 <!-- begin : toc content -->
 
 <div id="content" class="toc">
+  <a id="top" title="top" class="noshow">&nbsp;</a>
 	<!-- begin : right-hand column -->
 	<div id="rhc">
 		<div id="sideNav">
@@ -39,19 +40,17 @@
 		<div id="issueImage">
 			<div id="thumbnail">
 				<a  href="/article/slideshow.action?imageURI=info%3Adoi%2F10.1371%2Fimage.pntd.v01.i01.g001&uri=info%3Adoi%2F10.1371%2Fimage.pntd.v01.i01"><img alt="Issue Image" src="/images/image.pntd.v01.i01.g001.png" width="120" height="120" /></a>
-
 				<a href="/article/slideshow.action?imageURI=info%3Adoi%2F10.1371%2Fimage.pntd.v01.i01.g001&uri=info%3Adoi%2F10.1371%2Fimage.pntd.v01.i01">View large image</a>
 			</div>
 			<h3>About This Image</h3>
-			<p><strong><em>Hope</em></strong></p>
-			<p><strong>by Emma Burns</strong></p>
+			<p><span id="title">Hope</span>&nbsp;<span id="creator">by Emma Burns</span></p>
 			<p>Emma Burns is a science illustrator who uses traditional and digital media to create images that depict a story or convey meaning with a single glance. A passionate interest in both biology and the arts led her to a combination of the two professions, wherein she creates artwork that reflects the scientific realm. Along with her lifelong interest in art, Emma earned a degree in Biology from the University of York. Inspired by the knowledge she gained, she set sail for California, where she took a graduate program in Science Illustration. She is fascinated by the natural world, and flora and fauna are commonly found in her illustrations. Emma feels that it is important to use art to depict global health issues and articulate them in a way that draws the attention of the general public.</p>
-            <p><italic>Image Credit: &copy; 2007 Emma Burns</italic></p>
+      <p id="credit">Image Credit: &copy; 2007 Emma Burns</p>
 		</div>
 		<!-- begin : search results -->
 		<div id="search-results">
 		
-			<a id="editorial" title="Editorial" />
+			<a id="editorial" title="Editorial" class="noshow">&nbsp;</a>
 			<h2>Editorial</h2>
 	  		
 			<div class="article">
@@ -68,7 +67,7 @@
 				<p class="authors">Gavin Yamey</p>
 			</div>
 
-			<a id="expert" title="Expert Commentary" />
+			<a id="expert" title="Expert Commentary" class="noshow">&nbsp;</a>
 			<h2>Expert Commentary</h2>
 			
  			<div class="article">
@@ -80,7 +79,7 @@
 				</dl>
 			</div>
 			
-			<a id="policy" title="Policy Platform" />
+			<a id="policy" title="Policy Platform" class="noshow">&nbsp;</a>
 			<h2>Policy Platform</h2>
 	
    			<div class="article">
@@ -88,7 +87,7 @@
 				<p class="authors">Catherine Hodgkin, David H. Molyneux, Adenike Abiose, Bernhard Philippon, Michael R. Reich, J. Hans Remme, Bjorn Thylefors, Mamadou Traore, Karen Grepin</p>
 			</div>
 
-			<a id="research" title="Research Articles" />
+			<a id="research" title="Research Articles" class="noshow">&nbsp;</a>
 			<h2>Research Articles</h2>
 			
 			<div class="article">
