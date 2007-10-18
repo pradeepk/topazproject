@@ -4,7 +4,7 @@
 <h1>A Message from the Editor-in-Chief</h1>
 
 <div class="quotes">
-	<blockquote>
+	<blockquote class="decorative">
 		<p>Despite the fact that so-called "neglected diseases" such as hookworm affect millions of people, they have long been abandoned by modern medicine.</p>
 	</blockquote>
 	<cite>- Erica Check, <em>Foreign Policy</em>, July/August 2006</cite>
