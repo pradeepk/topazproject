@@ -611,16 +611,18 @@ p#issueNav { margin:0; padding:0; position:relative; top:-12px }
 div.toc div#rhc { padding-top:0; }
 div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:hidden; } /* see floatingMenu.js */
 div.toc h1 		{ width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #67a96d; }
-div.toc div#issueImage { margin:30px 0 0 0; }
-div.toc div#issueImage p { margin:0 0 10px 0; font-size:.9em; line-height:1.5em; }
+div.toc div#issueImage { margin:30px 0 15px 0; }
+div.toc div#issueImage p { margin:0 0 10px 0; font-size:.9em; line-height:1.5em; display:inline; padding:0 .5em 0 0; }
+div.toc div#issueImage span#title { font-weight:bold; font-style:italic; }
+div.toc div#issueImage span#creator { font-weight:bold; }
 div.toc div#issueImage p#credit,
 div.toc div#issueImage p#credit a { font-style:italic; }
 div.toc div#issueImage div#thumbnail { width:122px; float:left; margin-right:15px; }
 div.toc div#issueImage div#thumbnail img { width:120px; height:120px;/*sizes temp*/ margin:0; border: 1px solid #999; display:block; }
 div.toc div#issueImage div#thumbnail a:link,
 div.toc div#issueImage div#thumbnail a:visited	{ font-size:.9em; margin:0; padding:0; }
-div.toc #search-results { margin:20px 0 0 0; padding:0; }
-div.toc h2 { font-size:170%; font-style:normal; border-bottom:1px solid #060 }
+div.toc #search-results { margin-top:0; padding:0; }
+div.toc h2 { margin:15px 0 0 0; font-size:170%; font-style:normal; border-bottom:1px solid #060 }
 div.toc div.article { margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #ccc; background:white; } /* white background allows bottom border to render in IE6 - wierd */
 div.toc h3 { font-size:110%; font-weight:bold; border:0; line-height:1.4em; color:#666; }
 div.toc h3 a:link,
