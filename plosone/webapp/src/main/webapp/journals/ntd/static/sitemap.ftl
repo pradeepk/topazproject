@@ -25,7 +25,7 @@
 	<@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubURL"/>
 	
-	<li><@s.a href="${browseIssueURL}" title="PLoS NTDs | Current Issue">Current Issue</@s.a></li>
+	<li><@s.a href="${tocStatic}" title="PLoS NTDs | Current Issue">Current Issue</@s.a></li><!-- Note that this is a temporary var to static TOC. Once dynamic TOC is in place, should be changed back to "browseIssueURL" -->
     <li><@s.a href="${browseDateURL}" title="PLoS NTDs | Browse by Publication Date">By Publication Date</@s.a></li>
     <li><@s.a href="${browseSubURL}" title="PLoS NTDs | Browse by Subject">By Subject</@s.a></li>
     <li><a href="http://collections.plos.org/plosntds/" title="Collections.plos.org | PLoS NTDs Collections">Collections</a></li>
