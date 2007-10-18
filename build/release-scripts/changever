@@ -3,8 +3,8 @@
 # This script needs to be run from head (or the top of a suitable branch)
 
 # These two variables are all that should be modified
-toVer="0.8.1_rc1"
-toPatch="-t00801_rc1"
+toVer="0.8.1_rc2-SNAPSHOT"
+toPatch="-t00801_rc2-SNAPSHOT"
 
 # Compute the current version strings
 fromVer=`groovy -e 'print new XmlSlurper().parse(new File("pom.xml")).version'`
