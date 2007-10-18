@@ -609,8 +609,8 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t0.8.1_rc2-SNAPSHOT</fedora-version>
-                  <ecqs-version>2.0.6-1-t0.8.1_rc2-SNAPSHOT</ecqs-version>
+                  <fedora-version>2.1.1-t00801_rc2-SNAPSHOT</fedora-version>
+                  <ecqs-version>2.0.6-1-t00801_rc2-SNAPSHOT</ecqs-version>
                 </configuration>
               </execution>
               <execution>

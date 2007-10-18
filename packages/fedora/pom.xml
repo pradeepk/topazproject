@@ -16,7 +16,7 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>fedora</artifactId>
-      <version>2.1.1-t0.8.1_rc2-SNAPSHOT</version>
+      <version>2.1.1-t00801_rc2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
