@@ -41,14 +41,14 @@
     <#list articleDates?keys?reverse as curYear>
       <#assign curYearStr = curYear?string("#") >
       <li>${curYearStr}</li>
-      <li><#list articleDates(curYear)?keys?reverse as curMon>
-        <#assign curMonStr = curMon?date("MM")?string("MMM") >
+      <#list articleDates(curYear)?keys?reverse as curMon>
+      <li><#assign curMonStr = curMon?date("MM")?string("MMM") >
         <ol>
           <#if curYear == year && curMon == month && day == -1>
-            <li class="current">
-            <#assign infoText = "in <strong>" + curMonStr + " " + curYearStr + "</strong>">
+          <li class="current">
+          <#assign infoText = "in <strong>" + curMonStr + " " + curYearStr + "</strong>">
           <#else>
-            <li>
+          <li>
           </#if>
           <@s.url id="monthURL" action="browse" namespace="/article" field="${field}" year="${curYear?c}" month="${curMon?c}" includeParams="none"/>
           <@s.a href="%{monthURL}">${curMonStr}</@s.a></li>
@@ -64,8 +64,8 @@
           <@s.a href="%{dayURL}">${curDayStr}</@s.a></li>
         </#list>
         </ol>
-      </#list>
       </li>
+      </#list>
     </#list>
     </ol>
 
