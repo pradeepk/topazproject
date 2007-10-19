@@ -5,10 +5,14 @@
 <#include "global_head.ftl">
 </head>
 <body>
+
+<#-- this should be pulled out into an ftl file -->
+<#if journalContext != "PLoSNTD" >
 <!-- begin : biocompare -->
 <script src='http://comparenetworks.com/partnerAds/swfobject.js' type='text/javascript'></script>
 <script language="javascript" type="text/javascript" src="http://comparenetworks.com/partnerAds/adSetup.js"></script>
 <!-- end : biocompare -->
+</#if>
 
 <!-- begin : container -->
 <div id="container">
