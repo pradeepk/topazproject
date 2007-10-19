@@ -129,7 +129,7 @@ function toggleAnnotation(obj, userType) {
     }
   }
   
-  toggleExpand(obj, null, "Show comments", "Hide comments");
+  toggleExpand(obj, null, "Show annotations", "Hide annotations");
   
   _ldc.hide();
   

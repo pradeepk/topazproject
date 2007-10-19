@@ -20,11 +20,11 @@
       <h6>Commentary</h6>
       <ol>
         <#if Session[freemarker_config.userAttributeKey]?exists>
-            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your comment</a></li>
+            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a></li>
         <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your comment</a></li>
+            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a></li>
         </#if>
-        <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn comments on/off">Hide comments</a>
+        <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
 
         <!-- begin : expanded block -->
         <!--  <fieldset>
@@ -64,7 +64,7 @@
         <@s.url id="trackbackURL" namespace="/article" action="listTrackbacks" includeParams="none" trackbackId="${articleURI}"/>
         <li><a href="${trackbackURL}" class="trackback icon">Trackbacks (${trackbackList?size})</a></li>
 
-  <!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your comment!</li> -->
+  <!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
       </ol>
     </div>
 
@@ -86,11 +86,11 @@
       <h6>Commentary</h6>
       <ol>
         <#if Session[freemarker_config.userAttributeKey]?exists>
-            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your comment</a></li>
+            <li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a></li>
         <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your comment</a></li>
+            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a></li>
         </#if>
-        <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn comments on/off">Hide comments</a>
+        <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
 
         <!-- begin : expanded block -->
         <!--  <fieldset>
@@ -129,7 +129,7 @@
         </li>
         <li><a href="${trackbackURL}" class="trackback icon">Trackbacks (${trackbackList?size})</a></li>
 
-  <!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your comment!</li> -->
+  <!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
       </ol>
     </div>
 

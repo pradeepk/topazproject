@@ -119,12 +119,12 @@ topaz.annotation = {
     annotationConfig.rangeInfoObj = this.getRangeOfSelection();
     
     if (annotationConfig.rangeInfoObj == annotationConfig.excludeSelection) {
-      alert("This area of text cannot be commented on.");
+      alert("This area of text cannot be annotated.");
       getArticle();
       return false;
     }
     else if (!annotationConfig.rangeInfoObj) {
-      alert("Using your mouse, select the area of the article you wish to comment on.");
+      alert("Using your mouse, select the area of the article you wish to annotate.");
       return false;
     }
     else {      
@@ -149,7 +149,7 @@ topaz.annotation = {
       var mod = this.analyzeRange(annotationConfig.rangeInfoObj);
      
       if (mod == annotationConfig.excludeSelection) {
-        alert("This area of text cannot be commented on.");
+        alert("This area of text cannot be annotated.");
         getArticle();
         return false;
       }

@@ -11,7 +11,7 @@
 		<fieldset>
 			<legend>Compose Your Response</legend>
 		
-			<label for="responseTitle"><span class="none">Enter your response title</span><!-- error message text <em>A title is required for all public comments</em>--></label>
+			<label for="responseTitle"><span class="none">Enter your response title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
 			<input type="text" name="responseTitle" id="responseTitle" value="Enter your response title..." class="title" alt="Enter your response title..." />
 			
 			<label for="reponseArea"><span class="none">Enter your response</span><!-- error message style <em>Please enter your response</em>--></label>

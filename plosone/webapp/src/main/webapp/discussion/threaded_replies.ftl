@@ -49,7 +49,7 @@
 	
 	<!-- begin : main content -->
 	<div id="content">
-		<h1>Comment and Responses</h1>
+		<h1>Annotation and Responses</h1>
 		<div class="source">
 			<span>Original Article</span>
 			<@s.url id="origArticle" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${baseAnnotation.annotates}" annotationId="${baseAnnotation.id}"/>
@@ -63,7 +63,7 @@
 				<!-- begin : response poster detail -->
 				<@s.url namespace="/user" includeParams="none" id="baseAuthorURL" action="showUser" userId="${baseAnnotation.creator}"/>
 				
-				<div class="detail">Posted by <a href="${baseAuthorURL}" title="Comment Author" class="user icon">${baseAnnotation.creatorName}</a> on <strong>${baseAnnotation.createdAsDate?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong>
+				<div class="detail">Posted by <a href="${baseAuthorURL}" title="Annotation Author" class="user icon">${baseAnnotation.creatorName}</a> on <strong>${baseAnnotation.createdAsDate?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong>
 				</div>
 				<!-- end : response poster details -->
 			</div>
