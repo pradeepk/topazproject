@@ -19,48 +19,57 @@
               </div>
             </div><!-- end : horizontalTabs -->
             <div class="block">
-              <h2>Featured Review</h2>
+              <h2>Featured Editorial</h2>
+			  <@s.url id="featured" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000065"/>
               <div class="article section lastSection">
-                <h3><a href="#">Reliance of Host Cholesterol Metabolic Pathways for the Life Cycle of Hepatitis C Virus</a></h3>
-                <img src="images/article_image1.gif" alt="article image" />
-                <p>In this new Review article, Jin Ye summarizes the cholesterol metabolic pathways that are required for the replication, secretion, and entry of Hepatitis C virus (HCV) and the potential application of drugs that alter host cholesterol metabolism.</p>
+                <h3><@s.a href="${featured}" title="Read Open-Access Article">A Turning Point in the History of Humanity's Oldest Diseases: Guest Commentary by WHO Director-General Margaret Chan</@s.a></h3>
+                <img src="images/homepage/article_v01_i01_chan.jpg" alt="article image" />
+                <p>The free availability of leading research articles will benefit policy makers and motivate scientists worldwide.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
             </div>
             <!-- end block -->
             <div class="block">
               <h2>New and Noted</h2>
+			  <@s.url id="newNoted1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000056"/>
+			  <@s.url id="newNoted2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000001"/>
+			  <@s.url id="newNoted3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000067"/>
+
               <div class="article section">
-                <h3><a href="#">Surprisingly High Specificity of the PPD Skin Test for M. tuberculosis Infection from Recent Exposure in The Gambia</a></h3>
-                <img src="images/article_image2.gif" alt="article image" /><p>Nostrud tum accumsan si vulpes utinam ibidem. Dolore in gemino acsi accumsan, metuo exerci amet praesent iriure praesent odio ulciscor obruo. Commodo accumsan immitto in quadrum dolus, melior pagus camur, fatua.</p>
+                <h3><@s.a href="${newNoted1}" title="Read Open-Access Article">A Dominant Clone of <em>Leptospira interrogans</em> Associated with an Outbreak of Human Leptospirosis in Thailand</@s.a></h3>
+                <img src="images/homepage/article_v01_i01_peacock.gif" alt="article image" />
+				<p>Janjira Thaipadungpanit and colleagues developed and used a multilocus sequence typing scheme to show that a single clone of <em>Leptospira interrogans</em>, found in the bandicoot rat, was the major cause of a sustained outbreak of human leptospirosis in northeast Thailand. </p>
+                <div class="clearer">&nbsp;</div>
+              </div>
+              <div class="article section">
+                <h3><@s.a href="${newNoted2}" title="Read Open-Access Article">Perturbation of the Dimer Interface of Triosephosphate Isomerase and its Effect on <em>Trypanosoma cruzi</em></@s.a></h3>
+                <img src="images/homepage/article_v01_i01_gomez-puyou.gif" alt="article image" />
+				<p>Vanesa Olivares-Illana and colleagues found significant differences in the interface between the two subunits of triosephosphate isomerase from <em>Homo sapiens</em> and <em>Trypanosoma cruzi</em> (TcTIM), which causes Chagas disease. They show that 2,2'-dithioaniline (DTDA) is more effective at inactivating TcTIM than the human enzyme.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
               <div class="article section lastSection">
-                <h3><a href="#">Increasing Coverage and Decreasing Inequity in Insecticide-Treated Bed Net Use among Rural Kenyan Children</a></h3>
-                <img src="images/article_image3.jpg" alt="article image" /><p>Inexpensive and efficacious interventions that avert childhood deaths in sub-Saharan Africa have failed to reach effective coverage, especially among the poorest rural sectors.</p>
+                <h3><@s.a href="${newNoted3}" title="Read Open-Access Article">National Mass Drug Administration Costs for Lymphatic Filariasis Elimination</@s.a></h3>
+				<img src="images/homepage/article_v01_i01_goldman.jpg" alt="article image" />
+				<p>This cost-analysis paper shows that mass drug administration for lymphatic filariasis is affordable and comparatively inexpensive in comparison to other public-health programs.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
             </div><!-- end : block -->
             <div class="other block">
               <h2>From Other PLoS Journals</h2>
               <div class="section">
-                <h3><a href="#"><em>PLoS Medicine</em></a> and <a href="#"><em>PLoS Pathogens</em></a></h3>
-                <p>These three related papers employ open access, web-based applications and downloadable source code from Microsoft Research to generate new statistical methods for studying Maleria.</p>
+                <h3><a href="http://www.plosmedicine.org/"><em>PLoS Medicine</em></a> and <a href="http://www.plospathogens.org/"><em>PLoS Pathogens</em></a></h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
                 <ul class="articles">
-                  <@s.url id="article0000000" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000000"/>
-                  <@s.url id="article0000007" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000007"/>
-                  <@s.url id="article0000008" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000008"/>
-                  <@s.url id="article0000012" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000012"/>
-                  <li><@s.a href="%{article0000012}" title="Read Open Access Article">The Effectiveness of Contact Tracing in Emerging Epidemics</@s.a></li>
-                  <li><@s.a href="%{article0000008}" title="Read Open Access Article">Molecular Adaptation during Adaptive Radiation in the Hawaiian Endemic Genus <em>Schiedea</em></@s.a></li>
-                  <li><@s.a href="%{article0000000}" title="Read Open Access Article">PLoS ONE Sandbox: A Place to Learn and Play</@s.a></li>
-                  <li><@s.a href="%{article0000007}" title="Read Open Access Article">A Single Basis for Developmental Buffering of <em>Drosophila</em> Wing Shape</@s.a></li>
+                  <li><a href="#" title="Read Open Access Article">Exerci eu Enim, Imputo Indoles Commodo Valde, Comis Verto</a></li>
+                   <li><a href="#" title="Read Open Access Article">Exerci eu Enim, Imputo Indoles Commodo Valde, Comis Verto</a></li>
+                  <li><a href="#" title="Read Open Access Article">Exerci eu Enim, Imputo Indoles Commodo Valde, Comis Verto</a></li>
                 </ul>
               </div>
               <div class="section lastSection">
-                <h3><a href="#"><em>PLoS ONE</em></a></h3>
-                <ul class="articles">
-                  <li><a href="#">Exerci eu Enim, Imputo Indoles Commodo Valde, Comis Verto</a></li>
+                <h3><a href="http://www.plosone.org/"><em>PLoS ONE</em></a></h3>
+                <@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000000"/>
+				<ul class="articles">
+                  <li><@s.a href="${article1}" title="Read Open Access Article">Exerci eu Enim, Imputo Indoles Commodo Valde, Comis Verto</@s.a></li>
                 </ul>
               </div>
             </div><!-- end : other block -->
@@ -70,7 +79,7 @@
         <div id="second" class="col">
           <!-- begin : col 3 -->
           <div class="subcol first">
-            <div id="issue" class="block"><h3><a href="${tocStatic}">October 2007 Issue</a></h3><a href="${tocStatic}"><img src="images/issue_image.jpg" alt="issue cover image" /></a></div><!-- keep div#issue hmtl all on one line to avoid extra space below issue image in IE -->
+            <div id="issue" class="block"><h3><a href="${tocStatic}">October 2007 Issue</a></h3><a href="${tocStatic}"><img src="images/homepage/issue_v01_i01.jpg" alt="issue cover image" /></a></div><!-- keep div#issue hmtl all on one line to avoid extra space below issue image in IE -->
             <!-- end : issue block -->
             <!-- begin : mission block -->
             <div id="mission" class="block">
@@ -87,55 +96,57 @@
             </div>
             <!-- end : stay-connected block -->
             <!-- begin : advocacy blocks -->
-            <script language='JavaScript' type='text/javascript'>
-            <!--
-               if (!document.phpAds_used) document.phpAds_used = ',';
-               phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-               document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-               document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&#38;what=zone:195&#38;source=NTD&#38;block=1");
-               document.write ("&#38;exclude=" + document.phpAds_used);
-               if (document.referrer)
-                 document.write ("&#38;referer=" + escape(document.referrer));
-               document.write ("'><" + "/script>");
-             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=abd0d95d' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:184&#38;source=PHUBCT&#38;n=abd0d95d' border='0' alt=''></a></noscript>
-            <script language='JavaScript' type='text/javascript'>
-            <!--
-               if (!document.phpAds_used) document.phpAds_used = ',';
-               phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-
-               document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-               document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&#38;what=zone:196&#38;source=NTD&#38;block=1");
-               document.write ("&#38;exclude=" + document.phpAds_used);
-               if (document.referrer)
-                  document.write ("&#38;referer=" + escape(document.referrer));
-               document.write ("'><" + "/script>");
-            //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a56536b2' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:185&#38;source=PHUBCT&#38;n=a56536b2' border='0' alt=''></a></noscript>
-            <script language='JavaScript' type='text/javascript'>
-            <!--
-               if (!document.phpAds_used) document.phpAds_used = ',';
-               phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-               document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-               document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&#38;what=zone:197&#38;source=NTD&#38;block=1");
-               document.write ("&#38;exclude=" + document.phpAds_used);
-               if (document.referrer)
-                  document.write ("&#38;referer=" + escape(document.referrer));
-               document.write ("'><" + "/script>");
-            //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a6f9fd36' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:186&#38;source=PHUBCT&#38;n=a6f9fd36' border='0' alt=''></a></noscript>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<!--
+   if (!document.phpAds_used) document.phpAds_used = ',';
+   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+   document.write ("&amp;what=zone:195&amp;source=NTD&amp;target=_top&amp;block=1");
+   document.write ("&amp;exclude=" + document.phpAds_used);
+   if (document.referrer)
+      document.write ("&amp;referer=" + escape(document.referrer));
+   document.write ("'><" + "/script>");
+//-->
+</script><noscript><a href='http://ads.plos.org/adclick.php?n=a1ec113d' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:195&amp;source=NTD&amp;n=a1ec113d' border='0' alt=''></a></noscript>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<!--
+   if (!document.phpAds_used) document.phpAds_used = ',';
+   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+   document.write ("&amp;what=zone:196&amp;source=NTD&amp;target=_top&amp;block=1");
+   document.write ("&amp;exclude=" + document.phpAds_used);
+   if (document.referrer)
+      document.write ("&amp;referer=" + escape(document.referrer));
+   document.write ("'><" + "/script>");
+//-->
+</script><noscript><a href='http://ads.plos.org/adclick.php?n=ace5c997' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:196&amp;source=NTD&amp;n=ace5c997' border='0' alt=''></a></noscript>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<!--
+   if (!document.phpAds_used) document.phpAds_used = ',';
+   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+   document.write ("&amp;what=zone:197&amp;source=NTD&amp;target=_top&amp;block=1");
+   document.write ("&amp;exclude=" + document.phpAds_used);
+   if (document.referrer)
+      document.write ("&amp;referer=" + escape(document.referrer));
+   document.write ("'><" + "/script>");
+//-->
+</script><noscript><a href='http://ads.plos.org/adclick.php?n=aec547bc' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:197&amp;source=NTD&amp;n=aec547bc' border='0' alt=''></a></noscript>
             <!-- end : advocacy blocks -->
             <!-- begin : blog block -->
             <div id="blog" class="block">
               <h3>From the PLoS Blog</h3>
               <p>Read the <a href="http://www.plos.org/cms/blog" title="PLoS Blog">PLoS Blog</a> and contribute your views on scientific research and open-access publishing.</p>
               <ul class="articles">
-                  <li><a href="#">In the August issue of PLoS Medicine</a></li>
-                  <li><a href="#">PLoS Neglected Tropical Diseases goes live today</a></li>
-                  <li><a href="#">Commenting on PLoS ONE: Q&A</a></li>
+                  <li><a href="http://www.plos.org/cms/node/274">Oops we missed our own birthday</a></li>
+                  <li><a href="http://www.plos.org/cms/node/272">Journal Clubs - think of the future!</a></li>
+                  <li><a href="http://www.plos.org/cms/node/271">Using open-access articles for student projects</a></li>
               </ul>
             </div>
             <!-- end : blog block -->
@@ -143,20 +154,21 @@
           <!-- end : col 3 -->
           <!-- begin : col 4 -->
           <div class="subcol last">
-            <div class="block banner">
-              <script language='JavaScript' type='text/javascript'>
-              <!--
-                if (!document.phpAds_used) document.phpAds_used = ',';
-                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-                document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-                document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-                document.write ("&#38;what=zone:181&#38;source=PHUBCT&#38;block=1&#38;blockcampaign=1");
-                document.write ("&#38;exclude=" + document.phpAds_used);
-                if (document.referrer)
-                  document.write ("&#38;referer=" + escape(document.referrer));
-                document.write ("'><" + "/script>");
-              //-->
-              </script><noscript><a href='http://ads.plos.org/adclick.php?n=a595dcde' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:181&#38;source=PHUBCT&#38;n=a595dcde' border='0' alt=''></a></noscript>
+            <div class="block banner"><!--skyscraper-->
+              <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<!--
+   if (!document.phpAds_used) document.phpAds_used = ',';
+   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+   document.write ("&amp;what=zone:192&amp;source=NTD&amp;target=_top&amp;block=1&amp;blockcampaign=1");
+   document.write ("&amp;exclude=" + document.phpAds_used);
+   if (document.referrer)
+      document.write ("&amp;referer=" + escape(document.referrer));
+   document.write ("'><" + "/script>");
+//-->
+</script><noscript><a href='http://ads.plos.org/adclick.php?n=a93f3323' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:192&amp;source=NTD&amp;n=a93f3323' border='0' alt=''></a></noscript>
             </div><!-- end : block banner -->
           </div><!-- end : subcol last -->
         </div><!-- end : wrapper for cols 3 & 4 -->
