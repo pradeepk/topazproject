@@ -32,6 +32,8 @@ public abstract class CommonBasePage extends AbstractPage {
     "Browse", "RSS", "Home", "Browse Articles", "About", "For Readers",
       "Journals", "Hubs", "PLoS.org"
   };
+  
+  
 
   private static final String plosOneLinks[] = new String[] {"PLoS ONE", 
     "For Authors and Reviewers"};
@@ -53,9 +55,11 @@ public abstract class CommonBasePage extends AbstractPage {
       tester.assertLinkPresentWithText(PREFERENCES_LINK);
     }
 
-    for (String link : commonLinks)
-      tester.assertLinkPresentWithText(link);
-
+    if (HomePage.J_PONE.equals(journal)) {
+      for (String link : commonLinks)
+        tester.assertLinkPresentWithText(link);
+    }
+    
     if (J_PONE.equals(getJournal())) {
       for (String link : plosOneLinks)
         tester.assertLinkPresentWithText(link);
