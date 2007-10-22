@@ -130,11 +130,12 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 <a name="clinical_trials"></a>
 <h5>a. Clinical Trials</h5> 
 
-<p>Authors must submit original protocols as supporting information to allow editors and reviewers to assess manuscripts fully. Any deviation from the protocol must be explained.</p>
+<p>We follow the <a href="http://www.who.int/ictrp/en/">WHO definition of a clinical trial</a>. "A clinical trial is any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes. Interventions include but are not restricted to drugs, cells and other biological products, surgical procedures, radiologic procedures, devices, behavioural treatments, process-of-care changes, preventive care, etc"</p>
 
-<p>We require that authors of clinical trials adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types. All reports of the results of randomized clinical trials should include the CONSORT flow diagram as Figure 1, and authors should complete and submit the checklist contained within the CONSORT statement. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported according to the specifications indicated in the Methods section under Preparation of Manuscripts (below).</p>
+<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq on trial registration</a> for further details. The WHO's list of approved registries is listed here <a href="http://www.who.int/ictrp/network/list_registers/en/index.html">http://www.who.int/ictrp/network/list_registers/en/index.html</a>.</p>
 
-<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. The trial's registration number must be provided at the time of submission. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq</a> on trial registration for further details.</p>
+<p>Authors of randomized controlled trials must adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types.   Before the paper can enter peer review authors must: 1) name in the paper trial registry, trial registration number, and IRB and 2) provide a copy of the trial protocol and a completed CONSORT checklist as supporting files. The CONSORT flow diagram must be included as Figure 1. Any deviation from the trial protocol must be explained in the paper. Authors must explicitly discuss informed consent in their paper, and PLoS reserves the right to ask for a copy of the patient consent form. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported in the Methods section.</p>
+
 
 <a name="systematic_reviews"></a>
 <h5>b. Systematic Reviews and Meta-Analyses of Randomized Controlled Trials</h5>
@@ -267,6 +268,17 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 <h3>Organization of the Manuscript</h3>
 
 <p>Most articles published in <em>PLoS Neglected Tropical Diseases</em> will be organized into the following sections: title, authors, affiliations, abstract, introduction, methods, results, discussion, acknowledgments,  references, figure legends, and tables. Uniformity in format will help readers and users of the journal. We recognize, however, that this format is not ideal for all types of studies. If you have a manuscript that would benefit from a different format, please contact the editors to discuss this further. Although we have no firm length restrictions for the entire manuscript or individual sections, we urge authors to present and discuss their findings concisely.</p>
+
+<h4>Templates for Specific Study Types</h4>
+
+<ul>
+<li><a href="http://www.plosone.org/static/tpl_plos_clinical_general.doc">Clinical Research article</a></li>
+<li><a href="http://www.plosone.org/static/tpl_plos_clinicaltrials.doc">Clinical Trial article</a></li>
+<li><a href="http://www.plosone.org/static/tpl_plos_meta.doc">Systematic Review / Meta-Analysis article</a></li>
+</ul>
+
+<p>These manuscript templates will help to prepare your manuscript in the standard format. The templates consist of the standard headings along with body text explaining what to include in each section. You should overwrite (or copy and paste) the body text with the corresponding section text for your article.</p>
+
  
 <h4>Title (150 characters)</h4>
 
@@ -303,9 +315,6 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 <p><a href="http://genetics.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pgen.0010011#toclink1">A Hybrid Photoreceptor Expressing Both Rod and Cone Genes in a Mouse Model of Enhanced S-Cone Syndrome</a></p>
 
 <p><a href="http://genetics.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pgen.0010065#toclink1">Life in Hot Carbon Monoxide: The Complete Genome Sequence of Carboxydothermus hydrogenoformans Z-2901</a></p>
-
-<h3>Registration</h3>
-<p>Registration details should be included when reporting results of a clinical trial (see "<a href="#reporting_guidelines">Material Required for the Submission of Specific Study Types</a>" for details). For each location that your trial is registered, please list: name of registry, registry number, and URL of your trial in the registry database.</p>
  
 <h4>Introduction</h4>
 <p>The introduction should discuss the purpose of the study in the broader context. As you compose the introduction, think of readers who are not experts in this field. Include a brief review of the key literature. If there are relevant controversies or disagreements in the field, they should be mentioned so that a non-expert reader can delve into these issues further. The introduction should conclude with a brief statement of the overall aim of the experiments and a comment about whether that aim was achieved.</p>

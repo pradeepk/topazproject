@@ -70,17 +70,16 @@
 <a name="clinical_trials"></a>
 <h5>a. Clinical Trials</h5> 
 
+<p>We follow the WHO definition of a clinical trial &#8212; see <a href="http://www.who.int/ictrp/en/">http://www.who.int/ictrp/en/</a>. "A clinical trial is any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes. Interventions include but are not restricted to drugs, cells and other biological products, surgical procedures, radiologic procedures, devices, behavioural treatments, process-of-care changes, preventive care, etc"</p>
 
-<p>Authors must submit original protocols as supporting information to allow editors and reviewers to assess manuscripts fully. Any deviation from the protocol must be explained.</p>
+<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq on trial registration</a> on trial registration for further details. The WHO's list of approved registries is listed here <a href="http://www.who.int/ictrp/network/list_registers/en/index.html">http://www.who.int/ictrp/network/list_registers/en/index.html</a>.</p>
 
-<p>We require that authors of clinical trials adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types. All reports of the results of randomized clinical trials should include the CONSORT flow diagram as Figure 1, and authors should complete and submit the checklist contained within the CONSORT statement. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported according to the specifications indicated in the Methods section under Preparation of Manuscripts (below).</p>
-
-<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. The trial's registration number must be provided at the time of submission. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq</a> on trial registration for further details.</p>
+<p>Authors of randomized controlled trials must adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types. Before the paper can enter peer review authors must: 1) name in the paper trial registry, trial registration number, and IRB and 2) provide a copy of the trial protocol and a completed CONSORT checklist as supporting files. The CONSORT flow diagram must be included as Figure 1. Any deviation from the trial protocol must be explained in the paper. Authors must explicitly discuss informed consent in their paper, and PLoS reserves the right to ask for a copy of the patient consent form. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported in the Methods section.</p>
 
 <a name="systematic_reviews"></a>
 <h5>b. Systematic Reviews and Meta-Analyses of Randomized Controlled Trials</h5>
 
-<p>Reports of meta-analyses of randomized controlled studies should use the QUOROM statement as a guide (Moher D, Cook DJ, Eastwood S, Olkin I, Rennie D, Stroup DF [1999] Improving the quality of reports of meta-analyses of randomized controlled trials: The QUOROM statement. Lancet354: 1896–900), and should include a copy of the <a href="http://www.consort-statement.org/QUOROM.pdf" title="QUOROM checklist">QUOROM checklist</a>. 
+<p>Reports of meta-analyses of randomized controlled studies should use the QUOROM statement as a guide (Moher D, Cook DJ, Eastwood S, Olkin I, Rennie D, Stroup DF [1999] Improving the quality of reports of meta-analyses of randomized controlled trials: The QUOROM statement. Lancet 354: 1896–900), and should include a copy of the <a href="http://www.consort-statement.org/QUOROM.pdf" title="QUOROM checklist">QUOROM checklist</a>. 
 </p> 
 
 <a name="diagnostic_studies"></a>
@@ -98,11 +97,6 @@
 
 <p>Reports of microarray experiments should conform to <a href="http://www.mged.org/Workgroups/MIAME/miame.html" title="MIAME guidelines">the MIAME guidelines</a>, and the data from the experiments must be deposited in a publicly accessible database.</p>
 
-<h3>Clinical Trials Manuscript Template</h3>
-
-<p><a href="http://journals.plos.org/plosclinicaltrials/Template.doc">Download</a> an MS Word (57 KB DOC) version of the clinical trials manuscript template.</p>
-<p>The clinical trials manuscript template above will help to prepare your manuscript in the standard format. The template consists of the standard headings along with body text explaining what to include in each section. You should overwrite (or copy and paste) the body text with the corresponding section text for your article.</p>
-
 <a name="studies"></a>
 <h2>6. Publication of Studies Sponsored by Pharmaceutical Companies.</h2>
 <p>We support the <a href="http://basic1.easily.co.uk/03100E/00605D/guidelines.htm" title="Good Publication Practice guidelines for pharmaceutical companies">guidelines for the reporting of studies sponsored by pharmaceutical companies</a>.</p>
@@ -110,6 +104,16 @@
 <a name="human"></a>
 <h2>7. Human and Animal Research</h2>
 <p>All research involving humans and animals must have been approved by the authors' institutional review board or equivalent committee and that board named by the authors. In the case of human participants, informed consent must have been obtained and all clinical investigation must have been conducted according to the principles expressed in the <a href="http://www.wma.net/e/policy/b3.htm" title="World Medical Association Declaration of Helsinki | Ethical Principles for Medical Research Involving Human Subjects">Declaration of Helsinki</a>.  Authors should submit a statement from the ethics committee or institutional review board indicating their approval of the research. We also encourage authors to submit a sample of a patient consent form and may require submission of completed forms on particular occasions.</p>
+
+<p>For studies involving humans categorized by race/ethnicity, age, disease/disabilities, religion, sex/gender, sexual orientation, or other socially constructed groupings, authors should, as much as possible,</p>
+<ul>
+ <li> make explicit their methods of categorizing human populations;</li>
+ <li> define categories in as much detail as the study protocol allows;</li>
+ <li> justify their choices of definitions and categories, including for example whether any rules of human categorization were required by their funding agency;</li>
+ <li> explain whether (and if so, how) they controlled for confounding variables such as socioeconomic status, nutrition, environmental exposures, etc.</li>
+</ul>
+
+<p>In addition, outmoded terms and potentially stigmatizing labels should be changed to more current, acceptable terminology. Examples: "Caucasian" should be changed to "white" or "of [Western] European descent" (as appropriate); "cancer victims" should be changed to "patients with cancer".</p>
 
 <a name="nomenclature"></a>
 <h2>8. Nomenclature</h2>
