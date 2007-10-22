@@ -44,11 +44,11 @@
 
 <h3>Clinical Trials</h3> 
 
-<p>Authors must submit original protocols as supporting information to allow editors and reviewers to assess manuscripts fully. Any deviation from the protocol must be explained.</p>
+<p>We follow the <a href="http://www.who.int/ictrp/en/">WHO definition of a clinical trial</a>. "A clinical trial is any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes. Interventions include but are not restricted to drugs, cells and other biological products, surgical procedures, radiologic procedures, devices, behavioural treatments, process-of-care changes, preventive care, etc"</p>
 
-<p>We require that authors of clinical trials adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="Consort-Statement.org">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types. All reports of the results of randomized clinical trials should include the CONSORT flow diagram as Figure 1, and authors should complete and submit the checklist contained within the CONSORT statement. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported according to the specifications indicated in the Methods section under Preparation of Manuscripts (below).</p>
+<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq on trial registration</a> for further details. The WHO's list of approved registries is listed here <a href="http://www.who.int/ictrp/network/list_registers/en/index.html">http://www.who.int/ictrp/network/list_registers/en/index.html</a>.</p>
 
-<p>PLoS supports the International Committee of Medical journal Editors' (ICMJE) position on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (before patient recruitment has begun) or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. The trial's registration number must be provided at the time of submission. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE | Questions about Clinical Trials Registration">ICMJE FAQ</a> on trial registration for further details.</p>
+<p>Authors of randomized controlled trials must adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types.   Before the paper can enter peer review authors must: 1) name in the paper trial registry, trial registration number, and IRB and 2) provide a copy of the trial protocol and a completed CONSORT checklist as supporting files. The CONSORT flow diagram must be included as Figure 1. Any deviation from the trial protocol must be explained in the paper. Authors must explicitly discuss informed consent in their paper, and PLoS reserves the right to ask for a copy of the patient consent form. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported in the Methods section.</p>
 
 <h3>Systematic Reviews and Meta-Analyses of Randomized Controlled Trials</h3>
 
@@ -68,6 +68,16 @@
 
 <h2 name="research" id="research">Human and Animal Research </h2>
 <p>All research involving humans and animals must have been approved by the authors' institutional review board or equivalent committee and that board named by the authors. In the case of human participants, informed consent must have been obtained and all clinical investigation must have been conducted according to the principles expressed in the <a href="http://www.wma.net/e/policy/b3.htm" title="World Medical Association Declaration of Helsinki | Ethical Principles for Medical Research Involving Human Subjects">Declaration of Helsinki</a>.  Authors should submit a statement from the ethics committee or institutional review board indicating their approval of the research. We also encourage authors to submit a sample of a patient consent form and may require submission of completed forms on particular occasions.</p>
+
+<p>For studies involving humans categorized by race/ethnicity, age, disease/disabilities, religion, sex/gender, sexual orientation, or other socially constructed groupings, authors should, as much as possible,</p>
+<ul>
+ <li> make explicit their methods of categorizing human populations;</li>
+ <li> define categories in as much detail as the study protocol allows;</li>
+ <li> justify their choices of definitions and categories, including for example whether any rules of human categorization were required by their funding agency;</li>
+ <li> explain whether (and if so, how) they controlled for confounding variables such as socioeconomic status, nutrition, environmental exposures, etc.</li>
+</ul>
+
+<p>In addition, outmoded terms and potentially stigmatizing labels should be changed to more current, acceptable terminology. Examples: "Caucasian" should be changed to "white" or "of [Western] European descent" (as appropriate); "cancer victims" should be changed to "patients with cancer".</p>
 
 <h2 name="nomenclature" id="nomenclature">Nomenclature </h2>
 <p>The use of standardized nomenclature in all fields of science and medicine is an essential step toward the integration and linking of scientific information reported in published literature. We will enforce the use of correct and established nomenclature wherever possible, such as:</p>
