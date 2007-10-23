@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>plosone-it-data-basic</artifactId>
-      <version>0.81.2</version>
+      <version>0.81.3</version>
       <type>tbz</type>
       <scope>test</scope>
     </dependency>
