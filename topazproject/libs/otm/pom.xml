@@ -2,13 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>otm</artifactId>
   <packaging>jar</packaging>
-  <version>0.8.1_rc2-SNAPSHOT</version>
+  <version>0.8.1_rc2</version>
   <name>Object/Triple Mapping</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.8.1_rc2-SNAPSHOT</version>
+    <version>0.8.1_rc2</version>
   </parent>
   
   <dependencies>
