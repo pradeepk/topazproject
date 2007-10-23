@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.8.1_rc2</version>
+  <version>0.8.1_rc3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -85,7 +85,6 @@
     <module>plosone</module>
     <module>plos-registration</module>
     <module>re-package</module>
-    <module>packages</module>
   </modules>
 
   <properties>
@@ -610,8 +609,8 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t00801_rc2</fedora-version>
-                  <ecqs-version>2.0.6-1-t00801_rc2</ecqs-version>
+                  <fedora-version>2.1.1-t00801_rc3-SNAPSHOT</fedora-version>
+                  <ecqs-version>2.0.6-1-t00801_rc3-SNAPSHOT</ecqs-version>
                 </configuration>
               </execution>
               <execution>
