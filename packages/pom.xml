@@ -51,8 +51,8 @@
     will correspond to the directory name where the ant task will unzip the
     file to under {project.build.directory}
     -->
-    <tomcatFile>apache-tomcat-5.5.23</tomcatFile>
-    <tomcatLocation>http://www.apache.org/dist/tomcat/tomcat-5/v5.5.23/bin</tomcatLocation>
+    <tomcatFile>apache-tomcat-5.5.25</tomcatFile>
+    <tomcatLocation>http://www.apache.org/dist/tomcat/tomcat-5/v5.5.25/bin</tomcatLocation>
   </properties>
 
   <modules>
