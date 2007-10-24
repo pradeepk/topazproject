@@ -165,7 +165,14 @@ public class MemStore extends AbstractTripleStore {
    * inherited javadoc
    */
   public Results doNativeQuery(String query, Transaction txn) throws OtmException {
-    throw new OtmException("OQL queries not supported");
+    throw new OtmException("Native queries not supported");
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void doNativeUpdate(String query, Transaction txn) throws OtmException {
+    throw new OtmException("Native updates not supported");
   }
 
   /*

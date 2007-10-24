@@ -776,6 +776,15 @@ public class ItqlStore extends AbstractTripleStore {
     return new ItqlNativeResults(a, txn.getSession());
   }
 
+  public void doNativeUpdate(String command, Transaction txn) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
+    try {
+      isc.getItqlHelper().doUpdate(command, null);
+    } catch (RemoteException re) {
+      throw new QueryException("error performing command '" + command + "'", re);
+    }
+  }
+
   private static String getModelUri(String modelId, Transaction txn) throws OtmException {
     ModelConfig mc = txn.getSession().getSessionFactory().getModel(modelId);
     if (mc == null) // Happens if using a Class but the model was not added

@@ -119,6 +119,15 @@ public interface TripleStore {
   public Results doNativeQuery(String query, Transaction txn) throws OtmException;
 
   /**
+   * Execute a native update.
+   *
+   * @param command the native command(s) to execute
+   * @param txn     the transaction context
+   * @throws OtmException on an error
+   */
+  public void doNativeUpdate(String command, Transaction txn) throws OtmException;
+
+  /**
    * Creates a new model/graph in the persistence store.
    *
    * @param conf the configuration

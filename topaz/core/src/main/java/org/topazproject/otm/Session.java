@@ -466,6 +466,22 @@ public class Session {
   }
 
   /**
+   * Execute a native(ITQL, SPARQL etc.) update.
+   *
+   * @param command the native command(s) to execute
+   * @throws OtmException on an error
+   */
+  public void doNativeUpdate(String command) throws OtmException {
+    if (txn == null)
+      throw new OtmException("No transaction active");
+
+    flush(); // so that ordering is preserved
+
+    TripleStore store = sessionFactory.getTripleStore();
+    store.doNativeUpdate(command, txn);
+  }
+
+  /**
    * Gets the ids for a list of objects.
    *
    * @param objs list of objects
