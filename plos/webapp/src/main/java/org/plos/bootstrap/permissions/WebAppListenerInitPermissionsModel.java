@@ -22,7 +22,9 @@ import org.plos.configuration.ConfigurationStore;
 
 import org.plos.permission.service.PermissionsImpl;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.stores.ItqlStore;
 
 /**
  * A listener class for initializing permissions impl.
@@ -46,20 +48,24 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
    * @param event destroyed event
    */
   public void contextInitialized(ServletContextEvent event) {
-    ItqlHelper itql = null;
-
+    Session sess = null;
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("topaz.services.itql-admin.uri"));
-      itql                  = new ItqlHelper(service);
-      PermissionsImpl.initializeModel(itql);
+
+      SessionFactory factory = new SessionFactory();
+      factory.setTripleStore(new ItqlStore(service));
+
+      sess = factory.openSession();
+      PermissionsImpl.initializeModel(sess);
     } catch (Exception e) {
       log.warn("initializing permissions impl failed", e);
     } finally {
       try {
-        if (itql != null)
-          itql.close();
+        if (sess != null)
+          sess.close();
       } catch (Throwable t) {
+        log.warn("Error closing session", t);
       }
     }
 

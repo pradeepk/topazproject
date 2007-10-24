@@ -31,7 +31,9 @@ import java.io.FileNotFoundException;
 import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.stores.ItqlStore;
 
 import org.plos.models.Article;
 import org.plos.models.ObjectInfo;
@@ -64,7 +66,7 @@ public class ArticleUtil {
 
   private final Uploader   uploader;
   private final FedoraAPIM apim;
-  private final ItqlHelper itql;
+  private final Session sess;
   private final FgsOperations[] fgs;
   private final Ingester   ingester;
   private static final URI        fedoraServer = getFedoraBaseUri();
@@ -77,10 +79,17 @@ public class ArticleUtil {
    */
   public ArticleUtil()
       throws URISyntaxException, MalformedURLException, ServiceException, RemoteException {
-    this(new ItqlHelper(new URI(CONF.getString("topaz.services.itql.uri"))));
+    this(createSession());
   }
 
-  public ArticleUtil(ItqlHelper itql)
+  private static Session createSession() throws URISyntaxException {
+    SessionFactory factory = new SessionFactory();
+    ItqlStore      itql    = new ItqlStore(new URI(CONF.getString("topaz.services.itql.uri")));
+    factory.setTripleStore(itql);
+    return factory.openSession();
+  }
+
+  public ArticleUtil(Session sess)
       throws MalformedURLException, ServiceException, RemoteException {
 
     this(CONF.getString("topaz.services.fedora.uri"),
@@ -89,7 +98,7 @@ public class ArticleUtil {
          CONF.getString("topaz.services.fedoraUploader.uri"),
          CONF.getString("topaz.services.fedoraUploader.userName"),
          CONF.getString("topaz.services.fedoraUploader.password"),
-         itql);
+         sess);
   }
 
   /**
@@ -101,17 +110,17 @@ public class ArticleUtil {
    * @param uploadUri the fedora upload service uri
    * @param uploadUserName the fedora upload service username
    * @param uploadPasswd the fedora upload service passwd
-   * @param itql the mulgara service client
+   * @param sess the OTM session
    */
   public ArticleUtil(String fedoraUri, String fedoraUserName, String fedoraPasswd,
                      String uploadUri, String uploadUserName, String uploadPasswd,
-                     ItqlHelper itql)
+                     Session sess)
       throws MalformedURLException, ServiceException, RemoteException {
     this.uploader = new Uploader(uploadUri, uploadUserName, uploadPasswd);
     this.apim     = APIMStubFactory.create(fedoraUri, fedoraUserName, fedoraPasswd);
     this.fgs      = getFgsOperations();
-    this.itql     = itql;
-    this.ingester = new Ingester(itql, apim, uploader, fgs);
+    this.sess     = sess;
+    this.ingester = new Ingester(sess, apim, uploader, fgs);
   }
 
   /**

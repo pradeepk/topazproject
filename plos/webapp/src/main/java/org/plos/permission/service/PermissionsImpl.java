@@ -9,12 +9,12 @@
  */
 package org.plos.permission.service;
 
-import java.rmi.RemoteException;
-
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -25,14 +25,15 @@ import org.plos.configuration.ConfigurationStore;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
-import org.topazproject.mulgara.itql.StringAnswer;
 
-import org.topazproject.otm.Connection;
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
-import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
+import org.topazproject.otm.TripleStore;
+import org.topazproject.otm.query.Results;
+import org.topazproject.otm.util.TransactionHelper;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -130,18 +131,19 @@ public class PermissionsImpl implements Permissions {
   /**
    * Initialize the permissions ITQL model.
    *
-   * @param itql itql handle to use
+   * @param s the session to use
    *
-   * @throws RemoteException on a failure
+   * @throws OtmException on a failure
    */
-  public static void initializeModel(ItqlHelper itql) throws RemoteException {
+  public static void initializeModel(Session s) throws OtmException {
     if (((grantsCache != null) && (grantsCache.getSize() != 0))
          || ((revokesCache != null) && (revokesCache.getSize() != 0)))
       return; // xxx: cache has entries perhaps from peers. so initialized is a good guess
 
-    itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";", null);
-    itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";", null);
-    itql.doUpdate("create " + PP_MODEL + " " + PP_MODEL_TYPE + ";", null);
+    TripleStore ts = s.getSessionFactory().getTripleStore();
+    ts.createModel(new ModelConfig("grants",  toURI(GRANTS_MODEL),  toURI(GRANTS_MODEL_TYPE)));
+    ts.createModel(new ModelConfig("revokes", toURI(REVOKES_MODEL), toURI(REVOKES_MODEL_TYPE)));
+    ts.createModel(new ModelConfig("pp",      toURI(PP_MODEL),      toURI(PP_MODEL_TYPE)));
 
     Configuration conf        = CONF.subset("topaz.permissions.impliedPermissions");
 
@@ -160,26 +162,16 @@ public class PermissionsImpl implements Permissions {
       }
     }
 
-    String triples = sb.toString();
-    String cmd     = "insert " + triples + " into " + PP_MODEL + ";";
+    String triples   = sb.toString();
+    final String cmd = "insert " + triples + " into " + PP_MODEL + ";";
 
-    String txn     = "load implied-permissions from config";
-
-    try {
-      if (permissions.size() > 0) {
-        itql.beginTxn(txn);
-        itql.doUpdate(cmd, null);
-        itql.commitTxn(txn);
-      }
-      txn = null;
-    } finally {
-      try {
-        if (txn != null)
-          itql.rollbackTxn(txn);
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("Error rolling failed transaction", t);
-      }
+    if (permissions.size() > 0) {
+      TransactionHelper.doInTx(s, new TransactionHelper.Action<Void>() {
+        public Void run(Transaction tx) {
+          tx.getSession().doNativeUpdate(cmd);
+          return null;
+        }
+      });
     }
 
     if (grantsCache != null)
@@ -187,6 +179,10 @@ public class PermissionsImpl implements Permissions {
 
     if (revokesCache != null)
       revokesCache.removeAll();
+  }
+
+  private static URI toURI(String uri) {
+    return URI.create(uri.substring(1, uri.length() - 1));
   }
 
   //
@@ -205,7 +201,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#grant
    */
   public void grant(String resource, String[] permissions, String[] principals)
-             throws RemoteException {
+             throws OtmException {
     updateModel(pep.GRANT, GRANTS_MODEL, grantsCache, resource, permissions, principals, true);
   }
 
@@ -213,7 +209,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#revoke
    */
   public void revoke(String resource, String[] permissions, String[] principals)
-              throws RemoteException {
+              throws OtmException {
     updateModel(pep.REVOKE, REVOKES_MODEL, revokesCache, resource, permissions, principals, true);
   }
 
@@ -221,7 +217,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#cancleGrants
    */
   public void cancelGrants(String resource, String[] permissions, String[] principals)
-                    throws RemoteException {
+                    throws OtmException {
     updateModel(pep.CANCEL_GRANTS, GRANTS_MODEL, grantsCache, resource, permissions, principals,
                 false);
   }
@@ -230,7 +226,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#cancelRevokes
    */
   public void cancelRevokes(String resource, String[] permissions, String[] principals)
-                     throws RemoteException {
+                     throws OtmException {
     updateModel(pep.CANCEL_REVOKES, REVOKES_MODEL, revokesCache, resource, permissions, principals,
                 false);
   }
@@ -239,7 +235,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#listGrants
    */
   public String[] listGrants(String resource, String principal)
-                      throws RemoteException {
+                      throws OtmException {
     return listPermissions(pep.LIST_GRANTS, GRANTS_MODEL, resource, principal);
   }
 
@@ -247,7 +243,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#listRevokes
    */
   public String[] listRevokes(String resource, String principal)
-                       throws RemoteException {
+                       throws OtmException {
     return listPermissions(pep.LIST_REVOKES, REVOKES_MODEL, resource, principal);
   }
 
@@ -255,7 +251,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#implyPermission
    */
   public void implyPermissions(String permission, String[] implies)
-                        throws RemoteException {
+                        throws OtmException {
     updatePP(pep.IMPLY_PERMISSIONS, permission, IMPLIES, implies, true);
   }
 
@@ -263,7 +259,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#cancelImplyPermission
    */
   public void cancelImplyPermissions(String permission, String[] implies)
-                              throws RemoteException {
+                              throws OtmException {
     updatePP(pep.CANCEL_IMPLY_PERMISSIONS, permission, IMPLIES, implies, false);
   }
 
@@ -271,7 +267,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#listImpliedPermissions
    */
   public String[] listImpliedPermissions(String permission, boolean transitive)
-                                  throws RemoteException {
+                                  throws OtmException {
     return listPP(pep.LIST_IMPLIED_PERMISSIONS, permission, IMPLIES, transitive);
   }
 
@@ -279,7 +275,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#propagatePermissions
    */
   public void propagatePermissions(String resource, String[] to)
-                            throws RemoteException {
+                            throws OtmException {
     updatePP(pep.PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, true);
   }
 
@@ -287,7 +283,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#cancelPropagatePermissions
    */
   public void cancelPropagatePermissions(String resource, String[] to)
-                                  throws RemoteException {
+                                  throws OtmException {
     updatePP(pep.CANCEL_PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, false);
   }
 
@@ -295,7 +291,7 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#listPermissionPropagations
    */
   public String[] listPermissionPropagations(String resource, boolean transitive)
-                                      throws RemoteException {
+                                      throws OtmException {
     return listPP(pep.LIST_PERMISSION_PROPAGATIONS, resource, PROPAGATES, transitive);
   }
 
@@ -303,18 +299,18 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#isGranted
    */
   public boolean isGranted(String resource, String permission, String principal)
-                    throws RemoteException {
+                    throws OtmException {
     if (principal == null)
       throw new NullPointerException("principal");
 
     if (grantsCache == null)
       return isInferred(GRANTS_MODEL, resource, permission, principal);
 
-    HashMap map;
+    Map<String, List<String>> map;
     Element element = grantsCache.get(resource);
 
     if (element != null) {
-      map = (HashMap) element.getValue();
+      map = (Map<String, List<String>>) element.getValue();
 
       if (log.isDebugEnabled())
         log.debug("grants-cache: cache hit for " + resource);
@@ -326,7 +322,7 @@ public class PermissionsImpl implements Permissions {
         log.debug("grants-cache: cache miss for " + resource);
     }
 
-    ArrayList list = (ArrayList) map.get(permission);
+    List<String> list = map.get(permission);
 
     return (list != null) && (list.contains(principal) || list.contains(ALL));
   }
@@ -335,18 +331,18 @@ public class PermissionsImpl implements Permissions {
    * @see org.topazproject.ws.permissions.Permission#isGranted
    */
   public boolean isRevoked(String resource, String permission, String principal)
-                    throws RemoteException {
+                    throws OtmException {
     if (principal == null)
       throw new NullPointerException("principal");
 
     if (revokesCache == null)
       return isInferred(REVOKES_MODEL, resource, permission, principal);
 
-    HashMap map;
+    Map<String, List<String>> map;
     Element element = revokesCache.get(resource);
 
     if (element != null) {
-      map = (HashMap) element.getValue();
+      map = (Map<String, List<String>>) element.getValue();
 
       if (log.isDebugEnabled())
         log.debug("revokes-cache: cache hit for " + resource);
@@ -358,14 +354,14 @@ public class PermissionsImpl implements Permissions {
         log.debug("grants-cache: cache miss for " + resource);
     }
 
-    ArrayList list = (ArrayList) map.get(permission);
+    List<String> list = map.get(permission);
 
     return (list != null) && (list.contains(principal) || list.contains(ALL));
   }
 
   private void updateModel(String action, String model, Ehcache cache, String resource,
                            String[] permissions, String[] principals, boolean insert)
-                    throws RemoteException {
+                    throws OtmException {
     permissions = validateUriList(permissions, "permissions", false);
 
     if (permissions.length == 0)
@@ -411,7 +407,7 @@ public class PermissionsImpl implements Permissions {
 
   private void updatePP(String action, final String subject, final String predicate,
                         String[] objects, boolean insert)
-                 throws RemoteException {
+                 throws OtmException {
     String sLabel;
     String oLabel;
 
@@ -449,23 +445,18 @@ public class PermissionsImpl implements Permissions {
     else
       cmd = "delete " + triples + " from " + PP_MODEL + ";";
 
-    StringAnswer ans     =
-      doInTxn(new Action<StringAnswer>() {
-          public StringAnswer run(ItqlHelper itql) throws RemoteException {
-            itql.doUpdate(cmd, null);
+    Results ans =
+      TransactionHelper.doInTx(getCurrentSession(), new TransactionHelper.Action<Results>() {
+        public Results run(Transaction tx) {
+          tx.getSession().doNativeUpdate(cmd);
 
-            try {
-              if (((grantsCache != null) || (revokesCache != null)) && PROPAGATES.equals(predicate))
-                return new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_PP_TRANS, "s",
-                                                                           subject, "p", predicate),
-                                                     null));
+          if (((grantsCache != null) || (revokesCache != null)) && PROPAGATES.equals(predicate))
+            return tx.getSession().doNativeQuery(
+                      ItqlHelper.bindValues(ITQL_LIST_PP_TRANS, "s", subject, "p", predicate));
 
-              return null;
-            } catch (AnswerException ae) {
-              throw new RemoteException("Error while querying propagated resources", ae);
-            }
-          }
-        });
+          return null;
+        }
+      });
 
     if (ans == null) {
       // implied permissions changed.
@@ -475,12 +466,8 @@ public class PermissionsImpl implements Permissions {
       if (revokesCache != null)
         revokesCache.removeAll();
     } else {
-      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
-
-      int  c    = rows.size();
-
-      for (int i = 0; i < c; i++) {
-        String res = ((String[]) rows.get(i))[0];
+      while (ans.next()) {
+        String res = ans.getString(0);
 
         if (grantsCache != null)
           grantsCache.remove(res);
@@ -492,7 +479,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   private String[] listPermissions(String action, String model, String resource, String principal)
-                            throws RemoteException {
+                            throws OtmException {
     if (principal == null)
       throw new NullPointerException("principal");
 
@@ -500,31 +487,23 @@ public class PermissionsImpl implements Permissions {
 
     pep.checkAccess(action, ItqlHelper.validateUri(resource, "resource"));
 
-    try {
-      HashMap map = new HashMap(3);
-      map.put("resource", resource);
-      map.put("principal", principal);
-      map.put("MODEL", model);
+    Map map = new HashMap(3);
+    map.put("resource", resource);
+    map.put("principal", principal);
+    map.put("MODEL", model);
 
-      String       query  = ItqlHelper.bindValues(ITQL_LIST, map);
+    String  query = ItqlHelper.bindValues(ITQL_LIST, map);
+    Results ans   = doQuery(query);
 
-      StringAnswer ans    = new StringAnswer(doQuery(query));
-      List         rows   = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+    List<String> result = new ArrayList<String>();
+    while (ans.next())
+      result.add(ans.getString(0));
 
-      String[]     result = new String[rows.size()];
-
-      for (int i = 0; i < result.length; i++)
-        result[i] = ((String[]) rows.get(i))[0];
-
-      return result;
-    } catch (AnswerException ae) {
-      throw new RemoteException("Error listing permissions for resource '" + resource
-                                + "' and principal '" + principal + "'", ae);
-    }
+    return result.toArray(new String[result.size()]);
   }
 
   private String[] listPP(String action, String subject, String predicate, boolean transitive)
-                   throws RemoteException {
+                   throws OtmException {
     String sLabel;
     String oLabel;
 
@@ -544,23 +523,17 @@ public class PermissionsImpl implements Permissions {
     String query = transitive ? ITQL_LIST_PP_TRANS : ITQL_LIST_PP;
     query = ItqlHelper.bindValues(query, "s", subject, "p", predicate);
 
-    try {
-      StringAnswer ans    = new StringAnswer(doQuery(query));
-      List         rows   = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+    Results ans = doQuery(query);
 
-      String[]     result = new String[rows.size()];
+    List<String> result = new ArrayList<String>();
+    while (ans.next())
+      result.add(ans.getString(0));
 
-      for (int i = 0; i < result.length; i++)
-        result[i] = ((String[]) rows.get(i))[0];
-
-      return result;
-    } catch (AnswerException ae) {
-      throw new RemoteException("Error while loading " + oLabel + " for " + subject, ae);
-    }
+    return result.toArray(new String[result.size()]);
   }
 
   private boolean isInferred(String model, String resource, String permission, String principal)
-                      throws RemoteException {
+                      throws OtmException {
     if (principal == null)
       throw new NullPointerException("principal");
 
@@ -574,16 +547,10 @@ public class PermissionsImpl implements Permissions {
     values.put("principal", principal);
     values.put("MODEL", model);
 
-    String query = ItqlHelper.bindValues(ITQL_INFER_PERMISSION, values);
+    String  query = ItqlHelper.bindValues(ITQL_INFER_PERMISSION, values);
+    Results ans   = doQuery(query);
 
-    try {
-      StringAnswer ans  = new StringAnswer(doQuery(query));
-      List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
-
-      return rows.size() > 0;
-    } catch (AnswerException ae) {
-      throw new RemoteException("Error while querying inferred permissions", ae);
-    }
+    return ans.next();
   }
 
   private String[] validateUriList(String[] list, String name, boolean nullOk) {
@@ -605,103 +572,48 @@ public class PermissionsImpl implements Permissions {
     return list;
   }
 
-  private HashMap createPermissionMap(String resource, String model)
-                               throws RemoteException {
+  private Map<String, List<String>> createPermissionMap(String resource, String model)
+        throws OtmException {
     String query =
       ItqlHelper.bindValues(ITQL_RESOURCE_PERMISSIONS, "resource", resource, "MODEL", model);
 
-    try {
-      StringAnswer ans  = new StringAnswer(doQuery(query));
-      List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
-      HashMap      map  = new HashMap();
+    Results                   ans = doQuery(query);
+    Map<String, List<String>> map = new HashMap<String, List<String>>();
 
-      for (int i = 0; i < rows.size(); i++) {
-        String[]  result = (String[]) rows.get(i);
-        ArrayList list   = (ArrayList) map.get(result[0]);
+    while (ans.next()) {
+      List<String> list = map.get(ans.getString(0));
 
-        if (list == null) {
-          list = new ArrayList();
-          map.put(result[0], list);
-        }
-
-        list.add(result[1]);
+      if (list == null) {
+        list = new ArrayList<String>();
+        map.put(ans.getString(0), list);
       }
 
-      return map;
-    } catch (AnswerException ae) {
-      throw new RemoteException("Error while querying inferred permissions", ae);
+      list.add(ans.getString(1));
     }
+
+    return map;
   }
 
-  private <T> T doInTxn(Action<T> action) throws RemoteException {
-    boolean     wasActive = false;
-    Transaction txn       = null;
+  private Session getCurrentSession() {
+    return (Session) WebApplicationContextUtils
+      .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
+      .getBean("otmSession");
+  }
 
-    try {
-      Session s = (Session) WebApplicationContextUtils
-        .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
-        .getBean("otmSession");
-
-      txn         = s.getTransaction();
-      wasActive   = (txn != null);
-
-      if (txn == null)
-        txn = s.beginTransaction();
-
-      if (txn == null)
-        throw new RemoteException("Failed to start an otm transaction");
-
-      Connection isc = txn.getConnection();
-
-      if (!(isc instanceof ItqlStoreConnection))
-        throw new RemoteException("Expecting an instance of " + ItqlStoreConnection.class);
-
-      ItqlHelper itql = ((ItqlStoreConnection) isc).getItqlHelper();
-
-      if (itql == null)
-        throw new RemoteException("Failed to get an instance of " + ItqlHelper.class);
-
-      T res = action.run(itql);
-
-      if (!wasActive)
-        txn.commit();
-
-      txn = null;
-
-      return res;
-    } catch (RuntimeException e) {
-      throw new RemoteException("Unable to execute transaction ", e);
-    } finally {
-      try {
-        if (!wasActive && (txn != null))
-          txn.rollback();
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("rollback failed", t);
+  private Results doQuery(final String query) throws OtmException {
+    return TransactionHelper.doInTx(getCurrentSession(), new TransactionHelper.Action<Results>() {
+      public Results run(Transaction tx) {
+        return tx.getSession().doNativeQuery(query);
       }
-    }
+    });
   }
 
-  private String doQuery(final String query) throws RemoteException {
-    return doInTxn(new Action<String>() {
-        public String run(ItqlHelper itql) throws RemoteException {
-          return itql.doQuery(query, null);
-        }
-      });
+  private void doUpdate(final String cmd) throws OtmException {
+    TransactionHelper.doInTx(getCurrentSession(), new TransactionHelper.Action<Void>() {
+      public Void run(Transaction tx) {
+        tx.getSession().doNativeUpdate(cmd);
+        return null;
+      }
+    });
   }
-
-  private void doUpdate(final String cmd) throws RemoteException {
-    doInTxn(new Action<String>() {
-        public String run(ItqlHelper itql) throws RemoteException {
-          itql.doUpdate(cmd, null);
-
-          return cmd;
-        }
-      });
-  }
-
-  private static interface Action<T> {
-    public T run(ItqlHelper itql) throws RemoteException;
-  }
-  ;
 }

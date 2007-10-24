@@ -17,8 +17,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Helper to execute code inside of an OTM transaction. This should probably get replaced
- * by a spring TransactionManager.
+ * Helper to execute code inside of an OTM transaction. If a transaction is already active, it is
+ * reused; otherwise a new transaction is started (and stopped).
+ *
+ * <p>This should probably get replaced by a spring TransactionManager.
  *
  * <p>Example usage:
  * <pre>
@@ -50,22 +52,31 @@ public class TransactionHelper {
    * @return the value returned by the action
    */
   public static <T> T doInTx(Session s, Action<T> action) {
-    Transaction tx = null;
+    Transaction tx    = null;
+    boolean     isNew = true;
+
     try {
-      tx = s.beginTransaction();
+      tx = s.getTransaction();
+
+      if (tx == null)
+        tx = s.beginTransaction();
+      else
+        isNew = false;
+
       T res = action.run(tx);
-      tx.commit();
+
+      if (isNew)
+        tx.commit();
+      tx = null;
+
       return res;
-    } catch (Throwable t) {
+    } finally {
       try {
-        if (tx != null)
+        if (isNew && tx != null)
           tx.rollback();
       } catch (OtmException oe) {
         log.warn("rollback failed", oe);
       }
-      if (t instanceof Error)
-        throw (Error) t;
-      throw (RuntimeException) t;
     }
   }
 
@@ -77,24 +88,31 @@ public class TransactionHelper {
    * @return the value returned by the action
    */
   public static <T, E extends Throwable> T doInTxE(Session s, ActionE<T, E> action) throws E {
-    Transaction tx = null;
+    Transaction tx    = null;
+    boolean     isNew = true;
+
     try {
-      tx = s.beginTransaction();
+      tx = s.getTransaction();
+
+      if (tx == null)
+        tx = s.beginTransaction();
+      else
+        isNew = false;
+
       T res = action.run(tx);
-      tx.commit();
+
+      if (isNew)
+        tx.commit();
+      tx = null;
+
       return res;
-    } catch (Throwable t) {
+    } finally {
       try {
-        if (tx != null)
+        if (isNew && tx != null)
           tx.rollback();
       } catch (OtmException oe) {
         log.warn("rollback failed", oe);
       }
-      if (t instanceof Error)
-        throw (Error) t;
-      if (t instanceof RuntimeException)
-        throw (RuntimeException) t;
-      throw (E) t;
     }
   }
 

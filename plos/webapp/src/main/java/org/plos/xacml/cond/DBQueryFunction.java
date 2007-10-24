@@ -168,8 +168,8 @@ public abstract class DBQueryFunction implements Function {
    *
    * @throws QueryException to indicate a failure in query execution
    */
-  public abstract EvaluationResult executeQuery(EvaluationCtx context, String conf, String query,
-                                                String[] bindings)
+  protected abstract EvaluationResult executeQuery(EvaluationCtx context, String conf, String query,
+                                                   String[] bindings)
                                          throws QueryException;
 
   /*

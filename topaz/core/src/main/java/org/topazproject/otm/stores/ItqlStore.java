@@ -850,7 +850,7 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  public static class ItqlStoreConnection implements Connection {
+  private static class ItqlStoreConnection implements Connection {
     private final URI  serverUri;
     private ItqlHelper itql;
 

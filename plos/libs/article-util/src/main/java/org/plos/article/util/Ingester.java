@@ -44,7 +44,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.mulgara.itql.ItqlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -58,6 +57,11 @@ import org.topazproject.fedora.client.FedoraAPIM;
 
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.topazproject.fedoragsearch.service.FgsOperations;
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.util.TransactionHelper;
 
 import net.sf.saxon.Controller;
 import net.sf.saxon.TransformerFactoryImpl;
@@ -97,7 +101,7 @@ public class Ingester {
   private static final String FGS_REPO     = CONF.getString("topaz.fedoragsearch.repository");
 
   private final TransformerFactory tFactory;
-  private final ItqlHelper         itql;
+  private final Session            sess;
   private final FedoraAPIM         apim;
   private final Uploader           uploader;
   private final FgsOperations[]    fgs;
@@ -105,11 +109,13 @@ public class Ingester {
   /**
    * Create a new ingester pointing to the given fedora server.
    *
-   * @param ctx      the topaz context containing apim, uploader and itql
+   * @param sess     the OTM session to use for RDF updates
+   * @param apim     the fedora management object to use
+   * @param uploader the uploader to use to upload to fedora
    * @param fgs      an array of fedoragsearch clients
    */
-  public Ingester(ItqlHelper itql, FedoraAPIM apim, Uploader uploader, FgsOperations[] fgs) {
-    this.itql = itql;
+  public Ingester(Session sess, FedoraAPIM apim, Uploader uploader, FgsOperations[] fgs) {
+    this.sess = sess;
     this.apim = apim;
     this.uploader = uploader;
     this.fgs = fgs;
@@ -161,21 +167,23 @@ public class Ingester {
          * and we really don't want to delete existing RDF or permissions in this case.
          */
         fedoraIngest(zip, objInfo, apim, uploader, rb);
-        mulgaraInsert(objInfo, itql, rb);
+        mulgaraInsert(objInfo, sess, rb);
         rb = null;
       } finally {
         if (rb != null) {
           log.info("Rolling back failed ingest for '" + uri + "'");
-          rb.doRollback(itql, apim, fgs);
+          rb.doRollback(sess, apim, fgs);
         }
       }
 
       log.info("Successfully ingested '" + uri + "'");
       return uri;
     } catch (RemoteException re) {
-      throw new IngestException("Error ingesting into fedora or mulgara", re);
+      throw new IngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {
-      throw new IngestException("Error talking to fedora or mulgara", ioe);
+      throw new IngestException("Error talking to fedora", ioe);
+    } catch (OtmException oe) {
+      throw new IngestException("Error talking to mulgara", oe);
     } catch (URISyntaxException use) {
       throw new IngestException("Zip format error", use);
     } catch (TransformerException te) {
@@ -297,48 +305,47 @@ public class Ingester {
    * Insert the RDF into the triple-store according to the given object-info doc.
    *
    * @param objInfo the document describing the RDF to insert
-   * @param itql    the handle to access the RDF store
+   * @param sess    the session to access the RDF store
    * @param rb      where to store the list of completed operations that need to be undone
    *                in case of a rollback
    */
-  private void mulgaraInsert(Document objInfo, ItqlHelper itql, RollbackBuffer rb)
-      throws IngestException, TransformerException, IOException, RemoteException {
-    Element objList = objInfo.getDocumentElement();
+  private void mulgaraInsert(Document objInfo, Session sess, final RollbackBuffer rb)
+      throws IngestException, TransformerException, OtmException {
+    final Element objList = objInfo.getDocumentElement();
 
     // set up the transformer to generate the triples
-    Transformer tf = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
+    final Transformer tf = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
 
-    // create the fedora objects
-    String txn = "ingest " + objList.getAttribute(OL_AID_A);
-    boolean inTransaction = itql.isInTransaction();
+    // do the inserts
+    boolean done = false;
     try {
-      if (!inTransaction)
-        itql.beginTxn(txn);
+      done = TransactionHelper.doInTxE(sess, new TransactionHelper.ActionE<Boolean, Exception>() {
+        public Boolean run(Transaction tx) throws Exception {
+          NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
+          for (int idx = 0; idx < objs.getLength(); idx++) {
+            Element obj = (Element) objs.item(idx);
+            mulgaraInsertOneRDF(tx.getSession(), obj, tf, rb);
+          }
 
-      NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
-      for (int idx = 0; idx < objs.getLength(); idx++) {
-        Element obj = (Element) objs.item(idx);
-        mulgaraInsertOneRDF(itql, obj, tf, rb);
-      }
-
-      if (!inTransaction)
-        itql.commitTxn(txn);
-      txn = null;
-    } finally {
-      try {
-        if ((txn != null) && !inTransaction) {
-          rb.rdfStmts.clear();
-          itql.rollbackTxn(txn);
+          return true;
         }
-      } catch (Throwable t) {
-        log.debug("Error rolling back failed transaction", t);
-      }
+      });
+    } catch (IngestException ie) {
+      throw ie;
+    } catch (TransformerException te) {
+      throw te;
+    } catch (RuntimeException re) {
+      throw re;
+    } catch (Exception e) {
+      throw new RuntimeException("Impossible", e);
+    } finally {
+      if (!done && (sess.getTransaction() == null))
+        rb.rdfStmts.clear();    // tx was rolled back
     }
   }
 
-  private void mulgaraInsertOneRDF(ItqlHelper itql, Element obj, Transformer t,
-                                   RollbackBuffer rb)
-      throws IngestException, TransformerException, IOException, RemoteException {
+  private void mulgaraInsertOneRDF(Session sess, Element obj, Transformer t, RollbackBuffer rb)
+      throws IngestException, TransformerException, OtmException {
     // figure out the model
     String m = "ri";
     if (obj.hasAttribute(RDF_MDL_A)) {
@@ -346,9 +353,10 @@ public class Ingester {
       obj.removeAttribute(RDF_MDL_A);
     }
 
-    String model = CONF.getString("topaz.models." + m, null);
-    if (model == null)
-      throw new IngestException("Internal error: model '" + m + "' not found in configuration");
+    ModelConfig mc = sess.getSessionFactory().getModel(m);
+    if (mc == null)
+      throw new IngestException("Internal error: model '" + mc + "' not found in configuration");
+    String model = mc.getUri().toString();
 
     // create the iTQL insert statements
     StringWriter sw = new StringWriter(500);
@@ -357,12 +365,13 @@ public class Ingester {
     t.transform(new DOMSource(obj), new StreamResult(sw));
     if (!hasNonWS(sw.getBuffer(), 7))
       return;
-    rb.addRDFStatements(model, sw.getBuffer().substring(7));
 
+    int stmtLen = sw.getBuffer().length();
     sw.write(" into <" + model + ">;");
 
     // insert
-    itql.doUpdate(sw.toString(), null);
+    sess.doNativeUpdate(sw.toString());
+    rb.addRDFStatements(model, sw.getBuffer().substring(7, stmtLen));
   }
 
   private static final boolean hasNonWS(CharSequence seq, int idx) {
@@ -550,7 +559,7 @@ public class Ingester {
       s.add(statements);
     }
 
-    void doRollback(ItqlHelper itql, FedoraAPIM apim, FgsOperations[] fgs) {
+    void doRollback(Session sess, FedoraAPIM apim, FgsOperations[] fgs) {
       // clear out RDF statements
       log.debug("Rolling back RDF statements");
       for (Iterator iter = rdfStmts.keySet().iterator(); iter.hasNext(); ) {
@@ -560,7 +569,7 @@ public class Ingester {
           String stmts = (String) iter2.next();
           String cmd   = "delete " + stmts + " from <" + model + ">;";
           try {
-            itql.doUpdate(cmd, null);
+            sess.doNativeUpdate(cmd);
           } catch (Exception e) {
             log.error("Error while rolling back failed ingest: failed itql command was '" + cmd +
                       "'", e);

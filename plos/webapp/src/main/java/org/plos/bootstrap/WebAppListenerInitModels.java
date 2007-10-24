@@ -21,7 +21,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.stores.ItqlStore;
 
 /**
  * A listener class for web-apps to initialize things at startup.
@@ -50,12 +51,11 @@ public class WebAppListenerInitModels implements ServletContextListener {
   }
 
   private void initModels() {
-    ItqlHelper itql = null;
-
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("topaz.services.itql-admin.uri"));
-      itql                  = new ItqlHelper(service);
+
+      ItqlStore     store   = new ItqlStore(service);
 
       conf                  = conf.subset("topaz.models");
 
@@ -69,21 +69,11 @@ public class WebAppListenerInitModels implements ServletContextListener {
 
         String model  = conf.getString(key);
         String type   = conf.getString(key + "[@type]", "mulgara:Model");
-        String create = "create <" + model + "> <" + type + ">;";
 
-        if (log.isDebugEnabled())
-          log.debug("topaz.models." + key + ": " + create);
-
-        itql.doUpdate(create, null);
+        store.createModel(new ModelConfig("", new URI(model), new URI(type)));
       }
     } catch (Exception e) {
       log.warn("bootstrap of models failed", e);
-    } finally {
-      try {
-        if (itql != null)
-          itql.close();
-      } catch (Throwable t) {
-      }
     }
 
     log.info("Successfully created all configured ITQL Models.");

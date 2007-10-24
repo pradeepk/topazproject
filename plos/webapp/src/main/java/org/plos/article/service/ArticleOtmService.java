@@ -44,7 +44,6 @@ import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -53,7 +52,6 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
 
 /**
  * Provide Article "services" via OTM.
@@ -93,8 +91,7 @@ public class ArticleOtmService {
     try {
       return TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<String, Exception>() {
         public String run(Transaction txn) throws Exception {
-          ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
-          ArticleUtil util = new ArticleUtil(itql);
+          ArticleUtil util = new ArticleUtil(txn.getSession());
           String ret = util.ingest(
             new Zip.DataSourceZip(
               new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
