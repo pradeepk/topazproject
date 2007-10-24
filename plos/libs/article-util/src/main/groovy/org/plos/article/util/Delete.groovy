@@ -63,13 +63,12 @@ def process(c) {
 def queueDir    = CONF.getString('pub.spring.ingest.source', '/var/spool/plosone/ingestion-queue')
 def ingestedDir = CONF.getString('pub.spring.ingest.destination', '/var/spool/plosone/ingested')
 
-def util = new ArticleUtil()
 opt.arguments().each() { uri ->
   // Call ArticleUtil.delete() to remove from mulgara, fedora & lucene
   print "Deleting article $uri..."
   process() {
     def tx = session.beginTransaction()
-    util.delete(uri, tx)
+    ArticleUtil.delete(uri, tx)
     tx.commit()
   }
   println "done"
