@@ -146,17 +146,28 @@ tokens {
           return new OqlAST[] { curVar, listPred };
 
         case RDFLIST:
-          if (curVar != null)
-            throw new RecognitionException("RdfList not supported, pending Mulgara fix");
-
-          curVar  = addTriple(list, curVar, curPred);
+          AST prevVar = curVar;
+          curVar      = addTriple(list, curVar, curPred);
 
           OqlAST s = nextVar();
           OqlAST o = nextVar();
-          // XXX: doesn't work!!! Need to "fix" mulgara
+          /* FIXME: doesn't work! Need to "fix" mulgara
           AST walk = #([WALK,"walk"], makeTriple(curVar, "<rdf:rest>", o, curPred.getModel()),
                                       makeTriple(s, "<rdf:rest>", o, curPred.getModel()));
           list.addChild(walk);
+
+           * instead we use a less efficient method for now (taken from ItqlStore):
+           *   (trans($cur <rdf:rest> $s) or $cur <rdf:rest> $s or $prevVar $prevPred $s)
+           *     and $prevVar $prevPred $cur and $s <rdf:first> $o and $s <rdf:rest> $n
+
+           * FIXME: can't specify an 'in' clause in trans()
+           */
+          AST trans = #([TRANS,"trans"], makeTriple(curVar, "<rdf:rest>", s));
+          AST exist = makeTriple(curVar, "<rdf:rest>", s, curPred.getModel());
+          AST first = makeTriple(prevVar, curPred, s, curPred.getModel());
+          list.addChild(#([OR,"or"], trans, exist));
+          list.addChild(makeTriple(s, "<rdf:rest>", nextVar(), curPred.getModel()));
+          /* end trans version */
 
           listPred = makeID("<rdf:first>");
           listPred.setModel(curPred.getModel());

@@ -814,7 +814,7 @@ public class OqlTest extends GroovyTestCase {
     int cnt = 0;
 
     // collections of simple type
-    for (col in ['Predicate', 'RdfBag', 'RdfSeq', 'RdfAlt' /* , 'RdfList' */]) {
+    for (col in ['Predicate', 'RdfBag', 'RdfSeq', 'RdfAlt', 'RdfList']) {
       Class cls = rdf.class('Test' + cnt++) {
         name () 'Jack Rabbit'
         colors (maxCard:-1, colMapping:col)
@@ -853,7 +853,7 @@ public class OqlTest extends GroovyTestCase {
       s.saveOrUpdate(c6)
     }
 
-    for (col in ['Predicate', 'RdfBag', 'RdfSeq', 'RdfAlt' /* , 'RdfList' */]) {
+    for (col in ['Predicate', 'RdfBag', 'RdfSeq', 'RdfAlt', 'RdfList']) {
       Class cls = rdf.class('Test' + cnt++) {
         name () 'Jack Rabbit'
         colors (type:'Color', maxCard:-1, colMapping:col)
