@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SimpleTimeZone;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * A factory for creating serializers for basic java types.

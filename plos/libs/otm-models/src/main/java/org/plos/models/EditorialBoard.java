@@ -14,11 +14,11 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Editorial Board for an aggregation.

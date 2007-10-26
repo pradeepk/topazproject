@@ -16,11 +16,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * A user's preferences.

@@ -18,6 +18,7 @@ import java.lang.reflect.Modifier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.ClassMetadata;
@@ -25,7 +26,6 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Utility to add otm classes to #metadata in owl form.

@@ -13,9 +13,9 @@ package org.plos.models;
 import java.net.URI;
 import java.net.URL;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Represents a trackback on a resource.

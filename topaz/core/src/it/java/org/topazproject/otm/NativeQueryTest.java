@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Annotea;

@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Model for a subset of the elements of the Dublin Core metadata

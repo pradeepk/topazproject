@@ -37,6 +37,7 @@ import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
@@ -45,7 +46,6 @@ import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;

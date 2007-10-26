@@ -19,9 +19,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.Rdf;
 import org.plos.article.util.ArticleUtil;
 import org.plos.models.ObjectInfo;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * This holds the information returned about a representation of an object.

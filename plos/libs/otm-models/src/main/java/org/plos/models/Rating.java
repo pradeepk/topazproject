@@ -11,9 +11,9 @@ package org.plos.models;
 
 import java.net.URI;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * General base Rating class to store a RatingContent body.

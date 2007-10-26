@@ -9,9 +9,9 @@
  */
 package org.topazproject.otm.samples;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Rdf;
 
 @Entity(type = Rdf.topaz + "NoPredicate", model = "ri")
 public class NoPredicate {

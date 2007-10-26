@@ -26,7 +26,6 @@ import javassist.util.proxy.ProxyObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.filter.FilterDefinition;

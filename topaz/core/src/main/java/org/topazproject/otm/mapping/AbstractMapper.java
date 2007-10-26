@@ -16,7 +16,7 @@ import java.net.URI;
 import java.net.URL;
 
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
