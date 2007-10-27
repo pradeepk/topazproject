@@ -3,7 +3,7 @@
 
 <h1><em>PLoS Neglected Tropical Diseases</em> Journal Information</h1>
 
-<h1>About <em>PLoS Neglected Tropical Diseases</em> 
+<h2>About <em>PLoS Neglected Tropical Diseases</em></h2>
 
 <p class="intro"><em>PLoS Neglected Tropical Diseases</em> (eISSN 1935-2735) is the first open-access journal devoted to the world's most <a href="scope.action">neglected tropical diseases</a> (NTDs), such as elephantiasis, river blindness, leprosy, hookworm, schistosomiasis, and African sleeping sickness. The journal publishes high-quality, peer-reviewed research on all scientific, medical, and public-health aspects of these forgotten diseases affecting the world's forgotten people.</p> 
 
