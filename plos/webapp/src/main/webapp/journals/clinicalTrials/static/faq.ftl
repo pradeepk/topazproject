@@ -37,7 +37,7 @@
   <h2>Why does the first PLoS Hub cover clinical trials?</h2>
 
   <p>
-    Clinical trials research is a field in which the benefits of transparency are well documented,
+    Clinical trials research is a field in which the <a href="http://www.thelancet.com/journals/lancet/article/PIIS0140673606687084/fulltext" title="The Lancet | Clinical trial registration: transparency is the watchword [free registration required]">benefits of transparency</a> are well documented,
     which is why PLoS is committed to publishing the results of all clinical trials regardless of
     outcome, and making this essential information freely and publicly available.
   </p>
@@ -89,10 +89,10 @@
   <h2>Is the PLoS Hub for Clinical Trials a work in progress?</h2>
 
   <p>
-    Absolutely. It's the first step in the development of our online community sites. We will be
+    Absolutely. We will be
     adding more PLoS content, as well as open-access content from other journals, and we will be
     launching more PLoS Hubs on different topics. We will also be adding new functionality to the site,
-    and are launching the PLoS Hubs in "beta" so that we can work with the community to help shape this
+    and are launching the PLoS Hubs in "beta" so that we can <a href="${feedbackURL}" title="PLoS Hub | Send Feedback">work with the community to help shape this</a>
     and future PLoS Hubs.
    </p>
 </div>

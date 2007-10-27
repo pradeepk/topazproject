@@ -19,7 +19,7 @@
 
 <ol>
 	<li>Combine all sections of the file into a single file; do not submit separate .bbl or .bib files (see BiBTeX instructions below). Avoid use of personalized macros and shortcuts (e.g., \newcommand, \def). The TeX file must contain expanded versions of shortcuts and macros.</li>
-	<li>Please comment out any graphics and table files (e.g., \includegraphics, \figbox); all images must be submitted as separate .eps or .tif files and all tables must be submitted as separate, editable Word or Excel files.</li>
+	<li>Please comment out any graphics and table files (e.g., \includegraphics, \figbox); all images must be submitted as separate .eps or .tif files and all tables must be included in the text file, at the very end of the manuscript.</li>
 	<li>If you use BiBTeX:
 		<ul>
 			<li>Run LaTeX on your LaTeX file.</li>
@@ -36,7 +36,7 @@
 	<li>Please make sure that footnotes are incorporated into the text.</li>
 	<li>Check to see that references are complete and in order. References may have dropped out in the conversion if they were added later in your writing/editing process and not inserted correctly. Often the reference tag from the TeX file will remain at the end of each line as an artifact. All extraneous text should be deleted. It might look something like this: 
 		<ul>
-			<li>[45] Orr HA (2005) The Genetic Theory of Adaptation: A Brief History. Nature Reviews Genetics 6:119â&#8364;&#8220;127. orrNRG2005Key: orrNRG2005 Annotation</li>
+			<li>[45] Orr HA (2005) The Genetic Theory of Adaptation: A Brief History. Nature Reviews Genetics 6:119-127. orrNRG2005Key: orrNRG2005 Annotation</li>
 		</ul>
 	</li>
 	<li>Please check all numbered citations throughout the paper (including figures and tables).</li>

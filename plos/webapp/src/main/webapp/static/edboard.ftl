@@ -1,4 +1,4 @@
-<!-- LAST UPDATE: 12/8/2006 -->
+<!-- LAST UPDATE: 10/12/2007 -->
 <!-- begin : main content -->
 <div id="content" class="edboard static">
 
@@ -72,9 +72,21 @@ United States of America</dd>
 <dd>Duke University Medical Center<br />
 United States of America</dd>
 
+<dt>Hany Abdel-Aleem</dt>
+<dd>Assiut University Hospital<br />
+Egypt</dd>
+
 <dt>Karen Aboody</dt>
 <dd>City of Hope National Medical Center &amp; Beckman Research Institute<br />
 United States of America</dd>
+
+<dt>Fred Adler</dt>
+<dd>University of Utah<br />
+United States of America</dd>
+
+<dt>Niyaz Ahmed</dt>
+<dd>Centre for DNA Fingerprinting and Diagnostics (CDFD)<br />
+India</dd>
 
 <dt>Schahram Akbarian</dt>
 <dd>University of Massachusetts Medical School<br />
@@ -91,6 +103,10 @@ United States of America</dd>
 <dt>Andrew Alspaugh</dt>
 <dd>Duke University<br />
 United States of America</dd>
+
+<dt>Fernando Althabe</dt>
+<dd>Latin American Centre for Perinatology<br />
+Uruguay</dd>
 
 <dt>Mohammed Ansari</dt>
 <dd>Children's Hospital of Eastern Ontario<br />
@@ -152,6 +168,18 @@ United Kingdom</dd>
 <dd>University of Sheffield<br />
 United Kingdom</dd>
 
+<dt>Dagmar Beier</dt>
+<dd>University of Würzburg<br />
+Germany</dd>
+
+<dt>Jos&eacute; Beliz&aacute;n</dt>
+<dd>Institute for Clinical Effectiveness and Health Policy<br />
+Argentina</dd>
+
+<dt>Simon Belt</dt>
+<dd>University of Plymouth<br />
+United Kingdom</dd>
+
 <dt>Peter Bennett</dt>
 <dd>Institute of Zoology, Zoological Society of London<br />
 United Kingdom</dd>
@@ -180,6 +208,10 @@ United States of America</dd>
 <dd>University of Chicago<br />
 United States of America</dd>
 
+<dt>Andrew Boswell</dt>
+<dd>National Institutes of Health<br />
+United States of America</dd>
+
 <dt>Guillaume Bourque</dt>
 <dd>Genome Institute of Singapore<br />
 Singapore</dd>
@@ -192,9 +224,21 @@ France</dd>
 <dd>National Institute for Communicable Diseases<br />
 South Africa</dd>
 
+<dt>Patricia Bozza</dt>
+<dd>Instituto Oswaldo Cruz<br />
+Brazil</dd>
+
 <dt>Bjoern Brembs</dt>
 <dd>Freie Universit&#228;t Berlin<br />
 Germany</dd>
+
+<dt>Timothy Bromage</dt>
+<dd>New York University<br />
+United States of America</dd>
+
+<dt>Rob	Brooks</dt>
+<dd>University of New South Wales<br />
+Australia</dd>
 
 <dt>Sarah Brosnan</dt>
 <dd>Emory University<br />
@@ -204,9 +248,17 @@ United States of America</dd>
 <dd>University of Oxford<br />
 United Kingdom</dd>
 
+<dt>Bernard Burnand</dt>
+<dd>Institute of Social and Preventive Medicine<br />
+Switzerland</dd>
+
 <dt>Tim Bussey</dt>
 <dd>University of Cambridge<br />
 United Kingdom</dd>
+
+<dt>Geraldine Butler</dt>
+<dd>University College Dublin<br />
+Ireland</dd>
 
 <dt>Andrea Califano</dt>
 <dd>Columbia University<br />
@@ -215,6 +267,11 @@ United States of America</dd>
 <dt>Patrick Callaerts</dt>
 <dd>University of Leuven<br />
 Belgium</dd>
+
+<dt>James D. Campbell</dt>
+<dd>University of Maryland<br />
+United States of America</dd>
+
 
 <dt>Maria Cardenas</dt>
 <dd>Duke University<br />
@@ -232,15 +289,24 @@ United States of America</dd>
 <dd>University of Sydney<br />
 Australia</dd>
 
+<dt>Arachu Castro</dt>
+<dd>Harvard Medical School / Partners In Health<br />
+United States of America</dd>
+
 <dt>Giacomo Cavalli</dt>
 <dd>Institute of Human Genetics<br />
 France</dd>
+
+<dt>An-Wen Chan</dt>
+<dd>University of Toronto<br />
+Canada</dd>
+
 
 <dt>Tailoi Chan-Ling</dt>
 <dd>University of Sydney<br />
 Australia</dd>
 
-<dt>J&eacute;r&oacute;me Chave</dt>
+<dt>J&eacute;r&ocirc;me Chave</dt>
 <dd>University of Toulouse<br />
 France</dd>
 
@@ -276,6 +342,14 @@ United Kingdom</dd>
 <dd>Canadian Agency for Drugs and Technologies in Health<br />
 Canada</dd>
 
+<dt>Carmel Collins</dt>
+<dd>Child Health Research Institute<br />
+Australia</dd>
+
+<dt>Tom Connell</dt>
+<dd>University of Melbourne<br />
+Australia</dd>
+
 <dt>Che Connon</dt>
 <dd>Cardiff University<br />
 United Kingdom</dd>
@@ -295,6 +369,10 @@ Germany</dd>
 <dt>Luis Corrochano</dt>
 <dd>University of Seville<br />
 Spain</dd>
+
+<dt>Mark Cotton</dt>
+<dd>Universiteit Stellenbosch<br />
+South Africa</dd>
 
 <dt>Leah Cowen</dt>
 <dd>Whitehead Institute for Biomedical Research<br />
@@ -316,6 +394,14 @@ United States of America</dd>
 <dd>University of Washington<br />
 United States of America</dd>
 
+<dt>Allan Cyna</dt>
+<dd>Women's and Children's Hospital<br />
+Australia</dd>
+
+<dt>Umberto D'Alessandro</dt>
+<dd>Prince Leopold Institute of Tropical Medicine<br />
+Belgium</dd>
+
 <dt>Christophe d'Enfert</dt>
 <dd>Pasteur Institute<br />
 France</dd>
@@ -336,9 +422,13 @@ United States of America</dd>
 <dd>Wellcome Trust Sanger Institute<br />
 United Kingdom</dd>
 
-<dt>Robert	DeSalle</dt>
+<dt>Robert DeSalle</dt>
 <dd>American Museum of Natural History<br />
 United States of America</dd>
+
+<dt>Keertan Dheda</dt>
+<dd>South African Medical Research Council<br />
+South Africa</dd>
 
 <dt>Paul Digard</dt>
 <dd>University of Cambridge<br />
@@ -347,6 +437,14 @@ United Kingdom</dd>
 <dt>Brian Dilkes</dt>
 <dd>University of Washington<br />
 United States of America</dd>
+
+<dt>Ben Djulbegovic</dt>
+<dd>H. Lee Moffitt Cancer Center and Research Institute<br />
+United States of America</dd>
+
+<dt>Denise Doolan</dt>
+<dd>Queensland Institute of Medical Research<br />
+Australia</dd>
 
 <dt>Francoise Dromer</dt>
 <dd>Pasteur Institute<br />
@@ -380,9 +478,17 @@ Sweden</dd>
 <dd>University of Cambridge<br />
 United Kingdom</dd>
 
+<dt>Sean Emery</dt>
+<dd>University of New South Wales<br />	
+Australia</dd>
+
 <dt>Ingemar Ernberg</dt>
 <dd>Karolinska Institutet<br />
 Sweden</dd>
+
+<dt>Scott R. Evans</dt>
+<dd>Harvard University<br />	
+United States of America</dd>
 
 <dt>Cecile Fairhead</dt>
 <dd>Pasteur Institute<br />
@@ -420,6 +526,10 @@ United States of America</dd>
 <dd>University of St. Andrews<br />
 United Kingdom</dd>
 
+<dt>Vicki Flenady</dt>
+<dd>Center for Clinical Research, Mater Health Services<br />
+Australia</dd>
+
 <dt>Debbie Fox</dt>
 <dd>Research Institute for Children, New Orleans<br />
 United States of America</dd>
@@ -436,6 +546,10 @@ United Kingdom</dd>
 <dd>University of Sheffield<br />
 United Kingdom</dd>
 
+<dt>Atle Fretheim</dt>
+<dd>Norwegian Knowledge Centre for Health Services<br />
+Norway</dd>
+
 <dt>Sebastian Fugmann</dt>
 <dd>National Institutes of Health<br />
 United States of America</dd>
@@ -449,12 +563,16 @@ United States of America</dd>
 United States of America</dd>
 
 <dt>Joel Gagnier</dt>
-<dd>Jamieson Labs, Inc.<br />
+<dd>University of Toronto<br />
 Canada</dd>
 
 <dt>Alison Galvani</dt>
 <dd>Yale University<br />
 United States of America</dd>
+
+<dt>Andy Gardner</dt>
+<dd>University of Oxford<br />
+United Kingdom</dd>
 
 <dt>Nick Gay</dt>
 <dd>University of Cambridge<br />
@@ -464,9 +582,21 @@ United Kingdom</dd>
 <dd>Tel Aviv University<br />
 Israel</dd>
 
+<dt>Wenzel Geissler</dt>
+<dd>London School of Hygiene and Tropical Medicine<br />
+United Kingdom</dd>
+
 <dt>Neil Gemmell</dt>
 <dd>University of Canterbury<br />
 New Zealand</dd>
+
+<dt>Wayne Getz</dt>
+<dd>University of California, Berkeley<br />
+United States of America</dd>
+
+<dt>Mark Gibbs</dt>
+<dd>Australian National University<br />
+Australia</dd>
 
 <dt>Martin Giurfa</dt>
 <dd>University of Toulouse<br />
@@ -476,6 +606,18 @@ France</dd>
 <dd>Dartmouth College<br />
 United States of America</dd>
 
+<dt>Christian Gluud</dt>
+<dd>Copenhagen University Hospital<br />
+Denmark</dd>
+
+<dt>Lise Gluud</dt>
+<dd>Copenhagen University Hospital<br />
+Denmark</dd>
+
+<dt>Jeffrey Gold</dt>
+<dd>Oregon Health &amp; Science University<br />
+United States of America</dd>
+
 <dt>Cayetano Gonzalez</dt>
 <dd>Institute for Research in Biomedicine<br />
 Spain</dd>
@@ -483,6 +625,10 @@ Spain</dd>
 <dt>Marcos Gonz&aacute;lez-Gait&aacute;n</dt>
 <dd>Max Planck Institute of Molecular Cell Biology and Genetics<br />
 Germany</dd>
+
+<dt>Max Goyffon</dt>
+<dd>Mus&eacute;um National d'Histoire Naturelle<br />
+France</dd>
 
 <dt>Ananth Grama</dt>
 <dd>Purdue University<br />
@@ -495,6 +641,22 @@ United Kingdom</dd>
 <dt>Markus Grebe</dt>
 <dd>The Ume&#229; Plant Science Center<br />
 Sweden</dd>
+
+<dt>Ernest Greene</dt>
+<dd>University of Southern California<br />
+United States of America</dd>
+
+<dt>Aric Gregson</dt>
+<dd>University of California, Los Angeles<br />
+United States of America</dd>
+
+<dt>Beatriz Grinsztejn</dt>
+<dd>HIV/AIDS Clinical Research Unit<br />
+Brazil</dd>
+
+<dt>Benedikt Grothe</dt>
+<dd>Ludwig-Maximilians University<br />
+Germany</dd>
 
 <dt>Jean Gruenberg</dt>
 <dd>University of Geneva<br />
@@ -512,6 +674,10 @@ United States of America</dd>
 <dd>Institute for Genomic Research<br />
 United States of America</dd>
 
+<dt>Daniel Halperin</dt>
+<dd>Harvard University<br />
+United States of America</dd>
+
 <dt>Henry Harpending</dt>
 <dd>University of Utah<br />
 United States of America</dd>
@@ -519,6 +685,10 @@ United States of America</dd>
 <dt>Justin Harris</dt>
 <dd>University of Sydney<br />
 Australia</dd>
+
+<dt>Kenji Hashimoto</dt>
+<dd>Chiba University<br />
+Japan</dd>
 
 <dt>Mariko Hatakeyama</dt>
 <dd>RIKEN Genomic Sciences Center<br />
@@ -539,6 +709,10 @@ United Kingdom</dd>
 <dt>Edith Heard</dt>
 <dd>Curie Institute<br />
 France</dd>
+
+<dt>Andrew Hector</dt>
+<dd>Universit&auml;t Z&uuml;rich<br />
+Switzerland</dd>
 
 <dt>Carl-Philipp Heisenberg</dt>
 <dd>Max Planck Institute of Molecular Cell Biology and Genetics<br />
@@ -568,6 +742,14 @@ Netherlands</dd>
 <dd>South African National Bioinformatics Institute<br />
 South Africa</dd>
 
+<dt>Steven Hirschfeld</dt>
+<dd>National Institute of Child Health and Human Development<br />
+United States of America</dd>
+
+<dt>Jackie Ho</dt>
+<dd>Penang Medical College<br />
+Malaysia</dd>
+
 <dt>Shawn Hochman</dt>
 <dd>Emory University<br />
 United States of America</dd>
@@ -592,9 +774,17 @@ Germany</dd>
 <dd>University Medical Centre Utrecht<br />
 Netherlands</dd>
 
+<dt>Tanya Horsley</dt>
+<dd>The Royal College of Physicians and Surgeons of Canada<br />
+Canada</dd>
+
 <dt>Neil Hotchin</dt>
 <dd>University of Birmingham<br />
 United Kingdom</dd>
+
+<dt>Barbara Howlett</dt>
+<dd>University of Melbourne<br />
+Australia</dd>
 
 <dt>Sui Huang</dt>
 <dd>Harvard Medical School<br />
@@ -627,6 +817,11 @@ Greece</dd>
 <dt>Mark Isalan</dt>
 <dd>Centre for Genomic Regulation<br />
 Spain</dd>
+
+<dt>William L. Isley</dt>
+<dd>Mayo Clinic<br />
+United States of America</dd>
+
 
 <dt>Laurent Itti</dt>
 <dd>University of Southern California<br />
@@ -664,6 +859,10 @@ United Kingdom</dd>
 <dd>University of Edinburgh<br />
 United Kingdom</dd>
 
+<dt>Peter Juni</dt>
+<dd>University of Berne<br />
+Switzerland</dd>
+
 <dt>Esper Kallas</dt>
 <dd>Universidade Federal de S&#227;o Paulo<br />
 Brazil</dd>
@@ -672,6 +871,11 @@ Brazil</dd>
 <dd>Universit&eacute; Paris-Sud<br />
 France</dd>
 
+<dt>Edward L. Kaplan</dt>
+<dd>University of Minnesota Medical School<br />
+United States of America</dd>
+
+
 <dt>Rees Kassen</dt>
 <dd>University of Ottawa<br />
 Canada</dd>
@@ -679,6 +883,10 @@ Canada</dd>
 <dt>Janet Kelso</dt>
 <dd>Max Planck Institute for Evolutionary Anthropology<br />
 Germany</dd>
+
+<dt>Tom Kemp</dt>
+<dd>University of Oxford<br />
+United Kingdom</dd>
 
 <dt>Stefan Kepinski</dt>
 <dd>University of Leeds<br />
@@ -704,6 +912,14 @@ United Kingdom</dd>
 <dd>University of Helsinki<br />
 Finland</dd>
 
+<dt>Bostjan Kobe</dt>
+<dd>University of Queensland<br />
+Australia</dd>
+
+<dt>Sotiris Koutsopoulos</dt>
+<dd>Massachusetts Institute of Technology<br />
+United States of America</dd>
+
 <dt>Florian Kronenberg</dt>
 <dd>Innsbruck Medical University<br />
 Austria</dd>
@@ -711,6 +927,11 @@ Austria</dd>
 <dt>Juergen Kroymann</dt>
 <dd>Max Planck Institute for Chemical Ecology<br />
 Germany</dd>
+
+<dt>Johnstone Kumwenda</dt>
+<dd>Johns Hopkins Project, Blantyre<br />
+Malawi</dd>
+
 
 <dt>Hilal A. Lashuel</dt>
 <dd>Swiss Federal Institute of Technology Lausanne (EPFL)<br />
@@ -723,6 +944,10 @@ United States of America</dd>
 <dt>Heinrich Leonhardt</dt>
 <dd>Ludwig-Maximilians University<br />
 Germany</dd>
+
+<dt>Anne Lethaby</dt>
+<dd>University of Auckland<br />
+New Zealand</dd>
 
 <dt>David Levens</dt>
 <dd>National Cancer Institute<br />
@@ -754,6 +979,10 @@ Spain</dd>
 <dd>University of Texas<br />
 United States of America</dd>
 
+<dt>Eric Loucks</dt>
+<dd>McGill University<br />
+Canada</dd>
+
 <dt>Bai Lu</dt>
 <dd>National Institutes of Health<br />
 United States of America</dd>
@@ -761,6 +990,10 @@ United States of America</dd>
 <dt>Jian R. Lu</dt>
 <dd>University of Manchester Institute of Science and Technology<br />
 United Kingdom</dd>
+
+<dt>Pisake Lumbiganon</dt>
+<dd>Khon Kaen University<br />
+Thailand</dd>
 
 <dt>David Lusseau</dt>
 <dd>Dalhousie University<br />
@@ -770,9 +1003,17 @@ Canada</dd>
 <dd>Emory University<br />
 United States of America</dd>
 
+<dt>Gary Maartens</dt>
+<dd>University of Cape Town<br />
+South Africa</dd>
+
 <dt>Stefan Maas</dt>
 <dd>Lehigh University<br />
 United States of America</dd>
+
+<dt>Vincent Macaulay</dt>
+<dd>University of Glasgow<br />
+United Kingdom</dd>
 
 <dt>Ruth Mace</dt>
 <dd>University College London<br />
@@ -789,6 +1030,10 @@ United States of America</dd>
 <dt>Huib Mansvelder</dt>
 <dd>Vrije University<br />
 Netherlands</dd>
+
+<dt>Ben Marais</dt>
+<dd>Universiteit Stellenbosch<br />
+South Africa</dd>
 
 <dt>Gary Marcus</dt>
 <dd>New York University<br />
@@ -838,6 +1083,10 @@ United States of America</dd>
 <dd>Purdue University<br />
 United States of America</dd>
 
+<dt>Philippa Middleton</dt>
+<dd>The University of Adelaide<br />
+Australia</dd>
+
 <dt>Jaime Miranda</dt>
 <dd>London School of Hygiene and Tropical Medicine<br />
 United Kingdom</dd>
@@ -850,6 +1099,9 @@ United Kingdom</dd>
 <dd>CDC Atlanta<br />
 United States of America</dd>
 
+<dt>Vasee Moorthy</dt>
+<dd>University of Oxford<br />
+United Kingdom</dd>
 
 <dt>Ulrich M&uuml;ller</dt>
 <dd>Institute for Human Genetics<br />
@@ -867,6 +1119,10 @@ United States of America</dd>
 <dd>City of Hope National Medical Center<br />
 United States of America</dd>
 
+<dt>Kirsten Nielsen</dt>
+<dd>University of Minnesota<br />
+United States of America</dd>
+
 <dt>Miguel Nicolelis</dt>
 <dd>Duke University Medical Center<br />
 United States of America</dd>
@@ -875,9 +1131,17 @@ United States of America</dd>
 <dd>University of Arizona<br />
 United States of America</dd>
 
+<dt>Steven E. Nissen</dt>
+<dd>Cleveland Clinic Foundation<br />
+United States of America</dd>
+
 <dt>Douglas Nixon</dt>
 <dd>University of California, San Francisco<br />
 United States of America</dd>
+
+<dt>Alfred Nordheim</dt>
+<dd>Universit&auml;t T&uuml;bingen<br />
+Germany</dd>
 
 <dt>Fran&#231;ois Nosten</dt>
 <dd>Mahidol University<br />
@@ -891,6 +1155,14 @@ United States of America</dd>
 <dd>National University of Singapore<br />
 Singapore</dd>
 
+<dt>Toru Ouchi</dt>
+<dd>Northwestern University<br />
+United States of America</dd>
+
+<dt>Madhukar Pai</dt>
+<dd>McGill University<br />
+Canada</dd>
+
 <dt>Xuewen Pan</dt>
 <dd>Baylor College of Medicine<br />
 United States of America</dd>
@@ -902,6 +1174,10 @@ United States of America</dd>
 <dt>Hal Pashler</dt>
 <dd>University of California San  Diego<br />
 United States of America</dd>
+
+<dt>Koen Peeters Grietens</dt>
+<dd>Partners for Applied Social Sciences (PASS)<br />
+Belgium</dd>
 
 <dt>Michael Petraglia</dt>
 <dd>University of Cambridge<br />
@@ -931,6 +1207,14 @@ Australia</dd>
 <dd>University of Oxford<br />
 United Kingdom</dd>
 
+<dt>John Quackenbush</dt>
+<dd>Harvard University<br />
+United States of America</dd>
+
+<dt>Paul Quick</dt>
+<dd>University of Sheffield<br />
+United Kingdom</dd>
+
 <dt>David Raible</dt>
 <dd>University of Washington<br />
 United States of America</dd>
@@ -938,6 +1222,10 @@ United States of America</dd>
 <dt>Sean Rands</dt>
 <dd>University of Bristol<br />
 United Kingdom</dd>
+
+<dt>Fran&ccedil;ois Rannou</dt>
+<dd>l'H&ocirc;pital Cochin<br />
+France</dd>
 
 <dt>Yi Rao</dt>
 <dd>Northwestern University<br />
@@ -949,6 +1237,10 @@ United States of America</dd>
 
 <dt>Francis Ratnieks</dt>
 <dd>University of Sheffield<br />
+United Kingdom</dd>
+
+<dt>David Reby</dt>
+<dd>University of Sussex<br />
 United Kingdom</dd>
 
 <dt>Rosie Redfield</dt>
@@ -999,6 +1291,14 @@ United States of America</dd>
 <dd>University of Cambridge<br />
 United Kingdom</dd>
 
+<dt>Alice Rumbold</dt>
+<dd>Menzies School of Health Research<br />
+Australia</dd>
+
+<dt>Steven Russell</dt>
+<dd>University of East Anglia<br />
+United Kingdom</dd>
+
 <dt>Aldo Rustichini</dt>
 <dd>University of Minnesota<br />
 United States of America</dd>
@@ -1011,8 +1311,8 @@ United Kingdom</dd>
 <dd>Fred Hutchinson Cancer Research Center<br />
 United States of America</dd>
 
-<dt>Steve Salzberg</dt>
-<dd>University of Maryland<br />
+<dt>Jon Sackner-Bernstein</dt>
+<dd>CLINiLABS Inc.<br />
 United States of America</dd>
 
 <dt>Steve Salzberg</dt>
@@ -1022,6 +1322,10 @@ United States of America</dd>
 <dt>Margaret Sampson</dt>
 <dd>Children's Hospital of Eastern Ontario<br />
 Canada</dd>
+
+<dt>Steven Sandler</dt>
+<dd>University of Massachusetts, Amherst<br />
+United States of America</dd>
 
 <dt>Laurie Santos</dt>
 <dd>Yale University<br />
@@ -1039,6 +1343,14 @@ Italy</dd>
 <dd>University of Cape Town<br />
 South Africa</dd>
 
+<dt>Roberta Scherer</dt>
+<dd>Johns Hopkins University<br />
+United States of America</dd>
+
+<dt>Raphael Schiffmann</dt>
+<dd>National Institutes of Health<br />
+United States of America</dd>
+
 <dt>Harald Schmidt</dt>
 <dd>Monash University<br />
 Australia</dd>
@@ -1055,6 +1367,10 @@ South Africa</dd>
 <dd>Stanford University School of Medicine<br />
 United States of America</dd>
 
+<dt>Arnold Schwartz</dt>
+<dd>University of Cincinnati<br />
+United States of America</dd>
+
 <dt>Olivier Schwartz</dt>
 <dd>Pasteur Institute<br />
 France</dd>
@@ -1067,9 +1383,17 @@ France</dd>
 <dd>University of Arizona<br />
 United States of America</dd>
 
+<dt>Christoph Seiler</dt>
+<dd>University of Heidelberg<br />
+Germany</dd>
+
 <dt>Cathal Seoighe</dt>
 <dd>South African National Bioinformatics Institute<br />
 South Africa</dd>
+
+<dt>Alessandro Sette</dt>
+<dd>La Jolla Institute for Allergy & Immunology<br />
+United States of America</dd>
 
 <dt>Beverley Shea</dt>
 <dd>University of Ottawa<br />
@@ -1115,8 +1439,16 @@ Singapore</dd>
 <dd>Indiana University, Bloomington<br />
 United States of America</dd>
 
+<dt>Jason Stajich</dt>
+<dd>University of California, Berkeley<br />
+United States of America</dd>
+
 <dt>William Steinbach</dt>
 <dd>Duke University<br />
+United States of America</dd>
+
+<dt>Rick Steinhardt</dt>
+<dd>University of California, Berkeley<br />
 United States of America</dd>
 
 <dt>Philip Stevenson</dt>
@@ -1151,9 +1483,21 @@ United Kingdom</dd>
 <dd>Lund University<br />
 Sweden</dd>
 
+<dt>Philippa Talmud</dt>
+<dd>University College London<br />
+United Kingdom</dd>
+
 <dt>J&uuml;rgen Tautz</dt>
 <dd>University of W&uuml;rzburg<br />
 Germany</dd>
+
+<dt>Mukund Thattai</dt>
+<dd>National Centre for Biological Sciences<br />
+India</dd>
+
+<dt>Ross Thompson</dt>
+<dd>Monash University<br />
+Australia</dd>
 
 <dt>Laszlo Tora</dt>
 <dd>Institute of Genetics and Molecular and Cellular Biology<br />
@@ -1163,12 +1507,20 @@ France</dd>
 <dd>University of Exeter<br />
 United Kingdom</dd>
 
+<dt>Srikanth Tripathy</dt>
+<dd>National AIDS Research Institute<br />
+India</dd>
+
 <dt>Joe Z. Tsien</dt>
 <dd>Boston University<br />
 United States of America</dd>
 
+<dt>Erick Turner</dt>
+<dd>Oregon Health and Science University<br />
+United States of America</dd>
+
 <dt>Mike Tyers</dt>
-<dd> Samuel Lunenfeld Research Institute<br />
+<dd>Samuel Lunenfeld Research Institute<br />
 Canada</dd>
 
 <dt>C&#233;sar Ugarte-Gil</dt>
@@ -1178,6 +1530,10 @@ Peru</dd>
 <dt>Derya Unutmaz</dt>
 <dd>Vanderbilt University Medical Center<br />
 United States of America</dd>
+
+<dt>Arto Urtti</dt>
+<dd>University of Helsinki<br />
+Finland</dd>
 
 <dt>Juan Valc&aacute;rcel</dt>
 <dd>Centre for Genomic Regulation<br />
@@ -1190,6 +1546,14 @@ United States of America</dd>
 <dt>Maarten van Lohuizen</dt>
 <dd>The Netherlands Kanker Institute<br />
 Netherlands</dd>
+
+<dt>Adrian Vella</dt>
+<dd>Mayo Clinic<br />
+United States of America</dd>
+
+<dt>Antonio Verdejo Garc&iacute;a</dt>
+<dd>Universidad de Granada<br />
+Spain</dd>
 
 <dt>Eric Verdin</dt>
 <dd>University of California, San Francisco<br />
@@ -1211,6 +1575,10 @@ Switzerland</dd>
 <dd>Rockefeller<br />
 United States of America</dd>
 
+<dt>Mark Wainberg</dt>
+<dd>McGill University AIDS Centre<br />
+Canada</dd>
+
 <dt>Chenxi Wang</dt>
 <dd>University of Louisville<br />
 United States of America</dd>
@@ -1218,6 +1586,10 @@ United States of America</dd>
 <dt>Fusheng Wang</dt>
 <dd>Beijing Institute of Infectious Diseases<br />
 China</dd>
+
+<dt>Ping Wang</dt>
+<dd>Children's Research Institute<br />
+United States of America</dd>
 
 <dt>Naomi Ward</dt>
 <dd>The Institute for Genomic Research<br />
@@ -1240,6 +1612,10 @@ United Kingdom</dd>
 <dd>Uppsala University<br />
 Sweden</dd>
 
+<dt>Nicholas White</dt>
+<dd>Mahidol University<br />
+Thailand</dd>
+
 <dt>Stefan W&ouml;lfl </dt>
 <dd>University of Heidelberg<br />
 Germany</dd>
@@ -1251,6 +1627,14 @@ United States of America</dd>
 <dt>Xiaolin	Wu</dt>
 <dd>National Institutes of Health<br />
 United States of America</dd>
+
+<dt>Wenqing Xu</dt>
+<dd>University of Washington<br />
+United States of America</dd>
+
+<dt>Kenji Yamamoto</dt>
+<dd>Research Institute of International Medical Center<br />
+Japan</dd>
 
 <dt>Otto Yang</dt>
 <dd>University of California, Los Angeles<br />
@@ -1268,6 +1652,10 @@ United States of America</dd>
 <dd>Washington University in St. Louis<br />
 United States of America</dd>
 
+<dt>Jae-Hyuk Yu</dt>
+<dd>University of Wisconsin, Madison<br />
+United States of America</dd>
+
 <dt>Yu Ren Yuan</dt>
 <dd>National University of Singapore<br />
 Singapore</dd>
@@ -1280,12 +1668,20 @@ United States of America</dd>
 <dd>Claremont Graduate University<br />
 United States of America</dd>
 
+<dt>Heather Zar</dt>
+<dd>University of Cape Town<br />
+South Africa</dd>
+
 <dt>Linqi Zhang</dt>
 <dd>Chinese Academy of Medical Sciences<br />
 China</dd>
 
 <dt>Shuguang Zhang</dt>
 <dd>Massachussetts Institute of Technology<br />
+United States of America</dd>
+
+<dt>Ji Zhu</dt>
+<dd>University of Michigan<br />
 United States of America</dd>
 
 <dt>Jacques Zimmer</dt>

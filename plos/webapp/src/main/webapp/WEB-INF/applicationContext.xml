@@ -155,35 +155,38 @@
     <property name="emailAddressUrl" value="https://${pub.spring.server.cas}/cas/email?guid="/>
     <property name="weeklyCategories">
       <list>
-        <value>plosone</value>
         <value>biology</value>
         <value>clinical_trials</value>
         <value>computational_biology</value>
         <value>genetics</value>
         <value>medicine</value>
         <value>pathogens</value>
+        <value>plosntds</value>
+        <value>plosone</value>
       </list>
     </property>
     <property name="monthlyCategories">
       <list>
-        <value>plosone</value>
         <value>biology</value>
         <value>clinical_trials</value>
         <value>computational_biology</value>
         <value>genetics</value>
         <value>medicine</value>
         <value>pathogens</value>
+        <value>plosntds</value>
+        <value>plosone</value>
       </list>
     </property>
     <property name="categoryNames">
       <map>
-        <entry key="plosone" value="PLoS ONE"/>
         <entry key="biology" value="PLoS Biology"/>
         <entry key="computational_biology" value="PLoS Computational Biology"/>
         <entry key="clinical_trials" value="PLoS Clinical Trials"/>
         <entry key="genetics" value="PLoS Genetics"/>
         <entry key="medicine" value="PLoS Medicine"/>
         <entry key="pathogens" value="PLoS Pathogens"/>
+        <entry key="plosntds" value="PLoS Neglected Tropical Diseases"/>
+        <entry key="plosone" value="PLoS ONE"/>
       </map>
     </property>
     <aop:scoped-proxy/>
