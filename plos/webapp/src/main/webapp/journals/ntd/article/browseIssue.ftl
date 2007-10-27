@@ -1,12 +1,12 @@
 <#macro related articleInfo>
 	<#if articleInfo.relatedArticles?size gt 0>
-						<dl class="related">
-							<dt>Related PLoS Articles</dt>
-							<#list articleInfo.relatedArticles as ra>
-							<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
-							<dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
-							</#list>
-						</dl>
+		<dl class="related">
+			<dt>Related <em>PLoS</em> Articles</dt>
+			<#list articleInfo.relatedArticles as ra>
+			<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
+			<dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
+			</#list>
+		</dl>
 	</#if>
 </#macro>
 
@@ -37,16 +37,16 @@
 				</#if>
 			</p>
      <div id="floatMarker">&nbsp;</div>
-      <div id="postcomment" class="fixed"> <!-- class of 'fixed' is what floats the menu -->
-        <div id="sectionNavTop" class="tools">
+      <!-- <div id="postcomment" class="fixed"> class of 'fixed' is what floats the menu. "postcomment" wrapper is probably not needed here. -->
+        <div id="sectionNavTop" class="tools fixed">
           <ul>
             <li><a class="first" href="#top">Top</a></li>
-            <#if issueInfo.editorials?has_content><li><a href="#">Editorial</a></li></#if>
-            <#if issueInfo.researchArticles?has_content><li><a href="#">Research Articles</a></li></#if>
-            <#if issueInfo.corrections?has_content><li><a href="#">Corrections</a></li></#if>
+            <#if issueInfo.editorials?has_content><li><a href="#editorial">Editorial</a></li></#if>
+            <#if issueInfo.researchArticles?has_content><li><a href="#research">Research Articles</a></li></#if>
+            <#if issueInfo.corrections?has_content><li><a href="#corrections">Corrections</a></li></#if>
           </ul>
         </div><!-- end : sectionNav -->
-      </div><!-- end : postcomment -->
+      <!-- </div>end : postcomment -->
     </div><!-- end : sideNav -->
 	</div><!-- end : right-hand column -->
 	<!-- begin : primary content area -->
@@ -70,6 +70,7 @@
 		<!-- begin : search results -->
 		<div id="search-results">
 			<#if issueInfo.editorials?has_content>
+				<a id="editorial" title="Editorial" />
 				<h2>Editorial</h2>
 				<#list issueInfo.editorials as articleInfo>
 					<div class="article">
@@ -82,26 +83,27 @@
 			</#if>
 	
 			<#if issueInfo.researchArticles?has_content>
+				<a id="research" title="Research Articles" />
 				<h2>Research Articles</h2>
 				<#list issueInfo.researchArticles as articleInfo>
 					<div class="article">
 						<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
 						<h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
 						<p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-						<!-- ??? <p><a href="#">Author Summary</a></p> This should only appear if there is an author summary -->
+						<p><@s.a href="%{fetchArticleURL}#abstract1">Author Summary</@s.a></p>
 						<@related articleInfo=articleInfo/>
 					</div>
 				</#list>
 			</#if>
 	
 			<#if issueInfo.corrections?has_content>
+				<a id="corrections" title="Corrections" />
 				<h2>Corrections</h2>
 				<#list issueInfo.corrections as articleInfo>
 					<div class="article">
 						<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
 						<h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
 						<p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-						<!-- ??? <p><a href="#">Author Summary</a></p> This should only appear if there is an author summary -->
 						<@related articleInfo=articleInfo/>
 					</div>
 				</#list>
