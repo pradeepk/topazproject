@@ -13,6 +13,8 @@ _uacct = "UA-338393-1";
   <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
   <#if journalContext = "PLoSClinicalTrials" >
 _udn = "clinicaltrials.ploshubs.org";
+  <#elseif journalContext = "PLoSNTD" >
+_udn = "www.plosntds.org";
   <#else>
 _udn = "www.plosone.org";
   </#if>
