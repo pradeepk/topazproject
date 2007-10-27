@@ -315,7 +315,6 @@ ul#tabsContainer li span {
   float:left;
   background:url("../images/tab_right.gif") no-repeat 100% 0%;
   padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */
-  background-color:#f3f3f3; /* temp hack to keep bkg image from showing on right side of active tab in IE6 */
 }
 ul#tabsContainer li.active {
   background-position:0% -40px;
@@ -323,9 +322,6 @@ ul#tabsContainer li.active {
 ul#tabsContainer li.active span { 
   background-position:100% -40px;
 	padding-bottom: 9px!important;  
-}
-ul#tabsContainer li.published,
-ul#tabsContainer li.annotated	{ 
 }
 .horizontalTabs .contentwrap {
   float:left;
