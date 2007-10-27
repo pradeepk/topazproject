@@ -370,12 +370,13 @@ div#articleMenu ul li a:visited { background-color:transparent; background-posit
 div#articleMenu ul li a:hover { text-decoration:underline; color:#0c0; }
 
 /* Related articles at top of right column on article pages */
-dl#relatedArticles { margin:0 0 20px 0; padding:9px 0 .5em 0; border-bottom:1px solid #666; background-color:#fff; }
-dl#relatedArticles dt { font-size:1em; color:#303030; margin-bottom:.5em; }
-dl#relatedArticles dd { line-height:1.2em; margin-bottom:.5em; }
-dl#relatedArticles dd a:link,
-dl#relatedArticles dd a:visited { font-size:.95em; color:#069; text-decoration:none; }
-dl#relatedArticles dd a:hover { color:#008ED5; text-decoration:underline; }
+div#sideNav dl.related { margin:0 0 20px 0; padding:9px 0 .5em 0; border-bottom:1px solid #999; background-color:#fff; }
+div#sideNav dl.related dt { font-size:1em; text-transform:uppercase; color:#303030; margin-bottom:.5em; }
+div#sideNav dl.related dt em { text-transform:none; font-style:normal }
+div#sideNav dl.related dd { line-height:1.2em; margin-bottom:.5em; }
+div#sideNav dl.related dd a:link,
+div#sideNav dl.related dd a:visited { font-size:.95em; color:#069; text-decoration:none; }
+div#sideNav dl.related dd a:hover { color:#008ED5; text-decoration:underline; }
 
 #rhc ul li a,
 #rhc ul li a:visited	{ display: block; font-size: .85em; padding: 0 5px; text-decoration: none; color: #333; }
@@ -384,7 +385,7 @@ dl#relatedArticles dd a:hover { color:#008ED5; text-decoration:underline; }
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
 #rhc ul li a.last		{ border-bottom:0!important; }
 /* temp styles for TOC floating nav - these should be removed when this menu is generated in the same way as the menu in articles */
-div.toc div#rhc div#sectionNavTop { position:relative;top:285px; } /* This isn't the correct position in IE6 - need fix */
+div.toc div#rhc div#sectionNavTop { position:static; width:240px; }
 div.toc div#rhc div#sectionNavTop ul li a,
 div.toc div#rhc div#sectionNavTop ul li a:visited { border-bottom:0; border-top:1px solid #ccc; }
 div.toc div#rhc div#sectionNavTop ul li a.first { border-top:0!important; }
@@ -533,9 +534,10 @@ div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
 div.horizontalTabs		{ position: relative; border-width: 0;}
 .horizontalTabs ul,
-.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; color: #069;}
+.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; }
+.horizontalTabs ul li	a { font-weight: bold; }
 .horizontalTabs ul		{ display: block; margin-bottom: 5px; z-index: 10; border-bottom: 2px solid #ACF1FF; }
-.horizontalTabs ul li	{ cursor: pointer; padding: 6px; background-color: transparent; margin: 5px 2px 3px 2px; display: inline; }
+.horizontalTabs ul li	{ padding: 6px; background-color: transparent; margin: 5px 2px 3px 2px; display: inline; }
 .horizontalTabs ul li.active	{ font-weight: bold;background: url(../images/pone_forms_bg.gif) repeat-x bottom; border-bottom-color: #fff; text-decoration: none; color: #000;}
 .horizontalTabs .contentwrap {margin: 0; border: 2px solid #fff; padding: 0;position: relative; }
 
@@ -623,6 +625,7 @@ div.toc #search-results div.article dl.related { margin:0; }
 div.toc #search-results div.article dl.related dt,
 div.toc #search-results div.article dl.related dd { margin-bottom:.2em; font-size:.9em; line-height:1.5em; }
 div.toc #search-results div.article dl.related dt { color:#666 }
+div.toc #search-results div.article dl.related dt em { font-style:normal }
 
 /*--- Browse Form ---- */
 div#browseNav form.browseForm { margin: 0; background: #fff url(../images/pone_tools_bg.gif) no-repeat top left; padding: 10px 0 0 0; color: #666; position: relative; }
