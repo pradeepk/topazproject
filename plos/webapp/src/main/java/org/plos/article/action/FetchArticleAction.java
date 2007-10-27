@@ -13,6 +13,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
+import org.plos.article.service.BrowseService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.annotation.service.Annotation;
@@ -24,6 +25,8 @@ import org.plos.models.ObjectInfo;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.util.TransactionHelper;
+
+import org.springframework.beans.factory.annotation.Required;
 
 import java.net.URI;
 import java.rmi.RemoteException;
@@ -39,11 +42,13 @@ public class FetchArticleAction extends BaseActionSupport {
 
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
+  private BrowseService browseService;
   private FetchArticleService fetchArticleService;
   private JournalService journalService;
   private Set<Journal> journalList;
   private Session session;
   private ObjectInfo articleInfo;
+  private BrowseService.ArticleInfo articleInfoX;
   private String transformedArticle;
   private AnnotationService annotationService;
   private int numDiscussions = 0;
@@ -66,6 +71,10 @@ public class FetchArticleAction extends BaseActionSupport {
       
       TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
           public Void run(Transaction tx) {
+            
+            // get the alternate ArticleInfo, e.g. contains RelatedArticles
+            articleInfoX = browseService.getArticleInfo(URI.create(articleURI), tx);
+            
             journalList = journalService.getJournalsForObject(URI.create(articleURI));
             return null;
           }
@@ -180,6 +189,21 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
+   * Return the ArticleInfo from the Browse cache.
+   * 
+   * TODO: convert all usages of "articleInfo" (ObjectInfo) to use the Browse cache version of
+   * ArticleInfo.  Note that for all templates to use ArticleInfo, it will have to
+   * be enhanced.  articleInfo & articleInfoX are both present, for now, to support:
+   *   - existing templates/services w/o a large conversion
+   *   - access to RelatedArticles
+   * 
+   * @return Returns the articleInfoX.
+   */
+  public BrowseService.ArticleInfo getArticleInfoX() {
+    return articleInfoX;
+  }
+
+  /**
    * @return Returns the articleInfo.
    */
   public ObjectInfo getArticleInfo() {
@@ -207,6 +231,14 @@ public class FetchArticleAction extends BaseActionSupport {
    */
   public Set<Journal> getJournalList() {
     return journalList;
+  }
+
+  /**
+   * @param browseService The browseService to set.
+   */
+  @Required
+  public void setBrowseService(BrowseService browseService) {
+    this.browseService = browseService;
   }
 
   /**
