@@ -306,9 +306,9 @@ public class ArticleFeed extends BaseActionSupport {
       maxResults = 30;  // default
     }
 
-    // sort by date, ascending
+    // sort by date, descending
     HashMap<String, Boolean> sort = new HashMap();
-    sort.put("dublinCore.date", true);
+    sort.put("dublinCore.date", false);
 
     List<Article> articles = null;
     try {
