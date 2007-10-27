@@ -477,12 +477,15 @@ public class ArticleFeed extends BaseActionSupport {
       Content description = new Content();
       description.setType("html");
       try {
-        String text = "";
+        StringBuffer text = new StringBuffer();
         // If this is a nomral feed (not extended) and there's more than one author, add to content
-        if ((!extended) && authors.size() > 1)
-          text = "<p>by " + authorNames + "</p>\n";
-        text += transformToHtml(dc.getDescription());
-        description.setValue(text);
+        if ((!extended) && authors.size() > 1) {
+          text.append("<p>by ").append(authorNames).append("</p>\n");
+        }
+        if (dc.getDescription() != null) {
+        	text.append(transformToHtml(dc.getDescription()));
+        }
+        description.setValue(text.toString());
       } catch (Exception e) {
         log.error(e);
         description.setValue("<p>Internal server error.</p>");
