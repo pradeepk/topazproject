@@ -10,7 +10,7 @@
 <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubURL"/>
 
 <ul>
-    <li><@s.a href="${browseIssueURL}" title="PLoS NTDs | Current Issue">Current Issue</@s.a> - Browse the Table of Contents for the most recently published issue</li>
+    <li><@s.a href="${tocStatic}" title="PLoS NTDs | Current Issue">Current Issue</@s.a> - Browse the Table of Contents for the most recently published issue</li>
     <li><@s.a href="${browseDateURL}" title="PLoS NTDs | Browse by Publication Date">By Publication Date</@s.a> - Browse articles by choosing a specific week or month of publication</li>
     <li><@s.a href="${browseSubURL}" title="PLoS NTDs | Browse by Subject">By Subject</@s.a> - Browse articles published in a specific subject area</li>
 	<li><a href="http://collections.plos.org/plosntds/" title="Collections.plos.org | PLoS NTDs Collections">Collections</a> - Browse selected articles; watch videos from the Tri-I Forum on Neglected Diseases</li>
