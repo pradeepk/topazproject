@@ -12,6 +12,7 @@
 
 <!-- begin : toc content -->
 <div id="content" class="toc">
+<a id="top" title="top" class="noshow">&nbsp;</a>
   <!-- begin : right-hand column -->
   <div id="rhc">
     <div id="sideNav">
