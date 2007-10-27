@@ -28,13 +28,23 @@ public class EnvCommand {
           "[data-artifact (eg. org.plosone:plosone-it-data:07)]");
       return;
     }
-
+      
+      StringBuffer buf = new StringBuffer();
+      for (int i=0; i<args.length; i++) {
+          buf.append(" ");
+          buf.append(args[i]);
+      }
+    System.out.println("EnvCommand invoked with args:"+buf.toString());
+    
+    String envParam = (args.length > 0) ? args[0] : "install/basic"; 
     String cmd = (args.length > 1) ? args[1] : "start";
     String data = (args.length > 2) ? args[2] : null;
-    // simple space seperated for now
+      // simple space seperated for now
     String cmdArgs[] = ((args.length > 3) && (args[3] != null)) ? args[3].split(" ") : new String[0];
+      System.out.println("Invoking method '"+cmd+"' on Env.groovy with Env='"+
+                         envParam + "' and data='" + data + "'");
 
-    Env    env = new Env(args[0], data);
+    Env    env = new Env(envParam, data);
     env.invokeMethod(cmd, cmdArgs);
 
     if (cmd.equals("start")) {

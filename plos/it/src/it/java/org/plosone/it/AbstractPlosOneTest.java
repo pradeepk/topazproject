@@ -9,9 +9,12 @@
  */
 package org.plosone.it;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,18 +45,16 @@ public abstract class AbstractPlosOneTest {
   /**
    * DOCUMENT ME!
    */
-  public static final String BASE_URL = "http://localhost:8080/plosone-webapp";
-
-  /**
-   * DOCUMENT ME!
-   */
-  public static final Map<String, BrowserVersion> browsers = new HashMap();
+  public static final Map<String, BrowserVersion> browsers = 
+    new HashMap<String, BrowserVersion>();
 
   public static final String IE7 = "Internet Explorer 7";
   public static final String IE6 = "Internet Explorer 6";
   public static final String FIREFOX2 = "Firefox 2";
 
-  public static final Map<String, Map<String,String>> journals = new HashMap();
+  public static final Map<String, Map<String,String>> journals = 
+    new HashMap<String, Map<String, String>>();
+  public Map<String, String[]> articles = new HashMap<String, String[]>();
 
   static {
     browsers.put(IE6, BrowserVersion.INTERNET_EXPLORER_6_0);
@@ -68,9 +69,9 @@ public abstract class AbstractPlosOneTest {
       throw new Error("Registration of test-engine failed", t);
     }
 
-    HashMap ctHeaders = new HashMap();
+    HashMap<String, String> ctHeaders = new HashMap<String, String>();
     ctHeaders.put("plosJournal", "clinicaltrials");   // add this HttpHeader in every request
-    journals.put(AbstractPage.J_PONE, new HashMap());
+    journals.put(AbstractPage.J_PONE, new HashMap<String, String>());
     journals.put(AbstractPage.J_CT, ctHeaders);
   }
 
@@ -79,14 +80,15 @@ public abstract class AbstractPlosOneTest {
    */
   private final Env[] envs =
     new Env[] {
-                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.81.1"),
+                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.81.2"),
                 new Env("install/empty", null)
     };
 
   /**
    * DOCUMENT ME!
    */
-  private final Map<TesterId, PlosOneWebTester> testers = new HashMap();
+  private final Map<TesterId, PlosOneWebTester> testers = 
+    new HashMap<TesterId, PlosOneWebTester>();
 
   /**
    * DOCUMENT ME!
@@ -138,7 +140,7 @@ public abstract class AbstractPlosOneTest {
 
   @DataProvider(name = "journals")
   public Object[][] journalsTestData() {
-    ArrayList l = new ArrayList();
+    ArrayList<String[]> l = new ArrayList<String[]>();
     for (String journal : journals.keySet())
       for (String browser : browsers.keySet()) {
         // TODO: fix java script for IE6 on CT
@@ -147,6 +149,36 @@ public abstract class AbstractPlosOneTest {
         l.add(new String[] { journal, browser });
       }
   
+    return (Object[][]) l.toArray(new Object[0][]);
+  }
+
+  @DataProvider(name = "articles")
+  public Object[][] articlesTestData(Method m) {
+    ArrayList<String[]> l = new ArrayList<String[]>();
+  
+    String methodsThatUseSmallSet[] = new String[] { "Annotation", "Discussion" };
+    boolean useSmallSet = false;
+    String mName = m.getName();
+  
+    for (String name : methodsThatUseSmallSet)
+      if (mName.indexOf(name) > 0)
+        useSmallSet = true;
+  
+    Set<String> dois = useSmallSet ? Collections.singleton("info:doi/10.1371/journal.pone.0000021") : articles.keySet();
+  
+    for (String article : dois) {
+      for (String journal : articles.get(article)) {
+        for (String browser : browsers.keySet()) {
+          // TODO: fix java script for firefox
+          if (FIREFOX2.equals(browser))
+            continue;
+          // TODO: fix java script for IE6 on CT
+          if (IE6.equals(browser) && HomePage.J_CT.equals(journal))
+            continue;
+          l.add(new String[] { article, journal, browser });
+        }
+      }
+    }
     return (Object[][]) l.toArray(new Object[0][]);
   }
 

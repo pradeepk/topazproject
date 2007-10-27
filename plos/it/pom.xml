@@ -39,7 +39,7 @@
     <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>plosone-it-data-basic</artifactId>
-      <version>0.81.1</version>
+      <version>0.81.2</version>
       <type>tbz</type>
       <scope>test</scope>
     </dependency>
@@ -130,6 +130,14 @@
                 <property>
                   <name>stopOnStart</name>
                   <value>${stopOnStart}</value>
+                </property>
+                <property>
+                  <name>plosone.it.baseUrl</name>
+                  <value>${plosone.it.baseUrl}</value>
+                </property>
+                <property>
+                  <name>plosone.it.mulgaraUrl</name>
+                  <value>${plosone.it.mulgaraUrl}</value>
                 </property>
               </systemProperties>
             </configuration>
