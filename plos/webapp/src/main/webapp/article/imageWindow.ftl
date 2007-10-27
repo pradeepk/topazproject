@@ -45,7 +45,11 @@
 		
 		<div id="figure-window-viewer">
 			<img src="${currentImageUrl}&representation=${currentImage.repMedium}" title="${currentImage.title} ${currentImage.plainCaptionTitle}" class="large" id="figureImg" />
-			<span id="figureTitle"><strong>${currentImage.title}.</strong> ${currentImage.transformedCaptionTitle}</span>
+			<span id="figureTitle">
+			<#if currentImage.title != "" > 
+				<strong>${currentImage.title}.</strong> 
+                	</#if>
+			${currentImage.transformedCaptionTitle}</span>
 		</div>
 		<div id="figure-window-description">
 				${currentImage.transformedDescription}
