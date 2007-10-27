@@ -9,7 +9,7 @@
 <p>This has indeed been an extraordinary week.  Both from our Scientific and Technical Advisory Group held on Tuesday and Wednesday, today's amazing agenda, as well as a meeting on NTDs held in Washington last October it is clear that something remarkable and historical has happened over the last year.  Possibly never before have leaders from so many different disciplines come together to help the world's poorest people in such a visceral and tangible way.  Please stop and pause for a minute to think &#8212; representatives of the largest multinational pharmaceutical companies, working side by side with academicians and scientists, together with the Bill and Melinda Gates Foundation and other private philanthropies, together with their grantees &#8212; partnerships of the Global Network for Neglected Tropical Disease Control such as the SCI, ITI, GAELF, APOC, Sabin Institute, the Task Force, Helen Keller, Earth Institute, as well as the  Carter Center, together with the national health ministries, and perhaps most importantly, together with the district health managers and community distributors &#8212; all working together to deliver a package of NTD drugs, which will one day lift the world's poorest people out of poverty!</p>
 
 <div class="quotes">
-	<blockquote>
+	<blockquote class="decorative">
 		<p>Today we recognize that an assault on the NTDs represents a significant and highly cost-effective new opportunity to reduce human misery and poverty.</p>
 	</blockquote>
 </div>
