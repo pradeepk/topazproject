@@ -40,8 +40,8 @@
     <ol>
     <#list articleDates?keys?reverse as curYear>
       <#assign curYearStr = curYear?string("#") >
-      <li>${curYearStr}
-      <#list articleDates(curYear)?keys?reverse as curMon>
+      <li>${curYearStr}</li>
+      <li><#list articleDates(curYear)?keys?reverse as curMon>
         <#assign curMonStr = curMon?date("MM")?string("MMM") >
         <ol>
           <#if curYear == year && curMon == month && day == -1>
