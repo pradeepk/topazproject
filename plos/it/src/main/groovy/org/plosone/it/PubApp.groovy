@@ -49,7 +49,8 @@ public class PubApp extends Tomcat5x {
    */
   public PubApp(String tomcatUrl, String installDir, String port, 
                  String shutdownPort, String jvmargs) {
-    super(tomcatUrl, installDir, port, shutdownPort, '-server -Xmx200m')
+    super(tomcatUrl, installDir, port, shutdownPort, 
+          '-server -Xmx200m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8085')
     String version = Env.pomVersion()
     wars['/plosone-webapp'] = Env.dependencyPath('org.plosone', 'plosone-webapp', version, 'war')
     wars['/plos-registration'] = Env.dependencyPath('org.plos', 'plos-registration-webapp', 
