@@ -49,6 +49,7 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 /* Global : Styles
 ----------------------------------------------------------
 */
+.noshow { line-height:0; } /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
 
 /* Global : Icons
 ----------------------------------------------------------
