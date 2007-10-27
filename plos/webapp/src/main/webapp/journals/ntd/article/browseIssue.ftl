@@ -63,7 +63,8 @@
 					<img alt="Issue Image" src="${imageSmURL}"/>
 					<a href="${imageLgURL}">View large image</a>
 				</div>
-				<p id="about"><em>About This Image:</em> ${issueInfo.description}</p>
+				<h3>About This Image</h3>
+				${issueInfo.description}
 				<p id="credit"><em>Image Credit:</em> Credit information goes here.</p>
 			</div>
 		</#if>
