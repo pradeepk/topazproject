@@ -18,6 +18,14 @@
         <param name="templateFile">/journals/ntd/index.ftl</param>
       </result>
     </action>
+    
+    <action name="recentArticles" class="org.plos.action.HomePageAction">
+      <result name="success">/journals/ntd/article/recentArticles.ftl</result>
+    </action>
+
+    <action name="mostCommented" class="org.plos.action.HomePageAction">
+      <result name="success">/journals/ntd/article/mostCommented.ftl</result>
+    </action>
 
   </package>
 
