@@ -25,13 +25,13 @@
 					<a href="${prevIssueURL}">&lt;Previous Issue</a>
 					<#assign needSpacer=true/>
 				</#if>
-				<#if needSpacer> | </#if>
-				<a href="${archiveURL}">Archive</a>
+				<!-- <#if needSpacer> | </#if> -->
+				<!-- <a href="${archiveURL}">Archive</a> Commented out until we have the Archive page in place. Remember to uncomment spacers and the link in the navbar too! -->
 				<#assign needSpacer=true/>
 				<#if issueInfo.nextIssue?exists>
 					<@s.url id="nextIssueURL" action="browseIssue" namespace="/journals/ntd/article"
 						field="issue" issue="${issueInfo.nextIssue}" includeParams="none"/>
-					<#if needSpacer> | </#if>
+					<!-- <#if needSpacer> | </#if> -->
 					<a href="${nextIssueURL}">Next Issue&gt;</a>
 					<#assign needSpacer=true/>
 				</#if>
