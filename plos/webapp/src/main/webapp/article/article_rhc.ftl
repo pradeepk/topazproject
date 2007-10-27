@@ -3,12 +3,16 @@
 
 <div id="sideNav">
 
-  <dl id="relatedArticles"> <!-- This section needs to be made dynamic -->
-    <dt>RELATED PLoS ARTICLES</dt>
-    <dd><a href="#">National Mass Drug Administration Costs for Lymphatic Filariasis Elimination</a></dd>
-    <dd><a href="#">A Turning Point in the History of Humanity's Oldest Diseases: Guest Commentary by WHO Director-General Margaret Chan</a></dd>
-  </dl>
-
+	<#if articleInfoX.relatedArticles?size gt 0>
+		<dl class="related">
+			<dt>Related <em>PLoS</em> Articles</dt>
+			<#list articleInfoX.relatedArticles as ra>
+			<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
+			<dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
+			</#list>
+		</dl>
+	</#if>
+  
   <div id="floatMarker"></div>
 
   <div id="postcomment">
