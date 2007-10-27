@@ -4,7 +4,7 @@
 
 <h1><em>PLoS Neglected Tropical Diseases</em> Guidelines for Authors</h1> 
 
-<p class="intro">Detailed below are guidelines for authors about the journal, open access, the editorial process, and the production process. We also provide a <a href="checklist.action" title="PLoS NTDs | Manuscript Submission Checklist">checklist for submitting manuscripts</a> for the first time, a <a href="revised_checklist.action" title="PLoS NTDs | Checklist for Revised Manuscripts">checklist for submitting revised manuscripts</a>, and detailed <a href="figureGuidelines.action" title="PLoS NTDs | Guidelines for Table and Figure Preparation">guidelines for table and figure preparation</a>. <em>PLoS Neglected Tropical Diseases</em> also offers <a href="developing.action">several means of support</a> to authors in developing countries.</p>
+<p class="intro">Detailed below are guidelines for authors about the journal, open access, the editorial process, and the production process. We also provide a <a href="checklist.action" title="PLoS NTDs | Manuscript Submission Checklist">checklist for submitting manuscripts</a> for the first time, a <a href="revisedChecklist.action" title="PLoS NTDs | Checklist for Revised Manuscripts">checklist for submitting revised manuscripts</a>, and detailed <a href="figureGuidelines.action" title="PLoS NTDs | Guidelines for Table and Figure Preparation">guidelines for table and figure preparation</a>. <em>PLoS Neglected Tropical Diseases</em> also offers <a href="developing.action">several means of support</a> to authors in developing countries.</p>
 <h2>Contents:</h2>
 <ol>
 	<li><a href="#about">About <em>PLoS Neglected Tropical Diseases</em></a></li>
@@ -21,7 +21,7 @@
 	<li><a href="#submission">Submission of Research Manuscripts</a></li>
 		<ul>
 		<li><a href="checklist.action">Checklist for Submitting New Manuscript</a></li>
-		<li><a href="revised_checklist.action">Checklist for Submitting Revised Manuscript</a></li>
+		<li><a href="revisedChecklist.action">Checklist for Submitting Revised Manuscript</a></li>
 		</ul>	
 	<li><a href="#other">Other Types of Articles</a></li>
 	<li><a href="#production">Overview of the Production Process</a></li>
@@ -49,7 +49,7 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 <a name="publication"></a>
 <h2>3. Publication Charges</h2>
 
-<p>To provide open access, PLoS journals use a business model in which our expenses&#8212;including those of peer review, journal production, and online hosting and archiving&#8212;are recovered in part by charging a publication fee to the authors or research sponsors for each research article they publish. For <em>PLoS Neglected Tropical Diseases</em> the introductory (pre-launch) publication fee is US$2100.   Authors who are affiliated with one of our <a href="http://www.plos.org/support/instmembers.html" title="PLoS Institutional Members">Institutional Members</a> are eligible for a discount on this fee.</p>
+<p>To provide open access, PLoS journals use a business model in which our expenses&#8212;including those of peer review, journal production, and online hosting and archiving&#8212;are recovered in part by charging a publication fee to the authors or research sponsors for each research article they publish. For <em>PLoS Neglected Tropical Diseases</em> the publication fee is US$2100.   Authors who are affiliated with one of our <a href="http://www.plos.org/support/instmembers.html" title="PLoS Institutional Members">Institutional Members</a> are eligible for a discount on this fee.</p>
 
 <p>We offer a complete or partial fee waiver for authors who do not have funds to cover publication fees. Editors and reviewers have no access to payment information, and hence inability to pay will not influence the decision to publish a paper. </p>
 
@@ -78,7 +78,7 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
  
 <p>Expert reviewers will be asked to assess the technical and scientific merits of the work. Where relevant, work presented in a manuscript will be subject to a rigorous review of the statistical methods used. <em>PLoS Neglected Tropical Diseases</em> encourages open (non-anonymous) peer-review. As a default, we will pass a reviewer's name on to the authors along with the comments. If reviewers do not wish to have their name revealed, they can request to stay anonymous and we will honor that request.</p>
 
-<p>Upon submission of a manuscript, authors are asked if they wish to exclude any specific academic editors or reviewers from the peer review of their article. The editorial team will respect these requests so long as this does not interfere with the objective and thorough assessment of the article. See the relevant guidelines for reviewers and <a href="competing.action" title="PLoS policy regarding competing interests">more general information on PLoS’ policy regarding competing interests</a>.</p>
+<p>Upon submission of a manuscript, authors are asked if they wish to exclude any specific academic editors or reviewers from the peer review of their article. The editorial team will respect these requests so long as this does not interfere with the objective and thorough assessment of the article. See the relevant guidelines for reviewers and <a href="competing.action" title="PLoS policy regarding competing interests">more general information on PLoS' policy regarding competing interests</a>.</p>
 
 <p>Once all reviews have been received and considered by the professional and academic editors, a decision letter to the author will be drafted.</p>
 
@@ -107,7 +107,7 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 
 <h3>Human and Animal Research</h3>
 
-<p>All research involving humans and animals must have been approved by the authors’ institutional review board or equivalent committee, and that board <strong>must be</strong> named by the authors. In the case of human participants, informed consent must have been obtained, and all clinical investigation must have been conducted according to the principles expressed in the <a href="http://www.wma.net/e/policy/b3.htm" title="Declaration of Helsinki"><em>Declaration of Helsinki</em></a>. Authors should submit a statement from the ethics committee or institutional review board indicating approval of the research. We also encourage authors to submit a sample of a patient consent form, and may require submission on particular occasions.</p>
+<p>All research involving humans and animals must have been approved by the authors' institutional review board or equivalent committee, and that board <strong>must be</strong> named by the authors. In the case of human participants, informed consent must have been obtained, and all clinical investigation must have been conducted according to the principles expressed in the <a href="http://www.wma.net/e/policy/b3.htm" title="Declaration of Helsinki"><em>Declaration of Helsinki</em></a>. Authors should submit a statement from the ethics committee or institutional review board indicating approval of the research. We also encourage authors to submit a sample of a patient consent form, and may require submission on particular occasions.</p>
 
 <h3>Patient Privacy and Informed Consent for Publication</h3>
 
@@ -134,7 +134,7 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 
 <p>We require that authors of clinical trials adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types. All reports of the results of randomized clinical trials should include the CONSORT flow diagram as Figure 1, and authors should complete and submit the checklist contained within the CONSORT statement. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported according to the specifications indicated in the Methods section under Preparation of Manuscripts (below).</p>
 
-<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. The trial’s registration number must be provided at the time of submission. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq</a> on trial registration for further details.</p>
+<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. The trial's registration number must be provided at the time of submission. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq</a> on trial registration for further details.</p>
 
 <a name="systematic_reviews"></a>
 <h5>b. Systematic Reviews and Meta-Analyses of Randomized Controlled Trials</h5>
@@ -180,7 +180,7 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 
 <h3>Prior Publication</h3>
 
-$prior_publication
+<p>When submitting an article, all authors are asked to indicate that they have not submitted a similar manuscript for publication elsewhere. If related work has been submitted elsewhere, then a copy must be included with the article submitted to PLoS. Reviewers will be asked to comment on the overlap between related submissions.</p>
 
 <a name="preparation"></a>
 <h2>8. Preparation of Research Manuscripts</h2>
@@ -282,7 +282,7 @@ $prior_publication
 
 <h4>Authors and Affiliations</h4>
 
-<p>Provide the first names or initials (if used), middle names or initials (if used), surnames, and affiliations&#8212;department, university or organization, city, state/province (if applicable), and country&#8212;for all authors. One of the authors should be designated as the corresponding author. It is the corresponding author’s responsibility to ensure that the author list, and the summary of the author contributions to the study are accurate and complete. If the article has been submitted on behalf of a consortium, all consortium members and affiliations should be listed after the Acknowledgments.</p> 
+<p>Provide the first names or initials (if used), middle names or initials (if used), surnames, and affiliations&#8212;department, university or organization, city, state/province (if applicable), and country&#8212;for all authors. One of the authors should be designated as the corresponding author. It is the corresponding author's responsibility to ensure that the author list, and the summary of the author contributions to the study are accurate and complete. If the article has been submitted on behalf of a consortium, all consortium members and affiliations should be listed after the Acknowledgments.</p> 
 
 <p>(For authorship criteria, see <a href="#supporting">Supporting Information and Materials Required at Submission</a>)</p>
 
@@ -397,7 +397,7 @@ Same as above, but "In press" appears instead of the page numbers. Example: Adv 
 
 <p>We have provided an <a href="checklist.action" title="Checklist for Manuscript Submission">author checklist</a> to help you prepare your materials for submission and to make the online submission process as straightforward as possible. Please take the time to look through the list before submitting your article.</p>
 
-<p>If you are submitting a revised manuscript, you will have been given substantial guidance by the editors. We have provided a <a href="revised_checklist.action" title="Checklist for Submitting a Revised Manuscript">checklist for revised manuscripts</a>.</p>
+<p>If you are submitting a revised manuscript, you will have been given substantial guidance by the editors. We have provided a <a href="revisedChecklist.action" title="Checklist for Submitting a Revised Manuscript">checklist for revised manuscripts</a>.</p>
 
 <h3>Electronic Submission</h3>
 

@@ -5,7 +5,7 @@
 
 <a id="browsers" name="browsers"></a>
 <h2>Recommended Web Browsers</h2>
-<p><em>PLoS ONE</em> supports the following Web browsers:</p>
+<p>This site supports the following Web browsers:</p>
 <ul>
 	<li>Internet Explorer 6+ for Windows</li>
 	<li>Internet Explorer 7+ for Windows</li>
@@ -16,7 +16,7 @@
 
 <a id="account" name="account"></a>
 <h2>PLoS Journals Account</h2>
-<p>You may read PLoS journals without creating an account.  However, an account is required to receive journal e-mail alerts and to comment on <em>PLoS ONE</em> articles. Accounts are free.</p>
+<p>You may read PLoS journals without creating an account.  However, an account is required to receive journal e-mail alerts and to comment on articles. Accounts are free.</p>
 
 <h3>Create Account</h3>
 <p>Create a PLoS Journals account at <a href="http://register.plos.org" title="Create PLoS Journals Profile">http://register.plos.org</a>.  A confirmation will be sent to your e-mail address with the title "Please verify your PLoS registration".  Use the URL in that e-mail to complete your registration.</p>

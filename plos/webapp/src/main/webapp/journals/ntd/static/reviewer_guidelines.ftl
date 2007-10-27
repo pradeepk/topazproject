@@ -1,7 +1,7 @@
 
 <!-- begin : main content -->
 <div id="content" class="static">
-<h1><em>PLoS Ngelected Tropical Diseases</em> Guidelines for Reviewers</h1>
+<h1><em>PLoS Neglected Tropical Diseases</em> Guidelines for Reviewers</h1>
 
 <h2>Contents:</h2>
 <ol>
@@ -119,7 +119,7 @@
 
 <p>As far as possible we respect requests by authors to exclude reviewers whom they consider to be unsuitable. We also, as much as possible, try to rule out those reviewers who may have an obvious competing interest, such as those who may have been collaborators on other projects with the authors of the manuscript under review, those who may be direct competitors, those who may have a known history of antipathy with the author(s), or those who might profit financially from the work. Because it is not possible for all such competing interests to be known by a particular editor, we request that reviewers who recognize a potential competing interest inform the editors or journal staff and recuse themselves if they feel that are unable to offer an impartial review.</p>
  
-<p><a href="competing.action" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science’s policy regarding competing interests.</a> When submitting your review you must indicate whether or not you have any competing interests.</p>
+<p><a href="competing.action" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science's policy regarding competing interests.</a> When submitting your review you must indicate whether or not you have any competing interests.</p>
 
  
 <p>On occasion, reviewers may be asked to offer their opinion on a manuscript that they may have reviewed for some other journal. This is not in itself a competing interest. That two journals have identified the same person as especially well qualified to judge the manuscript under consideration does not in any way decrease the validity of that opinion and may perhaps even enhance it.</p> 

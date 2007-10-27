@@ -17,6 +17,8 @@
   <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
   <#if journalContext = "PLoSClinicalTrials" >
     <#include "/journals/clinicalTrials/global/global_topbanner.ftl">
+  <#elseif journalContext = "PLoSNTD" >
+    <#include "/journals/ntd/global/global_topbanner.ftl">
   <#else>
     <#include "global_topbanner.ftl">
   </#if>
