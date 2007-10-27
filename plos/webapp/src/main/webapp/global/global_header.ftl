@@ -61,8 +61,10 @@
   <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
   <#if journalContext = "PLoSClinicalTrials" >
     <#include "/journals/clinicalTrials/global/global_navigation.ftl">
+  <#elseif journalContext = "PLoSNTD"> 
+     <#include "/journals/ntd/global/global_navigation.ftl">
   <#else>
-    <#include "../global/global_navigation.ftl">
+     <#include "../global/global_navigation.ftl">
   </#if>
   <#-- END HACK -->
 

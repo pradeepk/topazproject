@@ -34,3 +34,4 @@
 
   <#include "global_header.ftl">
   </div>
+  <!-- end : header --> 

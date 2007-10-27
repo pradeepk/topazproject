@@ -27,7 +27,7 @@
             </div>
             <div id="rss">
               <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/>
-              <a href="${rssURL}"><span><strong>Subscribe</strong>
+	      <a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><span><strong>Subscribe</strong>
               Subscribe to the clinical trials RSS content feed</span></a>
               <a href="${rssinfo}" class="adInfo">What is RSS?</a>
             </div>
