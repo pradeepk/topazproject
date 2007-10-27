@@ -19,8 +19,10 @@ import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.journal.JournalService;
+import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
+import org.plos.models.PLoS;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -47,9 +49,10 @@ public class FetchArticleAction extends BaseActionSupport {
   private JournalService journalService;
   private Set<Journal> journalList;
   private Session session;
-  private ObjectInfo articleInfo;
+  private Article articleInfo;
   private BrowseService.ArticleInfo articleInfoX;
   private String transformedArticle;
+  private String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
   private AnnotationService annotationService;
   private int numDiscussions = 0;
   private int numAnnotations = 0;
@@ -67,7 +70,22 @@ public class FetchArticleAction extends BaseActionSupport {
           numAnnotations ++;
         }
       }
-      setArticleInfo(fetchArticleService.getArticleInfo(articleURI));
+      Article artInfo = fetchArticleService.getArticleInfo(articleURI); 
+      setArticleInfo(artInfo);
+      // Determine the articleType heading from the Article model. The article type was ingested from 
+      // the Article XML and stored as a URI. 
+      if (artInfo != null) {
+        Set<URI> artTypes = artInfo.getArticleType();
+        for (URI artType : artTypes) {
+          String artTypeStr = artType.toString();
+          if (artTypeStr.startsWith(PLoS.PLOS_ArticleType)) {
+            articleTypeHeading = artTypeStr.substring(PLoS.PLOS_ArticleType.length());
+         // Replace %20 tokens with spaces that were converted by the ingestion.groovy script
+            articleTypeHeading = articleTypeHeading.replaceAll("%20", " "); 
+            break;
+          }
+        }
+      }
       
       TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
           public Void run(Transaction tx) {
@@ -93,8 +111,8 @@ public class FetchArticleAction extends BaseActionSupport {
 
 
   /**
-   * Returns just the annotated article XML
-   *
+   * A struts action that populates the transformedArticle field of this class. 
+   * 
    * @return Annotated Article XML String
    */
   public String getAnnotatedArticle() {
@@ -206,14 +224,22 @@ public class FetchArticleAction extends BaseActionSupport {
   /**
    * @return Returns the articleInfo.
    */
-  public ObjectInfo getArticleInfo() {
+  public Article getArticleInfo() {
     return articleInfo;
   }
 
   /**
+   * The article type displayed by article_content.ftl as per #693
+   * @return
+   */
+  public String getArticleTypeHeading() {
+  	return articleTypeHeading;
+  }
+  
+  /**
    * @param articleInfo The articleInfo to set.
    */
-  private void setArticleInfo(ObjectInfo articleInfo) {
+  private void setArticleInfo(Article articleInfo) {
     this.articleInfo = articleInfo;
   }
 
