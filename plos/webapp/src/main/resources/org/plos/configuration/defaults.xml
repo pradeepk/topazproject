@@ -472,6 +472,24 @@
       </page>
 
       <page>
+        <name>/static/about.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/static/authors.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
         <name>/static/browse.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -481,7 +499,16 @@
       </page>
 
       <page>
-        <name>/static/comment_guidelines.ftl</name>
+        <name>/static/checklist.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/static/commentGuidelines.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -616,7 +643,25 @@
       </page>
 
       <page>
-        <name>/static/reviwer_guidelines.ftl</name>
+        <name>/static/ratingGuidelines.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/static/releaseNotes.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/static/reviewer_guidelines.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -634,7 +679,7 @@
       </page>
 
       <page>
-        <name>/static/rss_info.ftl</name>
+        <name>/static/rssInfo.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -662,6 +707,15 @@
 
       <page>
         <name>/static/terms.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/static/users.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -729,6 +783,96 @@
         <name>/article/article_body.ftl</name>
         <title>CODE_ARTICLE_TITLE</title>
       </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/about.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/authors.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/browse.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/checklist.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/contact.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/faq.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/information.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/rssFeeds.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/sitemap.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/clinicalTrials/static/users.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
     </journal>
     <journal>
       <name>PLoSNTD</name>
@@ -785,6 +929,196 @@
         <name>/article/article_body.ftl</name>
         <title>CODE_ARTICLE_TITLE</title>
       </page>
+      
+      <page>
+        <name>/journals/ntd/static/about.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/ae_checklist.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/authors.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/browse.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/checklist.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/contact.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/developing.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/downloads.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/edboard.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/eic.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      
+      <page>
+        <name>/journals/ntd/static/guidelines.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/hotez_who.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/information.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/policies.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/reviewer_guidelines.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/revised_checklist.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      
+      <page>
+        <name>/journals/ntd/static/resFeeds.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/scope.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      
+      <page>
+        <name>/journals/ntd/static/sitemap.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/users.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
+      <page>
+        <name>/journals/ntd/static/whypublish.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+
     </journal>
   </freemarker>
 </config>

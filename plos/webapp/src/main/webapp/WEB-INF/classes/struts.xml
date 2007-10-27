@@ -367,6 +367,12 @@
       </result>
     </action>
 
+    <action name="error" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/serverError.ftl</param>
+      </result>
+    </action>
+
     <action name="sitemap" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/sitemap.ftl</param>
@@ -388,12 +394,6 @@
     <action name="whypublish" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/whypublish.ftl</param>
-      </result>
-    </action>
-
-    <action name="error" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/serverError.ftl</param>
       </result>
     </action>
 
