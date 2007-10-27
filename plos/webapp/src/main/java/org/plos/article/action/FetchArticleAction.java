@@ -61,7 +61,8 @@ public class FetchArticleAction extends BaseActionSupport {
       "Review", 
       "Editorial", 
       "Interview", 
-      "Correspondence"
+      "Correspondence",
+      "Issue Image"
   };
   private static final Set<String> VALID_ARTICLE_TYPES = 
     new HashSet<String>(Arrays.asList(articleTypes));
