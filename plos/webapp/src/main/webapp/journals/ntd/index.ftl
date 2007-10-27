@@ -70,7 +70,7 @@
         <div id="second" class="col">
           <!-- begin : col 3 -->
           <div class="subcol first">
-            <div id="issue" class="block"><h3><a href="${browseIssueURL}">October 2007 Issue</a></h3><a href="${browseIssueURL}"><img src="images/issue_image.jpg" alt="issue cover image" /></a></div><!-- keep div#issue hmtl all on one line to avoid extra space below issue image in IE -->
+            <div id="issue" class="block"><h3><a href="${tocStatic}">October 2007 Issue</a></h3><a href="${tocStatic}"><img src="images/issue_image.jpg" alt="issue cover image" /></a></div><!-- keep div#issue hmtl all on one line to avoid extra space below issue image in IE -->
             <!-- end : issue block -->
             <!-- begin : mission block -->
             <div id="mission" class="block">
