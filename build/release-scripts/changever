@@ -34,14 +34,14 @@ echo "Updating/patching ${#topatch[@]} files from $fromPatch to $toPatch"
 read -p "Continue (y/n)? " ans
 [[ "$ans" != y* ]] && exit 1
 
-# Update all our poms
-for f in ${poms[@]}; do
-  echo "Updating $f to $toVer"
-  perl -p -i -e "s/$fromVer/$toVer/g" "$f"
-done
-
 # Change the patch versions in specific files
 for f in ${topatch[@]}; do
   echo "Patching $f to $toPatch"
   perl -p -i -e "s/$fromPatch/$toPatch/g" "$f"
+done
+
+# Update all our poms
+for f in ${poms[@]}; do
+  echo "Updating $f to $toVer"
+  perl -p -i -e "s/$fromVer/$toVer/g" "$f"
 done
