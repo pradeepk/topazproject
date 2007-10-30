@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.article.service.BrowseService;
+import org.plos.model.article.ArticleInfo;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -32,7 +33,7 @@ public class HomePageAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(HomePageAction.class);
 
   private BrowseService                   browseService;
-  private List<BrowseService.ArticleInfo> recentArticles;
+  private List<ArticleInfo> recentArticles;
   private SortedMap<String, Integer>      categoryInfos;
 
   /**
@@ -61,7 +62,7 @@ public class HomePageAction extends BaseActionSupport {
    *
    * @return array of ArticleInfo objects
    */
-  public List<BrowseService.ArticleInfo> getRecentArticles() {
+  public List<ArticleInfo> getRecentArticles() {
     return recentArticles;
   }
 

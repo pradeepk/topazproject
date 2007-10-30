@@ -30,6 +30,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.struts2.ServletActionContext;
 
+import org.plos.model.IssueInfo;
+import org.plos.model.VolumeInfo;
+import org.plos.model.article.ArticleInfo;
+import org.plos.model.article.ArticleType;
+import org.plos.model.article.RelatedArticleInfo;
+import org.plos.model.article.Years;
 import org.plos.models.Article;
 import org.plos.models.Issue;
 import org.plos.models.PLoS;
@@ -70,10 +76,6 @@ public class BrowseService {
 
   private static final String ARTICLE_LOCK        = "ArticleLock-";
   private static final String ARTICLE_KEY         = "Article-";
-
-  private static final URI    RESEARCH_ART = URI.create(PLoS.PLOS_ArticleType + "research-article");
-  private static final URI    EDITORIAL    = URI.create(PLoS.PLOS_ArticleType + "editorial");
-  private static final URI    CORRECTION   = URI.create(PLoS.PLOS_ArticleType + "correction");
 
   private final ArticlePEP pep;
   private       Session    session;
@@ -225,39 +227,18 @@ public class BrowseService {
       }
     }
 
-    // display is by Article type
-    List<ArticleInfo> editorials = new ArrayList();
-    List<ArticleInfo> researchArticles = new ArrayList();
-    List<ArticleInfo> corrections = new ArrayList();
-    for (final URI articleDoi : issue.getSimpleCollection()) {
+    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(),
+        issue.getPrevIssue(), issue.getNextIssue(), imageArticle, description);
+    
+    for (URI articleDoi : issue.getSimpleCollection()) {
       ArticleInfo articleInIssue = getArticleInfo(articleDoi);
       if (articleInIssue == null) {
         log.warn("Article " + articleDoi + " missing; member of Issue " + doi);
         continue;
       }
-
-      boolean articleAdded = false;
-      if (articleInIssue.getArticleTypes().contains(RESEARCH_ART)) {
-        researchArticles.add(articleInIssue);
-        articleAdded = true;
-      }
-      if (articleInIssue.getArticleTypes().contains(EDITORIAL)) {
-        editorials.add(articleInIssue);
-        articleAdded = true;
-      }
-      if (articleInIssue.getArticleTypes().contains(CORRECTION)) {
-        corrections.add(articleInIssue);
-        articleAdded = true;
-      }
-      // ensure Article is displayed
-      if (!articleAdded) {
-        researchArticles.add(articleInIssue);
-      }
+      issueInfo.addArticleToIssue(articleInIssue);
     }
-
-    return new IssueInfo(issue.getId(), issue.getDisplayName(), issue.getPrevIssue(),
-      issue.getNextIssue(), imageArticle, description, editorials, researchArticles,
-      corrections);
+    return issueInfo;
   }
 
   /**
@@ -501,13 +482,15 @@ public class BrowseService {
     }
 
     Results sr = r.getSubQueryResults(4);
-    while (sr.next())
-      ai.articleTypes.add(sr.getURI(0));
-
+    while (sr.next()) {
+      ai.articleTypes.add(ArticleType.getTypeForURI(sr.getURI(0)));
+    }
+    
     sr = r.getSubQueryResults(5);
-    while (sr.next())
+    while (sr.next()) {
       ai.relatedArticles.add(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
-
+    }
+    
     if (log.isDebugEnabled())
       log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
                 + "', date='" + ai.date + "', title='" + ai.title
@@ -662,110 +645,6 @@ public class BrowseService {
   }
 
   /**
-   * The info about a single article that the UI needs.
-   */
-  public static class ArticleInfo implements Serializable {
-    public URI                     id;
-    public Set<URI>                articleTypes = new HashSet<URI>();
-    public Date                    date;
-    public String                  title;
-    public List<String>            authors = new ArrayList<String>();
-    public Set<RelatedArticleInfo> relatedArticles = new HashSet<RelatedArticleInfo>();
-
-    /**
-     * Get the id.
-     *
-     * @return the id.
-     */
-    public URI getId() {
-      return id;
-    }
-
-    /**
-     * Get the Article types.
-     *
-     * @return the Article types.
-     */
-    public Set<URI> getArticleTypes() {
-      return articleTypes;
-    }
-
-    /**
-     * Get the date.
-     *
-     * @return the date.
-     */
-    public Date getDate() {
-      return date;
-    }
-
-    /**
-     * Get the title.
-     *
-     * @return the title.
-     */
-    public String getTitle() {
-      return title;
-    }
-
-    /**
-     * Get the authors.
-     *
-     * @return the authors.
-     */
-    public List<String> getAuthors() {
-      return authors;
-    }
-
-    /**
-     * Get the related articles.
-     *
-     * @return the related articles.
-     */
-    public Set<RelatedArticleInfo> getRelatedArticles() {
-      return relatedArticles;
-    }
-  }
-
-  public static class RelatedArticleInfo implements Serializable {
-    public final URI    uri;
-    public final String title;
-
-    /**
-     * Create a new related-article-info object.
-     *
-     * @param uri   the uri of the article
-     * @param title the article's title
-     */
-    public RelatedArticleInfo(URI uri, String title) {
-      this.uri   = uri;
-      this.title = title;
-    }
-
-    /**
-     * Get the article uri.
-     *
-     * @return the article uri.
-     */
-    public URI getUri() {
-      return uri;
-    }
-
-    /**
-     * Get the title.
-     *
-     * @return the title.
-     */
-    public String getTitle() {
-      return title;
-    }
-
-    public String toString() {
-      return "RelatedArticleInfo[uri='" + uri + "', title='" + title + "']";
-    }
-  }
-
-  /**
    * Just the list of authors.
    */
   @Entity(type = PLoS.bibtex + "Entry", model = "ri")
@@ -787,245 +666,5 @@ public class BrowseService {
 
     @Predicate(uri = Rdf.foaf + "name")
     public String realName;
-  }
-
-  /**
-   * The info about a single Issue that the UI needs.
-   */
-  public static class IssueInfo implements Serializable {
-
-    private URI          id;
-    private String       displayName;
-    private URI          prevIssue;
-    private URI          nextIssue;
-    private URI          imageArticle;
-    private String       description;
-    private List<ArticleInfo> editorials;
-    private List<ArticleInfo> researchArticles;
-    private List<ArticleInfo> corrections;
-
-    // XXX TODO, List<URI> w/Article DOI vs. List<ArticleInfo>???
-
-    public IssueInfo(URI id, String displayName, URI prevIssue, URI nextIssue, URI imageArticle,
-      String description, List<ArticleInfo> editorials,
-      List<ArticleInfo> researchArticles, List<ArticleInfo> corrections) {
-
-      this.id = id;
-      this.displayName = displayName;
-      this.prevIssue = prevIssue;
-      this.nextIssue = nextIssue;
-      this.imageArticle = imageArticle;
-      this.description = description;
-      this.editorials = editorials;
-      this.researchArticles = researchArticles;
-      this.corrections = corrections;
-    }
-
-    /**
-     * Get the id.
-     *
-     * @return the id.
-     */
-    public URI getId() {
-      return id;
-    }
-
-    /**
-     * Get the displayName.
-     *
-     * @return the displayName.
-     */
-    public String getDisplayName() {
-      return displayName;
-    }
-
-    /**
-     * Get the previous Issue.
-     *
-     * @return the previous Issue.
-     */
-    public URI getPrevIssue() {
-      return prevIssue;
-    }
-
-    /**
-     * Get the next Issue.
-     *
-     * @return the next Issue.
-     */
-    public URI getNextIssue() {
-      return nextIssue;
-    }
-
-    /**
-     * Get the image Article DOI.
-     *
-     * @return the image Article DOI.
-     */
-    public URI getImageArticle() {
-      return imageArticle;
-    }
-
-    /**
-     * Get the description.
-     *
-     * @return the description.
-     */
-    public String getDescription() {
-      return description;
-    }
-
-    /**
-     * Get the editorials.
-     *
-     * @return the editorials.
-     */
-    public List<ArticleInfo> getEditorials() {
-      return editorials;
-    }
-
-    /**
-     * Get the research articles.
-     *
-     * @return the research articles.
-     */
-    public List<ArticleInfo> getResearchArticles() {
-      return researchArticles;
-    }
-    /**
-     * Get the corrections.
-     *
-     * @return the corrections.
-     */
-    public List<ArticleInfo> getCorrections() {
-      return corrections;
-    }
-  }
-
-  /**
-   * The info about a single Volume that the UI needs.
-   */
-  public static class VolumeInfo implements Serializable {
-
-    private URI          id;
-    private String       displayName;
-    private URI          prevVolume;
-    private URI          nextVolume;
-    private URI          imageArticle;
-    private String       description;
-    private List<IssueInfo> issueInfos;
-
-    // XXX TODO, List<URI> w/Issue DOI vs. List<IssueInfo>???
-
-    public VolumeInfo(URI id, String displayName, URI prevVolume, URI nextVolume, URI imageArticle,
-      String description, List<IssueInfo> issueInfos) {
-
-      this.id = id;
-      this.displayName = displayName;
-      this.prevVolume = prevVolume;
-      this.nextVolume = nextVolume;
-      this.imageArticle = imageArticle;
-      this.description = description;
-      this.issueInfos = issueInfos;
-    }
-
-    /**
-     * Get the id.
-     *
-     * @return the id.
-     */
-    public URI getId() {
-      return id;
-    }
-
-    /**
-     * Get the displayName.
-     *
-     * @return the displayName.
-     */
-    public String getDisplayName() {
-      return displayName;
-    }
-
-    /**
-     * Get the previous Volume.
-     *
-     * @return the previous Volume.
-     */
-    public URI getPrevVolume() {
-      return prevVolume;
-    }
-
-    /**
-     * Get the next Volume.
-     *
-     * @return the next Volume.
-     */
-    public URI getNextVolume() {
-      return nextVolume;
-    }
-
-    /**
-     * Get the image Article DOI.
-     *
-     * @return the image Article DOI.
-     */
-    public URI getImageArticle() {
-      return imageArticle;
-    }
-
-    /**
-     * Get the description.
-     *
-     * @return the description.
-     */
-    public String getDescription() {
-      return description;
-    }
-
-    /**
-     * Get the issueInfos.
-     *
-     * @return the issueInfos.
-     */
-    public List<IssueInfo> getIssueInfos() {
-      return issueInfos;
-    }
-  }
-
-  /**
-   * An ordered list of years (as year numbers). Each year has a list of months.
-   */
-  public static class Years extends TreeMap<Integer, Months> {
-    /**
-     * @return the list of months (possibly emtpy, but always non-null)
-     */
-    public Months getMonths(Integer year) {
-      Months months = get(year);
-      if (months == null)
-        put(year, months = new Months());
-      return months;
-    }
-  }
-
-  /**
-   * An ordered list of months (as month numbers, from 1 to 12). Each month has a list of days.
-   */
-  public static class Months extends TreeMap<Integer, Days> {
-    /**
-     * @return the list of days (possibly emtpy, but always non-null)
-     */
-    public Days getDays(Integer mon) {
-      Days days = get(mon);
-      if (days == null)
-        put(mon, days = new Days());
-      return days;
-    }
-  }
-
-  /**
-   * An ordered list of days.
-   */
-  public static class Days extends TreeSet<Integer> {
   }
 }

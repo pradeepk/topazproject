@@ -39,9 +39,9 @@
     <div id="sectionNavTop" class="tools fixed">
       <ul>
         <li><a class="first" href="#top">Top</a></li>
-        <#if issueInfo.editorials?has_content><li><a href="#editorial">Editorial</a></li></#if>
-        <#if issueInfo.researchArticles?has_content><li><a href="#research">Research Articles</a></li></#if>
-        <#if issueInfo.corrections?has_content><li><a href="#corrections">Corrections</a></li></#if>
+        <#list articleGroups as articleGrp>
+          <li><a href="#${articleGrp.id}">${articleGrp.heading}</a></li>
+        </#list>
       </ul>
     </div><!-- end : sectionNav -->
     <!-- </div>end : postcomment -->
@@ -63,12 +63,12 @@
         <p id="credit"><em>Image Credit:</em> Credit information goes here.</p>
       </div>
     </#if>
-    <!-- begin : search results -->
-    <div id="search-results">
-      <#if issueInfo.editorials?has_content>
-        <a id="editorial" class="noshow" title="Editorial">&nbsp;</a>
-        <h2>Editorial</h2>
-        <#list issueInfo.editorials as articleInfo>
+    <!-- begin : articleTypes -->
+    <div id="articleTypeList">
+      <#list articleGroups as articleGrp>
+        <a id="${articleGrp.id}" class="noshow" title="${articleGrp.heading}">&nbsp;</a>
+        <h2>${articleGrp.heading}</h2>
+        <#list articleGrp.articles as articleInfo>
           <div class="article">
             <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
             <h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
@@ -76,34 +76,8 @@
             <@related articleInfo=articleInfo/>
           </div>
         </#list>
-      </#if>
-	
-      <#if issueInfo.researchArticles?has_content>
-        <a id="research" class="noshow" title="Research Articles">&nbsp;</a>
-        <h2>Research Articles</h2>
-        <#list issueInfo.researchArticles as articleInfo>
-          <div class="article">
-            <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
-            <h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
-            <p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-            <p><@s.a href="%{fetchArticleURL}#abstract1">Author Summary</@s.a></p>
-            <@related articleInfo=articleInfo/>
-          </div>
         </#list>
-      </#if>
-	
-      <#if issueInfo.corrections?has_content>
-        <a id="corrections" class="noshow" title="Corrections">&nbsp;</a>
-        <h2>Corrections</h2>
-        <#list issueInfo.corrections as articleInfo>
-          <div class="article">
-            <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
-            <h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
-            <p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-            <@related articleInfo=articleInfo/>
           </div>
-        </#list>
-      </#if>
-    </div> <!-- end : search results -->
+    <!-- end : articleTypes -->
   </div>
 </div> <!-- end : toc content-->
