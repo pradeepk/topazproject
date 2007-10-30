@@ -11,10 +11,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <!--Plosone developer beans here -->
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" >
@@ -452,6 +454,30 @@
     <aop:scoped-proxy/>
   </bean>
 
+  <!-- Set up Transaction-Manager stuff -->
+  <bean id="txManager" class="org.topazproject.otm.spring.OtmTransactionManager">
+    <property name="otmSession" ref="otmSession"/>
+  </bean>
+
+  <tx:annotation-driven transaction-manager="txManager"/>
+
+  <tx:advice id="txAdvice" transaction-manager="txManager">
+    <tx:attributes>
+      <tx:method name="get*" read-only="true"/>
+      <tx:method name="*" rollback-for="Throwable"/>
+    </tx:attributes>
+  </tx:advice>
+  
+  <aop:config proxy-target-class="true">
+    <!-- all (potential) action methods, all getters (for lazy loading), and user-lookup -->
+    <aop:pointcut id="needTx" expression="
+      execution(public String org.plos..*Action.*()) ||
+      execution(public * org.plos..*Action.get*()) ||
+      execution(public * org.plos.user.UserAccountsInterceptor.intercept(..))
+      "/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="needTx"/>
+  </aop:config>
+  
   <bean id="journalService" class="org.plos.journal.JournalService" scope="singleton">
     <constructor-arg index="0">
       <ref bean="otmSessionFactory"/>

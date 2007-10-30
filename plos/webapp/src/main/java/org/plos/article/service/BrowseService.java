@@ -39,9 +39,7 @@ import org.plos.web.VirtualJournalContext;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
@@ -209,30 +207,6 @@ public class BrowseService {
    * @return the Issue information.
    */
   public IssueInfo getIssueInfo(final URI doi) {
-
-    // XXX look up IssueInfo in Cache
-
-    // OTM usage wants to be in a Transaction
-    return TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<IssueInfo>() {
-
-        // TODO should all of this be in a tx???
-
-        public IssueInfo run(Transaction tx) {
-
-          return getIssueInfoInTx(session, doi);
-        }
-      });
-  }
-
-  /**
-   * Get Issue information inside of a Transaction.
-   *
-   * @param issue DOI of Issue.
-   * @return the Issue information.
-   */
-  private IssueInfo getIssueInfoInTx(Session session, final URI doi) {
-
     // XXX look up IssueInfo in Cache
 
     // get the Issue
@@ -256,7 +230,7 @@ public class BrowseService {
     List<ArticleInfo> researchArticles = new ArrayList();
     List<ArticleInfo> corrections = new ArrayList();
     for (final URI articleDoi : issue.getSimpleCollection()) {
-      ArticleInfo articleInIssue = getArticleInfo(articleDoi, session.getTransaction());
+      ArticleInfo articleInIssue = getArticleInfo(articleDoi);
       if (articleInIssue == null) {
         log.warn("Article " + articleDoi + " missing; member of Issue " + doi);
         continue;
@@ -292,46 +266,35 @@ public class BrowseService {
    * @return volumeInfos.
    */
   public List<VolumeInfo> getVolumeInfos() {
-
     // XXX look up VolumeInfos in Cache
 
-    // OTM usage wants to be in a Transaction
-    return TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<List<VolumeInfo>>() {
+    List<VolumeInfo> volumeInfos = new ArrayList();
+    // get the Volumes
+    for (final Volume volume : (List<Volume>) session.createCriteria(Volume.class).list()) {
 
-        // TODO should all of this be in a tx???
-
-        public List<VolumeInfo> run(Transaction tx) {
-
-          List<VolumeInfo> volumeInfos = new ArrayList();
-          // get the Volumes
-          for (final Volume volume : (List<Volume>) session.createCriteria(Volume.class).list()) {
-
-            // get the image Article, may be null
-            URI imageArticle = null;
-            String description = null;
-            if (volume.getImage() != null) {
-              final Article article = session.get(Article.class, volume.getImage().toString());
-              if (article != null) {
-                imageArticle = volume.getImage();
-                description = article.getDublinCore().getDescription();
-              }
-            }
-
-            List<IssueInfo> issueInfos = new ArrayList();
-            for (final URI issueDoi : volume.getSimpleCollection()) {
-              issueInfos.add(getIssueInfoInTx(session, issueDoi));
-            }
-
-            final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
-              volume.getPrevVolume(), volume.getNextVolume(), imageArticle, description,
-              issueInfos);
-            volumeInfos.add(volumeInfo);
-          }
-
-          return volumeInfos;
+      // get the image Article, may be null
+      URI imageArticle = null;
+      String description = null;
+      if (volume.getImage() != null) {
+        final Article article = session.get(Article.class, volume.getImage().toString());
+        if (article != null) {
+          imageArticle = volume.getImage();
+          description = article.getDublinCore().getDescription();
         }
-      });
+      }
+
+      List<IssueInfo> issueInfos = new ArrayList();
+      for (final URI issueDoi : volume.getSimpleCollection()) {
+        issueInfos.add(getIssueInfo(issueDoi));
+      }
+
+      final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
+        volume.getPrevVolume(), volume.getNextVolume(), imageArticle, description,
+        issueInfos);
+      volumeInfos.add(volumeInfo);
+    }
+
+    return volumeInfos;
   }
 
   private Object getCatInfo(String key, String desc, boolean load) {
@@ -485,27 +448,19 @@ public class BrowseService {
    */
   private void loadCategoryInfos(String jnlName) {
     // get all article-ids in all categories
-    SortedMap<String, List<URI>> artByCat =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<SortedMap<String, List<URI>>>() {
-        public SortedMap<String, List<URI>> run(Transaction tx) {
-          Results r = tx.getSession().createQuery(
-              "select cat, a.id, a.dublinCore.date date from Article a " +
-              "where cat := a.categories.mainCategory order by date desc;").execute();
+    Results r = session.createQuery(
+        "select cat, a.id, a.dublinCore.date date from Article a " +
+        "where cat := a.categories.mainCategory order by date desc;").execute();
 
-          SortedMap<String, List<URI>> artByCat = new TreeMap<String, List<URI>>();
-          r.beforeFirst();
-          while (r.next()) {
-            String cat = r.getString(0);
-            List<URI> ids = artByCat.get(cat);
-            if (ids == null)
-              artByCat.put(cat, ids = new ArrayList<URI>());
-            ids.add(r.getURI(1));
-          }
-
-          return artByCat;
-        }
-      });
+    SortedMap<String, List<URI>> artByCat = new TreeMap<String, List<URI>>();
+    r.beforeFirst();
+    while (r.next()) {
+      String cat = r.getString(0);
+      List<URI> ids = artByCat.get(cat);
+      if (ids == null)
+        artByCat.put(cat, ids = new ArrayList<URI>());
+      ids.add(r.getURI(1));
+    }
 
     updateCategoryCaches(artByCat, jnlName);
   }
@@ -521,8 +476,8 @@ public class BrowseService {
     browseCache.put(new Element(CAT_INFO_KEY + jnlName, catSizes));
   }
 
-  private ArticleInfo loadArticleInfo(final URI id, Transaction tx) {
-    Results r = tx.getSession().createQuery(
+  private ArticleInfo loadArticleInfo(final URI id) {
+    Results r = session.createQuery(
         "select a.id, dc.date, dc.title, ci, " +
         "(select a.articleType from Article aa), " +
         "(select aa2.id, aa2.dublinCore.title from Article aa2 " +
@@ -563,25 +518,20 @@ public class BrowseService {
   }
 
   private Years loadArticleDates() {
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<Years>() {
-      public Years run(Transaction tx) {
-        Results r = tx.getSession().createQuery(
-            "select a.dublinCore.date from Article a;").execute();
+    Results r = session.createQuery("select a.dublinCore.date from Article a;").execute();
 
-        Years dates = new Years();
+    Years dates = new Years();
 
-        r.beforeFirst();
-        while (r.next()) {
-          String  date = r.getString(0);
-          Integer y    = getYear(date);
-          Integer m    = getMonth(date);
-          Integer d    = getDay(date);
-          dates.getMonths(y).getDays(m).add(d);
-        }
+    r.beforeFirst();
+    while (r.next()) {
+      String  date = r.getString(0);
+      Integer y    = getYear(date);
+      Integer m    = getMonth(date);
+      Integer d    = getDay(date);
+      dates.getMonths(y).getDays(m).add(d);
+    }
 
-        return dates;
-      }
-    });
+    return dates;
   }
 
   private static final Integer getYear(String date) {
@@ -614,46 +564,38 @@ public class BrowseService {
     // ge(date, date) is currently broken, so tweak the start-date instead
     sd.add(Calendar.MILLISECOND, -1);
 
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<List<URI>>() {
-      public List<URI> run(Transaction tx) {
-        Results r = tx.getSession().createQuery(
-            "select a.id, date from Article a where " +
-            "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc;").
-            setParameter("sd", sd).setParameter("ed", endDate).execute();
+    Results r = session.createQuery(
+        "select a.id, date from Article a where " +
+        "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc;").
+        setParameter("sd", sd).setParameter("ed", endDate).execute();
 
-        List<URI> dates = new ArrayList<URI>();
+    List<URI> dates = new ArrayList<URI>();
 
-        r.beforeFirst();
-        while (r.next())
-          dates.add(r.getURI(0));
+    r.beforeFirst();
+    while (r.next())
+      dates.add(r.getURI(0));
 
-        return dates;
-      }
-    });
+    return dates;
   }
 
   private List<ArticleInfo> getArticles(final List<URI> ids, int pageNum, int pageSize) {
     final int beg = (pageSize > 0) ? pageNum * pageSize : 0;
     final int end = (pageSize > 0) ? Math.min((pageNum + 1) * pageSize, ids.size()) : ids.size();
 
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<List<ArticleInfo>>() {
-      public List<ArticleInfo> run(Transaction tx) {
-        List<ArticleInfo> res = new ArrayList<ArticleInfo>();
+    List<ArticleInfo> res = new ArrayList<ArticleInfo>();
 
-        for (int idx = beg; idx < end; idx++) {
-          URI id = ids.get(idx);
+    for (int idx = beg; idx < end; idx++) {
+      URI id = ids.get(idx);
 
-          ArticleInfo ai = getArticleInfo(id, tx);
-          if (ai != null)
-            res.add(ai);
-        }
+      ArticleInfo ai = getArticleInfo(id);
+      if (ai != null)
+        res.add(ai);
+    }
 
-        return res;
-      }
-    });
+    return res;
   }
 
-  public ArticleInfo getArticleInfo(final URI id, final Transaction tx) {
+  public ArticleInfo getArticleInfo(final URI id) {
     try {
       pep.checkAccess(ArticlePEP.READ_META_DATA, id);
     } catch (SecurityException se) {
@@ -667,36 +609,32 @@ public class BrowseService {
                                     "article " + id,
                                     new CacheAdminHelper.EhcacheUpdater<ArticleInfo>() {
         public ArticleInfo lookup() {
-          return loadArticleInfo(id, tx);
+          return loadArticleInfo(id);
         }
       });
   }
 
   private List<NewArtInfo> getNewArticleInfos(final String[] uris) {
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<List<NewArtInfo>>() {
-      public List<NewArtInfo> run(Transaction tx) {
-        String query =
-            "select cat, a.id, a.dublinCore.date date from Article a " +
-            "where cat := a.categories.mainCategory and (";
-        for (String uri : uris)
-          query += "a.id = <" + uri + "> or ";
-        query = query.substring(0, query.length() - 4) + ") order by date desc;";
+    String query =
+        "select cat, a.id, a.dublinCore.date date from Article a " +
+        "where cat := a.categories.mainCategory and (";
+    for (String uri : uris)
+      query += "a.id = <" + uri + "> or ";
+    query = query.substring(0, query.length() - 4) + ") order by date desc;";
 
-        Results r = tx.getSession().createQuery(query).execute();
+    Results r = session.createQuery(query).execute();
 
-        List<NewArtInfo> res = new ArrayList<NewArtInfo>();
-        r.beforeFirst();
-        while (r.next()) {
-          NewArtInfo nai = new NewArtInfo();
-          nai.category = r.getString(0);
-          nai.id       = r.getURI(1);
-          nai.date     = r.getLiteralAs(2, Date.class);
-          res.add(nai);
-        }
+    List<NewArtInfo> res = new ArrayList<NewArtInfo>();
+    r.beforeFirst();
+    while (r.next()) {
+      NewArtInfo nai = new NewArtInfo();
+      nai.category = r.getString(0);
+      nai.id       = r.getURI(1);
+      nai.date     = r.getLiteralAs(2, Date.class);
+      res.add(nai);
+    }
 
-        return res;
-      }
-    });
+    return res;
   }
 
   private static class NewArtInfo {

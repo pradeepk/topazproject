@@ -134,6 +134,12 @@
       <artifactId>spring</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.5.3</version>
+    </dependency>
+
     <!-- needed for scoping support in spring IOC -->
     <dependency>
       <groupId>cglib</groupId>

@@ -23,9 +23,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -68,27 +66,20 @@ public abstract class OtmQueryFunction extends DBQueryFunction {
         .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
         .getBean("otmSession");
 
-      List<String> results =
-        TransactionHelper.doInTxE(s, new TransactionHelper.ActionE<List<String>, QueryException>() {
-          public List<String> run(Transaction tx) throws QueryException {
-            Results answer = executeQuery(tx.getSession(), query, bindings);
+      Results answer = executeQuery(s, query, bindings);
 
-            if (answer.getWarnings() != null)
-              log.error("query '" + query + "' return warnings: " +
-                        Arrays.asList(answer.getWarnings()));
+      if (answer.getWarnings() != null)
+        log.error("query '" + query + "' return warnings: " +
+                  Arrays.asList(answer.getWarnings()));
 
-            if (answer.getVariables().length != 1)
-              throw new QueryException("query '" + query + "' execution returned " +
-                                       answer.getVariables().length +
-                                       " columns. Expects only 1 column in query results.");
+      if (answer.getVariables().length != 1)
+        throw new QueryException("query '" + query + "' execution returned " +
+                                 answer.getVariables().length +
+                                 " columns. Expects only 1 column in query results.");
 
-            List<String> results = new ArrayList<String>();
-            while (answer.next())
-              results.add(answer.getString(0));
-
-            return results;
-          }
-        });
+      List<String> results = new ArrayList<String>();
+      while (answer.next())
+        results.add(answer.getString(0));
 
       return makeResult(results);
     } catch (OtmException oe) {

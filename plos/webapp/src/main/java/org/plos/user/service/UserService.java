@@ -11,31 +11,6 @@ package org.plos.user.service;
 
 import java.io.IOException;
 import java.net.URI;
-
-import com.opensymphony.oscache.base.NeedsRefreshException;
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
-import org.plos.Constants;
-import org.plos.models.AuthenticationId;
-import org.plos.models.UserAccount;
-import org.plos.models.UserPreference;
-import org.plos.models.UserPreferences;
-import org.plos.models.UserRole;
-import org.plos.permission.service.PermissionWebService;
-import org.plos.user.PlosOneUser;
-import org.plos.user.UserProfileGrant;
-import org.plos.user.UsersPEP;
-import org.plos.web.UserContext;
-import org.topazproject.otm.util.TransactionHelper;
-import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.query.Results;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +18,34 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.opensymphony.oscache.base.NeedsRefreshException;
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.plos.ApplicationException;
+import org.plos.Constants;
+import org.plos.models.AuthenticationId;
+import org.plos.models.UserAccount;
+import org.plos.models.UserPreferences;
+import org.plos.models.UserRole;
+import org.plos.permission.service.PermissionWebService;
+import org.plos.user.PlosOneUser;
+import org.plos.user.UserProfileGrant;
+import org.plos.user.UsersPEP;
+import org.plos.web.UserContext;
+
+import org.topazproject.otm.Session;
+import org.topazproject.otm.query.Results;
+import org.topazproject.otm.spring.OtmTransactionManager;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
@@ -55,14 +58,8 @@ public class UserService {
   private static final Log      log = LogFactory.getLog(UserService.class);
   private static final String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
 
-  private static final int      LD_NONE     = 0;
-  private static final int      LD_AUTH_IDS = 1 << 0;
-  private static final int      LD_ROLES    = 1 << 1;
-  private static final int      LD_PREFS    = 1 << 2;
-  private static final int      LD_PROFILE  = 1 << 3;
-  private static final int      LD_ALL      = 0xFFFFFFFF;
-
-  private Session session;
+  private Session               session;
+  private OtmTransactionManager txManager;
 
   private final UsersPEP pep;
 
@@ -85,43 +82,35 @@ public class UserService {
   /**
    * Create a new user account and associate a single authentication id with it.
    * 
-   * @param authId
-   *          the user's authentication id from CAS
+   * @param authId the user's authentication id from CAS
    * @return the user's internal id
-   * @throws ApplicationException
-   *           if an error occured
+   * @throws ApplicationException if the <var>authId</var> is a duplicate
    */
   public String createUser(final String authId) throws ApplicationException {
     pep.checkAccessAE(pep.CREATE_USER, pep.ANY_RESOURCE);
 
     // create account
-    final UserAccount ua =
-        TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
-      public UserAccount run(Transaction tx) {
-        UserAccount ua = new UserAccount();
-        ua.getAuthIds().add(new AuthenticationId(authId));
-        tx.getSession().saveOrUpdate(ua);
-        return ua;
-      }
-    });
+    UserAccount ua = new UserAccount();
+    ua.getAuthIds().add(new AuthenticationId(authId));
+    session.saveOrUpdate(ua);
 
-    // check for duplicate
-    TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, ApplicationException>() {
-      public Void run(Transaction tx) throws ApplicationException {
-        Results r = tx.getSession().
-            createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
-            setParameter("id", authId).execute();
-        if (!r.next() || !r.next())
-          return null;
+    // check for duplicate. Tx hack alert!!!
+    txManager.doCommit(
+        (DefaultTransactionStatus) TransactionAspectSupport.currentTransactionStatus());
+    txManager.doBegin(txManager.doGetTransaction(), null);
 
-        tx.getSession().delete(ua);
-        tx.commit();
+    Results r = session.
+        createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
+        setParameter("id", authId).execute();
+    if (!r.next() || !r.next())
+      return ua.getId().toString();
 
-        throw new ApplicationException("AuthId '" + authId + "' is already in use");
-      }
-    });
+    session.delete(ua);
+    txManager.doCommit(
+        (DefaultTransactionStatus) TransactionAspectSupport.currentTransactionStatus());
+    txManager.doBegin(txManager.doGetTransaction(), null);
 
-    return ua.getId().toString();
+    throw new ApplicationException("AuthId '" + authId + "' is already in use");
   }
 
   /**
@@ -134,55 +123,21 @@ public class UserService {
   public void deleteUser(final String topazUserId) throws ApplicationException {
     pep.checkAccessAE(pep.DELETE_USER, URI.create(topazUserId));
 
-    TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
-      public Void run(Transaction tx) {
-        UserAccount ua = tx.getSession().get(UserAccount.class, topazUserId);
-        if (ua != null)
-          tx.getSession().delete(ua);
-        return null;
-      }
-    });
+    UserAccount ua = session.get(UserAccount.class, topazUserId);
+    if (ua != null)
+      session.delete(ua);
   }
 
   /**
    * Get the account info for the given user.
    * @param topazUserId the Topaz User ID
-   * @param loadList    the list of associations to eagerly load
    * @throws ApplicationException ApplicationException
    */
-  private UserAccount getUserAccount(final String topazUserId, final int loadList)
-      throws ApplicationException {
-    return TransactionHelper.doInTxE(session,
-                              new TransactionHelper.ActionE<UserAccount, ApplicationException>() {
-      public UserAccount run(Transaction tx) throws ApplicationException {
-        UserAccount ua = tx.getSession().get(UserAccount.class, topazUserId);
-        if (ua == null)
-          throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
-
-        /* Ugh! This is ugly, and fragile in case the model ever changes...
-         * Since there's no eager loading (yet) in OTM, we touch (force a load of)
-         * all the stuff we'll need now while we're still in a transaction.
-         */
-        if ((loadList & LD_AUTH_IDS) != 0 && ua.getAuthIds() != null)
-          for (AuthenticationId ai : ua.getAuthIds()) ;
-
-        if ((loadList & LD_ROLES) != 0 && ua.getRoles() != null)
-          for (UserRole r : ua.getRoles()) ;
-
-        if ((loadList & LD_PREFS) != 0 && ua.getPreferences() != null) {
-          for (UserPreferences pl : ua.getPreferences()) {
-            if (pl.getPrefs() != null)
-              for (UserPreference p : pl.getPrefs()) ;
-          }
-        }
-
-        if ((loadList & LD_PROFILE) != 0 && ua.getProfile() != null &&
-            ua.getProfile().getInterests() != null)
-          for (URI i : ua.getProfile().getInterests()) ;
-
-        return ua;
-      }
-    });
+  private UserAccount getUserAccount(final String topazUserId) throws ApplicationException {
+    UserAccount ua = session.get(UserAccount.class, topazUserId);
+    if (ua == null)
+      throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
+    return ua;
   }
 
   /**
@@ -221,142 +176,125 @@ public class UserService {
 
   private String getDisplayName(final String topazUserId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_DISP_NAME, URI.create(topazUserId));
-    return TransactionHelper.doInTxE(session,
-                                     new TransactionHelper.ActionE<String, ApplicationException>() {
-      public String run(Transaction tx) throws ApplicationException {
-        Results r = tx.getSession().
-            createQuery("select ua.profile.displayName from UserAccount ua where ua = :id;").
-            setParameter("id", topazUserId).execute();
-        if (!r.next())
-          throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
-        return r.getString(0);
-      }
-    });
+
+    Results r = session.
+        createQuery("select ua.profile.displayName from UserAccount ua where ua = :id;").
+        setParameter("id", topazUserId).execute();
+    if (!r.next())
+      throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
+    return r.getString(0);
   }
 
   /**
    * Gets the user specified by the Topaz userID passed in
    * 
-   * @param topazUserId
-   *          Topaz User ID
+   * @param topazUserId Topaz User ID
    * @return user associated with the topazUserId
-   * @throws ApplicationException ApplicationException
+   * @throws ApplicationException on access-check failure
    */
   public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
     return getUserWithProfileLoaded(topazUserId);
   }
 
   /**
-   * Get the PlosOneUser with only the profile loaded,
-   * for getting the preferences also use {@link UserService#getUserByTopazId UserService.getUserByTopazId}
+   * Get the PlosOneUser with only the profile loaded. For getting the preferences also use
+   * {@link UserService#getUserByTopazId UserService.getUserByTopazId}
+   *
    * @param topazUserId topazUserId
    * @return PlosOneUser
-   * @throws ApplicationException ApplicationException
+   * @throws ApplicationException on access-check failure
    */
-  public PlosOneUser getUserWithProfileLoaded(final String topazUserId) throws ApplicationException {
+  public PlosOneUser getUserWithProfileLoaded(final String topazUserId)
+      throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
 
-    return new PlosOneUser(getUserAccount(topazUserId, LD_ALL), applicationId, pep);
+    return new PlosOneUser(getUserAccount(topazUserId), applicationId, pep);
   }
 
   /**
    * Gets the user specified by the authentication ID (CAS ID currently)
    * 
-   * @param authId
-   *          authentication ID
+   * @param authId authentication ID
    * @return the user associated with the authID
-   * @throws ApplicationException ApplicationException
+   * @throws ApplicationException on access-check failure
    */
   public PlosOneUser getUserByAuthId(final String authId) throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
 
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<PlosOneUser>() {
-      public PlosOneUser run(Transaction tx) {
-        Results r = tx.getSession().
-            createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
-            setParameter("id", authId).execute();
-        if (!r.next())
-          return null;
-        return new PlosOneUser((UserAccount) r.get(0), applicationId, pep);
-      }
-    });
+    Results r = session.
+        createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
+        setParameter("id", authId).execute();
+    if (!r.next())
+      return null;
+    return new PlosOneUser((UserAccount) r.get(0), applicationId, pep);
   }
 
   /**
    * Sets the state of the user account
    * 
-   * @param userId
-   *          Topaz User ID
-   * @param state
-   *          new state of the user
+   * @param userId Topaz User ID
+   * @param state  new state of the user
    * @throws ApplicationException ApplicationException
    */
   public void setState(final String userId, int state) throws ApplicationException {
     pep.checkAccessAE(pep.SET_STATE, URI.create(userId));
 
-    UserAccount ua = getUserAccount(userId, LD_NONE);
+    UserAccount ua = getUserAccount(userId);
     ua.setState(state);
-    flush(ua);
+    session.saveOrUpdate(ua);
   }
 
   /**
    * Gets the current state of the user
    * 
-   * @param userId
-   *          Topaz userID
+   * @param userId Topaz userID
    * @return current state of the user
    * @throws ApplicationException ApplicationException
    */
   public int getState(final String userId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_STATE, URI.create(userId));
 
-    UserAccount ua = getUserAccount(userId, LD_NONE);
+    UserAccount ua = getUserAccount(userId);
     return ua.getState();
   }
 
   /**
-   * Retrieves all authentication IDs for a given Topaz userID
+   * Retrieves first authentication ID for a given Topaz userID.
    * 
-   * @param topazId
-   *          Topaz userID
+   * @param topazId Topaz userID
    * @return first authentiation ID associated with the Topaz userID
    * @throws ApplicationException ApplicationException
    */
   public String getAuthenticationId(final String topazId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_AUTH_IDS, URI.create(topazId));
 
-    UserAccount ua = getUserAccount(topazId, LD_AUTH_IDS);
+    UserAccount ua = getUserAccount(topazId);
     return ua.getAuthIds().iterator().next().getValue();
   }
 
   /**
    * Returns the Topaz userID the authentiation ID passed in is associated with
    * 
-   * @param authId
-   *          authentication ID you are looking up
+   * @param authId authentication ID you are looking up
    * @return Topaz userID for a given authentication ID
-   * @throws ApplicationException ApplicationException
+   * @throws ApplicationException on access-check failure
    */
   public String lookUpUserByAuthId(final String authId) throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
 
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
-      public String run(Transaction tx) {
-        Results r = tx.getSession().
-            createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
-            setParameter("id", authId).execute();
-        if (!r.next())
-          return null;
-        return r.getString(0);
-      }
-    });
+    Results r = session.
+        createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
+        setParameter("id", authId).execute();
+    if (!r.next())
+      return null;
+    return r.getString(0);
   }
 
   /**
    * Lookup the topaz id of the user with a given email address
    * @param emailAddress emailAddress
    * @return topaz id of the user
-   * @throws org.plos.ApplicationException ApplicationException
+   * @throws ApplicationException on access-check failure
    */
   public String lookUpUserByEmailAddress(final String emailAddress) throws ApplicationException {
     return lookUpUserByProfile("email", URI.create("mailto:" + emailAddress));
@@ -366,27 +304,23 @@ public class UserService {
       throws ApplicationException {
     pep.checkAccessAE(pep.FIND_USERS_BY_PROF, pep.ANY_RESOURCE);
 
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
-      public String run(Transaction tx) {
-        Results r = tx.getSession().
-            createQuery("select ua.id from UserAccount ua where ua.profile." + field + " = :v;").
-            setParameter("v", value).execute();
-        if (!r.next())
-          return null;
-        return r.getString(0);
-      }
-    });
+    Results r = session.
+        createQuery("select ua.id from UserAccount ua where ua.profile." + field + " = :v;").
+        setParameter("v", value).execute();
+    if (!r.next())
+      return null;
+    return r.getString(0);
   }
 
   /**
    * Takes in a PLoS ONE user and write the profile to the store
    *
-   * @param inUser
-   *          write profile of this user to the store
-   * @throws org.plos.ApplicationException ApplicationException
-   * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
+   * @param inUser write profile of this user to the store
+   * @throws ApplicationException ApplicationException
+   * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
-  public void setProfile(final PlosOneUser inUser) throws ApplicationException, DisplayNameAlreadyExistsException {
+  public void setProfile(final PlosOneUser inUser)
+      throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
       setProfile(inUser, false);
     } else {
@@ -397,20 +331,21 @@ public class UserService {
   /**
    * Takes in a PLoS ONE user and write the profile to the store
    *
-   * @param inUser
-   *          write profile of this user to the store
+   * @param inUser write profile of this user to the store
    * @param privateFields fields marked private by the user
    * @param userNameIsRequired whether userNameIsRequired
-   * @throws org.plos.ApplicationException ApplicationException
-   * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
+   * @throws ApplicationException ApplicationException
+   * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
   public void setProfile(final PlosOneUser inUser, final String[] privateFields,
                          final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
       setProfile(inUser, userNameIsRequired);
-      final Collection<UserProfileGrant> profileGrantsList = UserProfileGrant.getProfileGrantsForFields(privateFields);
-      final UserProfileGrant[] profileGrants = profileGrantsList.toArray(new UserProfileGrant[profileGrantsList.size()]);
+      final Collection<UserProfileGrant> profileGrantsList =
+          UserProfileGrant.getProfileGrantsForFields(privateFields);
+      final UserProfileGrant[] profileGrants =
+          profileGrantsList.toArray(new UserProfileGrant[profileGrantsList.size()]);
       setProfileFieldsPrivate(inUser.getUserId(), profileGrants);
     } else {
       throw new ApplicationException("User is null");
@@ -420,13 +355,11 @@ public class UserService {
   /**
    * Write the specified user profile and associates it with the specified user ID
    *
-   * @param topazUserId
-   *          Topaz User ID
-   * @param profile
-   *          profile to be written
+   * @param topazUserId Topaz User ID
+   * @param profile     profile to be written
    * @param userNameIsRequired whether userNameIsRequired
-   * @throws org.plos.ApplicationException ApplicationException
-   * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
+   * @throws ApplicationException ApplicationException
+   * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
   protected void setProfile(final PlosOneUser inUser, final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
@@ -439,22 +372,25 @@ public class UserService {
       }
     }
 
-    UserAccount ua = getUserAccount(inUser.getUserId(), LD_PROFILE);
+    UserAccount ua = getUserAccount(inUser.getUserId());
     ua.setProfile(inUser.getUserProfile());
-    flush(ua);
+    session.saveOrUpdate(ua);
 
     userCacheAdministrator.flushEntry(inUser.getUserId());
   }
 
   /**
    * Get the UserProfileGrants for the profile fields that are public
+   *
    * @param topazId topazId
-   * @throws ApplicationException ApplicationException
    * @return the collection of UserProfileGrant
+   * @throws ApplicationException ApplicationException
    */
-  public Collection<UserProfileGrant> getProfileFieldsThatArePublic(final String topazId) throws ApplicationException {
+  public Collection<UserProfileGrant> getProfileFieldsThatArePublic(String topazId)
+      throws ApplicationException {
     try {
-      final String[] publicGrants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
+      final String[] publicGrants =
+          permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
 
       final Collection<String> result = new ArrayList<String>(publicGrants.length);
       for (final String publicGrant : publicGrants) {
@@ -472,13 +408,16 @@ public class UserService {
 
   /**
    * Get the UserProfileGrants for the profile fields that are private
+   *
    * @param topazId topazId
-   * @throws ApplicationException ApplicationException
    * @return the collection of UserProfileGrant
+   * @throws ApplicationException ApplicationException
    */
-  public Collection<UserProfileGrant> getProfileFieldsThatArePrivate(final String topazId) throws ApplicationException {
+  public Collection<UserProfileGrant> getProfileFieldsThatArePrivate(String topazId)
+      throws ApplicationException {
     try {
-      final String[] publicGrants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
+      final String[] publicGrants =
+          permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
 
       final Collection<String> result = new ArrayList<String>();
       CollectionUtils.addAll(result, getAllUserProfileFieldGrants());
@@ -494,18 +433,20 @@ public class UserService {
   }
 
   /**
-   * Set the selected profileGrantEnums on the given topaz profile to be private for the user making this call.
-   * All the other fields will be set as public.
+   * Set the selected profileGrantEnums on the given topaz profile to be private for the user making
+   * this call.  All the other fields will be set as public.
    *
    * @param topazId topazId
    * @param profileGrantEnums profileGrantEnums
    * @throws ApplicationException ApplicationException
    */
-  public void setProfileFieldsPrivate(final String topazId, final UserProfileGrant[] profileGrantEnums) throws ApplicationException {
+  public void setProfileFieldsPrivate(String topazId, UserProfileGrant[] profileGrantEnums)
+      throws ApplicationException {
     UserProfileGrant[] allUserProfileGrants = UserProfileGrant.values();
 
     for (final UserProfileGrant profileGrantEnum : profileGrantEnums) {
-      allUserProfileGrants = (UserProfileGrant[]) ArrayUtils.removeElement(allUserProfileGrants, profileGrantEnum);
+      allUserProfileGrants =
+          (UserProfileGrant[]) ArrayUtils.removeElement(allUserProfileGrants, profileGrantEnum);
     }
 
     setProfileFieldsPublic(topazId, allUserProfileGrants);
@@ -519,12 +460,14 @@ public class UserService {
    * @param profileGrantEnums profileGrantEnums
    * @throws ApplicationException ApplicationException
    */
-  public void setProfileFieldsPublic(final String topazId, final UserProfileGrant[] profileGrantEnums) throws ApplicationException {
+  public void setProfileFieldsPublic(String topazId, UserProfileGrant[] profileGrantEnums)
+      throws ApplicationException {
     final String[] grants = getGrants(profileGrantEnums);
     setProfileFieldsPublic(topazId, grants);
   }
 
-  private void setProfileFieldsPublic(final String topazId, final String[] grants) throws ApplicationException {
+  private void setProfileFieldsPublic(final String topazId, final String[] grants)
+      throws ApplicationException {
     if (grants.length > 0) {
       try {
         final String[] publicGrants = permissionWebService.listGrants(topazId, ALL_PRINCIPALS[0]);
@@ -580,7 +523,7 @@ public class UserService {
 
     pep.checkAccessAE(pep.SET_PREFERENCES, URI.create(inUser.getUserId()));
 
-    UserAccount ua = getUserAccount(inUser.getUserId(), LD_PREFS);
+    UserAccount ua = getUserAccount(inUser.getUserId());
 
     UserPreferences p = ua.getPreferences(applicationId);
     if (p == null) {
@@ -590,26 +533,7 @@ public class UserService {
     }
     inUser.getUserPrefs(p);
 
-    flush(ua);
-  }
-
-  /**
-   * Writes out the given user's to the store.
-   *
-   * @param ua
-   *          User account whose data should be written
-   * @throws ApplicationException ApplicationException
-   */
-  private void flush(final UserAccount ua) throws ApplicationException {
-    if (ua == null)
-      throw new ApplicationException("User is null");
-
-    TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
-      public Void run(Transaction tx) {
-        tx.getSession().saveOrUpdate(ua);
-        return null;
-      }
-    });
+    session.saveOrUpdate(ua);
   }
 
   /**
@@ -629,11 +553,11 @@ public class UserService {
   public void setRole(final String topazId, final String[] roleIds) throws ApplicationException {
     pep.checkAccessAE(pep.SET_ROLES, URI.create(topazId));
 
-    UserAccount ua = getUserAccount(topazId, LD_ROLES);
+    UserAccount ua = getUserAccount(topazId);
     ua.getRoles().clear();
     for (String r : roleIds)
       ua.getRoles().add(new UserRole(r));
-    flush(ua);
+    session.saveOrUpdate(ua);
   }
 
   /**
@@ -644,7 +568,7 @@ public class UserService {
   public String[] getRole(final String topazId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_ROLES, URI.create(topazId));
 
-    UserAccount ua = getUserAccount(topazId, LD_ROLES);
+    UserAccount ua = getUserAccount(topazId);
 
     String[] res = new String[ua.getRoles().size()];
     int idx = 0;
@@ -795,6 +719,16 @@ public class UserService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  /** 
+   * Set the OTM transaction manager. Called by spring's bean wiring. 
+   * 
+   * @param txManager the otm transaction manager
+   */
+  @Required
+  public void setTxManager(OtmTransactionManager txManager) {
+    this.txManager = txManager;
   }
 
   /**

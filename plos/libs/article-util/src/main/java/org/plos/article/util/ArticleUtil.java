@@ -212,16 +212,16 @@ public class ArticleUtil {
    * from the ingest.
    *
    * @param article the URI of the article (e.g. "info:doi/10.1371/journal.pbio.003811")
-   * @param tx a mulgara transaction within which to do the delete
+   * @param session the otm session to use for the delete
    * @throws NoSuchArticleIdException if the article does not exist
    * @throws RemoteException if some other error occured
    * @throws IOException if there was a problem moving files back to the ingest queue
    */
-  public static void delete(String article, Transaction tx)
+  public static void delete(String article, Session session)
       throws NoSuchArticleIdException, RemoteException, IOException {
     try {
       log.debug("Deleting '" + article + "'");
-      delete(article, tx, APIMStubFactory.create(
+      delete(article, session, APIMStubFactory.create(
                                       CONF.getString("topaz.services.fedora.uri"),
                                       CONF.getString("topaz.services.fedora.userName"),
                                       CONF.getString("topaz.services.fedora.password")),
@@ -255,10 +255,8 @@ public class ArticleUtil {
     }
   }
 
-  private static void delete(String article, Transaction tx, FedoraAPIM apim, FgsOperations[] fgs)
+  private static void delete(String article, Session session, FedoraAPIM apim, FgsOperations[] fgs)
       throws NoSuchArticleIdException, RemoteException {
-    Session session = tx.getSession();
-
     // load article and objects
     Article a = (Article) session.get(Article.class, article);
     if (a == null)

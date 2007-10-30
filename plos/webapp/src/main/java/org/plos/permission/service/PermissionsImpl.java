@@ -30,10 +30,8 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.apache.struts2.ServletActionContext;
 
@@ -165,14 +163,8 @@ public class PermissionsImpl implements Permissions {
     String triples   = sb.toString();
     final String cmd = "insert " + triples + " into " + PP_MODEL + ";";
 
-    if (permissions.size() > 0) {
-      TransactionHelper.doInTx(s, new TransactionHelper.Action<Void>() {
-        public Void run(Transaction tx) {
-          tx.getSession().doNativeUpdate(cmd);
-          return null;
-        }
-      });
-    }
+    if (permissions.size() > 0)
+      s.doNativeUpdate(cmd);
 
     if (grantsCache != null)
       grantsCache.removeAll();
@@ -394,7 +386,7 @@ public class PermissionsImpl implements Permissions {
     else
       cmd = "delete " + triples + " from " + model + ";";
 
-    doUpdate(cmd);
+    getCurrentSession().doNativeUpdate(cmd);
 
     if (cache != null)
       cache.remove(resource);
@@ -445,20 +437,12 @@ public class PermissionsImpl implements Permissions {
     else
       cmd = "delete " + triples + " from " + PP_MODEL + ";";
 
-    Results ans =
-      TransactionHelper.doInTx(getCurrentSession(), new TransactionHelper.Action<Results>() {
-        public Results run(Transaction tx) {
-          tx.getSession().doNativeUpdate(cmd);
+    getCurrentSession().doNativeUpdate(cmd);
 
-          if (((grantsCache != null) || (revokesCache != null)) && PROPAGATES.equals(predicate))
-            return tx.getSession().doNativeQuery(
-                      ItqlHelper.bindValues(ITQL_LIST_PP_TRANS, "s", subject, "p", predicate));
+    if ((grantsCache == null) && (revokesCache == null))
+      return;
 
-          return null;
-        }
-      });
-
-    if (ans == null) {
+    if (!PROPAGATES.equals(predicate)) {
       // implied permissions changed.
       if (grantsCache != null)
         grantsCache.removeAll();
@@ -466,6 +450,8 @@ public class PermissionsImpl implements Permissions {
       if (revokesCache != null)
         revokesCache.removeAll();
     } else {
+      Results ans = getCurrentSession().doNativeQuery(
+                        ItqlHelper.bindValues(ITQL_LIST_PP_TRANS, "s", subject, "p", predicate));
       while (ans.next()) {
         String res = ans.getString(0);
 
@@ -493,7 +479,7 @@ public class PermissionsImpl implements Permissions {
     map.put("MODEL", model);
 
     String  query = ItqlHelper.bindValues(ITQL_LIST, map);
-    Results ans   = doQuery(query);
+    Results ans   = getCurrentSession().doNativeQuery(query);
 
     List<String> result = new ArrayList<String>();
     while (ans.next())
@@ -523,7 +509,7 @@ public class PermissionsImpl implements Permissions {
     String query = transitive ? ITQL_LIST_PP_TRANS : ITQL_LIST_PP;
     query = ItqlHelper.bindValues(query, "s", subject, "p", predicate);
 
-    Results ans = doQuery(query);
+    Results ans = getCurrentSession().doNativeQuery(query);
 
     List<String> result = new ArrayList<String>();
     while (ans.next())
@@ -548,7 +534,7 @@ public class PermissionsImpl implements Permissions {
     values.put("MODEL", model);
 
     String  query = ItqlHelper.bindValues(ITQL_INFER_PERMISSION, values);
-    Results ans   = doQuery(query);
+    Results ans   = getCurrentSession().doNativeQuery(query);
 
     return ans.next();
   }
@@ -577,7 +563,7 @@ public class PermissionsImpl implements Permissions {
     String query =
       ItqlHelper.bindValues(ITQL_RESOURCE_PERMISSIONS, "resource", resource, "MODEL", model);
 
-    Results                   ans = doQuery(query);
+    Results                   ans = getCurrentSession().doNativeQuery(query);
     Map<String, List<String>> map = new HashMap<String, List<String>>();
 
     while (ans.next()) {
@@ -598,22 +584,5 @@ public class PermissionsImpl implements Permissions {
     return (Session) WebApplicationContextUtils
       .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
       .getBean("otmSession");
-  }
-
-  private Results doQuery(final String query) throws OtmException {
-    return TransactionHelper.doInTx(getCurrentSession(), new TransactionHelper.Action<Results>() {
-      public Results run(Transaction tx) {
-        return tx.getSession().doNativeQuery(query);
-      }
-    });
-  }
-
-  private void doUpdate(final String cmd) throws OtmException {
-    TransactionHelper.doInTx(getCurrentSession(), new TransactionHelper.Action<Void>() {
-      public Void run(Transaction tx) {
-        tx.getSession().doNativeUpdate(cmd);
-        return null;
-      }
-    });
   }
 }

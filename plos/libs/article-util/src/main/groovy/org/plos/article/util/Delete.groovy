@@ -68,7 +68,7 @@ opt.arguments().each() { uri ->
   print "Deleting article $uri..."
   process() {
     def tx = session.beginTransaction()
-    ArticleUtil.delete(uri, tx)
+    ArticleUtil.delete(uri, session)
     tx.commit()
   }
   println "done"

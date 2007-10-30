@@ -35,13 +35,10 @@ import org.plos.user.PlosOneUser;
 
 import org.plos.permission.service.PermissionWebService;
 
-import org.topazproject.otm.util.TransactionHelper;
-
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
 /**
@@ -122,13 +119,7 @@ public class ReplyWebService extends BaseAnnotationService {
     r.setBody(URI.create(bodyUri));
     r.setCreated(new Date());
 
-    String  newId      =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<String>() {
-          public String run(Transaction tx) {
-            return tx.getSession().saveOrUpdate(r);
-          }
-        });
+    String newId = session.saveOrUpdate(r);
 
     boolean propagated = false;
 
@@ -144,15 +135,7 @@ public class ReplyWebService extends BaseAnnotationService {
           log.debug("failed to propagate permissions for reply " + newId + " to " + bodyUri);
 
         try {
-          TransactionHelper.doInTx(session,
-                                   new TransactionHelper.Action<String>() {
-              public String run(Transaction tx) {
-                tx.getSession().delete(r);
-
-                return "ok";
-              }
-            });
-
+          session.delete(r);
           fedora.purgeObjects(new String[] { fedora.uri2PID(bodyUri) });
         } catch (Throwable t) {
           if (log.isDebugEnabled())
@@ -174,17 +157,9 @@ public class ReplyWebService extends BaseAnnotationService {
   public void deleteReply(final String replyId) throws RemoteException {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
-    Reply a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Reply>() {
-          public Reply run(Transaction tx) {
-            Reply a = tx.getSession().get(Reply.class, replyId);
-            a.setState(DELETE_MASK);
-            tx.getSession().saveOrUpdate(a);
-
-            return a;
-          }
-        });
+    Reply a = session.get(Reply.class, replyId);
+    a.setState(DELETE_MASK);
+    session.saveOrUpdate(a);
   }
 
   /**
@@ -197,34 +172,19 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public void deleteReplies(final String root, final String inReplyTo)
                      throws RemoteException {
-    final List<Reply> all  =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<List<Reply>>() {
-          public List<Reply> run(Transaction tx) {
-            return tx.getSession().createCriteria(ReplyThread.class)
-                      .add(Restrictions.eq("root", root))
-                      .add(Restrictions.walk("replies", inReplyTo)).list();
-          }
-        });
+    final List<Reply> all = session.createCriteria(ReplyThread.class)
+                              .add(Restrictions.eq("root", root))
+                              .add(Restrictions.walk("replies", inReplyTo)).list();
 
-    List<String> pids      = new ArrayList(all.size());
+    List<String> pids     = new ArrayList(all.size());
 
     for (Reply r : all) {
       pep.checkAccess(pep.DELETE_REPLY, r.getId());
       pids.add(fedora.uri2PID(r.getBody().toString()));
     }
 
-    TransactionHelper.doInTx(session,
-                             new TransactionHelper.Action<String>() {
-        public String run(Transaction tx) {
-          Session s = tx.getSession();
-
-          for (Reply r : all)
-            s.delete(r);
-
-          return "ok";
-        }
-      });
+    for (Reply r : all)
+      session.delete(r);
 
     fedora.purgeObjects((String[]) pids.toArray(new String[pids.size()]));
 
@@ -253,38 +213,14 @@ public class ReplyWebService extends BaseAnnotationService {
 
     final List<Reply>  all  = new ArrayList();
     final List<String> pids = new ArrayList();
-    final ReplyThread  root =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<ReplyThread>() {
-          public ReplyThread run(Transaction tx) {
-            ReplyThread r = tx.getSession().get(ReplyThread.class, target);
-
-            if (r != null)
-              add(r);
-
-            return r;
-          }
-
-          private void add(ReplyThread r) {
-            all.add(r);
-            pids.add(fedora.uri2PID(r.getBody().toString()));
-
-            for (ReplyThread t : r.getReplies())
-              add(t);
-          }
-        });
+    final ReplyThread  root = session.get(ReplyThread.class, target);
+    if (root != null)
+      add(all, pids, root);
 
     for (Reply r : all)
       pep.checkAccess(pep.DELETE_REPLY, r.getId());
 
-    TransactionHelper.doInTx(session,
-                             new TransactionHelper.Action<String>() {
-        public String run(Transaction tx) {
-          tx.getSession().delete(root); // ... and cascade
-
-          return "ok";
-        }
-      });
+    session.delete(root); // ... and cascade
 
     fedora.purgeObjects((String[]) pids.toArray(new String[pids.size()]));
 
@@ -297,6 +233,14 @@ public class ReplyWebService extends BaseAnnotationService {
           log.debug("Failed to cancel the propagated permissions on " + r.getId(), t);
       }
     }
+  }
+
+  private void add(List<Reply> all, List<String> pids, ReplyThread r) {
+    all.add(r);
+    pids.add(fedora.uri2PID(r.getBody().toString()));
+
+    for (ReplyThread t : r.getReplies())
+      add(all, pids, t);
   }
 
   /**
@@ -312,14 +256,7 @@ public class ReplyWebService extends BaseAnnotationService {
   public ReplyInfo getReplyInfo(final String replyId) throws RemoteException {
     pep.checkAccess(pep.GET_REPLY_INFO, URI.create(replyId));
 
-    Reply a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Reply>() {
-          public Reply run(Transaction tx) {
-            return tx.getSession().get(Reply.class, replyId);
-          }
-        });
-
+    Reply a = session.get(Reply.class, replyId);
     if (a == null)
       throw new IllegalArgumentException("invalid reply id: " + replyId);
 
@@ -338,14 +275,8 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public ReplyInfo[] listReplies(final String root, final String inReplyTo)
                           throws RemoteException {
-    List<Reply> all =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<List<Reply>>() {
-          public List<Reply> run(Transaction tx) {
-            return tx.getSession().createCriteria(Reply.class).add(Restrictions.eq("root", root))
-                      .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
-          }
-        });
+    List<Reply> all = session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
+                        .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
 
     List<Reply> l   = new ArrayList(all.size());
 
@@ -382,15 +313,9 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public ReplyInfo[] listAllReplies(final String root, final String inReplyTo)
                              throws RemoteException {
-    List<Reply> all =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<List<Reply>>() {
-          public List<Reply> run(Transaction tx) {
-            return tx.getSession().createCriteria(Reply.class)
-                      .add(Restrictions.eq("root", root))
-                      .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
-          }
-        });
+    List<Reply> all = session.createCriteria(Reply.class)
+                        .add(Restrictions.eq("root", root))
+                        .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
 
     List<Reply> l   = new ArrayList(all.size());
 
@@ -425,17 +350,9 @@ public class ReplyWebService extends BaseAnnotationService {
   public void unflagReply(final String replyId) throws RemoteException {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
-    Reply a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Reply>() {
-          public Reply run(Transaction tx) {
-            Reply a = tx.getSession().get(Reply.class, replyId);
-            a.setState(0);
-            tx.getSession().saveOrUpdate(a);
-
-            return a;
-          }
-        });
+    Reply a = session.get(Reply.class, replyId);
+    a.setState(0);
+    session.saveOrUpdate(a);
   }
 
   /**
@@ -448,17 +365,9 @@ public class ReplyWebService extends BaseAnnotationService {
   public void setFlagged(final String replyId) throws RemoteException {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
-    Reply a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Reply>() {
-          public Reply run(Transaction tx) {
-            Reply a = tx.getSession().get(Reply.class, replyId);
-            a.setState(FLAG_MASK | PUBLIC_MASK);
-            tx.getSession().saveOrUpdate(a);
-
-            return a;
-          }
-        });
+    Reply a = session.get(Reply.class, replyId);
+    a.setState(FLAG_MASK | PUBLIC_MASK);
+    session.saveOrUpdate(a);
   }
 
   /**
@@ -476,21 +385,15 @@ public class ReplyWebService extends BaseAnnotationService {
                           throws RemoteException {
     pep.checkAccess(pep.LIST_REPLIES_IN_STATE, pep.ANY_RESOURCE);
 
-    List<Reply> l       =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<List<Reply>>() {
-          public List<Reply> run(Transaction tx) {
-            Criteria c = tx.getSession().createCriteria(Reply.class);
-            if (mediator != null)
-                c.add(Restrictions.eq("mediator", mediator));
-            if (state == 0)
-              c.add(Restrictions.ne("state", "0"));
-            else
-              c.add(Restrictions.eq("state", "" + state));
+      Criteria c = session.createCriteria(Reply.class);
+    if (mediator != null)
+      c.add(Restrictions.eq("mediator", mediator));
+    if (state == 0)
+      c.add(Restrictions.ne("state", "0"));
+    else
+      c.add(Restrictions.eq("state", "" + state));
 
-            return c.list();
-          }
-        });
+    List<Reply> l       = c.list();
 
     ReplyInfo[] replies = new ReplyInfo[l.size()];
 

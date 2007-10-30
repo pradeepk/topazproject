@@ -22,8 +22,6 @@ import org.plos.annotation.service.AnnotationsPEP;
 import org.plos.article.util.NoSuchObjectIdException;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -76,24 +74,13 @@ public class EditAnnotationAction extends BaseActionSupport {
     // ask PEP if allowed
     getPEP().checkAccess(AnnotationsPEP.UPDATE_ANNOTATION, URI.create(saveAnnotationId));
 
-    TransactionHelper.doInTxE(session,
-      new TransactionHelper.ActionE<Void, NoSuchObjectIdException>() {
+    org.plos.models.Annotation a = session.get(org.plos.models.Annotation.class, saveAnnotationId);
+    if (a == null) {
+      throw new NoSuchObjectIdException(saveAnnotationId);
+    }
 
-      public Void run(Transaction tx) throws NoSuchObjectIdException {
-
-        org.plos.models.Annotation a = tx.getSession()
-          .get(org.plos.models.Annotation.class, saveAnnotationId);
-        if (a == null) {
-          throw new NoSuchObjectIdException(saveAnnotationId);
-        }
-
-        a.setContext(saveAnnotationContext);
-
-        tx.getSession().saveOrUpdate(a);
-
-        return null;
-      }
-    });
+    a.setContext(saveAnnotationContext);
+    session.saveOrUpdate(a);
 
     addActionMessage("Annotation: " + saveAnnotationId
       + ", Updated Context: " + saveAnnotationContext);

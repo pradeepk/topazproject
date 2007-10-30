@@ -13,12 +13,14 @@ import org.plos.ApplicationException;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.spring.OtmTransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
 import org.apache.commons.configuration.Configuration;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Service to provide search capabilities for the application
@@ -34,6 +36,7 @@ public class SearchService {
 
   private SearchWebService           searchWebService;
   private Session                    otmSession;
+  private OtmTransactionManager      txManager;
 
   /**
    * Find the results for a given query.
@@ -56,10 +59,10 @@ public class SearchService {
         cache.put(cacheKey, results);
         if (log.isDebugEnabled())
           log.debug("Created search cache for '" + cacheKey + "' of " +
-                    results.getTotalHits(otmSession));
+                    results.getTotalHits(otmSession, txManager));
       }
 
-      return results.getPage(startPage, pageSize, otmSession);
+      return results.getPage(startPage, pageSize, otmSession, txManager);
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
@@ -73,7 +76,13 @@ public class SearchService {
     this.searchWebService = searchWebService;
   }
 
+  @Required
   public void setOtmSession(Session otmSession) {
     this.otmSession = otmSession;
+  }
+
+  @Required
+  public void setTxManager(OtmTransactionManager txManager) {
+    this.txManager = txManager;
   }
 }

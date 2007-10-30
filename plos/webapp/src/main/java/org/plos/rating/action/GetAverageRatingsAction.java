@@ -26,9 +26,7 @@ import org.plos.rating.service.RatingsPEP;
 import org.plos.user.PlosOneUser;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -77,59 +75,53 @@ public class GetAverageRatingsAction extends BaseActionSupport {
 
     getPEP().checkAccess(RatingsPEP.GET_STATS, URI.create(articleURI));
 
-    return TransactionHelper.doInTx(session,
-                              new TransactionHelper.Action<String>() {
-      public String run(Transaction tx) {
-        RatingSummary ratingSummary      = null;
+    RatingSummary ratingSummary      = null;
 
-        if (log.isDebugEnabled()) {
-          log.debug("retrieving rating summaries for: " + articleURI);
-        }
+    if (log.isDebugEnabled()) {
+      log.debug("retrieving rating summaries for: " + articleURI);
+    }
 
-        List<RatingSummary> summaryList = session
-          .createCriteria(RatingSummary.class)
-          .add(Restrictions.eq("annotates", articleURI))
-          .list();
+    List<RatingSummary> summaryList = session
+      .createCriteria(RatingSummary.class)
+      .add(Restrictions.eq("annotates", articleURI))
+      .list();
 
-        if (summaryList.size() > 0) {
-          ratingSummary = summaryList.get(0);
+    if (summaryList.size() > 0) {
+      ratingSummary = summaryList.get(0);
 
-          insightAverage          = ratingSummary.getBody().retrieveAverage(Rating.INSIGHT_TYPE);
-          insightRoundedAverage   = RatingContent.roundTo(insightAverage, 0.5);
-          numInsightRatings       = ratingSummary.getBody().getInsightNumRatings();
-          totalInsight            = ratingSummary.getBody().retrieveTotal(Rating.INSIGHT_TYPE);
+      insightAverage          = ratingSummary.getBody().retrieveAverage(Rating.INSIGHT_TYPE);
+      insightRoundedAverage   = RatingContent.roundTo(insightAverage, 0.5);
+      numInsightRatings       = ratingSummary.getBody().getInsightNumRatings();
+      totalInsight            = ratingSummary.getBody().retrieveTotal(Rating.INSIGHT_TYPE);
 
-          reliabilityAverage          = ratingSummary.getBody().retrieveAverage(Rating.RELIABILITY_TYPE);
-          reliabilityRoundedAverage   = RatingContent.roundTo(reliabilityAverage, 0.5);
-          numReliabilityRatings       = ratingSummary.getBody().getReliabilityNumRatings();
-          totalReliability            = ratingSummary.getBody().retrieveTotal(Rating.RELIABILITY_TYPE);
+      reliabilityAverage          = ratingSummary.getBody().retrieveAverage(Rating.RELIABILITY_TYPE);
+      reliabilityRoundedAverage   = RatingContent.roundTo(reliabilityAverage, 0.5);
+      numReliabilityRatings       = ratingSummary.getBody().getReliabilityNumRatings();
+      totalReliability            = ratingSummary.getBody().retrieveTotal(Rating.RELIABILITY_TYPE);
 
-          styleAverage          = ratingSummary.getBody().retrieveAverage(Rating.STYLE_TYPE);
-          styleRoundedAverage   = RatingContent.roundTo(styleAverage, 0.5);
-          numStyleRatings       = ratingSummary.getBody().getStyleNumRatings();
-          totalStyle            = ratingSummary.getBody().retrieveTotal(Rating.STYLE_TYPE);
+      styleAverage          = ratingSummary.getBody().retrieveAverage(Rating.STYLE_TYPE);
+      styleRoundedAverage   = RatingContent.roundTo(styleAverage, 0.5);
+      numStyleRatings       = ratingSummary.getBody().getStyleNumRatings();
+      totalStyle            = ratingSummary.getBody().retrieveTotal(Rating.STYLE_TYPE);
 
-          numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
-        }
+      numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
+    }
 
-        if (user != null) {
-          if (log.isDebugEnabled()) {
-            log.debug("retrieving list of user ratings for article: " + articleURI + " and user: "
-                    + user.getUserId());
-          }
-
-          List ratingsList =
-            session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
-                  .add(Restrictions.eq("creator", user.getUserId())).list();
-
-          if (ratingsList.size() > 0) {
-            hasRated = true;
-          }
-        }
-        return SUCCESS;
+    if (user != null) {
+      if (log.isDebugEnabled()) {
+        log.debug("retrieving list of user ratings for article: " + articleURI + " and user: "
+                + user.getUserId());
       }
-    });
 
+      List ratingsList =
+        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
+              .add(Restrictions.eq("creator", user.getUserId())).list();
+
+      if (ratingsList.size() > 0) {
+        hasRated = true;
+      }
+    }
+    return SUCCESS;
   }
 
   /**

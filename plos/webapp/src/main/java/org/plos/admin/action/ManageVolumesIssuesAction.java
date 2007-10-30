@@ -27,9 +27,7 @@ import org.plos.models.Volume;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * Allow Admin to Manage Volumes/ Issues.
@@ -42,7 +40,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   public static final String UPDATE_VOLUME = "UPDATE_VOLUME";
   public static final String CREATE_ISSUE  = "CREATE_ISSUE";
   public static final String UPDATE_ISSUE  = "UPDATE_ISSUE";
-  
+
   private static final String SEPARATORS = "[ ,;]";
 
   private String journalKey;
@@ -86,40 +84,30 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       }
     }
 
-    // JournalService, OTM usage wants to be in a Transaction
-    TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<Void>() {
+    // get the Journal
+    journal = journalService.getJournal(journalKey);
+    if (journal == null) {
+      final String errorMessage = "Error getting journal: " + journalKey;
+      addActionMessage(errorMessage);
+      log.error(errorMessage);
+      return null;
+    }
 
-        public Void run(Transaction tx) {
+    // get Issues for this Journal
+    issues = session.createCriteria(Issue.class)
+                .add(Restrictions.eq("journal", journal.getEIssn()))
+                .list();
+    if (log.isDebugEnabled()) {
+      log.debug(issues.size() + " Issue(s) for Journal " + journal.getEIssn());
+    }
 
-          // get the Journal
-          journal = journalService.getJournal(journalKey);
-          if (journal == null) {
-            final String errorMessage = "Error getting journal: " + journalKey;
-            addActionMessage(errorMessage);
-            log.error(errorMessage);
-            return null;
-          }
-
-          // get Issues for this Journal
-          issues = session.createCriteria(Issue.class)
-                      .add(Restrictions.eq("journal", journal.getEIssn()))
-                      .list();
-          if (log.isDebugEnabled()) {
-            log.debug(issues.size() + " Issue(s) for Journal " + journal.getEIssn());
-          }
-
-          // get Volumes for this Journal
-          volumes = session.createCriteria(Volume.class)
-                      .add(Restrictions.eq("journal", journal.getEIssn()))
-                      .list();
-          if (log.isDebugEnabled()) {
-            log.debug(volumes.size() + " Volume(s) for Journal " + journal.getEIssn());
-          }
-
-          return null;
-        }
-      });
+    // get Volumes for this Journal
+    volumes = session.createCriteria(Volume.class)
+                .add(Restrictions.eq("journal", journal.getEIssn()))
+                .list();
+    if (log.isDebugEnabled()) {
+      log.debug(volumes.size() + " Volume(s) for Journal " + journal.getEIssn());
+    }
 
     // default action is just to display the template
     return SUCCESS;
@@ -131,47 +119,36 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * Volume values taken from Struts Form.
    */
   private String createVolume() {
+    // the DOI must be unique
+    if (session.get(Volume.class, doi.toString()) != null) {
+      addActionMessage("Duplicate DOI, Volume, " + doi + ", already exists.");
+      return ERROR;
+    }
 
-    // OTM usage wants to be in a Transaction
-    TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<String>() {
+    Volume newVolume = new Volume();
+    newVolume.setId(doi);
+    DublinCore newDublinCore = new DublinCore();
+    newDublinCore.setCreated(new Date());
+    newVolume.setDublinCore(newDublinCore);
+    newVolume.setJournal(journalEIssn);
+    newVolume.setDisplayName(displayName);
+    newVolume.setImage(image);
+    newVolume.setPrevVolume(prev);
+    newVolume.setNextVolume(next);
 
-        public String run(Transaction tx) {
+    // process Issues
+    if (aggregation != null && aggregation.length() != 0) {
+      List<URI> issues = new ArrayList();
+      for (final String issueToAdd : aggregation.split(SEPARATORS)) {
+        if (issueToAdd.length() == 0) { continue; }
+        issues.add(URI.create(issueToAdd.trim()));
+      }
+      newVolume.setSimpleCollection(issues);
+    }
 
-          // the DOI must be unique
-          if (session.get(Volume.class, doi.toString()) != null) {
-            addActionMessage("Duplicate DOI, Volume, " + doi + ", already exists.");
-            return ERROR;
-          }
+    session.saveOrUpdate(newVolume);
 
-          Volume newVolume = new Volume();
-          newVolume.setId(doi);
-          DublinCore newDublinCore = new DublinCore();
-          newDublinCore.setCreated(new Date());
-          newVolume.setDublinCore(newDublinCore);
-          newVolume.setJournal(journalEIssn);
-          newVolume.setDisplayName(displayName);
-          newVolume.setImage(image);
-          newVolume.setPrevVolume(prev);
-          newVolume.setNextVolume(next);
-
-          // process Issues
-          if (aggregation != null && aggregation.length() != 0) {
-            List<URI> issues = new ArrayList();
-            for (final String issueToAdd : aggregation.split(SEPARATORS)) {
-              if (issueToAdd.length() == 0) { continue; }
-              issues.add(URI.create(issueToAdd.trim()));
-            }
-            newVolume.setSimpleCollection(issues);
-          }
-
-          session.saveOrUpdate(newVolume);
-
-          addActionMessage("Created Volume: " + newVolume.toString());
-
-          return null;
-        }
-      });
+    addActionMessage("Created Volume: " + newVolume.toString());
 
     return SUCCESS;
   }
@@ -182,48 +159,39 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * Volume values taken from Struts Form.
    */
   private String updateVolume() {
+    // the Volume to update
+    Volume volume = session.get(Volume.class, doi.toString());
 
-    // OTM usage wants to be in a Transaction
-    return TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<String>() {
+    // delete the Volume?
+    if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
+      session.delete(volume);
+      addActionMessage("Deleted Volume: " + volume.toString());
+      return SUCCESS;
+    }
 
-        public String run(Transaction tx) {
+    // assume updating the Volume
+    volume.setDisplayName(displayName);
+    volume.setImage(image);
+    volume.setNextVolume(next);
+    volume.setPrevVolume(prev);
 
-          // the Volume to update
-          Volume volume = session.get(Volume.class, doi.toString());
+    // process Issues
+    List<URI> volumeIssues = new ArrayList();
+    if (aggregation != null && aggregation.length() != 0) {
+      for (final String issueToAdd : aggregation.split(SEPARATORS)) {
+        if (issueToAdd.length() == 0) { continue; }
+        volumeIssues.add(URI.create(issueToAdd.trim()));
+      }
+    } else {
+      volumeIssues = null;
+    }
+    volume.setSimpleCollection(volumeIssues);
 
-          // delete the Volume?
-          if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
-            session.delete(volume);
-            addActionMessage("Deleted Volume: " + volume.toString());
-            return SUCCESS;
-          }
+    session.saveOrUpdate(volume);
 
-          // assume updating the Volume
-          volume.setDisplayName(displayName);
-          volume.setImage(image);
-          volume.setNextVolume(next);
-          volume.setPrevVolume(prev);
+    addActionMessage("Updated Volume: " + volume.toString());
 
-          // process Issues
-          List<URI> volumeIssues = new ArrayList();
-          if (aggregation != null && aggregation.length() != 0) {
-            for (final String issueToAdd : aggregation.split(SEPARATORS)) {
-              if (issueToAdd.length() == 0) { continue; }
-              volumeIssues.add(URI.create(issueToAdd.trim()));
-            }
-          } else {
-            volumeIssues = null;
-          }
-          volume.setSimpleCollection(volumeIssues);
-
-          session.saveOrUpdate(volume);
-
-          addActionMessage("Updated Volume: " + volume.toString());
-
-          return SUCCESS;
-        }
-      });
+    return SUCCESS;
   }
 
   /**
@@ -232,48 +200,37 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * Issue values taken from Struts Form.
    */
   private String createIssue() {
+    // the DOI must be unique
+    if (session.get(Issue.class, doi.toString()) != null) {
+      addActionMessage("Duplicate DOI, Issue, " + doi + ", already exists.");
+      return ERROR;
+    }
 
-    // OTM usage wants to be in a Transaction
-    TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<String>() {
+    Issue newIssue = new Issue();
+    newIssue.setId(doi);
+    DublinCore newDublinCore = new DublinCore();
+    newDublinCore.setCreated(new Date());
+    newIssue.setDublinCore(newDublinCore);
+    newIssue.setJournal(journalEIssn);
+    newIssue.setVolume(volume);
+    newIssue.setDisplayName(displayName);
+    newIssue.setImage(image);
+    newIssue.setPrevIssue(prev);
+    newIssue.setNextIssue(next);
 
-        public String run(Transaction tx) {
+    // process Articles
+    if (aggregation != null && aggregation.length() != 0) {
+      List<URI> articles = new ArrayList();
+      for (final String articleToAdd : aggregation.split(SEPARATORS)) {
+        if (articleToAdd.length() == 0) { continue; }
+        articles.add(URI.create(articleToAdd.trim()));
+      }
+      newIssue.setSimpleCollection(articles);
+    }
 
-          // the DOI must be unique
-          if (session.get(Issue.class, doi.toString()) != null) {
-            addActionMessage("Duplicate DOI, Issue, " + doi + ", already exists.");
-            return ERROR;
-          }
+    session.saveOrUpdate(newIssue);
 
-          Issue newIssue = new Issue();
-          newIssue.setId(doi);
-          DublinCore newDublinCore = new DublinCore();
-          newDublinCore.setCreated(new Date());
-          newIssue.setDublinCore(newDublinCore);
-          newIssue.setJournal(journalEIssn);
-          newIssue.setVolume(volume);
-          newIssue.setDisplayName(displayName);
-          newIssue.setImage(image);
-          newIssue.setPrevIssue(prev);
-          newIssue.setNextIssue(next);
-
-          // process Articles
-          if (aggregation != null && aggregation.length() != 0) {
-            List<URI> articles = new ArrayList();
-            for (final String articleToAdd : aggregation.split(SEPARATORS)) {
-              if (articleToAdd.length() == 0) { continue; }
-              articles.add(URI.create(articleToAdd.trim()));
-            }
-            newIssue.setSimpleCollection(articles);
-          }
-
-          session.saveOrUpdate(newIssue);
-
-          addActionMessage("Created Issue: " + newIssue.toString());
-
-          return null;
-        }
-      });
+    addActionMessage("Created Issue: " + newIssue.toString());
 
     return SUCCESS;
   }
@@ -284,49 +241,40 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * Issue values taken from Struts Form.
    */
   private String updateIssue() {
+    // the Issue to update
+    Issue issue = session.get(Issue.class, doi.toString());
 
-    // OTM usage wants to be in a Transaction
-    return TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<String>() {
+    // delete the Issue?
+    if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
+      session.delete(issue);
+      addActionMessage("Deleted Issue: " + issue.toString());
+      return SUCCESS;
+    }
 
-        public String run(Transaction tx) {
+    // assume updating the Issue
+    issue.setDisplayName(displayName);
+    issue.setVolume(volume);
+    issue.setImage(image);
+    issue.setNextIssue(next);
+    issue.setPrevIssue(prev);
 
-          // the Issue to update
-          Issue issue = session.get(Issue.class, doi.toString());
+    // process Issues
+    List<URI> issueArticles = new ArrayList();
+    if (aggregation != null && aggregation.length() != 0) {
+      for (final String articleToAdd : aggregation.split(SEPARATORS)) {
+        if (articleToAdd.length() == 0) { continue; }
+        issueArticles.add(URI.create(articleToAdd.trim()));
+      }
+    } else {
+      issueArticles = null;
+    }
+    issue.setSimpleCollection(issueArticles);
 
-          // delete the Issue?
-          if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
-            session.delete(issue);
-            addActionMessage("Deleted Issue: " + issue.toString());
-            return SUCCESS;
-          }
+    session.saveOrUpdate(issue);
 
-          // assume updating the Issue
-          issue.setDisplayName(displayName);
-          issue.setVolume(volume);
-          issue.setImage(image);
-          issue.setNextIssue(next);
-          issue.setPrevIssue(prev);
+    addActionMessage("Updated Issue: " + issue.toString());
 
-          // process Issues
-          List<URI> issueArticles = new ArrayList();
-          if (aggregation != null && aggregation.length() != 0) {
-            for (final String articleToAdd : aggregation.split(SEPARATORS)) {
-              if (articleToAdd.length() == 0) { continue; }
-              issueArticles.add(URI.create(articleToAdd.trim()));
-            }
-          } else {
-            issueArticles = null;
-          }
-          issue.setSimpleCollection(issueArticles);
-
-          session.saveOrUpdate(issue);
-
-          addActionMessage("Updated Issue: " + issue.toString());
-
-          return SUCCESS;
-        }
-      });
+    return SUCCESS;
   }
 
   /**
@@ -335,7 +283,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * @return all Volumes for the Journal.
    */
   public List<Volume> getVolumes() {
-
     return volumes;
   }
 
@@ -345,7 +292,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * @return all Issues for the Journal.
    */
   public List<Issue> getIssues() {
-
     return issues;
   }
 

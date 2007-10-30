@@ -20,8 +20,7 @@ import com.sun.xacml.PDP;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
+import org.topazproject.otm.spring.OtmTransactionManager;
 
 import java.security.Guard;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -39,6 +38,9 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 import org.apache.commons.configuration.Configuration;
 
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.DefaultTransactionStatus;
+
 /**
  * Store the progress of a search. That is, when a search is done, we get the first N results
  * and don't get more until more are requested.
@@ -55,6 +57,7 @@ public class Results {
   private String                     query;
   private int                        totalHits = 0;
   private Session                    otmSession;
+  private OtmTransactionManager      txManager;
 
   /**
    * Construct a search Results object.
@@ -79,14 +82,17 @@ public class Results {
    * @param startPage the page number to return (starts with 0)
    * @param pageSize  the number of entries to return
    * @param otmSession the current otm session
+   * @param txManager  the current otm transaction manager
    * @return The results for one page of a search.
    * @throws UndeclaredThrowableException if there was a problem retrieving the search results.
    *         It likely wraps a RemoteException (talking to the search webapp) or an IOException
    *         parsing the results.
    */
-  public SearchResultPage getPage(int startPage, int pageSize, Session otmSession) {
+  public SearchResultPage getPage(int startPage, int pageSize, Session otmSession,
+                                  OtmTransactionManager txManager) {
     // Stash the otmSession so we can use it in the HitGuard
     this.otmSession = otmSession;
+    this.txManager  = txManager;
 
     ArrayList<SearchHit> hits = new ArrayList<SearchHit>(pageSize);
     int                  cnt  = 0; // Actual number of hits retrieved
@@ -109,12 +115,14 @@ public class Results {
 
   /**
    * @param otmSession the current otm session
+   * @param txManager  the current otm transaction manager
    * @return The total number of records lucene thinks we have. This may be inaccurate if
    *         XACML filters any out.
    */
-  public int getTotalHits(Session otmSession) {
+  public int getTotalHits(Session otmSession, OtmTransactionManager txManager) {
     // Stash the otmSession so we can use it in the HitGuard
     this.otmSession = otmSession;
+    this.txManager  = txManager;
 
     cache.hasNext(); // Read at least one record to populate totalHits instance variable
     return totalHits;
@@ -132,6 +140,10 @@ public class Results {
 
     public boolean hasNext() {
       if (!iter.hasNext()) {
+        // Tx hack alert!!! Need disable tx during search because search can take a while...
+        txManager.doCommit(
+            (DefaultTransactionStatus) TransactionAspectSupport.currentTransactionStatus());
+
         try {
           String xml = service.find(query, position,
                                     CONF.getInt("pub.search.fetchSize", 10),
@@ -154,6 +166,8 @@ public class Results {
         } catch (Exception e) {
           // It is possible we could throw a RemoteException or IOException
           throw new UndeclaredThrowableException(e, "Error talking to search service");
+        } finally {
+          txManager.doBegin(txManager.doGetTransaction(), null);
         }
       }
 
@@ -206,31 +220,24 @@ public class Results {
       SearchHit    hit = (SearchHit) object;
       final String uri = hit.getPid();
 
-      TransactionHelper.doInTxE(otmSession,
-                                new TransactionHelper.ActionE<Void, SecurityException>() {
-        public Void run(Transaction tx) throws SecurityException {
-          try {
-            // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
-            pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
+      try {
+        // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
+        pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
 
-            // Verify otm returns one record...
-            if (!tx.getSession().createQuery("select a.id from Article a where a.id = :id;")
-                 .setParameter("id", uri).execute().next())
-              throw new SecurityException("Article '" + uri + "' not in current journal");
+        // Verify otm returns one record...
+        if (!otmSession.createQuery("select a.id from Article a where a.id = :id;")
+             .setParameter("id", uri).execute().next())
+          throw new SecurityException("Article '" + uri + "' not in current journal");
 
-            if (log.isDebugEnabled())
-              log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
-          } catch (OtmException oe) {
-            throw (SecurityException)
-              new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
-          } catch (URISyntaxException us) {
-            throw (SecurityException)
-              new SecurityException("HitGuard: Unable to create URI '" + uri + "'").initCause(us);
-          }
-
-          return null;
-        }
-      });
+        if (log.isDebugEnabled())
+          log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
+      } catch (OtmException oe) {
+        throw (SecurityException)
+          new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
+      } catch (URISyntaxException us) {
+        throw (SecurityException)
+          new SecurityException("HitGuard: Unable to create URI '" + uri + "'").initCause(us);
+      }
     }
   }
 }

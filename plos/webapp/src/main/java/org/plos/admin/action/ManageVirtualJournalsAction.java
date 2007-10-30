@@ -25,8 +25,6 @@ import org.plos.models.Journal;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * Allow Admin to Manage virtual Journals.
@@ -49,99 +47,88 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    * Manage Journals.  Display Journals and processes all add/deletes.
    */
   public String execute() throws Exception  {
-
     if (log.isDebugEnabled()) {
       log.debug("journalToModify: " + journalToModify + ", articlesToAdd: " + articlesToAdd
         + ", articlesToDelete: " + articlesToDelete);
     }
 
-    // JournalService wants to be in a Transaction
-    TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<Void>() {
+    // process any pending modifications, adds, deletes
+    if (journalToModify != null
+      && (image != null
+        || currentIssue != null
+        || (articlesToAdd != null && articlesToAdd.length() != 0)
+        || articlesToDelete != null)) {
+      // get the Journal
+      Journal journal = journalService.getJournal(journalToModify);
+      if (journal == null) {
+        final String errorMessage = "Error getting journal to modify: " + journalToModify;
+        addActionMessage(errorMessage);
+        log.error(errorMessage);
+        return null;
+      }
 
-        public Void run(Transaction tx) {
+      // current Journal Articles
+      List<URI> articles = journal.getSimpleCollection();
 
-          // process any pending modifications, adds, deletes
-          if (journalToModify != null
-            && (image != null
-              || currentIssue != null
-              || (articlesToAdd != null && articlesToAdd.length() != 0)
-              || articlesToDelete != null)) {
-            // get the Journal
-            Journal journal = journalService.getJournal(journalToModify);
-            if (journal == null) {
-              final String errorMessage = "Error getting journal to modify: " + journalToModify;
-              addActionMessage(errorMessage);
-              log.error(errorMessage);
-              return null;
-            }
-
-            // current Journal Articles
-            List<URI> articles = journal.getSimpleCollection();
-
-            // process modifications
-            if (image != null) {
-              if (image.toString().length() == 0) {
-                image = null;
-              }
-              journal.setImage(image);
-              addActionMessage("Image set to: " + image);
-            }
-
-            if (currentIssue != null) {
-              if (currentIssue.toString().length() == 0) {
-                currentIssue = null;
-              }
-              journal.setCurrentIssue(currentIssue);
-              addActionMessage("Current Issue set to: " + currentIssue);
-            }
-
-            // process adds
-            if (articlesToAdd != null && articlesToAdd.length() != 0) {
-              for (final String articleToAdd : articlesToAdd.split("[,\\s]+")) {
-                URI art = getURI(articleToAdd);
-                if (art != null) {
-                  articles.add(art);
-                  addActionMessage("Added: " + articleToAdd);
-                }
-              }
-            }
-
-            // process deletes
-            if (articlesToDelete != null) {
-              for (final String articleToDelete : articlesToDelete) {
-                URI art = getURI(articleToDelete);
-                if (art != null) {
-                  articles.remove(art);
-                  addActionMessage("Deleted: " + articleToDelete);
-                }
-              }
-            }
-
-            // new Journal Articles
-            journal.setSimpleCollection(articles);
-
-            // Journal was updated
-            session.saveOrUpdate(journal);
-            journalService.journalWasModified(journal);
-            browseService.notifyJournalModified(journal.getKey());
-            addActionMessage("Browse cache flush for: " + journal.getKey());
-          }
-
-          // get all Journals
-          journals = journalService.getAllJournals();
-
-          if (log.isDebugEnabled()) {
-            for (final Journal journal : journals) {
-              log.debug("execute(): Journal: key:" + journal.getKey() + ", eIssn:" + journal.getEIssn()
-                + ", smartCollectionRules:" + journal.getSmartCollectionRules().toString()
-                + ", simpleCollection:" + journal.getSimpleCollection().toString());
-            }
-          }
-
-          return null;
+      // process modifications
+      if (image != null) {
+        if (image.toString().length() == 0) {
+          image = null;
         }
-      });
+        journal.setImage(image);
+        addActionMessage("Image set to: " + image);
+      }
+
+      if (currentIssue != null) {
+        if (currentIssue.toString().length() == 0) {
+          currentIssue = null;
+        }
+        journal.setCurrentIssue(currentIssue);
+        addActionMessage("Current Issue set to: " + currentIssue);
+      }
+
+      // process adds
+      if (articlesToAdd != null && articlesToAdd.length() != 0) {
+        for (final String articleToAdd : articlesToAdd.split("[,\\s]+")) {
+          URI art = getURI(articleToAdd);
+          if (art != null) {
+            articles.add(art);
+            addActionMessage("Added: " + articleToAdd);
+          }
+        }
+      }
+
+      // process deletes
+      if (articlesToDelete != null) {
+        for (final String articleToDelete : articlesToDelete) {
+          URI art = getURI(articleToDelete);
+          if (art != null) {
+            articles.remove(art);
+            addActionMessage("Deleted: " + articleToDelete);
+          }
+        }
+      }
+
+      // new Journal Articles
+      journal.setSimpleCollection(articles);
+
+      // Journal was updated
+      session.saveOrUpdate(journal);
+      journalService.journalWasModified(journal);
+      browseService.notifyJournalModified(journal.getKey());
+      addActionMessage("Browse cache flush for: " + journal.getKey());
+    }
+
+    // get all Journals
+    journals = journalService.getAllJournals();
+
+    if (log.isDebugEnabled()) {
+      for (final Journal journal : journals) {
+        log.debug("execute(): Journal: key:" + journal.getKey() + ", eIssn:" + journal.getEIssn()
+          + ", smartCollectionRules:" + journal.getSmartCollectionRules().toString()
+          + ", simpleCollection:" + journal.getSimpleCollection().toString());
+      }
+    }
 
     // default action is just to display the template
     return SUCCESS;

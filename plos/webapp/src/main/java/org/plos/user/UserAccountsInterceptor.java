@@ -27,11 +27,9 @@ import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
 
 import org.plos.models.UserAccount;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * A webwork interceptor that maps the authenticated user id to an internal plos-user-id. The plos
@@ -178,21 +176,17 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
     if (authId == null)
       return null;
 
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
-      public UserAccount run(Transaction tx) {
-        Results r = tx.getSession().
-            createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
-            setParameter("id", authId).execute();
+    Results r = session.
+        createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
+        setParameter("id", authId).execute();
 
-        if (!r.next()) {
-          if (log.isDebugEnabled())
-            log.debug("Failed to look up plos-user with auth-id '" + authId + "'");
-          return null;
-        }
+    if (!r.next()) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to look up plos-user with auth-id '" + authId + "'");
+      return null;
+    }
 
-        return (UserAccount) r.get(0);
-      }
-    });
+    return (UserAccount) r.get(0);
   }
 
   /** 

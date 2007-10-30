@@ -31,8 +31,6 @@ import org.plos.models.Journal;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * @author stevec
@@ -143,23 +141,15 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   private String browseIssue() {
-
     // was issued specified, or use Journal.currentIssue?
     if (issue == null || issue.length() == 0) {
-    // JournalService, OTM usage wants to be in a Transaction
-    issue = TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<String>() {
-
-        public String run(Transaction tx) {
-
-          // get the Journal's currentIssue
-          final Journal journal = journalService.getJournal();
-          if (journal == null) { return null; }
-          final URI currentIssue = journal.getCurrentIssue();
-          if (currentIssue == null) { return null; }
-          return currentIssue.toString();
-        }
-      });
+      // get the Journal's currentIssue
+      Journal journal = journalService.getJournal();
+      if (journal != null) {
+        URI currentIssue = journal.getCurrentIssue();
+        if (currentIssue != null)
+          issue = currentIssue.toString();
+      }
     }
 
     // if still no issue, create an IssueInfo

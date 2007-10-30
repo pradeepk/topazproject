@@ -24,7 +24,9 @@ import org.plos.permission.service.PermissionsImpl;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore;
+import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * A listener class for initializing permissions impl.
@@ -57,7 +59,12 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
       factory.setTripleStore(new ItqlStore(service));
 
       sess = factory.openSession();
-      PermissionsImpl.initializeModel(sess);
+      TransactionHelper.doInTx(sess, new TransactionHelper.Action<Void>() {
+        public Void run(Transaction tx) {
+          PermissionsImpl.initializeModel(tx.getSession());
+          return null;
+        }
+      });
     } catch (Exception e) {
       log.warn("initializing permissions impl failed", e);
     } finally {

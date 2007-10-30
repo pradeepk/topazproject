@@ -40,13 +40,11 @@ import org.plos.models.Category;
 import org.plos.models.Citation;
 import org.plos.models.ObjectInfo;
 import org.plos.models.UserProfile;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
@@ -73,59 +71,43 @@ public class ArticleOtmService {
 
   /**
    * Ingest an article.
+   *
    * @param dataHandler dataHandler
    * @return the uri of the article ingested
-   * @throws RemoteException RemoteException
-   * @throws ServiceException ServiceException
    * @throws IngestException IngestException
    * @throws DuplicateIdException DuplicateIdException
    */
   public String ingest(final DataHandler dataHandler)
-          throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException {
+          throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException,
+                 IOException {
     // ask PEP if ingest is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
-    // create an Ingester using the values from the WSTopazContext
+    // ingest article
+    ArticleUtil util = new ArticleUtil(session);
+    String ret = util.ingest(
+      new Zip.DataSourceZip(
+        new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
+                                          8192, "application/octet-stream", true)));
 
-    try {
-      return TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<String, Exception>() {
-        public String run(Transaction txn) throws Exception {
-          ArticleUtil util = new ArticleUtil(txn.getSession());
-          String ret = util.ingest(
-            new Zip.DataSourceZip(
-              new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
-                                                8192, "application/octet-stream", true)));
+    // notify journal service of new article
+    jrnlSvc.objectWasAdded(URI.create(ret));
 
-          jrnlSvc.objectWasAdded(URI.create(ret));
-
-          return ret;
-        }
-      });
-    } catch (ServiceException se) {
-      throw se;
-    } catch (DuplicateArticleIdException daie) {
-      throw daie;
-    } catch (IOException ioe) {
-      log.error("Ingestion failed: ", ioe);
-      throw new IngestException("Ingestion failed: ", ioe);
-    } catch (RuntimeException re) {
-      throw re;
-    } catch (Exception e) {
-      throw new Error("Unexpected exception", e);
-    }
+    return ret;
   }
 
   /**
    * Ingest an article.
+   *
    * @param articleUrl articleUrl
    * @return the uri of the article ingested
-   * @throws RemoteException RemoteException
    * @throws IngestException IngestException
    * @throws DuplicateIdException DuplicateIdException
    */
   public String ingest(final URL articleUrl)
-          throws  DuplicateArticleIdException, IngestException, RemoteException, ServiceException {
+          throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException,
+                 IOException  {
     return ingest(new DataHandler(articleUrl));
   }
 
@@ -147,25 +129,18 @@ public class ArticleOtmService {
    * @param obj uri
    * @param rep rep
    * @return the URL, or null if this object doesn't exist in the desired version
-   * @throws RemoteException RemoteException
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
-  public String getObjectURL(final String obj, final String rep)
-          throws RemoteException, NoSuchObjectIdException {
+  public String getObjectURL(final String obj, final String rep) throws NoSuchObjectIdException {
     // ask PEP if getting Object URL is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
 
-    return TransactionHelper.doInTxE(session,
-                              new TransactionHelper.ActionE<String, NoSuchObjectIdException>() {
-      public String run(Transaction tx) throws NoSuchObjectIdException {
-        ObjectInfo a = tx.getSession().get(ObjectInfo.class, obj);
-        if (a == null)
-          throw new NoSuchObjectIdException(obj);
+    ObjectInfo a = session.get(ObjectInfo.class, obj);
+    if (a == null)
+      throw new NoSuchObjectIdException(obj);
 
-        return ArticleUtil.getFedoraDataStreamURL(a.getPid(), rep);
-      }
-    });
+    return ArticleUtil.getFedoraDataStreamURL(a.getPid(), rep);
   }
 
   /**
@@ -175,31 +150,13 @@ public class ArticleOtmService {
    * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public void delete(final String article)
-      throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
+  public void delete(String article) throws RemoteException, NoSuchArticleIdException, IOException {
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
-    try {
-      TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
-        public Void run(Transaction tx) throws Exception {
-          ArticleUtil.delete(article, tx);
-          jrnlSvc.objectWasDeleted(URI.create(article));
-          return null;
-        }
-      });
-    } catch (ServiceException se) {
-      throw se;
-    } catch (NoSuchArticleIdException nsaie) {
-      throw nsaie;
-    } catch (IOException ioe) {
-      throw ioe;
-    } catch (RuntimeException re) {
-      throw re;
-    } catch (Exception e) {
-      throw new Error("Unexpected exception", e);
-    }
+    ArticleUtil.delete(article, session);
+    jrnlSvc.objectWasDeleted(URI.create(article));
   }
 
   /**
@@ -212,23 +169,17 @@ public class ArticleOtmService {
   public void setState(final String article, final int state) throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
 
-    TransactionHelper.doInTxE(session,
-                              new TransactionHelper.ActionE<Void, NoSuchArticleIdException>() {
-      public Void run(Transaction tx) throws NoSuchArticleIdException {
-        Article a = tx.getSession().get(Article.class, article);
-        if (a == null)
-          throw new NoSuchArticleIdException(article);
+    Article a = session.get(Article.class, article);
+    if (a == null)
+      throw new NoSuchArticleIdException(article);
 
-        a.setState(state);
-        for (ObjectInfo oi : a.getParts())
-          oi.setState(state);
-        for (Category c : a.getCategories())
-          c.setState(state);
+    a.setState(state);
+    for (ObjectInfo oi : a.getParts())
+      oi.setState(state);
+    for (Category c : a.getCategories())
+      c.setState(state);
 
-        tx.getSession().saveOrUpdate(a);
-        return null;
-      }
-    });
+    session.saveOrUpdate(a);
   }
 
   /**
@@ -266,23 +217,19 @@ public class ArticleOtmService {
 
     qry.append("order by d ").append(ascending ? "asc" : "desc").append(";");
 
-    List<URI> ids = TransactionHelper.doInTx(session, new TransactionHelper.Action<List<URI>>() {
-      public List<URI> run(Transaction tx) {
-        List<URI> uris = new ArrayList<URI>();
-        Query q = tx.getSession().createQuery(qry.toString());
-        if (startDate != null)
-          q.setParameter("sd", startDate);
-        if (endDate != null)
-          q.setParameter("ed", endDate);
-        for (int idx = 0; states != null && idx < states.length; idx++)
-          q.setParameter("st" + idx, states[idx]);
+    Query q = session.createQuery(qry.toString());
+    if (startDate != null)
+      q.setParameter("sd", startDate);
+    if (endDate != null)
+      q.setParameter("ed", endDate);
+    for (int idx = 0; states != null && idx < states.length; idx++)
+      q.setParameter("st" + idx, states[idx]);
 
-        Results r = q.execute();
-        while (r.next())
-          uris.add(r.getURI(0));
-        return uris;
-      }
-    });
+    List<URI> ids = new ArrayList<URI>();
+
+    Results r = q.execute();
+    while (r.next())
+      ids.add(r.getURI(0));
 
     List<String> res = new ArrayList<String>();
     for (URI id : ids) {
@@ -318,18 +265,13 @@ public class ArticleOtmService {
                                final String[] categories, final String[] authors,
                                final int[] states, final boolean ascending)
       throws ParseException {
-    return TransactionHelper.doInTxE(session,
-                                     new TransactionHelper.ActionE<Article[], ParseException>() {
-      public Article[] run(Transaction tx) throws ParseException {
-        // get a list of Articles that meet the specified Criteria and Restrictions
-        Map<String, Boolean> orderBy = new HashMap<String, Boolean>();
-        orderBy.put("dublinCore.date", ascending);
+    // get a list of Articles that meet the specified Criteria and Restrictions
+    Map<String, Boolean> orderBy = new HashMap<String, Boolean>();
+    orderBy.put("dublinCore.date", ascending);
 
-        List<Article> articleList =
-            findArticles(startDate, endDate, categories, authors, states, orderBy, 0, tx);
-        return articleList.toArray(new Article[articleList.size()]);
-      }
-    });
+    List<Article> articleList =
+        findArticles(startDate, endDate, categories, authors, states, orderBy, 0);
+    return articleList.toArray(new Article[articleList.size()]);
   }
 
   /**
@@ -353,16 +295,9 @@ public class ArticleOtmService {
                                    final int[] states, final Map<String, Boolean> orderBy,
                                    final int maxResults)
       throws ParseException {
-    return TransactionHelper.doInTxE(session,
-                               new TransactionHelper.ActionE<List<Article>, ParseException>() {
-      public List<Article> run(Transaction tx) throws ParseException {
-        // get a list of Articles that meet the specified Criteria and Restrictions
-        List<Article> articleList =
-            findArticles(startDate, endDate, categories, authors, states, orderBy, maxResults, tx);
-
-        return articleList;
-      }
-    });
+    // get a list of Articles that meet the specified Criteria and Restrictions
+    return
+        findArticles(startDate, endDate, categories, authors, states, orderBy, maxResults);
   }
 
   /**
@@ -371,10 +306,10 @@ public class ArticleOtmService {
    */
   private List<Article> findArticles(String startDate, String endDate, String[] categories,
                                      String[] authors, int[] states, Map<String, Boolean> orderBy,
-                                     int maxResults, Transaction tx)
+                                     int maxResults)
       throws ParseException {
     // build up Criteria for the Articles
-    Criteria articleCriteria = tx.getSession().createCriteria(Article.class);
+    Criteria articleCriteria = session.createCriteria(Article.class);
 
     // normalize dates for query
     if (startDate != null) {
@@ -475,15 +410,10 @@ public class ArticleOtmService {
       throw se;
     }
 
-    return TransactionHelper.doInTxE(session,
-                            new TransactionHelper.ActionE<ObjectInfo, NoSuchObjectIdException>() {
-      public ObjectInfo run(Transaction tx) throws NoSuchObjectIdException {
-        ObjectInfo objectInfo = tx.getSession().get(ObjectInfo.class, uri);
-        if (objectInfo == null)
-          throw new NoSuchObjectIdException(uri);
-        return objectInfo;
-      }
-    });
+    ObjectInfo objectInfo = session.get(ObjectInfo.class, uri);
+    if (objectInfo == null)
+      throw new NoSuchObjectIdException(uri);
+    return objectInfo;
   }
 
   /**
@@ -512,15 +442,11 @@ public class ArticleOtmService {
       throw se;
     }
 
-    return TransactionHelper.doInTxE(session,
-                            new TransactionHelper.ActionE<Article, NoSuchArticleIdException>() {
-      public Article run(Transaction tx) throws NoSuchArticleIdException {
-        Article article = tx.getSession().get(Article.class, uri.toString());
-        if (article == null)
-          throw new NoSuchArticleIdException(uri.toString());
-        return article;
-      }
-    });
+    Article article = session.get(Article.class, uri.toString());
+    if (article == null)
+      throw new NoSuchArticleIdException(uri.toString());
+
+    return article;
   }
 
   /**
@@ -533,27 +459,22 @@ public class ArticleOtmService {
       throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
-    return TransactionHelper.doInTxE(session,
-                new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
-      public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
-        // get objects
-        Article art = tx.getSession().get(Article.class, article);
-        if (art == null)
-          throw new NoSuchArticleIdException(article);
+    // get objects
+    Article art = session.get(Article.class, article);
+    if (art == null)
+      throw new NoSuchArticleIdException(article);
 
-        /* sort the object list.
-         *
-         * TODO: the list should be stored using RdfSeq or RdfList instead of this next-object hack
-         * so we can just use art.getParts()
-         */
-        List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
-        for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject())
-          sorted.add(oi);
+    /* sort the object list.
+     *
+     * TODO: the list should be stored using RdfSeq or RdfList instead of this next-object hack
+     * so we can just use art.getParts()
+     */
+    List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
+    for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject())
+      sorted.add(oi);
 
-        // convert to SecondaryObject's. TODO: can't we just return ObjectInfo?
-        return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
-      }
-    });
+    // convert to SecondaryObject's. TODO: can't we just return ObjectInfo?
+    return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
   }
 
   private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
@@ -578,7 +499,8 @@ public class ArticleOtmService {
   public Article[] getCommentedArticles(final int maxArticles) {
     // sanity check args
     if (maxArticles < 0) {
-      throw new IllegalArgumentException("Requesting a maximum # of commented articles < 0: " +  maxArticles);
+      throw new IllegalArgumentException("Requesting a maximum # of commented articles < 0: " +
+                                         maxArticles);
     }
     if (maxArticles == 0) {
       return new Article[0];
@@ -587,31 +509,26 @@ public class ArticleOtmService {
     final String oqlQuery =
       "select a, count(n) c from Article a, Annotation n where n.annotates = a order by c desc limit " + maxArticles;
 
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<Article[]>() {
-      public Article[] run(Transaction tx) {
-        Results commentedArticles = tx.getSession().createQuery(oqlQuery).execute();
+    Results commentedArticles = session.createQuery(oqlQuery).execute();
 
-        // check access control on all Article results
-        // logged in user is automatically resolved by the ServletActionContextAttribute
-        ArrayList<Article> returnArticles = new ArrayList();
+    // check access control on all Article results
+    // logged in user is automatically resolved by the ServletActionContextAttribute
+    ArrayList<Article> returnArticles = new ArrayList();
 
-        commentedArticles.beforeFirst();
-        while (commentedArticles.next()) {
-          Article commentedArticle = (Article) commentedArticles.get("a");
-          try {
-            pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
-            returnArticles.add(commentedArticle);
-          } catch (SecurityException se) {
-            if (log.isDebugEnabled())
-              log.debug("Filtering URI "
-                + commentedArticle.getId()
-                + " from commented Article list due to PEP SecurityException", se);
-          }
-        }
-
-        return returnArticles.toArray(new Article[returnArticles.size()]);
+    commentedArticles.beforeFirst();
+    while (commentedArticles.next()) {
+      Article commentedArticle = (Article) commentedArticles.get("a");
+      try {
+        pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
+        returnArticles.add(commentedArticle);
+      } catch (SecurityException se) {
+        if (log.isDebugEnabled())
+          log.debug("Filtering URI " + commentedArticle.getId()
+                    + " from commented Article list due to PEP SecurityException", se);
       }
-    });
+    }
+
+    return returnArticles.toArray(new Article[returnArticles.size()]);
   }
 
 
@@ -637,40 +554,25 @@ public class ArticleOtmService {
       throws NoSuchObjectIdException, RemoteException {
     pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
 
-    try {
-      TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
-        public Void run(Transaction tx) throws NoSuchObjectIdException, RemoteException {
-          // get the object info
-          ObjectInfo obj = tx.getSession().get(ObjectInfo.class, objId);
-          if (obj == null)
-            throw new NoSuchObjectIdException(objId);
+    // get the object info
+    ObjectInfo obj = session.get(ObjectInfo.class, objId);
+    if (obj == null)
+      throw new NoSuchObjectIdException(objId);
 
-          String ct = content.getContentType();
-          if (ct == null)
-            ct = "application/octet-stream";
+    String ct = content.getContentType();
+    if (ct == null)
+      ct = "application/octet-stream";
 
-          // update fedora
-          long len = ArticleUtil.setDatastream(obj.getPid(), rep, ct, content);
+    // update fedora
+    long len = ArticleUtil.setDatastream(obj.getPid(), rep, ct, content);
 
-          // update the rdf
-          obj.getRepresentations().add(rep);
+    // update the rdf
+    obj.getRepresentations().add(rep);
 
-          obj.getData().put("topaz:" + rep + "-contentType", toList(ct));
-          obj.getData().put("topaz:" + rep + "-objectSize", toList(Long.toString(len)));
+    obj.getData().put("topaz:" + rep + "-contentType", toList(ct));
+    obj.getData().put("topaz:" + rep + "-objectSize", toList(Long.toString(len)));
 
-          tx.getSession().saveOrUpdate(obj);
-
-          // done
-          return null;
-        }
-      });
-    } catch (Exception e) {
-      if (e instanceof RuntimeException)
-        throw (RuntimeException) e;
-      if (e instanceof NoSuchObjectIdException)
-        throw (NoSuchObjectIdException) e;
-      throw (RemoteException) e;
-    }
+    session.saveOrUpdate(obj);
   }
 
   private static <T> List<T> toList(T item) {

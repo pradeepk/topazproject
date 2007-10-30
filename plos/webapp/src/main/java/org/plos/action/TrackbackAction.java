@@ -35,10 +35,8 @@ import org.plos.web.VirtualJournalContext;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.apache.roller.util.LinkbackExtractor;
 
@@ -105,63 +103,58 @@ public class TrackbackAction extends BaseActionSupport {
       return returnError("Object URI invalid");
     }
 
-    return TransactionHelper.doInTxE(session,
-                              new TransactionHelper.ActionE<String, Exception>() {
-      public String run(Transaction tx) throws Exception {
-        boolean inserted = false;
-        List<Trackback> trackbackList = session
-        .createCriteria(Trackback.class)
-        .add(Restrictions.eq("annotates", trackback))
-        .createCriteria("body")
-        .add(Restrictions.eq("url", url))
-        .list();
+    boolean inserted = false;
+    List<Trackback> trackbackList = session
+      .createCriteria(Trackback.class)
+      .add(Restrictions.eq("annotates", trackback))
+      .createCriteria("body")
+      .add(Restrictions.eq("url", url))
+      .list();
 
-        if (trackbackList.size() == 0) {
-          if (log.isDebugEnabled()) {
-            log.debug("No previous trackback found for: " + permalink);
-          }
-
-          LinkbackExtractor linkback = new LinkbackExtractor(url,
-                                     getArticleUrl(journalContext.getBaseUrl(), trackbackId));
-          if (linkback.getExcerpt() == null) {
-            if (log.isDebugEnabled()) {
-              log.debug("Trackback failed verification: " + permalink);
-            }
-            return returnError("No trackback present");
-          }
-
-          TrackbackContent tc = new TrackbackContent (title, excerpt, blog_name, permalink);
-          Trackback tb = new Trackback();
-          tb.setBody(tc);
-          tb.setAnnotates(trackback);
-          tb.setCreated(new Date());
-
-          session.saveOrUpdate(tb);
-          inserted = true;
-        }
-
-        if (log.isInfoEnabled() && inserted) {
-          if (log.isDebugEnabled() && inserted){
-            StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
-                                               .append (trackbackId)
-                                               .append ("; with title: ")
-                                               .append (title)
-                                               .append ("; url: ")
-                                               .append (url)
-                                               .append ("; excerpt: ")
-                                               .append (excerpt)
-                                               .append ("; blog_name: ")
-                                               .append (blog_name);
-            log.debug(msg);
-          } else {
-            StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
-                                               .append (trackbackId);
-            log.info(msg);
-          }
-        }
-        return SUCCESS;
+    if (trackbackList.size() == 0) {
+      if (log.isDebugEnabled()) {
+        log.debug("No previous trackback found for: " + permalink);
       }
-    });
+
+      LinkbackExtractor linkback = new LinkbackExtractor(url,
+                                 getArticleUrl(journalContext.getBaseUrl(), trackbackId));
+      if (linkback.getExcerpt() == null) {
+        if (log.isDebugEnabled()) {
+          log.debug("Trackback failed verification: " + permalink);
+        }
+        return returnError("No trackback present");
+      }
+
+      TrackbackContent tc = new TrackbackContent (title, excerpt, blog_name, permalink);
+      Trackback tb = new Trackback();
+      tb.setBody(tc);
+      tb.setAnnotates(trackback);
+      tb.setCreated(new Date());
+
+      session.saveOrUpdate(tb);
+      inserted = true;
+    }
+
+    if (log.isInfoEnabled() && inserted) {
+      if (log.isDebugEnabled() && inserted){
+        StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
+                                           .append (trackbackId)
+                                           .append ("; with title: ")
+                                           .append (title)
+                                           .append ("; url: ")
+                                           .append (url)
+                                           .append ("; excerpt: ")
+                                           .append (excerpt)
+                                           .append ("; blog_name: ")
+                                           .append (blog_name);
+        log.debug(msg);
+      } else {
+        StringBuilder msg = new StringBuilder ("Successfully inserted trackback for resource: ")
+                                           .append (trackbackId);
+        log.info(msg);
+      }
+    }
+    return SUCCESS;
   }
 
 
@@ -171,9 +164,8 @@ public class TrackbackAction extends BaseActionSupport {
    * number of trackbacks, or any other information in the base Annotation class.
    *
    * @return status
-   * @throws Exception
    */
-  public String getTrackbackCount() throws Exception {
+  public String getTrackbackCount() {
     if (trackbackId == null)
       trackbackId = articleURI;
     return getTrackbacks(false);
@@ -201,30 +193,25 @@ public class TrackbackAction extends BaseActionSupport {
    * @return status
    * @throws Exception
    */
-  public String getTrackbacks() throws Exception {
+  public String getTrackbacks() {
     return getTrackbacks(true);
   }
 
-  private String getTrackbacks (final boolean getBodies) throws Exception {
-    return TransactionHelper.doInTxE(session,
-                              new TransactionHelper.ActionE<String, Exception>() {
-      public String run(Transaction tx) throws Exception {
-        if (log.isDebugEnabled()) {
-          log.debug("retrieving trackbacks for: " + trackbackId);
-        }
+  private String getTrackbacks (final boolean getBodies) {
+    if (log.isDebugEnabled()) {
+      log.debug("retrieving trackbacks for: " + trackbackId);
+    }
 
-        trackbackList = session
-          .createCriteria(Trackback.class)
-          .add(Restrictions.eq("annotates", trackbackId))
-          .addOrder(Order.desc("created"))
-          .list();
+    trackbackList = session
+      .createCriteria(Trackback.class)
+      .add(Restrictions.eq("annotates", trackbackId))
+      .addOrder(Order.desc("created"))
+      .list();
 
-        if (getBodies)
-          for (Trackback t : trackbackList)
-             t.getBlog_name(); // for lazy load
-        return SUCCESS;
-      }
-    });
+    if (getBodies)
+      for (Trackback t : trackbackList)
+         t.getBlog_name(); // for lazy load
+    return SUCCESS;
   }
 
   private String returnError (String errMsg) {

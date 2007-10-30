@@ -37,13 +37,11 @@ import org.plos.permission.service.PermissionWebService;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.FileUtils;
 import org.plos.user.PlosOneUser;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
@@ -137,13 +135,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     a.setBody(URI.create(bodyUri));
     a.setCreated(new Date());
 
-    String newId =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<String>() {
-          public String run(Transaction tx) {
-            return tx.getSession().saveOrUpdate(a);
-          }
-        });
+    String newId = session.saveOrUpdate(a);
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + newId + " for " + target + " annotated by " + bodyUri);
@@ -230,22 +222,11 @@ public class AnnotationWebService extends BaseAnnotationService {
     deleteAnnotation(flagId);
   }
 
-  private void deleteAnnotation(final String annotationId)
-                         throws RemoteException {
-    Comment a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Comment>() {
-          public Comment run(Transaction tx) {
-            Comment a = tx.getSession().get(Comment.class, annotationId);
-
-            if (a != null)
-              tx.getSession().delete(a);
-
-            return a;
-          }
-        });
+  private void deleteAnnotation(final String annotationId) throws RemoteException {
+    Comment a = session.get(Comment.class, annotationId);
 
     if (a != null) {
+      session.delete(a);
       articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(a.getAnnotates()));
       fedora.purgeObjects(new String[] { fedora.uri2PID(a.getBody().toString()) });
     }
@@ -269,20 +250,16 @@ public class AnnotationWebService extends BaseAnnotationService {
                                          "annotation list",
                                          new CacheAdminHelper.CacheUpdater<AnnotationInfo[]>() {
         public AnnotationInfo[] lookup(boolean[] updated) {
+          // xxx: See trac #357. The previous default was incorrect.
+          // Support both the old and the new to be compatible. (till data migration)
           List<Comment> all =
-            TransactionHelper.doInTx(session, new TransactionHelper.Action<List<Comment>>() {
-              public List<Comment> run(Transaction tx) {
-                // xxx: See trac #357. The previous default was incorrect.
-                // Support both the old and the new to be compatible. (till data migration)
-                return tx.getSession().createCriteria(Comment.class)
-                          .add(Restrictions.eq("mediator", getApplicationId()))
-                          .add(Restrictions.eq("annotates", target))
-                          .add(Restrictions.disjunction()
-                                            .add(Restrictions.eq("type", getDefaultType()))
-                                            .add(Restrictions.eq("type", PLOSONE_0_6_DEFAULT_TYPE)))
-                          .list();
-              }
-            });
+            session.createCriteria(Comment.class)
+                      .add(Restrictions.eq("mediator", getApplicationId()))
+                      .add(Restrictions.eq("annotates", target))
+                      .add(Restrictions.disjunction()
+                                        .add(Restrictions.eq("type", getDefaultType()))
+                                        .add(Restrictions.eq("type", PLOSONE_0_6_DEFAULT_TYPE)))
+                      .list();
 
           List<Comment> l   = all;
 
@@ -332,14 +309,7 @@ public class AnnotationWebService extends BaseAnnotationService {
                                throws RemoteException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
 
-    Comment a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Comment>() {
-          public Comment run(Transaction tx) {
-            return tx.getSession().get(Comment.class, annotationId);
-          }
-        });
-
+    Comment a = session.get(Comment.class, annotationId);
     if (a == null)
       throw new IllegalArgumentException("invalid annoation id: " + annotationId);
 
@@ -356,17 +326,9 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void setPublic(final String annotationDoi) throws RemoteException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
 
-    Comment a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Comment>() {
-          public Comment run(Transaction tx) {
-            Comment a = tx.getSession().get(Comment.class, annotationDoi);
-            a.setState(PUBLIC_MASK);
-            tx.getSession().saveOrUpdate(a);
-
-            return a;
-          }
-        });
+    Comment a = session.get(Comment.class, annotationDoi);
+    a.setState(PUBLIC_MASK);
+    session.saveOrUpdate(a);
   }
 
   /**
@@ -379,17 +341,9 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void setFlagged(final String annotationId) throws RemoteException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
-    Comment a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Comment>() {
-          public Comment run(Transaction tx) {
-            Comment a = tx.getSession().get(Comment.class, annotationId);
-            a.setState(PUBLIC_MASK | FLAG_MASK);
-            tx.getSession().saveOrUpdate(a);
-
-            return a;
-          }
-        });
+    Comment a = session.get(Comment.class, annotationId);
+    a.setState(PUBLIC_MASK | FLAG_MASK);
+    session.saveOrUpdate(a);
   }
 
   /**
@@ -408,33 +362,27 @@ public class AnnotationWebService extends BaseAnnotationService {
                                    throws RemoteException {
     pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
 
-    List<Comment> l           =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<List<Comment>>() {
-          public List<Comment> run(Transaction tx) {
-            Criteria c           = tx.getSession().createCriteria(Comment.class);
+    Criteria c = session.createCriteria(Comment.class);
 
-            if (mediator != null)
-              c.add(Restrictions.eq("mediator", mediator));
+    if (mediator != null)
+      c.add(Restrictions.eq("mediator", mediator));
 
-            if (state == 0)
-              c.add(Restrictions.ne("state", "0"));
-            else
-              c.add(Restrictions.eq("state", "" + state));
+    if (state == 0)
+      c.add(Restrictions.ne("state", "0"));
+    else
+      c.add(Restrictions.eq("state", "" + state));
 
-            // XXX: See trac #357. The previous default was incorrect.
-            // Support both the old and the new to be compatible. (till data migration)
-            c.add(Restrictions.disjunction()
-              .add(Restrictions.eq("type", getDefaultType()))
-              .add(Restrictions.eq("type", PLOSONE_0_6_DEFAULT_TYPE)));
+    // XXX: See trac #357. The previous default was incorrect.
+    // Support both the old and the new to be compatible. (till data migration)
+    c.add(Restrictions.disjunction()
+        .add(Restrictions.eq("type", getDefaultType()))
+        .add(Restrictions.eq("type", PLOSONE_0_6_DEFAULT_TYPE)));
 
-            return c.list();
-          }
-        });
+    List<Comment> l = c.list();
 
     AnnotationInfo[] annotations = new AnnotationInfo[l.size()];
 
-    int              i           = 0;
+    int i = 0;
 
     for (Comment a : l)
       annotations[i++] = new AnnotationInfo(a, fedora);

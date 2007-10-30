@@ -60,8 +60,6 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 
 import net.sf.saxon.Controller;
 import net.sf.saxon.TransformerFactoryImpl;
@@ -317,30 +315,10 @@ public class Ingester {
     final Transformer tf = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
 
     // do the inserts
-    boolean done = false;
-    try {
-      done = TransactionHelper.doInTxE(sess, new TransactionHelper.ActionE<Boolean, Exception>() {
-        public Boolean run(Transaction tx) throws Exception {
-          NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
-          for (int idx = 0; idx < objs.getLength(); idx++) {
-            Element obj = (Element) objs.item(idx);
-            mulgaraInsertOneRDF(tx.getSession(), obj, tf, rb);
-          }
-
-          return true;
-        }
-      });
-    } catch (IngestException ie) {
-      throw ie;
-    } catch (TransformerException te) {
-      throw te;
-    } catch (RuntimeException re) {
-      throw re;
-    } catch (Exception e) {
-      throw new RuntimeException("Impossible", e);
-    } finally {
-      if (!done && (sess.getTransaction() == null))
-        rb.rdfStmts.clear();    // tx was rolled back
+    NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
+    for (int idx = 0; idx < objs.getLength(); idx++) {
+      Element obj = (Element) objs.item(idx);
+      mulgaraInsertOneRDF(sess, obj, tf, rb);
     }
   }
 
@@ -371,7 +349,7 @@ public class Ingester {
 
     // insert
     sess.doNativeUpdate(sw.toString());
-    rb.addRDFStatements(model, sw.getBuffer().substring(7, stmtLen));
+    rb.addRDFStatements(model, sw.getBuffer().substring(7, stmtLen));   // ???
   }
 
   private static final boolean hasNonWS(CharSequence seq, int idx) {

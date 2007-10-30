@@ -25,8 +25,6 @@ import org.plos.models.ObjectInfo;
 import org.plos.models.PLoS;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -79,7 +77,7 @@ public class FetchArticleAction extends BaseActionSupport {
   private int numDiscussions = 0;
   private int numAnnotations = 0;
 
-  
+
   public String execute() throws Exception {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
@@ -92,10 +90,13 @@ public class FetchArticleAction extends BaseActionSupport {
           numAnnotations ++;
         }
       }
-      Article artInfo = fetchArticleService.getArticleInfo(articleURI); 
+
+      Article artInfo = fetchArticleService.getArticleInfo(articleURI);
       setArticleInfo(artInfo);
-      // Determine the articleType heading from the Article model. The article type was ingested from 
-      // the Article XML and stored as a URI. 
+
+      /* Determine the articleType heading from the Article model. The article type was ingested
+       * from the Article XML and stored as a URI. 
+       */
       if (artInfo != null) {
         Set<URI> artTypes = artInfo.getArticleType();
         for (URI artType : artTypes) {
@@ -110,17 +111,11 @@ public class FetchArticleAction extends BaseActionSupport {
           }
         }
       }
-      
-      TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
-          public Void run(Transaction tx) {
-            
-            // get the alternate ArticleInfo, e.g. contains RelatedArticles
-            articleInfoX = browseService.getArticleInfo(URI.create(articleURI), tx);
-            
-            journalList = journalService.getJournalsForObject(URI.create(articleURI));
-            return null;
-          }
-        });
+
+      // get the alternate ArticleInfo, e.g. contains RelatedArticles
+      articleInfoX = browseService.getArticleInfo(URI.create(articleURI));
+
+      journalList  = journalService.getJournalsForObject(URI.create(articleURI));
     } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: "+ articleURI, e);

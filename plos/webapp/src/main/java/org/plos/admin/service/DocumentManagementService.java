@@ -70,8 +70,6 @@ import org.plos.journal.JournalService;
 import org.plos.util.FileUtils;
 
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
@@ -539,35 +537,28 @@ public class DocumentManagementService {
           log.debug("published article: '" + article + "'");
 
         // register with journals
-        final Set<String> vjs = vjMap.get(article);
+        Set<String> vjs = vjMap.get(article);
         if (vjs != null) {
-          final String art = article;
-          TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
-            public Void run(Transaction tx) throws Exception {
-              for (String virtualJournal : vjs) {
-                // get Journal by name
-                final Journal journal = journalService.getJournal(virtualJournal);
-                if (journal == null)
-                  throw new Exception("Error adding article '" + art +
-                                      "' to non-existent journal '" + virtualJournal + "'");
+          for (String virtualJournal : vjs) {
+            // get Journal by name
+            final Journal journal = journalService.getJournal(virtualJournal);
+            if (journal == null)
+              throw new Exception("Error adding article '" + article +
+                                  "' to non-existent journal '" + virtualJournal + "'");
 
-                // add Article to Journal
-                journal.getSimpleCollection().add(URI.create(art));
+            // add Article to Journal
+            journal.getSimpleCollection().add(URI.create(article));
 
-                // update Journal
-                session.saveOrUpdate(journal);
-                modifiedJournals.add(journal);
+            // update Journal
+            session.saveOrUpdate(journal);
+            modifiedJournals.add(journal);
 
-                final String message =
-                  "Article '" + art + "' was published in the journal '" + virtualJournal + "'";
-                msgs.add(message);
-                if (log.isDebugEnabled())
-                  log.debug(message);
-              }
-
-              return null;
-            }
-          });
+            final String message =
+              "Article '" + article + "' was published in the journal '" + virtualJournal + "'";
+            msgs.add(message);
+            if (log.isDebugEnabled())
+              log.debug(message);
+          }
         }
       } catch (Exception e) {
         log.error("Could not publish article: '" + article + "'", e);
@@ -576,20 +567,14 @@ public class DocumentManagementService {
     }
 
     // notify journal service
-    TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
-      public Void run(Transaction tx) {
-        for (Journal journal : modifiedJournals) {
-          try {
-            journalService.journalWasModified(journal);
-          } catch (Exception e) {
-            log.error("Error updating journal '" + journal + "'", e);
-            msgs.add("Error updating journal '" + journal + "' - " + e.toString());
-          }
-        }
-
-        return null;
+    for (Journal journal : modifiedJournals) {
+      try {
+        journalService.journalWasModified(journal);
+      } catch (Exception e) {
+        log.error("Error updating journal '" + journal + "'", e);
+        msgs.add("Error updating journal '" + journal + "' - " + e.toString());
       }
-    });
+    }
 
     // notify browse service
     browseService.notifyArticlesAdded(uris);

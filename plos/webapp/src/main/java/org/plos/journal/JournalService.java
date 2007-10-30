@@ -98,6 +98,10 @@ public class JournalService {
     sf.setClassMetadata(new ClassMetadata(Object.class, "Object", null, Collections.EMPTY_SET,
                                           RI_MODEL, null, null, Collections.EMPTY_SET));
 
+    /* spring initializes singletons at startup, so no session is available yet, and hence
+     * we create our own and create our own transaction. Alternatively, we could use
+     * lazy-init="true".
+     */
     Session s = sf.openSession();
     try {
       TransactionHelper.doInTx(s, new TransactionHelper.Action<Void>() {
@@ -135,6 +139,9 @@ public class JournalService {
    * cache-listener on the journal-cache get notifications of changes to the cache. In order to
    * simplify things we do all update work from within this listener, even if the change was done
    * locally; local changes then become mostly straight cache operations.
+   *
+   * <p>Ehcache does not give us a flag to detect whether the change is from a local or a remote
+   * change, hence the isLocal global flag hack.
    */
   private class JournalCacheListener implements CacheEventListener {
     public Object clone() {
