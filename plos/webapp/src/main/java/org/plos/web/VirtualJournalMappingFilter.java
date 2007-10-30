@@ -11,11 +11,9 @@
 package org.plos.web;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import javax.management.MBeanServer;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -30,7 +28,6 @@ import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.management.ManagementService;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -60,8 +57,6 @@ public class VirtualJournalMappingFilter implements Filter {
     try {
       CacheManager cacheManager = CacheManager.getInstance();
       fileSystemCache = cacheManager.getEhcache("VirtualJournalMappingFilter");
-      MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-      ManagementService.registerMBeans(cacheManager, mBeanServer, true, true, true, true);
     } catch (CacheException ce) {
       log.error("Error getting cache-manager", ce);
     } catch (IllegalStateException ise) {
