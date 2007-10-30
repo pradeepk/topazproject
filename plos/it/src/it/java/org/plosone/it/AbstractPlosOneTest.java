@@ -45,14 +45,14 @@ public abstract class AbstractPlosOneTest {
   /**
    * DOCUMENT ME!
    */
-  public static final Map<String, BrowserVersion> browsers = 
+  public static final Map<String, BrowserVersion> browsers =
     new HashMap<String, BrowserVersion>();
 
   public static final String IE7 = "Internet Explorer 7";
   public static final String IE6 = "Internet Explorer 6";
   public static final String FIREFOX2 = "Firefox 2";
 
-  public static final Map<String, Map<String,String>> journals = 
+  public static final Map<String, Map<String,String>> journals =
     new HashMap<String, Map<String, String>>();
   public Map<String, String[]> articles = new HashMap<String, String[]>();
 
@@ -61,7 +61,7 @@ public abstract class AbstractPlosOneTest {
     browsers.put(IE7, BrowserVersion.INTERNET_EXPLORER_7_0);
     browsers.put(FIREFOX2, BrowserVersion.FIREFOX_2);
 
-    // Note: Point the browser to emulate at http://htmlunit.sourceforge.net/cgi-bin/browserVersion 
+    // Note: Point the browser to emulate at http://htmlunit.sourceforge.net/cgi-bin/browserVersion
     //       for the code to generate to add to the list of browsers above.
     try {
       TestingEngineRegistry.addTestingEngine(TEST_ENGINE, TEST_ENGINE);
@@ -87,7 +87,7 @@ public abstract class AbstractPlosOneTest {
   /**
    * DOCUMENT ME!
    */
-  private final Map<TesterId, PlosOneWebTester> testers = 
+  private final Map<TesterId, PlosOneWebTester> testers =
     new HashMap<TesterId, PlosOneWebTester>();
 
   /**
@@ -133,9 +133,9 @@ public abstract class AbstractPlosOneTest {
     for (String browser : browsers.keySet()) {
       l.add(new String[] {browser});
     }
-    
+
     Object[][] dataArray = (Object[][])l.toArray(new Object[0][]);
-    return (dataArray); 
+    return (dataArray);
   }
 
   @DataProvider(name = "journals")
@@ -148,24 +148,25 @@ public abstract class AbstractPlosOneTest {
           continue;
         l.add(new String[] { journal, browser });
       }
-  
+
     return (Object[][]) l.toArray(new Object[0][]);
   }
 
   @DataProvider(name = "articles")
   public Object[][] articlesTestData(Method m) {
     ArrayList<String[]> l = new ArrayList<String[]>();
-  
+
     String methodsThatUseSmallSet[] = new String[] { "Annotation", "Discussion" };
     boolean useSmallSet = false;
     String mName = m.getName();
-  
+
     for (String name : methodsThatUseSmallSet)
       if (mName.indexOf(name) > 0)
         useSmallSet = true;
-  
-    Set<String> dois = useSmallSet ? Collections.singleton("info:doi/10.1371/journal.pone.0000021") : articles.keySet();
-  
+
+    Set<String> dois = useSmallSet ?
+        Collections.singleton("info:doi/10.1371/journal.pone.0000021") : articles.keySet();
+
     for (String article : dois) {
       for (String journal : articles.get(article)) {
         for (String browser : browsers.keySet()) {
@@ -200,7 +201,7 @@ public abstract class AbstractPlosOneTest {
         return false;
       if (other == this)
         return true;
-      return browser.equals(((TesterId)other).browser) 
+      return browser.equals(((TesterId)other).browser)
         && journal.equals(((TesterId)other).journal);
     }
   }
