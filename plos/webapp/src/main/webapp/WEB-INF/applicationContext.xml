@@ -213,6 +213,23 @@
     <aop:scoped-proxy/>
   </bean>
 
+  <bean id="journalService" class="org.plos.journal.JournalService" scope="singleton">
+    <constructor-arg index="0">
+      <ref bean="otmSessionFactory"/>
+    </constructor-arg>
+    <constructor-arg index="1">
+      <ref bean="journalCache"/>
+    </constructor-arg>
+    <constructor-arg index="2">
+      <ref bean="carrierCache"/>
+    </constructor-arg>
+  </bean>
+
+  <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
+
+  <!-- OTM setups -->
   <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration" scope="singleton">
     <constructor-arg index="0" value="${pub.spring.itql.uri}" />
     <property name="models">
@@ -478,22 +495,7 @@
     <aop:advisor advice-ref="txAdvice" pointcut-ref="needTx"/>
   </aop:config>
   
-  <bean id="journalService" class="org.plos.journal.JournalService" scope="singleton">
-    <constructor-arg index="0">
-      <ref bean="otmSessionFactory"/>
-    </constructor-arg>
-    <constructor-arg index="1">
-      <ref bean="journalCache"/>
-    </constructor-arg>
-    <constructor-arg index="2">
-      <ref bean="carrierCache"/>
-    </constructor-arg>
-  </bean>
-
-  <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
-    <aop:scoped-proxy/>
-  </bean>
-
+  <!-- freemarker configs -->
   <bean id="plosOneFreemarkerManager" class="org.plos.struts2.PlosOneFreemarkerManager">
     <constructor-arg index="0">
       <ref bean="plosOneFreemarkerConfig" />
@@ -524,34 +526,24 @@
   </bean>
 
   <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-    <property name="configLocation">
-      <value>classpath:ehcache.xml</value>
-    </property>
+    <property name="configLocation" value="classpath:ehcache.xml"/>
     <property name="shared" value="true"/>
   </bean>
 
   <bean id="journalCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-    <property name="cacheName">
-      <value>Journals</value>
-    </property>
+    <property name="cacheName" value="Journals"/>
   </bean>
 
   <bean id="carrierCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-    <property name="cacheName">
-      <value>ArticleCarriers</value>
-    </property>
+    <property name="cacheName" value="ArticleCarriers"/>
   </bean>
 
   <bean id="browseCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-    <property name="cacheName">
-      <value>BrowseCache</value>
-    </property>
+    <property name="cacheName" value="BrowseCache"/>
   </bean>
 
   <bean id="feedCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-    <property name="cacheName">
-      <value>FeedCache</value>
-    </property>
+    <property name="cacheName" value="FeedCache"/>
   </bean>
 
   <!-- JMX exporting -->
