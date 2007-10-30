@@ -21,13 +21,6 @@
 
 [ -z "$MVN" ] && MVN=mvn
 
-[ -z "$TOPAZ_INSTALL_DIR" ] && \
-  TOPAZ_INSTALL_DIR=`$MVN help:effective-pom | grep 'topazproject.install.dir' | head -1 | \
-                     sed 's/.*>\(.*\)<.*/\1/'`
-
-MVN_REPOSITORY=$HOME/.m2/repository
-MVN_REPOSITORY_TOPAZ=${MVN_REPOSITORY}/org/topazproject
-
 MVN_FIRST_FAILURE=$HOME/.m2/first_failure
 MVN_LAST_SUCCESS=$HOME/.m2/last_success
 MVN_LAST_BUILD=$HOME/.m2/last_build
@@ -50,69 +43,9 @@ echo "svn info and recent changes"
 svn info
 svn log -rBASE:{`date "+%Y-%m-%d"`}
 
-echo "Removing potentially stale directory: ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}"
-rm -rf ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}
-
-# Build our ant-tasks first
-echo "Building ant-tasks-plugin first"
-(cd build/ant-tasks-plugin; ${MVN} ${MVNARGS} install)
-
-echo "Making sure ecqs is stopped: mvn ant-tasks:ecqs-stop"
-${MVN} ${MVNARGS} ant-tasks:ecqs-stop   > /dev/null
-echo "Making sure fedora is stopped: mvn ant-tasks:fedora-stop"
-${MVN} ${MVNARGS} ant-tasks:fedora-stop > /dev/null 2>&1
-echo "Making sure mulgara is stopped: mvn ant-tasks:mulgara-stop"
-${MVN} ${MVNARGS} ant-tasks:mulgara-stop > /dev/null 2>&1
-echo "Making sure search is stopped: mvn ant-tasks:search-stop"
-${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
-
-# Do a build, if it fails, just exit
-echo "Running our build: mvn clean install --batch-mode"
 set -e
-${MVN} ${MVNARGS} clean install --batch-mode
+${MVN} ${MVNARGS} -Pit clean site --batch-mode
 N=$?
-
-echo "Removing potentially stale directory: ${TOPAZ_INSTALL_DIR}"
-rm -rf ${TOPAZ_INSTALL_DIR}
-
-# The rest of these things we do whether they succeed or not
-# (Actually we care if integration tests fail, but need docs run even if they do)
-set +e
-
-# Run integration tests and generate documentation
-if [ ${N} -eq 0 ]; then
-  echo "Running integration tests: mvn clean -Pit-startenv install --batch-mode"
-  export MAVEN_OPTS=-XX:MaxPermSize=128m
-  (cd topazproject/integrationtests; ${MVN} ${MVNARGS} -Pit-startenv clean install --batch-mode)
-  N=$?
-
-  echo "Creating documentation: cd integrationtests; mvn site-deploy"
-  mkdir -p topazproject/integrationtests/target
-  RESULTS=`pwd`/topazproject/integrationtests/target/site.build.out.$$
-  #rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs
-  (cd topazproject/integrationtests; ${MVN} ${MVNARGS} site-deploy --batch-mode 2>&1 >$RESULTS)
-  if [ $? -ne 0 ]; then
-    echo "Site Build Failed"
-    cat $RESULTS
-  fi
-fi
-
-echo "Stopping ecqs"
-${MVN} ${MVNARGS} ant-tasks:ecqs-stop   > /dev/null
-echo "Stopping fedora"
-${MVN} ${MVNARGS} ant-tasks:fedora-stop > /dev/null 2>&1
-echo "Stopping mulgara"
-${MVN} ${MVNARGS} ant-tasks:mulgara-stop > /dev/null 2>&1
-echo "Making sure search is stopped: mvn ant-tasks:search-stop"
-${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
-
-#Run plosone integration tests
-if [ ${N} -eq 0 ]; then
-  echo "Running plosone-integration tests: mvn clean -Pit-helper install --batch-mode"
-  export MAVEN_OPTS=-XX:MaxPermSize=128m
-  (cd plos/it; ${MVN} ${MVNARGS} -Pit-helper clean install --batch-mode)
-  N=$?
-fi
 
 # Build RPMs if integration tests succeeded
 if [ ${N} -eq 0 -a -x /usr/bin/rpmbuild ]; then
