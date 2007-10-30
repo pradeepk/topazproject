@@ -21,7 +21,6 @@ import org.plos.annotation.service.AnnotationService;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Journal;
-import org.plos.models.ObjectInfo;
 import org.plos.models.PLoS;
 
 import org.topazproject.otm.Session;
@@ -46,23 +45,23 @@ public class FetchArticleAction extends BaseActionSupport {
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
   private static String[] articleTypes = new String[]{
-      "Correction", 
-      "Research Article", 
-      "Retraction", 
-      "Debate", 
-      "Expert Commentary", 
-      "From Innovation to Application", 
-      "Historical Profiles & Perspective", 
-      "Policy Platform", 
-      "Symposium", 
-      "Viewpoint", 
-      "Review", 
-      "Editorial", 
-      "Interview", 
+      "Correction",
+      "Research Article",
+      "Retraction",
+      "Debate",
+      "Expert Commentary",
+      "From Innovation to Application",
+      "Historical Profiles & Perspective",
+      "Policy Platform",
+      "Symposium",
+      "Viewpoint",
+      "Review",
+      "Editorial",
+      "Interview",
       "Correspondence",
       "Issue Image"
   };
-  private static final Set<String> VALID_ARTICLE_TYPES = 
+  private static final Set<String> VALID_ARTICLE_TYPES =
     new HashSet<String>(Arrays.asList(articleTypes));
   private BrowseService browseService;
   private FetchArticleService fetchArticleService;
@@ -95,7 +94,7 @@ public class FetchArticleAction extends BaseActionSupport {
       setArticleInfo(artInfo);
 
       /* Determine the articleType heading from the Article model. The article type was ingested
-       * from the Article XML and stored as a URI. 
+       * from the Article XML and stored as a URI.
        */
       if (artInfo != null) {
         Set<URI> artTypes = artInfo.getArticleType();
@@ -130,8 +129,8 @@ public class FetchArticleAction extends BaseActionSupport {
 
 
   /**
-   * A struts action that populates the transformedArticle field of this class. 
-   * 
+   * A struts action that populates the transformedArticle field of this class.
+   *
    * @return Annotated Article XML String
    */
   public String getAnnotatedArticle() {
@@ -227,13 +226,13 @@ public class FetchArticleAction extends BaseActionSupport {
 
   /**
    * Return the ArticleInfo from the Browse cache.
-   * 
+   *
    * TODO: convert all usages of "articleInfo" (ObjectInfo) to use the Browse cache version of
    * ArticleInfo.  Note that for all templates to use ArticleInfo, it will have to
    * be enhanced.  articleInfo & articleInfoX are both present, for now, to support:
    *   - existing templates/services w/o a large conversion
    *   - access to RelatedArticles
-   * 
+   *
    * @return Returns the articleInfoX.
    */
   public BrowseService.ArticleInfo getArticleInfoX() {
@@ -252,9 +251,9 @@ public class FetchArticleAction extends BaseActionSupport {
    * @return
    */
   public String getArticleTypeHeading() {
-  	return articleTypeHeading;
+    return articleTypeHeading;
   }
-  
+
   /**
    * @param articleInfo The articleInfo to set.
    */

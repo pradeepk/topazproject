@@ -483,7 +483,7 @@ public class ArticleFeed extends BaseActionSupport {
           text.append("<p>by ").append(authorNames).append("</p>\n");
         }
         if (dc.getDescription() != null) {
-        	text.append(transformToHtml(dc.getDescription()));
+          text.append(transformToHtml(dc.getDescription()));
         }
         description.setValue(text.toString());
       } catch (Exception e) {

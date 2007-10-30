@@ -67,10 +67,10 @@ public class TextUtils {
     if (StringUtils.isBlank(text)) {
       return text;
     } else {
-      return com.opensymphony.util.TextUtils.linkURL(text); 
+      return com.opensymphony.util.TextUtils.linkURL(text);
     }
   }
-  
+
   /**
    * Return the escaped html. Useful when you want to make any dangerous scripts safe to render.
    * @param bodyContent bodyContent

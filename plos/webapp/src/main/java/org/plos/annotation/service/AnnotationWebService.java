@@ -100,7 +100,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws UnsupportedOperationException DOCUMENT ME!
    */
   public String createAnnotation(final String mimeType, final String target, final String context,
-                                 final String olderAnnotation, final String title, final String body)
+                                 final String olderAnnotation, final String title,
+                                 final String body)
                           throws RemoteException, UnsupportedEncodingException {
     pep.checkAccess(pep.CREATE_ANNOTATION, URI.create(target));
 
@@ -113,8 +114,8 @@ public class AnnotationWebService extends BaseAnnotationService {
       throw new UnsupportedOperationException("supersedes is not supported");
 
     String user      = PlosOneUser.getCurrentUser().getUserId();
-    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()), 
-        "Annotation", "Annotation Body");
+    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
+                                         "Annotation", "Annotation Body");
 
     if (log.isDebugEnabled())
       log.debug("created fedora object " + bodyUri + " for annotation ");
