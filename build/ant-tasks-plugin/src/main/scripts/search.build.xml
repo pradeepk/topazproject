@@ -42,13 +42,8 @@
     <property name="tomcatlog.dir"      location="${home}/tomcat/log"/>
     <property name="port"               value="${PORT}"/>
 
-    <condition property="tomcat.url" value="${TOMCAT_URL}"
-        else="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.25/bin/apache-tomcat-5.5.25.zip">
-      <isset property="TOMCAT_URL"/>
-    </condition>
-
     <condition property="tomcathome" value="${TOMCAT_HOME}"
-        else="${tomcatinstall.dir}/apache-tomcat-5.5.25/apache-tomcat-5.5.25">
+        else="${tomcatinstall.dir}/apache-tomcat-${TOMCAT_VERSION}/apache-tomcat-${TOMCAT_VERSION}">
       <isset property="TOMCAT_HOME"/>
     </condition>
   </target>
@@ -57,8 +52,14 @@
   <target name="search-install" depends="init">
     <echo message="Installing Tomcat into ${tomcatinstall.dir} ..."/>
 
+    <artifact:dependencies filesetId="tomcat.fileset" useScope="runtime">
+      <dependency groupId="tomcat" artifactId="apache-tomcat"
+                  version="${TOMCAT_VERSION}" type="zip"/>
+    </artifact:dependencies>
+    <pathconvert property="tomcat-zip" refid="tomcat.fileset"/>
+
     <cargo containerId="tomcat5x" action="stop">
-      <zipUrlInstaller installUrl="${tomcat.url}" installDir="${tomcatinstall.dir}"/>
+      <zipUrlInstaller installUrl="file:${tomcat-zip}" installDir="${tomcatinstall.dir}"/>
       <configuration home="${tomcatconfig.dir}"/>
     </cargo>
   </target>
