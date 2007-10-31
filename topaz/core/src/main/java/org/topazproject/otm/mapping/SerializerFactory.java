@@ -171,6 +171,11 @@ public class SerializerFactory {
                   new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "date"), false);
     setSerializer(Calendar.class, Rdf.xsd + "time",
                   new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "time"), false);
+
+    setSerializer(Enum.class, new EnumSerializer(), true);
+    setSerializer(Enum.class, Rdf.xsd + "string", new EnumSerializer(), true);
+    setSerializer(Enum.class, Rdf.xsd + "anyURI", new EnumSerializer(), true);
+    setSerializer(Enum.class, Rdf.xsd + "XMLLiteral", new EnumSerializer(), true);
   }
 
   /**
@@ -289,6 +294,16 @@ public class SerializerFactory {
 
     public String toString() {
       return "SimpleSerializer[" + constructor.getDeclaringClass().getName() + "]";
+    }
+  }
+
+  private static class EnumSerializer implements Serializer<Enum> {
+    public String serialize(Enum o) throws Exception {
+      return (o == null) ? null : o.name();
+    }
+
+    public Enum deserialize(String o, Class c) throws Exception {
+      return Enum.valueOf(c, o);
     }
   }
 

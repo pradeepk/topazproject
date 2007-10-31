@@ -35,6 +35,7 @@ import org.topazproject.otm.criterion.TransCriterion;
 import org.topazproject.otm.criterion.WalkCriterion;
 
 import org.topazproject.otm.samples.Article;
+import org.topazproject.otm.samples.ClassWithEnum;
 import org.topazproject.otm.samples.Grants;
 import org.topazproject.otm.samples.NoPredicate;
 import org.topazproject.otm.samples.NoRdfType;
@@ -79,6 +80,7 @@ public abstract class AbstractOtmTest {
     Class classes [] = new Class[] {Article.class, PublicAnnotation.class, PrivateAnnotation.class,
                                     ReplyThread.class, Grants.class, Revokes.class,
                                     NoRdfType.class, NoPredicate.class, SpecialMappers.class,
+                                    ClassWithEnum.class,
                                     // criteria classes
                                     Conjunction.class, Criterion.class, DetachedCriteria.class,
                                     Disjunction.class, EQCriterion.class, ExistsCriterion.class,

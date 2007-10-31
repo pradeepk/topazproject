@@ -27,6 +27,7 @@ import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Annotea;
 import org.topazproject.otm.samples.Article;
+import org.topazproject.otm.samples.ClassWithEnum;
 import org.topazproject.otm.samples.Grants;
 import org.topazproject.otm.samples.NoPredicate;
 import org.topazproject.otm.samples.NoRdfType;
@@ -187,6 +188,33 @@ public class BasicOtmTest extends AbstractOtmTest {
    */
   @Test(dependsOnMethods =  {
     "testNoPredicate"}
+  )
+  public void testEnum() throws OtmException {
+    log.info("Testing enum ...");
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          ClassWithEnum c = new ClassWithEnum("http://localhost/ClassWithEnum/1");
+          c.foo = ClassWithEnum.Foo.bar1;
+          session.saveOrUpdate(c);
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          ClassWithEnum c = session.get(ClassWithEnum.class, "http://localhost/ClassWithEnum/1");
+          assertNotNull(c);
+
+          assertEquals(ClassWithEnum.Foo.bar1, c.foo);
+        }
+      });
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  @Test(dependsOnMethods =  {
+    "testEnum"}
   )
   public void testAssociations() throws OtmException {
     log.info("Testing associations ...");
