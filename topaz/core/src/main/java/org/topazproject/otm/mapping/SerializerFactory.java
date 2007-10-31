@@ -19,7 +19,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.SimpleTimeZone;
 
 import org.topazproject.otm.Rdf;
@@ -35,6 +37,7 @@ public class SerializerFactory {
   private Map<Class, Map<String, Serializer>> serializers;
   private SessionFactory                      sf;
   private static Map<Class, String>           typeMap = new HashMap<Class, String>();
+  private final Set<Class>                    supers  = new LinkedHashSet<Class>();
 
   static {
     typeMap.put(String.class, null);
@@ -107,59 +110,67 @@ public class SerializerFactory {
         }
       };
 
-    setSerializer(String.class, new SimpleSerializer<String>(String.class));
-    setSerializer(String.class, Rdf.xsd + "string", new SimpleSerializer<String>(String.class));
-    setSerializer(String.class, Rdf.xsd + "anyURI", new SimpleSerializer<String>(String.class));
-    setSerializer(String.class, Rdf.rdf + "XMLLiteral", new SimpleSerializer<String>(String.class));
-    setSerializer(Boolean.class, new XsdBooleanSerializer());
-    setSerializer(Boolean.TYPE, new XsdBooleanSerializer());
-    setSerializer(Integer.class, new SimpleSerializer<Integer>(Integer.class));
-    setSerializer(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class));
-    setSerializer(Integer.class, Rdf.xsd + "double", new IntegerSerializer<Integer>(Integer.class));
-    setSerializer(Integer.TYPE, Rdf.xsd + "double", new IntegerSerializer<Integer>(Integer.class));
-    setSerializer(Long.class, new SimpleSerializer<Long>(Long.class));
-    setSerializer(Long.TYPE, new SimpleSerializer<Long>(Long.class));
-    setSerializer(Short.class, new SimpleSerializer<Short>(Short.class));
-    setSerializer(Short.TYPE, new SimpleSerializer<Short>(Short.class));
-    setSerializer(Float.class, new SimpleSerializer<Float>(Float.class));
-    setSerializer(Float.TYPE, new SimpleSerializer<Float>(Float.class));
-    setSerializer(Double.class, new SimpleSerializer<Double>(Double.class));
-    setSerializer(Double.TYPE, new SimpleSerializer<Double>(Double.class));
-    setSerializer(Byte.class, new SimpleSerializer<Byte>(Byte.class));
-    setSerializer(Byte.TYPE, new SimpleSerializer<Byte>(Byte.class));
-    setSerializer(URI.class, new SimpleSerializer<URI>(URI.class));
-    setSerializer(URL.class, new SimpleSerializer<URL>(URL.class));
-    setSerializer(Date.class, new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
+    setSerializer(String.class, new SimpleSerializer<String>(String.class), false);
+    setSerializer(String.class, Rdf.xsd + "string", new SimpleSerializer<String>(String.class),
+                  false);
+    setSerializer(String.class, Rdf.xsd + "anyURI", new SimpleSerializer<String>(String.class),
+                  false);
+    setSerializer(String.class, Rdf.rdf + "XMLLiteral", new SimpleSerializer<String>(String.class),
+                  false);
+    setSerializer(Boolean.class, new XsdBooleanSerializer(), false);
+    setSerializer(Boolean.TYPE, new XsdBooleanSerializer(), false);
+    setSerializer(Integer.class, new SimpleSerializer<Integer>(Integer.class), false);
+    setSerializer(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class), false);
+    setSerializer(Integer.class, Rdf.xsd + "double", new IntegerSerializer<Integer>(Integer.class),
+                  false);
+    setSerializer(Integer.TYPE, Rdf.xsd + "double", new IntegerSerializer<Integer>(Integer.class),
+                  false);
+    setSerializer(Long.class, new SimpleSerializer<Long>(Long.class), false);
+    setSerializer(Long.TYPE, new SimpleSerializer<Long>(Long.class), false);
+    setSerializer(Short.class, new SimpleSerializer<Short>(Short.class), false);
+    setSerializer(Short.TYPE, new SimpleSerializer<Short>(Short.class), false);
+    setSerializer(Float.class, new SimpleSerializer<Float>(Float.class), false);
+    setSerializer(Float.TYPE, new SimpleSerializer<Float>(Float.class), false);
+    setSerializer(Double.class, new SimpleSerializer<Double>(Double.class), false);
+    setSerializer(Double.TYPE, new SimpleSerializer<Double>(Double.class), false);
+    setSerializer(Byte.class, new SimpleSerializer<Byte>(Byte.class), false);
+    setSerializer(Byte.TYPE, new SimpleSerializer<Byte>(Byte.class), false);
+    setSerializer(URI.class, new SimpleSerializer<URI>(URI.class), false);
+    setSerializer(URL.class, new SimpleSerializer<URL>(URL.class), false);
+    setSerializer(Date.class,
+                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"), false);
     setSerializer(Calendar.class,
-                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "dateTime"));
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "dateTime"),
+                  false);
 
     setSerializer(Date.class, Rdf.xsd + "dateTime",
-                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
+                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"), false);
     setSerializer(Date.class, Rdf.xsd + "date",
-                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "date"));
+                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "date"), false);
     setSerializer(Date.class, Rdf.xsd + "time",
-                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "time"));
+                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "time"), false);
 
     setSerializer(Long.class, Rdf.xsd + "dateTime",
-                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"));
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"), false);
     setSerializer(Long.class, Rdf.xsd + "date",
-                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"));
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"), false);
     setSerializer(Long.class, Rdf.xsd + "time",
-                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"));
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"), false);
 
     setSerializer(Long.TYPE, Rdf.xsd + "dateTime",
-                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"));
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"), false);
     setSerializer(Long.TYPE, Rdf.xsd + "date",
-                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"));
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"), false);
     setSerializer(Long.TYPE, Rdf.xsd + "time",
-                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"));
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"), false);
 
     setSerializer(Calendar.class, Rdf.xsd + "dateTime",
-                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "dateTime"));
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "dateTime"),
+                  false);
     setSerializer(Calendar.class, Rdf.xsd + "date",
-                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "date"));
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "date"), false);
     setSerializer(Calendar.class, Rdf.xsd + "time",
-                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "time"));
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "time"), false);
   }
 
   /**
@@ -201,7 +212,16 @@ public class SerializerFactory {
 
     Map<String, Serializer> m = serializers.get(clazz);
 
-    return (m != null) ? (Serializer<T>) m.get(dataType) : null;
+    Serializer<T>           s = (m != null) ? (Serializer<T>) m.get(dataType) : null;
+
+    if (s != null)
+      return s;
+
+    for (Class c : supers)
+      if (c.isAssignableFrom(clazz))
+        return getSerializer(c, dataType);
+
+    return null;
   }
 
   /**
@@ -211,10 +231,15 @@ public class SerializerFactory {
    * @param clazz the class
    * @param dataType the data type or null for un-typed
    * @param serializer the serializer to set
+   * @param sub indicates that the serializer can be used for sub-classes
    *
    * @return previous serializer if any
    */
-  public <T> Serializer<T> setSerializer(Class<T> clazz, String dataType, Serializer<T> serializer) {
+  public <T> Serializer<T> setSerializer(Class<T> clazz, String dataType, Serializer<T> serializer,
+                                         boolean sub) {
+    if (sub)
+      supers.add(clazz);
+
     if (dataType == null)
       dataType = Predicate.UNTYPED;
 
@@ -232,14 +257,15 @@ public class SerializerFactory {
    * @param <T> the java type of the class
    * @param clazz the class
    * @param serializer the serializer to set
+   * @param sub indicates that the serializer can be used for sub-classes
    */
-  public <T> void setSerializer(Class<T> clazz, Serializer<T> serializer) {
+  public <T> void setSerializer(Class<T> clazz, Serializer<T> serializer, boolean sub) {
     String dataType = typeMap.get(clazz);
 
     if (dataType != null)
-      setSerializer(clazz, dataType, serializer);
+      setSerializer(clazz, dataType, serializer, sub);
 
-    setSerializer(clazz, null, serializer);
+    setSerializer(clazz, null, serializer, sub);
   }
 
   private class SimpleSerializer<T> implements Serializer<T> {
