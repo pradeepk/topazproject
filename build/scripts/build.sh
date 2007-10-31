@@ -43,6 +43,7 @@ echo "svn info and recent changes"
 svn info
 svn log -rBASE:{`date "+%Y-%m-%d"`}
 
+rm -f plos/it/install/*/installed
 set -e
 ${MVN} ${MVNARGS} -Pit clean site --batch-mode
 N=$?
