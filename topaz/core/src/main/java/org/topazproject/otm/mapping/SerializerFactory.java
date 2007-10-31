@@ -253,7 +253,7 @@ public class SerializerFactory {
       return (o == null) ? null : o.toString();
     }
 
-    public T deserialize(String o) throws Exception {
+    public T deserialize(String o, Class<T> c) throws Exception {
       return constructor.newInstance(o);
     }
 
@@ -271,11 +271,11 @@ public class SerializerFactory {
       super(clazz);
     }
     
-    public T deserialize(String o) throws Exception {
+    public T deserialize(String o, Class<T> c) throws Exception {
       int decimal = o.indexOf(".");
       if (decimal != -1)
         o = o.substring(0, decimal); // TODO: Round-off properly?
-      return super.deserialize(o);
+      return super.deserialize(o, c);
     }
   }
   
@@ -328,7 +328,7 @@ public class SerializerFactory {
       }
     }
 
-    public T deserialize(String o) throws Exception {
+    public T deserialize(String o, Class<T> c) throws Exception {
       if (o == null)
         return null;
 
@@ -401,7 +401,7 @@ public class SerializerFactory {
       return o.toString();
     }
 
-    public Boolean deserialize(String o) throws Exception {
+    public Boolean deserialize(String o, Class c) throws Exception {
       if ("1".equals(o) || "true".equals(o))
         return Boolean.TRUE;
 

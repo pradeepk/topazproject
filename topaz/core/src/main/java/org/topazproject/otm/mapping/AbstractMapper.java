@@ -279,7 +279,7 @@ public abstract class AbstractMapper implements Mapper {
    */
   protected Object deserialize(Object o) throws OtmException {
     try {
-      return (serializer != null) ? serializer.deserialize((String) o) : o;
+      return (serializer != null) ? serializer.deserialize((String) o, getComponentType()) : o;
     } catch (Exception e) {
       throw new OtmException("Deserialization error on " + toString(), e);
     }

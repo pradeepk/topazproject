@@ -30,10 +30,11 @@ public interface Serializer<T> {
    * Convert from a triple store value
    *
    * @param o the triple store value as a String
+   * @param c the class of the object to deserialize
    *
    * @return the java object
    *
    * @throws Exception on a conversion error
    */
-  public T deserialize(String o) throws Exception;
+  public T deserialize(String o, Class<T> c) throws Exception;
 }

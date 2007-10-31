@@ -279,7 +279,7 @@ public abstract class Results {
                              "' and datatype '" + dt + "'");
 
     try {
-      return serializer.deserialize(lit.getValue());
+      return serializer.deserialize(lit.getValue(), type);
     } catch (OtmException oe) {
       throw oe;
     } catch (RuntimeException re) {
