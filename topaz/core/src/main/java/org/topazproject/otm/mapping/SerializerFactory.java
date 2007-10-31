@@ -58,7 +58,7 @@ public class SerializerFactory {
     typeMap.put(Calendar.class, Rdf.xsd + "dateTime");
   }
 
-/**
+  /**
    * Creates a new SerializerFactory object.
    *
    * @param sf the session factory
@@ -163,9 +163,10 @@ public class SerializerFactory {
   }
 
   /**
-   * Tests if a class must be serialized. 
+   * Tests if a class must be serialized.
    *
    * @param clazz the class
+   *
    * @return true if this class must be serialized
    */
   public boolean mustSerialize(Class clazz) {
@@ -188,6 +189,7 @@ public class SerializerFactory {
   /**
    * Gets the serializer for a class.
    *
+   * @param <T> the java type of the class
    * @param clazz the class
    * @param dataType the data type
    *
@@ -205,6 +207,7 @@ public class SerializerFactory {
   /**
    * Sets the serializer for a class and data type.
    *
+   * @param <T> the java type of the class
    * @param clazz the class
    * @param dataType the data type or null for un-typed
    * @param serializer the serializer to set
@@ -226,6 +229,7 @@ public class SerializerFactory {
   /**
    * Sets the default and un-typed serializer for a class.
    *
+   * @param <T> the java type of the class
    * @param clazz the class
    * @param serializer the serializer to set
    */
@@ -263,22 +267,26 @@ public class SerializerFactory {
   }
 
   /**
-   * When de-serializing an Integer that is stored as some non-integer, be sure to remove
-   * the decimal point.
+   * When de-serializing an Integer that is stored as some non-integer, be sure to remove the
+   * decimal point.
+   *
+   * @param <T> the java type of the class
    */
   private class IntegerSerializer<T> extends SimpleSerializer<T> {
     public IntegerSerializer(Class<T> clazz) {
       super(clazz);
     }
-    
+
     public T deserialize(String o, Class<T> c) throws Exception {
       int decimal = o.indexOf(".");
+
       if (decimal != -1)
         o = o.substring(0, decimal); // TODO: Round-off properly?
+
       return super.deserialize(o, c);
     }
   }
-  
+
   private static interface DateBuilder<T> {
     public Date toDate(T o);
 
