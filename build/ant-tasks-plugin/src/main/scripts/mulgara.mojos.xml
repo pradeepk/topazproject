@@ -114,6 +114,14 @@
         </parameter>
 
         <parameter>
+          <name>TOMCAT_VERSION</name>
+          <property>TOMCAT_VERSION</property>
+          <expression>${TOMCAT_VERSION}</expression>
+          <defaultValue>5.5.23</defaultValue>
+          <description>The tomcat version to use.</description>
+        </parameter>
+
+        <parameter>
           <name>webappVersion</name>
           <property>webappVersion</property>
           <required>true</required>
@@ -168,6 +176,15 @@
           <property>TOMCAT_HOME</property>
           <expression>${TOMCAT_HOME}</expression>
           <description>The location of the tomcat 5.x installation. Must be the same as what
+              was given in the mulgara-start command.</description>
+        </parameter>
+
+        <parameter>
+          <name>TOMCAT_VERSION</name>
+          <property>TOMCAT_VERSION</property>
+          <expression>${TOMCAT_VERSION}</expression>
+          <defaultValue>5.5.23</defaultValue>
+          <description>The tomcat version to use. Must be the same as what
               was given in the mulgara-start command.</description>
         </parameter>
 
