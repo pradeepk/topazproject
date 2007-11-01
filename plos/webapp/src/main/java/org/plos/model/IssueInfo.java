@@ -1,3 +1,13 @@
+/* $HeadURL$
+ * $Id$ 
+ *
+ * Copyright (c) 2006-2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
+
 package org.plos.model;
 
 import java.io.Serializable;
@@ -10,6 +20,7 @@ import org.plos.model.article.ArticleInfo;
 
 /**
  * The info about a single Issue that the UI needs.
+ * @version $Rev$ $Date$
  */
 public class IssueInfo implements Serializable {
 
