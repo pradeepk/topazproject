@@ -11,6 +11,7 @@ package org.topazproject.otm.mapping;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import java.util.AbstractList;
 import java.util.AbstractSequentialList;
@@ -61,6 +62,20 @@ public class CollectionMapper extends AbstractMapper {
   }
 
   /**
+   * Creates a new CollectionMapper object for Views.
+   *
+   * @param var           the projection variable
+   * @param field         the java class field
+   * @param getter        the field get method or null
+   * @param setter        the field set method or null
+   * @param componentType the array component type
+   */
+  public CollectionMapper(String var, Field field, Method getter, Method setter,
+                          Class componentType) {
+    super(var, field, getter, setter, componentType);
+  }
+
+  /**
    * Retrieve elements from a collection field of an object.
    *
    * @param o the object
@@ -93,7 +108,10 @@ public class CollectionMapper extends AbstractMapper {
    * @throws OtmException if a field's value cannot be de-serialized and set
    */
   public void set(Object o, List vals) throws OtmException {
-    Collection value  = (Collection) getRawValue(o, false);
+    Collection value = null;
+    if (getGetter() != null || getField().isAccessible() ||
+        Modifier.isPublic(getField().getModifiers()))
+      value = (Collection) getRawValue(o, false);
 
     boolean    create = (value == null);
 

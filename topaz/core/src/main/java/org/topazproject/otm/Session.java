@@ -437,6 +437,16 @@ public class Session {
   }
 
   /**
+   * Create a view.
+   *
+   * @param query the OQL query
+   * @return the query object
+   */
+  public <T> View<T> createView(Class<T> view) throws OtmException {
+    return new View(this, view, new ArrayList<Filter>(filters.values()));
+  }
+
+  /**
    * Create an OQL query.
    *
    * @param query the OQL query

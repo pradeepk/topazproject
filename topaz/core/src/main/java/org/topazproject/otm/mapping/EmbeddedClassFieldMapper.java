@@ -159,6 +159,10 @@ public class EmbeddedClassFieldMapper implements Mapper {
     return field.getUri();
   }
 
+  public String getProjectionVar() {
+    return null;
+  }
+
   /*
    * inherited javadoc
    */

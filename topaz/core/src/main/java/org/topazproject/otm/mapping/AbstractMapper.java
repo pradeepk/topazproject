@@ -44,7 +44,7 @@ public abstract class AbstractMapper implements Mapper {
   private final CascadeType[]       cascade;
 
   /**
-   * Creates a new AbstractMapper object.
+   * Creates a new AbstractMapper object for a regular class.
    *
    * @param uri the rdf predicate
    * @param field the java class field
@@ -66,6 +66,7 @@ public abstract class AbstractMapper implements Mapper {
                         String rdfType, boolean inverse, String model, MapperType mapperType,
                         boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade) {
     this.uri             = uri;
+    this.var             = null;
     this.field           = field;
     this.getter          = getter;
     this.setter          = setter;
@@ -81,6 +82,36 @@ public abstract class AbstractMapper implements Mapper {
     this.entityOwned     = entityOwned;
     this.generator       = generator;
     this.cascade         = cascade;
+  }
+
+  /**
+   * Creates a new AbstractMapper object for a view.
+   *
+   * @param var           the projection variable
+   * @param field         the java class field
+   * @param getter        the field get method or null
+   * @param setter        the field set method or null
+   * @param componentType of arrays and collections or type of functional properties
+   */
+  protected AbstractMapper(String var, Field field, Method getter, Method setter,
+                           Class componentType) {
+    this.uri             = null;
+    this.var             = var;
+    this.field           = field;
+    this.getter          = getter;
+    this.setter          = setter;
+    this.serializer      = null;
+    this.name            = field.getName();
+    this.type            = field.getType();
+    this.componentType   = componentType;
+    this.dataType        = null;
+    this.rdfType         = null;
+    this.inverse         = false;
+    this.model           = null;
+    this.mapperType      = null;
+    this.entityOwned     = false;
+    this.generator       = null;
+    this.cascade         = null;
   }
 
   /*
@@ -128,6 +159,10 @@ public abstract class AbstractMapper implements Mapper {
    */
   public String getUri() {
     return uri;
+  }
+
+  public String getProjectionVar() {
+    return var;
   }
 
   /*
@@ -299,7 +334,7 @@ public abstract class AbstractMapper implements Mapper {
    * inherited javadoc
    */
   public String toString() {
-    return getClass().getName() + "[field=" + name + ", pred=" + uri + ", type="
+    return getClass().getName() + "[field=" + name + ", pred=" + uri + ", var=" + var + ", type="
            + ((type != null) ? type.getName() : "-null-") + ", componentType="
            + ((componentType != null) ? componentType.getName() : "-null-") + ", dataType="
            + dataType + ", rdfType=" + rdfType + ", mapperType=" + mapperType + ", inverse="

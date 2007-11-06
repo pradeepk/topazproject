@@ -50,6 +50,18 @@ public class FunctionalMapper extends AbstractMapper {
   }
 
   /**
+   * Creates a new FunctionalMapper object for Views.
+   *
+   * @param var           the projection variable
+   * @param field         the java class field
+   * @param setter        the field set method or null
+   * @param componentType the array component type
+   */
+  public FunctionalMapper(String var, Field field, Method setter, Class componentType) {
+    super(var, field, null, setter, componentType);
+  }
+
+  /**
    * Get the value of a field of an object.
    *
    * @param o the object

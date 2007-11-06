@@ -41,9 +41,11 @@ public class ClassMetadata {
   private final Map<String, Mapper>       nameMap;
   private final Class                     clazz;
   private final Collection<Mapper>        fields;
+  private final String                    query;
+  private final Map<String, List<Mapper>> varMap;
 
   /**
-   * Creates a new ClassMetadata object.
+   * Creates a new ClassMetadata object for an Entity.
    *
    * @param clazz the class 
    * @param name the entity name for use in queries
@@ -59,6 +61,7 @@ public class ClassMetadata {
                 throws OtmException {
     this.clazz                                = clazz;
     this.name                                 = name;
+    this.query                                = null;
     this.type                                 = type;
     this.model                                = model;
     this.uriPrefix                            = uriPrefix;
@@ -86,6 +89,45 @@ public class ClassMetadata {
 
     this.uriMap  = Collections.unmodifiableMap(uriMap);
     this.nameMap = Collections.unmodifiableMap(nameMap);
+    this.varMap  = null;
+  }
+
+  /**
+   * Creates a new ClassMetadata object for a View.
+   *
+   * @param clazz  the class 
+   * @param name   the view name (used to look up class-metadata)
+   * @param query  the query, or null for SubView's
+   * @param fields mappers for all persistable fields (includes embedded class fields)
+   */
+  public ClassMetadata(Class clazz, String name, String query, Collection<Mapper> fields)
+                throws OtmException {
+    this.clazz     = clazz;
+    this.name      = name;
+    this.query     = query;
+    this.type      = null;
+    this.model     = null;
+    this.uriPrefix = null;
+    this.idField   = null;
+
+    this.types     = null;
+    this.fields    = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
+
+    Map<String, List<Mapper>> varMap  = new HashMap<String, List<Mapper>>();
+    Map<String, Mapper>       nameMap = new HashMap<String, Mapper>();
+    for (Mapper m : fields) {
+      if (nameMap.put(m.getName(), m) != null)
+        throw new OtmException("Duplicate field name for " + m.getField().toGenericString());
+
+      List<Mapper> mappers = varMap.get(m.getProjectionVar());
+      if (mappers == null)
+        varMap.put(m.getProjectionVar(), mappers = new ArrayList<Mapper>());
+      mappers.add(m);
+    }
+
+    this.uriMap  = null;
+    this.nameMap = Collections.unmodifiableMap(nameMap);
+    this.varMap  = Collections.unmodifiableMap(varMap);
   }
 
   /**
@@ -137,7 +179,7 @@ public class ClassMetadata {
   /**
    * Gets the set of rdf:type values that describe this class.
    *
-   * @return set of rdf:type uri values or an empty set
+   * @return set of rdf:type uri values or an empty set; null for views
    */
   public Set<String> getTypes() {
     return types;
@@ -155,7 +197,7 @@ public class ClassMetadata {
   /**
    * Gets the mapper for the id/subject-uri field.
    *
-   * @return the id field or null for embeddable classes
+   * @return the id field or null for embeddable classes and views
    */
   public Mapper getIdField() {
     return idField;
@@ -247,6 +289,26 @@ public class ClassMetadata {
    */
   public Mapper getMapperByName(String name) {
     return nameMap.get(name);
+  }
+
+  /**
+   * Gets the field mappers for a projection variable (for Views).
+   *
+   * @param var the projection variable name.
+   * @return the mappers or null
+   */
+  public List<Mapper> getMappersByVar(String var) {
+    List<Mapper> mappers = varMap.get(var);
+    return (mappers != null) ? new ArrayList<Mapper>(mappers) : null;
+  }
+
+  /** 
+   * Get the OQL query string if this is for a View.
+   * 
+   * @return the OQL query string, or null if this is not a View
+   */
+  public String getQuery() {
+    return query;
   }
 
   /*

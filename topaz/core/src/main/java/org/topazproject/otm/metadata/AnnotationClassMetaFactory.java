@@ -40,7 +40,10 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
+import org.topazproject.otm.annotations.Projection;
+import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
+import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
@@ -80,7 +83,10 @@ public class AnnotationClassMetaFactory {
    * @throws OtmException on an error
    */
   public ClassMetadata create(Class clazz) throws OtmException {
-    return create(clazz, clazz, null);
+    if (clazz.getAnnotation(View.class) != null || clazz.getAnnotation(SubView.class) != null)
+      return createView(clazz);
+    else
+      return create(clazz, clazz, null);
   }
 
   private ClassMetadata create(Class clazz, Class top, String uriPrefixOfContainingClass)
@@ -131,7 +137,7 @@ public class AnnotationClassMetaFactory {
     String name = ((entity != null) && !"".equals(entity.name())) ? entity.name() : getName(clazz);
 
     for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = createMapper(f, clazz, top, uriPrefix);
+      Collection<?extends Mapper> mappers = createMapper(f, clazz, top, uriPrefix, false);
 
       if (mappers == null)
         continue;
@@ -153,6 +159,29 @@ public class AnnotationClassMetaFactory {
     return new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
   }
 
+  private ClassMetadata createView(Class clazz) throws OtmException {
+    String name;
+    String query = null;
+
+    View view = (View) clazz.getAnnotation(View.class);
+    if (view != null) {
+      name  = !"".equals(view.name()) ? view.name() : getName(clazz);
+      query = view.query();
+    } else {
+      SubView sv = (SubView) clazz.getAnnotation(SubView.class);
+      name = !"".equals(sv.name()) ? sv.name() : getName(clazz);
+    }
+
+    Collection<Mapper> fields = new ArrayList<Mapper>();
+    for (Field f : clazz.getDeclaredFields()) {
+      Collection<?extends Mapper> mappers = createMapper(f, clazz, clazz, null, true);
+      if (mappers != null)
+        fields.addAll(mappers); // actually only one mapper in the collection
+    }
+
+    return new ClassMetadata(clazz, name, query, fields);
+  }
+
   /**
    * Create an appropriate mapper for the given java field.
    *
@@ -165,12 +194,13 @@ public class AnnotationClassMetaFactory {
    *
    * @throws OtmException if a mapper can't be created
    */
-  public Collection<?extends Mapper> createMapper(Field f, Class clazz, Class top, String ns)
+  public Collection<?extends Mapper> createMapper(Field f, Class clazz, Class top, String ns,
+                                                  boolean isView)
                                            throws OtmException {
     Class type = f.getType();
     int   mod  = f.getModifiers();
 
-    if (Modifier.isStatic(mod) || Modifier.isTransient(mod)) {
+    if (Modifier.isStatic(mod) || (!isView && Modifier.isTransient(mod))) {
       if (log.isDebugEnabled())
         log.debug(toString(f) + " will not be persisted.");
 
@@ -191,14 +221,14 @@ public class AnnotationClassMetaFactory {
     Method setMethod;
 
     try {
-      getMethod      = invokedOn.getMethod("get" + n);
+      getMethod = invokedOn.getMethod("get" + n);
     } catch (NoSuchMethodException e) {
       getMethod = null;
     }
 
     setMethod = getSetter(invokedOn, "set" + n, type);
 
-    if (((getMethod == null) || (setMethod == null)) && !Modifier.isPublic(mod))
+    if (((getMethod == null && !isView) || (setMethod == null)) && !Modifier.isPublic(mod))
       throw new OtmException("The field " + toString(f)
                              + " is inaccessible and can't be persisted.");
 
@@ -207,17 +237,29 @@ public class AnnotationClassMetaFactory {
     // xxx: But then again, that is 'bad coding style' anyway.  
     // xxx: So exception thrown above in those cases is somewhat justifiable.
     //
-    Predicate rdf      = (Predicate) f.getAnnotation(Predicate.class);
-    Id        id       = (Id) f.getAnnotation(Id.class);
-    boolean   embedded =
+    Predicate  rdf      = f.getAnnotation(Predicate.class);
+    Id         id       = f.getAnnotation(Id.class);
+    boolean    embedded =
       (f.getAnnotation(Embedded.class) != null) || (type.getAnnotation(Embeddable.class) != null);
+    Projection proj     = f.getAnnotation(Projection.class);
 
-    String    uri      =
+    if (isView && proj == null)
+      return null;
+    if (isView && (rdf != null || id != null || embedded))
+      throw new OtmException("Only @Projection is supported on fields in a View; class=" +
+                             clazz.getName() + ", field=" + f.getName());
+    if (!isView && proj != null)
+      throw new OtmException("@Projection is only supported on fields in a View; class=" +
+                             clazz.getName() + ", field=" + f.getName());
+
+    String     uri      =
       ((rdf != null) && !"".equals(rdf.uri())) ? rdf.uri() : ((ns != null) ? (ns + f.getName()) : null);
+    String     var      =
+      ((proj != null) && !"".equals(proj.value())) ? proj.value() : f.getName();
 
     // See if there is an @GeneratedValue annotation... create a generator and set parameter(s)
     IdentifierGenerator generator = null;
-    GeneratedValue      gv        = (GeneratedValue) f.getAnnotation(GeneratedValue.class);
+    GeneratedValue      gv        = f.getAnnotation(GeneratedValue.class);
 
     if (gv != null) {
       try {
@@ -266,7 +308,7 @@ public class AnnotationClassMetaFactory {
     if (f.getAnnotation(PredicateMap.class) != null)
       return Collections.singletonList(createPredicateMap(f, getMethod, setMethod));
 
-    if (!embedded && (uri == null))
+    if (!embedded && (uri == null) && !isView)
       throw new OtmException("Missing @Predicate for field " + toString(f));
 
     boolean isArray      = type.isArray();
@@ -304,15 +346,25 @@ public class AnnotationClassMetaFactory {
                                    : new CascadeType[]{CascadeType.all};
       Mapper            p;
 
-      if (isArray)
-        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse, model,
-                            mt, !notOwned, generator, ct);
-      else if (isCollection)
-        p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
-                                 model, mt, !notOwned, generator, ct);
-      else
-        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
-                                 mt, !notOwned, generator, ct);
+      if (isArray) {
+        if (isView)
+          p = new ArrayMapper(var, f, setMethod, type);
+        else
+          p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
+                              model, mt, !notOwned, generator, ct);
+      } else if (isCollection) {
+        if (isView)
+          p = new CollectionMapper(var, f, getMethod, setMethod, type);
+        else
+          p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
+                                   model, mt, !notOwned, generator, ct);
+      } else {
+        if (isView)
+          p = new FunctionalMapper(var, f, setMethod, type);
+        else
+          p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
+                                   mt, !notOwned, generator, ct);
+      }
 
       return Collections.singletonList(p);
     }

@@ -138,11 +138,20 @@ public interface Mapper {
   public Class getComponentType();
 
   /**
-   * Gets the rdf predicate uri. All fields other than an 'Id' field must have a uri.
+   * Gets the rdf predicate uri. All fields other than an 'Id' field must have a uri (for regular
+   * classes) or a projection-variable (for views).
    *
    * @return the rdf predicate uri
    */
   public String getUri();
+
+  /**
+   * Gets the projection variable. All fields in a view must have a projection-variable which
+   * specifies which element in projection list to tie this field to.
+   *
+   * @return the projection variable
+   */
+  public String getProjectionVar();
 
   /**
    * Gets the serializer used. Note that there won't be any serializer set up for

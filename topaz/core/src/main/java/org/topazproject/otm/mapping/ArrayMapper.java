@@ -53,6 +53,18 @@ public class ArrayMapper extends AbstractMapper {
   }
 
   /**
+   * Creates a new ArrayMapper object for Views.
+   *
+   * @param var           the projection variable
+   * @param field         the java class field
+   * @param setter        the field set method or null
+   * @param componentType the array component type
+   */
+  public ArrayMapper(String var, Field field, Method setter, Class componentType) {
+    super(var, field, null, setter, componentType);
+  }
+
+  /**
    * Retrieve elements from an array field of an object.
    *
    * @param o the object
