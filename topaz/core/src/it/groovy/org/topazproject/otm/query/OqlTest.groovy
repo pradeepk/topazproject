@@ -10,14 +10,13 @@
 
 package org.topazproject.otm.query;
 
+import org.topazproject.otm.AbstractTest;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Disjunction;
@@ -31,8 +30,6 @@ import org.topazproject.otm.filter.CriteriaFilterDefinition;
 import org.topazproject.otm.filter.DisjunctiveFilterDefinition;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.filter.OqlFilterDefinition;
-import org.topazproject.otm.metadata.RdfBuilder;
-import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.PublicAnnotation;
@@ -43,26 +40,15 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Integration tests for OQL.
  */
-public class OqlTest extends GroovyTestCase {
+public class OqlTest extends AbstractTest {
   private static final Log log = LogFactory.getLog(OqlTest.class);
 
-  def rdf;
-  def store;
-
   void setUp() {
-    store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
-    rdf = new RdfBuilder(
-        sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
-
-    for (c in [['ri',     'otmtest1', null],
-               ['prefix', 'prefix',   'mulgara:PrefixModel'.toURI()],
-               ['xsd',    'xsd',      'mulgara:XMLSchemaModel'.toURI()],
-               ['str',    'str',      'http://topazproject.org/models#StringCompare'.toURI()]]) {
-      def m = new ModelConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
-      rdf.sessFactory.addModel(m)
-      try { store.dropModel(m); } catch (Throwable t) { }
-      store.createModel(m)
-    }
+    models = [['ri',     'otmtest1', null],
+              ['prefix', 'prefix',   'mulgara:PrefixModel'.toURI()],
+              ['xsd',    'xsd',      'mulgara:XMLSchemaModel'.toURI()],
+              ['str',    'str',      'http://topazproject.org/models#StringCompare'.toURI()]];
+    super.setUp();
 
     rdf.sessFactory.preload(Annotation.class);
     rdf.sessFactory.preload(Article.class);
@@ -1566,30 +1552,6 @@ public class OqlTest extends GroovyTestCase {
       assert c.criterionList[0].criterions[1].criterions[1].arguments.length == 2
       assert c.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
       assert c.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
-    }
-  }
-
-  private def doInTx(Closure c) {
-    Session s = rdf.sessFactory.openSession()
-    s.beginTransaction()
-    try {
-      def r = c(s)
-      s.transaction.commit()
-      return r
-    } catch (OtmException e) {
-      try {
-        s.transaction.rollback()
-      } catch (OtmException oe) {
-        log.warn("rollback failed", oe);
-      }
-      log.error("error: ${e}", e)
-      throw e
-    } finally {
-      try {
-        s.close();
-      } catch (OtmException oe) {
-        log.warn("close failed", oe);
-      }
     }
   }
 }

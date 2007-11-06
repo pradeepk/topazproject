@@ -10,41 +10,13 @@
 
 package org.topazproject.otm;
 
-import org.topazproject.otm.ModelConfig;
-import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.filter.OqlFilterDefinition;
-import org.topazproject.otm.metadata.RdfBuilder;
-import org.topazproject.otm.stores.ItqlStore;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Integration tests for filters on object-read.
  */
-public class FilterTest extends GroovyTestCase {
-  private static final Log log = LogFactory.getLog(FilterTest.class);
-
-  def rdf;
-  def store;
-
-  void setUp() {
-    store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
-    rdf = new RdfBuilder(
-        sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
-
-    for (c in [['ri',     'otmtest1', null],
-               ]) {
-      def m = new ModelConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
-      rdf.sessFactory.addModel(m)
-      try { store.dropModel(m); } catch (Throwable t) { }
-      store.createModel(m)
-    }
-  }
-
+public class FilterTest extends AbstractTest {
   void testGet() {
     // create data
     Class clsN = rdf.class('Name') {
@@ -180,30 +152,6 @@ public class FilterTest extends GroovyTestCase {
       rdf.sessFactory.removeFilterDefinition(fd1.getFilterName());
       rdf.sessFactory.removeFilterDefinition(fd2.getFilterName());
       rdf.sessFactory.removeFilterDefinition(fd3.getFilterName());
-    }
-  }
-
-  private def doInTx(Closure c) {
-    Session s = rdf.sessFactory.openSession()
-    s.beginTransaction()
-    try {
-      def r = c(s)
-      s.transaction.commit()
-      return r
-    } catch (OtmException e) {
-      try {
-        s.transaction.rollback()
-      } catch (OtmException oe) {
-        log.warn("rollback failed", oe);
-      }
-      log.error("error: ${e}", e)
-      throw e
-    } finally {
-      try {
-        s.close();
-      } catch (OtmException oe) {
-        log.warn("close failed", oe);
-      }
     }
   }
 }
