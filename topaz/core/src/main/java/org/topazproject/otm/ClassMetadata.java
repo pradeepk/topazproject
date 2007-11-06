@@ -29,19 +29,20 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class ClassMetadata {
-  private static final Log          log       = LogFactory.getLog(ClassMetadata.class);
-  private Set<String>               types;
-  private String                    type;
-  private String                    name;
-  private String                    model;
-  private String                    uriPrefix;
-  private Mapper                    idField;
-  private Map<String, List<Mapper>> uriMap;
-  private Map<String, Mapper>       nameMap;
-  private Class                     clazz;
-  private Collection<Mapper>        fields;
+  private static final Log                log = LogFactory.getLog(ClassMetadata.class);
 
-/**
+  private final Set<String>               types;
+  private final String                    type;
+  private final String                    name;
+  private final String                    model;
+  private final String                    uriPrefix;
+  private final Mapper                    idField;
+  private final Map<String, List<Mapper>> uriMap;
+  private final Map<String, Mapper>       nameMap;
+  private final Class                     clazz;
+  private final Collection<Mapper>        fields;
+
+  /**
    * Creates a new ClassMetadata object.
    *
    * @param clazz the class 
@@ -66,8 +67,8 @@ public class ClassMetadata {
     this.types                                = Collections.unmodifiableSet(new HashSet<String>(types));
     this.fields                               = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
 
-    uriMap                                    = new HashMap<String, List<Mapper>>();
-    nameMap                                   = new HashMap<String, Mapper>();
+    Map<String, List<Mapper>> uriMap          = new HashMap<String, List<Mapper>>();
+    Map<String, Mapper>       nameMap         = new HashMap<String, Mapper>();
 
     for (Mapper m : fields) {
       List<Mapper> mappers = uriMap.get(m.getUri());
@@ -83,8 +84,8 @@ public class ClassMetadata {
         throw new OtmException("Duplicate field name for " + m.getField().toGenericString());
     }
 
-    uriMap    = Collections.unmodifiableMap(uriMap);
-    nameMap   = Collections.unmodifiableMap(nameMap);
+    this.uriMap  = Collections.unmodifiableMap(uriMap);
+    this.nameMap = Collections.unmodifiableMap(nameMap);
   }
 
   /**

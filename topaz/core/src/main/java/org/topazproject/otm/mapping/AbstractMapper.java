@@ -25,22 +25,23 @@ import org.topazproject.otm.id.IdentifierGenerator;
  * @author Pradeep krishnan
  */
 public abstract class AbstractMapper implements Mapper {
-  private Serializer          serializer;
-  private Method              getter;
-  private Method              setter;
-  private Field               field;
-  private String              name;
-  private String              uri;
-  private Class               type;
-  private Class               componentType;
-  private boolean             inverse;
-  private String              model;
-  private String              dataType;
-  private String              rdfType;
-  private MapperType          mapperType;
-  private boolean             entityOwned;
-  private IdentifierGenerator generator;
-  private CascadeType[]       cascade;
+  private final Serializer          serializer;
+  private final Method              getter;
+  private final Method              setter;
+  private final Field               field;
+  private final String              name;
+  private final String              uri;
+  private final String              var;
+  private final Class               type;
+  private final Class               componentType;
+  private final boolean             inverse;
+  private final String              model;
+  private final String              dataType;
+  private final String              rdfType;
+  private final MapperType          mapperType;
+  private final boolean             entityOwned;
+  private final IdentifierGenerator generator;
+  private final CascadeType[]       cascade;
 
   /**
    * Creates a new AbstractMapper object.
