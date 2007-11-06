@@ -217,7 +217,7 @@ public class ClassMetadata {
     if (mappers == null)
       return null;
 
-    Set<String> uris      = new HashSet(typeUris);
+    Set<String> uris      = new HashSet<String>(typeUris);
     Mapper      candidate = null;
 
     for (Mapper m : mappers) {
