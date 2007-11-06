@@ -1040,9 +1040,9 @@ public class OqlTest extends AbstractTest {
       checker.verify(r, warnings:true) {
       }
 
-      assert shouldFail(Exception, {
+      assert shouldFail(QueryException, {
         r = q.setUri("name", "Jack".toURI()).execute()
-      }).contains("is not absolute")
+      })
 
       // typed literal
       q = s.createQuery("select obj from Test1 obj where obj.state = :state;")
@@ -1066,9 +1066,9 @@ public class OqlTest extends AbstractTest {
       checker.verify(r, warnings:true) {
       }
 
-      assert shouldFail(Exception, {
+      assert shouldFail(QueryException, {
         r = q.setUri("state", "Jack".toURI()).execute()
-      }).contains("is not absolute")
+      })
 
       // uri
       q = s.createQuery("select obj from Test1 obj where obj.blog = :blog;")
@@ -1097,9 +1097,9 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:o2.id) }
       }
 
-      assert shouldFail(Exception, {
+      assert shouldFail(QueryException, {
         r = q.setUri("blog", "Jack".toURI()).execute()
-      }).contains("is not absolute")
+      })
 
       // class
       q = s.createQuery("select obj from Test1 obj where obj.info = :info;")

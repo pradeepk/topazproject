@@ -89,7 +89,7 @@ options {
         if (log.isDebugEnabled())
           log.debug("resolved parameter '" + name + "', type '" + type + "', to <" + val + ">");
 
-        makeUriref(node, (URI) val);
+        makeUriref(node, name, (URI) val);
       } else if (val instanceof Results.Literal) {
         Results.Literal lit = (Results.Literal) val;
         if (type != null) {
@@ -134,13 +134,13 @@ options {
                       s + "', val='" + val + "', to '" + txt);
 
           if (type.getType() == ExprType.Type.URI)
-            makeUriref(node, new URI(txt));
+            makeUriref(node, name, new URI(txt));
           else if (type.getType() == ExprType.Type.UNTYPED_LIT)
             makeLiteral(node, txt, null, null);
           else if (type.getType() == ExprType.Type.TYPED_LIT)
             makeLiteral(node, txt, new URI(type.getDataType()), null);
           else
-            makeUriref(node, new URI(txt));
+            makeUriref(node, name, new URI(txt));
         } catch (Exception e) {
           throw (RecognitionException)
               new RecognitionException("Error serializing the value for parameter '" + name +
@@ -149,7 +149,11 @@ options {
       }
     }
 
-    private void makeUriref(AST node, URI val) {
+    private void makeUriref(AST node, String pName, URI val) throws RecognitionException {
+      if (!val.isAbsolute())
+        throw new RecognitionException("parameter '" + pName + "' is a URI, but the URI is not " +
+                                       "absolute: '" + val + "'");
+
       node.setType(URIREF);
       node.setFirstChild(null);
       node.setText("<" + expandAliases(val) + ">");
