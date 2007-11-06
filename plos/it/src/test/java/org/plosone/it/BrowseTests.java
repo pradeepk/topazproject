@@ -90,7 +90,9 @@ public class BrowseTests extends AbstractPlosOneTest {
     HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
     hp.gotoPage();
     hp.getTester().clickLinkWithExactText("By Subject");
-    hp.getTester().clickLinkWithExactText("Infectious Diseases (1)");
+    // The first article subject should be automatically selected and the corresponding article link displayed. 
+    hp.getTester().assertLinkPresentWithText("A Low Protein Diet Increases the Hypoxic Tolerance");
+    hp.getTester().clickLinkWithText("Infectious Diseases");
     hp.getTester().assertTextPresent("Isolation of Non-Tuberculous Mycobacteria in "
         + "Children Investigated for Pulmonary Tuberculosis");
   }
