@@ -308,6 +308,33 @@ public abstract class Results {
     }
   }
 
+  public <T> T getURIAs(String var, Class<T> type) throws OtmException {
+    return getURIAs(findVariable(var), type);
+  }
+
+  public <T> T getURIAs(int idx, Class<T> type) throws OtmException {
+    if (type == URI.class)
+      return (T) getURI(idx);
+
+    URI     uri = getURI(idx);
+    String  dt  = sf.getSerializerFactory().getDefaultDataType(type);
+
+    Serializer<T> serializer = sf.getSerializerFactory().getSerializer(type, dt);
+    if (serializer == null)
+      throw new OtmException("No serializer found for class '" + type.getName() +
+                             "' and datatype '" + dt + "'");
+
+    try {
+      return serializer.deserialize(uri.toString(), type);
+    } catch (OtmException oe) {
+      throw oe;
+    } catch (RuntimeException re) {
+      throw re;
+    } catch (Exception e) {
+      throw new OtmException("Error deserializing '" + uri + "'", e);
+    }
+  }
+
   public Results getSubQueryResults(String var) throws OtmException {
     return getSubQueryResults(findVariable(var));
   }
