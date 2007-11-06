@@ -64,7 +64,7 @@
   </#if>
 
   <div id="search-results">
-    <p><strong>${startPgIndex + 1} - ${endPgIndex + 1}</strong> of <strong>${totalArticles}</strong> article<#if totalArticles != 1>s</#if> published ${infoText}.</p>
+    <#if endPgIndex gte 0><p><strong>${startPgIndex + 1} - ${endPgIndex + 1}</strong> of </#if><strong>${totalArticles}</strong> article<#if totalArticles != 1>s</#if> published ${infoText}.</p>
     <@pagination />
     <ul>
       <#list articleList as art>

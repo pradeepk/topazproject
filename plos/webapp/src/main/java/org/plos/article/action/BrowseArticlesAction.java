@@ -37,6 +37,8 @@ import org.plos.models.Journal;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * @author stevec
@@ -92,12 +94,20 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
   private String browseCategory () {
     categoryInfos = browseService.getCategoryInfos();
-
-    int[] numArt = new int[1];
-    articleList = (catName != null) ?
-        browseService.getArticlesByCategory(catName, startPage, pageSize, numArt) :
-        Collections.<ArticleInfo>emptyList();
-    totalArticles = numArt[0];
+    
+    // if the catName is unspecified, use the first catName in the categoryInfos list
+    if ((catName == null) && (categoryInfos != null) && (categoryInfos.size()>0)) {
+    	catName = categoryInfos.firstKey();
+    }
+    
+    if (catName != null) {
+      int[] numArt = new int[1];
+    	articleList = browseService.getArticlesByCategory(catName, startPage, pageSize, numArt);
+      totalArticles = numArt[0];
+    } else {
+      articleList = Collections.<ArticleInfo>emptyList();
+      totalArticles = 0;
+    }
 
     return SUCCESS;
   }
@@ -148,15 +158,23 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   private String browseIssue() {
+
     // was issued specified, or use Journal.currentIssue?
     if (issue == null || issue.length() == 0) {
-      // get the Journal's currentIssue
-      Journal journal = journalService.getJournal();
-      if (journal != null) {
-        URI currentIssue = journal.getCurrentIssue();
-        if (currentIssue != null)
-          issue = currentIssue.toString();
-      }
+    // JournalService, OTM usage wants to be in a Transaction
+    issue = TransactionHelper.doInTx(session,
+      new TransactionHelper.Action<String>() {
+
+        public String run(Transaction tx) {
+
+          // get the Journal's currentIssue
+          final Journal journal = journalService.getJournal();
+          if (journal == null) { return null; }
+          final URI currentIssue = journal.getCurrentIssue();
+          if (currentIssue == null) { return null; }
+          return currentIssue.toString();
+        }
+      });
     }
 
     // if still no issue, create an IssueInfo
