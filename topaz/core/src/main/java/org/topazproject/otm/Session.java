@@ -687,9 +687,6 @@ public class Session {
         if ((p.getSerializer() != null) || (p.getUri() == null))
           continue;
 
-        if (log.isDebugEnabled())
-          log.debug("Checking object '" + cm.getName() + "' field '" + p.getName() +
-                    "' literal type '" + p.getDataType() + "' rdf type '" + p.getRdfType() + "'");
         boolean deep = ((cascade != null) && p.isCascadable(cascade));
         boolean deepDelete = p.isCascadable(CascadeType.delete);
         for (Object ao : p.get(o)) {
