@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Ronald Tschalär
  */
-public class View<T> implements Parameterizable<View> {
+public class View<T> implements Parameterizable<View<T>> {
   private static final Log log = LogFactory.getLog(View.class);
 
   private final Session          sess;
@@ -71,8 +71,7 @@ public class View<T> implements Parameterizable<View> {
     return res;
   }
 
-  private Object createInstance(ClassMetadata cm, Results r)
-      throws OtmException {
+  private Object createInstance(ClassMetadata cm, Results r) throws OtmException {
     Object obj;
     try {
       obj = cm.getSourceClass().newInstance();
@@ -124,22 +123,22 @@ public class View<T> implements Parameterizable<View> {
     return query.getParameterNames();
   }
 
-  public View setParameter(String name, Object val) throws OtmException {
+  public View<T> setParameter(String name, Object val) throws OtmException {
     query.setParameter(name, val);
     return this;
   }
 
-  public View setUri(String name, URI val) throws OtmException {
+  public View<T> setUri(String name, URI val) throws OtmException {
     query.setUri(name, val);
     return this;
   }
 
-  public View setPlainLiteral(String name, String val, String lang) throws OtmException {
+  public View<T> setPlainLiteral(String name, String val, String lang) throws OtmException {
     query.setPlainLiteral(name, val, lang);
     return this;
   }
 
-  public View setTypedLiteral(String name, String val, URI dataType) throws OtmException {
+  public View<T> setTypedLiteral(String name, String val, URI dataType) throws OtmException {
     query.setTypedLiteral(name, val, dataType);
     return this;
   }
