@@ -21,9 +21,13 @@ import org.topazproject.otm.query.Results;
  * in the {@link #paramValues paramValues} map, where the values are either a {@link URI URI}, a
  * {@link Results.Literal Literal}, or the specific object.
  * 
+ * <p>Implementation note: subclasses must also implement <var>T</var> - this can't be expressed in
+ * the type parameters, unfortunately.
+ *
  * @author Ronald Tschalär
  */
-public abstract class AbstractParameterizable<T> implements Parameterizable<T> {
+public abstract class AbstractParameterizable<T extends Parameterizable<T>>
+    implements Parameterizable<T> {
   /** The parameter values that have been set. */
   protected final Map<String, Object> paramValues = new HashMap<String, Object>();
 
@@ -33,24 +37,28 @@ public abstract class AbstractParameterizable<T> implements Parameterizable<T> {
                              getParameterNames() + "'");
   }
 
+  @SuppressWarnings("unchecked")
   public T setParameter(String name, Object val) throws OtmException {
     checkParameterName(name);
     paramValues.put(name, val);
     return (T) this;
   }
 
+  @SuppressWarnings("unchecked")
   public T setUri(String name, URI val) throws OtmException {
     checkParameterName(name);
     paramValues.put(name, val);
     return (T) this;
   }
 
+  @SuppressWarnings("unchecked")
   public T setPlainLiteral(String name, String val, String lang) throws OtmException {
     checkParameterName(name);
     paramValues.put(name, new Results.Literal(val, lang, null));
     return (T) this;
   }
 
+  @SuppressWarnings("unchecked")
   public T setTypedLiteral(String name, String val, URI dataType) throws OtmException {
     checkParameterName(name);
     paramValues.put(name, new Results.Literal(val, null, dataType));

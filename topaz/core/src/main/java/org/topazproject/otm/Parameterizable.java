@@ -18,7 +18,7 @@ import java.util.Set;
  * 
  * @author Ronald Tschalär
  */
-public interface Parameterizable<T> {
+public interface Parameterizable<T extends Parameterizable<T>> {
   /** 
    * Return the list of parameter names. 
    * 
