@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,6 +52,7 @@ public class Session {
   private final Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
   private final Map<String, Filter>            filters        = new HashMap<String, Filter>();
+  private final Map<Id, InstanceState>         states         = new HashMap<Id, InstanceState>();
 
   /**
    * Empty constructor for spring scoped proxy. The resulting session instance is not usable
@@ -158,6 +160,7 @@ public class Session {
     deleteMap.clear();
     proxies.clear();
     associations.clear();
+    states.clear();
   }
 
   /**
@@ -579,18 +582,48 @@ public class Session {
     ClassMetadata         cm            = sessionFactory.getClassMetadata(o.getClass());
     TripleStore           store         = sessionFactory.getTripleStore();
 
-    if (delete || !pristineProxy) {
+    if (delete) {
       if (log.isDebugEnabled())
         log.debug("deleting from store: " + id);
 
-      store.delete(cm, id.getId(), txn);
-    }
-
-    if (!delete && !pristineProxy) {
+     states.remove(id);
+     store.delete(cm, cm.getFields(), id.getId(), o, txn);
+    } else if (pristineProxy) {
       if (log.isDebugEnabled())
-        log.debug("inserting into store: " + id);
+        log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
+    } else {
+      InstanceState state = states.get(id);
+      Collection<Mapper> fields;
+      if (state != null)
+        fields = state.update(o, cm, this);
+      else {
+        fields = cm.getFields();
+        states.put(id, new InstanceState(o, cm, this));
+      }
 
-      store.insert(cm, id.getId(), o, txn);
+      if ((fields.size() == 0) && (state != null)) {
+        if (log.isDebugEnabled())
+          log.debug("Update skipped for " + id + ". No changes to the object state.");
+      } else {
+        if (fields.size() == cm.getFields().size()) {
+          if (log.isDebugEnabled())
+            log.debug("insert/update in to store: " + id);
+        } else {
+          if (log.isDebugEnabled()) {
+            Collection<Mapper> skips = new ArrayList(cm.getFields());
+            skips.removeAll(fields);
+            StringBuilder buf = new StringBuilder(100);
+            char sep = ' ';
+            for (Mapper m : skips) {
+              buf.append(sep).append(m.getName());
+              sep = ',';
+            }
+            log.debug("Partial update for " + id + ". Skipped:" + buf);
+          }
+        }
+        store.delete(cm, fields, id.getId(), o, txn);
+        store.insert(cm, fields, id.getId(), o, txn);
+      }
     }
   }
 
@@ -606,6 +639,12 @@ public class Session {
 
     if (instance instanceof PostLoadEventListener)
       ((PostLoadEventListener)instance).onPostLoad(this, instance);
+
+    // Remember state for change tracking
+    if (instance != null)
+      states.put(id, new InstanceState(instance, cm, this));
+    else
+      states.remove(id);
 
     return instance;
   }
@@ -889,5 +928,45 @@ public class Session {
 
   private interface LazyLoadMethodHandler extends MethodHandler {
     public boolean isLoaded();
+  }
+
+  private static class InstanceState {
+    private final Map<Mapper, List<String>> vmap;
+    private Map<String, List<String>>       pmap;
+
+
+    public InstanceState(Object instance, ClassMetadata cm, Session session) {
+      vmap   = new HashMap<Mapper, List<String>>();
+      pmap   = null;
+      update(instance, cm, session);
+    }
+
+    public Collection<Mapper> update(Object instance, ClassMetadata cm, Session session) {
+      List<Mapper> mappers = new ArrayList<Mapper>();
+
+      for (Mapper m : cm.getFields()) {
+        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+          Map<String, List<String>> nv = (Map<String, List<String>>) m.getRawValue(instance, true);
+          boolean                   eq = (pmap == null) ? (nv == null) : pmap.equals(nv);
+
+          if (!eq) {
+            pmap = nv;
+            mappers.add(m);
+          }
+        } else {
+          List<String> ov = vmap.get(m);
+          List<String> nv =
+            (m.getSerializer() != null) ? m.get(instance) : session.getIds(m.get(instance));
+          boolean      eq = (ov == null) ? (nv == null) : ov.equals(nv);
+
+          if (!eq) {
+            vmap.put(m, nv);
+            mappers.add(m);
+          }
+        }
+      }
+
+      return mappers;
+    }
   }
 }

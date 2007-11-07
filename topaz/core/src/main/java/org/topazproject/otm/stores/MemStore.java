@@ -62,14 +62,14 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
-              throws OtmException {
+  public void insert(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, 
+      Transaction txn) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
     Storage            storage = msc.getStorage();
 
     storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getTypes().toArray(new String[0]));
 
-    for (Mapper p : cm.getFields()) {
+    for (Mapper p : fields) {
       if (p.hasInverseUri())
         continue;
 
@@ -84,13 +84,13 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn)
-              throws OtmException {
+  public void delete(ClassMetadata cm, Collection<Mapper> fields, String id, Object o,
+      Transaction txn) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
     Storage            storage = msc.getStorage();
     String             model   = cm.getModel();
 
-    for (Mapper m : cm.getFields())
+    for (Mapper m : fields)
       storage.remove(model, id, m.getUri());
   }
 

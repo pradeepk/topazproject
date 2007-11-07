@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
 
@@ -54,16 +55,45 @@ public interface TripleStore {
               throws OtmException;
 
   /**
-   * Removes an object from the triple store.
+   * Persists parts of an object in the triple store.
    *
    * @param cm the class metadata for the object
+   * @param fields the fields that are to be selectively persisted
    * @param id the id/subject-uri for the object
+   * @param o the object
    * @param txn the transaction context
    *
    * @throws OtmException on an error
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn)
+  public void insert(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, Transaction txn)
               throws OtmException;
+
+  /**
+   * Removes an object from the triple store.
+   *
+   * @param cm the class metadata for the object
+   * @param id the id/subject-uri for the object
+   * @param o the object
+   * @param txn the transaction context
+   *
+   * @throws OtmException on an error
+   */
+  public void delete(ClassMetadata cm, String id, Object o, Transaction txn)
+              throws OtmException;
+
+  /**
+   * Removes parts of an object from the triple store.
+   *
+   * @param cm the class metadata for the object
+   * @param fields the fields that are to be selectively deleted
+   * @param id the id/subject-uri for the object
+   * @param o the object
+   * @param txn the transaction context
+   *
+   * @throws OtmException on an error
+   */
+  public void delete(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, 
+                     Transaction txn) throws OtmException;
 
   /**
    * Gets an object from the triple store.

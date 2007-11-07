@@ -20,6 +20,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
@@ -153,6 +154,22 @@ public abstract class AbstractTripleStore implements TripleStore {
     }
 
     return instance;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
+              throws OtmException {
+    insert(cm, cm.getFields(), id, o, txn);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void delete(ClassMetadata cm, String id, Object o, Transaction txn)
+              throws OtmException {
+    delete(cm, cm.getFields(), id, o, txn);
   }
 
   /*

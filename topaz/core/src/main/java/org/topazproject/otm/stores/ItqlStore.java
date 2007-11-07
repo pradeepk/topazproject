@@ -83,8 +83,9 @@ public class ItqlStore extends AbstractTripleStore {
     ((ItqlStoreConnection) con).close();
   }
 
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn) throws OtmException {
-    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm);
+  public void insert(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, 
+      Transaction txn) throws OtmException {
+    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder insert = new StringBuilder(500);
 
     // for every model create an insert statement
@@ -116,13 +117,14 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata cm) {
+  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata cm, 
+      Collection<Mapper> fields) {
     Map<String, List<Mapper>> mappersByModel = new HashMap<String, List<Mapper>>();
 
     if (cm.getTypes().size() > 0)
       mappersByModel.put(cm.getModel(), new ArrayList<Mapper>());
 
-    for (Mapper p : cm.getFields()) {
+    for (Mapper p : fields) {
       String m = (p.getModel() != null) ? p.getModel() : cm.getModel();
       List<Mapper> pList = mappersByModel.get(m);
       if (pList == null)
@@ -214,8 +216,9 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  public void delete(ClassMetadata cm, String id, Transaction txn) throws OtmException {
-    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm);
+  public void delete(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, 
+      Transaction txn) throws OtmException {
+    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder delete = new StringBuilder(500);
 
     // for every model create a delete statement
