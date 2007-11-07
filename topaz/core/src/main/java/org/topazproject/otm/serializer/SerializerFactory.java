@@ -9,12 +9,8 @@
  */
 package org.topazproject.otm.serializer;
 
-import java.lang.reflect.Constructor;
-
 import java.net.URI;
 import java.net.URL;
-
-import java.text.SimpleDateFormat;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -22,7 +18,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.SimpleTimeZone;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
@@ -271,193 +266,5 @@ public class SerializerFactory {
       setSerializer(clazz, dataType, serializer, sub);
 
     setSerializer(clazz, null, serializer, sub);
-  }
-
-  private class SimpleSerializer<T> implements Serializer<T> {
-    private Constructor<T> constructor;
-
-    public SimpleSerializer(Class<T> clazz) {
-      try {
-        constructor = clazz.getConstructor(String.class);
-      } catch (NoSuchMethodException t) {
-        throw new IllegalArgumentException("Must have a constructor that takes a String", t);
-      }
-    }
-
-    public String serialize(T o) throws Exception {
-      return (o == null) ? null : o.toString();
-    }
-
-    public T deserialize(String o, Class<T> c) throws Exception {
-      return constructor.newInstance(o);
-    }
-
-    public String toString() {
-      return "SimpleSerializer[" + constructor.getDeclaringClass().getName() + "]";
-    }
-  }
-
-  private static class EnumSerializer implements Serializer<Enum> {
-    public String serialize(Enum o) throws Exception {
-      return (o == null) ? null : o.name();
-    }
-
-    public Enum deserialize(String o, Class c) throws Exception {
-      return Enum.valueOf(c, o);
-    }
-  }
-
-  /**
-   * When de-serializing an Integer that is stored as some non-integer, be sure to remove the
-   * decimal point.
-   *
-   * @param <T> the java type of the class
-   */
-  private class IntegerSerializer<T> extends SimpleSerializer<T> {
-    public IntegerSerializer(Class<T> clazz) {
-      super(clazz);
-    }
-
-    public T deserialize(String o, Class<T> c) throws Exception {
-      int decimal = o.indexOf(".");
-
-      if (decimal != -1)
-        o = o.substring(0, decimal); // TODO: Round-off properly?
-
-      return super.deserialize(o, c);
-    }
-  }
-
-  private static interface DateBuilder<T> {
-    public Date toDate(T o);
-
-    public T fromDate(Date d);
-  }
-
-  private static class XsdDateTimeSerializer<T> implements Serializer<T> {
-    private SimpleDateFormat sparser;
-    private SimpleDateFormat zparser;
-    private SimpleDateFormat fmt;
-    private DateBuilder<T>   dateBuilder;
-    private boolean          hasTime = true;
-
-    public XsdDateTimeSerializer(DateBuilder dateBuilder, String dataType) {
-      this.dateBuilder = dateBuilder;
-
-      if ((Rdf.xsd + "date").equals(dataType)) {
-        zparser   = new SimpleDateFormat("yyyy-MM-ddZ");
-        sparser   = new SimpleDateFormat("yyyy-MM-dd");
-        fmt       = new SimpleDateFormat("yyyy-MM-dd'Z'");
-        hasTime   = false;
-      } else if ((Rdf.xsd + "dateTime").equals(dataType)) {
-        zparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSSZ");
-        sparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS");
-        fmt       = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
-
-        if (mulgaraWorkAround()) {
-          // assume UTC if no timezone specified
-          sparser.setTimeZone(new SimpleTimeZone(0, "UTC"));
-        }
-      } else if ((Rdf.xsd + "time").equals(dataType)) {
-        zparser   = new SimpleDateFormat("HH:mm:ss'.'SSSZ");
-        sparser   = new SimpleDateFormat("HH:mm:ss'.'SSS");
-        fmt       = new SimpleDateFormat("HH:mm:ss'.'SSS'Z'");
-      } else {
-        throw new IllegalArgumentException("Data type must be an xsd:date, xsd:time or xsd:dateTime");
-      }
-
-      fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
-      sparser.setLenient(false);
-      zparser.setLenient(false);
-    }
-
-    public String serialize(T o) throws Exception {
-      synchronized (fmt) {
-        return (o == null) ? null : fmt.format(dateBuilder.toDate(o));
-      }
-    }
-
-    public T deserialize(String o, Class<T> c) throws Exception {
-      if (o == null)
-        return null;
-
-      if (o.endsWith("Z"))
-        o = o.substring(0, o.length() - 1) + "+00:00";
-
-      int     len         = o.length();
-      boolean hasTimeZone =
-        ((o.charAt(len - 3) == ':') && ((o.charAt(len - 6) == '-') || (o.charAt(len - 6) == '+')));
-
-      if (hasTime) {
-        int    pos    = o.indexOf('.');
-        String mss;
-        int    endPos;
-
-        if (pos == -1) {
-          mss         = ".000";
-          pos         = hasTimeZone ? (len - 6) : len;
-          endPos      = pos;
-        } else {
-          // convert fractional seconds to number of milliseconds
-          endPos   = hasTimeZone ? (len - 6) : len;
-          mss      = o.substring(pos, endPos);
-
-          while (mss.length() < 4)
-            mss += "0";
-
-          if (mss.length() > 4)
-            mss = mss.substring(0, 4);
-        }
-
-        o = o.substring(0, pos) + mss + o.substring(endPos, len);
-      }
-
-      if (hasTimeZone) {
-        // convert hh:mm to hhmm in timezone
-        len   = o.length();
-        o     = o.substring(0, len - 3) + o.substring(len - 2, len);
-      }
-
-      SimpleDateFormat parser = hasTimeZone ? zparser : sparser;
-
-      synchronized (parser) {
-        return dateBuilder.fromDate(parser.parse(o));
-      }
-    }
-
-    public String toString() {
-      return "XsdDateTimeSerializer";
-    }
-
-    /**
-     * Comment from Ronald. I give it  Tue Jan 12 11:42:34 PST 1999 what goes into mulgara
-     * is 1999-01-12T19:42:34.000Z what comes out of mulgara is 1999-01-12T19:42:34 and the result
-     * is Tue Jan 12 19:42:34 PST 1999 (i.e. 8 hours shifted). This problem doesn't occur for date
-     * (no time) or time because curiously time comes back as '19:42:34.000Z' i.e. with the Z. I
-     * think mulgara dropping the time zone is a bug.
-     *
-     * @return true
-     */
-    private boolean mulgaraWorkAround() {
-      // xxx : detect if this bug exists in the version we are connected to
-      // xxx : or pull this from the triple-store config
-      return true;
-    }
-  }
-
-  private static class XsdBooleanSerializer implements Serializer<Boolean> {
-    public String serialize(Boolean o) throws Exception {
-      return o.toString();
-    }
-
-    public Boolean deserialize(String o, Class c) throws Exception {
-      if ("1".equals(o) || "true".equals(o))
-        return Boolean.TRUE;
-
-      if ("0".equals(o) || "false".equals(o))
-        return Boolean.FALSE;
-
-      throw new IllegalArgumentException("invalid xsd:boolean '" + o + "'");
-    }
   }
 }
