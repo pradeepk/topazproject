@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.Arrays;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.Serializer;
+import org.topazproject.otm.serializer.Serializer;
 
 /** 
  * This holds the results from a query. It is structured similar to a jdbc ResultSet.

@@ -27,8 +27,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
-import org.topazproject.otm.mapping.SerializerFactory;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
+import org.topazproject.otm.serializer.SerializerFactory;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.

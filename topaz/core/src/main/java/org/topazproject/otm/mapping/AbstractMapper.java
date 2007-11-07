@@ -18,6 +18,7 @@ import java.net.URL;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.serializer.Serializer;
 
 /**
  * A convenient base class for all mappers.

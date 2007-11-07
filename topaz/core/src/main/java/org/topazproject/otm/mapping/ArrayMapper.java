@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.serializer.Serializer;
 
 /**
  * Mapper for array type fileds.

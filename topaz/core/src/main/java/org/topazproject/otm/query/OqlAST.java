@@ -10,7 +10,7 @@
 
 package org.topazproject.otm.query;
 
-import org.topazproject.otm.mapping.Serializer;
+import org.topazproject.otm.serializer.Serializer;
 import antlr.CommonAST;
 import antlr.collections.AST;
 

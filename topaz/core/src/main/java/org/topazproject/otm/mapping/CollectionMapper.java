@@ -28,6 +28,7 @@ import java.util.TreeSet;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.serializer.Serializer;
 
 /**
  * Mapper for {@link java.util.Collection collection} fields.

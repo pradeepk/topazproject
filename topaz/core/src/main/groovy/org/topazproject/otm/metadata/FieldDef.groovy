@@ -23,7 +23,7 @@ import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
-import org.topazproject.otm.mapping.Serializer;
+import org.topazproject.otm.serializer.Serializer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

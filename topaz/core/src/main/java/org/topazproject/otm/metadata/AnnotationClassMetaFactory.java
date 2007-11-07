@@ -53,7 +53,7 @@ import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
 import org.topazproject.otm.mapping.PredicateMapMapper;
-import org.topazproject.otm.mapping.Serializer;
+import org.topazproject.otm.serializer.Serializer;
 
 /**
  * Meta information for mapping a class to a set of triples.

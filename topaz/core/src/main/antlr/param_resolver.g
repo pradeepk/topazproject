@@ -26,8 +26,8 @@ import java.util.Set;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.Serializer;
 import org.topazproject.otm.query.Results;
+import org.topazproject.otm.serializer.Serializer;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
