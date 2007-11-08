@@ -301,6 +301,7 @@
           <file>/css/pone_rating.css</file>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -367,6 +368,15 @@
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_forms.css</file>
           <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      
+      <page>
+        <name>/article/browse.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
       </page>
 
@@ -495,6 +505,7 @@
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_static.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
       </page>
 
@@ -738,6 +749,7 @@
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_home.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>
@@ -768,6 +780,7 @@
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_home.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>
@@ -808,6 +821,7 @@
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_static.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
       </page>
 
@@ -889,6 +903,7 @@
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_home.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>
@@ -963,6 +978,7 @@
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_static.css</file>
+          <file>/css/pone_article_markup.css</file>
         </css>
       </page>
 
