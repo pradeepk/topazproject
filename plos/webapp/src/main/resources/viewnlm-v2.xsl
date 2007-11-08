@@ -1630,6 +1630,46 @@ Make article meta data
         <xsl:call-template name="nl-1"/>
       </ul>
     </xsl:when>
+    <xsl:when test="@list-type='simple'">
+      <xsl:call-template name="nl-1"/>
+      <ol class="simple">
+        <xsl:call-template name="nl-1"/>
+        <xsl:apply-templates/>
+        <xsl:call-template name="nl-1"/>
+      </ol>
+    </xsl:when>
+    <xsl:when test="@list-type='roman-lower'">
+      <xsl:call-template name="nl-1"/>
+      <ol class="roman-lower">
+        <xsl:call-template name="nl-1"/>
+        <xsl:apply-templates/>
+        <xsl:call-template name="nl-1"/>
+      </ol>
+    </xsl:when>
+    <xsl:when test="@list-type='roman-upper'">
+      <xsl:call-template name="nl-1"/>
+      <ol class="roman-upper">
+        <xsl:call-template name="nl-1"/>
+        <xsl:apply-templates/>
+        <xsl:call-template name="nl-1"/>
+      </ol>
+    </xsl:when>
+    <xsl:when test="@list-type='alpha-lower'">
+      <xsl:call-template name="nl-1"/>
+      <ol class="alpha-lower">
+        <xsl:call-template name="nl-1"/>
+        <xsl:apply-templates/>
+        <xsl:call-template name="nl-1"/>
+      </ol>
+    </xsl:when>
+    <xsl:when test="@list-type='alpha-upper'">
+      <xsl:call-template name="nl-1"/>
+      <ol class="alpha-upper">
+        <xsl:call-template name="nl-1"/>
+        <xsl:apply-templates/>
+        <xsl:call-template name="nl-1"/>
+      </ol>
+    </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="nl-1"/>
       <ol>
