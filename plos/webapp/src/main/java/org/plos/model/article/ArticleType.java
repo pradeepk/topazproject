@@ -50,6 +50,7 @@ public class ArticleType {
             // ignore and just use encoded uriStr :(
           }
           at = new ArticleType(uri, uriStr);
+          _newArticleTypes.put(uri, at);
         }
       }
     }
