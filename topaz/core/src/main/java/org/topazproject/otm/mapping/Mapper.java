@@ -29,6 +29,10 @@ public interface Mapper {
    * Enum defining how operations should cascade to associations.
    */
   static enum CascadeType {all, saveOrUpdate, delete, merge, refresh};
+  /**
+   * Enum defining how associations should be fetched.
+   */
+  static enum FetchType {lazy, eager};
 
 
   /**
@@ -209,4 +213,10 @@ public interface Mapper {
    */
   public boolean isCascadable(CascadeType op);
 
+  /**
+   * Get the fetch options for this field. Only applicable for associations.
+   *
+   * @return the FetchType option
+   */
+  public FetchType getFetchType();
 }

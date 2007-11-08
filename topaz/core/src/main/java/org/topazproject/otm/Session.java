@@ -33,6 +33,7 @@ import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
+import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -935,10 +936,15 @@ public class Session {
     public InstanceState(Object instance, ClassMetadata cm, Session session) {
       vmap   = new HashMap<Mapper, List<String>>();
       pmap   = null;
-      update(instance, cm, session);
+      update(instance, cm, session, true);
     }
 
     public Collection<Mapper> update(Object instance, ClassMetadata cm, Session session) {
+      return update(instance, cm, session, false);
+    }
+
+    private Collection<Mapper> update(Object instance, ClassMetadata cm, Session session, 
+        boolean fetch) {
       List<Mapper> mappers = new ArrayList<Mapper>();
 
       for (Mapper m : cm.getFields()) {
@@ -959,6 +965,12 @@ public class Session {
           if (!eq) {
             vmap.put(m, nv);
             mappers.add(m);
+          }
+          // Trigger a load for all eager fetched associations
+          if (fetch && (m.getFetchType() == FetchType.eager) && (m.getSerializer() == null)) {
+            for (Object o : m.get(instance))
+              if (o != null)
+                o.equals(null);
           }
         }
       }

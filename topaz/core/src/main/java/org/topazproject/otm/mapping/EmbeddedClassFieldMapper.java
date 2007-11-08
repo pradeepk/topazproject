@@ -213,6 +213,13 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
+  public FetchType getFetchType() {
+    return field.getFetchType();
+  }
+
+  /*
+   * inherited javadoc
+   */
   public boolean isCascadable(CascadeType op) {
     return field.isCascadable(op);
   }

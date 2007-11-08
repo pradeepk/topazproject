@@ -52,6 +52,7 @@ import org.topazproject.otm.mapping.EmbeddedClassMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
+import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.mapping.PredicateMapMapper;
 import org.topazproject.otm.serializer.Serializer;
 
@@ -300,7 +301,7 @@ public class AnnotationClassMetaFactory {
 
       Mapper     p          =
         new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
-                             Mapper.MapperType.PREDICATE, true, generator, null);
+                             Mapper.MapperType.PREDICATE, true, generator, null, null);
 
       return Collections.singletonList(p);
     }
@@ -344,6 +345,7 @@ public class AnnotationClassMetaFactory {
       Mapper.MapperType mt       = getMapperType(f, rdf, isArray);
       CascadeType ct[] = (rdf != null) ? rdf.cascade()
                                    : new CascadeType[]{CascadeType.all};
+      FetchType ft = (rdf != null) ? rdf.fetch() : FetchType.lazy;
       Mapper            p;
 
       if (isArray) {
@@ -351,19 +353,19 @@ public class AnnotationClassMetaFactory {
           p = new ArrayMapper(var, f, setMethod, type);
         else
           p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
-                              model, mt, !notOwned, generator, ct);
+                              model, mt, !notOwned, generator, ct, ft);
       } else if (isCollection) {
         if (isView)
           p = new CollectionMapper(var, f, getMethod, setMethod, type);
         else
           p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
-                                   model, mt, !notOwned, generator, ct);
+                                   model, mt, !notOwned, generator, ct, ft);
       } else {
         if (isView)
           p = new FunctionalMapper(var, f, setMethod, type);
         else
           p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
-                                   mt, !notOwned, generator, ct);
+                                   mt, !notOwned, generator, ct, ft);
       }
 
       return Collections.singletonList(p);

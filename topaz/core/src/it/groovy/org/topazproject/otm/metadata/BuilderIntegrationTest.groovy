@@ -416,6 +416,26 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
   }
 
+  void testEagerLoad() {
+    Class cls = rdf.class('Test1', type:'foo:Test1') {
+      sel  (pred:'foo:p1', type:'foo:Test1', fetch:'eager')
+    }
+
+    def obj = cls.newInstance(id:'foo:obj'.toURI())
+    def sel = cls.newInstance(id:'foo:sel'.toURI())
+    obj.sel = sel
+    sel.sel = obj
+    doInTx { s-> s.saveOrUpdate(obj) }
+    doInTx { s ->
+      obj = s.get(cls, 'foo:sel')
+    }
+    assertNotNull obj
+    sel = obj.sel
+    assertNotNull sel
+    assert sel.sel == obj
+  }
+
+
   private def doInTx(Closure c) {
     Session s = rdf.sessFactory.openSession()
     s.beginTransaction()

@@ -15,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.topazproject.otm.mapping.Mapper.CascadeType;
+import org.topazproject.otm.mapping.Mapper.FetchType;
 
 /**
  * Annotation for fields to specify the necessary config for controlling persistence to an RDF
@@ -74,4 +75,9 @@ public @interface Predicate {
    * Cascading preferences for this field. 
    */
   CascadeType[] cascade() default {CascadeType.all};
+
+  /**
+   * Cascading preferences for this field. 
+   */
+  FetchType fetch() default FetchType.lazy;
 }

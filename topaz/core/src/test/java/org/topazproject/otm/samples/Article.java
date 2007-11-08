@@ -18,6 +18,7 @@ import java.util.Set;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.mapping.Mapper.FetchType;
 
 /**
  * This returns meta-data about an article.
@@ -33,7 +34,7 @@ public class Article extends ObjectInfo {
   private String[] subjects;
   @Predicate(uri = Rdf.topaz + "hasCategory")
   private String[] categories;
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true, fetch=FetchType.eager)
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
   @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
   private List<PrivateAnnotation> privateAnnotations = new ArrayList<PrivateAnnotation>();

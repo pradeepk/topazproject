@@ -43,6 +43,7 @@ public abstract class AbstractMapper implements Mapper {
   private final boolean             entityOwned;
   private final IdentifierGenerator generator;
   private final CascadeType[]       cascade;
+  private final FetchType           fetchType;
 
   /**
    * Creates a new AbstractMapper object for a regular class.
@@ -61,11 +62,13 @@ public abstract class AbstractMapper implements Mapper {
    * @param entityOwned if the triples for this field is owned by the containing entity
    * @param generator if there is a generator for this field
    * @param cascade cascade options for this field
+   * @param fetchType fetch type for this field (mostly for associations)
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType, String dataType,
                         String rdfType, boolean inverse, String model, MapperType mapperType,
-                        boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade) {
+                        boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade,
+                        FetchType fetchType) {
     this.uri             = uri;
     this.var             = null;
     this.field           = field;
@@ -83,6 +86,7 @@ public abstract class AbstractMapper implements Mapper {
     this.entityOwned     = entityOwned;
     this.generator       = generator;
     this.cascade         = cascade;
+    this.fetchType       = fetchType;
   }
 
   /**
@@ -113,6 +117,7 @@ public abstract class AbstractMapper implements Mapper {
     this.entityOwned     = false;
     this.generator       = null;
     this.cascade         = null;
+    this.fetchType       = null;
   }
 
   /*
@@ -284,6 +289,13 @@ public abstract class AbstractMapper implements Mapper {
       if (ct.equals(CascadeType.all) || ct.equals(op))
         return true;
     return false;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public FetchType getFetchType() {
+    return fetchType;
   }
 
   /**

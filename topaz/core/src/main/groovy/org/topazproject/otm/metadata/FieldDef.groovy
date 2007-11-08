@@ -23,6 +23,7 @@ import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
+import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.serializer.Serializer;
 
 import org.apache.commons.logging.Log;
@@ -71,6 +72,8 @@ public class FieldDef {
   String   colMapping
   /** the cascading options */
   String[] cascade = ['all']
+  /** the fetch options */
+  String fetch = 'lazy'
   /** if false this field is never saved, only loaded */
   boolean  owned       = true
   /**
@@ -155,6 +158,7 @@ public class FieldDef {
     Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
     Mapper.MapperType mt = getMapperType(rdf)
     CascadeType[] ct = getCascadeType(rdf)
+    FetchType ft = getFetchType(rdf)
 
     String dtype = (type?.startsWith(xsdURI) && type != xsdURI + 'anyURI') ? type : null
 
@@ -167,7 +171,7 @@ public class FieldDef {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       String rt = (ser == null) ? getRdfType(rdf, f.getType()) : null;
       m = [new FunctionalMapper(pred, f, get, set, ser, dtype, rt, inverse, model, mt, owned, idGen,
-ct)]
+ct, ft)]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
@@ -175,10 +179,10 @@ ct)]
       String rt = (ser == null) ? getRdfType(rdf, compType) : null;
       if (collType.toLowerCase() == 'array')
         m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt, owned,
-                             idGen, ct)]
+                             idGen, ct, ft)]
       else
         m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt,
-                                  owned, idGen, ct)]
+                                  owned, idGen, ct, ft)]
     }
 
     // done
@@ -326,6 +330,23 @@ ct)]
       }
     }
     return ct.toArray(new CascadeType[0])
+  }
+
+  private FetchType getFetchType(RdfBuilder rdf) {
+    FetchType ft;
+    switch(fetch?.toLowerCase()) {
+      case null:
+      case 'lazy':
+         ft = FetchType.lazy;
+         break;
+      case 'eager':
+         ft = FetchType.eager;
+         break;
+      default:
+        throw new OtmException("Unknown fetch type '${fetch}' - must be one of " +
+                               "'lazy' or 'eager'");
+    }
+    return ft;
   }
 
   private String getRdfType(RdfBuilder rdf, Class clazz) {
