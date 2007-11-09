@@ -68,12 +68,12 @@
         <artifactId>groovy-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>compile</id>
-            <goals><goal>compile</goal></goals>
-          </execution>
-          <execution>
-            <id>testCompile</id>
-            <goals><goal>testCompile</goal></goals>
+            <goals>
+              <!-- <goal>generateStubs</goal> -->
+              <!-- <goal>generateTestStubs</goal> -->
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
