@@ -48,17 +48,17 @@ public class SessionFactory {
   /**
    * Class to metadata mapping.
    */
-  private final Map<Class, ClassMetadata> metadata = new HashMap<Class, ClassMetadata>();
+  private final Map<Class<?>, ClassMetadata<?>> metadata = new HashMap<Class<?>, ClassMetadata<?>>();
 
   /**
    * Class name to metadata mapping.
    */
-  private final Map<String, ClassMetadata> cnamemap = new HashMap<String, ClassMetadata>();
+  private final Map<String, ClassMetadata<?>> cnamemap = new HashMap<String, ClassMetadata<?>>();
 
   /**
    * Entity name to metadata mapping.
    */
-  private final Map<String, ClassMetadata> entitymap = new HashMap<String, ClassMetadata>();
+  private final Map<String, ClassMetadata<?>> entitymap = new HashMap<String, ClassMetadata<?>>();
 
   /**
    * Class to proxy class mapping.
@@ -111,8 +111,8 @@ public class SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public void preload(Class[] classes) throws OtmException {
-    for (Class c : classes)
+  public void preload(Class<?>[] classes) throws OtmException {
+    for (Class<?> c : classes)
       preload(c);
   }
 
@@ -123,7 +123,7 @@ public class SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public void preload(Class c) throws OtmException {
+  public void preload(Class<?> c) throws OtmException {
     if ((c == null) || Object.class.equals(c))
       return;
 
@@ -134,7 +134,7 @@ public class SessionFactory {
         log.debug("Preload: skipped for " + c.getSuperclass(), e);
     }
 
-    ClassMetadata cm           = cmf.create(c);
+    ClassMetadata<?> cm = cmf.create(c);
 
     setClassMetadata(cm);
   }
@@ -158,7 +158,7 @@ public class SessionFactory {
     if (typeUris.size() == 0)
       return clazz;
 
-    ClassMetadata solution  = null;
+    ClassMetadata<?> solution  = null;
 
     for (String uri : typeUris) {
       Set<Class> classes = classmap.get(uri);
@@ -175,7 +175,7 @@ public class SessionFactory {
       }
 
       if (classes.contains(candidate)) {
-        ClassMetadata cm = metadata.get(candidate);
+        ClassMetadata<?> cm = metadata.get(candidate);
         if (solution == null)
           solution = cm;
         else if ((cm != null) && (solution.getTypes().size() < cm.getTypes().size()))
@@ -193,14 +193,14 @@ public class SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public void setClassMetadata(ClassMetadata cm) throws OtmException {
+  public <T> void setClassMetadata(ClassMetadata<T> cm) throws OtmException {
     if (entitymap.containsKey(cm.getName())
          && !entitymap.get(cm.getName()).getSourceClass().equals(cm.getSourceClass()))
       throw new OtmException("An entity with name '" + cm.getName() + "' already exists.");
 
     entitymap.put(cm.getName(), cm);
 
-    Class c = cm.getSourceClass();
+    Class<T> c = cm.getSourceClass();
     metadata.put(c, cm);
     cnamemap.put(c.getName(), cm);
     if (cm.isEntity())
@@ -230,8 +230,8 @@ public class SessionFactory {
    *
    * @return metadata for the class, or null if not found
    */
-  public ClassMetadata getClassMetadata(Class clazz) {
-    ClassMetadata cm = metadata.get(clazz);
+  public <T> ClassMetadata<T> getClassMetadata(Class<? extends T> clazz) {
+    ClassMetadata<T> cm = (ClassMetadata<T>) metadata.get(clazz);
 
     if (cm != null)
       return cm;
@@ -239,7 +239,7 @@ public class SessionFactory {
     clazz = getProxyMapping(clazz);
 
     if (clazz != null)
-      cm = metadata.get(clazz);
+      cm = (ClassMetadata<T>) metadata.get(clazz);
 
     return cm;
   }
@@ -253,8 +253,8 @@ public class SessionFactory {
    *
    * @return metadata for the class, or null if not found
    */
-  public ClassMetadata getClassMetadata(String entity) {
-    ClassMetadata res = entitymap.get(entity);
+  public ClassMetadata<?> getClassMetadata(String entity) {
+    ClassMetadata<?> res = entitymap.get(entity);
     if (res == null)
       res = cnamemap.get(entity);
 
@@ -268,8 +268,8 @@ public class SessionFactory {
    *
    * @return the collection of ClassMetadata
    */
-  public Collection<ClassMetadata> listClassMetadata() {
-    return new ArrayList<ClassMetadata>(metadata.values());
+  public Collection<ClassMetadata<?>> listClassMetadata() {
+    return new ArrayList<ClassMetadata<?>>(metadata.values());
   }
 
   /**
@@ -279,7 +279,7 @@ public class SessionFactory {
    *
    * @return proxy or class
    */
-  public Class getProxyMapping(Class clazz) {
+  public <T> Class<? extends T> getProxyMapping(Class<? extends T> clazz) {
     return proxyClasses.get(clazz);
   }
 
@@ -394,7 +394,7 @@ public class SessionFactory {
     return !Modifier.isAbstract(mod) && !Modifier.isInterface(mod) && Modifier.isPublic(mod);
   }
 
-  private void createProxy(Class clazz, ClassMetadata cm) {
+  private <T> void createProxy(Class<T> clazz, ClassMetadata<T> cm) {
     final Method getter = cm.getIdField().getGetter();
 
     MethodFilter mf     =
@@ -408,7 +408,7 @@ public class SessionFactory {
     f.setSuperclass(clazz);
     f.setFilter(mf);
 
-    Class c = f.createClass();
+    Class<? extends T> c = f.createClass();
 
     proxyClasses.put(clazz, c);
     proxyClasses.put(c, clazz);

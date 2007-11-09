@@ -94,7 +94,7 @@ options {
     }
 
     private ExprType getTypeForClass(AST clazz, String loc) throws RecognitionException {
-      ClassMetadata md = sessFactory.getClassMetadata(clazz.getText());
+      ClassMetadata<?> md = sessFactory.getClassMetadata(clazz.getText());
       if (md == null && loc != null)
         throw new RecognitionException("unknown class '" + clazz.getText() + "' in " + loc);
       return ExprType.classType(md, null);
@@ -167,7 +167,7 @@ options {
       return (OqlAST) last;
     }
 
-    private static EmbeddedClassMapper findEmbeddedFieldMapper(ClassMetadata md, String field) {
+    private static EmbeddedClassMapper findEmbeddedFieldMapper(ClassMetadata<?> md, String field) {
       String[] parts = field.split("\\.");
       mappers: for (Mapper m : md.getFields()) {
         for (int idx = 0; idx < parts.length; idx++) {
@@ -202,7 +202,7 @@ options {
       if (m == null)
         return null;
 
-      ClassMetadata md;
+      ClassMetadata<?> md;
       if ((md = sessFactory.getClassMetadata(m.getComponentType())) != null)
         return ExprType.classType(md, m.getMapperType());
 

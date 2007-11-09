@@ -202,8 +202,8 @@ public class Session {
       dirtyMap.remove(id);
       deleteMap.put(id, o);
 
-      ClassMetadata cm     = sessionFactory.getClassMetadata(o.getClass());
-      Set<Wrapper>  assocs = new HashSet<Wrapper>();
+      ClassMetadata<?> cm     = sessionFactory.getClassMetadata(o.getClass());
+      Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
       for (Mapper p : cm.getFields()) {
         if ((p.getSerializer() != null) || (p.getUri() == null))
@@ -410,8 +410,8 @@ public class Session {
    */
   public Criteria createCriteria(Criteria criteria, String path)
                           throws OtmException {
-    ClassMetadata cm = criteria.getClassMetadata();
-    Mapper        m  = cm.getMapperByName(path);
+    ClassMetadata<?> cm = criteria.getClassMetadata();
+    Mapper           m  = cm.getMapperByName(path);
 
     if (m == null)
       throw new OtmException(path + " is not a valid field name for " + cm);
@@ -577,10 +577,10 @@ public class Session {
     return new HashSet<String>(filters.keySet());
   }
 
-  private void write(Id id, Object o, boolean delete) throws OtmException {
+  private <T> void write(Id id, T o, boolean delete) throws OtmException {
     LazyLoadMethodHandler llm           = (o instanceof ProxyObject) ? proxies.get(id) : null;
     boolean               pristineProxy = (llm != null) ? !llm.isLoaded() : false;
-    ClassMetadata         cm            = sessionFactory.getClassMetadata(o.getClass());
+    ClassMetadata<T>      cm            = sessionFactory.getClassMetadata((Class<T>) o.getClass());
     TripleStore           store         = sessionFactory.getTripleStore();
 
     if (delete) {
@@ -628,7 +628,7 @@ public class Session {
     }
   }
 
-  private Object getFromStore(Id id, ClassMetadata cm, Object instance, boolean filterObj)
+  private <T> T getFromStore(Id id, ClassMetadata<T> cm, T instance, boolean filterObj)
                        throws OtmException {
     if (txn == null)
       throw new OtmException("No transaction active");
@@ -681,8 +681,8 @@ public class Session {
         cleanMap.put(id, o);
       }
 
-      ClassMetadata cm     = checkClass(o.getClass());
-      Set<Wrapper>  assocs = new HashSet<Wrapper>();
+      ClassMetadata<?> cm     = checkClass(o.getClass());
+      Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
       for (Mapper p : cm.getFields()) {
         if ((p.getSerializer() != null) || (p.getUri() == null))
@@ -718,8 +718,8 @@ public class Session {
 
   private Object copy(Object o, Object other, Map<Id, Object> loopDetect)
                throws OtmException {
-    ClassMetadata ocm = checkClass(other.getClass());
-    ClassMetadata cm  = checkClass(o.getClass());
+    ClassMetadata<?> ocm = checkClass(other.getClass());
+    ClassMetadata<?> cm  = checkClass(o.getClass());
 
     if (!cm.getSourceClass().isAssignableFrom(ocm.getSourceClass()))
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
@@ -763,7 +763,7 @@ public class Session {
     return o;
   }
 
-  private Object newDynamicProxy(final Class clazz, final Id id, final ClassMetadata cm)
+  private <T> T newDynamicProxy(final Class<T> clazz, final Id id, final ClassMetadata<T> cm)
                           throws OtmException {
     LazyLoadMethodHandler mi =
       new LazyLoadMethodHandler() {
@@ -778,7 +778,7 @@ public class Session {
 
             loading = true;
             try {
-              getFromStore(id, cm, self, false);
+              getFromStore(id, cm, (T) self, false);
             } finally {
               loading = false;
             }
@@ -801,7 +801,7 @@ public class Session {
       };
 
     try {
-      Object o = sessionFactory.getProxyMapping(clazz).newInstance();
+      T o = sessionFactory.getProxyMapping(clazz).newInstance();
       cm.getIdField().set(o, Collections.singletonList(id.getId()));
       ((ProxyObject) o).setHandler(mi);
       proxies.put(id, mi);
@@ -819,9 +819,9 @@ public class Session {
     if (o == null)
       throw new NullPointerException("Null object");
 
-    ClassMetadata cm      = checkClass(o.getClass());
+    ClassMetadata<?> cm      = checkClass(o.getClass());
 
-    Mapper        idField = cm.getIdField();
+    Mapper           idField = cm.getIdField();
 
     if (idField == null)
       throw new OtmException("Must have an id field for " + o.getClass());
@@ -848,8 +848,8 @@ public class Session {
     return new Id(o.getClass(), id);
   }
 
-  private ClassMetadata checkClass(Class clazz) throws OtmException {
-    ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
+  private <T> ClassMetadata<T> checkClass(Class<? extends T> clazz) throws OtmException {
+    ClassMetadata<T> cm = sessionFactory.getClassMetadata(clazz);
 
     if (cm == null)
       throw new OtmException("No class metadata found for " + clazz);
@@ -933,18 +933,18 @@ public class Session {
     private Map<String, List<String>>       pmap;
 
 
-    public InstanceState(Object instance, ClassMetadata cm, Session session) {
+    public <T> InstanceState(T instance, ClassMetadata<T> cm, Session session) {
       vmap   = new HashMap<Mapper, List<String>>();
       pmap   = null;
       update(instance, cm, session, true);
     }
 
-    public Collection<Mapper> update(Object instance, ClassMetadata cm, Session session) {
+    public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session) {
       return update(instance, cm, session, false);
     }
 
-    private Collection<Mapper> update(Object instance, ClassMetadata cm, Session session, 
-        boolean fetch) {
+    private <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session, 
+                                          boolean fetch) {
       List<Mapper> mappers = new ArrayList<Mapper>();
 
       for (Mapper m : cm.getFields()) {

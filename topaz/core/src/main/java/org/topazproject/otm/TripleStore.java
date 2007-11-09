@@ -51,8 +51,7 @@ public interface TripleStore {
    *
    * @throws OtmException on an error
    */
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
-              throws OtmException;
+  public <T> void insert(ClassMetadata<T> cm, String id, T o, Transaction txn) throws OtmException;
 
   /**
    * Persists parts of an object in the triple store.
@@ -65,8 +64,8 @@ public interface TripleStore {
    *
    * @throws OtmException on an error
    */
-  public void insert(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, Transaction txn)
-              throws OtmException;
+  public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o,
+                         Transaction txn) throws OtmException;
 
   /**
    * Removes an object from the triple store.
@@ -78,8 +77,7 @@ public interface TripleStore {
    *
    * @throws OtmException on an error
    */
-  public void delete(ClassMetadata cm, String id, Object o, Transaction txn)
-              throws OtmException;
+  public <T> void delete(ClassMetadata<T> cm, String id, T o, Transaction txn) throws OtmException;
 
   /**
    * Removes parts of an object from the triple store.
@@ -92,8 +90,8 @@ public interface TripleStore {
    *
    * @throws OtmException on an error
    */
-  public void delete(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, 
-                     Transaction txn) throws OtmException;
+  public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
+                         Transaction txn) throws OtmException;
 
   /**
    * Gets an object from the triple store.
@@ -110,8 +108,8 @@ public interface TripleStore {
    *
    * @throws OtmException on an error
    */
-  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn,
-                    List<Filter> filters, boolean filterObj) throws OtmException;
+  public <T> T get(ClassMetadata<T> cm, String id, T instance, Transaction txn,
+                   List<Filter> filters, boolean filterObj) throws OtmException;
 
   /**
    * Lists objects matching the given Criteria.

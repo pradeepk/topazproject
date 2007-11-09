@@ -51,12 +51,12 @@ public abstract class AbstractTripleStore implements TripleStore {
    *
    * @throws OtmException on an error
    */
-  protected Object instantiate(Session session, Object instance, ClassMetadata cm, String id,
-                               Map<String, List<String>> fvalues,
-                               Map<String, List<String>> rvalues, Map<String, Set<String>> types)
+  protected <T> T instantiate(Session session, T instance, ClassMetadata<T> cm, String id,
+                              Map<String, List<String>> fvalues,
+                              Map<String, List<String>> rvalues, Map<String, Set<String>> types)
                         throws OtmException {
     SessionFactory sf    = session.getSessionFactory();
-    Class          clazz = cm.getSourceClass();
+    Class<T>       clazz = cm.getSourceClass();
 
     try {
       if (instance == null)
@@ -99,20 +99,20 @@ public abstract class AbstractTripleStore implements TripleStore {
 
         for (String val : mvalues.get(m)) {
           // lazy load
-          clazz = m.getComponentType();
+          Class cls = m.getComponentType();
 
           Set<String> t = types.get(val);
 
           if ((t != null) && (t.size() > 0))
-            clazz = sf.mostSpecificSubClass(clazz, t);
+            cls = sf.mostSpecificSubClass(cls, t);
           else {
-            ClassMetadata c = sf.getClassMetadata(clazz);
+            ClassMetadata c = sf.getClassMetadata(cls);
             if ((c != null) && (c.getType() != null))
-              clazz = null;
+              cls = null;
           }
 
-          if (clazz != null) {
-            Object a = session.load(clazz, val);
+          if (cls != null) {
+            Object a = session.load(cls, val);
 
             if (a != null)
               assocs.add(a);
@@ -159,16 +159,14 @@ public abstract class AbstractTripleStore implements TripleStore {
   /*
    * inherited javadoc
    */
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
-              throws OtmException {
+  public <T> void insert(ClassMetadata<T> cm, String id, T o, Transaction txn) throws OtmException {
     insert(cm, cm.getFields(), id, o, txn);
   }
 
   /*
    * inherited javadoc
    */
-  public void delete(ClassMetadata cm, String id, Object o, Transaction txn)
-              throws OtmException {
+  public <T> void delete(ClassMetadata<T> cm, String id, T o, Transaction txn) throws OtmException {
     delete(cm, cm.getFields(), id, o, txn);
   }
 

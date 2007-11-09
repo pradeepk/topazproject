@@ -83,14 +83,15 @@ public class AnnotationClassMetaFactory {
    *
    * @throws OtmException on an error
    */
-  public ClassMetadata create(Class clazz) throws OtmException {
+  public <T> ClassMetadata<T> create(Class<T> clazz) throws OtmException {
     if (clazz.getAnnotation(View.class) != null || clazz.getAnnotation(SubView.class) != null)
       return createView(clazz);
     else
       return create(clazz, clazz, null);
   }
 
-  private ClassMetadata create(Class clazz, Class top, String uriPrefixOfContainingClass)
+  private <T> ClassMetadata<T> create(Class<T> clazz, Class<?> top,
+                                      String uriPrefixOfContainingClass)
                         throws OtmException {
     Set<String>        types     = Collections.emptySet();
     String             type      = null;
@@ -99,13 +100,13 @@ public class AnnotationClassMetaFactory {
     Mapper             idField   = null;
     Collection<Mapper> fields    = new ArrayList<Mapper>();
 
-    Class              s         = clazz.getSuperclass();
+    Class<?>           s         = clazz.getSuperclass();
 
     if (log.isDebugEnabled())
       log.debug("Creating class-meta for " + clazz);
 
     if (!Object.class.equals(s) && (s != null)) {
-      ClassMetadata superMeta = create(s, top, uriPrefixOfContainingClass);
+      ClassMetadata<?> superMeta = create(s, top, uriPrefixOfContainingClass);
       model       = superMeta.getModel();
       uriPrefix   = superMeta.getUriPrefix();
       type        = superMeta.getType();
@@ -114,12 +115,12 @@ public class AnnotationClassMetaFactory {
       fields.addAll(superMeta.getFields());
     }
 
-    Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+    Entity entity = clazz.getAnnotation(Entity.class);
 
     if ((entity != null) && !"".equals(entity.model()))
       model = entity.model();
 
-    UriPrefix uriPrefixAnn = (UriPrefix) clazz.getAnnotation(UriPrefix.class);
+    UriPrefix uriPrefixAnn = clazz.getAnnotation(UriPrefix.class);
 
     if (uriPrefixAnn != null)
       uriPrefix = uriPrefixAnn.value();
@@ -160,16 +161,16 @@ public class AnnotationClassMetaFactory {
     return new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
   }
 
-  private ClassMetadata createView(Class clazz) throws OtmException {
+  private <T> ClassMetadata<T> createView(Class<T> clazz) throws OtmException {
     String name;
     String query = null;
 
-    View view = (View) clazz.getAnnotation(View.class);
+    View view = clazz.getAnnotation(View.class);
     if (view != null) {
       name  = !"".equals(view.name()) ? view.name() : getName(clazz);
       query = view.query();
     } else {
-      SubView sv = (SubView) clazz.getAnnotation(SubView.class);
+      SubView sv = clazz.getAnnotation(SubView.class);
       name = !"".equals(sv.name()) ? sv.name() : getName(clazz);
     }
 
@@ -195,11 +196,11 @@ public class AnnotationClassMetaFactory {
    *
    * @throws OtmException if a mapper can't be created
    */
-  public Collection<?extends Mapper> createMapper(Field f, Class clazz, Class top, String ns,
+  public Collection<?extends Mapper> createMapper(Field f, Class<?> clazz, Class<?> top, String ns,
                                                   boolean isView)
                                            throws OtmException {
-    Class type = f.getType();
-    int   mod  = f.getModifiers();
+    Class<?> type = f.getType();
+    int      mod  = f.getModifiers();
 
     if (Modifier.isStatic(mod) || (!isView && Modifier.isTransient(mod))) {
       if (log.isDebugEnabled())
@@ -215,7 +216,7 @@ public class AnnotationClassMetaFactory {
     n = n.substring(0, 1).toUpperCase() + n.substring(1);
 
     // polymorphic getter/setter is unusable for private fields
-    Class  invokedOn =
+    Class<?> invokedOn =
       (Modifier.isProtected(mod) || Modifier.isPublic(mod)) ? top : f.getDeclaringClass();
 
     Method getMethod;
@@ -375,10 +376,10 @@ public class AnnotationClassMetaFactory {
       throw new OtmException("@Embedded class field " + toString(f)
                              + " can't be an array, collection or a simple field");
 
-    ClassMetadata cm;
+    ClassMetadata<?> cm;
 
     try {
-      cm                         = create(type, type, ns);
+      cm = create(type, type, ns);
     } catch (OtmException e) {
       throw new OtmException("Could not generate metadata for @Embedded class field "
                              + toString(f), e);
@@ -484,7 +485,7 @@ public class AnnotationClassMetaFactory {
                            + "It cannot be applied to " + toString(field));
   }
 
-  private static String getName(Class clazz) {
+  private static String getName(Class<?> clazz) {
     String  name = clazz.getName();
     Package p    = clazz.getPackage();
 
@@ -494,15 +495,15 @@ public class AnnotationClassMetaFactory {
     return name;
   }
 
-  private static Method getSetter(Class invokedOn, String name, Class type) {
-    for (Class t = type; t != null; t = t.getSuperclass()) {
+  private static Method getSetter(Class<?> invokedOn, String name, Class<?> type) {
+    for (Class<?> t = type; t != null; t = t.getSuperclass()) {
       try {
         return invokedOn.getMethod(name, t);
       } catch (NoSuchMethodException e) {
       }
     }
 
-    for (Class t : type.getInterfaces()) {
+    for (Class<?> t : type.getInterfaces()) {
       try {
         return invokedOn.getMethod(name, t);
       } catch (NoSuchMethodException e) {
@@ -512,11 +513,11 @@ public class AnnotationClassMetaFactory {
     return null;
   }
 
-  private static String getRdfType(Class clazz) {
+  private static String getRdfType(Class<?> clazz) {
     if (clazz == null)
       return null;
 
-    Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+    Entity entity = clazz.getAnnotation(Entity.class);
 
     if ((entity != null) && !"".equals(entity.type()))
       return entity.type();
@@ -524,11 +525,11 @@ public class AnnotationClassMetaFactory {
     return getRdfType(clazz.getSuperclass());
   }
 
-  private static String getModel(Class clazz) {
+  private static String getModel(Class<?> clazz) {
     if (clazz == null)
       return null;
 
-    Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+    Entity entity = clazz.getAnnotation(Entity.class);
 
     if ((entity != null) && !"".equals(entity.model()))
       return entity.model();

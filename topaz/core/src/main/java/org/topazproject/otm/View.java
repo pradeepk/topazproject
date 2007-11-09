@@ -33,7 +33,7 @@ public class View<T> implements Parameterizable<View<T>> {
   private static final Log log = LogFactory.getLog(View.class);
 
   private final Session          sess;
-  private final ClassMetadata    cm;
+  private final ClassMetadata<T> cm;
   private final Query            query;
 
   /** 
@@ -66,13 +66,13 @@ public class View<T> implements Parameterizable<View<T>> {
 
     List<T> res = new ArrayList<T>();
     while (r.next())
-      res.add((T) createInstance(cm, r));
+      res.add(createInstance(cm, r));
 
     return res;
   }
 
-  private Object createInstance(ClassMetadata cm, Results r) throws OtmException {
-    Object obj;
+  private <S> S createInstance(ClassMetadata<S> cm, Results r) throws OtmException {
+    S obj;
     try {
       obj = cm.getSourceClass().newInstance();
     } catch (Exception e) {
@@ -92,7 +92,7 @@ public class View<T> implements Parameterizable<View<T>> {
     return obj;
   }
 
-  private Object getValue(Results r, int idx, Class type) throws OtmException {
+  private Object getValue(Results r, int idx, Class<?> type) throws OtmException {
     switch (r.getType(idx)) {
       case CLASS:
         return (type == String.class) ? r.getString(idx) : r.get(idx);
@@ -104,8 +104,8 @@ public class View<T> implements Parameterizable<View<T>> {
         return (type == String.class) ? r.getString(idx) : r.getURIAs(idx, type);
 
       case SUBQ_RESULTS:
-        ClassMetadata scm = sess.getSessionFactory().getClassMetadata(type);
-        List vals = new ArrayList();
+        ClassMetadata<?> scm = sess.getSessionFactory().getClassMetadata(type);
+        List<Object> vals = new ArrayList<Object>();
 
         Results sr = r.getSubQueryResults(idx);
         sr.beforeFirst();

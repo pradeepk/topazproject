@@ -83,8 +83,8 @@ public class ItqlStore extends AbstractTripleStore {
     ((ItqlStoreConnection) con).close();
   }
 
-  public void insert(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, 
-      Transaction txn) throws OtmException {
+  public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
+                         Transaction txn) throws OtmException {
     Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder insert = new StringBuilder(500);
 
@@ -117,8 +117,8 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata cm, 
-      Collection<Mapper> fields) {
+  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata<?> cm, 
+                                                               Collection<Mapper> fields) {
     Map<String, List<Mapper>> mappersByModel = new HashMap<String, List<Mapper>>();
 
     if (cm.getTypes().size() > 0)
@@ -216,8 +216,8 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  public void delete(ClassMetadata cm, Collection<Mapper> fields, String id, Object o, 
-      Transaction txn) throws OtmException {
+  public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
+                         Transaction txn) throws OtmException {
     Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder delete = new StringBuilder(500);
 
@@ -316,8 +316,8 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  public Object get(ClassMetadata cm, String id, Object instance, Transaction txn,
-                    List<Filter> filters, boolean filterObj) throws OtmException {
+  public <T> T get(ClassMetadata<T> cm, String id, T instance, Transaction txn,
+                   List<Filter> filters, boolean filterObj) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
     SessionFactory      sf  = txn.getSession().getSessionFactory();
 
@@ -416,14 +416,13 @@ public class ItqlStore extends AbstractTripleStore {
     return instantiate(txn.getSession(), instance, cm, id, fvalues, rvalues, types);
   }
 
-  private String buildGetSelect(ClassMetadata cm, String id, Transaction txn, List<Filter> filters,
-                                boolean filterObj) throws OtmException {
-    SessionFactory     sf     = txn.getSession().getSessionFactory();
-    Set<ClassMetadata> fCls   = listFieldClasses(cm, sf);
-    String             models = getModelsExpr(Collections.singleton(cm), txn);
-    String             tmdls  = getModelsExpr(fCls.size() > 0 ? fCls : Collections.singleton(cm),
-                                              txn);
-    List<Mapper>       assoc  = listAssociations(cm, sf);
+  private String buildGetSelect(ClassMetadata<?> cm, String id, Transaction txn,
+                                List<Filter> filters, boolean filterObj) throws OtmException {
+    SessionFactory        sf     = txn.getSession().getSessionFactory();
+    Set<ClassMetadata<?>> fCls   = listFieldClasses(cm, sf);
+    String                models = getModelsExpr(Collections.singleton(cm), txn);
+    String                tmdls  = fCls.size() > 0 ? getModelsExpr(fCls, txn) : models;
+    List<Mapper>          assoc  = listAssociations(cm, sf);
 
     StringBuilder qry = new StringBuilder(500);
 
@@ -457,7 +456,7 @@ public class ItqlStore extends AbstractTripleStore {
     filters = new ArrayList<Filter>(filters);
     for (Iterator<Filter> iter = filters.iterator(); iter.hasNext(); ) {
       Filter f = iter.next();
-      ClassMetadata fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
+      ClassMetadata<?> fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
       if (!fcm.getSourceClass().isAssignableFrom(cls))
         iter.remove();
     }
@@ -553,10 +552,10 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append(predList).append(")))");
   }
 
-  private static String getModelsExpr(Set<ClassMetadata> cmList, Transaction txn)
+  private static String getModelsExpr(Set<? extends ClassMetadata<?>> cmList, Transaction txn)
       throws OtmException {
     Set<String> mList = new HashSet<String>();
-    for (ClassMetadata cm : cmList) {
+    for (ClassMetadata<?> cm : cmList) {
       mList.add(getModelUri(cm.getModel(), txn));
       for (Mapper p : cm.getFields()) {
         if (p.getModel() != null)
@@ -572,11 +571,11 @@ public class ItqlStore extends AbstractTripleStore {
     return mexpr.toString();
   }
 
-  private static Set<ClassMetadata> listFieldClasses(ClassMetadata cm, SessionFactory sf) {
-    Set<ClassMetadata> clss = new HashSet<ClassMetadata>();
+  private static Set<ClassMetadata<?>> listFieldClasses(ClassMetadata<?> cm, SessionFactory sf) {
+    Set<ClassMetadata<?>> clss = new HashSet<ClassMetadata<?>>();
 
     for (Mapper p : cm.getFields()) {
-      ClassMetadata c = sf.getClassMetadata(p.getComponentType());
+      ClassMetadata<?> c = sf.getClassMetadata(p.getComponentType());
       if (c != null)
         clss.add(c);
     }
@@ -584,10 +583,10 @@ public class ItqlStore extends AbstractTripleStore {
     return clss;
   }
 
-  private static List<Mapper> listAssociations(ClassMetadata cm, SessionFactory sf) {
+  private static List<Mapper> listAssociations(ClassMetadata<?> cm, SessionFactory sf) {
     List<Mapper> mappers = new ArrayList<Mapper>();
 
-    for (ClassMetadata c : allSubClasses(cm, sf)) {
+    for (ClassMetadata<?> c : allSubClasses(cm, sf)) {
       for (Mapper p : c.getFields()) {
         if (p.getSerializer() == null && p.getMapperType() == Mapper.MapperType.PREDICATE)
           mappers.add(p);
@@ -597,11 +596,11 @@ public class ItqlStore extends AbstractTripleStore {
     return mappers;
   }
 
-  private static Set<ClassMetadata> allSubClasses(ClassMetadata top, SessionFactory sf) {
-    Set<ClassMetadata> classes = new HashSet<ClassMetadata>();
+  private static Set<ClassMetadata<?>> allSubClasses(ClassMetadata<?> top, SessionFactory sf) {
+    Set<ClassMetadata<?>> classes = new HashSet<ClassMetadata<?>>();
     classes.add(top);
 
-    for (ClassMetadata cm : sf.listClassMetadata()) {
+    for (ClassMetadata<?> cm : sf.listClassMetadata()) {
       if (cm.getSourceClass().isAssignableFrom(top.getSourceClass()))
         classes.add(cm);
     }

@@ -125,7 +125,7 @@ class ItqlResults extends Results {
                                null, sess);
 
       case CLASS:
-        return sess.get((Class) qi.getTypes().get(idx), qas.getString(idx), false);
+        return sess.get((Class<?>) qi.getTypes().get(idx), qas.getString(idx), false);
 
       case UNKNOWN:
         if (qas.isLiteral(idx))

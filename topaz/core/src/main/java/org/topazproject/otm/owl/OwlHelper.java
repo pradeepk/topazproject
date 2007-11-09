@@ -56,7 +56,7 @@ public class OwlHelper {
       createRdfAliases(session);
 
       // Loop over all classes in factory
-      for (ClassMetadata cm: factory.listClassMetadata()) {
+      for (ClassMetadata<?> cm: factory.listClassMetadata()) {
         String type = cm.getType();
         OwlClass oc = null;
 
@@ -110,7 +110,7 @@ public class OwlHelper {
                   continue;
               }
 
-              ClassMetadata fCm = factory.getClassMetadata(c);
+              ClassMetadata<?> fCm = factory.getClassMetadata(c);
               if (fCm != null && fCm.getType() != null) {
                 bFoundOwlClass = true;
                 break;
@@ -144,7 +144,7 @@ public class OwlHelper {
             if (m.getDataType() != null)
               op.setRanges(new URI[] { URI.create(m.getDataType()) });
             else {
-              ClassMetadata cm2 = factory.getClassMetadata(m.getComponentType());
+              ClassMetadata<?> cm2 = factory.getClassMetadata(m.getComponentType());
               if ((cm2 != null) && (cm2.getType() != null))
                 op.setRanges(new URI[] { URI.create(cm2.getType()) });
             }

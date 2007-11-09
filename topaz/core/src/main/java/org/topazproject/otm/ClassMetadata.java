@@ -28,7 +28,7 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public class ClassMetadata {
+public class ClassMetadata<T> {
   private static final Log                log = LogFactory.getLog(ClassMetadata.class);
 
   private final Set<String>               types;
@@ -39,7 +39,7 @@ public class ClassMetadata {
   private final Mapper                    idField;
   private final Map<String, List<Mapper>> uriMap;
   private final Map<String, Mapper>       nameMap;
-  private final Class                     clazz;
+  private final Class<T>                  clazz;
   private final Collection<Mapper>        fields;
   private final String                    query;
   private final Map<String, List<Mapper>> varMap;
@@ -56,7 +56,7 @@ public class ClassMetadata {
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(Class clazz, String name, String type, Set<String> types, String model,
+  public ClassMetadata(Class<T> clazz, String name, String type, Set<String> types, String model,
                        String uriPrefix, Mapper idField, Collection<Mapper> fields)
                 throws OtmException {
     this.clazz                                = clazz;
@@ -100,7 +100,7 @@ public class ClassMetadata {
    * @param query  the query, or null for SubView's
    * @param fields mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(Class clazz, String name, String query, Collection<Mapper> fields)
+  public ClassMetadata(Class<T> clazz, String name, String query, Collection<Mapper> fields)
                 throws OtmException {
     this.clazz     = clazz;
     this.name      = name;
@@ -135,7 +135,7 @@ public class ClassMetadata {
    *
    * @return the class
    */
-  public Class getSourceClass() {
+  public Class<T> getSourceClass() {
     return clazz;
   }
 
