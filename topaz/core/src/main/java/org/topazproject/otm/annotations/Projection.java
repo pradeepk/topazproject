@@ -14,8 +14,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.topazproject.otm.mapping.Mapper.CascadeType;
-
 /**
  * Annotation for fields in {@link View @View}'s and {@link SubView @SubView}'s.
  *
