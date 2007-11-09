@@ -14,9 +14,9 @@ overline { text-decoration: overline }
 
 strike { text-decoration: line-through }
 
-sub { vertical-aline: sub }
+sub { vertical-align: sub }
 
-sup { vertical-aline: super }
+sup { vertical-align: super }
 
 sc {
  font-size: smaller;
