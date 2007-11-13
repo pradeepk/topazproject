@@ -66,7 +66,9 @@ public class Transaction {
     if (session == null)
       throw new OtmException("Attempt to use a closed transaction");
 
-    session.flush();
+    Session.FlushMode fm = session.getFlushMode();
+    if ((fm == Session.FlushMode.commit) || (fm == Session.FlushMode.always))
+      session.flush();
 
     if (conn != null)
       conn.commit();

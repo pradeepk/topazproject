@@ -55,6 +55,15 @@ public class Session {
   private final Map<String, Filter>            filters        = new HashMap<String, Filter>();
   private final Map<Id, InstanceState>         states         = new HashMap<Id, InstanceState>();
 
+
+  /**
+   * Represents a flushing strategy. 'always' will flush before queries. 'commit' will flush
+   * on a transaction commit. 'manual' will require the user to call flush. Default is 'always'.
+   */
+  public static enum FlushMode {always, commit, manual};
+
+  private FlushMode flushMode = FlushMode.always;
+
   /**
    * Empty constructor for spring scoped proxy. The resulting session instance is not usable
    * for anything but as a proxy, as the session-factory is null.
@@ -125,6 +134,24 @@ public class Session {
       txn.rollback();
 
     txn = null;
+  }
+
+  /**
+   * Sets the FlushMode for this session.
+   *
+   * @param flushMode the FlushMode value to set
+   */
+  public void setFlushMode(FlushMode flushMode) {
+    this.flushMode = flushMode;
+  }
+
+  /**
+   * Gets the current FlushMode.
+   *
+   * @return the current FlushMode
+   */
+  public FlushMode getFlushMode() {
+    return this.flushMode;
   }
 
   /**
@@ -433,7 +460,8 @@ public class Session {
     if (txn == null)
       throw new OtmException("No transaction active");
 
-    flush(); // so that mods are visible to queries
+    if (flushMode == FlushMode.always)
+      flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
 
@@ -461,7 +489,8 @@ public class Session {
     if (txn == null)
       throw new OtmException("No transaction active");
 
-    flush(); // so that mods are visible to queries
+    if (flushMode == FlushMode.always)
+      flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
 
@@ -478,7 +507,8 @@ public class Session {
     if (txn == null)
       throw new OtmException("No transaction active");
 
-    flush(); // so that ordering is preserved
+    if (flushMode == FlushMode.always)
+      flush(); // so that ordering is preserved
 
     TripleStore store = sessionFactory.getTripleStore();
     store.doNativeUpdate(command, txn);
