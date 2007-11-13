@@ -174,7 +174,7 @@ public class Session {
    * @throws OtmException on an error
    */
   public String saveOrUpdate(Object o) throws OtmException {
-    Id id = checkObject(o);
+    Id id = checkObject(o, true);
     sync(o, id, false, true, CascadeType.saveOrUpdate);
 
     return id.getId();
@@ -190,7 +190,7 @@ public class Session {
    * @throws OtmException on an error
    */
   public String delete(Object o) throws OtmException {
-    Id id = checkObject(o);
+    Id id = checkObject(o, true);
 
     if (currentIds.contains(id))
       return id.getId(); // loop
@@ -214,7 +214,7 @@ public class Session {
           continue;
 
         for (Object ao : p.get(o))
-          assocs.add(new Wrapper(checkObject(ao), ao));
+          assocs.add(new Wrapper(checkObject(ao, true), ao));
       }
 
       Set<Wrapper> old = associations.remove(id);
@@ -342,7 +342,7 @@ public class Session {
    * @throws OtmException on an error
    */
   public <T> T merge(T o) throws OtmException {
-    Id id = checkObject(o);
+    Id id = checkObject(o, true);
 
     // make sure it is loaded
     T ao = (T) get(o.getClass(), id.getId());
@@ -374,7 +374,7 @@ public class Session {
    * @throws OtmException on an error
    */
   public void refresh(Object o) throws OtmException {
-    Id id = checkObject(o);
+    Id id = checkObject(o, false);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
       o = getFromStore(id, checkClass(o.getClass()), o, true);
@@ -441,16 +441,6 @@ public class Session {
   }
 
   /**
-   * Create a view.
-   *
-   * @param query the OQL query
-   * @return the query object
-   */
-  public <T> View<T> createView(Class<T> view) throws OtmException {
-    return new View(this, view, new ArrayList<Filter>(filters.values()));
-  }
-
-  /**
    * Create an OQL query.
    *
    * @param query the OQL query
@@ -507,7 +497,7 @@ public class Session {
     List<String> results = new ArrayList<String>(objs.size());
 
     for (Object o : objs)
-      results.add(checkObject(o).getId());
+      results.add(checkObject(o, false).getId());
 
     return results;
   }
@@ -635,19 +625,92 @@ public class Session {
 
     TripleStore store = sessionFactory.getTripleStore();
 
-    instance = store.get(cm, id.getId(), instance, txn, 
-                                new ArrayList<Filter>(filters.values()), filterObj);
+    if (cm.isView())
+      instance = loadView(cm, id.getId(), instance, txn,
+                                  new ArrayList<Filter>(filters.values()), filterObj);
+    else
+      instance = store.get(cm, id.getId(), instance, txn, 
+                                  new ArrayList<Filter>(filters.values()), filterObj);
 
     if (instance instanceof PostLoadEventListener)
       ((PostLoadEventListener)instance).onPostLoad(this, instance);
 
     // Remember state for change tracking
-    if (instance != null)
+    if (instance != null && !cm.isView())
       states.put(id, new InstanceState(instance, cm, this));
     else
       states.remove(id);
 
     return instance;
+  }
+
+  private <T> T loadView(ClassMetadata<T> cm, String id, T instance, Transaction txn,
+                         List<Filter> filters, boolean filterObj) throws OtmException {
+    Query q = createQuery(cm.getQuery());
+    Set<String> paramNames = q.getParameterNames();
+    if (paramNames.size() != 1 || !"id".equals(paramNames.iterator().next()))
+      throw new OtmException("View queries must have exactly one parameter, and the parameter " +
+                             "name must be 'id'; class='" + cm.getSourceClass().getName() +
+                             "', query='" + cm.getQuery() + "'");
+
+    Results r = q.setParameter("id", id).execute();
+
+    if (r.next())
+      instance = createInstance(cm, instance, r);
+    else
+      instance = null;
+
+    return instance;
+  }
+
+  private <S> S createInstance(ClassMetadata<S> cm, S obj, Results r) throws OtmException {
+    try {
+      if (obj == null)
+        obj = cm.getSourceClass().newInstance();
+    } catch (Exception e) {
+      throw new OtmException("Failed to create instance of '" + cm.getSourceClass().getName() + "'",
+                             e);
+    }
+
+    for (Mapper m : cm.getFields()) {
+      int    idx = r.findVariable(m.getProjectionVar());
+      Object val = getValue(r, idx, m.getComponentType());
+      if (val instanceof List)
+        m.set(obj, (List) val);
+      else
+        m.setRawValue(obj, val);
+    }
+
+    return obj;
+  }
+
+  private Object getValue(Results r, int idx, Class<?> type) throws OtmException {
+    switch (r.getType(idx)) {
+      case CLASS:
+        return (type == String.class) ? r.getString(idx) : r.get(idx);
+
+      case LITERAL:
+        return (type == String.class) ? r.getString(idx) : r.getLiteralAs(idx, type);
+
+      case URI:
+        return (type == String.class) ? r.getString(idx) : r.getURIAs(idx, type);
+
+      case SUBQ_RESULTS:
+        ClassMetadata<?> scm = sessionFactory.getClassMetadata(type);
+        boolean isSubView = scm != null && !scm.isView() && !scm.isEntity();
+
+        List<Object> vals = new ArrayList<Object>();
+
+        Results sr = r.getSubQueryResults(idx);
+        sr.beforeFirst();
+        while (sr.next())
+          vals.add(isSubView ? createInstance(scm, null, sr) : getValue(sr, 0, type));
+
+        return vals;
+
+      default:
+        throw new Error("unknown type " + r.getType(idx) + " encountered");
+    }
   }
 
   private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
@@ -691,7 +754,7 @@ public class Session {
         boolean deep = ((cascade != null) && p.isCascadable(cascade));
         boolean deepDelete = p.isCascadable(CascadeType.delete);
         for (Object ao : p.get(o)) {
-          Id aid = checkObject(ao);
+          Id aid = checkObject(ao, update);
 
           // note: sync() here will not return a merged object. see copy()
           if (deep)
@@ -725,7 +788,7 @@ public class Session {
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
     if (log.isDebugEnabled())
-      log.debug("Copy merging " + checkObject(o));
+      log.debug("Copy merging " + checkObject(o, false));
 
     for (Mapper p : cm.getFields()) {
       Mapper op = ocm.getMapperByUri(p.getUri(), p.hasInverseUri(), p.getRdfType());
@@ -739,7 +802,7 @@ public class Session {
         List cc = new ArrayList();
 
         for (Object ao : op.get(other)) {
-          Id     id  = checkObject(ao);
+          Id     id  = checkObject(ao, false);
           Object aoc = loopDetect.get(id);
 
           if (aoc == null) {
@@ -815,11 +878,13 @@ public class Session {
     }
   }
 
-  private Id checkObject(Object o) throws OtmException {
+  private Id checkObject(Object o, boolean isUpdate) throws OtmException {
     if (o == null)
       throw new NullPointerException("Null object");
 
     ClassMetadata<?> cm      = checkClass(o.getClass());
+    if (cm.isView() && isUpdate)
+      throw new OtmException("View's may not be updated: " + o.getClass());
 
     Mapper           idField = cm.getIdField();
 
@@ -854,7 +919,7 @@ public class Session {
     if (cm == null)
       throw new OtmException("No class metadata found for " + clazz);
 
-    if (cm.getModel() == null)
+    if (cm.getModel() == null && !cm.isView())
       throw new OtmException("No graph/model found for " + clazz);
 
     return cm;

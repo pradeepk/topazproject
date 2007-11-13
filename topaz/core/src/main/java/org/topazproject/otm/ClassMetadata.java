@@ -328,6 +328,15 @@ public class ClassMetadata<T> {
     return (idField != null) && (model != null);
   }
 
+  /**
+   * Tests if this meta-data is for a view class.
+   *
+   * @return true for view type
+   */
+  public boolean isView() {
+    return (query != null);
+  }
+
   private static boolean isDuplicateMapping(List<Mapper> mappers, Mapper o) {
     for (Mapper m : mappers) {
       if (m.hasInverseUri() != o.hasInverseUri())

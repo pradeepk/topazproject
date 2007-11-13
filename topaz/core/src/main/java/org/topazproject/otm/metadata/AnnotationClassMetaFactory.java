@@ -247,8 +247,8 @@ public class AnnotationClassMetaFactory {
 
     if (isView && proj == null)
       return null;
-    if (isView && (rdf != null || id != null || embedded))
-      throw new OtmException("Only @Projection is supported on fields in a View; class=" +
+    if (isView && (rdf != null || embedded))
+      throw new OtmException("Only @Projection and @Id are supported on fields in a View; class=" +
                              clazz.getName() + ", field=" + f.getName());
     if (!isView && proj != null)
       throw new OtmException("@Projection is only supported on fields in a View; class=" +
@@ -300,9 +300,12 @@ public class AnnotationClassMetaFactory {
 
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
-      Mapper     p          =
-        new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
-                             Mapper.MapperType.PREDICATE, true, generator, null, null);
+      Mapper     p;
+      if (isView)
+        p = new FunctionalMapper(var, f, getMethod, setMethod);
+      else
+        p = new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
+                                 Mapper.MapperType.PREDICATE, true, generator, null, null);
 
       return Collections.singletonList(p);
     }
@@ -363,7 +366,7 @@ public class AnnotationClassMetaFactory {
                                    model, mt, !notOwned, generator, ct, ft);
       } else {
         if (isView)
-          p = new FunctionalMapper(var, f, setMethod, type);
+          p = new FunctionalMapper(var, f, getMethod, setMethod);
         else
           p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
                                    mt, !notOwned, generator, ct, ft);

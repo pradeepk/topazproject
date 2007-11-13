@@ -17,8 +17,15 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for view classes. View's are expressed using OQL queries, with every field
- * corresponding to an element in the query's projection list. The fields must be marked using
- * the {@link Projection @Projection} annotation.
+ * corresponding to an element in the query's projection list; the fields must be marked using
+ * the {@link Projection @Projection} annotation. The OQL query must take exactly one parameter,
+ * and it must be named <var>id</var>; the result of running the query must be 0 or 1 rows.
+ * Furthermore, as with {@link Entity  Entity} one field must be marked {@link Id @Id} (in addition
+ * to the @Projection annotation). This makes a View behave similar to an Entity in that each
+ * instance has an id by which it can be retrieved (using {@link Session#get Session.get()}) and
+ * under which it is cached. This also allows View's to be used as fields in other View's and to
+ * be used as result objects in OQL and Criteria queries (they may not be dereferenced, though).
+ * View's may <em>not</em> be saved or deleted, however.
  *
  * <p>Subqueries may be used to fill in fields with type collection or array. If the subquery has
  * only a single projection element then nothing further is needed and the projection element is
@@ -30,9 +37,9 @@ import java.lang.annotation.Target;
  *
  * <p>Example:
  * <pre>
- *   @View(query = "select a.uri id, (select oi.uri pid, (select oi.representations from ObjectInfo oi2) reps from ObjectInfo oi where oi = a.parts order by pid) parts from Article a where a.categories = :cat order by id;")
+ *   @View(query = "select a.uri id, (select oi.uri pid, (select oi.representations from ObjectInfo oi2) reps from ObjectInfo oi where oi = a.parts order by pid) parts from Article a where a.uri = :id order by id;")
  *   class MyView {
- *     @Projection("id")
+ *     @Id @Projection("id")
  *     String id;
  *
  *     @Projection("parts")
@@ -60,7 +67,8 @@ public @interface View {
   String name() default "";
 
   /**
-   * The OQL query.
+   * The OQL query. It must have exactly one parameter, and the parameter's name must be
+   * <var>id</var>.
    */
   String query();
 }

@@ -57,11 +57,11 @@ public class FunctionalMapper extends AbstractMapper {
    *
    * @param var           the projection variable
    * @param field         the java class field
+   * @param getter        the field get method or null
    * @param setter        the field set method or null
-   * @param componentType the array component type
    */
-  public FunctionalMapper(String var, Field field, Method setter, Class componentType) {
-    super(var, field, null, setter, componentType);
+  public FunctionalMapper(String var, Field field, Method getter, Method setter) {
+    super(var, field, getter, setter, field.getType());
   }
 
   /**

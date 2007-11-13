@@ -13,7 +13,7 @@ package org.topazproject.otm;
 import java.net.URI;
 import java.util.Date;
 
-import org.topazproject.otm.View;
+import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.View;
@@ -38,6 +38,9 @@ public class ViewTest extends AbstractTest {
     rdf.sessFactory.preload(ViewTwo.class);
     rdf.sessFactory.preload(ViewThree.class);
     rdf.sessFactory.preload(ViewThreePart.class);
+    rdf.sessFactory.preload(ViewFour.class);
+    rdf.sessFactory.preload(ViewFourPart.class);
+    rdf.sessFactory.preload(ViewFive.class);
   }
 
   void testGet() {
@@ -68,44 +71,70 @@ public class ViewTest extends AbstractTest {
 
     doInTx { s ->
       // basic test
-      List<ViewOne> res1 = s.createView(ViewOne.class).setParameter("cat", "Fish").list()
-      assert res1.size() == 1
-      assertEquals(o1.uri,  res1.get(0).uri)
-      assertEquals(o1.date, res1.get(0).date)
+      ViewOne res1 = s.get(ViewOne.class, o1.uri.toString())
+      assertEquals(o1.uri,  res1.uri)
+      assertEquals(o1.date, res1.date)
+
+      res1 = s.get(ViewOne.class, o2.uri.toString())
+      assertEquals(o2.uri,  res1.uri)
+      assertEquals(o2.date, res1.date)
 
       // subqueries, field-list != projection-list
-      List<ViewTwo> res2 = s.createView(ViewTwo.class).setParameter("cat", "Fruits").list()
-      assert res2.size() == 2
+      ViewTwo res2 = s.get(ViewTwo.class, o1.uri.toString())
+      assertEquals(o1.title,  res2.title)
+      assertEquals(o1.authors.toList().sort(), res2.authors.toList().sort())
+      assertEquals(o1.authors.toList().sort(), res2.authorsList.sort())
+      assertEquals(o1.authors.toList().sort(), res2.authorsSet.toList().sort())
 
-      assertEquals(o2.title,  res2.get(0).title)
-      assertEquals(o2.authors.toList().sort(), res2.get(0).authors.toList().sort())
-      assertEquals(o2.authors.toList().sort(), res2.get(0).authorsList.sort())
-      assertEquals(o2.authors.toList().sort(), res2.get(0).authorsSet.toList().sort())
-
-      assertEquals(o1.title,  res2.get(1).title)
-      assertEquals(o1.authors.toList().sort(), res2.get(1).authors.toList().sort())
-      assertEquals(o1.authors.toList().sort(), res2.get(1).authorsList.sort())
-      assertEquals(o1.authors.toList().sort(), res2.get(1).authorsSet.toList().sort())
+      res2 = s.get(ViewTwo.class, o2.uri.toString())
+      assertEquals(o2.title,  res2.title)
+      assertEquals(o2.authors.toList().sort(), res2.authors.toList().sort())
+      assertEquals(o2.authors.toList().sort(), res2.authorsList.sort())
+      assertEquals(o2.authors.toList().sort(), res2.authorsSet.toList().sort())
 
       // sub-views, count
-      List<ViewThree> res3 = s.createView(ViewThree.class).setParameter("cat", "Fruits").list()
-      assert res3.size() == 2
-
-      assertEquals(o1.uri.toString(), res3.get(0).id)
-      assertEquals(o1.authors.size(), res3.get(0).authors)
-      assertEquals(o1.parts.size(),   res3.get(0).parts.size())
+      ViewThree res3 = s.get(ViewThree.class, o1.uri.toString())
+      assertEquals(o1.uri.toString(), res3.id)
+      assertEquals(o1.authors.size(), res3.authors)
+      assertEquals(o1.parts.size(),   res3.parts.size())
       def parts = o1.parts.toList().sort({ it.identifier })
-      assertEquals(parts[0].identifier,      res3.get(0).parts[0].identifier)
-      assertEquals(parts[0].representations, res3.get(0).parts[0].representations)
+      assertEquals(parts[0].identifier,      res3.parts[0].identifier)
+      assertEquals(parts[0].representations, res3.parts[0].representations)
 
-      assertEquals(o2.uri.toString(), res3.get(1).id)
-      assertEquals(o2.authors.size(), res3.get(1).authors)
-      assertEquals(o2.parts.size(),   res3.get(1).parts.size())
+      res3 = s.get(ViewThree.class, o2.uri.toString())
+      assertEquals(o2.uri.toString(), res3.id)
+      assertEquals(o2.authors.size(), res3.authors)
+      assertEquals(o2.parts.size(),   res3.parts.size())
       parts = o2.parts.toList().sort({ it.identifier })
-      assertEquals(parts[0].identifier,      res3.get(1).parts[0].identifier)
-      assertEquals(parts[0].representations, res3.get(1).parts[0].representations)
-      assertEquals(parts[1].identifier,      res3.get(1).parts[1].identifier)
-      assertEquals(parts[1].representations, res3.get(1).parts[1].representations)
+      assertEquals(parts[0].identifier,      res3.parts[0].identifier)
+      assertEquals(parts[0].representations, res3.parts[0].representations)
+      assertEquals(parts[1].identifier,      res3.parts[1].identifier)
+      assertEquals(parts[1].representations, res3.parts[1].representations)
+
+      // view-in-view
+      ViewFour res4 = s.get(ViewFour.class, o1.uri.toString())
+      assertEquals(o1.uri.toString(), res4.id)
+      assertEquals(o1.parts.size(),   res4.parts.size())
+      parts = o1.parts.toList().sort({ it.identifier })
+      def rp = res4.parts.toList().sort({ it.identifier })
+      assertEquals(parts[0].identifier,      rp[0].identifier)
+      assertEquals(parts[0].representations, rp[0].representations)
+
+      res4 = s.get(ViewFour.class, o2.uri.toString())
+      assertEquals(o2.uri.toString(), res4.id)
+      assertEquals(o2.parts.size(),   res4.parts.size())
+      parts = o2.parts.toList().sort({ it.identifier })
+      rp    = res4.parts.toList().sort({ it.identifier })
+      assertEquals(parts[0].identifier,      rp[0].identifier)
+      assertEquals(parts[0].representations, rp[0].representations)
+      assertEquals(parts[1].identifier,      rp[1].identifier)
+      assertEquals(parts[1].representations, rp[1].representations)
+
+      // view-in-view (non-collection)
+      ViewFive res5 = s.get(ViewFive.class, o1.uri.toString())
+      assertEquals(o1.uri.toString(), res5.id)
+      assertEquals(o1.parts.toList()[0].identifier,      res5.part.identifier)
+      assertEquals(o1.parts.toList()[0].representations, res5.part.representations)
 
       // cleanup
       s.delete(o1)
@@ -115,19 +144,22 @@ public class ViewTest extends AbstractTest {
 }
 
 /* basic view test */
-@View(query = "select a.uri id, a.date date from Article a where a.categories = :cat ;")
+@View(query = "select a.uri id, a.date date from Article a where a.uri = :id ;")
 class ViewOne {
-  @Projection("id")
+  @Id @Projection("id")
   URI uri;
 
   @Projection("date")
   Date date;
 }
 
-/* testing projection not used (uri), projection used multiple times (authors), and subqueries */
-@View(query = """select a.uri, a.title title, (select a.authors from Article aa) authors
-                 from Article a where a.categories = :cat order by title;""")
+/* testing projection not used (date), projection used multiple times (authors), and subqueries */
+@View(query = """select a.uri id, a.date, a.title title, (select a.authors from Article aa) authors
+                 from Article a where a.uri = :id;""")
 class ViewTwo {
+  @Id @Projection("id")
+  URI uri;
+
   @Projection("title")
   String title;
 
@@ -141,14 +173,14 @@ class ViewTwo {
   Set<String> authorsSet;
 }
 
-/* testing projection not used (uri), projection used multiple times (authors), and subqueries */
+/* testing sub-views */
 @View(query = """select a.uri id, count(a.authors) numAuth,
                   (select oi.uri, oi.identifier ident,
                    (select oi.representations from ObjectInfo oi2) reps
                    from ObjectInfo oi where oi = a.parts order by ident) parts
-                 from Article a where a.categories = :cat order by id;""")
+                 from Article a where a.uri = :id;""")
 class ViewThree {
-  @Projection("id")
+  @Id @Projection("id")
   String id;
 
   @Projection("numAuth")
@@ -165,4 +197,41 @@ class ViewThreePart {
 
   @Projection("reps")
   Set<String> representations;
+}
+
+/* testing views-in-views */
+@View(query = """select a.uri id,
+                   (select p from Article aa where p := cast(a.parts, ViewFourPart)) parts
+                 from Article a where a.uri = :id;""")
+class ViewFour {
+  @Id @Projection("id")
+  String id;
+
+  @Projection("parts")
+  Set<ViewFourPart> parts;
+}
+
+@View(query = """select oi.uri id, oi.identifier ident,
+                   (select oi.representations from ObjectInfo oi2) reps
+                 from ObjectInfo oi where oi.uri = :id;""")
+class ViewFourPart {
+  @Id @Projection("id")
+  String id;
+
+  @Projection("ident")
+  String identifier;
+
+  @Projection("reps")
+  Set<String> representations;
+}
+
+/* testing view-in-views (non-collection) */
+@View(query = """select a.uri id, p from Article a
+                 where a.uri = :id and p := cast(a.parts, ViewFourPart);""")
+class ViewFive {
+  @Id @Projection("id")
+  String id;
+
+  @Projection("p")
+  ViewFourPart part;
 }
