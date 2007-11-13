@@ -45,13 +45,14 @@ class ItqlNativeResults extends ItqlResults {
   }
 
   @Override
-  protected Object getResult(int idx, Type type) throws OtmException, AnswerException {
+  protected Object getResult(int idx, Type type, boolean eager)
+      throws OtmException, AnswerException {
     switch (type) {
       case SUBQ_RESULTS:
         return new ItqlNativeResults(qas.getSubQueryResults(idx), sess);
 
       default:
-        return super.getResult(idx, type);
+        return super.getResult(idx, type, eager);
     }
   }
 }

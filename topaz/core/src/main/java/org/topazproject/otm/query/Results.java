@@ -104,8 +104,8 @@ public abstract class Results {
    * <ul>
    *   <li>Advance to the next row, or set <var>eor</var> if no more rows are available.</li>
    *   <li>populate <var>curRow</var> with the current row; alternatively the subclass may
-   *       override {@link #getRow getRow()} and {@link #get(int) get(idx)} and provide the
-   *       results at that time instead.</li>
+   *       override {@link #getRow getRow()} and {@link #get(int, boolean) get(idx, eager)} and
+   *       provide the results at that time instead.</li>
    * </ul>
    * 
    * @throws OtmException 
@@ -210,11 +210,19 @@ public abstract class Results {
     return curRow.clone();
   }
 
-  public Object get(String var) throws OtmException {
-    return get(findVariable(var));
+  public final Object get(String var) throws OtmException {
+    return get(var, true);
   }
 
-  public Object get(int idx) throws OtmException {
+  public final Object get(int idx) throws OtmException {
+    return get(idx, true);
+  }
+
+  public Object get(String var, boolean eager) throws OtmException {
+    return get(findVariable(var), eager);
+  }
+
+  public Object get(int idx, boolean eager) throws OtmException {
     return curRow[idx];
   }
 

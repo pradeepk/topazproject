@@ -73,17 +73,19 @@ class ItqlOQLResults extends ItqlResults {
   }
 
   @Override
-  protected Object getResult(int idx, Type type) throws OtmException, AnswerException {
+  protected Object getResult(int idx, Type type, boolean eager)
+      throws OtmException, AnswerException {
     switch (type) {
       case SUBQ_RESULTS:
         return new ItqlOQLResults(qas.getSubQueryResults(idx), (QueryInfo) qi.getTypes().get(idx),
                                   null, sess);
 
       case CLASS:
-        return sess.get((Class<?>) qi.getTypes().get(idx), qas.getString(idx), false);
+        return eager ? sess.get((Class<?>) qi.getTypes().get(idx), qas.getString(idx), false) :
+                       sess.load((Class<?>) qi.getTypes().get(idx), qas.getString(idx));
 
       default:
-        return super.getResult(idx, type);
+        return super.getResult(idx, type, eager);
     }
   }
 }

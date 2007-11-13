@@ -110,7 +110,7 @@ abstract class ItqlResults extends Results {
       curRow = new Object[qas.getVariables().length];
       for (int idx = 0; idx < curRow.length; idx++) {
         try {
-          curRow[idx] = getResult(idx, getType(idx));
+          curRow[idx] = getResult(idx, getType(idx), true);
         } catch (AnswerException ae) {
           throw new QueryException("Error parsing answer", ae);
         }
@@ -121,7 +121,7 @@ abstract class ItqlResults extends Results {
   }
 
   @Override
-  public Object get(int idx) throws OtmException {
+  public Object get(int idx, boolean eager) throws OtmException {
     if (eor)
       throw new QueryException("at end of results");
 
@@ -129,7 +129,7 @@ abstract class ItqlResults extends Results {
       return curRow[idx];
     else {
       try {
-        return getResult(idx, getType(idx));
+        return getResult(idx, getType(idx), eager);
       } catch (AnswerException ae) {
         throw new QueryException("Error parsing answer", ae);
       }
@@ -139,13 +139,16 @@ abstract class ItqlResults extends Results {
   /** 
    * Get a single result object. This handles LITERAL, URI, and UNKNOWN only.
    * 
-   * @param idx  which object to get
-   * @param type the object's type
+   * @param idx   which object to get
+   * @param type  the object's type
+   * @param eager true if the object should be fetched eagerly, false if lazily; only relevant
+   *              for CLASS objects
    * @return the object
    * @throws OtmException 
    * @throws AnswerException 
    */
-  protected Object getResult(int idx, Type type) throws OtmException, AnswerException {
+  protected Object getResult(int idx, Type type, boolean eager)
+      throws OtmException, AnswerException {
     switch (type) {
       case LITERAL:
         String dt = qas.getLiteralDataType(idx);
@@ -164,7 +167,7 @@ abstract class ItqlResults extends Results {
           types[idx] = Type.SUBQ_RESULTS;
         else
           throw new Error("unknown query-answer type encountered at index " + idx);
-        return getResult(idx, types[idx]);
+        return getResult(idx, types[idx], eager);
 
       default:
         throw new Error("unknown type " + type + " encountered");
