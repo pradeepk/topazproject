@@ -85,8 +85,9 @@ class ItqlNativeResults extends Results {
     if (qas.isLiteral(idx)) {
       types[idx] = Type.LITERAL;
 
-    // FIXME: need lang from AnswerSet
-      return new Literal(qas.getString(idx), qas.getLiteralDataType(idx), null);
+      String dt = qas.getLiteralDataType(idx);
+      return new Literal(qas.getString(idx), qas.getLiteralLangTag(idx),
+                         (dt != null) ? URI.create(dt) : null);
     }
 
     if (qas.isURI(idx)) {
