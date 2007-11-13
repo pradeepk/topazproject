@@ -72,10 +72,11 @@ public class CollectionMapper extends AbstractMapper {
    * @param getter        the field get method or null
    * @param setter        the field set method or null
    * @param componentType the array component type
+   * @param fetchType     fetch type for this field (for associations)
    */
   public CollectionMapper(String var, Field field, Method getter, Method setter,
-                          Class componentType) {
-    super(var, field, getter, setter, null, componentType);
+                          Class componentType, FetchType fetchType) {
+    super(var, field, getter, setter, null, componentType, fetchType);
   }
 
   /**

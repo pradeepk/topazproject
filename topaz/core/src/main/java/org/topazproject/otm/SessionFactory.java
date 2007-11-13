@@ -203,7 +203,7 @@ public class SessionFactory {
     Class<T> c = cm.getSourceClass();
     metadata.put(c, cm);
     cnamemap.put(c.getName(), cm);
-    if (cm.isEntity())
+    if (cm.isEntity() || cm.isView())
       createProxy(c, cm);
 
     String type = cm.getType();

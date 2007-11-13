@@ -318,7 +318,7 @@ public class AnnotationClassMetaFactory {
 
       Mapper     p;
       if (isView)
-        p = new FunctionalMapper(null, f, getMethod, setMethod, serializer);
+        p = new FunctionalMapper(null, f, getMethod, setMethod, serializer, null);
       else
         p = new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
                                  Mapper.MapperType.PREDICATE, true, generator, null, null);
@@ -370,19 +370,19 @@ public class AnnotationClassMetaFactory {
 
       if (isArray) {
         if (isView)
-          p = new ArrayMapper(var, f, setMethod, type);
+          p = new ArrayMapper(var, f, setMethod, type, proj.fetch());
         else
           p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
                               model, mt, !notOwned, generator, ct, ft);
       } else if (isCollection) {
         if (isView)
-          p = new CollectionMapper(var, f, getMethod, setMethod, type);
+          p = new CollectionMapper(var, f, getMethod, setMethod, type, proj.fetch());
         else
           p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
                                    model, mt, !notOwned, generator, ct, ft);
       } else {
         if (isView)
-          p = new FunctionalMapper(var, f, getMethod, setMethod, null);
+          p = new FunctionalMapper(var, f, getMethod, setMethod, null, proj.fetch());
         else
           p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
                                    mt, !notOwned, generator, ct, ft);

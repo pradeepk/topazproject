@@ -678,7 +678,7 @@ public class Session {
 
     for (Mapper m : cm.getFields()) {
       int    idx = r.findVariable(m.getProjectionVar());
-      Object val = getValue(r, idx, m.getComponentType());
+      Object val = getValue(r, idx, m.getComponentType(), m.getFetchType() == FetchType.eager);
       if (val instanceof List)
         m.set(obj, (List) val);
       else
@@ -688,10 +688,10 @@ public class Session {
     return obj;
   }
 
-  private Object getValue(Results r, int idx, Class<?> type) throws OtmException {
+  private Object getValue(Results r, int idx, Class<?> type, boolean eager) throws OtmException {
     switch (r.getType(idx)) {
       case CLASS:
-        return (type == String.class) ? r.getString(idx) : r.get(idx);
+        return (type == String.class) ? r.getString(idx) : r.get(idx, eager);
 
       case LITERAL:
         return (type == String.class) ? r.getString(idx) : r.getLiteralAs(idx, type);
@@ -708,7 +708,7 @@ public class Session {
         Results sr = r.getSubQueryResults(idx);
         sr.beforeFirst();
         while (sr.next())
-          vals.add(isSubView ? createInstance(scm, null, null, sr) : getValue(sr, 0, type));
+          vals.add(isSubView ? createInstance(scm, null, null, sr) : getValue(sr, 0, type, eager));
 
         return vals;
 

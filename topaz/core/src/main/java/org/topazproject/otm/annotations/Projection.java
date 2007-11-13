@@ -14,6 +14,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.topazproject.otm.mapping.Mapper.FetchType;
+
 /**
  * Annotation for fields in {@link View @View}'s and {@link SubView @SubView}'s.
  *
@@ -27,4 +29,10 @@ public @interface Projection {
    * implicit) variable associated with the projection element. Defaults to the field name.
    */
   String value() default "";
+
+  /**
+   * Fetch type preferences for this field. Only valid for fields whose class is an Entity or a
+   * View.
+   */
+  FetchType fetch() default FetchType.eager;
 }

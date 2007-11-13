@@ -60,10 +60,11 @@ public class FunctionalMapper extends AbstractMapper {
    * @param getter        the field get method or null
    * @param setter        the field set method or null
    * @param serializer    the serializer or null
+   * @param fetchType     fetch type for this field (for associations)
    */
   public FunctionalMapper(String var, Field field, Method getter, Method setter,
-                          Serializer serializer) {
-    super(var, field, getter, setter, serializer, field.getType());
+                          Serializer serializer, FetchType fetchType) {
+    super(var, field, getter, setter, serializer, field.getType(), fetchType);
   }
 
   /**

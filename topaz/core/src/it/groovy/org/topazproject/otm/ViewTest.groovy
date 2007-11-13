@@ -17,6 +17,7 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.View;
+import org.topazproject.otm.mapping.Mapper.FetchType;
 
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.ObjectInfo;
@@ -207,8 +208,8 @@ class ViewFour {
   @Id
   String id;
 
-  @Projection("parts")
-  Set<ViewFourPart> parts;
+  @Projection(value="parts", fetch=FetchType.lazy)
+  List<ViewFourPart> parts;
 }
 
 @View(query = """select oi.uri, oi.identifier ident,

@@ -62,9 +62,11 @@ public class ArrayMapper extends AbstractMapper {
    * @param field         the java class field
    * @param setter        the field set method or null
    * @param componentType the array component type
+   * @param fetchType     fetch type for this field (for associations)
    */
-  public ArrayMapper(String var, Field field, Method setter, Class componentType) {
-    super(var, field, null, setter, null, componentType);
+  public ArrayMapper(String var, Field field, Method setter, Class componentType,
+                     FetchType fetchType) {
+    super(var, field, null, setter, null, componentType, fetchType);
   }
 
   /**

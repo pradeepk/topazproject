@@ -98,9 +98,10 @@ public abstract class AbstractMapper implements Mapper {
    * @param setter        the field set method or null
    * @param serializer    the serializer or null
    * @param componentType of arrays and collections or type of functional properties
+   * @param fetchType     fetch type for this field (for associations)
    */
   protected AbstractMapper(String var, Field field, Method getter, Method setter,
-                           Serializer serializer, Class componentType) {
+                           Serializer serializer, Class componentType, FetchType fetchType) {
     this.uri             = null;
     this.var             = var;
     this.field           = field;
@@ -118,7 +119,7 @@ public abstract class AbstractMapper implements Mapper {
     this.entityOwned     = false;
     this.generator       = null;
     this.cascade         = null;
-    this.fetchType       = null;
+    this.fetchType       = fetchType;
   }
 
   /*
