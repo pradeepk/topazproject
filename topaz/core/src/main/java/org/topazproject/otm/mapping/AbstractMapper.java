@@ -96,16 +96,17 @@ public abstract class AbstractMapper implements Mapper {
    * @param field         the java class field
    * @param getter        the field get method or null
    * @param setter        the field set method or null
+   * @param serializer    the serializer or null
    * @param componentType of arrays and collections or type of functional properties
    */
   protected AbstractMapper(String var, Field field, Method getter, Method setter,
-                           Class componentType) {
+                           Serializer serializer, Class componentType) {
     this.uri             = null;
     this.var             = var;
     this.field           = field;
     this.getter          = getter;
     this.setter          = setter;
-    this.serializer      = null;
+    this.serializer      = serializer;
     this.name            = field.getName();
     this.type            = field.getType();
     this.componentType   = componentType;

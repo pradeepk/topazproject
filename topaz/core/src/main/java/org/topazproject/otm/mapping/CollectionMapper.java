@@ -75,7 +75,7 @@ public class CollectionMapper extends AbstractMapper {
    */
   public CollectionMapper(String var, Field field, Method getter, Method setter,
                           Class componentType) {
-    super(var, field, getter, setter, componentType);
+    super(var, field, getter, setter, null, componentType);
   }
 
   /**

@@ -64,7 +64,7 @@ public class ArrayMapper extends AbstractMapper {
    * @param componentType the array component type
    */
   public ArrayMapper(String var, Field field, Method setter, Class componentType) {
-    super(var, field, null, setter, componentType);
+    super(var, field, null, setter, null, componentType);
   }
 
   /**

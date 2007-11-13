@@ -656,14 +656,15 @@ public class Session {
     Results r = q.setParameter("id", id).execute();
 
     if (r.next())
-      instance = createInstance(cm, instance, r);
+      instance = createInstance(cm, instance, id, r);
     else
       instance = null;
 
     return instance;
   }
 
-  private <S> S createInstance(ClassMetadata<S> cm, S obj, Results r) throws OtmException {
+  private <S> S createInstance(ClassMetadata<S> cm, S obj, String id, Results r)
+      throws OtmException {
     try {
       if (obj == null)
         obj = cm.getSourceClass().newInstance();
@@ -671,6 +672,9 @@ public class Session {
       throw new OtmException("Failed to create instance of '" + cm.getSourceClass().getName() + "'",
                              e);
     }
+
+    if (id != null && cm.getIdField() != null)
+      cm.getIdField().set(obj, Collections.singletonList(id));
 
     for (Mapper m : cm.getFields()) {
       int    idx = r.findVariable(m.getProjectionVar());
@@ -704,7 +708,7 @@ public class Session {
         Results sr = r.getSubQueryResults(idx);
         sr.beforeFirst();
         while (sr.next())
-          vals.add(isSubView ? createInstance(scm, null, sr) : getValue(sr, 0, type));
+          vals.add(isSubView ? createInstance(scm, null, null, sr) : getValue(sr, 0, type));
 
         return vals;
 

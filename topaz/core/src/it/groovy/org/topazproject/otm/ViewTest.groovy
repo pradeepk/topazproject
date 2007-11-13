@@ -144,9 +144,9 @@ public class ViewTest extends AbstractTest {
 }
 
 /* basic view test */
-@View(query = "select a.uri id, a.date date from Article a where a.uri = :id ;")
+@View(query = "select a.date date from Article a where a.uri = :id ;")
 class ViewOne {
-  @Id @Projection("id")
+  @Id
   URI uri;
 
   @Projection("date")
@@ -154,10 +154,10 @@ class ViewOne {
 }
 
 /* testing projection not used (date), projection used multiple times (authors), and subqueries */
-@View(query = """select a.uri id, a.date, a.title title, (select a.authors from Article aa) authors
+@View(query = """select a.uri, a.date, a.title title, (select a.authors from Article aa) authors
                  from Article a where a.uri = :id;""")
 class ViewTwo {
-  @Id @Projection("id")
+  @Id
   URI uri;
 
   @Projection("title")
@@ -174,13 +174,13 @@ class ViewTwo {
 }
 
 /* testing sub-views */
-@View(query = """select a.uri id, count(a.authors) numAuth,
+@View(query = """select a.uri, count(a.authors) numAuth,
                   (select oi.uri, oi.identifier ident,
                    (select oi.representations from ObjectInfo oi2) reps
                    from ObjectInfo oi where oi = a.parts order by ident) parts
                  from Article a where a.uri = :id;""")
 class ViewThree {
-  @Id @Projection("id")
+  @Id
   String id;
 
   @Projection("numAuth")
@@ -200,22 +200,22 @@ class ViewThreePart {
 }
 
 /* testing views-in-views */
-@View(query = """select a.uri id,
+@View(query = """select a.uri,
                    (select p from Article aa where p := cast(a.parts, ViewFourPart)) parts
                  from Article a where a.uri = :id;""")
 class ViewFour {
-  @Id @Projection("id")
+  @Id
   String id;
 
   @Projection("parts")
   Set<ViewFourPart> parts;
 }
 
-@View(query = """select oi.uri id, oi.identifier ident,
+@View(query = """select oi.uri, oi.identifier ident,
                    (select oi.representations from ObjectInfo oi2) reps
                  from ObjectInfo oi where oi.uri = :id;""")
 class ViewFourPart {
-  @Id @Projection("id")
+  @Id
   String id;
 
   @Projection("ident")
@@ -226,10 +226,10 @@ class ViewFourPart {
 }
 
 /* testing view-in-views (non-collection) */
-@View(query = """select a.uri id, p from Article a
+@View(query = """select a.uri, p from Article a
                  where a.uri = :id and p := cast(a.parts, ViewFourPart);""")
 class ViewFive {
-  @Id @Projection("id")
+  @Id
   String id;
 
   @Projection("p")

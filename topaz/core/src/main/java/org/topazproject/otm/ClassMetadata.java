@@ -95,12 +95,14 @@ public class ClassMetadata<T> {
   /**
    * Creates a new ClassMetadata object for a View.
    *
-   * @param clazz  the class 
-   * @param name   the view name (used to look up class-metadata)
-   * @param query  the query, or null for SubView's
-   * @param fields mappers for all persistable fields (includes embedded class fields)
+   * @param clazz   the class 
+   * @param name    the view name (used to look up class-metadata)
+   * @param query   the query, or null for SubView's
+   * @param idField the mapper for the id field
+   * @param fields  mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(Class<T> clazz, String name, String query, Collection<Mapper> fields)
+  public ClassMetadata(Class<T> clazz, String name, String query, Mapper idField,
+                       Collection<Mapper> fields)
                 throws OtmException {
     this.clazz     = clazz;
     this.name      = name;
@@ -108,7 +110,7 @@ public class ClassMetadata<T> {
     this.type      = null;
     this.model     = null;
     this.uriPrefix = null;
-    this.idField   = null;
+    this.idField   = idField;
 
     this.types     = null;
     this.fields    = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));

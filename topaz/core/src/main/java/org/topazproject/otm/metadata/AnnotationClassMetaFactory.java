@@ -174,14 +174,30 @@ public class AnnotationClassMetaFactory {
       name = !"".equals(sv.name()) ? sv.name() : getName(clazz);
     }
 
-    Collection<Mapper> fields = new ArrayList<Mapper>();
+    Mapper             idField = null;
+    Collection<Mapper> fields  = new ArrayList<Mapper>();
+
     for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = createMapper(f, clazz, clazz, null, true);
-      if (mappers != null)
-        fields.addAll(mappers); // actually only one mapper in the collection
+      Collection<? extends Mapper> mappers = createMapper(f, clazz, clazz, null, true);
+      if (mappers != null) {
+        for (Mapper m : mappers) {
+          String var = m.getProjectionVar();
+          if (var != null)
+            fields.add(m);
+          else {
+            if (idField != null)
+              throw new OtmException("Duplicate @Id field " + toString(f));
+
+            idField = m;
+          }
+        }
+      }
     }
 
-    return new ClassMetadata(clazz, name, query, fields);
+    if (view != null && idField == null)
+      throw new OtmException("Missing @Id field in " + clazz.getName());
+
+    return new ClassMetadata(clazz, name, query, idField, fields);
   }
 
   /**
@@ -245,7 +261,7 @@ public class AnnotationClassMetaFactory {
       (f.getAnnotation(Embedded.class) != null) || (type.getAnnotation(Embeddable.class) != null);
     Projection proj     = f.getAnnotation(Projection.class);
 
-    if (isView && proj == null)
+    if (isView && proj == null && id == null)
       return null;
     if (isView && (rdf != null || embedded))
       throw new OtmException("Only @Projection and @Id are supported on fields in a View; class=" +
@@ -302,7 +318,7 @@ public class AnnotationClassMetaFactory {
 
       Mapper     p;
       if (isView)
-        p = new FunctionalMapper(var, f, getMethod, setMethod);
+        p = new FunctionalMapper(null, f, getMethod, setMethod, serializer);
       else
         p = new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
                                  Mapper.MapperType.PREDICATE, true, generator, null, null);
@@ -366,7 +382,7 @@ public class AnnotationClassMetaFactory {
                                    model, mt, !notOwned, generator, ct, ft);
       } else {
         if (isView)
-          p = new FunctionalMapper(var, f, getMethod, setMethod);
+          p = new FunctionalMapper(var, f, getMethod, setMethod, null);
         else
           p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
                                    mt, !notOwned, generator, ct, ft);
