@@ -99,14 +99,6 @@ public abstract class Results {
     this.sf        = sf;
   }
 
-  protected Results(String[] variables, String[] warnings, SessionFactory sf) {
-    this.variables = variables;
-    this.warnings  = (warnings != null && warnings.length > 0) ? warnings : null;
-    this.sf        = sf;
-    this.types     = new Type[variables.length];
-    Arrays.fill(this.types, Type.UNKNOWN);
-  }
-
   /** 
    * Subclasses must do the work of loading a new row of results here. They are expected to
    * <ul>

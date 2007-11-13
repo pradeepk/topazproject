@@ -17,34 +17,47 @@ import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.QueryException;
-import org.topazproject.otm.query.QueryInfo;
 import org.topazproject.otm.query.Results;
 
 /** 
- * This processes the Itql results into an OTM Results object.
+ * This processes the Itql results into an OTM Results object. Indivual result objects in each row
+ * are loaded on-demand.
  * 
  * @author Ronald Tschalär
  */
-class ItqlResults extends Results {
-  private final AnswerSet.QueryAnswerSet qas;
-  private final QueryInfo                qi;
-  private final Session                  sess;
+abstract class ItqlResults extends Results {
+  protected final AnswerSet.QueryAnswerSet qas;
+  protected final Session                  sess;
+  protected final Type[]                   origTypes;
 
-  private ItqlResults(AnswerSet.QueryAnswerSet qas, QueryInfo qi, String[] warnings, Session sess)
+  /** 
+   * Create a new itql-results instance.
+   * 
+   * @param vars     the list of variables in the result
+   * @param types    the type of each variable
+   * @param qas      the query-answer to build the results from
+   * @param warnings the list of warnings generated while processing the query; may be null
+   * @param sess     the session this is attached to
+   */
+  protected ItqlResults(String[] vars, Type[] types, AnswerSet.QueryAnswerSet qas,
+                        String[] warnings, Session sess)
       throws OtmException {
-    super(getVariables(qi), getTypes(qi), warnings, sess.getSessionFactory());
-    this.qas  = qas;
-    this.qi   = qi;
-    this.sess = sess;
+    super(vars, types, warnings, sess.getSessionFactory());
+    this.qas       = qas;
+    this.sess      = sess;
+    this.origTypes = types.clone();
 
-    assert qas.getVariables().length == getVariables().length;
+    assert qas.getVariables().length == vars.length;
   }
 
-  public ItqlResults(String a, QueryInfo qi, String[] warnings, Session sess) throws OtmException {
-    this(getQAS(a), qi, warnings, sess);
-  }
-
-  private static AnswerSet.QueryAnswerSet getQAS(String a) throws OtmException {
+  /** 
+   * Parse an itql xml answer. 
+   * 
+   * @param a  the xml answer
+   * @return the parsed answer, or null if there was no result
+   * @throws OtmException if the answer is not a query-result or an error occured parsing the answer
+   */
+  protected static AnswerSet.QueryAnswerSet getQAS(String a) throws OtmException {
     try {
       AnswerSet ans = new AnswerSet(a);
 
@@ -62,31 +75,6 @@ class ItqlResults extends Results {
     }
   }
 
-  private static String[] getVariables(QueryInfo qi) {
-    return qi.getVars().toArray(new String[0]);
-  }
-
-  private static Type[] getTypes(QueryInfo qi) {
-    Type[] res = new Type[qi.getTypes().size()];
-
-    int idx = 0;
-    for (Object t : qi.getTypes()) {
-      if (t == null)
-        res[idx] = Type.UNKNOWN;
-      else if (t instanceof QueryInfo)
-        res[idx] = Type.SUBQ_RESULTS;
-      else if (t.equals(URI.class))
-        res[idx] = Type.URI;
-      else if (t.equals(String.class))
-        res[idx] = Type.LITERAL;
-      else
-        res[idx] = Type.CLASS;
-      idx++;
-    }
-
-    return res;
-  }
-
   @Override
   public void beforeFirst() throws OtmException {
     super.beforeFirst();
@@ -95,22 +83,69 @@ class ItqlResults extends Results {
 
   @Override
   protected void loadRow() throws OtmException {
-    if (!qas.next()) {
+    curRow = null;
+
+    if (!qas.next())
       eor = true;
-      return;
+    else {
+      for (int idx = 0; idx < getVariables().length; idx++) {
+        if (origTypes[idx] == Type.UNKNOWN) {
+          if (qas.isLiteral(idx))
+            types[idx] = Type.LITERAL;
+          else if (qas.isURI(idx))
+            types[idx] = Type.URI;
+          else if (qas.isSubQueryResults(idx))
+            types[idx] = Type.SUBQ_RESULTS;
+        }
+      }
+    }
+  }
+
+  @Override
+  public Object[] getRow() throws OtmException {
+    if (eor)
+      throw new QueryException("at end of results");
+
+    if (curRow == null) {
+      curRow = new Object[qas.getVariables().length];
+      for (int idx = 0; idx < curRow.length; idx++) {
+        try {
+          curRow[idx] = getResult(idx, getType(idx));
+        } catch (AnswerException ae) {
+          throw new QueryException("Error parsing answer", ae);
+        }
+      }
     }
 
-    curRow = new Object[qi.getVars().size()];
-    for (int idx = 0; idx < curRow.length; idx++) {
+    return curRow;
+  }
+
+  @Override
+  public Object get(int idx) throws OtmException {
+    if (eor)
+      throw new QueryException("at end of results");
+
+    if (curRow != null)
+      return curRow[idx];
+    else {
       try {
-        curRow[idx] = getResult(idx, getType(idx));
+        return getResult(idx, getType(idx));
       } catch (AnswerException ae) {
         throw new QueryException("Error parsing answer", ae);
       }
     }
   }
 
-  private Object getResult(int idx, Type type) throws OtmException, AnswerException {
+  /** 
+   * Get a single result object. This handles LITERAL, URI, and UNKNOWN only.
+   * 
+   * @param idx  which object to get
+   * @param type the object's type
+   * @return the object
+   * @throws OtmException 
+   * @throws AnswerException 
+   */
+  protected Object getResult(int idx, Type type) throws OtmException, AnswerException {
     switch (type) {
       case LITERAL:
         String dt = qas.getLiteralDataType(idx);
@@ -119,13 +154,6 @@ class ItqlResults extends Results {
 
       case URI:
         return qas.getURI(idx);
-
-      case SUBQ_RESULTS:
-        return new ItqlResults(qas.getSubQueryResults(idx), (QueryInfo) qi.getTypes().get(idx),
-                               null, sess);
-
-      case CLASS:
-        return sess.get((Class<?>) qi.getTypes().get(idx), qas.getString(idx), false);
 
       case UNKNOWN:
         if (qas.isLiteral(idx))

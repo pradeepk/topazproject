@@ -10,97 +10,48 @@
 
 package org.topazproject.otm.stores;
 
-import java.net.URI;
+import java.util.Arrays;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.query.QueryException;
-import org.topazproject.otm.query.Results;
 
 /** 
  * This processes the Itql results from a native query into a Results object.
  * 
  * @author Pradeep Krishnan
  */
-class ItqlNativeResults extends Results {
-  private final AnswerSet.QueryAnswerSet qas;
-  private final Session                  sess;
-
+class ItqlNativeResults extends ItqlResults {
   private ItqlNativeResults(AnswerSet.QueryAnswerSet qas, Session sess) throws OtmException {
-    super(qas.getVariables(), null, sess.getSessionFactory());
-    this.qas  = qas;
-    this.sess = sess;
+    super(qas.getVariables(), getTypes(qas.getVariables()), qas, null, sess);
   }
 
+  /** 
+   * Create a new native-itql-query results object. 
+   * 
+   * @param a    the xml answer
+   * @param sess the session this is attached to
+   * @throws OtmException 
+   */
   public ItqlNativeResults(String a, Session sess) throws OtmException {
     this(getQAS(a), sess);
   }
 
-  private static AnswerSet.QueryAnswerSet getQAS(String a) throws OtmException {
-    try {
-      AnswerSet ans = new AnswerSet(a);
-
-      // check if we got something useful
-      ans.beforeFirst();
-      if (!ans.next())
-        return null;
-      if (!ans.isQueryResult())
-        throw new QueryException("query failed: " + ans.getMessage());
-
-      // looks like we're ok
-      return ans.getQueryResults();
-    } catch (AnswerException ae) {
-      throw new QueryException("Error parsing answer", ae);
-    }
-  }
-
-
-  @Override
-  public void beforeFirst() throws OtmException {
-    super.beforeFirst();
-    qas.beforeFirst();
+  private static Type[] getTypes(String[] variables) {
+    Type[] types = new Type[variables.length];
+    Arrays.fill(types, Type.UNKNOWN);
+    return types;
   }
 
   @Override
-  protected void loadRow() throws OtmException {
-    if (!qas.next()) {
-      eor = true;
-      return;
+  protected Object getResult(int idx, Type type) throws OtmException, AnswerException {
+    switch (type) {
+      case SUBQ_RESULTS:
+        return new ItqlNativeResults(qas.getSubQueryResults(idx), sess);
+
+      default:
+        return super.getResult(idx, type);
     }
-
-    curRow = new Object[qas.getVariables().length];
-    for (int idx = 0; idx < curRow.length; idx++) {
-      try {
-        curRow[idx] = getResult(idx);
-      } catch (AnswerException ae) {
-        throw new QueryException("Error parsing answer", ae);
-      }
-    }
-  }
-
-  private Object getResult(int idx) throws OtmException, AnswerException {
-
-    if (qas.isLiteral(idx)) {
-      types[idx] = Type.LITERAL;
-
-      String dt = qas.getLiteralDataType(idx);
-      return new Literal(qas.getString(idx), qas.getLiteralLangTag(idx),
-                         (dt != null) ? URI.create(dt) : null);
-    }
-
-    if (qas.isURI(idx)) {
-      types[idx] = Type.URI;
-      return qas.getURI(idx);
-    }
-
-    if (qas.isSubQueryResults(idx)) {
-      types[idx] = Type.SUBQ_RESULTS;
-      return new ItqlNativeResults(qas.getSubQueryResults(idx), sess);
-    }
-
-    types[idx] = Type.UNKNOWN;
-    return null;
   }
 }

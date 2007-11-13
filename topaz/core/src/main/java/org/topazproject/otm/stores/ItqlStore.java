@@ -763,7 +763,7 @@ public class ItqlStore extends AbstractTripleStore {
       throw new QueryException("error performing query '" + query + "'", re);
     }
 
-    return new ItqlResults(a, qi, iq.getWarnings().toArray(new String[0]), txn.getSession());
+    return new ItqlOQLResults(a, qi, iq.getWarnings().toArray(new String[0]), txn.getSession());
   }
 
   public Results doNativeQuery(String query, Transaction txn) throws OtmException {
