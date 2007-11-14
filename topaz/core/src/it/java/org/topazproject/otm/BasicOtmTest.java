@@ -95,8 +95,6 @@ public class BasicOtmTest extends AbstractOtmTest {
 
           a.foobar.foo   = "FOO";
           a.foobar.bar = "BAR";
-
-          session.saveOrUpdate(a);
         }
       });
     doInSession(new Action() {
@@ -295,7 +293,6 @@ public class BasicOtmTest extends AbstractOtmTest {
 
           // set up for next test - perform implicit delete
           a.getReplies().clear();
-          session.saveOrUpdate(a);
         }
       });
   }

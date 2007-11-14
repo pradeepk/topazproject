@@ -164,6 +164,16 @@ public class Session {
     if (txn == null)
       throw new OtmException("No active transaction");
 
+    // auto-save objects that aren't explicitly saved
+    for (Id id : new HashSet<Id>(cleanMap.keySet())) {
+      Object o = cleanMap.get(id);
+      if (o != null) {
+        ClassMetadata cm = checkClass(o.getClass());
+        if (!cm.isView())
+          sync(o, id, false, true, CascadeType.saveOrUpdate, true);
+      }
+    }
+
     for (Map.Entry<Id, Object> e : deleteMap.entrySet())
       write(e.getKey(), e.getValue(), true);
 
