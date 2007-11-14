@@ -202,7 +202,7 @@ public class Session {
    */
   public String saveOrUpdate(Object o) throws OtmException {
     Id id = checkObject(o, true);
-    sync(o, id, false, true, CascadeType.saveOrUpdate);
+    sync(o, id, false, true, CascadeType.saveOrUpdate, true);
 
     return id.getId();
   }
@@ -341,7 +341,7 @@ public class Session {
         // If those associations are loaded from the store even before
         // we complete this get() operation, there will be an instance
         // in our cache for this same Id.
-        o = sync(o, id, true, false, null);
+        o = sync(o, id, true, false, null, true);
       }
     }
 
@@ -388,7 +388,7 @@ public class Session {
       o = ao;
     }
 
-    ao = (T) sync(o, id, true, true, CascadeType.merge);
+    ao = (T) sync(o, id, true, true, CascadeType.merge, false);
 
     return ao;
   }
@@ -405,7 +405,7 @@ public class Session {
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
       o = getFromStore(id, checkClass(o.getClass()), o, true);
-      sync(o, id, true, false, CascadeType.refresh);
+      sync(o, id, true, false, CascadeType.refresh, true);
     }
   }
 
@@ -597,9 +597,12 @@ public class Session {
     return new HashSet<String>(filters.keySet());
   }
 
-  private <T> void write(Id id, T o, boolean delete) throws OtmException {
+  private <T> boolean isPristineProxy(Id id, T o) {
     LazyLoadMethodHandler llm           = (o instanceof ProxyObject) ? proxies.get(id) : null;
-    boolean               pristineProxy = (llm != null) ? !llm.isLoaded() : false;
+    return (llm != null) ? !llm.isLoaded() : false;
+  }
+
+  private <T> void write(Id id, T o, boolean delete) throws OtmException {
     ClassMetadata<T>      cm            = sessionFactory.getClassMetadata((Class<T>) o.getClass());
     TripleStore           store         = sessionFactory.getTripleStore();
 
@@ -609,7 +612,7 @@ public class Session {
 
      states.remove(id);
      store.delete(cm, cm.getFields(), id.getId(), o, txn);
-    } else if (pristineProxy) {
+    } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
     } else {
@@ -748,7 +751,7 @@ public class Session {
   }
 
   private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
-                      final CascadeType cascade) throws OtmException {
+                      final CascadeType cascade, final boolean skipProxy) throws OtmException {
     if (currentIds.contains(id))
       return null; // loop and hence the return value is unused
 
@@ -778,6 +781,10 @@ public class Session {
         cleanMap.put(id, o);
       }
 
+      // avoid loading lazy loaded objects
+      if (skipProxy && isPristineProxy(id, o))
+        return o;
+
       ClassMetadata<?> cm     = checkClass(o.getClass());
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
@@ -792,7 +799,7 @@ public class Session {
 
           // note: sync() here will not return a merged object. see copy()
           if (deep)
-            sync(ao, aid, merge, update, cascade);
+            sync(ao, aid, merge, update, cascade, skipProxy);
           if (deepDelete)
             assocs.add(new Wrapper(aid, ao));
         }
