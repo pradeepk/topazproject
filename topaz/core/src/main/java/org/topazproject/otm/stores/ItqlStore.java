@@ -302,22 +302,44 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     // build rdf:List, rdf:Bag, rdf:Seq or rdf:Alt statements
-    found = false;
+    Collection<Mapper> col = null;
     for (Mapper p : mappers) {
-      if ((p.getMapperType() == Mapper.MapperType.RDFLIST) ||
-          (p.getMapperType() == Mapper.MapperType.RDFBAG) || 
-          (p.getMapperType() == Mapper.MapperType.RDFSEQ) ||
-          (p.getMapperType() == Mapper.MapperType.RDFALT)) {
-        found = true;
-        break;
+      if (p.getMapperType() == Mapper.MapperType.RDFLIST) {
+        if (col == null)
+          col = new ArrayList<Mapper>();
+        col.add(p);
       }
     }
 
-    if (found) {
+    if (col != null) {
       qry.append("or ($s $p $o and <").append(id).append("> $x $c ")
         .append("and (trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <").append(id).append("> $x $s)")
-        .append(" and ($s <rdf:type> <rdf:List> or $s <rdf:type> <rdf:Bag> ")
-        .append("or $s <rdf:type> <rdf:Seq> or $s <rdf:type> <rdf:Alt>) )");
+        .append(" and $s <rdf:type> <rdf:List> and (");
+      for (Mapper p : col)
+        qry.append("$x <mulgara:is> <").append(p.getUri()).append("> or ");
+      qry.setLength(qry.length() - 4);
+      qry.append(") ) ");
+    }
+
+    col = null;
+    for (Mapper p : mappers) {
+      if ((p.getMapperType() == Mapper.MapperType.RDFBAG) || 
+          (p.getMapperType() == Mapper.MapperType.RDFSEQ) ||
+          (p.getMapperType() == Mapper.MapperType.RDFALT)) {
+        if (col == null)
+          col = new ArrayList<Mapper>();
+        col.add(p);
+      }
+    }
+
+    if (col != null) {
+      qry.append("or ($s $p $o and <").append(id).append("> $x $s ")
+        .append(" and ($s <rdf:type> <rdf:Bag> ")
+        .append("or $s <rdf:type> <rdf:Seq> or $s <rdf:type> <rdf:Alt>) and (");
+      for (Mapper p : col)
+        qry.append("$x <mulgara:is> <").append(p.getUri()).append("> or ");
+      qry.setLength(qry.length() - 4);
+      qry.append(") ) ");
     }
 
     return (qry.length() > len);

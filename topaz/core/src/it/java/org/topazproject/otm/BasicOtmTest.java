@@ -337,7 +337,7 @@ public class BasicOtmTest extends AbstractOtmTest {
         public void run(Session session) throws OtmException {
           SpecialMappers m = new SpecialMappers("http://localhost/sm/1");
 
-          for (int i = 1; i < 12; i++) {
+          for (int i = 1; i < 11; i++) {
             m.list.add("l" + i);
             m.bag.add("b" + i);
             m.seq.add("s" + i);
@@ -351,6 +351,34 @@ public class BasicOtmTest extends AbstractOtmTest {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
+          m.list.add("l11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.bag.add("b11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.seq.add("s11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.alt.add("a11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
 
           assertEquals(11, m.list.size());
           assertEquals(11, m.bag.size());
@@ -358,9 +386,55 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals(11, m.alt.size());
 
           for (int i = 1; i < 12; i++) {
-            assertTrue(m.list.get(i - 1).equals("l" + i));
+            assertEquals("l" + i, m.list.get(i - 1));
             assertTrue(m.bag.contains("b" + i));
-            assertTrue(m.seq.get(i - 1).equals("s" + i));
+            assertEquals("s" + i, m.seq.get(i - 1));
+            assertTrue(m.alt.contains("a" + i));
+          }
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.list.remove("l11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.bag.remove("b11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.seq.remove("s11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+          m.alt.remove("a11");
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+          assertNotNull(m);
+
+          assertEquals(10, m.list.size());
+          assertEquals(10, m.bag.size());
+          assertEquals(10, m.seq.size());
+          assertEquals(10, m.alt.size());
+
+          for (int i = 1; i < 11; i++) {
+            assertEquals("l" + i, m.list.get(i - 1));
+            assertTrue(m.bag.contains("b" + i));
+            assertEquals("s" + i, m.seq.get(i - 1));
             assertTrue(m.alt.contains("a" + i));
           }
         }
