@@ -218,15 +218,19 @@ public class ItqlStore extends AbstractTripleStore {
 
   public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
                          Transaction txn) throws OtmException {
+    final boolean partialDelete = (cm.getFields().size() != fields.size());
     Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder delete = new StringBuilder(500);
 
     // for every model create a delete statement
     for (String m : mappersByModel.keySet()) {
+      int len = delete.length();
       delete.append("delete ");
-      buildDeleteSelect(delete, getModelUri(m, txn), mappersByModel.get(m),
-                        m.equals(cm.getModel()) && cm.getTypes().size() > 0, id);
-      delete.append("from <").append(getModelUri(m, txn)).append(">;");
+      if (buildDeleteSelect(delete, getModelUri(m, txn), mappersByModel.get(m),
+                        !partialDelete && m.equals(cm.getModel()) && cm.getTypes().size() > 0, id))
+        delete.append("from <").append(getModelUri(m, txn)).append(">;");
+      else
+        delete.setLength(len);
     }
 
     if (log.isDebugEnabled())
@@ -240,10 +244,11 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private void buildDeleteSelect(StringBuilder qry, String model, List<Mapper> mappers,
+  private boolean buildDeleteSelect(StringBuilder qry, String model, List<Mapper> mappers,
                                  boolean delTypes, String id)
       throws OtmException {
     qry.append("select $s $p $o from <").append(model).append("> where ");
+    int len = qry.length();
 
     // build forward statements
     boolean found = delTypes;
@@ -314,6 +319,8 @@ public class ItqlStore extends AbstractTripleStore {
         .append(" and ($s <rdf:type> <rdf:List> or $s <rdf:type> <rdf:Bag> ")
         .append("or $s <rdf:type> <rdf:Seq> or $s <rdf:type> <rdf:Alt>) )");
     }
+
+    return (qry.length() > len);
   }
 
   public <T> T get(ClassMetadata<T> cm, String id, T instance, Transaction txn,

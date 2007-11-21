@@ -78,7 +78,9 @@ public class BasicOtmTest extends AbstractOtmTest {
     log.info("Testing basic CRUD operations ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          session.saveOrUpdate(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
+          Annotation a;
+          session.saveOrUpdate(a = new PublicAnnotation(URI.create("http://localhost/annotation/1")));
+          a.setType(Annotation.NS + "Comment");
         }
       });
     doInSession(new Action() {
@@ -88,7 +90,6 @@ public class BasicOtmTest extends AbstractOtmTest {
 
           a.setCreator("Pradeep");
           a.setState(42);
-          a.setType(Annotation.NS + "Comment");
 
           if (a.foobar == null)
             a.foobar = new SampleEmbeddable();
