@@ -639,11 +639,13 @@ public class Session {
         if (log.isDebugEnabled())
           log.debug("Update skipped for " + id + ". No changes to the object state.");
       } else {
-        if (fields.size() == cm.getFields().size()) {
-          if (log.isDebugEnabled())
-            log.debug("insert/update in to store: " + id);
-        } else {
-          if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
+          if (fields.size() == cm.getFields().size()) {
+            if (state == null)
+              log.debug("Saving " + id + " to store.");
+            else
+              log.debug("Full update for " + id + ".");
+          } else {
             Collection<Mapper> skips = new ArrayList(cm.getFields());
             skips.removeAll(fields);
             StringBuilder buf = new StringBuilder(100);
@@ -680,7 +682,8 @@ public class Session {
 
     // Remember state for change tracking
     if (instance != null && !cm.isView())
-      states.put(id, new InstanceState(instance, cm, this));
+      states.put(id, new InstanceState(instance, 
+                                       sessionFactory.getClassMetadata(instance.getClass()), this));
     else
       states.remove(id);
 
