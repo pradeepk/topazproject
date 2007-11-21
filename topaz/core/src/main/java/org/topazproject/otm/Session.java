@@ -676,16 +676,27 @@ public class Session {
     else
       instance = store.get(cm, id.getId(), instance, txn, 
                                   new ArrayList<Filter>(filters.values()), filterObj);
+    if (instance == null){
+      states.remove(id);
+      return instance;
+    }
+
+    cm = sessionFactory.getClassMetadata((Class<T>) instance.getClass());
+
+    if (!cm.isView()) {
+      for (Mapper m : cm.getFields())
+        if ((m.getFetchType() == FetchType.eager) && (m.getSerializer() == null)) {
+          for (Object o : m.get(instance))
+            if (o != null)
+              o.equals(null);
+        }
+    }
 
     if (instance instanceof PostLoadEventListener)
       ((PostLoadEventListener)instance).onPostLoad(this, instance);
 
-    // Remember state for change tracking
-    if (instance != null && !cm.isView())
-      states.put(id, new InstanceState(instance, 
-                                       sessionFactory.getClassMetadata(instance.getClass()), this));
-    else
-      states.remove(id);
+    if (!cm.isView())
+      states.put(id, new InstanceState(instance, cm, this));
 
     return instance;
   }
@@ -1064,7 +1075,7 @@ public class Session {
 
     private <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session, 
                                           boolean fetch) {
-      List<Mapper> mappers = new ArrayList<Mapper>();
+      Collection<Mapper> mappers = new ArrayList<Mapper>();
 
       for (Mapper m : cm.getFields()) {
         if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
@@ -1073,7 +1084,8 @@ public class Session {
 
           if (!eq) {
             pmap = nv;
-            mappers.add(m);
+            mappers = cm.getFields();
+            break;
           }
         } else {
           List<String> ov = vmap.get(m);
@@ -1084,12 +1096,6 @@ public class Session {
           if (!eq) {
             vmap.put(m, nv);
             mappers.add(m);
-          }
-          // Trigger a load for all eager fetched associations
-          if (fetch && (m.getFetchType() == FetchType.eager) && (m.getSerializer() == null)) {
-            for (Object o : m.get(instance))
-              if (o != null)
-                o.equals(null);
           }
         }
       }
