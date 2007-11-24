@@ -94,12 +94,20 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
   private String browseCategory () {
     categoryInfos = browseService.getCategoryInfos();
-
-    int[] numArt = new int[1];
-    articleList = (catName != null) ?
-        browseService.getArticlesByCategory(catName, startPage, pageSize, numArt) :
-        Collections.<ArticleInfo>emptyList();
-    totalArticles = numArt[0];
+    
+    // if the catName is unspecified, use the first catName in the categoryInfos list
+    if ((catName == null) && (categoryInfos != null) && (categoryInfos.size()>0)) {
+    	catName = categoryInfos.firstKey();
+    }
+    
+    if (catName != null) {
+      int[] numArt = new int[1];
+    	articleList = browseService.getArticlesByCategory(catName, startPage, pageSize, numArt);
+      totalArticles = numArt[0];
+    } else {
+      articleList = Collections.<ArticleInfo>emptyList();
+      totalArticles = 0;
+    }
 
     return SUCCESS;
   }
