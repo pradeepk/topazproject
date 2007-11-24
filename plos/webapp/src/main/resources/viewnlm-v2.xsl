@@ -2694,12 +2694,14 @@ Make article meta data
         <xsl:call-template name="make-href"/>
         <xsl:call-template name="make-id"/>
         <xsl:apply-templates/>
+        <xsl:apply-templates select="../xref" mode="contrib"/>
       </a>
     </xsl:when>
     <xsl:otherwise>
       <span class="capture-id">
         <xsl:call-template name="make-id"/>
         <xsl:apply-templates/>
+        <xsl:apply-templates select="../xref" mode="contrib"/>
       </span>
     </xsl:otherwise>
   </xsl:choose>
