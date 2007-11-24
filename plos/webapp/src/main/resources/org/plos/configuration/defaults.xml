@@ -43,6 +43,26 @@
     <app-context></app-context> <!-- web application context; leave empty if deployed in root directory  -->
     <resource-sub-dir></resource-sub-dir> <!-- used only if web resources like images/css are deployed in a separate directory; rarely used  -->
 
+    <articleTypeList>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/research-article</typeUri>
+        <typeHeading>Research Article</typeHeading>
+        <default>true</default>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/editorial</typeUri>
+        <typeHeading>Editorial</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/correction</typeUri>
+        <typeHeading>Correction</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/article-commentary</typeUri>
+        <typeHeading>Expert Commentary</typeHeading>
+      </articleType>
+    </articleTypeList>
+    
     <!-- virtual journal config -->
     <virtualJournals>
       <!-- default values used if no virtual journal rules match -->

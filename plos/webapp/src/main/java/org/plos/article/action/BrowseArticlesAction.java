@@ -12,6 +12,7 @@ package org.plos.article.action;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,11 @@ import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.journal.JournalService;
+import org.plos.model.IssueInfo;
+import org.plos.model.VolumeInfo;
+import org.plos.model.article.ArticleInfo;
+import org.plos.model.article.ArticleType;
+import org.plos.model.article.Years;
 import org.plos.models.Journal;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -67,11 +73,12 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private JournalService                  journalService;
   private BrowseService                   browseService;
   private SortedMap<String, Integer>      categoryInfos;
-  private BrowseService.Years             articleDates;
-  private List<BrowseService.ArticleInfo> articleList;
+  private Years             articleDates;
+  private List<ArticleInfo> articleList;
   private int                             totalArticles;
-  private BrowseService.IssueInfo         issueInfo;
-  private List<BrowseService.VolumeInfo>  volumeInfos;
+  private IssueInfo         issueInfo;
+  private List<VolumeInfo>  volumeInfos;
+  private ArrayList<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
 
   public String execute() throws Exception {
     if (DATE_FIELD.equals(getField())) {
@@ -91,7 +98,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     int[] numArt = new int[1];
     articleList = (catName != null) ?
         browseService.getArticlesByCategory(catName, startPage, pageSize, numArt) :
-        Collections.<BrowseService.ArticleInfo>emptyList();
+        Collections.<ArticleInfo>emptyList();
     totalArticles = numArt[0];
 
     return SUCCESS;
@@ -164,8 +171,8 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
     // if still no issue, create an IssueInfo
     if (issue == null || issue.length() == 0) {
-      issueInfo = new BrowseService.IssueInfo(null, "No current Issue is defined for this Journal",
-        null, null, null, null, null, null, null);
+      issueInfo = new IssueInfo(null, "No current Issue is defined for this Journal", 
+                                null, null, null, null);
 
       return SUCCESS;
     }
@@ -174,6 +181,41 @@ public class BrowseArticlesAction extends BaseActionSupport {
     issueInfo = browseService.getIssueInfo(URI.create(issue));
     if (issueInfo == null) { return ERROR; }
 
+    // clear out the articleGroups and rebuild the list with one TOCArticleGroup
+    // for each ArticleType to be displayed in the order defined by 
+    // ArticleType.getOrderedListForDisplay()
+    articleGroups = new ArrayList<TOCArticleGroup>();
+    for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
+      articleGroups.add(new TOCArticleGroup(at));
+    }
+
+    // For every article that is of the same ArticleType as a 
+    // TOCArticleGroup, add it to that group. Articles can appear in 
+    // multiple TOCArticleGroups. 
+    for (ArticleInfo ai : issueInfo.getArticlesInIssue()) {
+      for (TOCArticleGroup ag : articleGroups) {
+        for (ArticleType articleType : ai.getArticleTypes()) {
+          if (ag.getArticleType().equals(articleType)) {
+            ag.addArticle(ai);
+            break;
+          }
+        }
+      }
+    }
+    
+    // Remove all empty TOCArticleGroups (avoid ConcurrentModificationException by 
+    // building a new ArrayList of non-empty article groups). 
+    int i = 1;
+    ArrayList<TOCArticleGroup> newArticleGroups = new ArrayList<TOCArticleGroup>();
+    for (TOCArticleGroup grp : articleGroups) {
+      if (grp.articles.size() != 0) {
+        newArticleGroups.add(grp);
+        grp.setId("tocGrp_"+i);
+        i++;
+      }
+    }
+    articleGroups = newArticleGroups;
+    
     return SUCCESS;
   }
 
@@ -298,7 +340,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
    *
    * @return Collection of dates
    */
-  public BrowseService.Years getArticleDates() {
+  public Years getArticleDates() {
     return articleDates;
   }
 
@@ -313,7 +355,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
   /**
    * @return Returns the article list for this page.
    */
-  public Collection<BrowseService.ArticleInfo> getArticleList() {
+  public Collection<ArticleInfo> getArticleList() {
     return articleList;
   }
 
@@ -327,14 +369,14 @@ public class BrowseArticlesAction extends BaseActionSupport {
   /**
    * @return the IssueInfo.
    */
-  public BrowseService.IssueInfo getIssueInfo() {
+  public IssueInfo getIssueInfo() {
     return issueInfo;
   }
 
   /**
    * @return the VolumeInfos.
    */
-  public List<BrowseService.VolumeInfo> getVolumeInfos() {
+  public List<VolumeInfo> getVolumeInfos() {
     return volumeInfos;
   }
 
@@ -379,5 +421,9 @@ public class BrowseArticlesAction extends BaseActionSupport {
   public String getRssPath() {
     return (catName != null) ? feedBasePath + feedCategoryPrefix + canonicalCategoryPath(catName) :
                                super.getRssPath();
+  }
+
+  public ArrayList<TOCArticleGroup> getArticleGroups() {
+    return articleGroups;
   }
 }

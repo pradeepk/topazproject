@@ -19,6 +19,7 @@ import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.journal.JournalService;
+import org.plos.model.article.ArticleInfo;
 import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
@@ -72,7 +73,7 @@ public class FetchArticleAction extends BaseActionSupport {
   private Set<Journal> journalList;
   private Session session;
   private Article articleInfo;
-  private BrowseService.ArticleInfo articleInfoX;
+  private ArticleInfo articleInfoX;
   private String transformedArticle;
   private String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
   private AnnotationService annotationService;
@@ -241,7 +242,7 @@ public class FetchArticleAction extends BaseActionSupport {
    * 
    * @return Returns the articleInfoX.
    */
-  public BrowseService.ArticleInfo getArticleInfoX() {
+  public ArticleInfo getArticleInfoX() {
     return articleInfoX;
   }
 
