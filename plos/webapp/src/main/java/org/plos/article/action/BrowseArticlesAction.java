@@ -190,24 +190,36 @@ public class BrowseArticlesAction extends BaseActionSupport {
     if (issueInfo == null) { return ERROR; }
 
     // clear out the articleGroups and rebuild the list with one TOCArticleGroup
-    // for each ArticleType to be displayed in the order defined by 
+    // for each ArticleType to be displayed in the order defined by
     // ArticleType.getOrderedListForDisplay()
     articleGroups = new ArrayList<TOCArticleGroup>();
+    TOCArticleGroup defaultArticleGroup = null;
     for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
-      articleGroups.add(new TOCArticleGroup(at));
+      TOCArticleGroup newArticleGroup = new TOCArticleGroup(at);
+      articleGroups.add(newArticleGroup);
+      if (at == ArticleType.getDefaultArticleType()) {
+        defaultArticleGroup = newArticleGroup;
+      }
     }
 
-    // For every article that is of the same ArticleType as a 
-    // TOCArticleGroup, add it to that group. Articles can appear in 
-    // multiple TOCArticleGroups. 
+    // For every article that is of the same ArticleType as a
+    // TOCArticleGroup, add it to that group. Articles can appear in
+    // multiple TOCArticleGroups.
     for (ArticleInfo ai : issueInfo.getArticlesInIssue()) {
+      boolean articleAdded = false;
       for (TOCArticleGroup ag : articleGroups) {
         for (ArticleType articleType : ai.getArticleTypes()) {
           if (ag.getArticleType().equals(articleType)) {
             ag.addArticle(ai);
+            articleAdded = true;
             break;
           }
         }
+      }
+      // If the article wasn't added to any TOCArticleGroup,
+      // then add it to the default group (if one had been defined)
+      if ((!articleAdded) && (defaultArticleGroup != null)) {
+        defaultArticleGroup.addArticle(ai);
       }
     }
     
