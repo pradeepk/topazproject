@@ -1620,7 +1620,6 @@ Make article meta data
 
 <xsl:template match="list">
   <xsl:call-template name="nl-1"/>
-
   <xsl:choose>
     <xsl:when test="@list-type='bullet'">
       <xsl:call-template name="nl-1"/>
@@ -1633,6 +1632,7 @@ Make article meta data
     <xsl:otherwise>
       <xsl:call-template name="nl-1"/>
       <ol>
+        <xsl:attribute name="class"><xsl:value-of select="@list-type"></xsl:value-of></xsl:attribute>
         <xsl:call-template name="nl-1"/>
         <xsl:apply-templates/>
         <xsl:call-template name="nl-1"/>

@@ -37,6 +37,11 @@ label em 	{ display: block; color: #c00; } /* em wraps all error messages within
 strong		{ font-weight: bold; }
 h1 sup		{ font-size: .75em; }
 ul, ol, dl	{ margin: 20px; position: relative; }
+ol.simple {list-style-type: none; margin: 20px; position: relative; }
+ol.roman-lower {list-style-type: lower-roman; margin: 20px; position: relative; }
+ol.roman-upper {list-style-type: upper-roman; margin: 20px; position: relative; }
+ol.alpha-lower {list-style-type: lower-alpha; margin: 20px; position: relative; }
+ol.alpha-upper {list-style-type: upper-alpha; margin: 20px; position: relative; }
 dt			{ font-weight: bold; }
 dd			{ margin: 0; }
 table		{ margin: 20px; border: none;}
