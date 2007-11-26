@@ -69,7 +69,6 @@
         <interceptor-ref name="servlet-config"/>
         <interceptor-ref name="prepare"/>
         <interceptor-ref name="i18n"/>
-        <interceptor-ref name="chain"/>
         <interceptor-ref name="debugging"/>
         <interceptor-ref name="model-driven"/>
         <interceptor-ref name="fileUpload"/>
@@ -401,7 +400,9 @@
 
   <package name="rate" extends="default" namespace="/rate">
     <action name="getAverageRatingsForArticle" class="org.plos.rating.action.GetAverageRatingsAction">
-      <interceptor-ref name="chain"/>
+      <interceptor-ref name="chain">
+        <param name="excludes">targetSource, callbacks, exposeProxy</param>
+      </interceptor-ref>
       <interceptor-ref name="plosUserStack"/>
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/article/article_body.ftl</param>
@@ -483,7 +484,9 @@
     </action>
 
     <action name="getNumTrackbacksForArticle" class="org.plos.action.TrackbackAction" method="getTrackbackCount">
-      <interceptor-ref name="chain"/>
+      <interceptor-ref name="chain">
+        <param name="excludes">targetSource, callbacks, exposeProxy</param>
+      </interceptor-ref>
       <interceptor-ref name="plosUserStack"/>
       <result type="chain">
         <param name="actionName">getAverageRatingsForArticle</param>
