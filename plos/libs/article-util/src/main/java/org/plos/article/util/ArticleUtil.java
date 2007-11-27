@@ -9,44 +9,39 @@
  */
 package org.plos.article.util;
 
-import java.net.URL;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
+
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.commons.io.FileUtils;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-
 import org.plos.configuration.ConfigurationStore;
-
+import org.plos.models.Article;
+import org.plos.models.Category;
+import org.plos.models.ObjectInfo;
+import org.topazproject.fedora.client.APIMStubFactory;
+import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.fedora.client.Uploader;
+import org.topazproject.fedoragsearch.service.FgsOperations;
+import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
+import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore;
-
-import org.plos.models.Article;
-import org.plos.models.ObjectInfo;
-import org.plos.models.Category;
-
-import org.topazproject.mulgara.itql.ItqlHelper;
-
-import org.topazproject.fedora.client.APIMStubFactory;
-import org.topazproject.fedora.client.Uploader;
-import org.topazproject.fedora.client.FedoraAPIM;
-
-import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
-import org.topazproject.fedoragsearch.service.FgsOperations;
 
 /**
  * Article interfaces that go beyond the triple-store.
@@ -162,7 +157,7 @@ public class ArticleUtil {
 
           if (log.isDebugEnabled())
             log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist yet - " +
-                      "creating it", re);
+                      "creating it"); // we don't need to log the exception here since this is not an error! 
 
           apim.addDatastream(pid, rep, new String[0], "Represention", false, ct, null, reLoc, "M",
                              "A", "New representation");
@@ -214,11 +209,12 @@ public class ArticleUtil {
    * @param article the URI of the article (e.g. "info:doi/10.1371/journal.pbio.003811")
    * @param tx a mulgara transaction within which to do the delete
    * @throws NoSuchArticleIdException if the article does not exist
-   * @throws RemoteException if some other error occured
+   * @throws RemoteException if some other error occurred
    * @throws IOException if there was a problem moving files back to the ingest queue
+   * @throws ArticleDeleteException 
    */
   public static void delete(String article, Transaction tx)
-      throws NoSuchArticleIdException, RemoteException, IOException {
+      throws NoSuchArticleIdException, RemoteException, IOException, ArticleDeleteException {
     try {
       log.debug("Deleting '" + article + "'");
       delete(article, tx, APIMStubFactory.create(
@@ -256,7 +252,8 @@ public class ArticleUtil {
   }
 
   private static void delete(String article, Transaction tx, FedoraAPIM apim, FgsOperations[] fgs)
-      throws NoSuchArticleIdException, RemoteException {
+      throws NoSuchArticleIdException, RemoteException, ArticleDeleteException {
+    ArticleDeleteException ade = new ArticleDeleteException();
     Session session = tx.getSession();
 
     // load article and objects
@@ -274,7 +271,11 @@ public class ArticleUtil {
       log.debug("deleting all objects for uri '" + article + "'");
 
     // delete the article from mulgara first (in case of problems)
+    try {
     session.delete(a);
+		} catch (OtmException e) {
+			ade.addException(e);
+		}
 
     oi = a;
     while (oi != null) {
@@ -283,22 +284,16 @@ public class ArticleUtil {
 
       // Remove article from full-text index first
       String result = "";
-      RemoteException firstRE = null;
       for (int i = 0; i < fgs.length; i++) {
         try {
           result = fgs[i].updateIndex("deletePid", oi.getPid(), FGS_REPO, null, null, null);
         } catch (RemoteException re) {
-          if (i == 0)
-            throw re;
-          if (firstRE == null)
-            firstRE = re;
+          ade.addException(re);
           log.error("Deleted pid '" + oi.getPid() +
                     "' from some server(s). But not from server " +
                     i + ". Cleanup required.", re);
         }
       }
-      if (firstRE != null)
-        throw firstRE;
 
       if (log.isDebugEnabled())
         log.debug("Removed '" + oi.getPid() + "' from full-text index:\n" + result);
@@ -308,7 +303,7 @@ public class ArticleUtil {
         apim.purgeObject(oi.getPid(), "Purged object", false);
       } catch (RemoteException re) {
         if (!FedoraUtil.isNoSuchObjectException(re))
-          throw re;
+          ade.addException(re);
         log.warn("Tried to remove non-existent object '" + oi.getPid() + "'");
       }
 
@@ -320,10 +315,15 @@ public class ArticleUtil {
       try {
         apim.purgeObject(c.getPid(), "Purged object", false);
       } catch (RemoteException re) {
-        if (!FedoraUtil.isNoSuchObjectException(re))
-          throw re;
+        if (!FedoraUtil.isNoSuchObjectException(re)) {
+          ade.addException(re);
+        }
         log.warn("Tried to remove non-existent object '" + c.getPid() + "'");
       }
+    }
+    
+    if (ade.getExceptionList().size()>0) {
+    	throw ade;
     }
   }
 

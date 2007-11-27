@@ -116,5 +116,13 @@
       </@s.form>
       <br/>
     </fieldset>
+    
+    <fieldset>
+      <legend><b>Misc Admin Utils</b></legend>
+      <@s.form name="deleteArticle" action="deleteArticle" method="get" namespace="/admin">
+        <@s.textfield label="ArticleDoi" name="article" size="80"/>&nbsp;<@s.submit value="Delete"/>
+      </@s.form>
+    </fieldset>
+    
   </body>
 </html>
