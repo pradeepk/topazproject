@@ -9,6 +9,9 @@
  */
 package org.topazproject.otm;
 
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -44,6 +47,7 @@ import org.topazproject.otm.query.Results;
  */
 public class Session {
   private static final Log                     log            = LogFactory.getLog(Session.class);
+  private static final StateCache              states         = new StateCache();
   private final SessionFactory                 sessionFactory;
   private       Transaction                    txn            = null;
   private final Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
@@ -53,8 +57,6 @@ public class Session {
   private final Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
   private final Map<String, Filter>            filters        = new HashMap<String, Filter>();
-  private final Map<Id, InstanceState>         states         = new HashMap<Id, InstanceState>();
-
 
   /**
    * Represents a flushing strategy. 'always' will flush before queries. 'commit' will flush
@@ -198,7 +200,6 @@ public class Session {
     deleteMap.clear();
     proxies.clear();
     associations.clear();
-    states.clear();
   }
 
   /**
@@ -620,19 +621,19 @@ public class Session {
       if (log.isDebugEnabled())
         log.debug("deleting from store: " + id);
 
-     states.remove(id);
+     states.remove(o);
      store.delete(cm, cm.getFields(), id.getId(), o, txn);
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
     } else {
-      InstanceState state = states.get(id);
+      InstanceState state = states.get(o);
       Collection<Mapper> fields;
       if (state != null)
         fields = state.update(o, cm, this);
       else {
         fields = cm.getFields();
-        states.put(id, new InstanceState(o, cm, this));
+        states.put(o, new InstanceState(o, cm, this));
       }
 
       if ((fields.size() == 0) && (state != null)) {
@@ -676,10 +677,8 @@ public class Session {
     else
       instance = store.get(cm, id.getId(), instance, txn, 
                                   new ArrayList<Filter>(filters.values()), filterObj);
-    if (instance == null){
-      states.remove(id);
+    if (instance == null)
       return instance;
-    }
 
     cm = sessionFactory.getClassMetadata((Class<T>) instance.getClass());
 
@@ -696,7 +695,7 @@ public class Session {
       ((PostLoadEventListener)instance).onPostLoad(this, instance);
 
     if (!cm.isView())
-      states.put(id, new InstanceState(instance, cm, this));
+      states.put(instance, new InstanceState(instance, cm, this));
 
     return instance;
   }
@@ -1103,4 +1102,63 @@ public class Session {
       return mappers;
     }
   }
+
+  private static class ObjectReference<T> extends WeakReference<T> {
+
+    private final int hash;
+
+    public ObjectReference(T o) {
+      super(o);
+      hash = System.identityHashCode(get());
+    }
+
+    public ObjectReference(T o, ReferenceQueue<? super T> queue) {
+      super(o, queue);
+      hash = System.identityHashCode(get());
+    }
+
+    public boolean equals(Object o) {
+      return (o instanceof ObjectReference) &&
+        ((o == this) || (get() == ((ObjectReference<T>) o).get()));
+    }
+
+    public int hashCode() {
+      return hash;
+    }
+
+  }
+
+  private static class StateCache {
+    private Map<ObjectReference<?>, InstanceState> states =
+      new HashMap<ObjectReference<?>, InstanceState> (1001);
+    private ReferenceQueue<ObjectReference<?>> queue = new ReferenceQueue<ObjectReference<?>>();
+
+    public synchronized InstanceState get(Object o) {
+      expunge();
+      return states.get(new ObjectReference(o));
+    }
+
+    public synchronized InstanceState put(Object o, InstanceState state) {
+      expunge();
+      return states.put(new ObjectReference(o, queue), state);
+    }
+
+    public synchronized InstanceState remove(Object o) {
+      expunge();
+      return states.remove(new ObjectReference(o));
+    }
+
+    private void expunge() {
+      int count = 0;
+      ObjectReference<?> ref;
+      while ((ref = (ObjectReference<?>) queue.poll()) != null) {
+        states.remove(ref);
+        count++;
+      }
+      if (log.isDebugEnabled() && (count > 0))
+        log.debug("Expunged " + count + " objects from states-cache. Size is now " + states.size());
+    }
+
+  }
+
 }

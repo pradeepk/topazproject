@@ -393,7 +393,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       assertNull o.all
       assertNull o.none
       o.sel = s.get(cls, 'foo:sel')
-      o.all = all
+      o.all = cls.newInstance(id:'foo:all'.toURI())
       o.none = s.get(cls, 'foo:none')
       s.saveOrUpdate(o)
     }
