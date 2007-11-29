@@ -115,6 +115,10 @@ public class BrowseService {
       });
   }
 
+  private void updateArticleDates(Years dates, String jnlName) { 
+    browseCache.put(new Element(DATE_LIST_KEY + jnlName, dates)); 
+  } 
+
   /**
    * Get articles in the given category. One "page" of articles will be returned, i.e. articles
    * pageNum * pageSize .. (pageNum + 1) * pageSize - 1 . Note that less than a pageSize articles
@@ -428,6 +432,7 @@ public class BrowseService {
         for (NewArtInfo nai: nais)
           insertDate(dates, nai.date);
       }
+      updateArticleDates(dates, jnlName);
     }
 
     for (Object key : browseCache.getKeysNoDuplicateCheck()) {
