@@ -1036,6 +1036,10 @@
         <param name="templateFile">/WEB-INF/pages/admin/manageVolumesIssues.ftl</param>
       </result>
     </action>
+
+    <action name="manageCaches" class="org.plos.admin.action.ManageCachesAction">
+        <result name="success">/WEB-INF/pages/admin/manageCaches.ftl</result>
+    </action>
   </package>
 
   <!-- make Clinical Trial Actions and configs available  -->

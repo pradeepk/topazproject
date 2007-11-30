@@ -31,6 +31,10 @@
             <@s.url id="manageVirtualJournalsURL" namespace="/admin" action="manageVirtualJournals" />
             <@s.a href="%{manageVirtualJournalsURL}">Manage Virtual Journals</@s.a>
           </td>
+          <td>
+            <@s.url id="manageCaches" namespace="/admin" action="manageCaches" />
+            <@s.a href="%{manageCaches}">Manage Caches</@s.a>
+          </td>
         </tr>
       </table>
     </fieldset>
