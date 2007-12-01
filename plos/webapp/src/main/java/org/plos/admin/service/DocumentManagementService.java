@@ -98,8 +98,6 @@ public class DocumentManagementService {
 
   private File xslTemplate;
 
-  private Ehcache articleAnnotationCache;
-  
   private BrowseService browseService;
 
   private JournalService journalService;
@@ -626,15 +624,6 @@ public class DocumentManagementService {
     public String getName() {
       return "png";
     }
-  }
-
-  /**
-   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
-   *   to use.
-   */
-  @Required
-  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
-    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**
