@@ -87,7 +87,7 @@
     <property name="ingestedDocumentDirectory" value="${pub.spring.ingest.destination}"/>
     <!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>
-    <property name="articleCacheAdministrator" ref="articleCacheAdministrator"/>
+    <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="plosDoiUrl" value="${pub.spring.crossref.plos.doiurl}"/>
     <property name="plosEmail" value="${pub.spring.crossref.plos.email}"/>
     <property name="sendToXref" value="${pub.spring.crossref.sendToXref}"/>
@@ -126,7 +126,7 @@
   </bean>
 
   <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" scope="session">
-    <property name="articleCacheAdministrator" ref="articleCacheAdministrator"/>
+    <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Comment"/>
@@ -150,7 +150,7 @@
   <bean id="userService" class="org.plos.user.service.UserService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="permissionWebService" ref="permissionWebService"/>
-    <property name="userCacheAdministrator" ref="userCacheAdministrator"/>
+    <property name="userCache" ref="userCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="emailAddressUrl" value="https://${pub.spring.server.cas}/cas/email?guid="/>
     <property name="weeklyCategories">
@@ -477,26 +477,6 @@
   <bean id="plosOneFreemarkerConfig" class="org.plos.struts2.PlosOneFreemarkerConfig" />
 
   <!-- Caches -->
-  <bean id="userCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy">
-    <constructor-arg index="0">
-      <props>
-        <prop key="cache.memory">true</prop>
-<!--         <prop key="cache.persistence.class">com.opensymphony.oscache.plugins.diskpersistence.HashDiskPersistenceListener</prop> -->
-      </props>
-    </constructor-arg>
-  </bean>
-  <!-- store articles and annotations -->
-  <bean id="articleCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy">
-     <constructor-arg index="0">
-       <props>
-         <prop key="cache.memory">true</prop>
-         <prop key="cache.event.listeners">com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener</prop>
-<!--      <prop key="cache.cluster.properties">UDP(mcast_addr=231.12.21.135;mcast_port=45566;ip_ttl=1;mcast_send_buf_size=150000;mcast_recv_buf_size=80000):PING(timeout=2000;num_initial_members=3;):MERGE2(min_interval=5000;max_interval=10000):FD_SOCK:VERIFY_SUSPECT(timeout=1500):pbcast.NAKACK(gc_lag=50;retransmit_timeout=300,600,1200,2400,4800;max_xmit_size=8192):UNICAST(timeout=300,600,1200,2400):pbcast.STABLE(desired_avg_gossip=20000):FRAG(frag_size=8096;down_thread=false;up_thread=false):pbcast.GMS(join_timeout=5000;join_retry_timeout=2000;shun=false;print_local_addr=true)</prop> -->
-       <!--    <prop key="cache.capacity">500</prop>-->
-       </props>
-     </constructor-arg>
-  </bean>
-
   <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
     <property name="configLocation">
       <value>classpath:ehcache.xml</value>
@@ -513,6 +493,24 @@
   <bean id="carrierCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName">
       <value>ArticleCarriers</value>
+    </property>
+  </bean>
+
+  <bean id="simplePageCachingFilter" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>SimplePageCachingFilter</value>
+    </property>
+  </bean>
+
+  <bean id="articleAnnotationCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>ArticleAnnotationCache</value>
+    </property>
+  </bean>
+
+  <bean id="userCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>UserCache</value>
     </property>
   </bean>
 
