@@ -10,7 +10,6 @@
 
 package org.topazproject.otm.query;
 
-import org.topazproject.otm.serializer.Serializer;
 import antlr.CommonAST;
 import antlr.collections.AST;
 
@@ -24,7 +23,6 @@ public class OqlAST extends CommonAST {
   private String     model;
   private boolean    isVar;
   private boolean    isInv;
-  private Serializer ser;
 
   public void initialize(AST t) {
     super.initialize(t);
@@ -35,7 +33,6 @@ public class OqlAST extends CommonAST {
       model     = o.model;
       isVar     = o.isVar;
       isInv     = o.isInv;
-      ser       = o.ser;
     }
   }
 
@@ -111,23 +108,5 @@ public class OqlAST extends CommonAST {
    */
   public void setIsInverse(boolean isInv) {
     this.isInv = isInv;
-  }
-
-  /**
-   * Get the serializer.
-   *
-   * @return the serializer.
-   */
-  public Serializer getSerializer() {
-    return ser;
-  }
-
-  /**
-   * Set the serializer.
-   *
-   * @param ser the serializer.
-   */
-  public void setSerializer(Serializer ser) {
-    this.ser = ser;
   }
 }

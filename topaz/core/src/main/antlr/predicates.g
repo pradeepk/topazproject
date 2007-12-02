@@ -228,7 +228,6 @@ options {
 
       if (m != null) {
         a.setIsInverse(m.hasInverseUri());
-        a.setSerializer(m.getSerializer());
         if (m.getModel() != null)
           a.setModel(getModelUri(m.getModel()));
       }
