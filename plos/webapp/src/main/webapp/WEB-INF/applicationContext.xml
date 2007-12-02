@@ -526,6 +526,13 @@
     </property>
   </bean>
 
+  <bean id="virtualJournalMappingFilterCache"
+    class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName">
+      <value>VirtualJournalMappingFilter</value>
+    </property>
+  </bean>
+
   <!-- JMX exporting -->
   <bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
     <property name="autodetect" value="true"/>
