@@ -11,7 +11,6 @@ package org.topazproject.otm;
 
 import java.net.URI;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,6 +32,8 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.TransCriterion;
 import org.topazproject.otm.criterion.WalkCriterion;
+
+import org.topazproject.otm.impl.SessionFactoryImpl;
 
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.ClassWithEnum;
@@ -57,7 +58,7 @@ public abstract class AbstractOtmTest {
   /**
    * Shared session factory
    */
-  protected SessionFactory factory = new SessionFactory();
+  protected SessionFactory factory = new SessionFactoryImpl();
 
   protected void initFactory() throws OtmException {
     log.info("initializing otm session factory ...");

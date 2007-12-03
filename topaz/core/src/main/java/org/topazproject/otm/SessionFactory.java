@@ -37,56 +37,14 @@ import org.topazproject.otm.serializer.SerializerFactory;
  *
  * @author Pradeep Krishnan
  */
-public class SessionFactory {
-  private static final Log log = LogFactory.getLog(SessionFactory.class);
-
-  /**
-   * rdf:type to Class mapping.
-   */
-  private final Map<String, Set<Class>> classmap = new HashMap<String, Set<Class>>();
-
-  /**
-   * Class to metadata mapping.
-   */
-  private final Map<Class<?>, ClassMetadata<?>> metadata = new HashMap<Class<?>, ClassMetadata<?>>();
-
-  /**
-   * Class name to metadata mapping.
-   */
-  private final Map<String, ClassMetadata<?>> cnamemap = new HashMap<String, ClassMetadata<?>>();
-
-  /**
-   * Entity name to metadata mapping.
-   */
-  private final Map<String, ClassMetadata<?>> entitymap = new HashMap<String, ClassMetadata<?>>();
-
-  /**
-   * Class to proxy class mapping.
-   */
-  private final Map<Class, Class> proxyClasses = new HashMap<Class, Class>();
-
-  /**
-   * Model to config mapping (uris, types etc.)
-   */
-  private final Map<String, ModelConfig> models = new HashMap<String, ModelConfig>();
-
-  /**
-   * Filter definitions by name.
-   */
-  private final Map<String, FilterDefinition> filterDefs = new HashMap<String, FilterDefinition>();
-  private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
-  private SerializerFactory          serializerFactory = new SerializerFactory(this);
-  private TripleStore                store;
-  private CurrentSessionContext      currentSessionContext;
+public interface SessionFactory {
 
   /**
    * Open a new otm session.
    *
    * @return the newly created session
    */
-  public Session openSession() {
-    return new Session(this);
-  }
+  public Session openSession();
 
   /**
    * Obtains the current session.  The definition of what exactly "current" means is
@@ -97,12 +55,7 @@ public class SessionFactory {
    *
    * @throws OtmException Indicates an issue locating a suitable current session.
    */
-  public Session getCurrentSession() throws OtmException {
-    if (currentSessionContext == null)
-      throw new OtmException("CurrentSessionContext is not configured");
-
-    return currentSessionContext.currentSession();
-  }
+  public Session getCurrentSession() throws OtmException;
 
   /**
    * Preload some classes. Must be called as part of the factory initialization.
@@ -111,10 +64,7 @@ public class SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public void preload(Class<?>[] classes) throws OtmException {
-    for (Class<?> c : classes)
-      preload(c);
-  }
+  public void preload(Class<?>[] classes) throws OtmException;
 
   /**
    * Preload a class. Must be called as part of the factory initialization.
@@ -123,21 +73,7 @@ public class SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public void preload(Class<?> c) throws OtmException {
-    if ((c == null) || Object.class.equals(c))
-      return;
-
-    try {
-      preload(c.getSuperclass());
-    } catch (Exception e) {
-      if (log.isDebugEnabled())
-        log.debug("Preload: skipped for " + c.getSuperclass(), e);
-    }
-
-    ClassMetadata<?> cm = cmf.create(c);
-
-    setClassMetadata(cm);
-  }
+  public void preload(Class<?> c) throws OtmException;
 
   /**
    * Return the most specific subclass of clazz that is mapped to one of the given rdf types.
@@ -150,41 +86,9 @@ public class SessionFactory {
    *
    * @return the most specific sub class
    */
-  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris) {
-    return mostSpecificSubClass(clazz, typeUris, false);
-  }
+  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris);
 
-  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris, boolean any) {
-    if (typeUris.size() == 0)
-      return clazz;
-
-    ClassMetadata<?> solution  = null;
-
-    for (String uri : typeUris) {
-      Set<Class> classes = classmap.get(uri);
-
-      if (classes == null)
-        continue;
-
-      Class candidate = clazz;
-
-      //find the most specific class with the same rdf:type
-      for (Class cl : classes) {
-        if (candidate.isAssignableFrom(cl) && (any || isInstantiable(cl)))
-          candidate = cl;
-      }
-
-      if (classes.contains(candidate)) {
-        ClassMetadata<?> cm = metadata.get(candidate);
-        if (solution == null)
-          solution = cm;
-        else if ((cm != null) && (solution.getTypes().size() < cm.getTypes().size()))
-          solution = cm;
-      }
-    }
-
-    return (solution != null) ? solution.getSourceClass() : null;
-  }
+  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris, boolean any);
 
   /**
    * Sets/registers a ClassMetadata.
@@ -193,35 +97,7 @@ public class SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public <T> void setClassMetadata(ClassMetadata<T> cm) throws OtmException {
-    if (entitymap.containsKey(cm.getName())
-         && !entitymap.get(cm.getName()).getSourceClass().equals(cm.getSourceClass()))
-      throw new OtmException("An entity with name '" + cm.getName() + "' already exists.");
-
-    entitymap.put(cm.getName(), cm);
-
-    Class<T> c = cm.getSourceClass();
-    metadata.put(c, cm);
-    cnamemap.put(c.getName(), cm);
-    if (cm.isEntity() || cm.isView())
-      createProxy(c, cm);
-
-    String type = cm.getType();
-
-    if (type != null) {
-      Set<Class> set = classmap.get(type);
-
-      if (set == null) {
-        set = new HashSet<Class>();
-        classmap.put(type, set);
-      }
-
-      set.add(c);
-    }
-
-    if (log.isDebugEnabled())
-      log.debug("setClassMetadata: type(" + cm.getType() + ") ==> " + cm);
-  }
+  public <T> void setClassMetadata(ClassMetadata<T> cm) throws OtmException;
 
   /**
    * Gets the class metadata of a pre-registered class.
@@ -230,19 +106,7 @@ public class SessionFactory {
    *
    * @return metadata for the class, or null if not found
    */
-  public <T> ClassMetadata<T> getClassMetadata(Class<? extends T> clazz) {
-    ClassMetadata<T> cm = (ClassMetadata<T>) metadata.get(clazz);
-
-    if (cm != null)
-      return cm;
-
-    clazz = getProxyMapping(clazz);
-
-    if (clazz != null)
-      cm = (ClassMetadata<T>) metadata.get(clazz);
-
-    return cm;
-  }
+  public <T> ClassMetadata<T> getClassMetadata(Class<? extends T> clazz);
 
   /**
    * Gets the class metadata of a pre-registered entity. This first attempts to find a registered
@@ -253,13 +117,7 @@ public class SessionFactory {
    *
    * @return metadata for the class, or null if not found
    */
-  public ClassMetadata<?> getClassMetadata(String entity) {
-    ClassMetadata<?> res = entitymap.get(entity);
-    if (res == null)
-      res = cnamemap.get(entity);
-
-    return res;
-  }
+  public ClassMetadata<?> getClassMetadata(String entity);
 
   /**
    * Lists all registered ClassMetadata objects. The returned collection is a snapshot at the
@@ -268,9 +126,7 @@ public class SessionFactory {
    *
    * @return the collection of ClassMetadata
    */
-  public Collection<ClassMetadata<?>> listClassMetadata() {
-    return new ArrayList<ClassMetadata<?>>(metadata.values());
-  }
+  public Collection<ClassMetadata<?>> listClassMetadata();
 
   /**
    * Gets the proxy mapping. class to proxy or proxy to class.
@@ -279,9 +135,7 @@ public class SessionFactory {
    *
    * @return proxy or class
    */
-  public <T> Class<? extends T> getProxyMapping(Class<? extends T> clazz) {
-    return proxyClasses.get(clazz);
-  }
+  public <T> Class<? extends T> getProxyMapping(Class<? extends T> clazz);
 
   /**
    * Gets the model configuration.
@@ -290,63 +144,49 @@ public class SessionFactory {
    *
    * @return the configuration
    */
-  public ModelConfig getModel(String modelId) {
-    return models.get(modelId);
-  }
+  public ModelConfig getModel(String modelId);
 
   /**
    * Adds a model configuration.
    *
    * @param model the model configuration
    */
-  public void addModel(ModelConfig model) {
-    models.put(model.getId(), model);
-  }
+  public void addModel(ModelConfig model);
 
   /**
    * Gets the triple store used.
    *
    * @return the store
    */
-  public TripleStore getTripleStore() {
-    return store;
-  }
+  public TripleStore getTripleStore();
 
   /**
    * Sets the triple store used
    *
    * @param store the store
    */
-  public void setTripleStore(TripleStore store) {
-    this.store = store;
-  }
+  public void setTripleStore(TripleStore store);
 
   /**
    * Get currentSessionContext.
    *
    * @return currentSessionContext as CurrentSessionContext.
    */
-  public CurrentSessionContext getCurrentSessionContext() {
-    return currentSessionContext;
-  }
+  public CurrentSessionContext getCurrentSessionContext();
 
   /**
    * Set currentSessionContext.
    *
    * @param currentSessionContext the value to set.
    */
-  public void setCurrentSessionContext(CurrentSessionContext currentSessionContext) {
-    this.currentSessionContext = currentSessionContext;
-  }
+  public void setCurrentSessionContext(CurrentSessionContext currentSessionContext);
 
   /**
    * Gets the serializer factory used.
    *
    * @return the serializer factory
    */
-  public SerializerFactory getSerializerFactory() {
-    return serializerFactory;
-  }
+  public SerializerFactory getSerializerFactory();
 
   /** 
    * Add a new filter definition. If one has already been registered with the same name it is
@@ -354,9 +194,7 @@ public class SessionFactory {
    * 
    * @param fd the filter definition to register 
    */
-  public void addFilterDefinition(FilterDefinition fd) {
-    filterDefs.put(fd.getFilterName(), fd);
-  }
+  public void addFilterDefinition(FilterDefinition fd);
 
   /** 
    * Remove the filter definition with the given name. Does nothing if none was registered with
@@ -364,9 +202,7 @@ public class SessionFactory {
    * 
    * @param filterName the filter name
    */
-  public void removeFilterDefinition(String filterName) {
-    filterDefs.remove(filterName);
-  }
+  public void removeFilterDefinition(String filterName);
 
   /** 
    * List all registered filter definitions. 
@@ -374,43 +210,6 @@ public class SessionFactory {
    * @return the list of registered filter definitions; will be empty if no filter definitions have
    *         been registered.
    */
-  public Collection<FilterDefinition> listFilterDefinitions() {
-    return new ArrayList<FilterDefinition>(filterDefs.values());
-  }
+  public Collection<FilterDefinition> listFilterDefinitions();
 
-  /** 
-   * Get the filter definition for the named filter. 
-   * 
-   * @param name the name of the filter
-   * @return the filter definition, or null
-   */
-  FilterDefinition getFilterDefinition(String name) {
-    return filterDefs.get(name);
-  }
-
-  private boolean isInstantiable(Class clazz) {
-    int mod = clazz.getModifiers();
-
-    return !Modifier.isAbstract(mod) && !Modifier.isInterface(mod) && Modifier.isPublic(mod);
-  }
-
-  private <T> void createProxy(Class<T> clazz, ClassMetadata<T> cm) {
-    final Method getter = cm.getIdField().getGetter();
-
-    MethodFilter mf     =
-      new MethodFilter() {
-        public boolean isHandled(Method m) {
-          return !m.getName().equals("finalize") && !m.equals(getter);
-        }
-      };
-
-    ProxyFactory f      = new ProxyFactory();
-    f.setSuperclass(clazz);
-    f.setFilter(mf);
-
-    Class<? extends T> c = f.createClass();
-
-    proxyClasses.put(clazz, c);
-    proxyClasses.put(c, clazz);
-  }
 }

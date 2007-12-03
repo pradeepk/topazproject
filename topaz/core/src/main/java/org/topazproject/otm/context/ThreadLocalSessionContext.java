@@ -26,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionImpl;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 
 /**
  * A {@link CurrentSessionContext} impl which scopes the notion of current session by the
@@ -164,7 +166,7 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
     return (Map) context.get();
   }
 
-  private static void doBind(org.topazproject.otm.Session session, SessionFactory factory) {
+  private static void doBind(Session session, SessionFactory factory) {
     Map sessionMap = sessionMap();
 
     if (sessionMap == null) {
@@ -200,12 +202,12 @@ public class ThreadLocalSessionContext implements CurrentSessionContext {
         };
 
       ProxyFactory f  = new ProxyFactory();
-      f.setSuperclass(Session.class);
+      f.setSuperclass(SessionImpl.class);
       f.setFilter(mf);
 
       Class clazz = f.createClass();
 
-      return clazz.getConstructor(SessionFactory.class);
+      return clazz.getConstructor(SessionFactoryImpl.class);
     } catch (Exception e) {
       log.error("Unexpected exception while initializing a proxy class for " + Session.class, e);
       throw new Error(e);

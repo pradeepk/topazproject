@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.stores.ItqlStore;
 
 /**
@@ -35,7 +36,7 @@ public class OtmConfiguration {
    * @param tripleStoreUrl the URL for the store
    */
   public OtmConfiguration(String tripleStoreUrl) {
-    factory = new SessionFactory();
+    factory = new SessionFactoryImpl();
 
     if (log.isDebugEnabled()) {
       log.debug("Creating new triplestore: " + tripleStoreUrl);

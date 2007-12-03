@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 
 /**
  * Test the model definitions.
@@ -20,7 +21,7 @@ import org.topazproject.otm.SessionFactory;
  * @author Pradeep Krishnan
  */
 public class ModelsTest {
-  private SessionFactory factory = new SessionFactory();
+  private SessionFactory factory = new SessionFactoryImpl();
   private Class[]        classes =
     new Class[] {
                   Annotation.class, Annotea.class, Article.class, AuthenticationId.class,

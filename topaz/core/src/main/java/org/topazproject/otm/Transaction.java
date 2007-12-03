@@ -9,36 +9,19 @@
  */
 package org.topazproject.otm;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Transaction object.
  *
  * @author Pradeep Krishnan
  */
-public class Transaction {
-  private static final Log log     = LogFactory.getLog(Transaction.class);
-  private Session          session;
-  private Connection       conn    = null;
-
-  /**
-   * Creates a new Transaction object.
-   *
-   * @param session the owning session
-   */
-  public Transaction(Session session) {
-    this.session = session;
-  }
+public interface Transaction {
 
   /**
    * Gets the session to which this transaction belongs.
    *
    * @return the session
    */
-  public Session getSession() {
-    return session;
-  }
+  public Session getSession();
 
   /**
    * Gets a connection to the triplestore.
@@ -47,58 +30,20 @@ public class Transaction {
    *
    * @throws OtmException on an error in opening a connection
    */
-  public Connection getConnection() throws OtmException {
-    if (conn != null)
-      return conn;
-
-    conn = session.getSessionFactory().getTripleStore().openConnection();
-    conn.beginTransaction();
-
-    return conn;
-  }
+  public Connection getConnection() throws OtmException;
 
   /**
    * Flush the session, commit and close the connection.
    *
    * @throws OtmException on an error in commit
    */
-  public void commit() throws OtmException {
-    if (session == null)
-      throw new OtmException("Attempt to use a closed transaction");
-
-    Session.FlushMode fm = session.getFlushMode();
-    if ((fm == Session.FlushMode.commit) || (fm == Session.FlushMode.always))
-      session.flush();
-
-    if (conn != null)
-      conn.commit();
-
-    close();
-  }
+  public void commit() throws OtmException;
 
   /**
    * Rollback the transaction and close the connection. Session data is left alone.
    *
    * @throws OtmException on an error in roll-back
    */
-  public void rollback() throws OtmException {
-    try {
-      if (conn != null)
-        conn.rollback();
-    } finally {
-      close();
-    }
-  }
+  public void rollback() throws OtmException;
 
-  private void close() throws OtmException {
-    if (conn != null) {
-      session.getSessionFactory().getTripleStore().closeConnection(conn);
-      conn = null;
-    }
-
-    if (session != null) {
-      session.endTransaction();
-      session = null;
-    }
-  }
 }

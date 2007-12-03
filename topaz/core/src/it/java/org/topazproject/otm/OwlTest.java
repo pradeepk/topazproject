@@ -27,6 +27,8 @@ import org.topazproject.otm.owl.OwlClass;
 import org.topazproject.otm.owl.ObjectProperty;
 import org.topazproject.otm.owl.OwlHelper;
 
+import org.topazproject.otm.impl.SessionFactoryImpl;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -38,8 +40,8 @@ public class OwlTest {
   private static final String VINModel = "otmtest";
   private static final URI VINModelUri = URI.create("local:///topazproject#" + VINModel);
 
-  private SessionFactory factory = new SessionFactory();
-  private SessionFactory metaFactory = new SessionFactory();
+  private SessionFactory factory = new SessionFactoryImpl();
+  private SessionFactory metaFactory = new SessionFactoryImpl();
 
   private static void clearModel(SessionFactory fac, ModelConfig model) throws OtmException {
     try {

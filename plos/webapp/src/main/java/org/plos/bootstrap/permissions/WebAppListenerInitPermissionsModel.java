@@ -24,6 +24,7 @@ import org.plos.permission.service.PermissionsImpl;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.util.TransactionHelper;
@@ -55,7 +56,7 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("topaz.services.itql-admin.uri"));
 
-      SessionFactory factory = new SessionFactory();
+      SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service));
 
       sess = factory.openSession();

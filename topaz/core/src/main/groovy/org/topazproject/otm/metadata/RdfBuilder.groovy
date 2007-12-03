@@ -13,6 +13,7 @@ package org.topazproject.otm.metadata;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.apache.commons.logging.Log;
@@ -43,7 +44,7 @@ public class RdfBuilder extends BuilderSupport {
   private static final Log log = LogFactory.getLog(RdfBuilder.class)
 
   /** the session factory to use for looking up serializers and registering class-metadata */
-  SessionFactory sessFactory = new SessionFactory()
+  SessionFactory sessFactory = new SessionFactoryImpl()
   /** the default collection type; defaults to 'List' */
   String         defColType = 'List'
   /** the default collection mapping type; defaults to 'Predicate' */

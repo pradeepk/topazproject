@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.stores.ItqlStore;
 
-import org.topazproject.otm.Rdf;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
@@ -31,7 +31,7 @@ import org.topazproject.otm.samples.PublicAnnotation;
 
 public class IdGenTest {
   private static final Log log = LogFactory.getLog(IdGenTest.class);
-  private SessionFactory factory = new SessionFactory();
+  private SessionFactory factory = new SessionFactoryImpl();
   private Session session = null;
   private Transaction tx = null;
 

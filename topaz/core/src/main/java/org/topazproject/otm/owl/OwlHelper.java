@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.mapping.Mapper;
@@ -203,7 +204,7 @@ public class OwlHelper {
    */
   private static SessionFactory createMetaSessionFactory(SessionFactory factory, ModelConfig mc)
       throws OtmException {
-    SessionFactory metaFactory = new SessionFactory();
+    SessionFactory metaFactory = new SessionFactoryImpl();
     metaFactory.setTripleStore(factory.getTripleStore());
 
     metaFactory.addModel(mc);

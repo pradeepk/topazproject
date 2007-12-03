@@ -32,6 +32,7 @@ import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore;
 
@@ -83,7 +84,7 @@ public class ArticleUtil {
   }
 
   private static Session createSession() throws URISyntaxException {
-    SessionFactory factory = new SessionFactory();
+    SessionFactory factory = new SessionFactoryImpl();
     ItqlStore      itql    = new ItqlStore(new URI(CONF.getString("topaz.services.itql.uri")));
     factory.setTripleStore(itql);
     return factory.openSession();

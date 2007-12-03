@@ -10,6 +10,7 @@
 import org.topazproject.interpreter.Answer;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.owl.OwlClass;
@@ -68,7 +69,7 @@ aliases = itql.getDefaultAliases()
 
 metamodel = "local:///topazproject#metadata"
 
-factory = new SessionFactory()
+factory = new SessionFactoryImpl()
 factory.setTripleStore(new ItqlStore(URI.create(mulgaraUri)))
 factory.addModel(new ModelConfig("metadata", URI.create(metamodel), null))
 factory.preload(OwlClass.class)

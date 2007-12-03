@@ -26,49 +26,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Ronald Tschalär
  */
-public class Query extends AbstractParameterizable<Query> {
-  private static final Log log = LogFactory.getLog(Query.class);
+public abstract class Query extends AbstractParameterizable<Query> {
 
-  private final Session            sess;
-  private final GenericQueryImpl   query;
-  private final Collection<Filter> filters;
-  private final Set<String>        paramNames;
-
-  /** 
-   * Create a new query instance. 
-   * 
-   * @param sess    the session this is attached to
-   * @param query   the oql query string
-   * @param filters the filters that should be applied to this query
-   */
-  Query(Session sess, String query, Collection<Filter> filters) throws OtmException {
-    this.sess    = sess;
-    this.filters = filters;
-
-    this.query = new GenericQueryImpl(query, log);
-    this.query.prepareQuery(sess.getSessionFactory());
-    this.paramNames = Collections.unmodifiableSet(this.query.getParameterNames());
-  }
-
-  /** 
-   * Execute this query. 
-   * 
-   * @return the query results
-   * @throws OtmException
-   */
-  public Results execute() throws OtmException {
-    if (sess.getTransaction() == null)
-      throw new OtmException("No transaction active");
-
-    sess.flush(); // so that mods are visible to queries
-
-    TripleStore store = sess.getSessionFactory().getTripleStore();
-
-    query.applyParameterValues(paramValues, sess.getSessionFactory());
-    return store.doQuery(query, filters, sess.getTransaction());
-  }
-
-  public Set<String> getParameterNames() {
-    return paramNames;
-  }
+  public abstract Results execute() throws OtmException;
 }

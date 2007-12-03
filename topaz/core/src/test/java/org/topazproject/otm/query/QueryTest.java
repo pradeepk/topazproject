@@ -14,6 +14,7 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.ReplyThread;
@@ -146,7 +147,7 @@ public class QueryTest extends TestCase {
 
   private Session getSession() throws OtmException {
     if (session == null) {
-      SessionFactory factory = new SessionFactory();
+      SessionFactory factory = new SessionFactoryImpl();
       factory.preload(ReplyThread.class);
       factory.preload(PublicAnnotation.class);
       factory.preload(Article.class);

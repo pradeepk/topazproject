@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.SessionFactory
+import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.stores.ItqlStore
 import org.topazproject.otm.owl.OwlHelper
@@ -32,7 +33,7 @@ import org.topazproject.otm.ClassMetadata
 class Metadata {
   private static final Log log = LogFactory.getLog(Metadata.class);
   static GroovyClassLoader gcl = new GroovyClassLoader()
-  static SessionFactory factory = new SessionFactory()
+  static SessionFactory factory = new SessionFactoryImpl()
   static String MODEL_PREFIX = "local:///topazproject#"
 
   static {

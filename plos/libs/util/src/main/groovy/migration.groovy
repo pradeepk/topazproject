@@ -14,6 +14,7 @@ import org.plos.models.Citation
 import org.plos.models.PLoS
 import org.plos.models.UserProfile
 import org.topazproject.otm.SessionFactory
+import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.stores.ItqlStore
 import org.topazproject.xml.transform.cache.CachedSource
@@ -63,7 +64,7 @@ def articleMeta = slurpedArticle.front.'article-meta'
 def journalMeta = slurpedArticle.front.'journal-meta'
 
 // Setup OTM
-def factory = new SessionFactory();
+def factory = new SessionFactoryImpl();
 def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
 def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null);
 def p = new ModelConfig("profiles", URI.create(CONF.getString("topaz.models.profiles")), null);

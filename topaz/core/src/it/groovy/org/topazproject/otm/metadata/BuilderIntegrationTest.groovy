@@ -15,6 +15,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.stores.ItqlStore;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 
 /**
  * Integration tests for groovy-builder.
@@ -26,7 +27,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   void setUp() {
     store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
     rdf = new RdfBuilder(
-        sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
+        sessFactory:new SessionFactoryImpl(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
 
     def ri = new ModelConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
     rdf.sessFactory.addModel(ri);
