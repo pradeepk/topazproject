@@ -13,6 +13,7 @@ package org.plos.model;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.plos.model.article.ArticleInfo;
@@ -31,6 +32,7 @@ public class IssueInfo implements Serializable {
   private URI          imageArticle;
   private String       description;
   private List<ArticleInfo> articlesInIssue = new ArrayList<ArticleInfo>();
+  private URI parentVolume;
 
   // XXX TODO, List<URI> w/Article DOI vs. List<ArticleInfo>???
 
@@ -106,5 +108,12 @@ public class IssueInfo implements Serializable {
   public List<ArticleInfo> getArticlesInIssue() {
     return articlesInIssue;
   }
-  
+
+  public URI getParentVolume() {
+    return parentVolume;
+  }
+
+  public void setParentVolume(URI parentVolume) {
+    this.parentVolume = parentVolume;
+  }
 }

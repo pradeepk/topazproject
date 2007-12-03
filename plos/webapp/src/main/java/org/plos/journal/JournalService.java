@@ -612,17 +612,23 @@ public class JournalService {
 
   /* must be invoked with journalCache monitor held and active tx on session and in local context */
   private Journal getJournalInternal(String jName) {
+    Journal journal = null;
     Element e = journalCache.get(jName);
     if (e == null) {
       isLocal = true;
       try {
-        journalCache.put(e = new Element(jName, new JournalWrapper(null)));
+        journal = retrieveJournalFromDB(jName, session);
+        if (journal != null) {
+          journalCache.put(new Element(jName, new JournalWrapper(journal)));
+        }
       } finally {
         isLocal = false;
       }
+    } else {
+      journal = ((JournalWrapper) e.getValue()).getJournal();
     }
 
-    return ((JournalWrapper) e.getValue()).getJournal();
+    return journal;
   }
 
   /**
@@ -651,6 +657,21 @@ public class JournalService {
     }
   }
 
+  /**
+   * Get the current JournalInfo object. 
+   * @param session
+   * @return
+   */
+  public Journal getCurrentJournal(Session session) {
+    // TODO - Use some plos-only 'JournalInfo' domain model object?
+    return TransactionHelper.doInTx(session,
+        new TransactionHelper.Action<Journal>() {
+          public Journal run(Transaction tx) {
+            return getJournal();
+          }
+    });
+  }
+  
   /**
    * Get the current journal. This assumes an active transaction on the session.
    *
