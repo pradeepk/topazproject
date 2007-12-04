@@ -526,13 +526,15 @@
     <!--
       SimplePageCachingFilter cache.
       This cache stores action page results.
+      This is a "disk only cache", maxElementsInMemory="1" set per
+      http://ehcache.sourceforge.net/documentation/faq.html.
     -->
     <cache name="SimplePageCachingFilter"
-           maxElementsInMemory="10000"
+           maxElementsInMemory="1"
            eternal="false"
            timeToIdleSeconds="86400"
            timeToLiveSeconds="0"
-           overflowToDisk="false">
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory

@@ -10,6 +10,9 @@
 
 package org.plos.admin.action;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -36,6 +39,7 @@ public class ManageCachesAction extends BaseActionSupport {
   private CacheManager cacheManager;
   private String cacheAction;
   private String cacheName;
+  private List   cacheKeys = new ArrayList();
 
   private static final Log log = LogFactory.getLog(ManageCachesAction.class);
 
@@ -46,12 +50,24 @@ public class ManageCachesAction extends BaseActionSupport {
     if ("removeAll".equals(cacheAction) && cacheName != null) {
       Ehcache cache = cacheManager.getEhcache(cacheName);
       cache.removeAll();
-      addActionMessage(cacheName + ".removeAll()");
+      addActionMessage(cacheName + ".removeAll() executed.");
     }
+    if ("clearStatistics".equals(cacheAction) && cacheName != null) {
+      Ehcache cache = cacheManager.getEhcache(cacheName);
+      cache.clearStatistics();
+      addActionMessage(cacheName + ".clearStatistics() executed.");
+    }
+    if ("getKeys".equals(cacheAction) && cacheName != null) {
+      Ehcache cache = cacheManager.getEhcache(cacheName);
+      cacheKeys = cache.getKeysNoDuplicateCheck();
+      Collections.sort(cacheKeys);
+      addActionMessage(cacheName + ".getKeysNoDuplicateCheck() executed.");
+    }
+
 
     // populate stats for display
     cacheStats.put("", new String[] {
-      "Size #/Objects/Keys",
+      "Size #/Objects",
       "Hits (Memory/Disk)",
       "Misses",
       "Eternal (TTI/TTL)",
@@ -64,8 +80,7 @@ public class ManageCachesAction extends BaseActionSupport {
       final Statistics statistics = cache.getStatistics();
       cacheStats.put(displayName, new String[] {
         String.valueOf(cache.getSize()) + " / "
-          + String.valueOf(statistics.getObjectCount()) + " / "
-          + String.valueOf(cache.getKeysNoDuplicateCheck().size()),
+          + String.valueOf(statistics.getObjectCount()),
         String.valueOf(statistics.getCacheHits()) + " ( "
           + String.valueOf(statistics.getInMemoryHits()) + " / "
           + String.valueOf(statistics.getOnDiskHits()) + " )",
@@ -82,12 +97,30 @@ public class ManageCachesAction extends BaseActionSupport {
   }
 
   /**
+   * Get cacheName.
+   *
+   * @return Cache name.
+   */
+  public String getCacheName() {
+    return cacheName;
+  }
+
+  /**
    * Get cacheStats.
    *
    * @return Cache stats.
    */
   public SortedMap<String, String[]> getCacheStats() {
     return cacheStats;
+  }
+
+  /**
+   * Get cacheKeys.
+   *
+   * @return Cache keys.
+   */
+  public List getCacheKeys() {
+    return cacheKeys;
   }
 
   /**
