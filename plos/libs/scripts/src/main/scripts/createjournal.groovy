@@ -20,6 +20,7 @@ import org.plos.models.Volume
 
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.SessionFactory
+import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.criterion.DetachedCriteria
 import org.topazproject.otm.criterion.EQCriterion
 import org.topazproject.otm.criterion.Restrictions
@@ -62,7 +63,7 @@ def slurpedJournal = slurper.parse(new File(journalDefinition))
 println "parsed journal definition input: " + journalDefinition
 
 // Setup OTM
-def factory = new SessionFactory();
+def factory = new SessionFactoryImpl();
 def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
 def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null);
 def p = new ModelConfig("profiles", URI.create(CONF.getString("topaz.models.profiles")), null);

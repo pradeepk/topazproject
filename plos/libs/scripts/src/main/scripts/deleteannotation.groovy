@@ -16,6 +16,7 @@ import org.plos.models.RatingSummary
 import org.plos.models.Reply
 import org.plos.models.ReplyThread
 import org.topazproject.otm.SessionFactory
+import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.stores.ItqlStore
 import org.topazproject.otm.query.Results
@@ -49,7 +50,7 @@ def fedoraSvc = new PasswordProtectedService(CONF.getString("topaz.services.fedo
 def apim = APIMStubFactory.create(fedoraSvc)
 
 // Setup OTM
-def factory = new SessionFactory();
+def factory = new SessionFactoryImpl();
 def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
 def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null);
 factory.setTripleStore(itql)
