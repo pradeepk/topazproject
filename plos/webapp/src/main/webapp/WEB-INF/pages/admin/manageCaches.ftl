@@ -23,6 +23,19 @@
       <hr/>
     </#if>
 
+    <#if cacheKeys?has_content> 
+      <fieldset>
+        <legend><b>${cacheName}</b> Keys</legend>
+        <p>
+          <#list cacheKeys as cacheKey>
+            ${cacheKey} <br/>
+          </#list>
+        </p>
+      </fieldset>
+      <br/>
+      <hr/>
+    </#if>
+
     <table border="1" cellpadding="2" cellspacing="0">
       <#list cacheStats.keySet().toArray() as cacheName>
         <tr>
@@ -67,19 +80,5 @@
         The time taken is O(log n). On a single cpu 1.8Ghz P4, approximately 6ms is required for 1000 entries and 36 for 50000.
       </p>
     </blockquote>
-
-    <hr/>
-
-    <#if cacheKeys?has_content> 
-      <fieldset>
-        <legend><b>${cacheName}</b> Keys</legend>
-        <p>
-          <#list cacheKeys as cacheKey>
-            ${cacheKey} <br/>
-          </#list>
-        </p>
-      </fieldset>
-      <br/>
-    </#if>
   </body>
 </html>

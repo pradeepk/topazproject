@@ -148,7 +148,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
 -->
-  <filter-mapping >
+  <filter-mapping>
     <filter-name>DummySSOFilter</filter-name>
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
@@ -215,6 +215,13 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <filter-mapping>
     <filter-name>SimplePageCachingFilter</filter-name>
+    <url-pattern>/article/fetchArticle.action</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>SimplePageCachingFilter</filter-name>
     <url-pattern>/article/fetchAnnotatedArticle.action</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
@@ -223,6 +230,13 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   <filter-mapping>
     <filter-name>SimplePageCachingFilter</filter-name>
     <url-pattern>/article/fetchObject.action</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>SimplePageCachingFilter</filter-name>
+    <url-pattern>/article/fetchObjectAttachment.action</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
   </filter-mapping>
