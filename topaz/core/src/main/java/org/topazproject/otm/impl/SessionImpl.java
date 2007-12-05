@@ -54,8 +54,7 @@ import org.topazproject.otm.Rdf;
  * @author Pradeep Krishnan
  */
 public class SessionImpl extends AbstractSession {
-  private static final Log                     log            = LogFactory.getLog(Session.class);
-  private static final StateCache              states         = new StateCache();
+  private static final Log                     log            = LogFactory.getLog(SessionImpl.class);
   private final Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
@@ -63,6 +62,23 @@ public class SessionImpl extends AbstractSession {
   private final Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
 
+  private static final StateCache              states         = new StateCache() {
+    public void insert(Object o, ClassMetadata cm, Session session) {
+      synchronized(this) {
+        super.insert(o, cm, session);
+      }
+    }
+    public Collection<Mapper> update(Object o, ClassMetadata cm, Session session) {
+      synchronized(this) {
+        return super.update(o, cm, session);
+      }
+    }
+    public void remove(Object o) {
+      synchronized(this) {
+        super.remove(o);
+      }
+    }
+  };
 
   /**
    * Creates a new Session object.
@@ -356,42 +372,33 @@ public class SessionImpl extends AbstractSession {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
     } else {
-      InstanceState state = states.get(o);
-      Collection<Mapper> fields;
-      if (state != null)
-        fields = state.update(o, cm, this);
-      else {
-        fields = cm.getFields();
-        states.put(o, new InstanceState(o, cm, this));
-      }
-
-      if ((fields.size() == 0) && (state != null)) {
-        if (log.isDebugEnabled())
+      Collection<Mapper> fields = states.update(o, cm, this);
+      if (log.isDebugEnabled()) {
+        if (fields == null)
+          log.debug("Saving " + id + " to store.");
+        else if (fields.size() == cm.getFields().size()) 
+            log.debug("Full update for " + id + ".");
+        else if (fields.size() == 0)
           log.debug("Update skipped for " + id + ". No changes to the object state.");
-      } else {
-        if (log.isDebugEnabled()) {
-          if (fields.size() == cm.getFields().size()) {
-            if (state == null)
-              log.debug("Saving " + id + " to store.");
-            else
-              log.debug("Full update for " + id + ".");
-          } else {
-            Collection<Mapper> skips = new ArrayList(cm.getFields());
-            skips.removeAll(fields);
-            StringBuilder buf = new StringBuilder(100);
-            char sep = ' ';
-            for (Mapper m : skips) {
-              buf.append(sep).append(m.getName());
-              sep = ',';
-            }
-            log.debug("Partial update for " + id + ". Skipped:" + buf);
+        else {
+          Collection<Mapper> skips = new ArrayList(cm.getFields());
+          skips.removeAll(fields);
+          StringBuilder buf = new StringBuilder(100);
+          char sep = ' ';
+          for (Mapper m : skips) {
+            buf.append(sep).append(m.getName());
+            sep = ',';
           }
+          log.debug("Partial update for " + id + ". Skipped:" + buf);
         }
-        store.delete(cm, fields, id.getId(), o, txn);
-        store.insert(cm, fields, id.getId(), o, txn);
       }
+      if (fields == null)
+        fields = cm.getFields();
+      store.delete(cm, fields, id.getId(), o, txn);
+      store.insert(cm, fields, id.getId(), o, txn);
     }
   }
+
 
   private <T> T getFromStore(Id id, ClassMetadata<T> cm, T instance, boolean filterObj)
                        throws OtmException {
@@ -424,7 +431,7 @@ public class SessionImpl extends AbstractSession {
       ((PostLoadEventListener)instance).onPostLoad(this, instance);
 
     if (!cm.isView())
-      states.put(instance, new InstanceState(instance, cm, this));
+      states.insert(instance, cm, this);
 
     return instance;
   }
@@ -736,110 +743,6 @@ public class SessionImpl extends AbstractSession {
 
   private interface LazyLoadMethodHandler extends MethodHandler {
     public boolean isLoaded();
-  }
-
-  private static class InstanceState {
-    private final Map<Mapper, List<String>> vmap;
-    private Map<String, List<String>>       pmap;
-
-
-    public <T> InstanceState(T instance, ClassMetadata<T> cm, Session session) {
-      vmap   = new HashMap<Mapper, List<String>>();
-      pmap   = null;
-      update(instance, cm, session, true);
-    }
-
-    public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session) {
-      return update(instance, cm, session, false);
-    }
-
-    private <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session, 
-                                          boolean fetch) {
-      Collection<Mapper> mappers = new ArrayList<Mapper>();
-
-      for (Mapper m : cm.getFields()) {
-        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
-          Map<String, List<String>> nv = (Map<String, List<String>>) m.getRawValue(instance, true);
-          boolean                   eq = (pmap == null) ? (nv == null) : pmap.equals(nv);
-
-          if (!eq) {
-            pmap = nv;
-            mappers = cm.getFields();
-            break;
-          }
-        } else {
-          List<String> ov = vmap.get(m);
-          List<String> nv =
-            (m.getSerializer() != null) ? m.get(instance) : session.getIds(m.get(instance));
-          boolean      eq = (ov == null) ? (nv == null) : ov.equals(nv);
-
-          if (!eq) {
-            vmap.put(m, nv);
-            mappers.add(m);
-          }
-        }
-      }
-
-      return mappers;
-    }
-  }
-
-  private static class ObjectReference<T> extends WeakReference<T> {
-
-    private final int hash;
-
-    public ObjectReference(T o) {
-      super(o);
-      hash = System.identityHashCode(get());
-    }
-
-    public ObjectReference(T o, ReferenceQueue<? super T> queue) {
-      super(o, queue);
-      hash = System.identityHashCode(get());
-    }
-
-    public boolean equals(Object o) {
-      return (o instanceof ObjectReference) &&
-        ((o == this) || (get() == ((ObjectReference<T>) o).get()));
-    }
-
-    public int hashCode() {
-      return hash;
-    }
-
-  }
-
-  private static class StateCache {
-    private Map<ObjectReference<?>, InstanceState> states =
-      new HashMap<ObjectReference<?>, InstanceState> (1001);
-    private ReferenceQueue<ObjectReference<?>> queue = new ReferenceQueue<ObjectReference<?>>();
-
-    public synchronized InstanceState get(Object o) {
-      expunge();
-      return states.get(new ObjectReference(o));
-    }
-
-    public synchronized InstanceState put(Object o, InstanceState state) {
-      expunge();
-      return states.put(new ObjectReference(o, queue), state);
-    }
-
-    public synchronized InstanceState remove(Object o) {
-      expunge();
-      return states.remove(new ObjectReference(o));
-    }
-
-    private void expunge() {
-      int count = 0;
-      ObjectReference<?> ref;
-      while ((ref = (ObjectReference<?>) queue.poll()) != null) {
-        states.remove(ref);
-        count++;
-      }
-      if (log.isDebugEnabled() && (count > 0))
-        log.debug("Expunged " + count + " objects from states-cache. Size is now " + states.size());
-    }
-
   }
 
 }
