@@ -11,11 +11,11 @@
 package org.plos.article.service;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.struts2.ServletActionContext;
 
+import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
@@ -38,6 +38,7 @@ import org.plos.model.article.RelatedArticleInfo;
 import org.plos.model.article.Years;
 import org.plos.models.Article;
 import org.plos.models.Issue;
+import org.plos.models.Journal;
 import org.plos.models.PLoS;
 import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
@@ -77,9 +78,10 @@ public class BrowseService {
   private static final String ARTICLE_LOCK        = "ArticleLock-";
   private static final String ARTICLE_KEY         = "Article-";
 
-  private final ArticlePEP pep;
-  private       Session    session;
-  private       Ehcache    browseCache;
+  private final ArticlePEP     pep;
+  private       Session        session;
+  private       Ehcache        browseCache;
+  private       JournalService journalService;
 
 
   /**
@@ -96,13 +98,12 @@ public class BrowseService {
    * @return the article dates.
    */
   public Years getArticleDates() {
-    return getArticleDates(true);
+    return getArticleDates(true, getCurrentJournal());
   }
 
-  private Years getArticleDates(boolean load) {
-    String jnlName = getCurrentJournal();
-    String key     = DATE_LIST_KEY + jnlName;
-    Object lock    = (DATE_LIST_LOCK + jnlName).intern();
+  private Years getArticleDates(boolean load, String jnlName) {
+    String key  = DATE_LIST_KEY + jnlName;
+    Object lock = (DATE_LIST_LOCK + jnlName).intern();
 
     return
       CacheAdminHelper.getFromCache(browseCache, key, -1, lock, "article dates",
@@ -233,7 +234,7 @@ public class BrowseService {
 
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(),
         issue.getPrevIssue(), issue.getNextIssue(), imageArticle, description);
-    
+
     for (URI articleDoi : issue.getSimpleCollection()) {
       ArticleInfo articleInIssue = getArticleInfo(articleDoi);
       if (articleInIssue == null) {
@@ -283,7 +284,10 @@ public class BrowseService {
   }
 
   private Object getCatInfo(String key, String desc, boolean load) {
-    String jnlName = getCurrentJournal();
+    return getCatInfo(key, desc, load, getCurrentJournal());
+  }
+
+  private Object getCatInfo(String key, String desc, boolean load, String jnlName) {
     key += jnlName;
 
     synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
@@ -312,48 +316,53 @@ public class BrowseService {
   }
 
   /**
-   * Notify this service that articles have been deleted from the system.
+   * Notify this service that articles have been deleted from the system. This should be invoked
+   * before the journal-service is updated.
    *
    * @param uris the list of id's of the deleted articles
    */
   public void notifyArticlesDeleted(String[] uris) {
-    String jnlName = getCurrentJournal();
+    // create list of articles for each journal
+    Map<String, Set<String>> artMap = getArticlesByJournal(uris);
 
-    // update category lists
-    synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
-      SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
-          getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false);
-      if (artByCat != null) {
-        Set<URI> uriSet = new HashSet<URI>();
-        for (String uri : uris)
-          uriSet.add(URI.create(uri));
+    // process each journal
+    for (String jnlName : artMap.keySet()) {
+      // update category lists
+      synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
+        SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
+            getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
+        if (artByCat != null) {
+          Set<URI> uriSet = new HashSet<URI>();
+          for (String uri : artMap.get(jnlName))
+            uriSet.add(URI.create(uri));
 
-        cat: for (Iterator<List<URI>> catIter = artByCat.values().iterator(); catIter.hasNext(); ) {
-          List<URI> articles = catIter.next();
-          for (Iterator<URI> artIter = articles.iterator(); artIter.hasNext(); ) {
-            URI art = artIter.next();
-            if (uriSet.remove(art)) {
-              artIter.remove();
+          cat: for (Iterator<List<URI>> catIter = artByCat.values().iterator(); catIter.hasNext(); ) {
+            List<URI> articles = catIter.next();
+            for (Iterator<URI> artIter = articles.iterator(); artIter.hasNext(); ) {
+              URI art = artIter.next();
+              if (uriSet.remove(art)) {
+                artIter.remove();
 
-              if (articles.isEmpty())
-                catIter.remove();
+                if (articles.isEmpty())
+                  catIter.remove();
 
-              if (uriSet.isEmpty())
-                break cat;
+                if (uriSet.isEmpty())
+                  break cat;
+              }
             }
           }
+
+          updateCategoryCaches(artByCat, jnlName);
         }
-
-        updateCategoryCaches(artByCat, jnlName);
       }
-    }
 
-    // update date lists
-    browseCache.remove(DATE_LIST_KEY + jnlName);
+      // update date lists
+      browseCache.remove(DATE_LIST_KEY + jnlName);
 
-    for (Object key : browseCache.getKeysNoDuplicateCheck()) {
-      if (key instanceof String && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName))
-        browseCache.remove(key);
+      for (Object key : browseCache.getKeysNoDuplicateCheck()) {
+        if (key instanceof String && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName))
+          browseCache.remove(key);
+      }
     }
 
     // update article cache
@@ -362,46 +371,69 @@ public class BrowseService {
   }
 
   /**
-   * Notify this service that articles have been added to the system.
+   * Notify this service that articles have been added to the system. This should be invoked
+   * after the journal-service is updated.
    *
    * @param uris the list of id's of the added articles
    */
   public void notifyArticlesAdded(String[] uris) {
-    String jnlName = getCurrentJournal();
+    // create list of articles for each journal
+    Map<String, Set<String>> artMap = getArticlesByJournal(uris);
 
-    // get some info about the new articles
-    List<NewArtInfo> nais = getNewArticleInfos(uris);
+    // process each journal
+    for (String jnlName : artMap.keySet()) {
+      // get some info about the new articles
+      List<NewArtInfo> nais = getNewArticleInfos(artMap.get(jnlName));
 
-    // update category lists
-    synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
-      final SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
-                                    getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false);
-      if (artByCat != null) {
-        for (NewArtInfo nai: nais) {
-          List<URI> arts = artByCat.get(nai.category);
-          if (arts == null)
-            artByCat.put(nai.category, arts = new ArrayList<URI>());
-          arts.add(0, nai.id);
+      // update category lists
+      synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
+        final SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
+                            getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
+        if (artByCat != null) {
+          for (NewArtInfo nai: nais) {
+            List<URI> arts = artByCat.get(nai.category);
+            if (arts == null)
+              artByCat.put(nai.category, arts = new ArrayList<URI>());
+            arts.add(0, nai.id);
+          }
+
+          updateCategoryCaches(artByCat, jnlName);
         }
+      }
 
-        updateCategoryCaches(artByCat, jnlName);
+      // update date lists
+      synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
+        Years dates = getArticleDates(false, jnlName);
+        if (dates != null) {
+          for (NewArtInfo nai: nais)
+            insertDate(dates, nai.date);
+        }
+        updateArticleDates(dates, jnlName);
+      }
+
+      for (Object key : browseCache.getKeysNoDuplicateCheck()) {
+        if (key instanceof String && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName))
+          browseCache.remove(key);
+      }
+    }
+  }
+
+  /**
+   * Build list of articles for each journal.
+   */
+  private Map<String, Set<String>> getArticlesByJournal(String[] artUris) {
+    Map<String, Set<String>> artMap = new HashMap<String, Set<String>>();
+
+    for (String uri : artUris) {
+      for (Journal j : journalService.getJournalsForObject(URI.create(uri))) {
+        Set<String> artList = artMap.get(j.getKey());
+        if (artList == null)
+          artMap.put(j.getKey(), artList = new HashSet<String>());
+        artList.add(uri);
       }
     }
 
-    // update date lists
-    synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
-      Years dates = getArticleDates(false);
-      if (dates != null) {
-        for (NewArtInfo nai: nais)
-          insertDate(dates, nai.date);
-      }
-      updateArticleDates(dates, jnlName);
-    }
-
-    for (Object key : browseCache.getKeysNoDuplicateCheck()) {
-      if (key instanceof String && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName))
-        browseCache.remove(key);
-    }
+    return artMap;
   }
 
   /**
@@ -490,12 +522,12 @@ public class BrowseService {
     while (sr.next()) {
       ai.articleTypes.add(ArticleType.getTypeForURI(sr.getURI(0)));
     }
-    
+
     sr = r.getSubQueryResults(5);
     while (sr.next()) {
       ai.relatedArticles.add(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
     }
-    
+
     if (log.isDebugEnabled())
       log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
                 + "', date='" + ai.date + "', title='" + ai.title
@@ -602,7 +634,7 @@ public class BrowseService {
       });
   }
 
-  private List<NewArtInfo> getNewArticleInfos(final String[] uris) {
+  private List<NewArtInfo> getNewArticleInfos(final Set<String> uris) {
     String query =
         "select cat, a.id, a.dublinCore.date date from Article a " +
         "where cat := a.categories.mainCategory and (";
@@ -629,6 +661,14 @@ public class BrowseService {
     public URI          id;
     public Date         date;
     public String       category;
+  }
+
+  /**
+   * @param journalService The journal-service to use.
+   */
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
   }
 
   /**
