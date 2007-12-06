@@ -645,7 +645,8 @@ public class PlosOneHtmlUnitDialog implements IJWebUnitDialog {
             wc = new WebClient(bv);
         }
         wc.setJavaScriptEnabled(jsEnabled);
-        wc.setThrowExceptionOnScriptError(true);
+        // avoid javascript errors that we don't care about. We can positively test for results we do care about.
+        wc.setThrowExceptionOnScriptError(false);  
         wc.setRedirectEnabled(true);
         wc.setRefreshHandler(new ImmediateRefreshHandler());
         DefaultCredentialsProvider creds = new DefaultCredentialsProvider();
