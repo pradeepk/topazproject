@@ -580,10 +580,13 @@ public class SessionImpl extends AbstractSession {
 
     try {
       currentIds.add(id);
-      o = deleteMap.remove(id);
+      o = deleteMap.get(id);
 
-      if (o == null)
-        o = dirtyMap.get(id);
+      if (o != null)
+        throw new OtmException("Attempt to use a deleted object. Remove all references to <" 
+                                + id + "> from all 'Persisted' objects");
+
+      o = dirtyMap.get(id);
 
       boolean dirtyExists = o != null;
 
@@ -596,7 +599,7 @@ public class SessionImpl extends AbstractSession {
         o = other;
 
       if (update || dirtyExists) {
-        dirtyMap.put(id, o); // re-put since it may have been deleted
+        dirtyMap.put(id, o);
         cleanMap.remove(id);
       } else {
         cleanMap.put(id, o);
