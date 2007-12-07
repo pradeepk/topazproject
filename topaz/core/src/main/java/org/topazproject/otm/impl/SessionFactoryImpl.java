@@ -86,23 +86,15 @@ public class SessionFactoryImpl implements SessionFactory {
   private TripleStore                store;
   private CurrentSessionContext      currentSessionContext;
 
-  /**
-   * Open a new otm session.
-   *
-   * @return the newly created session
+  /*
+   * inherited javadoc
    */
   public Session openSession() {
     return new SessionImpl(this);
   }
 
-  /**
-   * Obtains the current session.  The definition of what exactly "current" means is
-   * controlled by the {@link org.topazproject.otm.context.CurrentSessionContext} impl configured
-   * for use.
-   *
-   * @return The current session.
-   *
-   * @throws OtmException Indicates an issue locating a suitable current session.
+  /*
+   * inherited javadoc
    */
   public Session getCurrentSession() throws OtmException {
     if (currentSessionContext == null)
@@ -111,24 +103,16 @@ public class SessionFactoryImpl implements SessionFactory {
     return currentSessionContext.currentSession();
   }
 
-  /**
-   * Preload some classes. Must be called as part of the factory initialization.
-   *
-   * @param classes the classes to load
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public void preload(Class<?>[] classes) throws OtmException {
     for (Class<?> c : classes)
       preload(c);
   }
 
-  /**
-   * Preload a class. Must be called as part of the factory initialization.
-   *
-   * @param c the class to load
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public void preload(Class<?> c) throws OtmException {
     if ((c == null) || Object.class.equals(c))
@@ -146,16 +130,8 @@ public class SessionFactoryImpl implements SessionFactory {
     setClassMetadata(cm);
   }
 
-  /**
-   * Return the most specific subclass of clazz that is mapped to one of the given rdf types.
-   * We assume that we don't have two subclasses of <code>clazz</code> that are associated with
-   * the same rdf type. If this is not the case then the returned class will be randomly selected
-   * from one of the available ones.
-   *
-   * @param clazz the super class
-   * @param typeUris collection of type uris
-   *
-   * @return the most specific sub class
+  /*
+   * inherited javadoc
    */
   public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris) {
     return mostSpecificSubClass(clazz, typeUris, false);
@@ -193,12 +169,8 @@ public class SessionFactoryImpl implements SessionFactory {
     return (solution != null) ? solution.getSourceClass() : null;
   }
 
-  /**
-   * Sets/registers a ClassMetadata.
-   *
-   * @param cm the class metadata
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public <T> void setClassMetadata(ClassMetadata<T> cm) throws OtmException {
     if (entitymap.containsKey(cm.getName())
@@ -230,12 +202,8 @@ public class SessionFactoryImpl implements SessionFactory {
       log.debug("setClassMetadata: type(" + cm.getType() + ") ==> " + cm);
   }
 
-  /**
-   * Gets the class metadata of a pre-registered class.
-   *
-   * @param clazz the class.
-   *
-   * @return metadata for the class, or null if not found
+  /*
+   * inherited javadoc
    */
   public <T> ClassMetadata<T> getClassMetadata(Class<? extends T> clazz) {
     ClassMetadata<T> cm = (ClassMetadata<T>) metadata.get(clazz);
@@ -251,14 +219,8 @@ public class SessionFactoryImpl implements SessionFactory {
     return cm;
   }
 
-  /**
-   * Gets the class metadata of a pre-registered entity. This first attempts to find a registered
-   * class with an entity name of <var>entity</var>, and if that fails it looks for any registered
-   * class with a fully-qualified class name of <var>entity</var>.
-   *
-   * @param entity the entity name or the fully qualified class name.
-   *
-   * @return metadata for the class, or null if not found
+  /*
+   * inherited javadoc
    */
   public ClassMetadata<?> getClassMetadata(String entity) {
     ClassMetadata<?> res = entitymap.get(entity);
@@ -268,118 +230,85 @@ public class SessionFactoryImpl implements SessionFactory {
     return res;
   }
 
-  /**
-   * Lists all registered ClassMetadata objects. The returned collection is a snapshot at the
-   * time of the call. New changes made via {@link #setClassMetadata} will not be reflected in the
-   * returned collection.
-   *
-   * @return the collection of ClassMetadata
+  /*
+   * inherited javadoc
    */
   public Collection<ClassMetadata<?>> listClassMetadata() {
     return new ArrayList<ClassMetadata<?>>(metadata.values());
   }
 
-  /**
-   * Gets the proxy mapping. class to proxy or proxy to class.
-   *
-   * @param clazz the class or proxy
-   *
-   * @return proxy or class
+  /*
+   * inherited javadoc
    */
   public <T> Class<? extends T> getProxyMapping(Class<? extends T> clazz) {
     return proxyClasses.get(clazz);
   }
 
-  /**
-   * Gets the model configuration.
-   *
-   * @param modelId the model id
-   *
-   * @return the configuration
+  /*
+   * inherited javadoc
    */
   public ModelConfig getModel(String modelId) {
     return models.get(modelId);
   }
 
-  /**
-   * Adds a model configuration.
-   *
-   * @param model the model configuration
+  /*
+   * inherited javadoc
    */
   public void addModel(ModelConfig model) {
     models.put(model.getId(), model);
   }
 
-  /**
-   * Gets the triple store used.
-   *
-   * @return the store
+  /*
+   * inherited javadoc
    */
   public TripleStore getTripleStore() {
     return store;
   }
 
-  /**
-   * Sets the triple store used
-   *
-   * @param store the store
+  /*
+   * inherited javadoc
    */
   public void setTripleStore(TripleStore store) {
     this.store = store;
   }
 
-  /**
-   * Get currentSessionContext.
-   *
-   * @return currentSessionContext as CurrentSessionContext.
+  /*
+   * inherited javadoc
    */
   public CurrentSessionContext getCurrentSessionContext() {
     return currentSessionContext;
   }
 
-  /**
-   * Set currentSessionContext.
-   *
-   * @param currentSessionContext the value to set.
+  /*
+   * inherited javadoc
    */
   public void setCurrentSessionContext(CurrentSessionContext currentSessionContext) {
     this.currentSessionContext = currentSessionContext;
   }
 
-  /**
-   * Gets the serializer factory used.
-   *
-   * @return the serializer factory
+  /*
+   * inherited javadoc
    */
   public SerializerFactory getSerializerFactory() {
     return serializerFactory;
   }
 
-  /** 
-   * Add a new filter definition. If one has already been registered with the same name it is
-   * replaced. 
-   * 
-   * @param fd the filter definition to register 
+  /*
+   * inherited javadoc
    */
   public void addFilterDefinition(FilterDefinition fd) {
     filterDefs.put(fd.getFilterName(), fd);
   }
 
-  /** 
-   * Remove the filter definition with the given name. Does nothing if none was registered with
-   * that name. 
-   * 
-   * @param filterName the filter name
+  /*
+   * inherited javadoc
    */
   public void removeFilterDefinition(String filterName) {
     filterDefs.remove(filterName);
   }
 
-  /** 
-   * List all registered filter definitions. 
-   * 
-   * @return the list of registered filter definitions; will be empty if no filter definitions have
-   *         been registered.
+  /*
+   * inherited javadoc
    */
   public Collection<FilterDefinition> listFilterDefinitions() {
     return new ArrayList<FilterDefinition>(filterDefs.values());

@@ -81,7 +81,7 @@ public class SessionImpl extends AbstractSession {
   };
 
   /**
-   * Creates a new Session object.
+   * Creates a new SessionImpl object.
    *
    * @param sessionFactory the session factory that created this session
    */
@@ -89,11 +89,8 @@ public class SessionImpl extends AbstractSession {
     super(sessionFactory);
   }
 
-  /**
-   * Flushes all modified objects to the triple-store. Usually called automatically on a
-   * transaction commit.
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public void flush() throws OtmException {
     if (txn == null)
@@ -124,8 +121,8 @@ public class SessionImpl extends AbstractSession {
     dirtyMap.clear();
   }
 
-  /**
-   * Clear persistence state of all objects.
+  /*
+   * inherited javadoc
    */
   public void clear() {
     cleanMap.clear();
@@ -135,14 +132,8 @@ public class SessionImpl extends AbstractSession {
     orphanTrack.clear();
   }
 
-  /**
-   * Marks an object for storage. All associated objects are stored too.
-   *
-   * @param o the object to store
-   *
-   * @return the object id
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public String saveOrUpdate(Object o) throws OtmException {
     Id id = checkObject(o, true, true);
@@ -151,14 +142,8 @@ public class SessionImpl extends AbstractSession {
     return id.getId();
   }
 
-  /**
-   * Mark an object for deletion from storage. All associated objects are deleted too.
-   *
-   * @param o the object to delete
-   *
-   * @return the object id.
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public String delete(Object o) throws OtmException {
     Id id = checkObject(o, true, true);
@@ -202,14 +187,8 @@ public class SessionImpl extends AbstractSession {
     return id.getId();
   }
 
-  /**
-   * Evict an object from this Session.
-   *
-   * @param o the object to evict
-   *
-   * @return the object id.
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public String evict(Object o) throws OtmException {
     final Id id = checkObject(o, true, true);
@@ -247,16 +226,8 @@ public class SessionImpl extends AbstractSession {
     return id.getId();
   }
 
-  /**
-   * Check if the object is contained in the Session. Only tests for 
-   * objects in 'Persistent' state. Does not contain objects in the
-   * 'Removed' state.
-   *
-   * @param o the object to evict
-   *
-   * @return true if this session contains this object
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public boolean contains(Object o) throws OtmException {
     final Id id = checkObject(o, true, false);
@@ -264,17 +235,8 @@ public class SessionImpl extends AbstractSession {
     return (cleanMap.get(id) == o) || (dirtyMap.get(id) == o);
   }
 
-  /**
-   * Loads an object from the session or a newly created dynamic proxy for it. Does not hit
-   * the triplestore.
-   *
-   * @param <T> the type of object
-   * @param clazz the class of the object
-   * @param oid the id of the object
-   *
-   * @return the object or null if deleted from session
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public <T> T load(Class<T> clazz, String oid) throws OtmException {
     if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
@@ -304,25 +266,15 @@ public class SessionImpl extends AbstractSession {
                            + o.getClass());
   }
 
-  /**
-   * Gets an object from the session or from the triple store.
-   *
-   * @param <T> the type of the object
-   * @param clazz the class of the object
-   * @param oid the id of the object
-   *
-   * @return the object or null if deleted or does not exist in store
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public <T> T get(Class<T> clazz, String oid) throws OtmException {
     return get(clazz, oid, true);
   }
 
-  /**
-   * Internal method. DO NOT USE.
-   *
-   * @see #get(java.lang.Class, java.lang.String)
+  /*
+   * inherited javadoc
    */
   public <T> T get(Class<T> clazz, String oid, boolean filterObj) throws OtmException {
     if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
@@ -362,17 +314,8 @@ public class SessionImpl extends AbstractSession {
                            + o.getClass());
   }
 
-  /**
-   * Merges the given object. The returned object in all cases is an attached object with the
-   * state info merged. If the  supplied object is a detached object, it will remain detached even
-   * after the call.
-   *
-   * @param <T> the type of object
-   * @param o the detached object
-   *
-   * @return an attached object with merged values
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public <T> T merge(T o) throws OtmException {
     Id id = checkObject(o, true, false);
@@ -399,12 +342,8 @@ public class SessionImpl extends AbstractSession {
     return ao;
   }
 
-  /**
-   * Refreshes an attached object with values from the database.
-   *
-   * @param o the attached object to refresh
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public void refresh(Object o) throws OtmException {
     Id id = checkObject(o, false, true);

@@ -36,21 +36,15 @@ class TransactionImpl implements Transaction {
     this.session = session;
   }
 
-  /**
-   * Gets the session to which this transaction belongs.
-   *
-   * @return the session
+  /*
+   * inherited javadoc
    */
   public Session getSession() {
     return session;
   }
 
-  /**
-   * Gets a connection to the triplestore.
-   *
-   * @return the connection
-   *
-   * @throws OtmException on an error in opening a connection
+  /*
+   * inherited javadoc
    */
   public Connection getConnection() throws OtmException {
     if (conn != null)
@@ -62,10 +56,8 @@ class TransactionImpl implements Transaction {
     return conn;
   }
 
-  /**
-   * Flush the session, commit and close the connection.
-   *
-   * @throws OtmException on an error in commit
+  /*
+   * inherited javadoc
    */
   public void commit() throws OtmException {
     if (session == null)
@@ -81,10 +73,8 @@ class TransactionImpl implements Transaction {
     close();
   }
 
-  /**
-   * Rollback the transaction and close the connection. Session data is left alone.
-   *
-   * @throws OtmException on an error in roll-back
+  /*
+   * inherited javadoc
    */
   public void rollback() throws OtmException {
     try {

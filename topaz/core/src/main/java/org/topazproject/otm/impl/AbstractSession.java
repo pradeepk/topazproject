@@ -57,21 +57,15 @@ abstract class AbstractSession implements Session {
     this.sessionFactory = sessionFactory;
   }
 
-  /**
-   * Gets the session factory that created this session.
-   *
-   * @return the session factory
+  /*
+   * inherited javadoc
    */
   public SessionFactory getSessionFactory() {
     return sessionFactory;
   }
 
-  /**
-   * Begins a new transaction. All session usage is within transaction scope.
-   *
-   * @return the transaction
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public Transaction beginTransaction() throws OtmException {
     if (txn == null)
@@ -89,19 +83,15 @@ abstract class AbstractSession implements Session {
     txn = null;
   }
 
-  /**
-   * Gets the current transaction.
-   *
-   * @return the transaction
+  /*
+   * inherited javadoc
    */
   public Transaction getTransaction() {
     return txn;
   }
 
-  /**
-   * Close and release all resources.
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public void close() throws OtmException {
     clear();
@@ -112,49 +102,30 @@ abstract class AbstractSession implements Session {
     txn = null;
   }
 
-  /**
-   * Sets the FlushMode for this session.
-   *
-   * @param flushMode the FlushMode value to set
+  /*
+   * inherited javadoc
    */
   public void setFlushMode(FlushMode flushMode) {
     this.flushMode = flushMode;
   }
 
-  /**
-   * Gets the current FlushMode.
-   *
-   * @return the current FlushMode
+  /*
+   * inherited javadoc
    */
   public FlushMode getFlushMode() {
     return this.flushMode;
   }
 
-  /**
-   * Creates the 'criteria' for retrieving a set of objects of a class.
-   *
-   * @param clazz the class
-   *
-   * @return a newly created Criteria object
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public Criteria createCriteria(Class clazz) throws OtmException {
     return new Criteria(this, null, null, checkClass(clazz),
                         new ArrayList<Filter>(filters.values()));
   }
 
-  /**
-   * Creates a 'sub-criteria' for retrieving a set of objects for an association in a parent
-   * class. Usually called by {@link
-   * org.topazproject.otm.Criteria#createCriteria(java.lang.String) Criteria#createCriteria}
-   *
-   * @param criteria the parent class criteria
-   * @param path path to the associatyion field
-   *
-   * @return a newly created Criteria.
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public Criteria createCriteria(Criteria criteria, String path)
                           throws OtmException {
@@ -168,14 +139,8 @@ abstract class AbstractSession implements Session {
                         new ArrayList<Filter>(filters.values()));
   }
 
-  /**
-   * Gets a list of objects based on a criteria.
-   *
-   * @param criteria the criteria
-   *
-   * @return the results list
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public List list(Criteria criteria) throws OtmException {
     if (txn == null)
@@ -189,22 +154,15 @@ abstract class AbstractSession implements Session {
     return store.list(criteria, txn);
   }
 
-  /**
-   * Create an OQL query.
-   *
-   * @param query the OQL query
-   * @return the query object
+  /*
+   * inherited javadoc
    */
   public Query createQuery(String query) throws OtmException {
     return new QueryImpl(this, query, new ArrayList<Filter>(filters.values()));
   }
 
-  /**
-   * Execute a native(ITQL, SPARQL etc.) query.
-   *
-   * @param query the native query
-   * @return the results object
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public Results doNativeQuery(String query) throws OtmException {
     if (txn == null)
@@ -218,11 +176,8 @@ abstract class AbstractSession implements Session {
     return store.doNativeQuery(query, txn);
   }
 
-  /**
-   * Execute a native(ITQL, SPARQL etc.) update.
-   *
-   * @param command the native command(s) to execute
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public void doNativeUpdate(String command) throws OtmException {
     if (txn == null)
@@ -235,14 +190,8 @@ abstract class AbstractSession implements Session {
     store.doNativeUpdate(command, txn);
   }
 
-  /**
-   * Gets the ids for a list of objects.
-   *
-   * @param objs list of objects
-   *
-   * @return the list of ids
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public List<String> getIds(List objs) throws OtmException {
     List<String> results = new ArrayList<String>(objs.size());
@@ -253,14 +202,8 @@ abstract class AbstractSession implements Session {
     return results;
   }
 
-  /**
-   * Gets the id of an object.
-   *
-   * @param o the object
-   *
-   * @return the id
-   *
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public String getId(Object o) throws OtmException {
     if (o == null)
@@ -284,12 +227,8 @@ abstract class AbstractSession implements Session {
   }
 
 
-  /** 
-   * Enable the named filter. This does not affect existing queries or criteria.
-   * 
-   * @param name the name of the filter to enable
-   * @return the enabled filter, or null if no filter definition can be found.
-   * @throws OtmException on an error
+  /*
+   * inherited javadoc
    */
   public Filter enableFilter(String name) throws OtmException {
     if (filters.containsKey(name))
@@ -304,18 +243,8 @@ abstract class AbstractSession implements Session {
     return f;
   }
 
-  /** 
-   * Enable the filter defined by the specified filter-definition. Unlike {@link
-   * #enableFilter(java.lang.String) enableFilter(String)} this filter-definition does not have to
-   * be pre-registered on the session-factory. The filter can be disabled by name, just like with
-   * filters from pre-registered filter-definitions.
-   *
-   * <p>This does not affect existing queries or criteria.
-   * 
-   * @param fd the filter-definition whose filter to enable
-   * @return the enabled filter
-   * @throws OtmException if a filter-definition with the same name has been registered with the
-   *                      session-factory or a filter with the same name is already enabled
+  /*
+   * inherited javadoc
    */
   public Filter enableFilter(FilterDefinition fd) throws OtmException {
     if (sessionFactory.getFilterDefinition(fd.getFilterName()) != null)
@@ -330,20 +259,15 @@ abstract class AbstractSession implements Session {
     return f;
   }
 
-  /** 
-   * Disable the named filter. This does nothing if no filter by the given name has been enabled.
-   * This does not affect existing queries or criteria.
-   * 
-   * @param name the name of the filter to disable
+  /*
+   * inherited javadoc
    */
   public void disableFilter(String name) throws OtmException {
     filters.remove(name);
   }
 
-  /** 
-   * Get the set of enabled filters' names. 
-   * 
-   * @return the names of the enabled filters
+  /*
+   * inherited javadoc
    */
   public Set<String> listFilters() {
     return new HashSet<String>(filters.keySet());
