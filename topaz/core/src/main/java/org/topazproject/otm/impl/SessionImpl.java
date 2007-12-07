@@ -570,7 +570,22 @@ public class SessionImpl extends AbstractSession {
         throw new Error("unknown type " + r.getType(idx) + " encountered");
     }
   }
-
+  
+  /**
+   * Synchronize the Session Cache entries with the current state of the object; either
+   * loaded from the database or supplied by the application.
+   *
+   * @param other an object that may or may not be known to the session and may even be 
+   *              a duplicate instance (same Id, different instance)
+   * @param id    the object id
+   * @param merge the 'other' object needs to be merged to existing instance in Session 
+   * @param update this operation is performed because of an update by the application
+   *               (as opposed to a load from the store) 
+   * @param cascade the applicable cascade control (or 'null' for certain internal operations)
+   * @param skipProxy whether to avoid the force-loading of proxy object
+   *
+   * @return the object from Session Cache.
+   */
   private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
                       final CascadeType cascade, final boolean skipProxy) throws OtmException {
     if (currentIds.contains(id))
@@ -619,9 +634,10 @@ public class SessionImpl extends AbstractSession {
         boolean deep = ((cascade != null) && p.isCascadable(cascade));
         boolean deepDelete = p.isCascadable(CascadeType.deleteOrphan);
         for (Object ao : p.get(o)) {
+          // Note: duplicate check is not performed when merging
           Id aid = checkObject(ao, update, !merge);
 
-          // note: sync() here will not return a merged object. see copy()
+          // Note: sync() here will not return a merged object. see copy()
           if (deep)
             sync(ao, aid, merge, update, cascade, skipProxy);
           if (deepDelete)
@@ -629,6 +645,10 @@ public class SessionImpl extends AbstractSession {
         }
       }
 
+      // Note: We do this unconditionally. ie. update==false or update==true
+      // We do the orphan deletes only when update==true. update==false is
+      // used in cases where a fresh load from the database was performed
+      // and therefore discarding the previous orphanTrack entries is just fine.
       Set<Wrapper> old = orphanTrack.put(id, assocs);
 
       if (update && (old != null)) {
