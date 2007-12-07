@@ -330,9 +330,12 @@ ct, ft)]
         case 'deleteorphan':
            ct.add(CascadeType.deleteOrphan)
            break;
+        case 'evict':
+           ct.add(CascadeType.evict)
+           break;
         default:
           throw new OtmException("Unknown cascade type '${c}' - must be one of " +
-            "'all', 'delete', 'saveOrUpdate', 'refresh', 'merge' or 'deleteOrphan'");
+            "'all', 'delete', 'saveOrUpdate', 'refresh', 'merge' 'evict' or 'deleteOrphan'");
       }
     }
     return ct.toArray(new CascadeType[0])

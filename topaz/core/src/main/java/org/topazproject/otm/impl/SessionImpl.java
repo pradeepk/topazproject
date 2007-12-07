@@ -203,6 +203,68 @@ public class SessionImpl extends AbstractSession {
   }
 
   /**
+   * Evict an object from this Session.
+   *
+   * @param o the object to evict
+   *
+   * @return the object id.
+   *
+   * @throws OtmException on an error
+   */
+  public String evict(Object o) throws OtmException {
+    final Id id = checkObject(o, true, true);
+
+    if (currentIds.contains(id))
+      return id.getId(); // loop
+
+    try {
+      currentIds.add(id);
+
+      cleanMap.remove(id);
+      dirtyMap.remove(id);
+
+      ClassMetadata<?> cm     = sessionFactory.getClassMetadata(o.getClass());
+      Set<Wrapper>     assocs = new HashSet<Wrapper>();
+
+      for (Mapper p : cm.getFields()) {
+        if ((p.getSerializer() != null) || (p.getUri() == null))
+          continue;
+
+        // ignore this association if evict does not cascade
+        if (!p.isCascadable(CascadeType.evict))
+          continue;
+
+        for (Object ao : p.get(o))
+          assocs.add(new Wrapper(checkObject(ao, true, true), ao));
+      }
+
+      for (Wrapper ao : assocs)
+        evict(ao.get());
+    } finally {
+      currentIds.remove(id);
+    }
+
+    return id.getId();
+  }
+
+  /**
+   * Check if the object is contained in the Session. Only tests for 
+   * objects in 'Persistent' state. Does not contain objects in the
+   * 'Removed' state.
+   *
+   * @param o the object to evict
+   *
+   * @return true if this session contains this object
+   *
+   * @throws OtmException on an error
+   */
+  public boolean contains(Object o) throws OtmException {
+    final Id id = checkObject(o, true, false);
+
+    return (cleanMap.get(id) == o) || (dirtyMap.get(id) == o);
+  }
+
+  /**
    * Loads an object from the session or a newly created dynamic proxy for it. Does not hit
    * the triplestore.
    *

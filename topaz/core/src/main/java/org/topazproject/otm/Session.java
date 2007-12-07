@@ -132,6 +132,30 @@ public interface Session {
   public String delete(Object o) throws OtmException;
 
   /**
+   * Evict an object from this Session.
+   *
+   * @param o the object to evict
+   *
+   * @return the object id.
+   *
+   * @throws OtmException on an error
+   */
+  public String evict(Object o) throws OtmException;
+
+  /**
+   * Check if the object is contained in the Session. Only tests for 
+   * objects in 'Persistent' state. Does not contain objects in the
+   * 'Removed' state.
+   *
+   * @param o the object to evict
+   *
+   * @return true if this session contains this object
+   *
+   * @throws OtmException on an error
+   */
+  public boolean contains(Object o) throws OtmException;
+
+    /**
    * Loads an object from the session or a newly created dynamic proxy for it. Does not hit
    * the triplestore.
    *

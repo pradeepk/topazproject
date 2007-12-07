@@ -30,9 +30,9 @@ public interface Mapper {
    * Enum defining how operations should cascade to associations.
    */
   public static enum CascadeType {
-    saveOrUpdate, delete, merge, refresh,
+    saveOrUpdate, delete, merge, refresh, evict,
     all {public boolean implies(CascadeType e){
-      for (CascadeType c: EnumSet.range(CascadeType.saveOrUpdate, CascadeType.refresh))
+      for (CascadeType c: EnumSet.range(CascadeType.saveOrUpdate, CascadeType.evict))
         if (c.implies(e))
           return true;
       return e.equals(this);

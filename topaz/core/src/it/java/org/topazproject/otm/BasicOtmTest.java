@@ -80,6 +80,10 @@ public class BasicOtmTest extends AbstractOtmTest {
         public void run(Session session) throws OtmException {
           Annotation a;
           session.saveOrUpdate(a = new PublicAnnotation(URI.create("http://localhost/annotation/1")));
+          assertTrue(session.contains(a));
+          session.evict(a);
+          assertTrue(!session.contains(a));
+          session.saveOrUpdate(a);
           a.setType(Annotation.NS + "Comment");
         }
       });
