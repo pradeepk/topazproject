@@ -348,7 +348,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   void testCascade() {
     Class cls = rdf.class('Test1', type:'foo:Test1') {
       sel  (pred:'foo:p1', type:'foo:Test1', cascade:['saveOrUpdate'])
-      all  (pred:'foo:p2', type:'foo:Test1')
+      all  (pred:'foo:p2', type:'foo:Test1', cascade:['all', 'deleteOrphan'])
       none (pred:'foo:p3', type:'foo:Test1', cascade:[])
     }
 

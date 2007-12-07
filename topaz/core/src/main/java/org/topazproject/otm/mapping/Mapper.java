@@ -12,6 +12,7 @@ package org.topazproject.otm.mapping;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import org.topazproject.otm.OtmException;
@@ -28,7 +29,22 @@ public interface Mapper {
   /**
    * Enum defining how operations should cascade to associations.
    */
-  static enum CascadeType {all, saveOrUpdate, delete, merge, refresh};
+  public static enum CascadeType {
+    saveOrUpdate, delete, merge, refresh,
+    all {public boolean implies(CascadeType e){
+      for (CascadeType c: EnumSet.range(CascadeType.saveOrUpdate, CascadeType.refresh))
+        if (c.implies(e))
+          return true;
+      return e.equals(this);
+    }},
+    deleteOrphan {public boolean implies(CascadeType e){
+      return e.equals(this) || CascadeType.delete.implies(e);
+    }};
+
+    public boolean implies(CascadeType e) {
+      return e.equals(this);
+    }
+  };
   /**
    * Enum defining how associations should be fetched.
    */

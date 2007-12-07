@@ -288,7 +288,7 @@ public abstract class AbstractMapper implements Mapper {
    */
   public boolean isCascadable(CascadeType op) {
     for (CascadeType ct : cascade)
-      if (ct.equals(CascadeType.all) || ct.equals(op))
+      if (ct.implies(op))
         return true;
     return false;
   }

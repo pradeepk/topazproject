@@ -18,6 +18,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.mapping.Mapper.CascadeType;
 
 /**
  * Annotation meta-data.
@@ -34,7 +35,8 @@ public abstract class Annotation extends Annotea {
   private Annotation                                                                supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private Annotation                                                                supersededBy;
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true, notOwned = true)
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true, notOwned = true, 
+             cascade={CascadeType.all, CascadeType.deleteOrphan})
   private List<ReplyThread>                                                         replies =
     new ArrayList<ReplyThread>();
 

@@ -552,7 +552,7 @@ public class SessionImpl extends AbstractSession {
           continue;
 
         boolean deep = ((cascade != null) && p.isCascadable(cascade));
-        boolean deepDelete = p.isCascadable(CascadeType.delete);
+        boolean deepDelete = p.isCascadable(CascadeType.deleteOrphan);
         for (Object ao : p.get(o)) {
           Id aid = checkObject(ao, update);
 
