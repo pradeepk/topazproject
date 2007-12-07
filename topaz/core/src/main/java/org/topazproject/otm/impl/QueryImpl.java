@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.Query;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.TripleStore;
@@ -67,7 +68,8 @@ class QueryImpl extends Query {
     if (sess.getTransaction() == null)
       throw new OtmException("No transaction active");
 
-    sess.flush(); // so that mods are visible to queries
+    if (sess.getFlushMode() == FlushMode.always)
+      sess.flush(); // so that mods are visible to queries
 
     TripleStore store = sess.getSessionFactory().getTripleStore();
 
