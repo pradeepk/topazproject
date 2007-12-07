@@ -879,9 +879,6 @@ public class OqlTest extends AbstractTest {
         row { object (class:cls, id:obj[0].id) }
         row { object (class:cls, id:obj[1].id) }
       }
-
-      for (o in obj)
-        s.delete(o)
     }
   }
 

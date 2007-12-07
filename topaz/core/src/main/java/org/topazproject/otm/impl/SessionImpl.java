@@ -145,7 +145,7 @@ public class SessionImpl extends AbstractSession {
    * @throws OtmException on an error
    */
   public String saveOrUpdate(Object o) throws OtmException {
-    Id id = checkObject(o, true);
+    Id id = checkObject(o, true, true);
     sync(o, id, false, true, CascadeType.saveOrUpdate, true);
 
     return id.getId();
@@ -161,7 +161,7 @@ public class SessionImpl extends AbstractSession {
    * @throws OtmException on an error
    */
   public String delete(Object o) throws OtmException {
-    Id id = checkObject(o, true);
+    Id id = checkObject(o, true, true);
 
     if (currentIds.contains(id))
       return id.getId(); // loop
@@ -185,7 +185,7 @@ public class SessionImpl extends AbstractSession {
           continue;
 
         for (Object ao : p.get(o))
-          assocs.add(new Wrapper(checkObject(ao, true), ao));
+          assocs.add(new Wrapper(checkObject(ao, true, true), ao));
       }
 
       Set<Wrapper> old = associations.remove(id);
@@ -313,7 +313,7 @@ public class SessionImpl extends AbstractSession {
    * @throws OtmException on an error
    */
   public <T> T merge(T o) throws OtmException {
-    Id id = checkObject(o, true);
+    Id id = checkObject(o, true, false);
 
     // make sure it is loaded
     T ao = (T) get(o.getClass(), id.getId());
@@ -345,7 +345,7 @@ public class SessionImpl extends AbstractSession {
    * @throws OtmException on an error
    */
   public void refresh(Object o) throws OtmException {
-    Id id = checkObject(o, false);
+    Id id = checkObject(o, false, true);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
       o = getFromStore(id, checkClass(o.getClass()), o, true);
@@ -554,7 +554,7 @@ public class SessionImpl extends AbstractSession {
         boolean deep = ((cascade != null) && p.isCascadable(cascade));
         boolean deepDelete = p.isCascadable(CascadeType.deleteOrphan);
         for (Object ao : p.get(o)) {
-          Id aid = checkObject(ao, update);
+          Id aid = checkObject(ao, update, !merge);
 
           // note: sync() here will not return a merged object. see copy()
           if (deep)
@@ -588,7 +588,7 @@ public class SessionImpl extends AbstractSession {
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
     if (log.isDebugEnabled())
-      log.debug("Copy merging " + checkObject(o, false));
+      log.debug("Copy merging " + checkObject(o, false, false));
 
     for (Mapper p : cm.getFields()) {
       Mapper op = ocm.getMapperByUri(p.getUri(), p.hasInverseUri(), p.getRdfType());
@@ -602,7 +602,7 @@ public class SessionImpl extends AbstractSession {
         List cc = new ArrayList();
 
         for (Object ao : op.get(other)) {
-          Id     id  = checkObject(ao, false);
+          Id     id  = checkObject(ao, false, false);
           Object aoc = loopDetect.get(id);
 
           if (aoc == null) {
@@ -678,7 +678,7 @@ public class SessionImpl extends AbstractSession {
     }
   }
 
-  private Id checkObject(Object o, boolean isUpdate) throws OtmException {
+  private Id checkObject(Object o, boolean isUpdate, boolean dupCheck) throws OtmException {
     if (o == null)
       throw new NullPointerException("Null object");
 
@@ -710,7 +710,14 @@ public class SessionImpl extends AbstractSession {
       id = (String) ids.get(0);
     }
 
-    return new Id(o.getClass(), id);
+    Id oid = new Id(o.getClass(), id);
+    if (dupCheck) {
+      for (Object ex : new Object[] {deleteMap.get(oid), cleanMap.get(oid), dirtyMap.get(oid)})
+        if ((ex != null) && (ex != o))
+          throw new OtmException("Session already contains another object instance with id <" 
+            + id + ">");
+    }
+    return oid;
   }
 
   // For use in sets where we want id equality rather than object equality.
