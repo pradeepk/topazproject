@@ -68,7 +68,7 @@ class QueryImpl extends Query {
     if (sess.getTransaction() == null)
       throw new OtmException("No transaction active");
 
-    if (sess.getFlushMode() == FlushMode.always)
+    if (sess.getFlushMode().implies(FlushMode.always))
       sess.flush(); // so that mods are visible to queries
 
     TripleStore store = sess.getSessionFactory().getTripleStore();

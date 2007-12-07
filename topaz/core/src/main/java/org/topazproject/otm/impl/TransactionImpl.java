@@ -64,7 +64,7 @@ class TransactionImpl implements Transaction {
       throw new OtmException("Attempt to use a closed transaction");
 
     Session.FlushMode fm = session.getFlushMode();
-    if ((fm == Session.FlushMode.commit) || (fm == Session.FlushMode.always))
+    if (fm.implies(Session.FlushMode.commit))
       session.flush();
 
     if (conn != null)

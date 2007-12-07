@@ -50,7 +50,17 @@ public interface Session {
    * Represents a flushing strategy. 'always' will flush before queries. 'commit' will flush
    * on a transaction commit. 'manual' will require the user to call flush. Default is 'always'.
    */
-  public static enum FlushMode {always, commit, manual};
+  public static enum FlushMode {
+    always { 
+      public boolean implies(FlushMode fm) {
+        return this.equals(fm) || FlushMode.commit.implies(fm);
+      }
+    }, commit, manual;
+    
+    public boolean implies(FlushMode fm) {
+      return this.equals(fm);
+    }
+  };
 
   /**
    * Gets the session factory that created this session.

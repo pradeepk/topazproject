@@ -146,7 +146,7 @@ abstract class AbstractSession implements Session {
     if (txn == null)
       throw new OtmException("No transaction active");
 
-    if (flushMode == FlushMode.always)
+    if (flushMode.implies(FlushMode.always))
       flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
@@ -168,7 +168,7 @@ abstract class AbstractSession implements Session {
     if (txn == null)
       throw new OtmException("No transaction active");
 
-    if (flushMode == FlushMode.always)
+    if (flushMode.implies(FlushMode.always))
       flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
@@ -183,7 +183,7 @@ abstract class AbstractSession implements Session {
     if (txn == null)
       throw new OtmException("No transaction active");
 
-    if (flushMode == FlushMode.always)
+    if (flushMode.implies(FlushMode.always))
       flush(); // so that ordering is preserved
 
     TripleStore store = sessionFactory.getTripleStore();
