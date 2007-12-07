@@ -59,7 +59,7 @@ public class SessionImpl extends AbstractSession {
   private final Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
   private final Map<Id, LazyLoadMethodHandler> proxies        = new HashMap<Id, LazyLoadMethodHandler>();
-  private final Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
+  private final Map<Id, Set<Wrapper>>          orphanTrack    = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
 
   private static final StateCache              states         = new StateCache() {
@@ -132,7 +132,7 @@ public class SessionImpl extends AbstractSession {
     dirtyMap.clear();
     deleteMap.clear();
     proxies.clear();
-    associations.clear();
+    orphanTrack.clear();
   }
 
   /**
@@ -188,7 +188,7 @@ public class SessionImpl extends AbstractSession {
           assocs.add(new Wrapper(checkObject(ao, true, true), ao));
       }
 
-      Set<Wrapper> old = associations.remove(id);
+      Set<Wrapper> old = orphanTrack.remove(id);
 
       if (old != null)
         assocs.addAll(old);
@@ -629,7 +629,7 @@ public class SessionImpl extends AbstractSession {
         }
       }
 
-      Set<Wrapper> old = associations.put(id, assocs);
+      Set<Wrapper> old = orphanTrack.put(id, assocs);
 
       if (update && (old != null)) {
         old.removeAll(assocs);
