@@ -50,6 +50,7 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
@@ -82,7 +83,7 @@ import org.topazproject.otm.stores.ItqlStore;
  */
 public class PlosOneDAO {
   private static final Log log     = LogFactory.getLog(PlosOneDAO.class);
-  private SessionFactory   factory = new SessionFactory();
+  private SessionFactory   factory = new SessionFactoryImpl();
 
   /**
    * DOCUMENT ME!
