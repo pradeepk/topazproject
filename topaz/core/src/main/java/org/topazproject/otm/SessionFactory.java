@@ -12,10 +12,13 @@ package org.topazproject.otm;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -148,11 +151,27 @@ public interface SessionFactory {
   public ModelConfig getModel(String modelId);
 
   /**
+   * Get the models of the given type.
+   *
+   * @param modelType the model type
+   *
+   * @return the list of models with the given type, or null if there are none
+   */
+  public List<ModelConfig> getModels(URI modelType);
+
+  /**
    * Adds a model configuration.
    *
    * @param model the model configuration
    */
   public void addModel(ModelConfig model);
+
+  /**
+   * Removes a model configuration.
+   *
+   * @param model the model configuration
+   */
+  public void removeModel(ModelConfig model);
 
   /**
    * Gets the triple store used.

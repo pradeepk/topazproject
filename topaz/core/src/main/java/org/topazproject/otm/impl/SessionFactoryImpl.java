@@ -12,10 +12,13 @@ package org.topazproject.otm.impl;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,7 +80,12 @@ public class SessionFactoryImpl implements SessionFactory {
   /**
    * Model to config mapping (uris, types etc.)
    */
-  private final Map<String, ModelConfig> models = new HashMap<String, ModelConfig>();
+  private final Map<String, ModelConfig> modelsByName = new HashMap<String, ModelConfig>();
+
+  /**
+   * Model-type to config mapping (uris, types etc.)
+   */
+  private final Map<URI, List<ModelConfig>> modelsByType = new HashMap<URI, List<ModelConfig>>();
 
   /**
    * Filter definitions by name.
@@ -261,14 +269,40 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public ModelConfig getModel(String modelId) {
-    return models.get(modelId);
+    return modelsByName.get(modelId);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public List<ModelConfig> getModels(URI modelType) {
+    return modelsByType.get(modelType);
   }
 
   /*
    * inherited javadoc
    */
   public void addModel(ModelConfig model) {
-    models.put(model.getId(), model);
+    modelsByName.put(model.getId(), model);
+
+    List<ModelConfig> models = modelsByType.get(model.getType());
+    if (models == null)
+      modelsByType.put(model.getType(), models = new ArrayList<ModelConfig>());
+    models.add(model);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void removeModel(ModelConfig model) {
+    modelsByName.remove(model.getId());
+
+    List<ModelConfig> models = modelsByType.get(model.getType());
+    if (models != null) {
+      models.remove(model);
+      if (models.size() == 0)
+        modelsByType.remove(model.getType());
+    }
   }
 
   /*
