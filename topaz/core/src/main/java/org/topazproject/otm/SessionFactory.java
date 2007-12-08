@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
+import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
 
 /**
@@ -212,4 +213,34 @@ public interface SessionFactory {
    */
   public Collection<FilterDefinition> listFilterDefinitions();
 
+  /** 
+   * Register a new query-function-factory. The factory is registered for each function name it
+   * exports, replacing any previous factory defined for each name.
+   * 
+   * @param qff the query-function-factory to register
+   */
+  public void addQueryFunctionFactory(QueryFunctionFactory qff);
+
+  /** 
+   * Unregister a query-function-factory. The factory is unregistered for each function name it
+   * exports.
+   * 
+   * @param qff the query-function-factory to unregister
+   */
+  public void removeQueryFunctionFactory(QueryFunctionFactory qff);
+
+  /** 
+   * List all registered query-function-factories. 
+   * 
+   * @return the set of registered query-function-factories
+   */
+  public Set<QueryFunctionFactory> listQueryFunctionFactories();
+
+  /** 
+   * Get the query-function-factory for the given function. 
+   * 
+   * @param funcName the name of the function for which to return the function-factory
+   * @return the function-factory, or null if not found
+   */
+  public QueryFunctionFactory getQueryFunctionFactory(String funcName);
 }

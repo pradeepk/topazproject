@@ -63,6 +63,7 @@ options {
     private final Map<String, ExprType> vars = new HashMap<String, ExprType>();
     private final Map<String, ExprType> prms = new HashMap<String, ExprType>();
     private final Set<String>           prjs = new HashSet<String>();
+    private final Set<QueryFunction>    qfs  = new HashSet<QueryFunction>();
     private SessionFactory              sessFactory;
     private int                         varCnt = 0;
 
@@ -357,13 +358,16 @@ options {
 
 
 query
-    :   #(SELECT #(FROM fclause) #(WHERE wclause) #(PROJ sclause) (oclause)? (lclause)? (tclause)?)
+    : #(SELECT #(FROM fclause) #(WHERE wclause) #(PROJ sclause) (oclause)? (lclause)? (tclause)?) {
+        for (QueryFunction qf : qfs)
+          qf.postPredicatesHook((OqlAST) query_AST_in, (OqlAST) #query);
+      }
     ;
 
 
 fclause
-    :   #(COMMA fclause fclause)
-    |   cls:ID var:ID  { addVar(#var, #cls); }
+    : #(COMMA fclause fclause)
+    | cls:ID var:ID  { addVar(#var, #cls); }
     ;
 
 
@@ -390,61 +394,84 @@ sclause
 
 pexpr returns [ExprType type = null]
     :   #(SUBQ query)
-    |   type=factor
+    |   type=factor[true, false]
     ;
 
 
 wclause
-    : (expr)?
+    : (expr[false])?
     ;
 
-expr
+expr[boolean isProj]
 { ExprType type, type2; }
-    : #(AND (expr)+)
-    | #(OR  (expr)+)
-    | #(ASGN ID type=factor) {
+    : #(AND (expr[isProj])+)
+    | #(OR  (expr[isProj])+)
+    | #(ASGN ID type=factor[isProj, false]) {
         vars.put(#ID.getText(), type);
         updateAST(#ID, null, type, null, true);
       }
-    | #(EQ type=e1:factor type2=e2:factor) { checkTypeCompatibility(type, type2, #e1, #e2, #expr); }
-    | #(NE type=n1:factor type2=n2:factor) { checkTypeCompatibility(type, type2, #n1, #n2, #expr); }
-    | factor
+    | #(EQ type=e1:factor[isProj, false] type2=e2:factor[isProj, false]) {
+        checkTypeCompatibility(type, type2, #e1, #e2, #expr);
+      }
+    | #(NE type=n1:factor[isProj, false] type2=n2:factor[isProj, false]) {
+        checkTypeCompatibility(type, type2, #n1, #n2, #expr);
+      }
+    | factor[isProj, true]
     ;
 
-factor returns [ExprType type = null]
+factor[boolean isProj, boolean isComp] returns [ExprType type = null]
     : QSTRING ((DHAT t:URIREF) | (AT ID))? {
         type = (#t != null) ? ExprType.literalType(expandAliases(#t.getText()), null) :
                               ExprType.literalType(null);
       }
     | URIREF                 { type = ExprType.uriType(null); }
     | #(PARAM ID)
-    | fcall
-    | #(REF (   v:ID         { updateAST(#v, null, type = getTypeForVar(#v), null, true); }
-              | type=c:cast  { updateAST(#c, null, type, null, ((OqlAST) #c).isVar()); }
+    | type=fcall[isProj, isComp]
+    | #(REF (   v:ID                 { updateAST(#v, null, type = getTypeForVar(#v), null, true); }
+              | type=c:cast[isProj]  { updateAST(#c, null, type, null, ((OqlAST) #c).isVar()); }
             )
             (   ! ID         { type = resolveField(currentAST, type, #ID); }
               | ! URIREF     { type = handlePredicate(currentAST, type, #URIREF); }
-              | #(EXPR pv:ID { addVar(#pv, ExprType.uriType(null)); } (expr)?) { type = null; }
+              | #(EXPR pv:ID { addVar(#pv, ExprType.uriType(null)); } (expr[isProj])?) { type = null; }
             )*
             (STAR)?
       )
     ;
 
-fcall
+fcall[boolean isProj, boolean isComp] returns [ExprType type = null]
 {
-  List<AST> args = new ArrayList<AST>();
+  List<OqlAST>   args  = new ArrayList<OqlAST>();
   List<ExprType> types = new ArrayList<ExprType>();
   ExprType t;
 }
-    : #(FUNC fp:ID (COLON fn:ID)? (t=a:factor { args.add(#a); types.add(t); })*) {
+    : #(FUNC fp:ID (COLON fn:ID)? (t=a:factor[isProj, false] { args.add((OqlAST) #a); types.add(t); })*) {
         String fname = #fp.getText() + (#fn != null ? ":" + #fn.getText() : "");
-        if (args.size() == 2 && isBinaryCompare(fname))
+
+        QueryFunctionFactory qff = sessFactory.getQueryFunctionFactory(fname);
+        if (qff == null)
+          throw new RecognitionException("Unknown function '" + fname + "' in " +
+                                         #fcall.toStringTree());
+
+        QueryFunction qf = qff.createFunction(fname, args, types, sessFactory);
+        if (isProj ^ (qf instanceof ProjectionFunction))
+          throw new RecognitionException("function '" + fname + "' can only be used in the " +
+                                         (isProj ? "where clause" : "projection-list"));
+        if (isComp ^ (qf instanceof BooleanConditionFunction))
+          throw new RecognitionException("function '" + fname + "' is " +
+                                         (isComp ? "not " : "") + "a boolean function");
+
+        if (args.size() == 2 && qf instanceof BooleanConditionFunction &&
+            ((BooleanConditionFunction) qf).isBinaryCompare())
           checkTypeCompatibility(types.get(0), types.get(1), args.get(0), args.get(1), #fcall);
+
+        qfs.add(qf);
+        ((OqlAST) #fcall).setFunction(qf);
+        type = qf.getReturnType();
       }
     ;
 
-cast returns [ExprType type = null]
-    : ! #(CAST f:factor t:ID) {
+cast[boolean isProj] returns [ExprType type = null]
+    : ! #(CAST f:factor[isProj, false] t:ID) {
         type = getTypeForClass(#t, "cast");
         #cast = #f;     // replace CAST node by casted expression
       }

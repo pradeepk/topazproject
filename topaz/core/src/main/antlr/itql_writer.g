@@ -53,15 +53,16 @@ options {
     }
 
     private static class QueryBuilder {
-      final StringBuilder where    = new StringBuilder();
-      final List<Object>  prjTypes = new ArrayList<Object>();
-      final List<String>  prjVars  = new ArrayList<String>();
-      final List<String>  prjExprs = new ArrayList<String>();
-      final List<String>  ordrVars = new ArrayList<String>();
-      final Set<String>   models   = new HashSet<String>();
-      String              limit    = null;
-      String              offset   = null;
-      int                 kVar     = 0;
+      final StringBuilder            where    = new StringBuilder();
+      final List<Object>             prjTypes = new ArrayList<Object>();
+      final List<String>             prjVars  = new ArrayList<String>();
+      final List<ProjectionFunction> prjFuncs = new ArrayList<ProjectionFunction>();
+      final List<String>             prjExprs = new ArrayList<String>();
+      final List<String>             ordrVars = new ArrayList<String>();
+      final Set<String>              models   = new HashSet<String>();
+      String                         limit    = null;
+      String                         offset   = null;
+      int                            kVar     = 0;
 
       public QueryInfo toQueryInfo(boolean isSubQuery) throws RecognitionException {
         StringBuilder q = new StringBuilder();
@@ -92,7 +93,7 @@ options {
         if (!isSubQuery)
           q.append(';');
 
-        return new QueryInfo(q.toString(), prjTypes, prjVars);
+        return new QueryInfo(q.toString(), prjTypes, prjVars, prjFuncs);
       }
     }
 }
@@ -133,21 +134,26 @@ pexpr[QueryBuilder qb, AST var]
         QueryInfo sqi = sqb.toQueryInfo(true);
         qb.prjExprs.add("subquery(" + sqi.getQuery() + ")");
         qb.prjTypes.add(sqi);
+        qb.prjFuncs.add((ProjectionFunction) ((OqlAST) #SUBQ).getFunction());
       }
 
     | #(COUNT iquery[sqb]) {
-          QueryInfo sqi = sqb.toQueryInfo(true);
-          qb.prjExprs.add("count(" + sqi.getQuery() + ")");
-          qb.prjTypes.add(String.class);
-        }
+        QueryInfo sqi = sqb.toQueryInfo(true);
+        qb.prjExprs.add("count(" + sqi.getQuery() + ")");
+        qb.prjTypes.add(String.class);
+        qb.prjFuncs.add((ProjectionFunction) ((OqlAST) #COUNT).getFunction());
+      }
 
     | (qs:QSTRING|uri:URIREF) {
         qb.prjExprs.add((#qs != null) ? #qs.getText() : #uri.getText());
         qb.prjTypes.add((#qs != null) ? String.class : URI.class);
+        qb.prjFuncs.add((ProjectionFunction) ((OqlAST) #qs).getFunction());
       }
 
     | v:ID {
         qb.prjExprs.add(toItqlStr(#v));
+        qb.prjFuncs.add((ProjectionFunction) ((OqlAST) #v).getFunction());
+
         ExprType type = ((OqlAST) #v).getExprType();
         if (type == null)
           qb.prjTypes.add(null);

@@ -11,11 +11,13 @@
 package org.topazproject.otm.stores;
 
 import java.net.URI;
+import java.util.List;
 
 import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.mulgara.itql.AnswerSet;
+import org.topazproject.mulgara.itql.AnswerSet.QueryAnswerSet;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.query.ProjectionFunction;
 import org.topazproject.otm.query.QueryInfo;
 
 /** 
@@ -26,10 +28,9 @@ import org.topazproject.otm.query.QueryInfo;
 class ItqlOQLResults extends ItqlResults {
   private final QueryInfo qi;
 
-  private ItqlOQLResults(AnswerSet.QueryAnswerSet qas, QueryInfo qi, String[] warnings,
-                         Session sess)
+  private ItqlOQLResults(QueryAnswerSet qas, QueryInfo qi, String[] warnings, Session sess)
       throws OtmException {
-    super(getVariables(qi), getTypes(qi), qas, warnings, sess);
+    super(getVariables(qi), getTypes(qi), getFuncResult(qas, qi), warnings, sess);
     this.qi = qi;
   }
 
@@ -48,13 +49,37 @@ class ItqlOQLResults extends ItqlResults {
   }
 
   private static String[] getVariables(QueryInfo qi) {
-    return qi.getVars().toArray(new String[0]);
+    List<String> vars = qi.getVars();
+
+    int idx = 0;
+    for (ProjectionFunction pf : qi.getFuncs()) {
+      if (pf != null) {
+        int old_size = vars.size();
+        vars = pf.initVars(vars, idx);
+        idx -= old_size - vars.size();
+      }
+      idx++;
+    }
+
+    return vars.toArray(new String[vars.size()]);
   }
 
   private static Type[] getTypes(QueryInfo qi) {
-    Type[] res = new Type[qi.getTypes().size()];
+    List<Object> types = qi.getTypes();
 
     int idx = 0;
+    for (ProjectionFunction pf : qi.getFuncs()) {
+      if (pf != null) {
+        int old_size = types.size();
+        types = pf.initTypes(types, idx);
+        idx -= old_size - types.size();
+      }
+      idx++;
+    }
+
+    Type[] res = new Type[types.size()];
+
+    idx = 0;
     for (Object t : qi.getTypes()) {
       if (t == null)
         res[idx] = Type.UNKNOWN;
@@ -72,9 +97,30 @@ class ItqlOQLResults extends ItqlResults {
     return res;
   }
 
+  private static QueryAnswerSet getFuncResult(QueryAnswerSet qas, QueryInfo qi) {
+    int idx = 0;
+    for (ProjectionFunction pf : qi.getFuncs()) {
+      if (pf != null) {
+        int old_size = qas.getVariables().length;
+        qas = pf.initItqlResult(qas, idx);
+        idx -= old_size - qas.getVariables().length;
+      }
+      idx++;
+    }
+
+    return qas;
+  }
+
   @Override
   protected Object getResult(int idx, Type type, boolean eager)
       throws OtmException, AnswerException {
+    ProjectionFunction pf = qi.getFuncs().get(idx);
+    if (pf != null) {
+      Object res = pf.getItqlResult(qas, pos, idx, type, eager);
+      if (res != null)
+        return res;
+    }
+
     switch (type) {
       case SUBQ_RESULTS:
         return new ItqlOQLResults(qas.getSubQueryResults(idx), (QueryInfo) qi.getTypes().get(idx),

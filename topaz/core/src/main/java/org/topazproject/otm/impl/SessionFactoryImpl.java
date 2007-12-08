@@ -28,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
+import org.topazproject.otm.query.DefaultQueryFunctionFactory;
+import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
 
 import org.topazproject.otm.ClassMetadata;
@@ -81,10 +83,21 @@ public class SessionFactoryImpl implements SessionFactory {
    * Filter definitions by name.
    */
   private final Map<String, FilterDefinition> filterDefs = new HashMap<String, FilterDefinition>();
+
+  /**
+   * QueryFunction factories by function name.
+   */
+  private final Map<String, QueryFunctionFactory> qffMap =
+                                                      new HashMap<String, QueryFunctionFactory>();
+
   private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
   private TripleStore                store;
   private CurrentSessionContext      currentSessionContext;
+
+  {
+    addQueryFunctionFactory(new DefaultQueryFunctionFactory());
+  }
 
   /*
    * inherited javadoc
@@ -322,6 +335,24 @@ public class SessionFactoryImpl implements SessionFactory {
    */
   FilterDefinition getFilterDefinition(String name) {
     return filterDefs.get(name);
+  }
+
+  public void addQueryFunctionFactory(QueryFunctionFactory qff) {
+    for (String name : qff.getNames())
+      qffMap.put(name, qff);
+  }
+
+  public void removeQueryFunctionFactory(QueryFunctionFactory qff) {
+    for (String name : qff.getNames())
+      qffMap.remove(name);
+  }
+
+  public Set<QueryFunctionFactory> listQueryFunctionFactories() {
+    return new HashSet(qffMap.values());
+  }
+
+  public QueryFunctionFactory getQueryFunctionFactory(String funcName) {
+    return qffMap.get(funcName);
   }
 
   private boolean isInstantiable(Class clazz) {

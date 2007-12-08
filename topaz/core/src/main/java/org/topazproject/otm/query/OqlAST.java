@@ -10,6 +10,9 @@
 
 package org.topazproject.otm.query;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import antlr.CommonAST;
 import antlr.collections.AST;
 
@@ -19,10 +22,12 @@ import antlr.collections.AST;
  * @author Ronald Tschalär
  */
 public class OqlAST extends CommonAST {
-  private ExprType   type;
-  private String     model;
-  private boolean    isVar;
-  private boolean    isInv;
+  private ExprType               type;
+  private String                 model;
+  private boolean                isVar;
+  private boolean                isInv;
+  private QueryFunction          func;
+  private Set<TransformListener> listeners;
 
   public void initialize(AST t) {
     super.initialize(t);
@@ -33,6 +38,8 @@ public class OqlAST extends CommonAST {
       model     = o.model;
       isVar     = o.isVar;
       isInv     = o.isInv;
+      func      = o.func;
+      listeners = o.listeners;
     }
   }
 
@@ -108,5 +115,43 @@ public class OqlAST extends CommonAST {
    */
   public void setIsInverse(boolean isInv) {
     this.isInv = isInv;
+  }
+
+  /**
+   * Get the associated function.
+   *
+   * @return the function.
+   */
+  public QueryFunction getFunction() {
+    return func;
+  }
+
+  /**
+   * Set the associated function.
+   *
+   * @param func the function.
+   */
+  public void setFunction(QueryFunction func) {
+    this.func = func;
+  }
+
+  /**
+   * Get the registered transform listeners.
+   *
+   * @return the listeners; may be null.
+   */
+  public Set<TransformListener> getListeners() {
+    return listeners;
+  }
+
+  /**
+   * Add a transform listener.
+   *
+   * @param listener the listener to add.
+   */
+  public void addListener(TransformListener listener) {
+    if (listeners == null)
+      listeners = new HashSet<TransformListener>();
+    listeners.add(listener);
   }
 }
