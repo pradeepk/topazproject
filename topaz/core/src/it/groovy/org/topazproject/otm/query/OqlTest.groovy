@@ -505,6 +505,70 @@ public class OqlTest extends AbstractTest {
         }
       }
     }
+
+    // test index()
+    int cnt = 2;
+    for (col in ['Predicate', 'RdfBag', 'RdfSeq', 'RdfAlt', 'RdfList']) {
+      cls = rdf.class('Test' + cnt) {
+        age   (type:'xsd:int')
+        names (className:'Name' + cnt, maxCard:-1, colMapping:col) {
+          first ()
+          last  ()
+        }
+      }
+
+      def nc = cls.getClassLoader().loadClass('Name' + cnt)
+      cnt++;
+
+      o1 = cls.newInstance(age:5, names:[nc.newInstance(first:'Bob', last:'Brown')])
+      o2 = cls.newInstance(age:6, names:[nc.newInstance(first:'Charly', last:'Chan'),
+                                         nc.newInstance(first:'Joe', last:'Jackson')])
+      o3 = cls.newInstance(age:7, names:[nc.newInstance(first:'Charly', last:'Chan'),
+                                         nc.newInstance(first:'Joe', last:'Jackson'),
+                                         nc.newInstance(first:'Sally', last:'Sommer')])
+
+      doInTx { s ->
+        s.saveOrUpdate(o1)
+        s.saveOrUpdate(o2)
+        s.saveOrUpdate(o3)
+      }
+      doInTx { s ->
+        r = s.createQuery("""
+            select n.first f, n.last, index(n) from ${cls.name} t where
+            t.age = '5'^^<xsd:int> and n := t.names order by f desc;""").execute()
+        checker.verify(r) {
+          row { string (o1.names[0].first); string(o1.names[0].last); string (0) }
+        }
+
+        r = s.createQuery("""
+            select n.first f, n.last, index(n) from ${cls.name} t where
+            t.age = '6'^^<xsd:int> and n := t.names order by f desc;""").execute()
+        checker.verify(r) {
+          if (col == 'Predicate') {
+            row { string (o2.names[1].first); string(o2.names[1].last); string (0) }
+            row { string (o2.names[0].first); string(o2.names[0].last); string (1) }
+          } else {
+            row { string (o2.names[1].first); string(o2.names[1].last); string (1) }
+            row { string (o2.names[0].first); string(o2.names[0].last); string (0) }
+          }
+        }
+
+        r = s.createQuery("""
+            select n.first f, n.last, index(n) from ${cls.name} t where
+            t.age = '7'^^<xsd:int> and n := t.names order by f desc;""").execute()
+        checker.verify(r) {
+          if (col == 'Predicate') {
+            row { string (o3.names[2].first); string(o3.names[2].last); string ('0') }
+            row { string (o3.names[1].first); string(o3.names[1].last); string ('1') }
+            row { string (o3.names[0].first); string(o3.names[0].last); string ('2') }
+          } else {
+            row { string (o3.names[2].first); string(o3.names[2].last); string ('2') }
+            row { string (o3.names[1].first); string(o3.names[1].last); string ('1') }
+            row { string (o3.names[0].first); string(o3.names[0].last); string ('0') }
+          }
+        }
+      }
+    }
   }
 
   void testOrderLimitOffset() {
@@ -1613,7 +1677,7 @@ class ResultChecker extends BuilderSupport {
         break;
 
       case 'string':
-        test.assertEquals(value, res.getString(col++));
+        test.assertEquals(value.toString(), res.getString(col++));
         break;
 
       case 'uri':
