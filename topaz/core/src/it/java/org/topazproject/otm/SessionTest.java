@@ -72,7 +72,7 @@ public class SessionTest extends AbstractOtmTest {
     }
   }
 
-  private void setUpData() {
+  private void setUpData() throws OtmException {
     log.info("Setting up data for tests ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {

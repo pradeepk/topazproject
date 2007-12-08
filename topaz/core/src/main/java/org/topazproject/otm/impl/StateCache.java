@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Mapper;
 
@@ -43,7 +44,7 @@ class StateCache {
    * @param cm it's class metadata
    * @param session the Session that is requesting the insert
    */
-  public void insert(Object o, ClassMetadata cm, Session session) {
+  public void insert(Object o, ClassMetadata cm, Session session) throws OtmException {
     expunge();
     states.put(new ObjectReference(o, queue), new InstanceState(o, cm, session));
   }
@@ -58,7 +59,8 @@ class StateCache {
    *
    * @return the collection of fields that were updated or null
    */
-  public Collection<Mapper> update(Object o, ClassMetadata cm, Session session) {
+  public Collection<Mapper> update(Object o, ClassMetadata cm, Session session)
+      throws OtmException {
     expunge();
 
     InstanceState is = states.get(new ObjectReference(o));
@@ -101,7 +103,7 @@ class StateCache {
     private final Map<Mapper, List<String>> vmap; // serialized field values
     private Map<String, List<String>>       pmap; // serialized predicate map values
 
-    public <T>InstanceState(T instance, ClassMetadata<T> cm, Session session) {
+    public <T>InstanceState(T instance, ClassMetadata<T> cm, Session session) throws OtmException {
       vmap                   = new HashMap<Mapper, List<String>>();
 
       for (Mapper m : cm.getFields()) {
@@ -115,7 +117,8 @@ class StateCache {
       }
     }
 
-    public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session) {
+    public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session)
+        throws OtmException {
       Collection<Mapper> mappers = new ArrayList<Mapper>();
 
       for (Mapper m : cm.getFields()) {

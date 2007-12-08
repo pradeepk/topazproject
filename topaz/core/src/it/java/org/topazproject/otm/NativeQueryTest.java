@@ -61,7 +61,7 @@ public class NativeQueryTest extends AbstractOtmTest {
    * DOCUMENT ME!
    */
   @Test
-  public void testNativeQuery() {
+  public void testNativeQuery() throws OtmException {
     log.info("Testing native query ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {

@@ -48,7 +48,7 @@ class ItqlOQLResults extends ItqlResults {
     this(getQAS(a), qi, warnings, sess);
   }
 
-  private static String[] getVariables(QueryInfo qi) {
+  private static String[] getVariables(QueryInfo qi) throws OtmException {
     List<String> vars = qi.getVars();
 
     int idx = 0;
@@ -64,7 +64,7 @@ class ItqlOQLResults extends ItqlResults {
     return vars.toArray(new String[vars.size()]);
   }
 
-  private static Type[] getTypes(QueryInfo qi) {
+  private static Type[] getTypes(QueryInfo qi) throws OtmException {
     List<Object> types = qi.getTypes();
 
     int idx = 0;
@@ -97,7 +97,8 @@ class ItqlOQLResults extends ItqlResults {
     return res;
   }
 
-  private static QueryAnswerSet getFuncResult(QueryAnswerSet qas, QueryInfo qi) {
+  private static QueryAnswerSet getFuncResult(QueryAnswerSet qas, QueryInfo qi)
+      throws OtmException {
     int idx = 0;
     for (ProjectionFunction pf : qi.getFuncs()) {
       if (pf != null) {

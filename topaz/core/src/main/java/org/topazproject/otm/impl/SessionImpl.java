@@ -63,12 +63,13 @@ public class SessionImpl extends AbstractSession {
   private final Set<Id>                        currentIds     = new HashSet<Id>();
 
   private static final StateCache              states         = new StateCache() {
-    public void insert(Object o, ClassMetadata cm, Session session) {
+    public void insert(Object o, ClassMetadata cm, Session session) throws OtmException {
       synchronized(this) {
         super.insert(o, cm, session);
       }
     }
-    public Collection<Mapper> update(Object o, ClassMetadata cm, Session session) {
+    public Collection<Mapper> update(Object o, ClassMetadata cm, Session session)
+        throws OtmException {
       synchronized(this) {
         return super.update(o, cm, session);
       }
