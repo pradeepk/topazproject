@@ -683,7 +683,28 @@
               </execution>
             </executions>
           </plugin>
-          
+
+          <plugin>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>testCompile</id>
+                <goals><goal>testCompile</goal></goals>
+                <configuration>
+                  <sources>
+                    <fileset>
+                      <directory>${pom.basedir}/src/it/groovy</directory>
+                      <includes>
+                        <include>**/*.groovy</include>
+                      </includes>
+                    </fileset>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
         </plugins>
 
         <!-- pluginManagement: Default plugin information to be made available for
