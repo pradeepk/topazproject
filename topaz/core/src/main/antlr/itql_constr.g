@@ -165,7 +165,7 @@ tokens {
           AST trans = #([TRANS,"trans"], makeTriple(curVar, "<rdf:rest>", s));
           AST exist = makeTriple(curVar, "<rdf:rest>", s, curPred.getModel());
           AST first = makeTriple(prevVar, curPred, s, curPred.getModel());
-          list.addChild(#([OR,"or"], trans, exist));
+          list.addChild(#([OR,"or"], trans, exist, first));
           list.addChild(makeTriple(s, "<rdf:rest>", nextVar(), curPred.getModel()));
           /* end trans version */
 

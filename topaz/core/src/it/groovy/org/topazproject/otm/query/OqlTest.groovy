@@ -808,7 +808,11 @@ public class OqlTest extends AbstractTest {
       def o1 = cls.newInstance(id:id1, colors:['cyan', 'grey', 'yellow'])
       def o2 = cls.newInstance(id:id2, colors:['magenta', 'sienna', 'bisque'])
 
-      checkCollection([o1, o2], cls, "colors", "'fuchsia'", "'sienna'", ["'sienna'", "'yellow'"])
+      checkCollection([o1, o2], cls, "colors",
+                      [["'fuchsia'"], []],
+                      [["'cyan'"], [o1]], [["'sienna'"], [o2]], [["'yellow'"], [o1]],
+                      [["'sienna'", "'magenta'"], [o2]],
+                      [["'sienna'", "'yellow'"], [o1, o2]], [["'cyan'", "'bisque'"], [o1, o2]])
     }
 
     // collections of class
@@ -847,14 +851,23 @@ public class OqlTest extends AbstractTest {
       def o1 = cls.newInstance(id:id1, colors:[c1, c2, c3])
       def o2 = cls.newInstance(id:id2, colors:[c4, c5, c6])
 
-      checkCollection([o1, o2], cls, "colors.color", "'fuchsia'", "'sienna'",
-                      ["'sienna'", "'yellow'"])
+      checkCollection([o1, o2], cls, "colors.color",
+                      [["'fuchsia'"], []],
+                      [["'cyan'"], [o1]], [["'sienna'"], [o2]], [["'yellow'"], [o1]],
+                      [["'sienna'", "'magenta'"], [o2]],
+                      [["'sienna'", "'yellow'"], [o1, o2]], [["'cyan'", "'bisque'"], [o1, o2]])
 
-      checkCollection([o1, o2], cls, "colors", "<foo:bar>", "<${cid5}>", ["<${cid5}>", "<${cid2}>"])
+      checkCollection([o1, o2], cls, "colors",
+                      [["<foo:bar>"], []],
+                      [["<${cid4}>"], [o2]], [["<${cid2}>"], [o1]], [["<${cid6}>"], [o2]],
+                      [["<${cid1}>", "<${cid2}>"], [o1]],
+                      [["<${cid2}>", "<${cid4}>"], [o1, o2]],
+                      [["<${cid5}>", "<${cid3}>"], [o1, o2]],
+                      [["<${cid1}>", "<${cid6}>"], [o1, o2]])
     }
   }
 
-  private void checkCollection(List obj, Class cls, String sel, String none, String one, List two) {
+  private void checkCollection(List obj, Class cls, String sel, List... tests) {
     def checker = new ResultChecker(test:this)
 
     doInTx { s ->
@@ -863,21 +876,18 @@ public class OqlTest extends AbstractTest {
     }
 
     doInTx { s ->
-      Results r = s.createQuery("select o from ${cls.name} o where o.${sel} = ${none};").execute()
-      checker.verify(r) {
-      }
+      for (test in tests) {
+        def conds = test[0]
+        def objs  = test[1]
 
-      r = s.createQuery("select o from ${cls.name} o where o.${sel} = ${one};").execute()
-      checker.verify(r) {
-        row { object (class:cls, id:obj[1].id) }
-      }
+        Results r = s.createQuery(
+          "select o from ${cls.name} o where " + conds.collect{ "o.${sel} = ${it}" }.join(" or ") +
+          " order by o;").execute()
 
-      r = s.createQuery(
-        "select o from ${cls.name} o where o.${sel} = ${two[0]} or o.${sel} = ${two[1]} order by o;"
-      ).execute()
-      checker.verify(r) {
-        row { object (class:cls, id:obj[0].id) }
-        row { object (class:cls, id:obj[1].id) }
+        checker.verify(r) {
+          for (o in objs)
+            row { object ('class':cls, 'id':o.id) }
+        }
       }
     }
   }
