@@ -20,6 +20,7 @@ header
 
 package org.topazproject.otm.query;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -82,10 +83,13 @@ tokens {
 }
 
 {
-    private Session                sess;
-    private String                 tmpVarPfx;
-    private boolean                addTypeConstr;
-    private int                    varCnt = 0;
+    private static final URI PREFIX_MODEL_TYPE =
+                                            URI.create("http://mulgara.org/mulgara#PrefixModel");
+
+    private Session          sess;
+    private String           tmpVarPfx;
+    private boolean          addTypeConstr;
+    private int              varCnt = 0;
 
     public ItqlConstraintGenerator(Session session, String tmpVarPfx, boolean addTypeConstr) {
       this();
@@ -147,8 +151,8 @@ tokens {
           listPred.setModel(curPred.getModel());
           listPred.setExprType(curPred.getExprType());
 
-          // FIXME: avoid hardcoded model-name
-          list.addChild(makeTriple(listPred, "<mulgara:prefix>", "<rdf:_>", getModelUri("prefix")));
+          list.addChild(makeTriple(listPred, "<mulgara:prefix>", "<rdf:_>",
+                                   getModelUri(PREFIX_MODEL_TYPE)));
 
           notifyDeref(curPred, new OqlAST[] { prevVar, curPred, curVar, listPred });
           return new OqlAST[] { curVar, listPred };
@@ -205,6 +209,10 @@ tokens {
 
     private String getModelUri(String modelId) throws RecognitionException {
       return ASTUtil.getModelUri(modelId, sess.getSessionFactory());
+    }
+
+    private String getModelUri(URI modelType) throws RecognitionException {
+      return ASTUtil.getModelUri(modelType, sess.getSessionFactory());
     }
 
     private AST makeTriple(Object s, Object p, Object o) {

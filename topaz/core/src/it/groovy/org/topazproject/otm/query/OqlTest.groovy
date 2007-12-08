@@ -45,8 +45,8 @@ public class OqlTest extends AbstractTest {
 
   void setUp() {
     models = [['ri',     'otmtest1', null],
-              ['prefix', 'prefix',   'mulgara:PrefixModel'.toURI()],
-              ['xsd',    'xsd',      'mulgara:XMLSchemaModel'.toURI()],
+              ['prefix', 'prefix',   'http://mulgara.org/mulgara#PrefixModel'.toURI()],
+              ['xsd',    'xsd',      'http://mulgara.org/mulgara#XMLSchemaModel'.toURI()],
               ['str',    'str',      'http://topazproject.org/models#StringCompare'.toURI()]];
     super.setUp();
 

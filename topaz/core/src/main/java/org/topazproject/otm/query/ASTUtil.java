@@ -10,6 +10,9 @@
 
 package org.topazproject.otm.query;
 
+import java.net.URI;
+import java.util.List;
+
 import antlr.ASTFactory;
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -57,6 +60,15 @@ public class ASTUtil implements ConstraintsTokenTypes {
     if (mc == null)
       throw new RecognitionException("Unable to find model '" + modelId + "'");
     return mc.getUri().toString();
+  }
+
+  public static String getModelUri(URI modelType, SessionFactory sf) throws RecognitionException {
+    List<ModelConfig> mc = sf.getModels(modelType);
+    if (mc == null)
+      throw new RecognitionException("Unable to find a model of type '" + modelType +
+                                     "' - please make sure you've created and configured a model" +
+                                     " for this type");
+    return mc.get(0).getUri().toString();
   }
 
   public static OqlAST makeTree(ASTFactory af, int rootType, String rootName, AST... children) {

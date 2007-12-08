@@ -10,6 +10,7 @@
 
 package org.topazproject.otm.query;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,6 +35,10 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
       XSD + "nonNegativeInteger", XSD + "unsignedLong", XSD + "unsignedInt",
       XSD + "unsignedShort", XSD + "unsignedByte", XSD + "positiveInteger",
   };
+  private static final URI      XSD_MODEL_TYPE =
+                                        URI.create("http://mulgara.org/mulgara#XMLSchemaModel");
+  private static final URI      STR_MODEL_TYPE =
+                                        URI.create("http://topazproject.org/models#StringCompare");
 
   static {
     Arrays.sort(DATE_TYPES);
@@ -121,22 +126,23 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
   protected OqlAST toItql(OqlAST larg, OqlAST lvar, OqlAST rarg, OqlAST rvar, ASTFactory af)
       throws RecognitionException {
     // create expression
-    String pred, iprd, model;
+    String pred, iprd;
+    URI    modelType;
     if (isDate(lvar)) {
       pred  = (name.charAt(0) == 'l') ? "<mulgara:before>" : "<mulgara:after>";
       iprd  = (name.charAt(0) != 'l') ? "<mulgara:before>" : "<mulgara:after>";
-      model = "xsd";  // FIXME: avoid hardcoded model-name
+      modelType = XSD_MODEL_TYPE;
     } else if (isNum(lvar)) {
       pred  = (name.charAt(0) == 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
       iprd  = (name.charAt(0) != 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
-      model = "xsd";  // FIXME: avoid hardcoded model-name
+      modelType = XSD_MODEL_TYPE;
     } else {
       pred  = (name.charAt(0) == 'l') ? "<topaz:lt>" : "<topaz:gt>";
       iprd  = (name.charAt(0) != 'l') ? "<topaz:lt>" : "<topaz:gt>";
-      model = "str";  // FIXME: avoid hardcoded model-name
+      modelType = STR_MODEL_TYPE;
     }
 
-    String modelUri = ASTUtil.getModelUri(model, sf);
+    String modelUri = ASTUtil.getModelUri(modelType, sf);
 
     OqlAST res = ASTUtil.makeTree(af, AND, "and", af.dupTree(larg), af.dupTree(rarg));
     if (name.equals("ge") || name.equals("le"))

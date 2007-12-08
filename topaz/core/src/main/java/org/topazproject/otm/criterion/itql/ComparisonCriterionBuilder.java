@@ -9,6 +9,9 @@
  */
 package org.topazproject.otm.criterion.itql;
 
+import java.net.URI;
+import java.util.List;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
@@ -25,23 +28,24 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class ComparisonCriterionBuilder implements CriterionBuilder {
-  private static final String RSLV_MODEL    = "local:///topazproject#str";
-  private String              resolverModel;
+  private static final URI RSLV_MODEL_TYPE =
+                                      URI.create("http://topazproject.org/models#StringCompare");
+  private URI              resolverModelType;
 
   /**
    * Creates a new ComparisonCriterionBuilder object.
    *
-   * @param resolverModel the model uri for the resolver that implements comparison
+   * @param resolverModelType the model type uri for the resolver that implements comparison
    */
-  public ComparisonCriterionBuilder(String resolverModel) {
-    this.resolverModel                      = "<" + resolverModel + ">";
+  public ComparisonCriterionBuilder(URI resolverModelType) {
+    this.resolverModelType = resolverModelType;
   }
 
   /**
    * Creates a new ComparisonCriterionBuilder object using a default resolver model.
    */
   public ComparisonCriterionBuilder() {
-    this(RSLV_MODEL);
+    this(RSLV_MODEL_TYPE);
   }
 
   /*
@@ -58,8 +62,8 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
     if (args[1] == null)
       throw new NullPointerException(func + ": argument 2 can not be null");
 
-    return new ComparisonCriterion((String) args[0], args[1], "<topaz:" + func + ">", resolverModel);
-
+    return new ComparisonCriterion((String) args[0], args[1], "<topaz:" + func + ">",
+                                   resolverModelType);
   }
 
   /**
@@ -69,7 +73,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
    * @author Pradeep Krishnan
    */
   public static class ComparisonCriterion extends Criterion {
-    private String resolverModel;
+    private URI    resolverModelType;
     private String name;
     private Object value;
     private String operator;
@@ -80,13 +84,13 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
      * @param name field/predicate name
      * @param value field/predicate value
      * @param operator the comparison operator
-     * @param resolverModel the model uri for the resolver that implements comparison
+     * @param resolverModelType the model type uri for the resolver that implements comparison
      */
-    public ComparisonCriterion(String name, Object value, String operator, String resolverModel) {
-      this.name            = name;
-      this.value           = value;
-      this.operator        = operator;
-      this.resolverModel   = resolverModel;
+    public ComparisonCriterion(String name, Object value, String operator, URI resolverModelType) {
+      this.name              = name;
+      this.value             = value;
+      this.operator          = operator;
+      this.resolverModelType = resolverModelType;
     }
 
     /*
@@ -117,6 +121,13 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
 
         model = " in <" + conf.getUri() + ">";
       }
+
+      List<ModelConfig> resolverModels =
+          criteria.getSession().getSessionFactory().getModels(resolverModelType);
+      if (resolverModels == null)
+        throw new OtmException("No model for type '" + resolverModelType + "' has been configured" +
+                               " in SessionFactory");
+      String resolverModel = "<" + resolverModels.get(0).getUri() + ">";
 
       if (!m.hasInverseUri())
         return "(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + model + " and "

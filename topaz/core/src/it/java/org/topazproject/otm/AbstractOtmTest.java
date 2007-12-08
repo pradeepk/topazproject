@@ -66,17 +66,18 @@ public abstract class AbstractOtmTest {
       new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null),
       new ModelConfig("grants", URI.create("local:///topazproject#otmtest2"), null),
       new ModelConfig("revokes", URI.create("local:///topazproject#otmtest3"), null),
-      new ModelConfig("criteria", URI.create("local:///topazproject#otmtest4"), null)
+      new ModelConfig("criteria", URI.create("local:///topazproject#otmtest4"), null),
+      new ModelConfig("str", URI.create("local:///topazproject#str"),
+                                      URI.create("http://topazproject.org/models#StringCompare")),
     };
     URI storeUri = URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService");
     TripleStore tripleStore = new ItqlStore(storeUri);
     factory.setTripleStore(tripleStore);
 
-    tripleStore.createModel(new ModelConfig("str", URI.create("local:///topazproject#str"),
-                                        URI.create("http://topazproject.org/models#StringCompare")));
-
     for (ModelConfig model : models)
       factory.addModel(model);
+
+    tripleStore.createModel(factory.getModel("str"));
 
     Class classes [] = new Class[] {Article.class, PublicAnnotation.class, PrivateAnnotation.class,
                                     ReplyThread.class, Grants.class, Revokes.class,

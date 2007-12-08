@@ -68,7 +68,7 @@ public class ItqlStore extends AbstractTripleStore {
     serverUri = server;
 
     //XXX: configure these
-    ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder("local:///topazproject#str");
+    ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder();
     critBuilders.put("gt", cc);
     critBuilders.put("ge", cc);
     critBuilders.put("lt", cc);
