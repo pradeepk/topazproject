@@ -11,7 +11,7 @@ package org.plos.annotation.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.Rdf;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,11 +28,11 @@ public class AnnotationModel {
 
   //
   static final URI a               = URI.create("http://www.w3.org/2000/10/annotation-ns#");
-  static final URI r               = URI.create(ItqlHelper.RDF_URI);
-  static final URI d               = URI.create(ItqlHelper.DC_URI);
-  static final URI dt              = URI.create(ItqlHelper.DC_TERMS_URI);
-  static final URI topaz           = URI.create(ItqlHelper.TOPAZ_URI);
-  static final URI nil             = URI.create(ItqlHelper.RDF_URI + "nil");
+  static final URI r               = URI.create(Rdf.rdf);
+  static final URI d               = URI.create(Rdf.dc);
+  static final URI dt              = URI.create(Rdf.dc_terms);
+  static final URI topaz           = URI.create(Rdf.topaz);
+  static final URI nil             = URI.create(Rdf.rdf + "nil");
   static final URI a_Annotation    = a.resolve("#Annotation");
   static final URI r_type          = r.resolve("#type");
   static final URI a_annotates     = a.resolve("#annotates");

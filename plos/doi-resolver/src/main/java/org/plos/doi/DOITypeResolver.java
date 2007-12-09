@@ -16,14 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.query.Results;
-
-import org.topazproject.mulgara.itql.ItqlHelper;
 
 /**
  * Resolver for the rdf:type of a DOI-URI.
@@ -60,7 +59,7 @@ public class DOITypeResolver {
    * @throws OtmException if an exception occurred talking to the service
    */
   public String[] getRdfTypes(URI doi) throws OtmException {
-    String query = ItqlHelper.bindValues(QUERY, "doi", doi.toString());
+    String query = RdfUtil.bindValues(QUERY, "doi", doi.toString());
 
     List<String> types = new ArrayList<String>();
     Session sess = sf.openSession();

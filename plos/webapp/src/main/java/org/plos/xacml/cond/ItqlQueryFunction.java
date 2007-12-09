@@ -11,9 +11,8 @@ package org.plos.xacml.cond;
 
 import java.net.URI;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
 
@@ -71,9 +70,9 @@ public class ItqlQueryFunction extends OtmQueryFunction {
       char bracket = s.charAt(s.length() - 1);
 
       if (bracket == '<')
-        ItqlHelper.validateUri(bindings[i], "xacml query parameter " + i);
+        RdfUtil.validateUri(bindings[i], "xacml query parameter " + i);
       else if (bracket == '\'')
-        bindings[i] = ItqlHelper.escapeLiteral(bindings[i]);
+        bindings[i] = RdfUtil.escapeLiteral(bindings[i]);
 
       s.append(bindings[i]);
     }

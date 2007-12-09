@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 
 import org.plos.configuration.ConfigurationStore;
 
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
@@ -39,8 +40,6 @@ import org.topazproject.otm.stores.ItqlStore;
 import org.plos.models.Article;
 import org.plos.models.ObjectInfo;
 import org.plos.models.Category;
-
-import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.Uploader;
@@ -348,7 +347,7 @@ public class ArticleUtil {
 
   private static URI getFedoraBaseUri() {
     String fedoraBase = CONF.getString("topaz.services.fedora.uri");
-    URI uri = ItqlHelper.validateUri(fedoraBase, "topaz.services.fedora.uri");
+    URI uri = RdfUtil.validateUri(fedoraBase, "topaz.services.fedora.uri");
     if (uri.getHost().equals("localhost")) {
       try {
         String serverName = CONF.getString("topaz.server.hostname");

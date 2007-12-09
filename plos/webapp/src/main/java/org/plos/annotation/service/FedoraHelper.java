@@ -35,7 +35,7 @@ import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.RdfUtil;
 
 /**
  * A helper class to interface with Fedora.
@@ -77,7 +77,7 @@ public class FedoraHelper {
 
     String serverName  = conf.getString("topaz.server.hostname");
     String fedoraBase  = conf.getString("topaz.services.fedora.uri");
-    URI    uri         = ItqlHelper.validateUri(fedoraBase, "topaz.services.fedora.uri");
+    URI    uri         = RdfUtil.validateUri(fedoraBase, "topaz.services.fedora.uri");
 
     if (uri.getHost().equals("localhost")) {
       try {
@@ -114,7 +114,7 @@ public class FedoraHelper {
       values.put("CONTENTMODEL", xmlAttrEscape(contentModel));
       values.put("LABEL", xmlAttrEscape(label));
 
-      String foxml = ItqlHelper.bindValues(FOXML, values);
+      String foxml = RdfUtil.bindValues(FOXML, values);
 
       return pid2URI(apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));
     } catch (UnsupportedEncodingException e) {

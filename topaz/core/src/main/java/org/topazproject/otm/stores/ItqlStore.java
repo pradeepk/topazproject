@@ -38,6 +38,7 @@ import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
@@ -208,7 +209,7 @@ public class ItqlStore extends AbstractTripleStore {
     if (objIsUri) {
       buf.append("> <").append(obj).append("> ");
     } else {
-      buf.append("> '").append(ItqlHelper.escapeLiteral(obj));
+      buf.append("> '").append(RdfUtil.escapeLiteral(obj));
       if (dt != null)
         buf.append("'^^<").append(dt).append("> ");
       else

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.serializer.Serializer;
@@ -162,7 +163,7 @@ options {
     private void makeLiteral(AST node, String val, URI dtype, String lang) {
       node.setType(QSTRING);
       node.setFirstChild(null);
-      node.setText("'" + ItqlHelper.escapeLiteral(val) + "'");
+      node.setText("'" + RdfUtil.escapeLiteral(val) + "'");
 
       if (dtype != null) {
         AST t1 = astFactory.create(DHAT);

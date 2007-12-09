@@ -25,10 +25,10 @@ import org.plos.configuration.ConfigurationStore;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Rdf;
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.query.Results;
@@ -67,8 +67,8 @@ public class PermissionsImpl implements Permissions {
     "<" + CONF.getString("topaz.models.pp[@type]", "mulgara:Model") + ">";
 
   //
-  private static final String IMPLIES    = ItqlHelper.TOPAZ_URI + "implies";
-  private static final String PROPAGATES = ItqlHelper.TOPAZ_URI + "propagate-permissions-to";
+  private static final String IMPLIES    = Rdf.topaz + "implies";
+  private static final String PROPAGATES = Rdf.topaz + "propagate-permissions-to";
 
   //
   private static final String ITQL_LIST                 =
@@ -364,7 +364,7 @@ public class PermissionsImpl implements Permissions {
 
     principals = validateUriList(principals, "principals", false);
 
-    pep.checkAccess(action, ItqlHelper.validateUri(resource, "resource"));
+    pep.checkAccess(action, RdfUtil.validateUri(resource, "resource"));
 
     StringBuffer sb = new StringBuffer(512);
 
@@ -419,7 +419,7 @@ public class PermissionsImpl implements Permissions {
     if (objects.length == 0)
       return;
 
-    pep.checkAccess(action, ItqlHelper.validateUri(subject, sLabel));
+    pep.checkAccess(action, RdfUtil.validateUri(subject, sLabel));
 
     StringBuffer sb = new StringBuffer(512);
 
@@ -451,7 +451,7 @@ public class PermissionsImpl implements Permissions {
         revokesCache.removeAll();
     } else {
       Results ans = getCurrentSession().doNativeQuery(
-                        ItqlHelper.bindValues(ITQL_LIST_PP_TRANS, "s", subject, "p", predicate));
+                        RdfUtil.bindValues(ITQL_LIST_PP_TRANS, "s", subject, "p", predicate));
       while (ans.next()) {
         String res = ans.getString(0);
 
@@ -469,16 +469,16 @@ public class PermissionsImpl implements Permissions {
     if (principal == null)
       throw new NullPointerException("principal");
 
-    ItqlHelper.validateUri(principal, "principal");
+    RdfUtil.validateUri(principal, "principal");
 
-    pep.checkAccess(action, ItqlHelper.validateUri(resource, "resource"));
+    pep.checkAccess(action, RdfUtil.validateUri(resource, "resource"));
 
     Map map = new HashMap(3);
     map.put("resource", resource);
     map.put("principal", principal);
     map.put("MODEL", model);
 
-    String  query = ItqlHelper.bindValues(ITQL_LIST, map);
+    String  query = RdfUtil.bindValues(ITQL_LIST, map);
     Results ans   = getCurrentSession().doNativeQuery(query);
 
     List<String> result = new ArrayList<String>();
@@ -504,10 +504,10 @@ public class PermissionsImpl implements Permissions {
       oLabel   = "objects";
     }
 
-    pep.checkAccess(action, ItqlHelper.validateUri(subject, sLabel));
+    pep.checkAccess(action, RdfUtil.validateUri(subject, sLabel));
 
     String query = transitive ? ITQL_LIST_PP_TRANS : ITQL_LIST_PP;
-    query = ItqlHelper.bindValues(query, "s", subject, "p", predicate);
+    query = RdfUtil.bindValues(query, "s", subject, "p", predicate);
 
     Results ans = getCurrentSession().doNativeQuery(query);
 
@@ -523,9 +523,9 @@ public class PermissionsImpl implements Permissions {
     if (principal == null)
       throw new NullPointerException("principal");
 
-    ItqlHelper.validateUri(resource, "resource");
-    ItqlHelper.validateUri(permission, "permission");
-    ItqlHelper.validateUri(principal, "principal");
+    RdfUtil.validateUri(resource, "resource");
+    RdfUtil.validateUri(permission, "permission");
+    RdfUtil.validateUri(principal, "principal");
 
     HashMap values = new HashMap();
     values.put("resource", resource);
@@ -533,7 +533,7 @@ public class PermissionsImpl implements Permissions {
     values.put("principal", principal);
     values.put("MODEL", model);
 
-    String  query = ItqlHelper.bindValues(ITQL_INFER_PERMISSION, values);
+    String  query = RdfUtil.bindValues(ITQL_INFER_PERMISSION, values);
     Results ans   = getCurrentSession().doNativeQuery(query);
 
     return ans.next();
@@ -550,7 +550,7 @@ public class PermissionsImpl implements Permissions {
 
     for (int i = 0; i < list.length; i++) {
       if (list[i] != null)
-        ItqlHelper.validateUri(list[i], name);
+        RdfUtil.validateUri(list[i], name);
       else if (!nullOk)
         throw new NullPointerException(name + " can't be null");
     }
@@ -561,7 +561,7 @@ public class PermissionsImpl implements Permissions {
   private Map<String, List<String>> createPermissionMap(String resource, String model)
         throws OtmException {
     String query =
-      ItqlHelper.bindValues(ITQL_RESOURCE_PERMISSIONS, "resource", resource, "MODEL", model);
+      RdfUtil.bindValues(ITQL_RESOURCE_PERMISSIONS, "resource", resource, "MODEL", model);
 
     Results                   ans = getCurrentSession().doNativeQuery(query);
     Map<String, List<String>> map = new HashMap<String, List<String>>();

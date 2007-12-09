@@ -14,12 +14,11 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Set;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -153,9 +152,9 @@ public abstract class Criterion {
     }
 
     if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(val, field) + ">";
+      val = "<" + RdfUtil.validateUri(val, field) + ">";
     else {
-      val = "'" + ItqlHelper.escapeLiteral(val) + "'";
+      val = "'" + RdfUtil.escapeLiteral(val) + "'";
 
       if (m.getDataType() != null)
         val += (("^^<" + m.getDataType()) + ">");
