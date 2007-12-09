@@ -55,14 +55,6 @@ public class ItqlHelper {
   private static final HashMap defaultAliases = new HashMap();
   private static final List    instanceList   = new LinkedList();
 
-  private static final String ANSWER     = "answer";
-  private static final String QUERY      = "query";
-  private static final String VARS       = "variables";
-  private static final String MESSAGE    = "message";
-  private static final String SOLUTION   = "solution";
-  private static final String RSRC_ATTR  = "resource";
-  private static final String BNODE_ATTR = "blank-node";
-
   /** The base URI for rdf defined URIs: {@value} */
   public static final String RDF_URI      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
   /** The base URI for rdf-schema defined URIs: {@value} */
