@@ -15,13 +15,14 @@ import java.net.URI;
 
 import java.rmi.RemoteException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
 import org.topazproject.mulgara.itql.AnswerException;
+import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.mulgara.itql.ItqlHelper;
-import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterException;
 
 /**
@@ -72,15 +73,17 @@ public class DOITypeResolver {
       results = itql.doQuery(query, null);
     }
 
-    StringAnswer answer = new StringAnswer(results);
-    List         rows = ((StringAnswer.StringQueryAnswer) (answer.getAnswers().get(0))).getRows();
+    AnswerSet answer = new AnswerSet(results);
+    answer.beforeFirst();
+    if (!answer.next())
+      return new String[0];
 
-    String[]     types = new String[rows.size()];
+    List<String> types = new ArrayList<String>();
+    AnswerSet.QueryAnswerSet qas = answer.getQueryResults();
+    while (qas.next())
+      types.add(qas.getString(0));
 
-    for (int i = 0; i < types.length; i++)
-      types[i] = ((String[]) rows.get(i))[0];
-
-    return types;
+    return types.toArray(new String[types.size()]);
   }
 
   /**
