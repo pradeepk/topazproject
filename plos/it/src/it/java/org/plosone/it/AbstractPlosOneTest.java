@@ -79,8 +79,9 @@ public abstract class AbstractPlosOneTest {
    * DOCUMENT ME!
    */
   private final Env[] envs =
+    // NOTE: These also have to be dependencies in the pom.xml (versioned the same)
     new Env[] {
-                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.81.3"),
+                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.81.5"),
                 new Env("install/empty", null)
     };
 
@@ -110,6 +111,7 @@ public abstract class AbstractPlosOneTest {
         tester.setTestingEngineKey(TEST_ENGINE);
         tester.getTestContext().setBaseUrl("http://localhost:8080/plosone-webapp");
         tester.setDao(dao);
+        tester.setScriptingEnabled(true);
         testers.put(new TesterId(journal, browser), tester);
       }
     }
