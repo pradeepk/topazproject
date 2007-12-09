@@ -20,6 +20,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>otm</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>

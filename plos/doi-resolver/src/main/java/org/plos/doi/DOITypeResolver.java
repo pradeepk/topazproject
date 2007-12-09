@@ -10,20 +10,20 @@
 package org.plos.doi;
 
 
-import java.net.MalformedURLException;
 import java.net.URI;
-
-import java.rmi.RemoteException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.rpc.ServiceException;
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.stores.ItqlStore;
+import org.topazproject.otm.query.Results;
 
-import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.mulgara.itql.ItqlHelper;
-import org.topazproject.mulgara.itql.service.ItqlInterpreterException;
 
 /**
  * Resolver for the rdf:type of a DOI-URI.
@@ -34,22 +34,20 @@ public class DOITypeResolver {
   private static final String MODEL = "<local:///topazproject#filter:model=ri>";
   private static final String QUERY = "select $t from " + MODEL + " where <${doi}> <rdf:type> $t";
 
-  
+
   //
-  private ItqlHelper itql;
+  private final SessionFactory sf;
 
   /**
    * Creates a new DOITypeResolver object.
    *
    * @param mulgaraUri the mulgara service uri
    *
-   * @throws MalformedURLException if service's uri is not a valid URL
-   * @throws ServiceException if an error occurred locating the web-service
-   * @throws RemoteException if an error occurred talking to the web-service
+   * @throws OtmException if an error occurred talking to the web-service
    */
-  public DOITypeResolver(URI mulgaraUri)
-                  throws MalformedURLException, ServiceException, RemoteException {
-    itql = new ItqlHelper(mulgaraUri);
+  public DOITypeResolver(URI mulgaraUri) throws OtmException {
+    sf = new SessionFactoryImpl();
+    sf.setTripleStore(new ItqlStore(mulgaraUri));
   }
 
   /**
@@ -59,46 +57,27 @@ public class DOITypeResolver {
    *
    * @return returns an array of rdf:types
    *
-   * @throws ItqlInterpreterException if an exception was encountered while processing the queries
-   * @throws AnswerException if an exception occurred parsing the query response
-   * @throws RemoteException if an exception occurred talking to the service
+   * @throws OtmException if an exception occurred talking to the service
    */
-  public String[] getRdfTypes(URI doi)
-                       throws ItqlInterpreterException, AnswerException, RemoteException {
+  public String[] getRdfTypes(URI doi) throws OtmException {
     String query = ItqlHelper.bindValues(QUERY, "doi", doi.toString());
 
-    String results;
-
-    synchronized (this) {
-      results = itql.doQuery(query, null);
-    }
-
-    AnswerSet answer = new AnswerSet(results);
-    answer.beforeFirst();
-    if (!answer.next())
-      return new String[0];
-
     List<String> types = new ArrayList<String>();
-    AnswerSet.QueryAnswerSet qas = answer.getQueryResults();
-    while (qas.next())
-      types.add(qas.getString(0));
+    Session sess = sf.openSession();
+    try {
+      Transaction tx = sess.beginTransaction();
+      try {
+        Results results = sess.doNativeQuery(query);
+        results.beforeFirst();
+        while (results.next())
+          types.add(results.getString(0));
+      } finally {
+        tx.commit();
+      }
+    } finally {
+      sess.close();
+    }
 
     return types.toArray(new String[types.size()]);
-  }
-
-  /**
-   * Close the database handle.
-   *
-   * @throws Throwable on an error
-   */
-  protected void finalize() throws Throwable {
-    try {
-      itql.close();
-    } catch (Throwable t) {
-    }
-
-    itql = null;
-
-    super.finalize();
   }
 }

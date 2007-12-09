@@ -35,6 +35,7 @@ public class ResolverServlet extends HttpServlet{
   private static final String[] urls;
   private static final int numJournals;
   private static final String errorPage;
+  private static final DOITypeResolver resolver;
 
   static {
     numJournals = myConfig.getList("pub.doi-journals.journal.url").size();
@@ -56,8 +57,16 @@ public class ResolverServlet extends HttpServlet{
       }
       log.trace( ("Error Page is: " + errorPage));
     }
-  }
 
+    try {
+      resolver = new DOITypeResolver(new URI(myConfig.getString("topaz.services.itql.uri")));
+      log.trace("Created resolver, server='" + myConfig.getString("topaz.services.itql.uri") + "'");
+    } catch (Exception e) {
+      log.error("Error creating doi-type-resolver, server='" +
+                myConfig.getString("topaz.services.itql.uri") + "'", e);
+      throw new RuntimeException("Error creating doi-type-resolver", e);
+    }
+  }
 
   /**
    * Tries to resolve a PLoS ONE doi from CrossRef into an application specific URL
@@ -114,8 +123,6 @@ public class ResolverServlet extends HttpServlet{
       return new String[0];
     }
     try {
-      DOITypeResolver resolver = new DOITypeResolver(new URI(
-                                myConfig.getString("topaz.services.itql.uri")));
       return resolver.getRdfTypes(doiURI);
     } catch (Exception e) {
       log.warn ("Couldn't retrieve rdf types for " + doiURI.toString(), e);
