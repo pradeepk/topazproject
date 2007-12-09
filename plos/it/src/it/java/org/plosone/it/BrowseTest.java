@@ -9,8 +9,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 
-public class BrowseTests extends AbstractPlosOneTest {
-  public static final Log log = LogFactory.getLog(BrowseTests.class);
+public class BrowseTest extends AbstractPlosOneTest {
+  public static final Log log = LogFactory.getLog(BrowseTest.class);
   
   @BeforeClass
   public void setUp() {
@@ -170,12 +170,6 @@ public class BrowseTests extends AbstractPlosOneTest {
    */
   @Test(dataProvider="browsers")
   public void testNavigateAnnotationNonAjax(String browser) {
-      if ((AbstractPlosOneTest.FIREFOX2.equals(browser)) || 
-          (AbstractPlosOneTest.IE6.equals(browser))) {
-        log.info("Skipping test with browser type [browser='" + 
-                 browser + "'] since the javascript engine is broken.");
-        return;
-      }
       log.info("Testing view annotation using left panel (non-ajax) using browser='"
           +browser+"'");
       PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
@@ -227,12 +221,6 @@ public class BrowseTests extends AbstractPlosOneTest {
   // TODO - this test is broken for all browser types due to javascript engine error
   // @Test(dataProvider = "browsers")
   public void testNavigateAnnotationReply(String browser) {
-    if ((AbstractPlosOneTest.FIREFOX2.equals(browser)) || 
-        (AbstractPlosOneTest.IE6.equals(browser))) {
-      log.info("Skipping test with browser type [browser='" + 
-               browser + "'] since the javascript engine is broken.");
-      return;
-    }
     log.info("Testing navigate annotaion reply using browser='"+browser+"'");
     PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
@@ -256,12 +244,6 @@ public class BrowseTests extends AbstractPlosOneTest {
    */
   @Test(dataProvider="browsers")
   public void testNavigateDiscussion(String browser) {
-    if ((AbstractPlosOneTest.FIREFOX2.equals(browser)) || 
-        (AbstractPlosOneTest.IE6.equals(browser))) {
-      log.info("Skipping test with browser type [browser='" + 
-               browser + "'] since the javascript engine is broken.");
-      return;
-    }
     log.info("Testing navigate discussion using browser='"+browser+"'");
     PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
@@ -286,14 +268,6 @@ public class BrowseTests extends AbstractPlosOneTest {
    */
   @Test(dataProvider = "browsers")
   public void testNavigateDiscussionFromCT(String browser) {
-    // TODO - The javascript sim engine for Firefox 2 appears to be broken,
-    // Need to investigate.
-    if ((AbstractPlosOneTest.FIREFOX2.equals(browser)) || 
-        (AbstractPlosOneTest.IE6.equals(browser))) {
-      log.info("Skipping test with browser type [browser='" + 
-               browser + "'] since the javascript engine is broken.");
-      return;
-    }
     log.info("Testing navigate discussion from CT using browser='"+browser+"'");
     PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_CT);
@@ -316,14 +290,6 @@ public class BrowseTests extends AbstractPlosOneTest {
    */
   @Test(dataProvider = "browsers")
   public void testNavigateRating(String browser) {
-    // TODO - The javascript sim engine for Firefox 2 appears to be broken,
-    // Need to investigate.
-    if ((AbstractPlosOneTest.FIREFOX2.equals(browser)) || 
-        (AbstractPlosOneTest.IE6.equals(browser))) {
-      log.info("Skipping test with browser type [browser='" + 
-               browser + "'] since the javascript engine is broken.");
-      return;
-    }
     log.info("Testing Navigate to Rating using browser='"+browser+"'");
     PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
@@ -351,14 +317,6 @@ public class BrowseTests extends AbstractPlosOneTest {
    */
   @Test(dataProvider = "browsers")
   public void testNavigateRatingFromCT(String browser) {
-    // TODO - The javascript simulation engine for Firefox 2 appears to be broken,
-    // Need to investigate.
-    if ((AbstractPlosOneTest.FIREFOX2.equals(browser)) || 
-        (AbstractPlosOneTest.IE6.equals(browser))) {
-      log.info("Skipping test with browser type browser='" + 
-               browser + "' since the javascript engine is broken.");
-      return;
-    }
     log.info("Testing navigate to rating from CT using browser='"+browser+"'");
     PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
     HomePage hp = new HomePage(tester, AbstractPage.J_CT);
