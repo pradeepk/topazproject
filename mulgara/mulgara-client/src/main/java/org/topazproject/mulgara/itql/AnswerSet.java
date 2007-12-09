@@ -106,6 +106,19 @@ public class AnswerSet extends AbstractAnswer {
     private final List rows;
     private       int  curPos = -1;
 
+    /**
+     * Create a new answer-set. This is only for delegating subclasses.
+     */
+    protected QueryAnswerSet() {
+      rows = null;
+    }
+
+    /**
+     * Create a new answer-set from the given query element.
+     *
+     * @param query the query element to parse the answer from
+     * @param gef   ignored
+     */
     protected QueryAnswerSet(Element query, GraphElementFactory gef) throws AnswerException {
       rows = new ArrayList();
       try {
