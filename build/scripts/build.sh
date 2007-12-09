@@ -45,13 +45,20 @@ svn log -rBASE:{`date "+%Y-%m-%d"`}
 
 rm -f plos/it/install/*/installed
 set -e
-${MVN} ${MVNARGS} -Pit clean site --batch-mode
+${MVN} ${MVNARGS} -Pit clean install --batch-mode
 N=$?
 
 # Build RPMs if integration tests succeeded
 if [ ${N} -eq 0 -a -x /usr/bin/rpmbuild ]; then
   echo "Build RPMs"
   (cd packages; ${MVN} ${MVNARGS} -Prpm clean install --batch-mode)
+  N=$?
+fi
+
+# Build site info
+if [ ${N} -eq 0 ]; then
+  echo "Build site"
+  ${MVN} ${MVNARGS} site
   N=$?
 fi
 
