@@ -8,7 +8,6 @@
  * http://opensource.org/licenses/ecl1.php
  */
 import org.topazproject.mulgara.itql.ItqlHelper;
-import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
