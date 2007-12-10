@@ -236,172 +236,68 @@
       <list>
         <bean name="riModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="ri" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=ri"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=ri"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="annotationsModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="annotations" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=ri"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=ri"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="usersModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="users" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=users"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=users"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="grantsModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="grants" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=grants"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=grants"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="revokesModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="revokes" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=revokes"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=revokes"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="ppModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="pp" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=pp"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=pp"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="preferencesModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="preferences" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=preferences"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=preferences"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="profilesModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="profiles" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=profiles"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=profiles"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="alertsModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="alerts" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=alerts"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=alerts"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="criteriaModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="criteria" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#filter:model=criteria"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#filter" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#filter:model=criteria"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="strModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="str" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#str"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://topazproject.org/models#StringCompare" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#str"/>
+          <constructor-arg index="2" value="http://topazproject.org/models#StringCompare"/>
         </bean>
         <bean name="xsdModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="xsd" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#xsd"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://mulgara.org/mulgara#XMLSchemaModel" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#xsd"/>
+          <constructor-arg index="2" value="http://mulgara.org/mulgara#XMLSchemaModel"/>
         </bean>
         <bean name="prefixModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="prefix" />
-          <constructor-arg index="1">
-            <bean class="java.net.URI">
-              <constructor-arg value="local:///topazproject#prefix"/>
-            </bean>
-          </constructor-arg>
-          <constructor-arg index="2">
-            <bean class="java.net.URI">
-              <constructor-arg value="http://mulgara.org/mulgara#PrefixModel" />
-            </bean>
-          </constructor-arg>
+          <constructor-arg index="1" value="local:///topazproject#prefix"/>
+          <constructor-arg index="2" value="http://mulgara.org/mulgara#PrefixModel"/>
         </bean>
       </list>
     </property>
