@@ -10,6 +10,7 @@
 package org.plos.configuration;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,5 +102,27 @@ public class OtmConfiguration {
       factory.addModel(model);
       factory.getTripleStore().createModel(model);
     }
+  }
+
+  /**
+   * Get the list of configured aliases.
+   *
+   * @return the aliases
+   */
+  public Map<String, String> getAliases() {
+    return factory.listAliases();
+  }
+
+  /**
+   * Configures the factory with aliases that we use.
+   *
+   * @param aliases the aliases to set.
+   */
+  public void setAliases(Map<String, String> aliases) {
+    for (String alias : factory.listAliases().keySet())
+      factory.removeAlias(alias);
+
+    for (Map.Entry<String, String> alias : aliases.entrySet())
+      factory.addAlias(alias.getKey(), alias.getValue());
   }
 }
