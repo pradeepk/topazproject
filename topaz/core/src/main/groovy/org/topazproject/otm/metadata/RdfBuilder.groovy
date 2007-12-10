@@ -14,7 +14,6 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,11 +66,8 @@ public class RdfBuilder extends BuilderSupport {
     return str[0].toLowerCase() + (str.size() > 1 ? str[1..-1] : "")
   }
 
-  String expandAliases(String str) {
-    // FIXME: do general alias expansion
-    return str?.replaceAll('^([^:]+):') { all, alias ->
-      def r = ItqlHelper.defaultAliases[alias]; return r ? r : alias + ':'
-    }
+  String expandAlias(String str) {
+    return str ? sessFactory.expandAlias(str) : str
   }
 
 

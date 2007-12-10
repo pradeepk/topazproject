@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.Session;
@@ -223,11 +222,8 @@ tokens {
       return ASTUtil.makeTriple(s, p, o, m, astFactory);
     }
 
-    private String expandAliases(String uri) {
-      // TODO: should use aliases in SessionFactory
-      for (String alias : (Set<String>) ItqlHelper.getDefaultAliases().keySet())
-        uri = uri.replace("<" + alias + ":", "<" + ItqlHelper.getDefaultAliases().get(alias));
-      return uri.substring(1, uri.length() - 1);
+    private String expandAlias(String uri) {
+      return sess.getSessionFactory().expandAlias(uri.substring(1, uri.length() - 1));
     }
 }
 
@@ -317,7 +313,7 @@ factor[OqlAST var, boolean isProj]
 constant[OqlAST var]
     : ! QSTRING ((DHAT type:URIREF) | (AT lang:ID))? {
           String lit = #QSTRING.getText();
-          String dt  = (#type != null) ? expandAliases(#type.getText()) : null;
+          String dt  = (#type != null) ? expandAlias(#type.getText()) : null;
           if (dt != null)
             lit += "^^<" + dt + ">";
           else if (#lang != null)

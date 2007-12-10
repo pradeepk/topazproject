@@ -36,16 +36,22 @@ import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.TripleStore;
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.OtmException;
-import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.TripleStore;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
  * Also it holds the triple store and model/graph configurations. This class is multi-thread safe,
  * so long as the preload and configuration  operations are done at boot-strap time.
+ *
+ * <p>Instances are preloaded with the following aliases by default: <var>rdf</var>,
+ * <var>rdfs</var>, <var>owl</var>, <var>xsd</var>, <var>dc</var>, <var>dc_terms</var>,
+ * <var>mulgara</var>, <var>topaz</var>. Also, the {@link DefaultQueryFunctionFactory
+ * DefaultQueryFunctionFactory} is always added.
  *
  * @author Pradeep Krishnan
  */
@@ -98,13 +104,28 @@ public class SessionFactoryImpl implements SessionFactory {
   private final Map<String, QueryFunctionFactory> qffMap =
                                                       new HashMap<String, QueryFunctionFactory>();
 
+  /**
+   * Aliases
+   */
+  private final Map<String, String> aliases = new HashMap<String, String>();
+
   private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
   private TripleStore                store;
   private CurrentSessionContext      currentSessionContext;
 
   {
+    // set up defaults
     addQueryFunctionFactory(new DefaultQueryFunctionFactory());
+
+    addAlias("rdf",      Rdf.rdf);
+    addAlias("rdfs",     Rdf.rdfs);
+    addAlias("owl",      Rdf.owl);
+    addAlias("xsd",      Rdf.xsd);
+    addAlias("dc",       Rdf.dc);
+    addAlias("dc_terms", Rdf.dc_terms);
+    addAlias("mulgara",  Rdf.mulgara);
+    addAlias("topaz",    Rdf.topaz);
   }
 
   /*
@@ -387,6 +408,28 @@ public class SessionFactoryImpl implements SessionFactory {
 
   public QueryFunctionFactory getQueryFunctionFactory(String funcName) {
     return qffMap.get(funcName);
+  }
+
+  public void addAlias(String alias, String replacement) {
+    aliases.put(alias, replacement);
+  }
+
+  public void removeAlias(String alias) {
+    aliases.remove(alias);
+  }
+
+  public Map<String, String> listAliases() {
+    return new HashMap<String, String>(aliases);
+  }
+
+  public String expandAlias(String uri) {
+    for (String alias : aliases.keySet()) {
+      if (uri.startsWith(alias + ":")) {
+        uri = aliases.get(alias) + uri.substring(alias.length() + 1);
+        break;
+      }
+    }
+    return uri;
   }
 
   private boolean isInstantiable(Class clazz) {

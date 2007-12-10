@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.SessionFactory;
@@ -348,11 +347,8 @@ options {
       return false;
     }
 
-    private String expandAliases(String uri) {
-      // TODO: should use aliases in SessionFactory
-      for (String alias : (Set<String>) ItqlHelper.getDefaultAliases().keySet())
-        uri = uri.replace("<" + alias + ":", "<" + ItqlHelper.getDefaultAliases().get(alias));
-      return uri.substring(1, uri.length() - 1);
+    private String expandAlias(String uri) {
+      return sessFactory.expandAlias(uri.substring(1, uri.length() - 1));
     }
 }
 
@@ -421,7 +417,7 @@ expr[boolean isProj]
 
 factor[boolean isProj, boolean isComp] returns [ExprType type = null]
     : QSTRING ((DHAT t:URIREF) | (AT ID))? {
-        type = (#t != null) ? ExprType.literalType(expandAliases(#t.getText()), null) :
+        type = (#t != null) ? ExprType.literalType(expandAlias(#t.getText()), null) :
                               ExprType.literalType(null);
       }
     | URIREF                 { type = ExprType.uriType(null); }

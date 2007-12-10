@@ -120,7 +120,7 @@ public class FieldDef {
                                "uri-prefix has been configured")
       pred = clsDef.uriPrefix + pred
     } else
-      pred = rdf.expandAliases(pred)
+      pred = rdf.expandAlias(pred)
 
     // fix up type if needed
     if (type && !type.toURI().isAbsolute()) {
@@ -129,7 +129,7 @@ public class FieldDef {
                                "but no uri-prefix has been configured")
       type = clsDef.uriPrefix + type
     } else
-      type = rdf.expandAliases(type)
+      type = rdf.expandAlias(type)
 
     // and resolve any references to classes defined earlier
     if (!classType)

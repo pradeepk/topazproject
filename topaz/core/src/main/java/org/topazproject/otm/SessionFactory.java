@@ -262,4 +262,35 @@ public interface SessionFactory {
    * @return the function-factory, or null if not found
    */
   public QueryFunctionFactory getQueryFunctionFactory(String funcName);
+
+  /** 
+   * Add an alias to the list. 
+   * 
+   * @param alias       the alias to add
+   * @param replacement the string being aliased
+   */
+  public void addAlias(String alias, String replacement);
+
+  /** 
+   * Remove an alias from the list. 
+   * 
+   * @param alias the alias to remove
+   */
+  public void removeAlias(String alias);
+
+  /** 
+   * Get the current list of aliases. 
+   * 
+   * @return a map where the keys are the aliases and the values are the replacement strings
+   */
+  public Map<String, String> listAliases();
+
+  /** 
+   * Perform alias expansion on the uri. The uri must start with '&lt;alias&gt;:' (e.g. 'rdf:')
+   * in order for expansion to occur. Expansion is not recursive.
+   * 
+   * @param uri the uri on which to perform alias expansion
+   * @return the uri with the alias (if any) expanded
+   */
+  public String expandAlias(String uri);
 }

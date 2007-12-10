@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.query.Results;
@@ -102,10 +101,10 @@ options {
             if (type.getType() != ExprType.Type.TYPED_LIT)
               reportWarning("type mismatch in parameter '" + name + "': parsed type is '" +
                             type + "' but parameter value is a typed literal");
-            else if (!expandAliases(lit.getDatatype()).equals(type.getDataType()))
+            else if (!expandAlias(lit.getDatatype()).equals(type.getDataType()))
               reportWarning("type mismatch in parameter '" + name + "': parsed type is '" +
                             type + "' but parameter value is a typed literal with datatype '" +
-                            expandAliases(lit.getDatatype()) + "'");
+                            expandAlias(lit.getDatatype()) + "'");
           }
         }
 
@@ -157,7 +156,7 @@ options {
 
       node.setType(URIREF);
       node.setFirstChild(null);
-      node.setText("<" + expandAliases(val) + ">");
+      node.setText("<" + expandAlias(val) + ">");
     }
 
     private void makeLiteral(AST node, String val, URI dtype, String lang) {
@@ -167,7 +166,7 @@ options {
 
       if (dtype != null) {
         AST t1 = astFactory.create(DHAT);
-        AST t2 = astFactory.create(URIREF, "<" + expandAliases(dtype) + ">");
+        AST t2 = astFactory.create(URIREF, "<" + expandAlias(dtype) + ">");
         t2.setNextSibling(node.getNextSibling());
         t1.setNextSibling(t2);
         node.setNextSibling(t1);
@@ -180,12 +179,8 @@ options {
       }
     }
 
-    private String expandAliases(URI uri) {
-      String u = uri.toString();
-      // TODO: should use aliases in SessionFactory
-      for (String alias : (Set<String>) ItqlHelper.getDefaultAliases().keySet())
-        u = u.replaceFirst("^" + alias + ":", (String) ItqlHelper.getDefaultAliases().get(alias));
-      return u;
+    private String expandAlias(URI uri) {
+      return sessFactory.expandAlias(uri.toString());
     }
 }
 

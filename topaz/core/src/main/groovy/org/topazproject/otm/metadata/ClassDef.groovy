@@ -58,7 +58,7 @@ public class ClassDef {
       uriPrefix = inheritField('uriPrefix', true, null, rdf)
     if (!uriPrefix)
       uriPrefix = rdf.defUriPrefix
-    uriPrefix = rdf.expandAliases(uriPrefix)
+    uriPrefix = rdf.expandAlias(uriPrefix)
 
     // fix up type if necessary
     if (type && !type.toURI().isAbsolute()) {
@@ -67,7 +67,7 @@ public class ClassDef {
                                "but no uri-prefix has been configured")
       type = uriPrefix + type
     } else
-      type = rdf.expandAliases(type)
+      type = rdf.expandAlias(type)
 
     // find type, inheriting if necessary
     if (type == "") {
