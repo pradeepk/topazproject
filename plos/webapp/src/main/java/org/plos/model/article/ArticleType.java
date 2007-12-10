@@ -9,6 +9,7 @@
  */
 package org.plos.model.article;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -20,7 +21,7 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.plos.configuration.ConfigurationStore;
 
-public class ArticleType {
+public class ArticleType implements Serializable {
   private static HashMap<String, ArticleType> _knownArticleTypes = new HashMap<String, ArticleType>();
   private static List<ArticleType> _articleTypeOrder = new ArrayList<ArticleType>();
   private static HashMap<String, ArticleType> _newArticleTypes = new HashMap<String, ArticleType>();
