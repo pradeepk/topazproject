@@ -58,6 +58,12 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xerces</artifactId>
+      <version>1.4.4</version>
+    </dependency>
     
     <dependency>
       <groupId>org.plosone</groupId>
