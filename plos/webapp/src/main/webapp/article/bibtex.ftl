@@ -20,7 +20,7 @@
     volume = {${citation.volume}},
     url = {${citation.URL}},
     pages = {${citation.startPage}},
-    abstract = {${citation.articleAbstract}},
+    abstract = {${citation.articleAbstract!''}},
     number = {${citation.issue}}
 }        
 

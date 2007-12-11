@@ -14,7 +14,7 @@ T1  - ${citation.articleTitle}
 ${authorTag}  - ${author.surname}, ${author.givenNames}${authorSuffix}
 </#list>
 Y1  - ${citation.publicationDate?string("yyyy/MM/dd")}
-N2  - ${citation.articleAbstract}
+N2  - ${citation.articleAbstract!''}
 JF  - ${citation.journalTitle}
 VL  - ${citation.volume}
 IS  - ${citation.issue}
