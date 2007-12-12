@@ -87,7 +87,7 @@ public class NativeQueryTest extends AbstractOtmTest {
           String model = factory.getClassMetadata(PublicAnnotation.class).getModel();
           model = factory.getModel(model).getUri().toString();
 
-          Results r  = session.doNativeQuery("select $s $p $o from <" + model + "> where $s $p $o");
+          Results r  = session.doNativeQuery("select $s $p $o from <" + model + "> where $s $p $o;");
           Map     m1 = new HashMap();
           Map     m2 = new HashMap();
 
