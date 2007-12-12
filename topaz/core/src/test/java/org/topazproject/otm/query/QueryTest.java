@@ -292,7 +292,7 @@ public class QueryTest extends TestCase {
     params.put("title", "42");
     params.put("blah", new Results.Literal("42", null, null));
     for (int idx = 0; idx < iter; idx++) {
-      pr = new ParameterResolver();
+      pr = new ParameterResolver(sess.getSessionFactory());
       pr.query(ft.getAST(), params);
     }
     t1 = System.currentTimeMillis();
