@@ -37,6 +37,7 @@
       </#if>
     </ul>
 
+<#if articleDates?exists>
     <ol>
     <#list articleDates?keys?reverse as curYear>
       <#assign curYearStr = curYear?string("#") >
@@ -68,6 +69,7 @@
       </#list>
     </#list>
     </ol>
+</#if> <!-- articleDates != null -->
 
   </div> <!-- browse nav-->
 
