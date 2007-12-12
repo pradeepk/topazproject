@@ -65,7 +65,7 @@ if (verbose) {
 metamodel = "local:///topazproject#metadata"
 
 factory = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
-aliases = itql.listAliases()
+aliases = factory.listAliases()
 factory.addModel(new ModelConfig("metadata", URI.create(metamodel), null))
 factory.preload(OwlClass.class)
 factory.preload(ObjectProperty.class)
