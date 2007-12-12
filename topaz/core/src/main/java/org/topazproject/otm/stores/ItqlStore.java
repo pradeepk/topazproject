@@ -9,9 +9,9 @@
  */
 package org.topazproject.otm.stores;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.rmi.RemoteException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,14 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.rpc.ServiceException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.mulgara.itql.AnswerSet;
-import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.mulgara.itql.ItqlClient;
+import org.topazproject.mulgara.itql.ItqlClientFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
@@ -57,8 +56,9 @@ import org.topazproject.otm.query.Results;
  */
 public class ItqlStore extends AbstractTripleStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
-  private static final Map<Object, List<ItqlHelper>> conCache = new HashMap();
-  private        final URI serverUri;
+  private static final Map<Object, List<ItqlClient>> conCache = new HashMap();
+  private static final ItqlClientFactory itqlFactory = new ItqlClientFactory();
+  private        final URI               serverUri;
 
   /** 
    * Create a new itql-store instance. 
@@ -76,8 +76,8 @@ public class ItqlStore extends AbstractTripleStore {
     critBuilders.put("le", cc);
   }
 
-  public Connection openConnection() {
-    return new ItqlStoreConnection(serverUri);
+  public Connection openConnection(SessionFactory sf) {
+    return new ItqlStoreConnection(serverUri, sf);
   }
 
   public void closeConnection(Connection con) {
@@ -110,11 +110,14 @@ public class ItqlStore extends AbstractTripleStore {
     if (log.isDebugEnabled())
       log.debug("insert: " + insert);
 
+    if (insert.length() == 0)
+      return;
+
     try {
       ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
-      isc.getItqlHelper().doUpdate(insert.toString(), null);
-    } catch (RemoteException re) {
-      throw new OtmException("error performing update", re);
+      isc.getItqlClient().doUpdate(insert.toString());
+    } catch (IOException ioe) {
+      throw new OtmException("error performing update", ioe);
     }
   }
 
@@ -237,11 +240,14 @@ public class ItqlStore extends AbstractTripleStore {
     if (log.isDebugEnabled())
       log.debug("delete: " + delete);
 
+    if (delete.length() == 0)
+      return;
+
     try {
       ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
-      isc.getItqlHelper().doUpdate(delete.toString(), null);
-    } catch (RemoteException re) {
-      throw new OtmException("error performing update: " + delete.toString(), re);
+      isc.getItqlClient().doUpdate(delete.toString());
+    } catch (IOException ioe) {
+      throw new OtmException("error performing update: " + delete.toString(), ioe);
     }
   }
 
@@ -358,11 +364,13 @@ public class ItqlStore extends AbstractTripleStore {
     if (log.isDebugEnabled())
       log.debug("get: " + get);
 
-    String a;
+    List<Answer> ans;
     try {
-      a = isc.getItqlHelper().doQuery(get, null);
-    } catch (RemoteException re) {
-      throw new OtmException("error performing query: " + get, re);
+      ans = isc.getItqlClient().doQuery(get);
+    } catch (IOException ioe) {
+      throw new OtmException("error performing query: " + get, ioe);
+    } catch (AnswerException ae) {
+      throw new OtmException("error performing query: " + get, ae);
     }
 
     // parse
@@ -370,15 +378,9 @@ public class ItqlStore extends AbstractTripleStore {
     Map<String, List<String>> rvalues = new HashMap<String, List<String>>();
     Map<String, Set<String>> types = new HashMap<String, Set<String>>();
     try {
-      AnswerSet ans = new AnswerSet(a);
-
-      // check if we got something useful
-      ans.beforeFirst();
-      while (ans.next()) {
-        if (!ans.isQueryResult())
-          throw new OtmException("query failed: " + ans.getMessage());
-
-        AnswerSet.QueryAnswerSet qa = ans.getQueryResults();
+      for (Answer qa : ans) {
+        if (qa.getVariables() == null)
+          throw new OtmException("query failed: " + qa.getMessage());
 
         // collect the results, grouping by predicate
         qa.beforeFirst();
@@ -685,26 +687,22 @@ public class ItqlStore extends AbstractTripleStore {
     SessionFactory      sf  = txn.getSession().getSessionFactory();
 
     log.debug("rdf:List/rdf:Bag query : " + qry);
-    String a;
+    List<Answer> ans;
     try {
-      a = isc.getItqlHelper().doQuery(qry, null);
-    } catch (RemoteException re) {
-      throw new OtmException("error performing rdf:List/rdf:Bag query", re);
+      ans = isc.getItqlClient().doQuery(qry);
+    } catch (IOException ioe) {
+      throw new OtmException("error performing rdf:List/rdf:Bag query", ioe);
+    } catch (AnswerException ae) {
+      throw new OtmException("error performing rdf:List/rdf:Bag query", ae);
     }
 
     List<String> res = new ArrayList();
 
     try {
-      AnswerSet ans = new AnswerSet(a);
-
       // check if we got something useful
-      ans.beforeFirst();
-      if (!ans.next())
-        return res;
-      if (!ans.isQueryResult())
-        throw new OtmException("query failed: " + ans.getMessage());
-
-      AnswerSet.QueryAnswerSet qa = ans.getQueryResults();
+      Answer qa = ans.get(0);
+      if (qa.getVariables() == null)
+        throw new OtmException("query failed: " + qa.getMessage());
 
       // collect the results,
       qa.beforeFirst();
@@ -755,14 +753,14 @@ public class ItqlStore extends AbstractTripleStore {
     return res;
   }
 
-  private void updateTypeMap(AnswerSet.QueryAnswerSet sqa, String assoc, 
-      Map<String, Set<String>> types) throws AnswerException {
-    sqa.beforeFirst();
-    while (sqa.next()) {
+  private void updateTypeMap(Answer qa, String assoc, Map<String, Set<String>> types)
+      throws AnswerException {
+    qa.beforeFirst();
+    while (qa.next()) {
       Set<String> v = types.get(assoc);
       if (v == null)
         types.put(assoc, v = new HashSet<String>());
-      v.add(sqa.getString("t"));
+      v.add(qa.getString("t"));
     }
   }
 
@@ -770,14 +768,16 @@ public class ItqlStore extends AbstractTripleStore {
     ItqlCriteria ic = new ItqlCriteria(criteria);
     String qry = ic.buildUserQuery();
     log.debug("list: " + qry);
-    String a;
+    List<Answer> ans;
     try {
       ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
-      a = isc.getItqlHelper().doQuery(qry, null);
-    } catch (RemoteException re) {
-      throw new OtmException("error performing query: " + qry, re);
+      ans = isc.getItqlClient().doQuery(qry);
+    } catch (IOException ioe) {
+      throw new OtmException("error performing query: " + qry, ioe);
+    } catch (AnswerException ae) {
+      throw new OtmException("error performing query: " + qry, ae);
     }
-    return ic.createResults(a);
+    return ic.createResults(ans);
   }
 
   public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Transaction txn)
@@ -786,34 +786,39 @@ public class ItqlStore extends AbstractTripleStore {
     QueryInfo qi = iq.parseItqlQuery();
 
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
-    String a;
+    List<Answer> ans;
     try {
-      a = isc.getItqlHelper().doQuery(qi.getQuery(), null);
-    } catch (RemoteException re) {
-      throw new QueryException("error performing query '" + query + "'", re);
+      ans = isc.getItqlClient().doQuery(qi.getQuery());
+    } catch (IOException ioe) {
+      throw new QueryException("error performing query '" + query + "'", ioe);
+    } catch (AnswerException ae) {
+      throw new QueryException("error performing query '" + query + "'", ae);
     }
 
-    return new ItqlOQLResults(a, qi, iq.getWarnings().toArray(new String[0]), txn.getSession());
+    return new ItqlOQLResults(ans.get(0), qi, iq.getWarnings().toArray(new String[0]),
+                              txn.getSession());
   }
 
   public Results doNativeQuery(String query, Transaction txn) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
-    String a;
+    List<Answer> ans;
     try {
-      a = isc.getItqlHelper().doQuery(query, null);
-    } catch (RemoteException re) {
-      throw new QueryException("error performing query '" + query + "'", re);
+      ans = isc.getItqlClient().doQuery(query);
+    } catch (IOException ioe) {
+      throw new QueryException("error performing query '" + query + "'", ioe);
+    } catch (AnswerException ae) {
+      throw new QueryException("error performing query '" + query + "'", ae);
     }
 
-    return new ItqlNativeResults(a, txn.getSession());
+    return new ItqlNativeResults(ans.get(0), txn.getSession());
   }
 
   public void doNativeUpdate(String command, Transaction txn) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
     try {
-      isc.getItqlHelper().doUpdate(command, null);
-    } catch (RemoteException re) {
-      throw new QueryException("error performing command '" + command + "'", re);
+      isc.getItqlClient().doUpdate(command);
+    } catch (IOException ioe) {
+      throw new QueryException("error performing command '" + command + "'", ioe);
     }
   }
 
@@ -824,38 +829,42 @@ public class ItqlStore extends AbstractTripleStore {
     return mc.getUri().toString();
   }
 
-  private static ItqlHelper getItqlHelper(URI serverUri) throws OtmException {
+  private static ItqlClient getItqlClient(URI serverUri, Map<String, String> aliases)
+      throws OtmException {
     synchronized (conCache) {
-      List<ItqlHelper> list = conCache.get(serverUri);
+      ItqlClient res;
+
+      List<ItqlClient> list = conCache.get(serverUri);
       if (list != null && list.size() > 0)
-        return list.remove(list.size() - 1);
+        res = list.remove(list.size() - 1);
       try {
-        return new ItqlHelper(serverUri);
-      } catch (ServiceException se) {
-        throw new OtmException("Error talking to '" + serverUri + "'", se);
-      } catch (RemoteException re) {
-        throw new OtmException("Error talking to '" + serverUri + "'", re);
-      } catch (MalformedURLException mue) {
-        throw new OtmException("Invalid server URI '" + serverUri + "'", mue);
+        res = itqlFactory.createClient(serverUri);
+      } catch (Exception e) {
+        throw new OtmException("Error talking to '" + serverUri + "'", e);
       }
+
+      if (aliases != null)
+        res.setAliases(aliases);
+
+      return res;
     }
   }
 
-  private static void returnItqlHelper(URI serverUri, ItqlHelper itql) {
+  private static void returnItqlClient(URI serverUri, ItqlClient itql) {
     synchronized (conCache) {
-      List<ItqlHelper> list = conCache.get(serverUri);
+      List<ItqlClient> list = conCache.get(serverUri);
       if (list == null)
-        conCache.put(serverUri, list = new ArrayList<ItqlHelper>());
+        conCache.put(serverUri, list = new ArrayList<ItqlClient>());
       list.add(itql);
     }
   }
 
   public void createModel(ModelConfig conf) throws OtmException {
-    ItqlHelper itql = ItqlStore.getItqlHelper(serverUri);
+    ItqlClient itql = ItqlStore.getItqlClient(serverUri, null);
     try {
       String type = (conf.getType() == null) ? "mulgara:Model" : conf.getType().toString();
-      itql.doUpdate("create <" + conf.getUri() + "> <" + type + ">;", null);
-      returnItqlHelper(serverUri, itql);
+      itql.doUpdate("create <" + conf.getUri() + "> <" + type + ">;");
+      returnItqlClient(serverUri, itql);
     } catch (Exception e) {
       throw new OtmException("Failed to create model <" + conf.getUri() + ">", e);
     }finally {
@@ -868,10 +877,10 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   public void dropModel(ModelConfig conf) throws OtmException {
-    ItqlHelper itql = ItqlStore.getItqlHelper(serverUri);
+    ItqlClient itql = ItqlStore.getItqlClient(serverUri, null);
     try {
-      itql.doUpdate("drop <" + conf.getUri() + ">;", null);
-      returnItqlHelper(serverUri, itql);
+      itql.doUpdate("drop <" + conf.getUri() + ">;");
+      returnItqlClient(serverUri, itql);
     } catch (Exception e) {
       throw new OtmException("Failed to drop model <" + conf.getUri() + ">", e);
     } finally {
@@ -883,14 +892,16 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   private static class ItqlStoreConnection implements Connection {
-    private final URI  serverUri;
-    private ItqlHelper itql;
+    private final URI            serverUri;
+    private final SessionFactory sf;
+    private       ItqlClient     itql;
 
-    public ItqlStoreConnection(URI serverUri) {
+    public ItqlStoreConnection(URI serverUri, SessionFactory sf) {
       this.serverUri = serverUri;
+      this.sf        = sf;
     }
 
-    public ItqlHelper getItqlHelper() {
+    public ItqlClient getItqlClient() {
       return itql;
     }
 
@@ -901,11 +912,11 @@ public class ItqlStore extends AbstractTripleStore {
         abort(false);
       }
 
-      itql = ItqlStore.getItqlHelper(serverUri);
+      itql = ItqlStore.getItqlClient(serverUri, sf.listAliases());
       try {
         itql.beginTxn("");
-      } catch (RemoteException re) {
-        throw new OtmException("error starting transaction", re);
+      } catch (IOException ioe) {
+        throw new OtmException("error starting transaction", ioe);
       }
     }
 
@@ -917,10 +928,10 @@ public class ItqlStore extends AbstractTripleStore {
 
       try {
         itql.commitTxn("");
-      } catch (RemoteException re) {
-        throw new OtmException("error committing transaction", re);
+      } catch (IOException ioe) {
+        throw new OtmException("error committing transaction", ioe);
       }
-      ItqlStore.returnItqlHelper(serverUri, itql);
+      ItqlStore.returnItqlClient(serverUri, itql);
       itql = null;
     }
 
@@ -936,19 +947,17 @@ public class ItqlStore extends AbstractTripleStore {
     private void abort(boolean throwEx) throws OtmException {
       try {
         itql.rollbackTxn("");
-        ItqlStore.returnItqlHelper(serverUri, itql);
+        ItqlStore.returnItqlClient(serverUri, itql);
         itql = null;
-      } catch (RemoteException re) {
+      } catch (IOException ioe) {
         if (throwEx)
-          throw new OtmException("error rolling back transaction", re);
+          throw new OtmException("error rolling back transaction", ioe);
         else
-          log.warn("Error during rollback", re);
+          log.warn("Error during rollback", ioe);
       } finally {
         if (itql != null) {
           try {
             itql.close();
-          } catch (RemoteException re) {
-            log.error("Failed to close connection after rollback failure", re);
           } finally {
             itql = null;
           }

@@ -18,8 +18,9 @@ import java.util.Map;
 import antlr.ASTFactory;
 import antlr.RecognitionException;
 
+import org.topazproject.mulgara.itql.AbstractAnswer;
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.mulgara.itql.AnswerSet.QueryAnswerSet;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.mapping.Mapper.MapperType;
@@ -231,33 +232,32 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
 
   /**
    */
-  public QueryAnswerSet initItqlResult(QueryAnswerSet qas, int col) throws OtmException {
+  public Answer initItqlResult(Answer qa, int col) throws OtmException {
     if (projCol < 0)
       projCol = col;
 
     if (col == projCol)
-      return qas;
+      return qa;
 
-    qas.beforeFirst();
     try {
-      indexes = buildRdfListOrder(qas, projCol);
+      qa.beforeFirst();
+      indexes = buildRdfListOrder(qa, projCol);
+
+      qa.beforeFirst();
+      return new RdfListAnswer(qa, projCol);
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
     }
-
-    qas.beforeFirst();
-    return new RdfListQueryAnswerSet(qas, projCol);
   }
 
-  private Map<String, Integer> buildRdfListOrder(QueryAnswerSet qas, int col)
-      throws AnswerException {
+  private Map<String, Integer> buildRdfListOrder(Answer qa, int col) throws AnswerException {
     Map<String, String>  fwd     = new HashMap<String, String>();
     Map<String, String>  rev     = new HashMap<String, String>();
     Map<String, Integer> indexes = new HashMap<String, Integer>();
 
-    while (qas.next()) {
-      String node = qas.getString(col);
-      String next = qas.getString(col + 1);
+    while (qa.next()) {
+      String node = qa.getString(col);
+      String next = qa.getString(col + 1);
       fwd.put(node, next);
       rev.put(next, node);
     }
@@ -276,8 +276,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
    * For multiple-predicate collections we just return the current row number; for RdfSeq/Bag/Alt 
    * we extract the index n directly from the predicate rdf:_&lt;n&gt;; for RdfList ...
    */
-  public Object getItqlResult(QueryAnswerSet qas, int row, int col, Results.Type type,
-                              boolean eager)
+  public Object getItqlResult(Answer qa, int row, int col, Results.Type type, boolean eager)
       throws OtmException, AnswerException {
     int idx;
 
@@ -290,11 +289,11 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
       case RDFSEQ:
       case RDFALT:
         // rdf:_<n> -> http://www.w3.org/1999/02/22-rdf-syntax-ns#_<n>
-        idx = Integer.parseInt(qas.getString(col).substring(44)) - 1;
+        idx = Integer.parseInt(qa.getString(col).substring(44)) - 1;
         break;
 
       case RDFLIST:
-        idx = indexes.get(qas.getString(col));
+        idx = indexes.get(qa.getString(col));
         break;
 
       case PREDICATE_MAP:
@@ -307,11 +306,11 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
     return new Results.Literal(Integer.toString(idx), null, URI.create(RET_TYPE.getDataType()));
   }
 
-  private static class RdfListQueryAnswerSet extends QueryAnswerSet {
-    private final QueryAnswerSet delegate;
-    private final int            pos;
+  private static class RdfListAnswer extends AbstractAnswer {
+    private final Answer delegate;
+    private final int    pos;
 
-    RdfListQueryAnswerSet(QueryAnswerSet delegate, int pos) {
+    RdfListAnswer(Answer delegate, int pos) {
       this.delegate = delegate;
       this.pos      = pos;
 
@@ -319,22 +318,24 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
       System.arraycopy(delegate.getVariables(), 0, vars, 0, pos + 1);
       if (pos < vars.length - 1)
         System.arraycopy(delegate.getVariables(), pos + 2, vars, pos + 1, vars.length - pos - 1);
+
       variables = vars;
+      message   = delegate.getMessage();
     }
 
     private int mapIndex(int idx) {
       return (idx > pos) ? idx + 1 : idx;
     }
 
-    public void beforeFirst() {
+    public void beforeFirst() throws AnswerException {
       delegate.beforeFirst();
     }
 
-    public boolean next() {
+    public boolean next() throws AnswerException {
       return delegate.next();
     }
 
-    public boolean isLiteral(int idx) {
+    public boolean isLiteral(int idx) throws AnswerException {
       return delegate.isLiteral(mapIndex(idx));
     }
 
@@ -350,7 +351,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
       return delegate.getString(mapIndex(idx));
     }
 
-    public boolean isURI(int idx) {
+    public boolean isURI(int idx) throws AnswerException {
       return delegate.isURI(mapIndex(idx));
     }
 
@@ -358,7 +359,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
       return delegate.getURI(mapIndex(idx));
     }
 
-    public boolean isBlankNode(int idx) {
+    public boolean isBlankNode(int idx) throws AnswerException {
       return delegate.isBlankNode(mapIndex(idx));
     }
 
@@ -366,11 +367,11 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
       return delegate.getBlankNode(mapIndex(idx));
     }
 
-    public boolean isSubQueryResults(int idx) {
+    public boolean isSubQueryResults(int idx) throws AnswerException {
       return delegate.isSubQueryResults(mapIndex(idx));
     }
 
-    public QueryAnswerSet getSubQueryResults(int idx) throws AnswerException {
+    public Answer getSubQueryResults(int idx) throws AnswerException {
       return delegate.getSubQueryResults(mapIndex(idx));
     }
   }

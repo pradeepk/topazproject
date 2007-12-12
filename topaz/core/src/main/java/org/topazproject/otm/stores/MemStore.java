@@ -26,6 +26,7 @@ import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
@@ -49,7 +50,7 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public Connection openConnection() {
+  public Connection openConnection(SessionFactory sf) {
     return new MemStoreConnection(storage);
   }
 

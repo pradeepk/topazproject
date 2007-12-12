@@ -7,93 +7,55 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
+
 package org.topazproject.mulgara.itql;
 
-import java.net.URISyntaxException;
-
-import org.jrdf.graph.GraphElementFactory;
-import org.jrdf.graph.GraphElementFactoryException;
-import org.jrdf.graph.GraphException;
-import org.jrdf.graph.mem.GraphImpl;
-
-import org.w3c.dom.Element;
+import java.net.URI;
 
 /** 
- * This provides some common help in parsing an answer to a set of iTQL commands.
+ * Partial implementation of an Answer that manages the list of variables. 
  * 
  * @author Ronald Tschalär
  */
-public abstract class AbstractAnswer {
-  protected static final String ANSWER     = "answer";
-  protected static final String QUERY      = "query";
-  protected static final String MESSAGE    = "message";
+public abstract class AbstractAnswer implements Answer {
+  /** The result message; should be assigned in the constructor and not changed after that. */
+  protected String   message;
+  /** The result variables; should be assigned in the constructor and not changed after that. */
+  protected String[] variables;
 
-  /** 
-   * Parse the given answer. This just invokes {@link #parseAnswer parseAnswer} with a new
-   * GraphElementFactory.
-   * 
-   * @param root the answer element to parse
-   * @param xml  the whole answer as an xml string; used for error messages only
-   * @throws AnswerException 
-   */
-  protected void parse(Element root, String xml) throws AnswerException {
-    try {
-      parseAnswer(root, new GraphImpl().getElementFactory());
-    } catch (URISyntaxException use) {
-      throw new AnswerException("Error parsing response: '" + xml + "'", use);
-    } catch (GraphElementFactoryException gefe) {
-      throw new AnswerException("Error parsing response: '" + xml + "'", gefe);
-    } catch (GraphException ge) {
-      throw new AnswerException("Error building answer: '" + xml + "'", ge);
-    }
+  public String getMessage() {
+    return message;
   }
 
-  /**
-   * Parse an answer. This has the following structure:
-   *
-   * <pre>
-   * &lt;answer xmlns="http://tucana.org/tql#"&gt;
-   *   &lt;query&gt;...&lt;/query&gt;
-   *   &lt;query&gt;...&lt;/query&gt;
-   *   ...
-   * &lt;/answer&gt;
-   * </pre>
-   */
-  protected void parseAnswer(Element ansElem, GraphElementFactory gef)
-      throws URISyntaxException, GraphElementFactoryException, AnswerException {
-    for (Element q = XmlHelper.getFirstChild(ansElem, QUERY); q != null;
-         q = XmlHelper.getNextSibling(q, QUERY)) {
-      Element first = XmlHelper.getFirstChild(q, "*");
-      if (first != null && first.getTagName().equals(MESSAGE))
-        parseMessage(XmlHelper.getText(first));
-      else
-        parseQueryAnswer(q, gef);
-    }
+  public String[] getVariables() {
+    return variables;
   }
 
-  /**
-   * Parse an answer to a single query command. The structure is
-   *
-   * <pre>
-   *   &lt;query&gt;
-   *     &lt;variables&gt;...&lt;/variables&gt;
-   *     &lt;solution&gt;...&lt;/solution&gt;
-   *     &lt;solution&gt;...&lt;/solution&gt;
-   *     ...
-   *   &lt;/query&gt;
-   * </pre>
-   */
-  protected abstract void parseQueryAnswer(Element query, GraphElementFactory gef)
-      throws URISyntaxException, GraphElementFactoryException, AnswerException;
+  public int indexOf(String var) {
+    if (variables == null)
+      return -1;
 
-  /**
-   * Parse an answer to a single non-query command. The structure is
-   *
-   * <pre>
-   *   &lt;query&gt;
-   *     &lt;message&gt;blah blah&lt;/message&gt;
-   *   &lt;/query&gt;
-   * </pre>
-   */
-  protected abstract void parseMessage(String msg) throws AnswerException;
+    for (int idx = 0; idx < variables.length; idx++) {
+      if (variables[idx].equals(var))
+        return idx;
+    }
+
+    return -1;
+  }
+
+  public String getString(String  var) throws AnswerException {
+    return getString(indexOf(var));
+  }
+
+  public URI getURI(String var) throws AnswerException {
+    return getURI(indexOf(var));
+  }
+
+  public String getBlankNode(String var) throws AnswerException {
+    return getBlankNode(indexOf(var));
+  }
+
+  public Answer getSubQueryResults(String var) throws AnswerException {
+    return getSubQueryResults(indexOf(var));
+  }
 }

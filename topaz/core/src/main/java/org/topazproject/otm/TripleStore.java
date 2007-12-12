@@ -26,11 +26,13 @@ public interface TripleStore {
   /**
    * Opens a connection to the store.
    *
+   * @param sf  the session factory
+   *
    * @return the connection
    *
    * @throws OtmException on an error
    */
-  public Connection openConnection() throws OtmException;
+  public Connection openConnection(SessionFactory sf) throws OtmException;
 
   /**
    * Closes a previously opened connection.

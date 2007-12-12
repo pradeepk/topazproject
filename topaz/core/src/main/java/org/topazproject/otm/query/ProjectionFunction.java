@@ -12,8 +12,8 @@ package org.topazproject.otm.query;
 
 import java.util.List;
 
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.mulgara.itql.AnswerSet.QueryAnswerSet;
 import org.topazproject.otm.OtmException;
 
 /** 
@@ -52,8 +52,8 @@ public interface ProjectionFunction extends QueryFunction {
    */
   List<Object> initTypes(List<Object> types, int col) throws OtmException;
 
-  QueryAnswerSet initItqlResult(QueryAnswerSet qas, int col) throws OtmException;
+  Answer initItqlResult(Answer qa, int col) throws OtmException;
 
-  Object getItqlResult(QueryAnswerSet qas, int row, int col, Results.Type type, boolean eager)
+  Object getItqlResult(Answer qa, int row, int col, Results.Type type, boolean eager)
     throws OtmException, AnswerException;
 }

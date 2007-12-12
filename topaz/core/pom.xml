@@ -47,6 +47,11 @@
       <artifactId>testng</artifactId>
       <classifier>jdk15</classifier>
     </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

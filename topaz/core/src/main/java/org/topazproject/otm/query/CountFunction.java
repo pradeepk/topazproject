@@ -16,7 +16,7 @@ import antlr.ASTFactory;
 import antlr.RecognitionException;
 import antlr.collections.AST;
 
-import org.topazproject.mulgara.itql.AnswerSet.QueryAnswerSet;
+import org.topazproject.mulgara.itql.Answer;
 
 /** 
  * @author Ronald Tschalär
@@ -78,12 +78,11 @@ class CountFunction implements ProjectionFunction, ConstraintsTokenTypes {
     return types;
   }
 
-  public QueryAnswerSet initItqlResult(QueryAnswerSet qas, int col) {
-    return qas;
+  public Answer initItqlResult(Answer qa, int col) {
+    return qa;
   }
 
-  public Object getItqlResult(QueryAnswerSet qas, int row, int col, Results.Type type,
-                              boolean eager) {
+  public Object getItqlResult(Answer qa, int row, int col, Results.Type type, boolean eager) {
     return null;
   }
 }

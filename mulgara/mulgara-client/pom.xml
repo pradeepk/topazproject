@@ -14,13 +14,26 @@
 
   <dependencies>
     <dependency>
+      <!-- only needed if you use soap-client -->
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
+      <optional>true</optional>
     </dependency>
+    <!--
     <dependency>
-      <groupId>org.jrdf</groupId>
-      <artifactId>jrdf</artifactId>
-      <version>0.3.4</version>
+      <!- only needed if you use rmi-client but mulgara is not included ->
+      <groupId>org.mulgara</groupId>
+      <artifactId>driver</artifactId>
+      <version>1.0.1-t5</version>
+      <optional>true</optional>
+    </dependency>
+    -->
+    <dependency>
+      <!-- only needed if you use embedded-client -->
+      <groupId>org.mulgara</groupId>
+      <artifactId>mulgara</artifactId>
+      <version>1.0.1-t5</version>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -45,7 +58,7 @@
           <dependency>
             <groupId>org.mulgara</groupId>
             <artifactId>mulgara</artifactId>
-            <version>1.0.1-t1</version>
+            <version>1.0.1-t5</version>
             <scope>provided</scope>
           </dependency>
           <dependency>

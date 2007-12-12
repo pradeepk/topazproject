@@ -50,7 +50,7 @@ class TransactionImpl implements Transaction {
     if (conn != null)
       return conn;
 
-    conn = session.getSessionFactory().getTripleStore().openConnection();
+    conn = session.getSessionFactory().getTripleStore().openConnection(session.getSessionFactory());
     conn.beginTransaction();
 
     return conn;

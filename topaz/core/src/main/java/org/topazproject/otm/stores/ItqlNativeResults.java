@@ -12,8 +12,8 @@ package org.topazproject.otm.stores;
 
 import java.util.Arrays;
 
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 
@@ -23,19 +23,15 @@ import org.topazproject.otm.Session;
  * @author Pradeep Krishnan
  */
 class ItqlNativeResults extends ItqlResults {
-  private ItqlNativeResults(AnswerSet.QueryAnswerSet qas, Session sess) throws OtmException {
-    super(qas.getVariables(), getTypes(qas.getVariables()), qas, null, sess);
-  }
-
   /** 
    * Create a new native-itql-query results object. 
    * 
-   * @param a    the xml answer
+   * @param qa   the query answer
    * @param sess the session this is attached to
    * @throws OtmException 
    */
-  public ItqlNativeResults(String a, Session sess) throws OtmException {
-    this(getQAS(a), sess);
+  public ItqlNativeResults(Answer qa, Session sess) throws OtmException {
+    super(qa.getVariables(), getTypes(qa.getVariables()), qa, null, sess);
   }
 
   private static Type[] getTypes(String[] variables) {
@@ -49,7 +45,7 @@ class ItqlNativeResults extends ItqlResults {
       throws OtmException, AnswerException {
     switch (type) {
       case SUBQ_RESULTS:
-        return new ItqlNativeResults(qas.getSubQueryResults(idx), sess);
+        return new ItqlNativeResults(qa.getSubQueryResults(idx), sess);
 
       default:
         return super.getResult(idx, type, eager);

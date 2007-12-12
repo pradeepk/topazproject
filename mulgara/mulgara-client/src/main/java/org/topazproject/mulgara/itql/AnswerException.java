@@ -33,4 +33,13 @@ public class AnswerException extends Exception {
   public AnswerException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
+  /** 
+   * Create a new instance from the underlying exception. 
+   * 
+   * @param cause the cause for this exception
+   */
+  public AnswerException(Throwable cause) {
+    super(cause);
+  }
 }

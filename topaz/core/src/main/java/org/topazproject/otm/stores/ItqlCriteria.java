@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.mulgara.itql.AnswerSet;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
@@ -253,26 +253,21 @@ public class ItqlCriteria {
    *
    * @throws OtmException on an error
    */
-  List createResults(String a) throws OtmException {
+  List createResults(List<Answer> ans) throws OtmException {
     // parse
     List          results = new ArrayList();
     ClassMetadata cm      = criteria.getClassMetadata();
 
     try {
-      AnswerSet ans = new AnswerSet(a);
-
       // check if we got something useful
-      ans.beforeFirst();
-
-      if (!ans.next())
+      if (ans.isEmpty())
         return Collections.emptyList();
 
-      if (!ans.isQueryResult())
-        throw new OtmException("query failed: " + ans.getMessage());
+      Answer qa = ans.get(0);
+      if (qa.getVariables() == null)
+        throw new OtmException("query failed: " + qa.getMessage());
 
       // go through the rows and build the results
-      AnswerSet.QueryAnswerSet qa = ans.getQueryResults();
-
       qa.beforeFirst();
 
       while (qa.next()) {
