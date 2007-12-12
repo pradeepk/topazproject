@@ -8,7 +8,6 @@
  * http://opensource.org/licenses/ecl1.php
  */
 import org.topazproject.interpreter.Answer;
-import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.ModelConfig;
@@ -63,14 +62,10 @@ if (verbose) {
   println "Mulgara URI: $mulgaraUri"
 }
 
-// Globals
-itql = new ItqlHelper(new URI(mulgaraUri))
-aliases = itql.getDefaultAliases()
-
 metamodel = "local:///topazproject#metadata"
 
-factory = new SessionFactoryImpl()
-factory.setTripleStore(new ItqlStore(URI.create(mulgaraUri)))
+factory = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
+aliases = itql.listAliases()
 factory.addModel(new ModelConfig("metadata", URI.create(metamodel), null))
 factory.preload(OwlClass.class)
 factory.preload(ObjectProperty.class)
