@@ -7,8 +7,9 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-import org.topazproject.mulgara.itql.ItqlHelper;
-import org.topazproject.xml.transform.cache.CachedSource;
+
+import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.stores.ItqlStore;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 
@@ -46,9 +47,10 @@ if (verbose) {
   println "Mulgara URI: $mulgaraUri"
 }
 
-itql = new ItqlHelper(new URI(mulgaraUri))
-def aliases = ItqlHelper.getDefaultAliases()
-aliases['foaf'] = "http://xmlns.com/foaf/0.1/"
+sf = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
+sf.addAlias('foaf', 'http://xmlns.com/foaf/0.1/')
+sess = sf.openSession()
+sess.beginTransaction()
 
 query = """
   select \$user \$email
@@ -68,29 +70,29 @@ query = """
 if (verbose)
   println "Query: $query"
 
-// Get an XmlSlurper object and use our resolver (without resolver, parsing takes forever)
-def slurper = new XmlSlurper()
-slurper.setEntityResolver(CachedSource.getResolver())
-
 def offset = 0
 
 while (true)
 {
-  def results = itql.doQuery("$query limit $LIMIT offset $offset;", aliases);
+  def results = sess.doNativeQuery("$query limit $LIMIT offset $offset;");
   if (verbose)
     println "Results: $results"
 
-  def ans = new XmlSlurper().parseText(results)
-  ans.query[0].solution.each() {
-    def email = it.email.'@resource'.toString().substring(7)
-    def itemList = it.k0.solution.item.list()
-    if (itemList) {
-      def items = itemList.toString()[1..-2]
-      println """\"$email", "$items\""""
-    }
+  boolean gotSomething = false
+  while (results.next()) {
+    def email = results.getString('email').substring(7)
+    def items = results.getSubQueryResults('k0')
+    def itemList = []
+    while (items.next())
+      itemList << items.getString('item')
+    if (itemList)
+      println """\"$email", "${itemList.toString()[1..-2]}\""""
+    gotSomething = true
   }
 
-  if (ans.query[0].solution.size() == 0 || offset >= MAX)
+  if (!gotSomething || offset >= MAX)
     break
   offset += LIMIT
 }
+
+sess.close()

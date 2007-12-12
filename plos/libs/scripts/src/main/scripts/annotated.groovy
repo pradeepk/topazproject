@@ -7,7 +7,9 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-import org.topazproject.mulgara.itql.ItqlHelper;
+
+import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -52,9 +54,10 @@ RI_MODEL='<local:///topazproject#ri>'
 STR_MODEL='<local:///topazproject#str>'
 DATETIME='<http://www.w3.org/2001/XMLSchema#dateTime>'
 
-itql = new ItqlHelper(new URI(mulgaraUri))
-def aliases = ItqlHelper.getDefaultAliases()
-aliases['a'] = 'http://www.w3.org/2000/10/annotation-ns#'
+sf = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
+sf.addAlias('a', 'http://www.w3.org/2000/10/annotation-ns#')
+sess = sf.openSession()
+sess.beginTransaction()
 
 restrict = ""
 if (opt.s) {
@@ -67,9 +70,7 @@ if (opt.e) {
 }
 
 query = """
-  select \$article
-    subquery(select \$article \$title from ${RI_MODEL}
-             where \$article <dc:title> \$title)
+  select \$article \$title
     count(select \$ann from ${RI_MODEL}
           where (     \$ann <rdf:type> <a:Annotation>
                   and \$ann <a:annotates> \$article
@@ -81,13 +82,14 @@ query = """
       and \$s <a:annotates> \$article
       and \$s <a:created> \$created
       and \$article <rdf:type> <topaz:Article>
+      and \$article <dc:title> \$title
       ${restrict}
 """
 
 if (verbose)
   println "Query: $query"
 
-def results = itql.doQuery(query + ";", aliases);
+def results = sess.doNativeQuery(query + ";");
 if (verbose)
   println "Results: $results"
 
@@ -96,11 +98,10 @@ def slurper = new XmlSlurper()
 slurper.setEntityResolver(CachedSource.getResolver())
 
 if (verbose)
-	println "article, title, author(s), count"
-def ans = new XmlSlurper().parseText(results)
-ans.query[0].solution.each() {
+  println "article, title, author(s), count"
+while (results.next()) {
   // Get article DOI from mulgara answer and convert to fedora URL
-  String doi = it.article.'@resource'
+  String doi = results.getString('article')
   def articleUrl = "$fedoraUri/doi:${URLEncoder.encode(doi.substring(9))}/XML"
 
   // Parse article and get list of authors into a string
@@ -109,10 +110,12 @@ ans.query[0].solution.each() {
   def authorList = article.front.'article-meta'.'author-notes'.corresp.email.list()
   if (authorList) authors = authorList.toString()[1..-2] // String of comma-separated emails
 
-  def title = it.k0.solution.title.text()
+  def title = results.getString('title')
   title = title.replaceAll(/<.*?>/) { it = " " }
   title = title.replaceAll(/\s{1,}/) { it = " " }
 
   // Dump out one of the articles we found as a line of tab separated data
-  println """${it.article.'@resource'}\t${title}\t$authors\t${it.k1}"""
+  println "${doi}\t${title}\t$authors\t${results.getString('k0')}"
 }
+
+sess.close()
