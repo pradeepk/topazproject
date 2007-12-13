@@ -11,7 +11,7 @@
 package org.topazproject.mulgara.itql;
 
 import java.io.IOException;
-
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -131,11 +131,17 @@ abstract class IIBClient implements ItqlClient {
   }
 
   public void setAliases(Map<String, String> aliases) {
-    iib.setAliasMap(aliases instanceof HashMap ? (HashMap) aliases : new HashMap(aliases));
+    HashMap a = new HashMap();
+    for (Map.Entry<String, String> e : aliases.entrySet())
+      a.put(e.getKey(), URI.create(e.getValue()));
+    iib.setAliasMap(a);
   }
 
   public Map<String, String> getAliases() {
-    return (Map<String, String>) iib.getAliasMap();
+    Map<String, String> a = new HashMap<String, String>();
+    for (Map.Entry<String, URI> e : ((Map<String, URI>) iib.getAliasMap()).entrySet())
+      a.put(e.getKey(), e.getValue().toString());
+    return a;
   }
 
   public Exception getLastError() {
