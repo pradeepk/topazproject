@@ -108,8 +108,11 @@ class AnswerAnswer extends AbstractAnswer {
       throw new AnswerException(te);
     }
 
-    if (o instanceof Literal)
-      return ((Literal) o).getLanguage();
+    if (o instanceof Literal) {
+      String lang = ((Literal) o).getLanguage();
+      return (lang != null && lang.length() > 0) ? lang : null;
+    }
+
     throw new AnswerException("is not a Literal");
   }
 
