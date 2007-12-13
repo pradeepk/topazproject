@@ -285,7 +285,7 @@ public class ClassDef {
 
       case "Date":
         if (val instanceof Date) {
-          return "new Date('${val}')"
+          return "new Date(${val.getTime()}L)"
         } else {
           try {
             val.toLong();
