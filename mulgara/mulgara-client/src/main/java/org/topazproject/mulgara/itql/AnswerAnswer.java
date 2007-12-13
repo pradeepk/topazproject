@@ -92,8 +92,11 @@ class AnswerAnswer extends AbstractAnswer {
       throw new AnswerException(te);
     }
 
-    if (o instanceof Literal)
-      return ((Literal) o).getDatatypeURI().toString();
+    if (o instanceof Literal) {
+      URI dt = ((Literal) o).getDatatypeURI();
+      return (dt != null) ? dt.toString() : null;
+    }
+
     throw new AnswerException("is not a Literal");
   }
 
