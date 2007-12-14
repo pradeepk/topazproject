@@ -55,8 +55,10 @@
       <@s.url id="imageLgURL" action="slideshow" namespace="/article" uri="${issueInfo.imageArticle}" imageURI="${issueInfo.imageArticle}.g001" includeParams="none"/>
       <div id="issueImage">
         <div id="thumbnail">
-          <img alt="Issue Image" src="${imageSmURL}"/>
-          <a href="${imageLgURL}">View large image</a>
+          <a href="${imageLgURL}">
+	  <img alt="Issue Image" src="${imageSmURL}"/>
+	  View large image
+	  </a>
         </div>
         <h3>About This Image</h3>
         ${issueInfo.description}
