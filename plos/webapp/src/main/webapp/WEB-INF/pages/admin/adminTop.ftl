@@ -3,41 +3,21 @@
     <title>PLoS ONE: Administration</title>
   </head>
   <body>
+    <h1 style="text-align: center">PLoS ONE: Administration</h1>
 
-    <h1>PLoS ONE: Administration</h1>
-    <fieldset>
-      <legend><b>Messages</b></legend>
-      <p>
-        <#list actionMessages as message>
-          ${message} <br/>
-        </#list>
-      </p>
-    </fieldset>
-    <br/>
+    <@s.url id="editAnnotation" namespace="/admin" action="editAnnotation"/>
+    <@s.url id="findUserURL" namespace="/admin" action="findUser" />
+    <@s.url id="manageVirtualJournalsURL" namespace="/admin" action="manageVirtualJournals" />
+    <@s.url id="manageCaches" namespace="/admin" action="manageCaches" />
+    <p style="text-align: right">
+      <@s.a href="${editAnnotation}">Edit Annotation</@s.a>&nbsp;|&nbsp;
+      <@s.a href="%{findUserURL}">Find User</@s.a>&nbsp;|&nbsp;
+      <@s.a href="%{manageVirtualJournalsURL}">Manage Virtual Journals</@s.a>&nbsp;|&nbsp;
+      <@s.a href="%{manageCaches}">Manage Caches</@s.a>
+    </p>
+    <hr/>
 
-    <fieldset>
-      <legend><b>Actions</b></legend>
-      <table border="1" cellpadding="2" cellspacing="0">
-        <tr>
-          <td>
-            <@s.url id="editAnnotation" namespace="/admin" action="editAnnotation"/>
-            <@s.a href="${editAnnotation}">Edit Annotation</@s.a>
-          </td>
-          <td>
-            <@s.url id="findUserURL" namespace="/admin" action="findUser" />
-            <@s.a href="%{findUserURL}">Find User</@s.a>
-          </td>
-          <td>
-            <@s.url id="manageVirtualJournalsURL" namespace="/admin" action="manageVirtualJournals" />
-            <@s.a href="%{manageVirtualJournalsURL}">Manage Virtual Journals</@s.a>
-          </td>
-          <td>
-            <@s.url id="manageCaches" namespace="/admin" action="manageCaches" />
-            <@s.a href="%{manageCaches}">Manage Caches</@s.a>
-          </td>
-        </tr>
-      </table>
-    </fieldset>
+    <#include "templates/messages.ftl">
 
     <fieldset>
       <legend><b>Ingestable Archives</b></legend>
@@ -120,13 +100,13 @@
       </@s.form>
       <br/>
     </fieldset>
-    
+
     <fieldset>
       <legend><b>Misc Admin Utils</b></legend>
       <@s.form name="deleteArticle" action="deleteArticle" method="get" namespace="/admin">
         <@s.textfield label="ArticleDoi" name="article" size="80"/>&nbsp;<@s.submit value="Delete"/>
       </@s.form>
     </fieldset>
-    
+
   </body>
 </html>

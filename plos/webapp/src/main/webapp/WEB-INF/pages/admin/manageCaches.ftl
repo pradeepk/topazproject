@@ -1,29 +1,19 @@
 <html>
   <head>
-    <title>PLoS ONE: Administration: Cache Stats</title>
+    <title>PLoS ONE: Administration: Manage Caches</title>
   </head>
   <body>
-    <h1>PLoS ONE: Administration: Cache Stats</h1>
+    <h1 style="text-align: center">PLoS ONE: Administration: Manage Caches</h1>
 
     <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
-    <p style="text-align: right">Return to <@s.a href="${adminTop}">Admin Top</@s.a></p>
-    <br />
-    <hr />
+    <p style="text-align: right">
+      <@s.a href="${adminTop}">Admin Top</@s.a>
+    </p>
+    <hr/>
 
-    <#if actionMessages?has_content> 
-      <fieldset>
-        <legend><b>Messages</b></legend>
-        <p>
-          <#list actionMessages as message>
-            ${message} <br/>
-          </#list>
-        </p>
-      </fieldset>
-      <br/>
-      <hr/>
-    </#if>
+    <#include "templates/messages.ftl">
 
-    <#if cacheKeys?has_content> 
+    <#if cacheKeys?has_content>
       <fieldset>
         <legend><b>${cacheName}</b> Keys</legend>
         <p>

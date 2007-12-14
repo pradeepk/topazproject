@@ -3,25 +3,15 @@
     <title>PLoS ONE: Administration: Edit Annotation</title>
   </head>
   <body>
-    <h1>PLoS ONE: Administration: Edit Annotation</h1>
+    <h1 style="text-align: center">PLoS ONE: Administration: Edit Annotation</h1>
 
     <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
-    <p style="text-align: right">Return to <@s.a href="${adminTop}">Admin Top</@s.a></p>
-    <br />
+    <p style="text-align: right">
+      <@s.a href="${adminTop}">Admin Top</@s.a>
+    </p>
+    <hr/>
 
-    <hr />
-
-    <fieldset>
-      <legend><b>Messages</b></legend>
-      <p>
-        <#list actionMessages as message>
-          ${message} <br/>
-        </#list>
-      </p>
-    </fieldset>
-    <br />
-
-    <hr />
+    <#include "templates/messages.ftl">
 
     <fieldset>
       <legend>Load Annotation</legend>

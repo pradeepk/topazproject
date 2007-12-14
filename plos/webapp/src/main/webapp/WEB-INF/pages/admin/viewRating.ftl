@@ -10,11 +10,21 @@
 </#if>
 <html>
   <head>
-    <title>Rating details</title>
+    <title>PLoS ONE: Administration: Rating Details</title>
   </head>
   <body>
+    <h1 style="text-align: center">PLoS ONE: Administration: Rating Details</h1>
+
+    <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
+    <p style="text-align: right">
+      <@s.a href="${adminTop}">Admin Top</@s.a>
+    </p>
+    <hr />
+
+    <#include "templates/messages.ftl">
+
     <fieldset>
-      <legend><b>Rating details</b></legend>
+      <legend><b>Rating Details</b></legend>
       <table width="100%">
         <tr><td width="100px">&nbsp;</td><td/></tr>
         <tr><td>Id</td><td>${rating.body.id}</td></tr>

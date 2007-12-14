@@ -16,29 +16,17 @@
     <title>PLoS ONE: Administration: Manage Virtual Journals : Volumes / Issues</title>
   </head>
   <body>
-    <h1>PLoS ONE: Administration: Manage Virtual Journals : Volumes / Issues</h1>
+    <h1 style="text-align: center">PLoS ONE: Administration: Manage Virtual Journals : Volumes / Issues</h1>
 
     <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
     <@s.url id="manageVirtualJournals" namespace="/admin" action="manageVirtualJournals"/>
     <p style="text-align: right">
-      Return to <@s.a href="${adminTop}">Admin Top</@s.a>,
+      <@s.a href="${adminTop}">Admin Top</@s.a>&nbsp;|&nbsp;
       <@s.a href="${manageVirtualJournals}">Manage Virtual Journals</@s.a>
     </p>
-    <br />
-
     <hr />
 
-    <fieldset>
-      <legend><b>Messages</b></legend>
-      <p>
-        <#list actionMessages as message>
-          ${message} <br/>
-        </#list>
-      </p>
-    </fieldset>
-    <br />
-
-    <hr />
+    <#include "templates/messages.ftl">
 
     <h2>${journal.key} (${journal.getEIssn()!""})</h2>
 
