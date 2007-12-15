@@ -22,47 +22,13 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = PLoS.plos + "Issue", model = "ri")
 public class Issue extends Aggregation {
 
-  /** Journal's eIssn. */
-  @Predicate(uri = PLoS.plos + "Issue/journal")
-  private String journal;
-
-  /** Volume's DOI */
-  @Predicate(uri = PLoS.plos + "Issue/volume")
-  private URI volume;
-
   /** Display name.  Human friendly. */
-  @Predicate(uri = PLoS.plos + "Issue/displayName")
+  @Predicate(uri = PLoS.plos + "displayName")
   private String displayName;
 
-  /** Previous Issue's DOI */
-  @Predicate(uri = PLoS.plos + "Issue/prevIssue")
-  private URI prevIssue;
-
-  /** Next Issue's DOI */
-  @Predicate(uri = PLoS.plos + "Issue/nextIssue")
-  private URI nextIssue;
-
   /** Arbitrary URI to an image */
-  @Predicate(uri = PLoS.plos + "Issue/image")
+  @Predicate(uri = PLoS.plos + "image")
   private URI image;
-
-  /**
-   * Get the Journal (eIssn) for this Issue.
-   *
-   * @return the Journal (eIssn).
-   */
-  public String getJournal() {
-    return journal;
-  }
-
-  /**
-   * Set the Journal (eIssn) for this Issue.
-   *
-   * @param journal the Journal (eIssn).
-   */
-  public void setJournal(String journal) {
-    this.journal = journal;
-  }
 
   /**
    * Get the image for this Issue.
@@ -82,25 +48,6 @@ public class Issue extends Aggregation {
     this.image = image;
   }
 
-  /**
-   * Get the Volume's DOI for this Issue.
-   *
-   * @return the Volume's DOI.
-   */
-  public URI getVolume() {
-    return volume;
-  }
-
-  /**
-   * Set the Volume's DOI for this Issue.
-   *
-   * The DOI is arbitrary, treated as opaque and encouraged to be human friendly.
-   *
-   * @param volume the Volume's DOI.
-   */
-  public void setVolume(URI volume) {
-    this.volume = volume;
-  }
 
   /**
    * Get the display name for this Issue.
@@ -123,51 +70,16 @@ public class Issue extends Aggregation {
   }
 
   /**
-   * Get the previous Issue's DOI for this Issue.
-   *
-   * @return the previous Issue's DOI, may be null.
+   * String representation for debugging.
+   * 
+   * @return String representation for debugging.
    */
-  public URI getPrevIssue() {
-    return prevIssue;
-  }
-
-  /**
-   * Set the previous Issue's DOI for this Issue.
-   *
-   * The DOI is arbitrary, treated as opaque and encouraged to be human friendly.
-   *
-   * @param prevIssue the previous Issue's DOI, may be null.
-   */
-  public void setPrevIssue(URI prevIssue) {
-    this.prevIssue = prevIssue;
-  }
-
-  /**
-   * Get the next Issue's DOI for this Issue.
-   *
-   * @return the next Issue's DOI, may be null.
-   */
-  public URI getNextIssue() {
-    return nextIssue;
-  }
-
-  /**
-   * Set the next Issue's DOI for this Issue.
-   *
-   * The DOI is arbitrary, treated as opaque and encouraged to be human friendly.
-   *
-   * @param nextIssue the next Issue's DOI, may be null.
-   */
-  public void setNextIssue(URI nextIssue) {
-    this.nextIssue = nextIssue;
-  }
-
-  /**
-   * String representation of an Issue for debugging.
-   */
+  @Override
   public String toString() {
-    return this.getClass().getName() + ", doi: " + getId() + ", display name: " + displayName
-      + ", journal: " + journal + ", volume: " + volume + ", image: " + image
-      + ", nextIssue: " + nextIssue + ", prevIssue: " + prevIssue;
+    return "Issue: ["
+            + "displayName: " + getDisplayName()
+            + ", image: " + getImage()
+            + ", " + super.toString()
+            + "]";
   }
 }

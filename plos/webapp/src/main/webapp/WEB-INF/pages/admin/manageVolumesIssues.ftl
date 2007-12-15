@@ -39,8 +39,6 @@
 
         <@s.hidden name="journalKey" label="Journal Key" required="true"
           value="${journal.key}"/>
-        <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
-          value="${journal.getEIssn()}"/>
         <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
           value="CREATE_VOLUME"/>
 
@@ -56,14 +54,6 @@
           <tr>
             <th align="right">Image Article (DOI)</th>
             <td><@s.textfield name="image" size="72"/></td>
-          </tr>
-          <tr>
-            <th align="right">Previous Volume (Id)</th>
-            <td><@s.textfield name="prev" size="72"/></td>
-          </tr>
-          <tr>
-            <th align="right">Next Volume (Id)</th>
-            <td><@s.textfield name="next" size="72"/></td>
           </tr>
           <tr>
             <th align="right">Issues</th>
@@ -86,8 +76,6 @@
             <th>Id</th>
             <th>Display Name</th>
             <th>Image</th>
-            <th>Previous</th>
-            <th>Next</th>
             <th>Issues</th>
           </tr>
           <#list volumes as volume>
@@ -98,8 +86,6 @@
 
                 <@s.hidden name="journalKey" label="Journal Key" required="true"
                   value="${journal.key}"/>
-                <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
-                  value="${journal.getEIssn()}"/>
                 <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
                   value="UPDATE_VOLUME"/>
 
@@ -127,12 +113,6 @@
                   <@s.textfield name="image" size="32" value="${volume.image!''}"/>
                 </td>
                 <td>
-                  <@s.textfield name="prev" size="32" value="${volume.prevVolume!''}"/>
-                </td>
-                <td>
-                  <@s.textfield name="next" size="32" value="${volume.nextVolume!''}"/>
-                </td>
-                <td>
                   <@trimBrackets volume.simpleCollection!'' />
                   <@s.textfield name="aggregation" size="96"
                     value="${unbracketedString}"/>
@@ -152,8 +132,6 @@
 
         <@s.hidden name="journalKey" label="Journal Key" required="true"
           value="${journal.key}"/>
-        <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
-          value="${journal.getEIssn()}"/>
         <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
           value="CREATE_ISSUE"/>
 
@@ -173,14 +151,6 @@
           <tr>
             <th align="right">Image Article (DOI)</th>
             <td><@s.textfield name="image" size="72"/></td>
-          </tr>
-          <tr>
-            <th align="right">Previous Issue (Id)</th>
-            <td><@s.textfield name="prev" size="72"/></td>
-          </tr>
-          <tr>
-            <th align="right">Next Issue (Id)</th>
-            <td><@s.textfield name="next" size="72"/></td>
           </tr>
           <tr>
             <th align="right">Articles</th>
@@ -203,8 +173,6 @@
           <th>Display Name</th>
           <th>Volume</th>
           <th>Image</th>
-          <th>Previous</th>
-          <th>Next</th>
           <th>Articles</th>
         </tr>
         <#list issues as issue>
@@ -215,8 +183,6 @@
 
               <@s.hidden name="journalKey" label="Journal Key" required="true"
                 value="${journal.key}"/>
-              <@s.hidden name="journalEIssn" label="Journal eIssn" required="true"
-                value="${journal.getEIssn()}"/>
               <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
                 value="UPDATE_ISSUE"/>
 
@@ -245,12 +211,6 @@
               </td>
               <td>
                 <@s.textfield name="image" size="32" value="${issue.image!''}"/>
-              </td>
-              <td>
-                <@s.textfield name="prev" size="32" value="${issue.prevIssue!''}"/>
-              </td>
-              <td>
-                <@s.textfield name="next" size="32" value="${issue.nextIssue!''}"/>
               </td>
               <td>
                 <@trimBrackets issue.simpleCollection!'' />

@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
-import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.util.TransactionHelper;
 
 /**
@@ -46,17 +45,14 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private static final String SEPARATORS = "[ ,;]";
 
   private String journalKey;
-  private String journalEIssn;
   private String manageVolumesIssuesAction;
   private Journal journal;
   private URI volume;
-  private List<Volume> volumes;
-  private List<Issue> issues;
+  private List<Volume> volumes = new ArrayList();
+  private List<Issue> issues = new ArrayList();
   private URI doi;
   private String displayName;
   private URI image;
-  private URI prev;
-  private URI next;
   private String aggregation;
   private URI aggregationToDelete;
 
@@ -68,6 +64,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   /**
    * Manage Volumes/Issues.  Display Volumes/Issues and processes all adds/modifications/deletes.
    */
+  @Override
   public String execute() throws Exception  {
 
     if (log.isDebugEnabled()) {
@@ -101,20 +98,39 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
             return null;
           }
 
-          // get Issues for this Journal
-          issues = session.createCriteria(Issue.class)
-                      .add(Restrictions.eq("journal", journal.getEIssn()))
-                      .list();
-          if (log.isDebugEnabled()) {
-            log.debug(issues.size() + " Issue(s) for Journal " + journal.getEIssn());
-          }
-
           // get Volumes for this Journal
-          volumes = session.createCriteria(Volume.class)
-                      .add(Restrictions.eq("journal", journal.getEIssn()))
-                      .list();
+          volumes.clear();
+          for (final URI volumeDoi : journal.getVolumes()) {
+            final Volume volume = session.get(Volume.class, volumeDoi.toString());
+            if (volume != null) {
+                volumes.add(volume);
+            } else {
+              final String errorMessage = "Error getting volume: " + volumeDoi;
+              addActionMessage(errorMessage);
+              log.error(errorMessage);
+            }
+          }
           if (log.isDebugEnabled()) {
             log.debug(volumes.size() + " Volume(s) for Journal " + journal.getEIssn());
+          }
+
+          // get Issues for this Journal
+          issues.clear();
+          for (final Volume volume : volumes) {
+            for (final URI issueDoi : volume.getSimpleCollection()) {
+              final Issue issue = session.get(Issue.class, issueDoi.toString());
+                if (issue != null) {
+                    issues.add(issue);
+                } else {
+                  final String errorMessage = "Error getting issue: " + issueDoi;
+                  addActionMessage(errorMessage);
+                  log.error(errorMessage);
+                }
+            }
+          }
+          if (log.isDebugEnabled()) {
+            log.debug(volumes.size() + " Volume(s), " + issues.size() + " Issue(s) for Journal "
+                    + journal.getEIssn());
           }
 
           return null;
@@ -149,11 +165,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           DublinCore newDublinCore = new DublinCore();
           newDublinCore.setCreated(new Date());
           newVolume.setDublinCore(newDublinCore);
-          newVolume.setJournal(journalEIssn);
           newVolume.setDisplayName(displayName);
           newVolume.setImage(image);
-          newVolume.setPrevVolume(prev);
-          newVolume.setNextVolume(next);
 
           // process Issues
           if (aggregation != null && aggregation.length() != 0) {
@@ -202,8 +215,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           // assume updating the Volume
           volume.setDisplayName(displayName);
           volume.setImage(image);
-          volume.setNextVolume(next);
-          volume.setPrevVolume(prev);
 
           // process Issues
           List<URI> volumeIssues = new ArrayList();
@@ -250,12 +261,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           DublinCore newDublinCore = new DublinCore();
           newDublinCore.setCreated(new Date());
           newIssue.setDublinCore(newDublinCore);
-          newIssue.setJournal(journalEIssn);
-          newIssue.setVolume(volume);
           newIssue.setDisplayName(displayName);
           newIssue.setImage(image);
-          newIssue.setPrevIssue(prev);
-          newIssue.setNextIssue(next);
 
           // process Articles
           if (aggregation != null && aggregation.length() != 0) {
@@ -303,10 +310,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
           // assume updating the Issue
           issue.setDisplayName(displayName);
-          issue.setVolume(volume);
           issue.setImage(image);
-          issue.setNextIssue(next);
-          issue.setPrevIssue(prev);
 
           // process Issues
           List<URI> issueArticles = new ArrayList();
@@ -358,17 +362,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    */
   public void setJournalKey(String journalKey) {
     this.journalKey = journalKey;
-  }
-
-  /**
-   * Set eIssn of Journal.
-   *
-   * Enable Struts Form to set the Journal eIssn from URI param and Form.
-   *
-   * @param journalEIssn of Journal.
-   */
-  public void setJournalEIssn(String journalEIssn) {
-    this.journalEIssn = journalEIssn;
   }
 
   /**
@@ -449,38 +442,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       this.image = null;
     } else {
       this.image = URI.create(image);
-    }
-  }
-
-  /**
-   * Set DOI of previous.
-   *
-   * Enable Struts Form to set the previous DOI as a String.
-   *
-   * @param doi DOI of previous.
-   */
-  public void setPrev(String prevDoi) {
-
-    if (prevDoi == null || prevDoi.length() == 0) {
-      this.prev = null;
-    } else {
-      this.prev = URI.create(prevDoi);
-    }
-  }
-
-  /**
-   * Set DOI of next.
-   *
-   * Enable Struts Form to set the next DOI as a String.
-   *
-   * @param doi DOI of next.
-   */
-  public void setNext(String nextDoi) {
-
-    if (nextDoi == null || nextDoi.length() == 0) {
-      this.next = null;
-    } else {
-      this.next = URI.create(nextDoi);
     }
   }
 

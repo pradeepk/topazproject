@@ -174,4 +174,19 @@ public class Aggregation {
   public void setSupersededBy(Aggregation supersededBy) {
     this.supersededBy = supersededBy;
   }
+
+  /**
+   * String representation for debugging.
+   * 
+   * @return String representation for debugging.
+   */
+  @Override
+  public String toString() {
+    return "Aggregation: ["
+            + "id: " + getId()
+            + ", simpleCollection: " + getSimpleCollection()
+            + ", " + getSmartCollectionRules()
+            + ", " + getDublinCore()
+            + "]";
+  }
 }

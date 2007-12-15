@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * The info about a single Volume that the UI needs.
+ * 
+ * This class is immutable.
  */
 public class VolumeInfo implements Serializable {
 

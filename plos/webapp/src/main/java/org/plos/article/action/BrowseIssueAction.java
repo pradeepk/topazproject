@@ -17,8 +17,6 @@ import org.plos.model.article.ArticleType;
 import org.plos.models.Journal;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 
 public class BrowseIssueAction extends BaseActionSupport{
   private static final Log log  = LogFactory.getLog(BrowseIssueAction.class);
@@ -30,6 +28,7 @@ public class BrowseIssueAction extends BaseActionSupport{
   private IssueInfo issueInfo;
   private ArrayList<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
   
+  @Override
   public String execute() {
 
     // was issued specified, or use Journal.currentIssue?
@@ -47,7 +46,7 @@ public class BrowseIssueAction extends BaseActionSupport{
            * from the latest volume. If no issue exists in the latest volume - 
            * look at the previous volume and so on.
            */ 
-          List<VolumeInfo> vols = browseService.getVolumeInfos();
+          List<VolumeInfo> vols = browseService.getVolumeInfos(currentJournal.getVolumes());
           if (vols.size() > 0) {
             Collections.reverse(vols);
             for (VolumeInfo volInfo : vols) {

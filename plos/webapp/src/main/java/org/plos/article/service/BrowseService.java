@@ -11,21 +11,17 @@
 package org.plos.article.service;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +55,7 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * Class to get all Articles in system and organize them by date and by category
@@ -261,12 +258,24 @@ public class BrowseService {
         description = article.getDublinCore().getDescription();
       }
     }
+    
+    // derive prev/next Issue, "parent" Volume
+    URI prevIssue = null;
+    URI nextIssue = null;
+    URI parentVolume = null;
+    final List<Volume> volumes = session.createCriteria(Volume.class)
+            .add(Restrictions.eq("simleCollection", doi)).list();
+    if (volumes.size() > 0) {
+      parentVolume = volumes.get(0).getId();
+      final List<URI> issues = volumes.get(0).getSimpleCollection();
+      final int issuePos = issues.indexOf(doi);
+      prevIssue = (issuePos == 0) ? null : issues.get(issuePos - 1);
+      prevIssue = (issuePos == issues.size() - 1) ? null : issues.get(issuePos + 1);
+    }
 
-    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(),
-        issue.getPrevIssue(), issue.getNextIssue(), imageArticle, description);
-    
-    issueInfo.setParentVolume(issue.getVolume());
-    
+    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssue, nextIssue,
+                                        imageArticle, description, parentVolume);
+        
     for (URI articleDoi : issue.getSimpleCollection()) {
       ArticleInfo articleInIssue = getArticleInfo(articleDoi, session.getTransaction());
       if (articleInIssue == null) {
@@ -281,23 +290,29 @@ public class BrowseService {
   /**
    * Get VolumeInfos.
    *
+   * @param volumeDois to look up.
    * @return volumeInfos.
    */
-  public List<VolumeInfo> getVolumeInfos() {
+  public List<VolumeInfo> getVolumeInfos(final List<URI> volumeDois) {
 
     // XXX look up VolumeInfos in Cache
 
     // OTM usage wants to be in a Transaction
-    Map<URI, VolumeInfo> volsMap = TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<Map<URI, VolumeInfo>>() {
+    return TransactionHelper.doInTx(session,
+      new TransactionHelper.Action<List<VolumeInfo>>() {
 
         // TODO should all of this be in a tx???
-        public Map<URI, VolumeInfo> run(Transaction tx) {
+        public List<VolumeInfo> run(Transaction tx) {
 
-          HashMap<URI, VolumeInfo> volumeMap = new HashMap<URI, VolumeInfo>();
+          List<VolumeInfo> volumeInfos = new ArrayList();
           // get the Volumes
-          for (final Volume volume : (List<Volume>) session.createCriteria(Volume.class).list()) {
-
+          for (int onVolumeDoi = 0; onVolumeDoi < volumeDois.size(); onVolumeDoi++) {
+            final URI volumeDoi = volumeDois.get(onVolumeDoi);
+            final Volume volume  = session.get(Volume.class, volumeDoi.toString());
+            if (volume == null) {
+              log.error("unable to load Volume: " + volumeDoi);
+              continue;
+            }
             // get the image Article, may be null
             URI imageArticle = null;
             String description = null;
@@ -314,62 +329,18 @@ public class BrowseService {
               issueInfos.add(getIssueInfoInTx(session, issueDoi));
             }
 
+            // calculate prev/next
+            final URI prevVolumeDoi = (onVolumeDoi == 0) ? null : volumeDois.get(onVolumeDoi - 1);
+            final URI nextVolumeDoi = (onVolumeDoi == volumeDois.size() - 1) ? null
+                                                      : volumeDois.get(onVolumeDoi + 1);
             final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
-              volume.getPrevVolume(), volume.getNextVolume(), imageArticle, description,
-              issueInfos);
-            volumeMap.put(volume.getId(), volumeInfo);
+                    prevVolumeDoi, nextVolumeDoi, imageArticle, description, issueInfos);
+            volumeInfos.add(volumeInfo);
           }
           
-          return volumeMap;
+          return volumeInfos;
         }
       });
-
-    // Create a linked list ordered by getNextVolume()
-    LinkedList<VolumeInfo> orderedList = new LinkedList<VolumeInfo>();
-    VolumeInfo vi = volsMap.values().iterator().next();
-    orderedList.add(vi);
-    volsMap.remove(vi.getId());
-    while (vi.getNextVolume() != null) {
-      verifyVolumeInfoLinks(vi, volsMap.get(vi.getNextVolume()));
-      vi = volsMap.get(vi.getNextVolume());
-      orderedList.add(vi);
-      volsMap.remove(vi.getId());
-    }
-    vi = orderedList.getFirst();
-    while (vi.getPrevVolume() != null) {
-      verifyVolumeInfoLinks(volsMap.get(vi.getPrevVolume()), vi);
-      vi = volsMap.get(vi.getPrevVolume());
-      orderedList.addFirst(vi);
-      volsMap.remove(vi.getId());
-    }
-    if (volsMap.size() != 0) {
-      StringBuffer sb = new StringBuffer();
-      for (URI volURI : volsMap.keySet()) {
-        sb.append("\"");
-        sb.append(volURI.toString());
-        sb.append("\" ");
-      }
-      log.error("Found inconsistency in volume definitions. The following " +
-      		"volumes are not linked to by other volumes. "+sb.toString());
-    }
-    
-    return orderedList;
-  }
-
-  /**
-   * Verify that volumeInfo A and B point to each other's IDs correctly. Report an error otherwise. 
-   * @param volA
-   * @param volB
-   */
-  private void verifyVolumeInfoLinks(VolumeInfo volA, VolumeInfo volB) {
-    if (!volA.getNextVolume().equals(volB.getId())) {
-      log.error("Found inconsistency in volume definitions. Volume '"+volA.getId()+"' NextVolume should point to '"+
-          volB.getId()+"' but points to '"+volA.getNextVolume()+"'");
-    }
-    if (!volB.getPrevVolume().equals(volA.getId())) {
-      log.error("Found inconsistency in volume definitions. Volume '"+volB.getId()+"' PrevVolume should point to '"+
-          volA.getId()+"' but points to '"+volB.getPrevVolume()+"'");
-    }
   }
 
   private Object getCatInfo(String key, String desc, boolean load) {
