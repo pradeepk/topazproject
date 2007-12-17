@@ -45,43 +45,15 @@
       <artifactId>mulgara-client</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- bug in maven: mulgara-client depends on this, but maven is not picking it up -->
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <properties>
     <forkMode>never</forkMode> <!-- Fixes annoying issue with surefire - see MSUREFIRE-121 -->
   </properties>
-
-  <profiles>
-    <profile>
-      <id>it-helper</id>
-
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>it-compile</id>
-                <phase>test-compile</phase>
-                <goals><goal>run</goal></goals>
-                <configuration>
-                  <tasks>
-                    <mkdir dir="${project.build.testOutputDirectory}" />
-                    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                      <classpath refid="maven.test.classpath" />
-                    </taskdef>
-                    <groovyc destdir="${project.build.testOutputDirectory}" srcdir="${basedir}/src/it/groovy/" listfiles="true">
-                      <classpath refid="maven.test.classpath" />
-                    </groovyc>
-                  </tasks>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
 </project>

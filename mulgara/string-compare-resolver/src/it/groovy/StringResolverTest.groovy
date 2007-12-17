@@ -7,77 +7,100 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-import org.topazproject.mulgara.itql.ItqlHelper
+
+import org.topazproject.mulgara.itql.DefaultItqlClientFactory
+import org.topazproject.mulgara.itql.ItqlClient
+import org.topazproject.mulgara.itql.ItqlClientFactory
 
 class StringResolverTest extends GroovyTestCase {
-  String MULGARA    = 'http://localhost:9091/mulgara-service/services/ItqlBeanService'
+  String MULGARA    = 'local:///topazproject'
   String TEST_MODEL = '<local:///topazproject#EqualIgnoreCaseTests>'
   String RSLV_MODEL = '<local:///topazproject#str>'
   String RSLV_TYPE  = '<http://topazproject.org/models#StringCompare>'
-  ItqlHelper itql
+  ItqlClientFactory itqlFactory = new DefaultItqlClientFactory()
+  ItqlClient itql
 
   void setUp() {
-    itql = new ItqlHelper(new URI(MULGARA))
-    itql.doUpdate("create ${RSLV_MODEL} ${RSLV_TYPE};", null)
-    itql.doUpdate("create ${TEST_MODEL};", null)
-    itql.doUpdate("insert <foo:1> <bar:is> 'a' into ${TEST_MODEL};", null)
-    itql.doUpdate("insert <foo:2> <bar:is> 'b' into ${TEST_MODEL};", null)
-    itql.doUpdate("insert <foo:X> <bar:is> 'c' into ${TEST_MODEL};", null)
+    itql = itqlFactory.createClient(MULGARA.toURI())
+    itql.setAliases([topaz:'http://rdf.topazproject.org/RDF/'])
+    itql.doUpdate("create ${RSLV_MODEL} ${RSLV_TYPE};")
+    itql.doUpdate("create ${TEST_MODEL};")
+    itql.doUpdate("insert <foo:1> <bar:is> 'a' into ${TEST_MODEL};")
+    itql.doUpdate("insert <foo:2> <bar:is> 'b' into ${TEST_MODEL};")
+    itql.doUpdate("insert <foo:X> <bar:is> 'c' into ${TEST_MODEL};")
   }
 
   void testEqualIgnoresCase() {
     def query = """select \$s from ${TEST_MODEL} 
                     where \$s <bar:is> \$o 
-                      and \$o <topaz:equalsIgnoreCase> 'B' in ${RSLV_MODEL}"""
-    def results = itql.doQuery(query, null)
-    def ans = new XmlSlurper().parseText(results)
-    assert ans.query[0].solution.s.'@resource' == 'foo:2'
+                      and \$o <topaz:equalsIgnoreCase> 'B' in ${RSLV_MODEL};"""
+    def ans = itql.doQuery(query)[0]
+    assert ans.next()
+    assert ans.getString('s') == 'foo:2'
   }
 
   void testEqualIgnoreCaseSubject() {
     def query = """select \$s from ${TEST_MODEL}
-                    where \$s <topaz:equalsIgnoreCase> <foo:x> in ${RSLV_MODEL}"""
-    def ans = new XmlSlurper().parseText(itql.doQuery(query, null))
-    assert ans.query[0].solution.s.'@resource' == 'foo:X'
+                    where \$s <topaz:equalsIgnoreCase> <foo:x> in ${RSLV_MODEL};"""
+    def ans = itql.doQuery(query)[0]
+    assert ans.next()
+    assert ans.getString('s') == 'foo:X'
+    assert !ans.next()
   }
 
   void testLt1() {
     def query = """select \$s from ${TEST_MODEL}
                     where \$s <bar:is> \$o
-                      and \$o <topaz:lt> 'b' in ${RSLV_MODEL}"""
-    def ans = new XmlSlurper().parseText(itql.doQuery(query, null))
-    assert ans.query[0].solution.s.'@resource' == 'foo:1'
+                      and \$o <topaz:lt> 'b' in ${RSLV_MODEL};"""
+    def ans = itql.doQuery(query)[0]
+    assert ans.next()
+    assert ans.getString('s') == 'foo:1'
+    assert !ans.next()
   }
 
   void testLt2() {
     def query = """select \$s from ${TEST_MODEL}
                     where \$s <bar:is> \$o
-                      and \$o <topaz:lt> 'c' in ${RSLV_MODEL}"""
-    def ans = new XmlSlurper().parseText(itql.doQuery(query, null))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
+                      and \$o <topaz:lt> 'c' in ${RSLV_MODEL};"""
+    def ans = itql.doQuery(query)[0]
+    assert ans.next()
+    assert ans.getString('s') == 'foo:1'
+    assert ans.next()
+    assert ans.getString('s') == 'foo:2'
+    assert !ans.next()
   }
 
   void testLe1() {
     def query = """select \$s from ${TEST_MODEL}
                     where \$s <bar:is> \$o
-                      and \$o <topaz:le> 'b' in ${RSLV_MODEL}"""
-    def ans = new XmlSlurper().parseText(itql.doQuery(query, null))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
+                      and \$o <topaz:le> 'b' in ${RSLV_MODEL};"""
+    def ans = itql.doQuery(query)[0]
+    assert ans.next()
+    assert ans.getString('s') == 'foo:1'
+    assert ans.next()
+    assert ans.getString('s') == 'foo:2'
+    assert !ans.next()
   }
 
   void testGt1() {
     def query = """select \$s from ${TEST_MODEL}
                     where \$s <bar:is> \$o
-                      and \$o <topaz:gt> 'b' in ${RSLV_MODEL}"""
-    def ans = new XmlSlurper().parseText(itql.doQuery(query, null))
-    assert ans.query[0].solution*.s.'@resource' == 'foo:X'
+                      and \$o <topaz:gt> 'b' in ${RSLV_MODEL};"""
+    def ans = itql.doQuery(query)[0]
+    assert ans.next()
+    assert ans.getString('s') == 'foo:X'
+    assert !ans.next()
   }
 
   void testGe1() {
     def query = """select \$s from ${TEST_MODEL}
                     where \$s <bar:is> \$o
-                      and \$o <topaz:ge> 'b' in ${RSLV_MODEL}"""
-    def ans = new XmlSlurper().parseText(itql.doQuery(query, null))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:2', 'foo:X' ]
+                      and \$o <topaz:ge> 'b' in ${RSLV_MODEL};"""
+    def ans = itql.doQuery(query)[0]
+    assert ans.next()
+    assert ans.getString('s') == 'foo:2'
+    assert ans.next()
+    assert ans.getString('s') == 'foo:X'
+    assert !ans.next()
   }
 }
