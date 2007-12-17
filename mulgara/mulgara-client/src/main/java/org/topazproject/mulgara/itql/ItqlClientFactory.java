@@ -18,6 +18,9 @@ import java.net.URI;
  * @author Ronald Tschalär
  */
 public class ItqlClientFactory {
+  private static final String MEM_CONF = "mulgara-mem-config.xml";
+  private static final String DSK_CONF = "mulgara-emb-config.xml";
+
   /** 
    * Create a new itql-client instance. Uri schemes are currently mapped as follows:
    * <dl>
@@ -29,6 +32,8 @@ public class ItqlClientFactory {
    *   <dd>Use SOAP over http</dd>
    *   <dt>local</dt>
    *   <dd>Create embedded mulgara instance</dd>
+   *   <dt>mem</dt>
+   *   <dd>Create an in-memory embedded mulgara instance</dd>
    * </dl>
    * 
    * @param uri  the server's URI
@@ -44,7 +49,9 @@ public class ItqlClientFactory {
     if (scheme.equals("soap"))
       return new SoapClient(new URI("http", uri.getSchemeSpecificPart(), uri.getFragment()));
     if (scheme.equals("local"))
-      return new EmbeddedClient(null, uri);
+      return new EmbeddedClient(uri, null, getClass().getResource(DSK_CONF), this);
+    if (scheme.equals("mem"))
+      return new EmbeddedClient(uri, null, getClass().getResource(MEM_CONF), this);
 
     throw new IllegalArgumentException("Unsupported scheme '" + scheme + "' from '" + uri + "'");
   }
