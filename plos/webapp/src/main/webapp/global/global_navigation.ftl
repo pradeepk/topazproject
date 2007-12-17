@@ -28,10 +28,12 @@
         <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="comment"/>
         <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
         <@s.url action="help" namespace="/static" includeParams="none" id="help"/>
-        <@s.url action="sitemap" namespace="/static" includeParams="none" id="site"/>
+        <@s.url action="journalClub" namespace="/static" includeParams="none" id="journalClub"/>
+       <@s.url action="sitemap" namespace="/static" includeParams="none" id="site"/>
           <li><a href="${comment}">Commenting Guidelines</a></li>
           <li><a href="${rating}">Rating Guidelines</a></li>
           <li><a href="${help}">Help Using this Site</a></li>
+		  <li><a href="${journalClub}">Journal Club Archives</a></li>
           <li><a href="${site}">Site Map</a></li>
         </ul>
       </li>
@@ -47,7 +49,7 @@
           <li><a href="${why}">Why Publish With Us?</a></li>
           <li><a href="${policies}">Editorial and Publishing Policies</a></li>
           <li><a href="${guidelines}">Author Guidelines</a></li>
-          <li><a href="${figure}">Figure Guidelines</a></li>
+          <li><a href="${figure}">Figure and Table Guidelines</a></li>
           <li><a href="${checklist}">Submit Your Paper</a></li>
           <li><a href="${reviewer}">Reviewer Guidelines</a></li>
         </ul>
