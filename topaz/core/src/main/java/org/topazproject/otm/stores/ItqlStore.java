@@ -30,6 +30,7 @@ import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlClient;
 import org.topazproject.mulgara.itql.ItqlClientFactory;
+import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
@@ -56,8 +57,8 @@ import org.topazproject.otm.query.Results;
  */
 public class ItqlStore extends AbstractTripleStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
-  private static final Map<Object, List<ItqlClient>> conCache = new HashMap();
-  private static final ItqlClientFactory itqlFactory = new DefaultItqlClientFactory();
+  private        final Map<Object, List<ItqlClient>> conCache = new HashMap();
+  private        final ItqlClientFactory itqlFactory;
   private        final URI               serverUri;
 
   /** 
@@ -66,7 +67,18 @@ public class ItqlStore extends AbstractTripleStore {
    * @param server  the uri of the iTQL server.
    */
   public ItqlStore(URI server) {
-    serverUri = server;
+    this(server, new DefaultItqlClientFactory());
+  }
+
+  /** 
+   * Create a new itql-store instance. 
+   * 
+   * @param server  the uri of the iTQL server.
+   * @param icf     the itql-client-factory to use
+   */
+  public ItqlStore(URI server, ItqlClientFactory icf) {
+    serverUri   = server;
+    itqlFactory = icf;
 
     //XXX: configure these
     ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder();
@@ -77,7 +89,7 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   public Connection openConnection(SessionFactory sf) {
-    return new ItqlStoreConnection(serverUri, sf);
+    return new ItqlStoreConnection(sf);
   }
 
   public void closeConnection(Connection con) {
@@ -829,8 +841,7 @@ public class ItqlStore extends AbstractTripleStore {
     return mc.getUri().toString();
   }
 
-  private static ItqlClient getItqlClient(URI serverUri, Map<String, String> aliases)
-      throws OtmException {
+  private ItqlClient getItqlClient(URI serverUri, Map<String, String> aliases) throws OtmException {
     synchronized (conCache) {
       ItqlClient res;
 
@@ -850,7 +861,7 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static void returnItqlClient(URI serverUri, ItqlClient itql) {
+  private void returnItqlClient(URI serverUri, ItqlClient itql) {
     synchronized (conCache) {
       List<ItqlClient> list = conCache.get(serverUri);
       if (list == null)
@@ -860,7 +871,7 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   public void createModel(ModelConfig conf) throws OtmException {
-    ItqlClient itql = ItqlStore.getItqlClient(serverUri, null);
+    ItqlClient itql = getItqlClient(serverUri, null);
     try {
       String type = (conf.getType() == null) ? "mulgara:Model" : conf.getType().toString();
       itql.doUpdate("create <" + conf.getUri() + "> <" + type + ">;");
@@ -877,7 +888,7 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   public void dropModel(ModelConfig conf) throws OtmException {
-    ItqlClient itql = ItqlStore.getItqlClient(serverUri, null);
+    ItqlClient itql = getItqlClient(serverUri, null);
     try {
       itql.doUpdate("drop <" + conf.getUri() + ">;");
       returnItqlClient(serverUri, itql);
@@ -891,14 +902,12 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static class ItqlStoreConnection implements Connection {
-    private final URI            serverUri;
+  private class ItqlStoreConnection implements Connection {
     private final SessionFactory sf;
     private       ItqlClient     itql;
 
-    public ItqlStoreConnection(URI serverUri, SessionFactory sf) {
-      this.serverUri = serverUri;
-      this.sf        = sf;
+    public ItqlStoreConnection(SessionFactory sf) {
+      this.sf = sf;
     }
 
     public ItqlClient getItqlClient() {
@@ -912,7 +921,7 @@ public class ItqlStore extends AbstractTripleStore {
         abort(false);
       }
 
-      itql = ItqlStore.getItqlClient(serverUri, sf.listAliases());
+      itql = ItqlStore.this.getItqlClient(ItqlStore.this.serverUri, sf.listAliases());
       try {
         itql.beginTxn("");
       } catch (IOException ioe) {
@@ -931,7 +940,7 @@ public class ItqlStore extends AbstractTripleStore {
       } catch (IOException ioe) {
         throw new OtmException("error committing transaction", ioe);
       }
-      ItqlStore.returnItqlClient(serverUri, itql);
+      ItqlStore.this.returnItqlClient(ItqlStore.this.serverUri, itql);
       itql = null;
     }
 
@@ -947,7 +956,7 @@ public class ItqlStore extends AbstractTripleStore {
     private void abort(boolean throwEx) throws OtmException {
       try {
         itql.rollbackTxn("");
-        ItqlStore.returnItqlClient(serverUri, itql);
+        ItqlStore.this.returnItqlClient(ItqlStore.this.serverUri, itql);
         itql = null;
       } catch (IOException ioe) {
         if (throwEx)
