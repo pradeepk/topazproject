@@ -125,17 +125,14 @@
           <!-- begin : block -->
           <div class="block">
             <h3>PLoS ONE is 1 Year Old</h3>
-            <p>We’re marking the occasion with this home page makeover that will help you find relevant content more quickly and encourage dialogue on articles. <a href="#">More</a></li></p>
+            <p>We're marking <a href="#">the occasion</a> with this home page makeover that will help you find relevant content more quickly and encourage dialogue on articles.</li></p>
           </div>
           <!-- end : block -->
           <!-- begin : block -->
           <div class="block">
             <h3>Author Survey Results</h3>
-            <p>Thanks to the more than 2,000 of our authors who responded to our survey.</p>
-            <ul>
-              <li>97.2% % say they will publish with PLoS ONE again</li>
-            </ul>
-            <p>iPod shuffle winners: Marion Coolen, Thomas J. Baiga, Benedicte Lafay - congratulations.</p>
+            <p>Thanks to the 2,000+ authors who responded to our survey&#8212;97.2% say they will publish with PLoS ONE again.</p>
+            <p>Congratulations to our iPod Shuffle winners: <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000374" title="Read Open Access Article">Marion Coolen</a>, <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000993" title="Read Open Access Article">Thomas J. Baiga</a>, and <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000277" title="Read Open Access Article">B&#233;n&#233;dicte Lafay</a></p>
           </div>
           <!-- end : block -->
           <!-- begin : journal club block -->
