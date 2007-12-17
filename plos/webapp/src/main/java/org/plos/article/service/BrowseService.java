@@ -557,7 +557,7 @@ public class BrowseService {
 
     Results sr = r.getSubQueryResults(4);
     while (sr.next()) {
-      ai.articleTypes.add(ArticleType.getTypeForURI(sr.getURI(0)));
+      ai.articleTypes.add(ArticleType.getArticleTypeForURI(sr.getURI(0), true));
     }
     
     sr = r.getSubQueryResults(5);

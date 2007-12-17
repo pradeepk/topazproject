@@ -19,9 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 public class ArticleType implements Serializable {
+  private static final Log log = LogFactory.getLog(ArticleType.class);
+  
   private static HashMap<String, ArticleType> _knownArticleTypes = new HashMap<String, ArticleType>();
   private static List<ArticleType> _articleTypeOrder = new ArrayList<ArticleType>();
   private static HashMap<String, ArticleType> _newArticleTypes = new HashMap<String, ArticleType>();
@@ -32,18 +36,36 @@ public class ArticleType implements Serializable {
   
   private URI uri;
   private String heading;
-	private boolean defaultArticleType = false;
+  private String imageConfigName;
   
   private ArticleType(URI articleTypeUri, String displayHeading) {
     uri = articleTypeUri;
     heading = displayHeading;
   }
   
-  public static ArticleType getTypeForURI(URI uri) {
+  /**
+   * Returns an ArticleType if configured in defaults.xml (etc) or null otherwise
+   * @param uri
+   * @return
+   */
+  public static ArticleType getKnownArticleTypeForURI(URI uri) {
+    return _knownArticleTypes.get(uri.toString());
+  }
+  
+  /**
+   * Returns an ArticleType object for the given URI. If one does not exist for that URI and
+   * createIfAbsent is true, a new ArticleType shall be created and added to a list of types 
+   * (although shall not be recognized as an official ArticleType by getKnownArticleTypeForURI). 
+   * If createIfAbsent is false, an ArticleType shall not be created and null shall be returned. 
+   * @param uri
+   * @param createIfAbsent
+   * @return The ArticleType for the given URI
+   */
+  public static ArticleType getArticleTypeForURI(URI uri, boolean createIfAbsent) {
     ArticleType at = _knownArticleTypes.get(uri.toString());
     if (at == null) {
       at = _newArticleTypes.get(uri.toString());
-      if ((at == null) && (uri != null)) {
+      if ((at == null) && (uri != null)  && createIfAbsent) {
         String uriStr = uri.toString();
         if (uriStr.contains("/")) {
           uriStr = uriStr.substring(uriStr.indexOf('/'));
@@ -60,14 +82,14 @@ public class ArticleType implements Serializable {
     return at;
   }
   
-  public static boolean addArticleType(URI uri, String heading) {
+  public static ArticleType addArticleType(URI uri, String heading) {
     if (_knownArticleTypes.containsKey(uri.toString())) {
-      return false;
+      return _knownArticleTypes.get(uri.toString());
     }
     ArticleType at = new ArticleType(uri, heading);
     _knownArticleTypes.put(uri.toString(), at);
     _articleTypeOrder.add(at);
-    return true;
+    return at;
   }
 
   public URI getUri() {
@@ -92,29 +114,43 @@ public class ArticleType implements Serializable {
 	 * Read in the ArticleTypes from the pubApp configuration (hint: normally defined in defauls.xml) 
 	 * and add them to the list of known ArticleType(s). The order of article types found in the 
 	 * configuration is significant and is returned in a Collection from getOrderedListForDisplay(). 
+	 * The defaultArticleType is set to the first article type defined unless configured explicitly. 
 	 */
 	public static void configureArticleTypes(Configuration myConfig) {
     int count = 0;
     String basePath = "pub.articleTypeList.articleType";
     String uriStr;
     String headingStr;
-    String isDefault;
+    // Iterate through the defined article types. This is ugly since the index needs 
+    // to be given in xpath format to access the element, so we calculate a base string
+    // like: pub.articleTypeList.articleType(x) and check if it's non-null for typeUri
     do {
-    	StringBuffer baseIndex = new StringBuffer(basePath).append("(").append(count).append(").");
-    	uriStr = myConfig.getString(baseIndex.toString() + "typeUri");
-    	headingStr = myConfig.getString(baseIndex.toString() + "typeHeading");
-    	isDefault = myConfig.getString(baseIndex.toString() + "default");
-    	if ((uriStr != null) && (headingStr != null)) {
-    		addArticleType(URI.create(uriStr), headingStr);
-    		if ("true".equalsIgnoreCase(isDefault)) {
-    			theDefaultArticleType = getTypeForURI(URI.create(uriStr));
-    		}
-    	}
+      String baseString = (new StringBuffer(basePath).append("(").append(count)
+          .append(").")).toString();
+      uriStr = myConfig.getString(baseString + "typeUri");
+      headingStr = myConfig.getString(baseString + "typeHeading");
+      if ((uriStr != null) && (headingStr != null)) {
+        ArticleType at = addArticleType(URI.create(uriStr), headingStr);
+        if (("true".equalsIgnoreCase(myConfig.getString(baseString + "default"))) || 
+            (theDefaultArticleType == null)) {
+          theDefaultArticleType = at;
+        }
+        at.setImageSetConfigName(myConfig.getString(baseString + "imageSetConfigName"));
+      }
     	count++;
     } while (uriStr != null);
 	}
+
+	public void setImageSetConfigName(String imgConfigName) {
+	  this.imageConfigName = imgConfigName;
+  }
 	
-	public static ArticleType getDefaultArticleType() {
+	public String getImageSetConfigName() {
+	  return imageConfigName;
+	}
+
+  public static ArticleType getDefaultArticleType() {
 		return theDefaultArticleType;
 	}
+
 }

@@ -60,6 +60,7 @@ import org.plos.article.service.BrowseService;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
+import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
@@ -239,7 +240,7 @@ public class DocumentManagementService {
   }
 
   /**
-   * Ingest the file. If succesful move it to the ingestedDocumentDirectory then create the
+   * Ingest the file. If successful move it to the ingestedDocumentDirectory then create the
    * Transformed CrossRef xml file and deposit that in the Directory as well.
    *
    *
@@ -265,11 +266,17 @@ public class DocumentManagementService {
     }
     DataHandler dh = new DataHandler(file.toURL());
     uri = articleOtmService.ingest(dh);
+    
+    ImageSetConfig imageSetConf = getImageSetConfigForArticleUri(uri);
+    if (imageSetConf == null) {
+      imageSetConf = ImageSetConfig.getDefaultImageSetConfig();
+    }
+    
     if (log.isInfoEnabled()) {
       log.info("Ingested: " + file);
     }
     try {
-      resizeImages(uri);
+      resizeImages(uri, imageSetConf);
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
         log.error("Resize images failed for article " + uri, e);
@@ -281,12 +288,14 @@ public class DocumentManagementService {
       }
       ImageResizeException ire = new ImageResizeException(articleUri, e);
       throw ire;
+    } finally {
+      try {
+        dh.getOutputStream().close();
+      } catch (Exception e) {
+        // ignore
+      }
     }
-    try {
-      dh.getOutputStream().close();
-    } catch (Exception e) {
 
-    }
     if (log.isInfoEnabled()) {
       log.info("Resized images");
     }
@@ -303,7 +312,35 @@ public class DocumentManagementService {
     return uri;
   }
 
-  private void resizeImages(String uri) throws NoSuchArticleIdException, NoSuchObjectIdException,
+  /**
+   * Find the ImageSetConfig for the given Article URI String. 
+   * @param uri of the article
+   * @return ArticleType of the given article URI
+   */
+  private ImageSetConfig getImageSetConfigForArticleUri(String uri) {
+    Article article = null;
+    try {
+      article = fetchArticleService.getArticleInfo(uri);
+    } catch (ApplicationException e) {
+      log.error("Unable to retrieve Article URI='"+uri+"'", e);
+    }
+    
+    Set<URI> artTypes = article.getArticleType();
+    ArticleType at = null;
+    ImageSetConfig isc;
+    for (URI artTypeUri : artTypes) {
+      if ((at = ArticleType.getKnownArticleTypeForURI(artTypeUri))!= null) {
+        if ((isc = ImageSetConfig.getImageSetConfig(at.getImageSetConfigName())) != null) {
+          return isc;
+        }
+      }
+    }
+    
+    log.debug("Unable to find ImageSetConfig for article: '"+uri+"'");
+    return null;
+  }
+
+  private void resizeImages(String uri, ImageSetConfig imageSetConfig) throws NoSuchArticleIdException, NoSuchObjectIdException,
                                                ImageResizeException, ImageStorageServiceException,
                                                HttpException, IOException {
     ImageResizeService irs;
@@ -312,7 +349,7 @@ public class DocumentManagementService {
     SecondaryObject[] objects = articleOtmService.listSecondaryObjects(uri);
     SecondaryObject object = null;
     for (int i = 0; i < objects.length; ++i) {
-      irs = new ImageResizeService();
+      irs = new ImageResizeService(imageSetConfig);
       object = objects[i];
       if (log.isDebugEnabled()) {
         log.debug("retrieving Object Info for: " + object.getUri());

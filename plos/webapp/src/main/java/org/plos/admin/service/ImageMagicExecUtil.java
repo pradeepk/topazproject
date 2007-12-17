@@ -64,27 +64,31 @@ public class ImageMagicExecUtil {
    * @param output      the file to be created (which results from the conversion operation)
    * @param imageWidth  the maximum width of the converted and resized image
    * @param imageHeight the maximum height of the converted and resized image
+   * @param quality     the quality of compressed image (100 is best quality).
    * @return result     an indication of whether the program was run successfully or not
    *                    (true = success & false = failure)
    */
   public boolean convert(final File input,final File output,
-                         final int imageWidth,final int imageHeight) {
+                         final int imageWidth,final int imageHeight, int quality) {
     final boolean result;
     final ArrayList<String> command = new ArrayList<String>(7);
     final String resizeOperation = "-resize";
     // for example: newDimensions = 1024x768
     final String newDimensions = imageWidth + "x" + imageHeight;
     final String compressionOperation = "-quality";
-    // qualityLevel = 100 => perfect quality/no compression
-    final String qualityLevel = "100";
     int exitStatus = 1;
 
+    // qualityLevel = 100 => perfect quality/no compression
+    if (quality < 0 || quality > 100) {
+      quality = 100;
+    }
+    
     try {
       command.add(this.pathToProgram);
       command.add(resizeOperation);
       command.add(newDimensions);
       command.add(compressionOperation);
-      command.add(qualityLevel);
+      command.add(String.valueOf(quality));
       command.add(input.getCanonicalPath());
       command.add(output.getCanonicalPath());
 
