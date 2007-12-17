@@ -135,7 +135,6 @@ class EmbeddedClient extends IIBClient {
      * which means we can't create multiple instances.
      */
     final File dir = createDir(dbDir);
-    System.err.println("dir='" + dir + "'");
     SessionFactory sf = new EmbeddedSessionFactory(uri, dir, conf);
 
     if (dbDir == null) {
@@ -210,7 +209,6 @@ class EmbeddedClient extends IIBClient {
 
       try {
         MulgaraConfig mc = MulgaraConfig.unmarshal(new InputStreamReader(conf.openStream()));
-        System.err.println("creating db with dir='" + dir + "'");
         sessionFactory = new Database(uri, dir, mc);
       } catch (QueryException qe) {
         throw qe;
