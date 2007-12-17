@@ -1,9 +1,7 @@
 /* 	-------------------------------------------------------------
 
-	GLOBAL STYLE SHEET FOR : www.plosone.org
-	
+	GLOBAL STYLE SHEET FOR : www.plosntds.org
 	CREATED ON  : 08-26-2006
-	
 	CREATED BY	: MARGARET SHEAR
 	MODIFIED BY	: SEBASTIAN TOOMEY
 
@@ -544,137 +542,6 @@ div.profile ol li .radio { width: 14px;}
 div.profile ol li .checkbox { width: 14px;}
 div.profile textarea {width: 324px; border: 1px solid #ACF1FF; }
 div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
-
-/* tabs and tabbed box */
-div.horizontalTabs		{
-  position:relative; /* for IE6 */
-  float:left;
-  border:0; 
-  padding:0/*!important*/; 
-  margin:0/*!important*/;
-  background:transparent;
-  /*width:490px; don't think I need this anymnore as width is specified in tabsContainer and contentWrap */
-}
-#browse-results div.horizontalTabs  { /* for vert spacing undevertical-align */
-  top:30px;
-}
-div.horizontalTabs:after {
-  content:"."; 
-  display: block; 
-  height:20px; 
-  clear:both; 
-  visibility:hidden;
-}
-.horizontalTabs ul,
-.horizontalTabs ul li	{ 
-  list-style-type: none; 
-  margin: 0; 
-  padding: 0; 
-}
-.horizontalTabs ul  { 
-  display: block; 
-  margin-bottom: 5px; 
-  z-index: 10; 
-  /*border-bottom: 2px solid #ACF1FF; */
-}
-.horizontalTabs ul li	{ 
-  padding: 6px; 
-  background-color: transparent; 
-  margin: 5px 2px 3px 2px; 
-  display: inline; 
-}
-/*.horizontalTabs ul li	a { 
-  font-weight: bold; 
-}*/
-
-.horizontalTabs ul li.active  { 
-  font-weight: bold;
-  background: url(../images/pone_forms_bg.gif) repeat-x bottom; 
-  border-bottom-color: #fff; 
-  text-decoration: none; 
-  color: #000;
-}
-
-ul#tabsContainer  		{
-  float:left;
-  margin:0!important; 
-  padding:0 0 0 10px!important; /* "!important" required for IE7 */
-  line-height:normal;
-  background:transparent url("../images/tab_bg.gif") repeat-x bottom;
-  width:892px;
-}
-#first ul#tabsContainer { /* for tabs on homepage */
-  width:480px;
-}
-ul#tabsContainer ul		{ 
-  margin:0; 
-  padding:10px 10px 0;
-}
-ul#tabsContainer li		{ 
-  cursor:pointer; 
-  float:left;
-  background:url("../images/tab_left.gif") no-repeat 0% 0%;
-  margin:0 2px;
-	padding:0 0 0 8px;
-  list-style:none;
-  font-size:.9em;
-  font-weight:bold; 
-  color:#666;
-}
-ul#tabsContainer li span {
-  display:block;
-  float:left;
-  background:url("../images/tab_right.gif") no-repeat 100% 0%;
-  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */
-}
-ul#tabsContainer li.active {
-  background-position:0% -40px;
-}
-ul#tabsContainer li.active span { 
-  background-position:100% -40px;
-	padding-bottom: 9px!important;  
-}
-.horizontalTabs .contentwrap {
-  float:left;
-  width:/*900px*/ 870px;
-  margin:0/*!important*/;
-  padding:0/*!important*/;
-  background:#ffffff; 
-  border:1px solid #bababa;
-  border-top:0;
-}
-#first .horizontalTabs .contentwrap { /* for tabs on homepage */
-  width:488px;
-}
-.archive .horizontalTabs .contentwrap { /* for tabs on archive page */
-  padding:30px 0 20px 30px;
-}
-/*.horizontalTabs .contentwrap {
-  margin: 0; 
-  border: 2px solid #fff; 
-  padding: 0;
-  position: relative; 
-}*/
-/* .horizontalTabs ul { 
-  border:0; suppresses "border-bottom:2px solid #acf1ff" ln. #553 
-}*/
-.horizontalTabs .contentwrap ul { 
-  list-style:none; 
-  margin:10px 10px 0 10px!important; 
-  padding:0!important;
-}
-.horizontalTabs .contentwrap li	{ 
-  display:list-item;
-  background-image:none!important; 
-  list-style:none; 
-  margin:0!important; 
-  padding:0!important;
-  padding-bottom:1em!important;
-  line-height:1.5em;
-}
-
-.horizontalTabs .contentwrap li.more	{ border-top:1px solid #ccc!important; padding-top:.4em!important; }
-.horizontalTabs .contentwrap li.more a	{ font-weight:normal!important; text-decoration:underline!important; }
 
 /* ------ EdBoard Styles ----*/
 
