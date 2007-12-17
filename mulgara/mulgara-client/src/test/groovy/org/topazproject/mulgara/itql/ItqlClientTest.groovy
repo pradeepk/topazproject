@@ -26,7 +26,7 @@ public class ItqlClientTest extends GroovyTestCase {
   private static final Log log = LogFactory.getLog(ItqlClientTest.class);
 
   public void testEmbeddedClient() {
-    ItqlClientFactory icf = new ItqlClientFactory();
+    ItqlClientFactory icf = new DefaultItqlClientFactory();
 
     // Create one client and run a couple commands
     ItqlClient itql = icf.createClient(URI.create("local:///test1"));

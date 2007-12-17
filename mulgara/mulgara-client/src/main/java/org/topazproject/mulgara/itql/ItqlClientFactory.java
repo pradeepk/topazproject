@@ -13,46 +13,17 @@ package org.topazproject.mulgara.itql;
 import java.net.URI;
 
 /**
- * A simple factory for {@link ItqlClient ItqlClient} instances.
+ * This represents a factory for {@link ItqlClient ItqlClient} instances.
  *
  * @author Ronald Tschalär
  */
-public class ItqlClientFactory {
-  private static final String MEM_CONF = "mulgara-mem-config.xml";
-  private static final String DSK_CONF = "mulgara-emb-config.xml";
-
+public interface ItqlClientFactory {
   /** 
-   * Create a new itql-client instance. Uri schemes are currently mapped as follows:
-   * <dl>
-   *   <dt>rmi</dt>
-   *   <dd>Use RMI</dd>
-   *   <dt>http</dt>
-   *   <dd>Use SOAP over http (deprecated - may be changed to use a REST API in the future)</dd>
-   *   <dt>soap</dt>
-   *   <dd>Use SOAP over http</dd>
-   *   <dt>local</dt>
-   *   <dd>Create embedded mulgara instance</dd>
-   *   <dt>mem</dt>
-   *   <dd>Create an in-memory embedded mulgara instance</dd>
-   * </dl>
+   * Create a new itql-client instance.
    * 
    * @param uri  the server's URI
    * @return the new client
-   * @throws Exception 
+   * @throws Exception on error
    */
-  public ItqlClient createClient(URI uri) throws Exception {
-    String scheme = uri.getScheme();
-    if (scheme.equals("rmi"))
-      return new RmiClient(uri.toString());
-    if (scheme.equals("http"))
-      return new SoapClient(uri);
-    if (scheme.equals("soap"))
-      return new SoapClient(new URI("http", uri.getSchemeSpecificPart(), uri.getFragment()));
-    if (scheme.equals("local"))
-      return new EmbeddedClient(uri, null, getClass().getResource(DSK_CONF), this);
-    if (scheme.equals("mem"))
-      return new EmbeddedClient(uri, null, getClass().getResource(MEM_CONF), this);
-
-    throw new IllegalArgumentException("Unsupported scheme '" + scheme + "' from '" + uri + "'");
-  }
+  public ItqlClient createClient(URI uri) throws Exception;
 }

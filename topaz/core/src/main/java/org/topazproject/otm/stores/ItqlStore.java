@@ -57,7 +57,7 @@ import org.topazproject.otm.query.Results;
 public class ItqlStore extends AbstractTripleStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
   private static final Map<Object, List<ItqlClient>> conCache = new HashMap();
-  private static final ItqlClientFactory itqlFactory = new ItqlClientFactory();
+  private static final ItqlClientFactory itqlFactory = new DefaultItqlClientFactory();
   private        final URI               serverUri;
 
   /** 
