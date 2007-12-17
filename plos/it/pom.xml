@@ -16,6 +16,7 @@
     <dependency>
       <groupId>htmlunit</groupId>
       <artifactId>htmlunit</artifactId>
+      <version>1.13</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -39,7 +40,7 @@
     <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>plosone-it-data-basic</artifactId>
-      <version>0.81.3</version>
+      <version>0.81.5</version>
       <type>tbz</type>
       <scope>test</scope>
     </dependency>
