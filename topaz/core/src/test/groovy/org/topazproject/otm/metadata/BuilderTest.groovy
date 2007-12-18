@@ -13,6 +13,7 @@ package org.topazproject.otm.metadata;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.java.FieldLoader;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
 
 /**
@@ -69,8 +70,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     def m = cm.fields.iterator().next()
+    def l = m.loader
     assert m.name     == 'state'
-    assert m.type     == String.class
+    assert l.type     == String.class
     assert m.dataType == null
     assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
     assert !m.hasInverseUri()
@@ -87,8 +89,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
+    l = m.loader
     assert m.name     == 'state'
-    assert m.type     == Integer.TYPE
+    assert l.type     == Integer.TYPE
     assert m.dataType == 'http://www.w3.org/2001/XMLSchema#int'
     assert m.uri      == 'http://rdf.topazproject.org/RDF/p2'
     assert !m.hasInverseUri()
@@ -106,8 +109,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
+    l = m.loader
     assert m.name     == 'state'
-    assert m.type     == cls2
+    assert l.type     == cls2
     assert m.dataType == null
     assert m.uri      == 'foo:p3'
     assert !m.hasInverseUri()
@@ -129,8 +133,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
+    l = m.loader
     assert m.name     == 'state'
-    assert m.type     == rdf.sessFactory.getClassMetadata('State').sourceClass
+    assert l.type     == rdf.sessFactory.getClassMetadata('State').sourceClass
     assert m.dataType == null
     assert m.uri      == 'foo:p4'
     assert !m.hasInverseUri()
@@ -143,16 +148,18 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 2
 
     m = cm.fields.asList()[0]
+    l = m.loader
     assert m.name     == 'value'
-    assert m.type     == String.class
+    assert l.type     == String.class
     assert m.dataType == null
     assert m.uri      == 'bar4:value'
     assert !m.hasInverseUri()
     assert m.model    == 'm42'
 
     m = cm.fields.asList()[1]
+    l = m.loader
     assert m.name          == 'history'
-    assert m.type          == List.class
+    assert l.type          == List.class
     assert m.componentType == rdf.sessFactory.getClassMetadata('History').sourceClass
     assert m.dataType      == null
     assert m.uri           == 'bar4:history'
@@ -166,8 +173,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.asList()[0]
+    l = m.loader
     assert m.name     == 'value'
-    assert m.type     == String.class
+    assert l.type     == String.class
     assert m.dataType == null
     assert m.uri      == 'bar4:value'
     assert !m.hasInverseUri()
@@ -184,8 +192,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
+    l = m.loader
     assert m.name     == 'state'
-    assert m.type     == URI.class
+    assert l.type     == URI.class
     assert m.dataType == null
     assert m.uri      == 'foo:p5'
     assert m.hasInverseUri()
@@ -203,8 +212,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
+    l = m.loader
     assert m.name     == 'state'
-    assert m.type     == URI.class
+    assert l.type     == URI.class
     assert m.dataType == null
     assert m.uri      == 'p6:state'
     assert !m.hasInverseUri()
@@ -251,8 +261,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
+    l = m.loader
     assert m.name     == 'state'
-    assert m.type     == String.class
+    assert l.type     == String.class
     assert m.dataType == null
     assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
     assert !m.hasInverseUri()
@@ -271,16 +282,18 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 2
 
     m = cm.fields.asList()[0]
+    l = m.loader
     assert m.name     == 'blah'
-    assert m.type     == String.class
+    assert l.type     == String.class
     assert m.dataType == null
     assert m.uri      == 'http://rdf.topazproject.org/RDF/blah'
     assert !m.hasInverseUri()
     assert m.model    == null
 
     m = cm.fields.asList()[1]
+    l = m.loader
     assert m.name     == 'state'
-    assert m.type     == String.class
+    assert l.type     == String.class
     assert m.dataType == null
     assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
     assert !m.hasInverseUri()
@@ -573,7 +586,7 @@ public class BuilderTest extends GroovyTestCase {
     def mappers = rdf.sessFactory.getClassMetadata(cls).fields
     assert mappers.size() == 3
     for (Mapper m : mappers)
-      assert m.serializer != null
+      assert ((FieldLoader)m.loader).serializer != null
     assert mappers.name.sort() == [ 'name.givenName', 'name.surname', 'state' ]
 
     // nested embeddings
@@ -592,7 +605,7 @@ public class BuilderTest extends GroovyTestCase {
     mappers = rdf.sessFactory.getClassMetadata(cls).fields
     assert mappers.size() == 3
     for (Mapper m : mappers)
-      assert m.serializer != null
+      assert ((FieldLoader)m.loader).serializer != null
     assert mappers.name.sort() ==
                       [ 'info.personal.name.givenName', 'info.personal.name.surname', 'state' ]
 
@@ -766,8 +779,9 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 3
 
     Mapper m = cm.fields.asList()[0]
+    FieldLoader l = (FieldLoader)m.loader
     assert m.name     == 'sel'
-    assert m.type     == cls
+    assert l.type     == cls
     assert m.dataType == null
     assert m.uri      == 'foo:p1'
     assert !m.hasInverseUri()
@@ -778,8 +792,9 @@ public class BuilderTest extends GroovyTestCase {
     assert !m.isCascadable(CascadeType.refresh)
 
     m = cm.fields.asList()[1]
+    l = (FieldLoader)m.loader
     assert m.name     == 'all'
-    assert m.type     == cls
+    assert l.type     == cls
     assert m.dataType == null
     assert m.uri      == 'foo:p2'
     assert !m.hasInverseUri()
@@ -790,8 +805,9 @@ public class BuilderTest extends GroovyTestCase {
     assert m.isCascadable(CascadeType.refresh)
 
     m = cm.fields.asList()[2]
+    l = (FieldLoader)m.loader
     assert m.name     == 'none'
-    assert m.type     == cls
+    assert l.type     == cls
     assert m.dataType == null
     assert m.uri      == 'foo:p3'
     assert !m.hasInverseUri()

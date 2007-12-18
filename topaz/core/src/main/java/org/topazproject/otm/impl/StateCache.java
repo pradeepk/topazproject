@@ -111,7 +111,7 @@ class StateCache {
           pmap = (Map<String, List<String>>) m.getRawValue(instance, true);
         else {
           List<String> nv =
-            (m.getSerializer() != null) ? m.get(instance) : session.getIds(m.get(instance));
+            !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
           vmap.put(m, nv);
         }
       }
@@ -135,7 +135,7 @@ class StateCache {
         } else {
           List<String> ov = vmap.get(m);
           List<String> nv =
-            (m.getSerializer() != null) ? m.get(instance) : session.getIds(m.get(instance));
+            !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
           boolean      eq = (ov == null) ? (nv == null) : ov.equals(nv);
 
           if (!eq) {

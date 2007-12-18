@@ -24,6 +24,9 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.java.FieldLoader;
+import org.topazproject.otm.serializer.Serializer;
 
 /**
  * An abstract base for all query criterion used as restrictions in a  {@link
@@ -145,7 +148,12 @@ public abstract class Criterion {
       val = criteria.resolveParameter(((Parameter)value).getParameterName(), field);
     else {
       try {
-        val = (m.getSerializer() != null) ? m.getSerializer().serialize(value) : value.toString();
+        Loader l = m.getLoader();
+        Serializer ser = null;
+        if (l instanceof FieldLoader)
+          ser = ((FieldLoader)l).getSerializer();
+
+        val = (ser != null) ? ser.serialize(value) : value.toString();
       } catch (Exception e) {
         throw new OtmException("Serializer exception", e);
       }

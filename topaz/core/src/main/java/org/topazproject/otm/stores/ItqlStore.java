@@ -163,7 +163,7 @@ public class ItqlStore extends AbstractTripleStore {
         for (String k : pMap.keySet())
           for (String v : pMap.get(k))
             addStmt(buf, id, k, v, null, false); // xxx: uri or literal?
-      } else if (p.getSerializer() != null)
+      } else if (!p.isAssociation())
         addStmts(buf, id, p.getUri(), (List<String>) p.get(o) , p.getDataType(), p.typeIsUri(), 
                  p.getMapperType(), "$s" + i++ + "i", p.hasInverseUri());
       else
@@ -632,7 +632,7 @@ public class ItqlStore extends AbstractTripleStore {
 
     for (ClassMetadata<?> c : allSubClasses(cm, sf)) {
       for (Mapper p : c.getFields()) {
-        if (p.getSerializer() == null && p.getMapperType() == Mapper.MapperType.PREDICATE)
+        if (p.isAssociation() && p.getMapperType() == Mapper.MapperType.PREDICATE)
           mappers.add(p);
       }
     }
@@ -657,7 +657,7 @@ public class ItqlStore extends AbstractTripleStore {
                                   List<Filter> filters)
         throws OtmException {
     String tmodel = modelUri;
-    if (m.getSerializer() == null)
+    if (m.isAssociation())
       tmodel = getModelUri(sf.getClassMetadata(m.getComponentType()).getModel(), txn);
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $s $n subquery (select $t from <").append(tmodel)
@@ -666,7 +666,7 @@ public class ItqlStore extends AbstractTripleStore {
        .append(sub).append("> <").append(pred).append("> $s) and <")
        .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o")
        .append(" and $s <rdf:rest> $n");
-    if (m.getSerializer() == null)
+    if (m.isAssociation())
       applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
     qry.append(";");
 
@@ -678,7 +678,7 @@ public class ItqlStore extends AbstractTripleStore {
                                  List<Filter> filters)
         throws OtmException {
     String tmodel = modelUri;
-    if (m.getSerializer() == null)
+    if (m.isAssociation())
       tmodel = getModelUri(sf.getClassMetadata(m.getComponentType()).getModel(), txn);
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $p subquery (select $t from <").append(tmodel)
@@ -686,7 +686,7 @@ public class ItqlStore extends AbstractTripleStore {
        .append(modelUri).append("> where ")
        .append("($s $p $o minus $s <rdf:type> $o) and <")
        .append(sub).append("> <").append(pred).append("> $s");
-    if (m.getSerializer() == null)
+    if (m.isAssociation())
       applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
     qry.append(";");
 

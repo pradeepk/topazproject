@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.mapping.EmbeddedClassMapper;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
 import org.topazproject.otm.mapping.Mapper.MapperType;
 
 /** 
@@ -29,11 +29,11 @@ class ExprType {
 
   private final Type                      type;
   private final ClassMetadata             meta;
-  private final List<EmbeddedClassMapper> embFields;
+  private final List<EmbeddedClassFieldLoader> embFields;
   private final String                    datatype;
   private final MapperType                colType;
 
-  private ExprType(Type type, ClassMetadata meta, List<EmbeddedClassMapper> embFields,
+  private ExprType(Type type, ClassMetadata meta, List<EmbeddedClassFieldLoader> embFields,
                    String datatype, MapperType colType) {
     this.type      = type;
     this.meta      = meta;
@@ -64,13 +64,13 @@ class ExprType {
    * @return the new type
    * @throws NullPointerException if <var>meta</var> or <var>field</var> is null
    */
-  public static ExprType embeddedClassType(ClassMetadata meta, EmbeddedClassMapper field) {
+  public static ExprType embeddedClassType(ClassMetadata meta, EmbeddedClassFieldLoader field) {
     if (meta == null)
       throw new NullPointerException("class metadata may not be null");
     if (field == null)
       throw new NullPointerException("class field may not be null");
 
-    List<EmbeddedClassMapper> fields = new ArrayList<EmbeddedClassMapper>();
+    List<EmbeddedClassFieldLoader> fields = new ArrayList<EmbeddedClassFieldLoader>();
     fields.add(field);
     return new ExprType(Type.EMB_CLASS, meta, fields, null, null);
   }
@@ -133,7 +133,7 @@ class ExprType {
    *
    * @return the mappers if this is an embedded class; null otherwise
    */
-  public List<EmbeddedClassMapper> getEmbeddedFields() {
+  public List<EmbeddedClassFieldLoader> getEmbeddedFields() {
     return embFields;
   }
 
@@ -211,7 +211,7 @@ class ExprType {
 
   private String embFieldNames() {
     StringBuilder res = new StringBuilder();
-    for (EmbeddedClassMapper m : embFields)
+    for (EmbeddedClassFieldLoader m : embFields)
       res.append('.').append(m.getName());
     return res.toString();
   }

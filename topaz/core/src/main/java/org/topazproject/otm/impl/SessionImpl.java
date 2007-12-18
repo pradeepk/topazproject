@@ -163,7 +163,7 @@ public class SessionImpl extends AbstractSession {
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
       for (Mapper p : cm.getFields()) {
-        if ((p.getSerializer() != null) || (p.getUri() == null))
+        if (!p.isAssociation())
           continue;
 
         // ignore this association if delete does not cascade
@@ -207,7 +207,7 @@ public class SessionImpl extends AbstractSession {
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
       for (Mapper p : cm.getFields()) {
-        if ((p.getSerializer() != null) || (p.getUri() == null))
+        if (!p.isAssociation())
           continue;
 
         // ignore this association if evict does not cascade
@@ -422,7 +422,7 @@ public class SessionImpl extends AbstractSession {
 
     if (!cm.isView()) {
       for (Mapper m : cm.getFields())
-        if ((m.getFetchType() == FetchType.eager) && (m.getSerializer() == null)) {
+        if (m.getFetchType() == FetchType.eager) {
           for (Object o : m.get(instance))
             if (o != null)
               o.equals(null);
@@ -568,7 +568,7 @@ public class SessionImpl extends AbstractSession {
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
       for (Mapper p : cm.getFields()) {
-        if ((p.getSerializer() != null) || (p.getUri() == null))
+        if (!p.isAssociation() || (p.getUri() == null))
           continue;
 
         boolean deep = ((cascade != null) && p.isCascadable(cascade));
@@ -621,7 +621,7 @@ public class SessionImpl extends AbstractSession {
       if (op == null)
         continue;
 
-      if ((loopDetect == null) || (p.getSerializer() != null) || (p.getUri() == null))
+      if ((loopDetect == null) || !p.isAssociation())
         p.set(o, op.get(other));
       else {
         List cc = new ArrayList();

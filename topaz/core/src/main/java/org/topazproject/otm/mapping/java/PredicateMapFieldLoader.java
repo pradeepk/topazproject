@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.otm.mapping;
+package org.topazproject.otm.mapping.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,21 +19,20 @@ import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.OtmException;
 
 /**
- * Mapper for a mapper that allows a dynamic/run-time map of properties to values..
+ * FieldLoader for a map that allows a dynamic/run-time map of properties to values.
  *
  * @author Pradeep Krishnan
  */
-public class PredicateMapMapper extends AbstractMapper {
+public class PredicateMapFieldLoader extends AbstractFieldLoader {
   /**
-   * Creates a new PredicateMapMapper object.
+   * Creates a new PredicateMapFieldLoader object.
    *
    * @param field the java class field
    * @param getter the field get method or null
    * @param setter the field set method or null
    */
-  public PredicateMapMapper(Field field, Method getter, Method setter) {
-    super(null, field, getter, setter, null, null, null, null, false, null, 
-          Mapper.MapperType.PREDICATE_MAP, true, null, null,null);
+  public PredicateMapFieldLoader(Field field, Method getter, Method setter) {
+    super(field, getter, setter, null, null);
   }
 
   /**
@@ -69,7 +68,4 @@ public class PredicateMapMapper extends AbstractMapper {
     setRawValue(o, value);
   }
 
-  public IdentifierGenerator getGenerator() {
-    throw new UnsupportedOperationException("Generated values not supported for PredicateMaps");
-  }
 }

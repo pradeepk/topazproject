@@ -46,7 +46,7 @@ public class TransCriterion extends AbstractBinaryCriterion {
       throw new OtmException("'" + getFieldName() + "' does not exist in " + cm);
     if (!m.typeIsUri())
       throw new OtmException("Value must be a uri for trans(): field is "
-                             + m.getField().toGenericString());
+                             + m.getName());
 
     String val = serializeValue(getValue(), criteria, getFieldName());
     String model = m.getModel();

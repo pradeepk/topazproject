@@ -16,12 +16,14 @@ import java.lang.reflect.Method;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.ArrayMapper;
-import org.topazproject.otm.mapping.CollectionMapper;
-import org.topazproject.otm.mapping.EmbeddedClassMapper;
-import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
-import org.topazproject.otm.mapping.FunctionalMapper;
+import org.topazproject.otm.mapping.java.ArrayFieldLoader;
+import org.topazproject.otm.mapping.java.CollectionFieldLoader;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
+import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldLoader;
+import org.topazproject.otm.mapping.java.FieldLoader;
+import org.topazproject.otm.mapping.java.ScalarFieldLoader;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.MapperImpl;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
 import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.serializer.Serializer;
@@ -165,24 +167,31 @@ public class FieldDef {
     // generate the mapper(s)
     List m;
     if (maxCard == 1 && embedded) {
-      def container = new EmbeddedClassMapper(f, get, set)
-      m = classType.toClass().fields.collect{ new EmbeddedClassFieldMapper(container, it) }
+      def container = new EmbeddedClassFieldLoader(f, get, set)
+      m = classType.toClass().fields.collect{ new MapperImpl(it, new EmbeddedClassMemberFieldLoader(container, it.getLoader())) }
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       String rt = (ser == null) ? getRdfType(rdf, f.getType()) : null;
-      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, rt, inverse, model, mt, owned, idGen,
+      FieldLoader l = new ScalarFieldLoader(f, get, set, ser);
+      if (ser != null)
+        ft = null;
+      m = [new MapperImpl(pred, l, dtype, rt, inverse, model, mt, owned, idGen,
 ct, ft)]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
       Serializer ser      = rdf.sessFactory.getSerializerFactory().getSerializer(compType, dtype)
       String rt = (ser == null) ? getRdfType(rdf, compType) : null;
+      if (ser != null)
+        ft = null;
+      FieldLoader l;
       if (collType.toLowerCase() == 'array')
-        m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt, owned,
-                             idGen, ct, ft)]
+        l = new ArrayFieldLoader(f, get, set, ser, compType);
       else
-        m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt,
-                                  owned, idGen, ct, ft)]
+        l = new CollectionFieldLoader(f, get, set, ser, compType);
+
+      m = [new MapperImpl(pred, l, dtype, rt, inverse, model, mt, owned,
+                             idGen, ct, ft)]
     }
 
     // done

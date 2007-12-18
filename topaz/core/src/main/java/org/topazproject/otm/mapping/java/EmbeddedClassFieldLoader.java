@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.otm.mapping;
+package org.topazproject.otm.mapping.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -15,23 +15,22 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * Mapper for an embedded class field. It is only a "half" mapper in the sense, there aren't
- * any corresponding rdf triples. So the {@link #get} and {@link #set} methods are meaningless and
- * hence this mapper is used only by its field mappers to get/set the parent object's field.
+ * FieldLoader for an embedded class field. The {@link #get} and {@link #set} methods are 
+ * meaningless and hence this loader is used only by its field loaders to get/set the 
+ * parent object's field.
  *
  * @author Pradeep Krishnan
  */
-public class EmbeddedClassMapper extends AbstractMapper {
+public class EmbeddedClassFieldLoader extends AbstractFieldLoader {
   /**
-   * Creates a new EmbeddedClassMapper object.
+   * Creates a new EmbeddedClassFieldLoader object.
    *
    * @param field the field that is embedding this class
    * @param getter the get method or null for this embedded class field
    * @param setter the set method or null for this embedded classs field
    */
-  public EmbeddedClassMapper(Field field, Method getter, Method setter) {
-    super(null, field, getter, setter, null, null, null, null, false, null, null, true, null, 
-          null, null);
+  public EmbeddedClassFieldLoader(Field field, Method getter, Method setter) {
+    super(field, getter, setter, null, null);
   }
 
   /**

@@ -24,6 +24,7 @@ import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.java.FieldLoader;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.OtmException;
@@ -94,7 +95,7 @@ public class OwlHelper {
         // Now let's iterate over the fields
         for (Mapper m: cm.getFields()) {
           // See if this field really belongs to our class/type
-          Field f = m.getField();
+          Field f = ((FieldLoader)m.getLoader()).getField();
           clazz = f.getDeclaringClass();
           if (clazz != cm.getSourceClass()) {
             /* Now, we need to walk up the chain until we find a non-anonymous class that

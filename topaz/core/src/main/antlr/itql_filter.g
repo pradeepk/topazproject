@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.EmbeddedClassMapper;
 import org.topazproject.otm.stores.ItqlFilter;
 
 import antlr.RecognitionException;

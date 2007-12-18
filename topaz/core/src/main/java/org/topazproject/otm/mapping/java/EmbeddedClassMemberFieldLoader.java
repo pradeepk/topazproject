@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.otm.mapping;
+package org.topazproject.otm.mapping.java;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,25 +17,26 @@ import java.util.List;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
- * A wrapping mapper that projects fields of an embedded class on to the embedding class. This
+ * A wrapping loader that projects fields of an embedded class on to the embedding class. This
  * makes it possible for treating embedded class fields the same way as regular class fields.
  *
  * @author Pradeep Krishnan
  */
-public class EmbeddedClassFieldMapper implements Mapper {
-  private EmbeddedClassMapper container;
-  private Mapper              field;
+public class EmbeddedClassMemberFieldLoader implements FieldLoader {
+  private EmbeddedClassFieldLoader container;
+  private FieldLoader              field;
 
   /**
-   * Creates a new EmbeddedClassFieldMapper object.
+   * Creates a new EmbeddedClassMemberFieldLoader object.
    *
    * @param container the mapper for the embedded class field in the embedding class
    * @param field the mapper for a field in the embedded class
    */
-  public EmbeddedClassFieldMapper(EmbeddedClassMapper container, Mapper field) {
+  public EmbeddedClassMemberFieldLoader(EmbeddedClassFieldLoader container, FieldLoader field) {
     this.container   = container;
     this.field       = field;
   }
@@ -45,7 +46,7 @@ public class EmbeddedClassFieldMapper implements Mapper {
    * 
    * @return the mapper
    */
-  public EmbeddedClassMapper getContainer() {
+  public EmbeddedClassFieldLoader getContainer() {
     return container;
   }
 
@@ -54,7 +55,7 @@ public class EmbeddedClassFieldMapper implements Mapper {
    * 
    * @return the mapper
    */
-  public Mapper getFieldMapper() {
+  public FieldLoader getFieldLoader() {
     return field;
   }
 
@@ -128,22 +129,8 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public boolean typeIsUri() {
-    return field.typeIsUri();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public String getDataType() {
-    return field.getDataType();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public String getRdfType() {
-    return field.getRdfType();
+  public boolean typeIsUri(Mapper mapper) {
+    return field.typeIsUri(mapper);
   }
 
   /*
@@ -156,72 +143,8 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public String getUri() {
-    return field.getUri();
-  }
-
-  public String getProjectionVar() {
-    return null;
-  }
-
-  /*
-   * inherited javadoc
-   */
   public Serializer getSerializer() {
     return field.getSerializer();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public boolean hasInverseUri() {
-    return field.hasInverseUri();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public String getModel() {
-    return field.getModel();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public MapperType getMapperType() {
-    return field.getMapperType();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public boolean isEntityOwned() {
-    return field.isEntityOwned();
-  }
-
-  public IdentifierGenerator getGenerator() {
-    return field.getGenerator();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public CascadeType[] getCascade() {
-    return field.getCascade();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public FetchType getFetchType() {
-    return field.getFetchType();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public boolean isCascadable(CascadeType op) {
-    return field.isCascadable(op);
   }
 
   /**
@@ -230,6 +153,6 @@ public class EmbeddedClassFieldMapper implements Mapper {
    * inherited javadoc
    */
   public String toString() {
-    return "EmbeddedClassFieldMapper[container=" + container + ", field=" + field + "]";
+    return "EmbeddedClassMemberFieldLoader[container=" + container + ", field=" + field + "]";
   }
 }

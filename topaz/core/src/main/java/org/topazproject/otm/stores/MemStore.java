@@ -74,7 +74,7 @@ public class MemStore extends AbstractTripleStore {
       if (p.hasInverseUri())
         continue;
 
-      if (p.getSerializer() != null)
+      if (!p.isAssociation())
         storage.insert(cm.getModel(), id, p.getUri(), (String[]) p.get(o).toArray(new String[0]));
       else
         storage.insert(cm.getModel(), id, p.getUri(),
@@ -245,7 +245,7 @@ public class MemStore extends AbstractTripleStore {
 
       try {
         Mapper m        = cm.getMapperByName(name);
-        value           = (m.getSerializer() != null) ? m.getSerializer().serialize(o) : o.toString();
+        value           = o.toString();
       } catch (Exception e) {
         throw new OtmException("Serializer exception", e);
       }

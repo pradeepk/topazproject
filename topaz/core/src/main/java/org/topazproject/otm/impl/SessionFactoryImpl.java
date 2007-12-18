@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
+import org.topazproject.otm.mapping.java.FieldLoader;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 import org.topazproject.otm.query.DefaultQueryFunctionFactory;
 import org.topazproject.otm.query.QueryFunctionFactory;
@@ -439,7 +440,7 @@ public class SessionFactoryImpl implements SessionFactory {
   }
 
   private <T> void createProxy(Class<T> clazz, ClassMetadata<T> cm) {
-    final Method getter = cm.getIdField().getGetter();
+    final Method getter = ((FieldLoader)cm.getIdField().getLoader()).getGetter();
 
     MethodFilter mf     =
       new MethodFilter() {

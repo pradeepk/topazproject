@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.otm.mapping;
+package org.topazproject.otm.mapping.java;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -22,51 +22,23 @@ import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
- * Mapper for array type fileds.
+ * FieldLoader for array type fileds.
  *
  * @author Pradeep Krishnan
  */
-public class ArrayMapper extends AbstractMapper {
+public class ArrayFieldLoader extends AbstractFieldLoader {
   /**
-   * Creates a new ArrayMapper object.
+   * Creates a new ArrayFieldLoader object.
    *
-   * @param uri the rdf predicate
    * @param field the java class field
    * @param getter the field get method or null
    * @param setter the field set method or null
    * @param serializer the serializer or null
    * @param componentType the array component type
-   * @param dataType of literals or null for un-typed
-   * @param rdfType of associations or null for un-typed
-   * @param inverse if this field is persisted with an inverse predicate
-   * @param model the model where this field is persisted
-   * @param mapperType the mapper type of this field
-   * @param entityOwned if the triples for this field is owned by the containing entity
-   * @param generator if there is a generator for this field
-   * @param cascade cascade options for this field
-   * @param fetchType fetch type for this field (mostly for associations)
    */
-  public ArrayMapper(String uri, Field field, Method getter, Method setter, Serializer serializer,
-                     Class componentType, String dataType, String rdfType, boolean inverse,
-                     String model, MapperType mapperType, boolean entityOwned,
-                     IdentifierGenerator generator, CascadeType [] cascade,
-                     FetchType fetchType) {
-    super(uri, field, getter, setter, serializer, componentType, dataType, rdfType, inverse, model,
-          mapperType, entityOwned, generator, cascade, fetchType);
-  }
-
-  /**
-   * Creates a new ArrayMapper object for Views.
-   *
-   * @param var           the projection variable
-   * @param field         the java class field
-   * @param setter        the field set method or null
-   * @param componentType the array component type
-   * @param fetchType     fetch type for this field (for associations)
-   */
-  public ArrayMapper(String var, Field field, Method setter, Class componentType,
-                     FetchType fetchType) {
-    super(var, field, null, setter, null, componentType, fetchType);
+  public ArrayFieldLoader(Field field, Method getter, Method setter, Serializer serializer,
+                     Class componentType) {
+    super(field, getter, setter, serializer, componentType);
   }
 
   /**

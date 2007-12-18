@@ -79,12 +79,12 @@ public class ClassMetadata<T> {
       if (mappers == null)
         uriMap.put(m.getUri(), mappers = new ArrayList<Mapper>());
       else if (isDuplicateMapping(mappers, m))
-        throw new OtmException("Duplicate predicate uri for " + m.getField().toGenericString());
+        throw new OtmException("Duplicate predicate uri for " + m.getName() + " in " + name);
 
       mappers.add(m);
 
       if (nameMap.put(m.getName(), m) != null)
-        throw new OtmException("Duplicate field name for " + m.getField().toGenericString());
+        throw new OtmException("Duplicate field name " + m.getName() + " in " + name);
     }
 
     this.uriMap  = Collections.unmodifiableMap(uriMap);
@@ -119,7 +119,7 @@ public class ClassMetadata<T> {
     Map<String, Mapper>       nameMap = new HashMap<String, Mapper>();
     for (Mapper m : fields) {
       if (nameMap.put(m.getName(), m) != null)
-        throw new OtmException("Duplicate field name for " + m.getField().toGenericString());
+        throw new OtmException("Duplicate field name " + m.getName() + " in view " + name);
 
       List<Mapper> mappers = varMap.get(m.getProjectionVar());
       if (mappers == null)

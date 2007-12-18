@@ -50,6 +50,19 @@ public interface Mapper {
    */
   static enum FetchType {lazy, eager};
 
+  /**
+   * Get the Loader for this field
+   *
+   * @return the loader for this field
+   */
+  public Loader getLoader();
+
+  /**
+   * Gets the name of the field.
+   *
+   * @return the name
+   */
+  public String getName();
 
   /**
    * Get a value from a field of an object.
@@ -95,41 +108,6 @@ public interface Mapper {
   public void setRawValue(Object o, Object value) throws OtmException;
 
   /**
-   * Gets the get method used.
-   *
-   * @return the get method or null
-   */
-  public Method getGetter();
-
-  /**
-   * Gets the set method used.
-   *
-   * @return the set method or null
-   */
-  public Method getSetter();
-
-  /**
-   * Gets the underlying field.
-   *
-   * @return the filed
-   */
-  public Field getField();
-
-  /**
-   * Gets the name of the field.
-   *
-   * @return the name
-   */
-  public String getName();
-
-  /**
-   * Gets the type of the field.
-   *
-   * @return the field type
-   */
-  public Class getType();
-
-  /**
    * Checks if the type is an rdf resource and not a literal.
    *
    * @return true if this field is persisted as a uri
@@ -144,19 +122,21 @@ public interface Mapper {
   public String getDataType();
 
   /**
+   * Checks if the type is an association and not a serialized literal/URI.
+   * When a field is not an association, the node is considered a leaf node
+   * in the rdf graph.
+   *
+   * @return true if this field is 
+   */
+  public boolean isAssociation();
+
+
+  /**
    * Gets the rdf:type for an association field.
    *
    * @return the rdf:type or null for un-typed
    */
   public String getRdfType();
-
-  /**
-   * Gets the component type of this field.
-   *
-   * @return component type for arrays; member type for collections; or same as type for simple
-   *         fields
-   */
-  public Class getComponentType();
 
   /**
    * Gets the rdf predicate uri. All fields other than an 'Id' field must have a uri (for regular
@@ -173,14 +153,6 @@ public interface Mapper {
    * @return the projection variable
    */
   public String getProjectionVar();
-
-  /**
-   * Gets the serializer used. Note that there won't be any serializer set up for
-   * associations.
-   *
-   * @return the serializer or null
-   */
-  public Serializer getSerializer();
 
   /**
    * Tests if the predicate uri represents an inverse.
@@ -235,4 +207,7 @@ public interface Mapper {
    * @return the FetchType option
    */
   public FetchType getFetchType();
+
+  // XXX: temporary hack
+  public Class getComponentType();
 }

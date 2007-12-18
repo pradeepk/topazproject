@@ -22,6 +22,9 @@ import java.util.Set;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.java.FieldLoader;
+import org.topazproject.otm.serializer.Serializer;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -374,7 +377,11 @@ public class Criteria implements Parameterizable<Criteria> {
     }
 
     try {
-      return (m.getSerializer() != null) ? m.getSerializer().serialize(val) : val.toString();
+      Loader l = m.getLoader();
+      Serializer ser = null;
+      if (l instanceof FieldLoader)
+        ser = ((FieldLoader)l).getSerializer();
+      return (ser != null) ? ser.serialize(val) : val.toString();
     } catch (Exception e) {
       throw new OtmException("Error serializing the value for parameter '" + name + ": field '" + 
           field + "' and value is '" + val + "'", e);

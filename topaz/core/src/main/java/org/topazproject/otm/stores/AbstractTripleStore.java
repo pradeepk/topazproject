@@ -92,7 +92,7 @@ public abstract class AbstractTripleStore implements TripleStore {
 
     // now assign values to fields
     for (Mapper m : mvalues.keySet()) {
-      if (m.getSerializer() != null)
+      if (!m.isAssociation())
         m.set(instance, mvalues.get(m));
       else {
         List assocs = new ArrayList();

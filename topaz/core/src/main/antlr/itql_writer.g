@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.topazproject.otm.mapping.EmbeddedClassMapper;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -164,7 +164,7 @@ pexpr[QueryBuilder qb, AST var]
               break;
 
             case EMB_CLASS:
-              List<EmbeddedClassMapper> ef = type.getEmbeddedFields();
+              List<EmbeddedClassFieldLoader> ef = type.getEmbeddedFields();
               qb.prjTypes.add(ef.get(ef.size() - 1).getType());
               break;
 

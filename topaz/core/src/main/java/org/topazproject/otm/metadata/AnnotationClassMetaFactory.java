@@ -45,15 +45,16 @@ import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.ArrayMapper;
-import org.topazproject.otm.mapping.CollectionMapper;
-import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
-import org.topazproject.otm.mapping.EmbeddedClassMapper;
-import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.MapperImpl;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
 import org.topazproject.otm.mapping.Mapper.FetchType;
-import org.topazproject.otm.mapping.PredicateMapMapper;
+import org.topazproject.otm.mapping.java.ArrayFieldLoader;
+import org.topazproject.otm.mapping.java.CollectionFieldLoader;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
+import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldLoader;
+import org.topazproject.otm.mapping.java.FieldLoader;
+import org.topazproject.otm.mapping.java.ScalarFieldLoader;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -317,10 +318,11 @@ public class AnnotationClassMetaFactory {
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       Mapper     p;
+      ScalarFieldLoader loader = new ScalarFieldLoader(f, getMethod, setMethod, serializer);
       if (isView)
-        p = new FunctionalMapper(null, f, getMethod, setMethod, serializer, null);
+        p = new MapperImpl(null, loader, null);
       else
-        p = new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
+        p = new MapperImpl(null, loader, null, null, false, null,
                                  Mapper.MapperType.PREDICATE, true, generator, null, null);
 
       return Collections.singletonList(p);
@@ -366,27 +368,24 @@ public class AnnotationClassMetaFactory {
       CascadeType ct[] = (rdf != null) ? rdf.cascade()
                                    : new CascadeType[]{CascadeType.all};
       FetchType ft = (rdf != null) ? rdf.fetch() : FetchType.lazy;
-      Mapper            p;
 
-      if (isArray) {
-        if (isView)
-          p = new ArrayMapper(var, f, setMethod, type, proj.fetch());
-        else
-          p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
-                              model, mt, !notOwned, generator, ct, ft);
-      } else if (isCollection) {
-        if (isView)
-          p = new CollectionMapper(var, f, getMethod, setMethod, type, proj.fetch());
-        else
-          p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
-                                   model, mt, !notOwned, generator, ct, ft);
-      } else {
-        if (isView)
-          p = new FunctionalMapper(var, f, getMethod, setMethod, null, proj.fetch());
-        else
-          p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
-                                   mt, !notOwned, generator, ct, ft);
-      }
+      if (serializer != null)
+        ft = null;
+      else if (isView)
+        ft = proj.fetch();
+
+      FieldLoader loader;
+      if (isArray)
+        loader = new ArrayFieldLoader(f, getMethod, setMethod, serializer, type);
+      else if (isCollection)
+        loader = new CollectionFieldLoader(f, getMethod, setMethod, serializer, type);
+      else
+        loader = new ScalarFieldLoader(f, getMethod, setMethod, serializer);
+      Mapper            p;
+      if (isView)
+        p = new MapperImpl(var, loader, ft);
+      else
+        p = new MapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft);
 
       return Collections.singletonList(p);
     }
@@ -396,7 +395,6 @@ public class AnnotationClassMetaFactory {
                              + " can't be an array, collection or a simple field");
 
     ClassMetadata<?> cm;
-
     try {
       cm = create(type, type, ns);
     } catch (OtmException e) {
@@ -409,17 +407,17 @@ public class AnnotationClassMetaFactory {
       throw new OtmException("@Embedded class '" + type + "' embedded at " + toString(f)
                              + " should not declare an rdf:type of its own. (fix me)");
 
-    EmbeddedClassMapper ecp     = new EmbeddedClassMapper(f, getMethod, setMethod);
+    EmbeddedClassFieldLoader ecp     = new EmbeddedClassFieldLoader(f, getMethod, setMethod);
 
     Collection<Mapper>  mappers = new ArrayList<Mapper>();
 
     for (Mapper p : cm.getFields())
-      mappers.add(new EmbeddedClassFieldMapper(ecp, p));
+      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldLoader(ecp, (FieldLoader)p.getLoader())));
 
     Mapper p = cm.getIdField();
 
     if (p != null)
-      mappers.add(new EmbeddedClassFieldMapper(ecp, p));
+      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldLoader(ecp, (FieldLoader)p.getLoader())));
 
     return mappers;
   }
@@ -478,6 +476,7 @@ public class AnnotationClassMetaFactory {
 
   private Mapper createPredicateMap(Field field, Method getter, Method setter)
                              throws OtmException {
+    String model = null; // TODO: allow predicate maps from other models
     Type type = field.getGenericType();
 
     if (Map.class.isAssignableFrom(field.getType()) && (type instanceof ParameterizedType)) {
@@ -495,7 +494,9 @@ public class AnnotationClassMetaFactory {
 
           if ((targs.length == 1) && (targs[0] instanceof Class)
                && String.class.isAssignableFrom((Class) targs[0]))
-            return new PredicateMapMapper(field, getter, setter);
+            return new MapperImpl(null, new ScalarFieldLoader(field, getter, setter, null), 
+                                  null, null, false, model, Mapper.MapperType.PREDICATE_MAP,
+                                  true, null, null, null);
         }
       }
     }
