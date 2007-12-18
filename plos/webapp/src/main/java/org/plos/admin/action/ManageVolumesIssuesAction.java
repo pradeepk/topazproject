@@ -47,7 +47,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private String journalKey;
   private String manageVolumesIssuesAction;
   private Journal journal;
-  private URI volume;
   private List<Volume> volumes = new ArrayList();
   private List<Issue> issues = new ArrayList();
   private URI doi;
@@ -405,17 +404,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    */
   public void setDoi(String doi) {
     this.doi = URI.create(doi);
-  }
-
-  /**
-   * Set Issue's Volume DOI.
-   *
-   * Enable Struts Form to set the Issue's Volume DOI as a String.
-   *
-   * @param volumeDoi the Issue's Volume DOI.
-   */
-  public void setVolume(String volumeDoi) {
-    this.volume = URI.create(volumeDoi);
   }
 
   /**
