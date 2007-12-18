@@ -45,7 +45,8 @@ svn log -rBASE:{`date "+%Y-%m-%d"`}
 
 rm -f plos/it/install/*/installed
 set -e
-${MVN} ${MVNARGS} -Pit clean install --batch-mode
+#${MVN} ${MVNARGS} -Pit clean install --batch-mode
+${MVN} ${MVNARGS} clean install --batch-mode
 N=$?
 
 # Build RPMs if integration tests succeeded
