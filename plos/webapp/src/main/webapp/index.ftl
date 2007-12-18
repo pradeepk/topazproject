@@ -60,28 +60,35 @@
             <!-- end : calls to action blocks -->
             
             <#if categoryInfos?size gt 0>
+	    
+            <#assign colSize = (categoryInfos?size / 2) + 0.5>
+	    
             <!-- begin : explore by subject block -->
             <div class="explore block">
               <h2>Explore by Subject</h2>
               <p>(#) indicates the number of articles published in each subject category.</p>
               <ul>
                 <#list categoryInfos?keys as category>
-                  <#assign categoryId = category?replace("\\s|\'","","r")>
-                  <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
-                  <li>
-                    <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
-                    <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
-                  </li>
+		  <#if (category_index + 1) lte colSize>
+		  <#assign categoryId = category?replace("\\s|\'","","r")>
+                    <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
+                    <li>
+                      <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
+                      <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
+                    </li>
+		  </#if>
                 </#list>
               </ul>
               <ul>
                 <#list categoryInfos?keys as category>
-                  <#assign categoryId = category?replace("\\s|\'","","r")>
-                  <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
-                  <li>
-                    <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
-                    <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
-                  </li>
+		  <#if (category_index + 1) gt colSize>
+                    <#assign categoryId = category?replace("\\s|\'","","r")>
+                    <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
+                    <li>
+                      <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
+                      <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
+                    </li>
+		  </#if>
                 </#list>
               </ul>
               <div class="clearer">&nbsp;</div>
