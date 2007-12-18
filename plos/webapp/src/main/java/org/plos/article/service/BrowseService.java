@@ -264,7 +264,7 @@ public class BrowseService {
     URI nextIssue = null;
     URI parentVolume = null;
     final List<Volume> volumes = session.createCriteria(Volume.class)
-            .add(Restrictions.eq("simleCollection", doi)).list();
+            .add(Restrictions.eq("simpleCollection", doi)).list();
     if (volumes.size() > 0) {
       parentVolume = volumes.get(0).getId();
       final List<URI> issues = volumes.get(0).getSimpleCollection();
