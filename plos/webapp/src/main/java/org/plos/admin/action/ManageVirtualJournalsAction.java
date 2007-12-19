@@ -13,7 +13,6 @@ package org.plos.admin.action;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +32,7 @@ import org.topazproject.otm.util.TransactionHelper;
  */
 public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
-  private Set<Journal> journals;
+  private Journal journal;
   private String journalToModify;
   private URI image;
   private URI currentIssue;
@@ -70,7 +69,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
               || (articlesToAdd != null && articlesToAdd.length() != 0)
               || articlesToDelete != null)) {
             // get the Journal
-            Journal journal = journalService.getJournal(journalToModify);
+            Journal journal = journalService.getJournal();
             if (journal == null) {
               final String errorMessage = "Error getting journal to modify: " + journalToModify;
               addActionMessage(errorMessage);
@@ -143,15 +142,11 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
             addActionMessage("Browse cache flush for: " + journal.getKey());
           }
 
-          // get all Journals
-          journals = journalService.getAllJournals();
+          // get current Journal
+          journal = journalService.getJournal();
 
           if (log.isDebugEnabled()) {
-            for (final Journal journal : journals) {
-              log.debug("execute(): Journal: key:" + journal.getKey() + ", eIssn:" + journal.getEIssn()
-                + ", smartCollectionRules:" + journal.getSmartCollectionRules().toString()
-                + ", simpleCollection:" + journal.getSimpleCollection().toString());
-            }
+              log.debug("execute(): Journal: " + journal);
           }
 
           return null;
@@ -177,20 +172,13 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   }
 
   /**
-   * Gets all virtual Journals.
+   * Gets current virtual Journal.
    *
-   * @return All virtual Journals.
+   * @return Current virtual Journal.
    */
-  public Set<Journal> getJournals() {
-    if (log.isDebugEnabled()) {
-      for (final Journal journal : journals) {
-        log.debug("getJournals(): Journal: key:" + journal.getKey() + ", eIssn:" + journal.getEIssn()
-          + ", smartCollectionRules:" + journal.getSmartCollectionRules().toString()
-          + ", simpleCollection:" + journal.getSimpleCollection().toString());
-      }
-    }
+  public Journal getJournal() {
 
-    return journals;
+    return journal;
   }
 
   /**
