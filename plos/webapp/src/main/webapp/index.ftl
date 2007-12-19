@@ -12,14 +12,19 @@
           <div class="col last">
             <div id="importantStuff" class="block">
               <h2>New and Noted</h2>
-              <@s.url id="newNoted1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000096"/>
-              <@s.url id="newNoted2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000087"/>
-              <@s.url id="newNoted3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000143"/>
+              <@s.url id="newNoted01" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001341"/>
+              <@s.url id="newNoted02" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001318"/>
+              <@s.url id="newNoted03" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001324"/>
+              <@s.url id="newNoted04" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001083"/>
+              <@s.url id="newNoted05" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001268"/>
+              <@s.url id="newNoted06" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001247"/>
+              <@s.url id="newNoted07" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001326"/>
               <div class="article section">
                 <h3>Recently Published</h3>
                 <ul class="articles">
-                  <li><a href="#">Autem Sino Nutus, Premo Conventio Virtus Epulae va Consequat at Dolus Appellatio Praesent Uxor Autem Lenis</a></li>
-                  <li><a href="#">Capto Zelus Obruo, Sudo Abico Mara Ratis Aliquip Praesent</a></li>
+                  <li><@s.a href="${newNoted01}" title="Read Open-Access Article">Light Variability Illuminates Niche-Partitioning among Marine Picocyanobacteria</@s.a></li>
+                  <li><@s.a href="${newNoted02}" title="Read Open-Access Article">Full-Exon Resequencing Reveals Toll-Like Receptor Variants Contribute to Human Susceptibility to Tuberculosis Disease</@s.a></li>
+                  <li><@s.a href="${newNoted03}" title="Read Open-Access Article">Canine Population Structure: Assessment and Impact of Intra-Breed Stratification on SNP-Based Association Studies</@s.a></li>
                   <li><a href="${browseDateURL}">Browse all recently published articles</a></li>
                 </ul>
                 <div class="clearer">&nbsp;</div>
@@ -27,20 +32,22 @@
               <div class="article section">
                 <h3>Community Discussions</h3>
                 <ul class="articles">
-                  <li><a href="#">Premo Conventio Virtus Epulae va Consequat at Dolus Appellatio Praesent Uxor Autem Lenis</a></li>
-                  <li><a href="#">Lorem Ipsum Dolor sit Amet, Consectetuer Adipiscing Elit</a></li>
+                  <li><@s.a href="${newNoted04}" title="Read Open-Access Article">Analysis of the Trajectory of <em>Drosophila melanogaster</em> in a Circular Open Field Arena</@s.a></li>
+                  <li><@s.a href="${newNoted05}" title="Read Open-Access Article">Repeated Exposure to Media Violence Is Associated with Diminished Response in an Inhibitory Frontolimbic Network</@s.a></li>
+                  <li><@s.a href="${newNoted06}" title="Read Open-Access Article">Brain Responses to Violet, Blue, and Green Monochromatic Light Exposures in Humans: Prominent Role of Blue Light and the Brainstem</@s.a></li>
                 </ul>
                 <div class="clearer">&nbsp;</div>
               </div>
               <div class="article section lastSection">
                 <h3>In the News</h3>
-                <p><a href="#">Structural Extremes in a Cretaceous Dinosaur</a></p>
-                <p>Fossils of the new dinosaur Nigersaurus taqueti caused a global media sensation and activity.</p>
+                <p><@s.a href="${newNoted07}" title="Read Open-Access Article">Plant Geneticists Find <em>Veritas in Vino</em></@s.a></p>
+                <p>Viticulture takes a step forward with the publication of a high quality 504.6 megabase genome sequence of Pinot Noir grape including 29,585 genes 2 million single nucleotide polymophisms, a whole genome duplication which produced at least ten of the nineteen chromosomes, and much more...</p>
+                <!-- The list below is to be used for links out to media or blogs referencing the highlighted article-->
+                <!--
                 <ul class="articles refs">
-                  <li>New York Times: <a href="#">A Cowlike Dinosaur Comes Into Focus</a></li>
-                  <li>National Geographic: <a href="#">Bizarre Dinosaur Grazed Like a Cow, Study Says</a></li>
-                  <li>New Scientist: <a href="#">Odd-jawed dinosaur reveals bovine lifestyle</a></li>
+                  <li>source: <a href="#">article title</a></li>
                 </ul>
+                -->
                 <div class="clearer">&nbsp;</div>
               </div>
             </div>
@@ -49,7 +56,7 @@
             <div class="ctaWrap">
               <div id="cta1">
                 <strong>Publish with PLoS</strong>
-                <a href="#">We want to publish your work</a>
+                <a href="${checklist}">We want to publish your work</a>
               </div>
               <div id="cta2">
                 <strong>Have Your Say</strong>
@@ -97,23 +104,32 @@
             
             <div class="other block">
               <h2>Other PLoS Content</h2>
+              <@s.url id="other01" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pgen.0030226"/>
+              <@s.url id="other02" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000087"/>
+              <@s.url id="other03" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pcbi.0030230"/>
+              <@s.url id="other04" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pbio.0050324"/>
               <div class="section">
-                <h3><a href="http://www.plospathogens.org/"><em>PLoS Pathogens</em></a></h3>
+                <h3><a href="http://genetics.plosjournals.org"><em>PLoS Genetics</em></a></h3>
                 <ul class="articles">
-                  <li><a href="http://pathogens.plosjournals.org/perlserv/?request=get-document&doi=10.1371%2Fjournal.ppat.0030185" title="Read Open Access Article">Bradykinin B2 Receptors of Dendritic Cells, Acting as Sensors of Kinins Proteolytically Released by <em>Trypanosoma cruzi</em>, Are Critical for the Development of Protective Type-1 Responses</a></li>
-                  <li><a href="http://pathogens.plosjournals.org/perlserv/?request=get-document&doi=10.1371%2Fjournal.ppat.0030183" title="Read Open Access Article">Secreted NS1 of Dengue Virus Attaches to the Surface of Cells via Interactions with Heparan Sulfate and Chondroitin Sulfate E </a></li>
+                  <li><@s.a href="${other01}" title="Read Open-Access Article">Chromosome Structuring Limits Genome Plasticity in <em>Escherichia coli</em></@s.a></li>
                 </ul>
               </div>
               <div class="section">
-                <h3><a href="http://www.plosone.org/"><em>PLoS ONE</em></a></h3>
+                <h3><a href="http://www.plosntds.org"><em>PLoS Neglected Tropical Diseases</em></a></h3>
                 <ul class="articles">
-                  <li><a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0001189" title="Read Open Access Article">Mining Predicted Essential Genes of <em>Brugia malayi</em> for Nematode Drug Targets </a></li>
+                  <li><@s.a href="${other02}" title="Read Open-Access Article">Risk Factors for Tungiasis in Nigeria: Identification of Targets for Effective Intervention</@s.a></li>
+                </ul>
+               </div>
+               <div class="section">
+                <h3><a href="http://compbiol.plosjournals.org"><em>PLoS Computational Biology</em></a></h3>
+                <ul class="articles">
+                  <li><@s.a href="${other03}" title="Read Open-Access Article">Using Likelihood-Free Inference to Compare Evolutionary Dynamics of the Protein Networks of <em>H. pylori</em> and <em>P. falciparum</em></@s.a></li>
                 </ul>
                </div>
                <div class="section lastSection">
-                 <h3><a href="http://www.plosmedicine.org/"><em>PLoS Medicine</em></a></h3>
-                 <ul class="articles">
-                    <li><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371%2Fjournal.pmed.0040334" title="Read Open Access Article">Cytomegalovirus Retinitis: The Neglected Disease of the AIDS Pandemic</a></li>
+                 <h3><a href="http://biology.plosjournals.org"><em>PLoS Biology</em></a></h3>
+                <ul class="articles">
+                  <li><@s.a href="${other04}" title="Read Open-Access Article">Mapping Meiotic Single-Strand DNA Reveals a New Landscape of DNA Double-Strand Breaks in <em>Saccharomyces cerevisiae</em></@s.a></li>
                 </ul>
               </div>
             </div><!-- end : other block -->
@@ -125,21 +141,21 @@
           <div class="subcol first">
           <!-- begin : about block -->
           <div class="block">
-            <h3>What is PLoS ONE?</h3>
+            <h3>What is <em>PLoS ONE</em>?</h3>
             <p>An interactive open-access journal for the communication of all peer-reviewed scientific and medical research. <a href="${info}">More</a></p>
           </div>
           <!-- end : about block -->
           <!-- begin : block -->
           <div class="block">
-            <h3>PLoS ONE is 1 Year Old</h3>
+            <h3><em>PLoS ONE</em> is 1 Year Old</h3>
             <p>We're marking <a href="#">the occasion</a> with this home page makeover that will help you find relevant content more quickly and encourage dialogue on articles.</li></p>
           </div>
           <!-- end : block -->
           <!-- begin : block -->
           <div class="block">
             <h3>Author Survey Results</h3>
-            <p>Thanks to the 2,000+ authors who responded to our survey&#8212;97.2% say they will publish with PLoS ONE again.</p>
-            <p>Congratulations to our iPod Shuffle winners: <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000374" title="Read Open Access Article">Marion Coolen</a>, <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000993" title="Read Open Access Article">Thomas J. Baiga</a>, and <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000277" title="Read Open Access Article">B&#233;n&#233;dicte Lafay</a></p>
+            <p>Thanks to the 2,000+ authors who responded to our survey&#8212;97.2% say they will publish with <em>PLoS ONE</em> again.</p>
+            <p>Congratulations to our iPod Shuffle winners: <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000374" title="Read Open Access Article">Marion Coolen</a>, <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000993" title="Read Open Access Article">Thomas J. Baiga</a>, and <a href="http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0000277" title="Read Open Access Article">B&#233;n&#233;dicte Lafay</a>.</p>
           </div>
           <!-- end : block -->
           <!-- begin : journal club block -->
