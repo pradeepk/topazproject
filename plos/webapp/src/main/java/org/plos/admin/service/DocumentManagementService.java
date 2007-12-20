@@ -324,6 +324,10 @@ public class DocumentManagementService {
     } catch (ApplicationException e) {
       log.error("Unable to retrieve Article URI='"+uri+"'", e);
     }
+    if (article == null) {
+      log.warn("fetchArticleService.getArticleInfo() returned null for article URI: '"+uri+"' so using default image set");
+      return ImageSetConfig.getDefaultImageSetConfig();
+    }
     
     Set<URI> artTypes = article.getArticleType();
     ArticleType at = null;
