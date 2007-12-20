@@ -70,7 +70,7 @@
               value="${unbracketedString}"/>
           </td>
         </tr>
-        <tr><th colspan="2">Simple Collection</th></tr>
+        <tr><th colspan="2">Articles</th></tr>
         <tr>
           <td colspan="2"><@s.textfield name="articlesToAdd" label="Add" size="100"/></td>
         </tr>
