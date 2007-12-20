@@ -1042,9 +1042,10 @@
     </action>
   </package>
 
-  <!-- make Clinical Trial Actions and configs available  -->
+  <!-- make virtual journal Actions and configs available  -->
   <include file="struts-clinicalTrials.xml" />
-
-  <!-- make NTD Actions and configs available  -->
+  <include file="struts-compbiol.xml" />
+  <include file="struts-genetics.xml" />
   <include file="struts-ntd.xml" />
+  <include file="struts-pathogens.xml" />
 </struts>
