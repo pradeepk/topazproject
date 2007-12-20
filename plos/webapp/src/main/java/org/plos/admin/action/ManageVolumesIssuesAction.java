@@ -45,7 +45,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   private static final String SEPARATORS = "[ ,;]";
 
-  private String journalKey;
   private String manageVolumesIssuesAction;
   private Journal journal;
   private List<Volume> volumes = new ArrayList();
@@ -67,10 +66,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   @Override
   public String execute() throws Exception  {
 
-    if (log.isDebugEnabled()) {
-      log.debug("journalKey: " + journalKey);
-    }
-
     if (manageVolumesIssuesAction != null) {
       if (manageVolumesIssuesAction.equals(CREATE_VOLUME)) {
         createVolume();
@@ -90,9 +85,9 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
         public Void run(Transaction tx) {
 
           // get the Journal
-          journal = journalService.getJournal(journalKey);
+          journal = journalService.getJournal();
           if (journal == null) {
-            final String errorMessage = "Error getting journal: " + journalKey;
+            final String errorMessage = "Error getting current Journal";
             addActionError(errorMessage);
             log.error(errorMessage);
             return null;
@@ -331,7 +326,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
             session.delete(issue);
             addActionMessage("Deleted Issue: " + issue);
-            
+
             // update Volume?
             List<Volume> containingVolumes = session.createCriteria(Volume.class)
                     .add(Restrictions.eq("simpleCollection", doi)).list();
@@ -392,17 +387,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   public List<Issue> getIssues() {
 
     return issues;
-  }
-
-  /**
-   * Set key of Journal.
-   *
-   * Enable Struts Form to set the Journal key from URI param and Form.
-   *
-   * @param journalKey of Journal.
-   */
-  public void setJournalKey(String journalKey) {
-    this.journalKey = journalKey;
   }
 
   /**
