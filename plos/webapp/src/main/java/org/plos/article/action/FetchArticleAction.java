@@ -9,35 +9,30 @@
  */
 package org.plos.article.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import java.net.URI;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
+import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.AnnotationService;
 import org.plos.article.service.BrowseService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.annotation.service.Annotation;
-import org.plos.annotation.service.AnnotationService;
 import org.plos.journal.JournalService;
 import org.plos.model.article.ArticleInfo;
+import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Journal;
-import org.plos.models.ObjectInfo;
-import org.plos.models.PLoS;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.util.TransactionHelper;
 
-import org.springframework.beans.factory.annotation.Required;
-
-import java.net.URI;
-import java.net.URLDecoder;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Fetch article action.
@@ -48,31 +43,13 @@ public class FetchArticleAction extends BaseActionSupport {
 
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
-  private static String[] articleTypes = new String[]{
-      "Correction", 
-      "Research Article", 
-      "Retraction", 
-      "Debate", 
-      "Expert Commentary", 
-      "From Innovation to Application", 
-      "Historical Profiles & Perspective", 
-      "Policy Platform", 
-      "Symposium", 
-      "Viewpoint", 
-      "Review", 
-      "Editorial", 
-      "Interview", 
-      "Correspondence",
-      "Issue Image"
-  };
-  private static final Set<String> VALID_ARTICLE_TYPES = 
-    new HashSet<String>(Arrays.asList(articleTypes));
   private BrowseService browseService;
   private FetchArticleService fetchArticleService;
   private JournalService journalService;
   private Set<Journal> journalList;
   private Session session;
   private Article articleInfo;
+  private ArticleType articleType;
   private ArticleInfo articleInfoX;
   private String transformedArticle;
   private String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
@@ -94,21 +71,14 @@ public class FetchArticleAction extends BaseActionSupport {
         }
       }
       Article artInfo = fetchArticleService.getArticleInfo(articleURI); 
+      
       setArticleInfo(artInfo);
-      // Determine the articleType heading from the Article model. The article type was ingested from 
-      // the Article XML and stored as a URI. 
-      if (artInfo != null) {
-        Set<URI> artTypes = artInfo.getArticleType();
-        for (URI artType : artTypes) {
-          String artTypeStr = artType.toString();
-          if (artTypeStr.startsWith(PLoS.PLOS_ArticleType)) {
-            String heading = artTypeStr.substring(PLoS.PLOS_ArticleType.length());
-            heading = URLDecoder.decode(heading, "UTF-8");
-            if (VALID_ARTICLE_TYPES.contains(heading)) {
-              articleTypeHeading = heading;
-              break;
-            }
-          }
+      
+      articleType = ArticleType.getDefaultArticleType();
+      for (URI artTypeUri : artInfo.getArticleType()) {
+        if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
+          articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
+          break;
         }
       }
       
@@ -297,5 +267,10 @@ public class FetchArticleAction extends BaseActionSupport {
    */
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+
+  public ArticleType getArticleType() {
+    return articleType;
   }
 }
