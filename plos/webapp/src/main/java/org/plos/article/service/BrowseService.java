@@ -266,11 +266,14 @@ public class BrowseService {
     final List<Volume> volumes = session.createCriteria(Volume.class)
             .add(Restrictions.eq("simpleCollection", doi)).list();
     if (volumes.size() > 0) {
+      // TODO: using 1st Volume, use ??? when multiple
       parentVolume = volumes.get(0).getId();
       final List<URI> issues = volumes.get(0).getSimpleCollection();
       final int issuePos = issues.indexOf(doi);
       prevIssue = (issuePos == 0) ? null : issues.get(issuePos - 1);
-      prevIssue = (issuePos == issues.size() - 1) ? null : issues.get(issuePos + 1);
+      nextIssue = (issuePos == issues.size() - 1) ? null : issues.get(issuePos + 1);
+    } else {
+      log.warn("Issue: " + issue.getId() + ", not contained in any Volumes");
     }
 
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssue, nextIssue,
