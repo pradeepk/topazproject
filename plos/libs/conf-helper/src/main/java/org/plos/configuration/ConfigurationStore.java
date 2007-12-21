@@ -122,6 +122,15 @@ public class ConfigurationStore {
   }
 
   /**
+   * Overrides all existing configuration with the given conifguration object 
+   * (useful for JUnit testing!)
+   * @param newConfig
+   */
+  public void setConfiguration(CombinedConfiguration newConfig) {
+    root = newConfig;
+  }
+  
+  /**
    * Load/Reload the configuration from the factory config url.
    *
    * @param configURL URL to the config file for ConfigurationFactory
@@ -206,7 +215,7 @@ public class ConfigurationStore {
    * Iterate over all the resources of the given name and add them to our root
    * configuration.
    */
-  private static void addResources(CombinedConfiguration root, String resource)
+  public static void addResources(CombinedConfiguration root, String resource)
       throws ConfigurationException {
     Class klass = ConfigurationStore.class;
     if (resource.startsWith("/")) {
