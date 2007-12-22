@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.otm.AbstractStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -30,7 +31,7 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public abstract class AbstractTripleStore implements TripleStore {
+public abstract class AbstractTripleStore extends AbstractStore implements TripleStore {
   /**
    * Map of Criterion Builders for store specific functions. 
    */

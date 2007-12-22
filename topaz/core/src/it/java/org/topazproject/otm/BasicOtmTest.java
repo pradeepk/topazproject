@@ -74,8 +74,9 @@ public class BasicOtmTest extends AbstractOtmTest {
    * @throws OtmException DOCUMENT ME!
    */
   @Test
-  public void testCrud() throws OtmException {
+  public void testCrud() throws Exception {
     log.info("Testing basic CRUD operations ...");
+    final byte[] blob = "Hello world".getBytes("UTF-8");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a;
@@ -85,6 +86,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertTrue(!session.contains(a));
           session.saveOrUpdate(a);
           a.setType(Annotation.NS + "Comment");
+          a.setBody(blob);
         }
       });
     doInSession(new Action() {
@@ -114,6 +116,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals(42, a.getState());
           assertEquals("Pradeep", a.getCreator());
           assertEquals(Annotation.NS + "Comment", a.getType());
+          assertEquals(blob, a.getBody());
           assertEquals("FOO", a.foobar.foo);
           assertEquals("BAR", a.foobar.bar);
 

@@ -22,27 +22,7 @@ import org.topazproject.otm.query.Results;
  *
  * @author Pradeep Krishnan
  */
-public interface TripleStore {
-  /**
-   * Opens a connection to the store.
-   *
-   * @param sf  the session factory
-   *
-   * @return the connection
-   *
-   * @throws OtmException on an error
-   */
-  public Connection openConnection(SessionFactory sf) throws OtmException;
-
-  /**
-   * Closes a previously opened connection.
-   *
-   * @param con the connection
-   *
-   * @throws OtmException error
-   */
-  public void closeConnection(Connection con) throws OtmException;
-
+public interface TripleStore extends Store {
   /**
    * Persists an object in the triple store.
    *

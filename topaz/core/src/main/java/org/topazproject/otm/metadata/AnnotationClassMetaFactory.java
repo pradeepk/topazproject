@@ -33,6 +33,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.annotations.Blob;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
@@ -45,6 +46,7 @@ import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.mapping.Loader;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.MapperImpl;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
@@ -99,6 +101,7 @@ public class AnnotationClassMetaFactory {
     String             model     = null;
     String             uriPrefix = null;
     Mapper             idField   = null;
+    Loader             blobField = null;
     Collection<Mapper> fields    = new ArrayList<Mapper>();
 
     Class<?>           s         = clazz.getSuperclass();
@@ -113,6 +116,7 @@ public class AnnotationClassMetaFactory {
       type        = superMeta.getType();
       types       = superMeta.getTypes();
       idField     = superMeta.getIdField();
+      blobField   = superMeta.getBlobField();
       fields.addAll(superMeta.getFields());
     }
 
@@ -146,20 +150,34 @@ public class AnnotationClassMetaFactory {
         continue;
 
       for (Mapper m : mappers) {
-        String uri = m.getUri();
-
-        if ((uri != null) || (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP))
+        FieldLoader l = (FieldLoader)m.getLoader();
+        Field f2 = l.getField();
+        Id id = f2.getAnnotation(Id.class);
+        Blob blob = f2.getAnnotation(Blob.class);
+        if ((id == null) && (blob == null))
           fields.add(m);
-        else {
+        else if (id != null) {
           if (idField != null)
-            throw new OtmException("Duplicate @Id field " + toString(f));
-
+            if (f.equals(f2))
+              throw new OtmException("Duplicate @Id field " + toString(f));
+             else
+               throw new OtmException("Duplicate @Id field " + toString(f2) 
+                   + " embedded from " + toString(f));
           idField = m;
+        } else {
+          if (blobField != null)
+            if (f.equals(f2))
+              throw new OtmException("Duplicate @Blob field " + toString(f));
+             else
+               throw new OtmException("Duplicate @Blob field " + toString(f2) 
+                   + " embedded from " + toString(f));
+          blobField = l;
         }
       }
     }
 
-    return new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
+    return new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, 
+                             fields, blobField);
   }
 
   private <T> ClassMetadata<T> createView(Class<T> clazz) throws OtmException {
@@ -258,9 +276,28 @@ public class AnnotationClassMetaFactory {
     //
     Predicate  rdf      = f.getAnnotation(Predicate.class);
     Id         id       = f.getAnnotation(Id.class);
+    Blob       blob     = f.getAnnotation(Blob.class);
     boolean    embedded =
       (f.getAnnotation(Embedded.class) != null) || (type.getAnnotation(Embeddable.class) != null);
     Projection proj     = f.getAnnotation(Projection.class);
+
+    if (blob != null) {
+      if (isView)
+        throw new OtmException("@Blob not supported in views: " + toString(f));
+      if (rdf != null)
+        throw new OtmException("@Predicate and @Blob both cannot be applied to a field: " + toString(f));
+      if (id != null)
+        throw new OtmException("@Id and @Blob both cannot be applied to a field: " + toString(f));
+
+      if (!type.isArray() || !type.getComponentType().equals(Byte.TYPE))
+        throw new OtmException("@Blob may only be applied to a 'byte[]' field: " + toString(f));
+      if (embedded)
+        throw new OtmException("@Embedded and @Blob both cannot be applied to a field: " + toString(f));
+      FieldLoader loader = new ArrayFieldLoader(f, getMethod, setMethod, null, Byte.TYPE);
+      Mapper p = new MapperImpl(null, loader, null);
+
+      return Collections.singletonList(p);
+    }
 
     if (isView && proj == null && id == null)
       return null;

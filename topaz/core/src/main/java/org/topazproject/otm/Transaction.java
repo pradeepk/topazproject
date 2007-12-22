@@ -30,7 +30,7 @@ public interface Transaction {
    *
    * @throws OtmException on an error in opening a connection
    */
-  public Connection getConnection() throws OtmException;
+  public Connection getConnection(Store store) throws OtmException;
 
   /**
    * Flush the session, commit and close the connection.

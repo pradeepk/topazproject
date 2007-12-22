@@ -46,7 +46,7 @@ import org.topazproject.otm.samples.ReplyThread;
 import org.topazproject.otm.samples.Revokes;
 import org.topazproject.otm.samples.SpecialMappers;
 import org.topazproject.otm.stores.ItqlStore;
-
+import org.topazproject.otm.stores.SimpleBlobStore;
 
 /**
  * Base class for all integration tests done using the samples classes.
@@ -73,6 +73,7 @@ public abstract class AbstractOtmTest {
     URI storeUri = URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService");
     TripleStore tripleStore = new ItqlStore(storeUri);
     factory.setTripleStore(tripleStore);
+    factory.setBlobStore(new SimpleBlobStore("blob-store"));
 
     for (ModelConfig model : models)
       factory.addModel(model);

@@ -16,6 +16,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.metadata.RdfBuilder;
 import org.topazproject.otm.stores.ItqlStore;
+import org.topazproject.otm.stores.SimpleBlobStore;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 
 import org.apache.commons.logging.Log;
@@ -29,13 +30,15 @@ public class AbstractTest extends GroovyTestCase {
 
   def rdf;
   def store;
+  def blobStore;
 
   protected def models = [['ri', 'otmtest1', null]];
 
   void setUp() {
     store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
+    blobStore = new SimpleBlobStore("blob-store");
     rdf = new RdfBuilder(
-        sessFactory:new SessionFactoryImpl(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
+        sessFactory:new SessionFactoryImpl(tripleStore:store, blobStore:blobStore), defModel:'ri', defUriPrefix:'topaz:')
 
     for (c in models) {
       def m = new ModelConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])

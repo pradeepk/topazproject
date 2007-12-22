@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
@@ -28,6 +29,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
@@ -57,15 +59,9 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public void closeConnection(Connection con) {
-  }
-
-  /*
-   * inherited javadoc
-   */
   public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
                          Transaction txn) throws OtmException {
-    MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
+    MemStoreConnection msc     = (MemStoreConnection) txn.getConnection(this);
     Storage            storage = msc.getStorage();
 
     storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getTypes().toArray(new String[0]));
@@ -87,7 +83,7 @@ public class MemStore extends AbstractTripleStore {
    */
   public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o,
                          Transaction txn) throws OtmException {
-    MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
+    MemStoreConnection msc     = (MemStoreConnection) txn.getConnection(this);
     Storage            storage = msc.getStorage();
     String             model   = cm.getModel();
 
@@ -103,7 +99,7 @@ public class MemStore extends AbstractTripleStore {
     if (filters != null && filters.size() > 0)
       throw new OtmException("Filters are not supported");
 
-    MemStoreConnection        msc     = (MemStoreConnection) txn.getConnection();
+    MemStoreConnection        msc     = (MemStoreConnection) txn.getConnection(this);
     Storage                   storage = msc.getStorage();
     String                    model   = cm.getModel();
 
@@ -138,7 +134,7 @@ public class MemStore extends AbstractTripleStore {
    */
   public List list(Criteria criteria, Transaction txn)
             throws OtmException {
-    MemStoreConnection msc      = (MemStoreConnection) txn.getConnection();
+    MemStoreConnection msc      = (MemStoreConnection) txn.getConnection(this);
     Storage            storage  = msc.getStorage();
     ClassMetadata<?>   cm       = criteria.getClassMetadata();
     Set<String>        subjects = conjunction(criteria.getCriterionList(), criteria, storage);
@@ -498,21 +494,18 @@ public class MemStore extends AbstractTripleStore {
     }
   }
 
-  private static class MemStoreConnection implements Connection {
+  private static class MemStoreConnection extends AbstractConnection {
     private Storage storage;
 
     public MemStoreConnection(Storage backingStore) {
       this.storage = new Storage(backingStore);
     }
 
-    public void beginTransaction() {
-    }
-
-    public void commit() {
+    public void doCommit() {
       storage.commit();
     }
 
-    public void rollback() {
+    public void doRollback() {
       storage.rollback();
     }
 

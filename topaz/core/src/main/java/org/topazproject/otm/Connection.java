@@ -9,6 +9,8 @@
  */
 package org.topazproject.otm;
 
+import java.util.List;
+
 /**
  * A triple store connection handle.
  *
@@ -16,17 +18,26 @@ package org.topazproject.otm;
   */
 public interface Connection {
   /**
-   * Begin a transaction on this connection.
+   * Prepare to commit the writes.
    */
-  public void beginTransaction() throws OtmException;
+  public void prepare() throws OtmException;
 
   /**
-   * Commit the current transaction and end it.
+   * Commit the writes made via this connection.
    */
   public void commit() throws OtmException;
 
   /**
-   * Rollback the current transaction and end it.
+   * Rollback/undo writes made via this connection.
    */
   public void rollback() throws OtmException;
+
+  /**
+   * Get the list of child connections participating in a Tree 2-Phase commit.
+   *
+   * @return a modifiable list of connections that a transaction cordinator
+   *         can manipulate to set up the list of Connections this Connection 
+   *         must coordinate.
+   */
+  public List<Connection> getChildConnections();
 }

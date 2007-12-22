@@ -12,6 +12,7 @@ package org.topazproject.otm.samples;
 import java.util.Date;
 
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.annotations.Blob;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -29,7 +30,8 @@ public class Annotea {
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
   private Date                                              created;
-  private String                                            body;
+  @Blob
+  private byte[]                                            body;
   @Predicate(uri = Rdf.rdf + "type")
   private String                                            type;
   @Predicate(uri = Rdf.dc + "creator")
@@ -112,7 +114,7 @@ public class Annotea {
    *
    * @return body as String.
    */
-  public String getBody() {
+  public byte[] getBody() {
     return body;
   }
 
@@ -121,7 +123,7 @@ public class Annotea {
    *
    * @param body the value to set.
    */
-  public void setBody(String body) {
+  public void setBody(byte[] body) {
     this.body = body;
   }
 

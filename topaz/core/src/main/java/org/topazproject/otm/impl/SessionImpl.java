@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.mapping.Loader;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Mapper.CascadeType;
 import org.topazproject.otm.mapping.Mapper.FetchType;
@@ -42,6 +43,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
@@ -363,6 +365,8 @@ public class SessionImpl extends AbstractSession {
   private <T> void write(Id id, T o, boolean delete) throws OtmException {
     ClassMetadata<T>      cm            = sessionFactory.getClassMetadata((Class<T>) o.getClass());
     TripleStore           store         = sessionFactory.getTripleStore();
+    BlobStore             bs            = sessionFactory.getBlobStore();
+    Loader                bf            = cm.getBlobField();
 
     if (delete) {
       if (log.isDebugEnabled())
@@ -370,11 +374,14 @@ public class SessionImpl extends AbstractSession {
 
      states.remove(o);
      store.delete(cm, cm.getFields(), id.getId(), o, txn);
+     if (bf != null)
+       bs.delete(id.getId(), txn);
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
     } else {
       Collection<Mapper> fields = states.update(o, cm, this);
+      boolean update = (fields != null);
       if (log.isDebugEnabled()) {
         if (fields == null)
           log.debug("Saving " + id + " to store.");
@@ -398,6 +405,15 @@ public class SessionImpl extends AbstractSession {
         fields = cm.getFields();
       store.delete(cm, fields, id.getId(), o, txn);
       store.insert(cm, fields, id.getId(), o, txn);
+
+      if (bf != null) {
+        if (update)
+          bs.delete(id.getId(), txn);
+        byte[] blob = (byte[]) bf.getRawValue(o, false);
+        if (blob != null)
+          bs.insert(id.getId(), blob, txn);
+      }
+
     }
   }
 
@@ -419,6 +435,10 @@ public class SessionImpl extends AbstractSession {
       return instance;
 
     cm = sessionFactory.getClassMetadata((Class<T>) instance.getClass());
+
+    Loader bf = cm.getBlobField();
+    if (bf != null)
+      bf.setRawValue(instance, sessionFactory.getBlobStore().get(id.getId(), txn));
 
     if (!cm.isView()) {
       for (Mapper m : cm.getFields())

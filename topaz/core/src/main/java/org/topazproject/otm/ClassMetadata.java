@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Loader;
 
 /**
  * Meta information for mapping a class to a set of triples.
@@ -37,6 +38,7 @@ public class ClassMetadata<T> {
   private final String                    model;
   private final String                    uriPrefix;
   private final Mapper                    idField;
+  private final Loader                    blobField;
   private final Map<String, List<Mapper>> uriMap;
   private final Map<String, Mapper>       nameMap;
   private final Class<T>                  clazz;
@@ -57,7 +59,8 @@ public class ClassMetadata<T> {
    * @param fields mappers for all persistable fields (includes embedded class fields)
    */
   public ClassMetadata(Class<T> clazz, String name, String type, Set<String> types, String model,
-                       String uriPrefix, Mapper idField, Collection<Mapper> fields)
+                       String uriPrefix, Mapper idField, Collection<Mapper> fields, 
+                       Loader blobField)
                 throws OtmException {
     this.clazz                                = clazz;
     this.name                                 = name;
@@ -66,6 +69,7 @@ public class ClassMetadata<T> {
     this.model                                = model;
     this.uriPrefix                            = uriPrefix;
     this.idField                              = idField;
+    this.blobField                            = blobField;
 
     this.types                                = Collections.unmodifiableSet(new HashSet<String>(types));
     this.fields                               = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
@@ -111,6 +115,7 @@ public class ClassMetadata<T> {
     this.model     = null;
     this.uriPrefix = null;
     this.idField   = idField;
+    this.blobField = null;
 
     this.types     = null;
     this.fields    = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
@@ -203,6 +208,15 @@ public class ClassMetadata<T> {
    */
   public Mapper getIdField() {
     return idField;
+  }
+
+  /**
+   * Gets the Loader for the blob field.
+   *
+   * @return the blob field or null
+   */
+  public Loader getBlobField() {
+    return blobField;
   }
 
   /**

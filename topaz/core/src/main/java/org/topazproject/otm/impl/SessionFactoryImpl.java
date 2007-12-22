@@ -43,6 +43,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
+import org.topazproject.otm.BlobStore;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
@@ -112,7 +113,8 @@ public class SessionFactoryImpl implements SessionFactory {
 
   private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
-  private TripleStore                store;
+  private TripleStore                tripleStore;
+  private BlobStore                  blobStore;
   private CurrentSessionContext      currentSessionContext;
 
   {
@@ -331,14 +333,42 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public TripleStore getTripleStore() {
-    return store;
+    return tripleStore;
   }
 
   /*
    * inherited javadoc
    */
   public void setTripleStore(TripleStore store) {
-    this.store = store;
+    if (store == tripleStore)
+      return;
+    if ((tripleStore != null) && (blobStore != null))
+      tripleStore.getChildStores().remove(blobStore);
+    this.tripleStore = store;
+    if ((tripleStore != null) && (blobStore != null))
+      tripleStore.getChildStores().add(blobStore);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public BlobStore getBlobStore() {
+    return blobStore;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void setBlobStore(BlobStore store) {
+    if (store == blobStore)
+      return;
+
+    if ((tripleStore != null) && (blobStore != null))
+      tripleStore.getChildStores().remove(blobStore);
+
+    this.blobStore = store;
+    if ((tripleStore != null) && (blobStore != null))
+      tripleStore.getChildStores().add(blobStore);
   }
 
   /*

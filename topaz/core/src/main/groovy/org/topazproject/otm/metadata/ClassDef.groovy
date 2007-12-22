@@ -216,8 +216,9 @@ public class ClassDef {
       clsDef = rdf.classDefsByName[clsDef.extendsClass]
     }
 
+    def blobLoader = null
     metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model, uriPrefix,
-                                 idmapper, mappers)
+                                 idmapper, mappers, blobLoader)
 
     if (log.debugEnabled)
       log.debug "created metadata for class '${clazz.name}': ${metadata}"

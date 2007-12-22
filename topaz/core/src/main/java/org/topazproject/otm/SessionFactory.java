@@ -188,6 +188,20 @@ public interface SessionFactory {
   public void setTripleStore(TripleStore store);
 
   /**
+   * Gets the blob store used.
+   *
+   * @return the store
+   */
+  public BlobStore getBlobStore();
+
+  /**
+   * Sets the blob store used
+   *
+   * @param store the store
+   */
+  public void setBlobStore(BlobStore store);
+
+  /**
    * Get currentSessionContext.
    *
    * @return currentSessionContext as CurrentSessionContext.

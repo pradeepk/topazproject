@@ -9,10 +9,16 @@
  */
 package org.topazproject.otm.impl;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.Store;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
@@ -25,7 +31,8 @@ import org.topazproject.otm.OtmException;
 class TransactionImpl implements Transaction {
   private static final Log log     = LogFactory.getLog(TransactionImpl.class);
   private AbstractSession          session;
-  private Connection       conn    = null;
+  private Map<Store, Connection>   connections = new LinkedHashMap<Store, Connection>();
+  private List<Connection>        managedConnections = null;
 
   /**
    * Creates a new Transaction object.
@@ -46,12 +53,19 @@ class TransactionImpl implements Transaction {
   /*
    * inherited javadoc
    */
-  public Connection getConnection() throws OtmException {
+  public Connection getConnection(Store store) throws OtmException {
+    if (session == null)
+      throw new OtmException("Attempt to use a closed transaction");
+
+    Connection conn = connections.get(store);
     if (conn != null)
       return conn;
 
-    conn = session.getSessionFactory().getTripleStore().openConnection(session.getSessionFactory());
-    conn.beginTransaction();
+    if (managedConnections != null)
+      throw new OtmException("commit/rollback in progress. Too late to participate.");
+
+    conn = store.openConnection(session.getSessionFactory());
+    connections.put(store, conn);
 
     return conn;
   }
@@ -67,33 +81,64 @@ class TransactionImpl implements Transaction {
     if (fm.implies(Session.FlushMode.commit))
       session.flush();
 
-    if (conn != null)
-      conn.commit();
+    createManagedList();
 
-    close();
+    boolean ok = false;
+    try {
+      for (Connection conn : managedConnections)
+        conn.prepare();
+      for (Connection conn : managedConnections)
+        conn.commit();
+
+      ok = true;
+    } finally {
+      try { if (!ok) rollback(); } catch (Throwable e) {}
+      close();
+    }
+
   }
 
   /*
    * inherited javadoc
    */
   public void rollback() throws OtmException {
+    int idx = 0;
     try {
-      if (conn != null)
-        conn.rollback();
+      if (managedConnections == null)
+       createManagedList();
+
+      while (idx < managedConnections.size())
+        managedConnections.get(idx++).rollback();
+
     } finally {
+      while (idx < managedConnections.size()) {
+        try {
+          managedConnections.get(idx++).rollback();
+        } catch (Throwable t) {
+        }
+      }
       close();
     }
   }
 
-  private void close() throws OtmException {
-    if (conn != null) {
-      session.getSessionFactory().getTripleStore().closeConnection(conn);
-      conn = null;
+  private void createManagedList() {
+    managedConnections = new ArrayList<Connection>(connections.values());
+    for (Store store : connections.keySet()) {
+      List<Connection> childList = connections.get(store).getChildConnections();
+      for (Store child : store.getChildStores()) {
+        Connection conn = connections.get(child);
+        if (conn != null) {
+          managedConnections.remove(conn);
+          childList.add(conn);
+        }
+      }
     }
+  }
 
-    if (session != null) {
-      session.endTransaction();
-      session = null;
-    }
+  private void close() {
+    AbstractSession closed = session;
+    session = null;
+    if (closed != null)
+      closed.endTransaction();
   }
 }
