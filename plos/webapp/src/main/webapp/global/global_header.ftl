@@ -30,8 +30,8 @@
     <div>
       <ul>
         <@s.url id="loginURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${thisPage}"/>
-        <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback"><strong>Login</strong></a></li>
-        <li><a href="${freemarker_config.registrationURL}">Create Account</a></li>
+        <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback"><strong>Login</strong></a> | </li>
+        <li><a href="${freemarker_config.registrationURL}">Create Account</a> | </li>
         <li class="feedback"><a href="${feedbackURL}" title="Send us your feedback">Feedback</a></li>
       </ul>
     </div>
@@ -54,6 +54,7 @@
         <input src="${freemarker_config.context}/images/pone_search_btn1.gif" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
       </fieldset>
     </form>
+    <!-- <a href="#" id="advSearch">Advanced Search</a> uncomment for 0.9 -->
   </div>
   <!-- end : dashboard -->
   <!-- begin : navigation -->
