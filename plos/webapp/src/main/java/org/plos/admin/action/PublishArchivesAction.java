@@ -38,8 +38,15 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
    *
    */
   public String execute() throws RemoteException, ApplicationException {
-    deleteArticles();
-    publishArticles();
+    try {
+      deleteArticles();
+      publishArticles();
+    } catch (Exception e) {
+      addActionError("Exception: " + e);
+      log.error(e);
+      // continue processing
+    }
+
     return base();
   }
 

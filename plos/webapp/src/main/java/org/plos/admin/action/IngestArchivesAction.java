@@ -41,20 +41,23 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
               filename));
           addActionMessage("Ingested: " + filename);
         } catch (DuplicateArticleIdException de) {
-          addActionMessage("Error ingesting: " + filename + " - " + de.toString());
-          log.info("Error ingesting article: " + filename , de);
+          addActionError("Error ingesting: " + filename + " - " + de.toString());
+          log.error("Error ingesting article: " + filename , de);
         } catch (ImageResizeException ire) {
-          addActionMessage("Error ingesting: " + filename + " - " + ire.getCause().toString());
+          addActionError("Error ingesting: " + filename + " - " + ire.getCause().toString());
           log.error("Error ingesting articles: " + filename, ire);
           articleURI = ire.getArticleURI().toString();
-          log.debug("trying to delete: " + articleURI);
+          if (log.isDebugEnabled()) {
+            log.debug("trying to delete: " + articleURI);
+          }
           try {
             getDocumentManagementService().delete(articleURI);
           } catch (Exception deleteException) {
+            addActionError("Could not delete article: " + articleURI + ", " + deleteException);
             log.error("Could not delete article: " + articleURI, deleteException);
           }
         } catch (Exception e) {
-          addActionMessage("Error ingesting: " + filename + " - " + e.toString());
+          addActionError("Error ingesting: " + filename + " - " + e.toString());
           log.error("Error ingesting article: " + filename, e);
         }
       }
