@@ -43,8 +43,6 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
 
   /**
    * Creates a new PredicateCriterion object.
-   *
-   * @param name field/predicate name
    */
   public PredicateCriterion() {
     super(null, null);

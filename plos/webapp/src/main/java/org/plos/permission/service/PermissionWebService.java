@@ -57,7 +57,7 @@ public class PermissionWebService {
   }
 
   /**
-   * @see org.topazproject.ws.permissions.Permissions#listGrants(String, String)
+   * @see org.plos.permission.service.Permissions#listGrants(String, String)
    *
    * @param resource resource
    * @param principal principal
@@ -79,7 +79,7 @@ public class PermissionWebService {
 
   /**
    * Grants permissions.
-   * @see org.topazproject.ws.permissions.Permissions#grant(String, String[], String[])
+   * @see org.plos.permission.service.Permissions#grant(String, String[], String[])
    * @param resource resource
    * @param permissions permissions
    * @param principals principals
@@ -142,7 +142,7 @@ public class PermissionWebService {
    * @param grants grants
    * @param principals principals
    * @throws RemoteException
-   * @see org.topazproject.ws.permissions.Permissions#cancelGrants(String, String[], String[])
+   * @see org.plos.permission.service.Permissions#cancelGrants(String, String[], String[])
    */
   public void cancelGrants(final String resource, final String[] grants, final String[] principals) throws RemoteException {
     permissionsService.cancelGrants(resource, grants, principals);
@@ -154,7 +154,7 @@ public class PermissionWebService {
    * @param grants grants
    * @param principals principals
    * @throws RemoteException
-   * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
+   * @see org.plos.permission.service.Permissions#cancelRevokes(String, String[], String[])
    */
   public void cancelRevokes(final String resource, final String[] grants, final String[] principals) throws RemoteException {
     permissionsService.cancelRevokes(resource, grants, principals);
@@ -166,7 +166,7 @@ public class PermissionWebService {
    * @param principal principal
    * @return a list of revokations for this principal
    * @throws RemoteException
-   * @see org.topazproject.ws.permissions.Permissions#listRevokes(String, String)
+   * @see org.plos.permission.service.Permissions#listRevokes(String, String)
    */
 
   public String[] listRevokes(final String resource, final String principal) throws RemoteException {
@@ -178,7 +178,7 @@ public class PermissionWebService {
    * @param resource resource
    * @param to other secondary resources
    * @throws RemoteException
-   * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
+   * @see org.plos.permission.service.Permissions#cancelRevokes(String, String[], String[])
    */
   public void propagatePermissions(final String resource, final String[] to)
     throws RemoteException {
@@ -190,7 +190,7 @@ public class PermissionWebService {
    * @param resource resource
    * @param to other secondary resources
    * @throws RemoteException
-   * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
+   * @see org.plos.permission.service.Permissions#cancelRevokes(String, String[], String[])
    */
   public void cancelPropagatePermissions(final String resource, final String[] to)
     throws RemoteException {

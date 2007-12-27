@@ -53,14 +53,14 @@ import com.sun.xacml.ctx.Status;
  */
 public abstract class PermissionFunction implements Function {
   /**
-   * XACML function name for {@link org.topazproject.ws.permissions.Permissions#isGranted}
+   * XACML function name for {@link org.plos.permission.service.Permissions#isGranted}
    * function.
    */
   public static final String FUNCTION_IS_GRANTED =
     "urn:topazproject:names:tc:xacml:1.0:function:is-granted";
 
   /**
-   * XACML function name for {@link org.topazproject.ws.permissions.Permissions#isRevoked}
+   * XACML function name for {@link org.plos.permission.service.Permissions#isRevoked}
    * function.
    */
   public static final String FUNCTION_IS_REVOKED =

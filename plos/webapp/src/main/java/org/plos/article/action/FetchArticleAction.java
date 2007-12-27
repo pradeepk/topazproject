@@ -249,7 +249,8 @@ public class FetchArticleAction extends BaseActionSupport {
 
   /**
    * The article type displayed by article_content.ftl as per #693
-   * @return
+   *
+   * @return the article type heading
    */
   public String getArticleTypeHeading() {
     return articleTypeHeading;

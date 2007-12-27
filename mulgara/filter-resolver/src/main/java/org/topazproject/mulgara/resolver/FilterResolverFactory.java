@@ -37,7 +37,7 @@ import org.topazproject.configuration.ConfigurationStore;
  * a config from one of the following locations:
  * <ol>
  *   <li>If {@link #CONFIG_FACTORY_CONFIG_PROPERTY CONFIG_FACTORY_CONFIG_PROPERTY} system property
- *       has been set, use it's value; other use {@link @DEFAULT_FACTORY_CONFIG
+ *       has been set, use it's value; other use {@link #DEFAULT_FACTORY_CONFIG
  *       DEFAULT_FACTORY_CONFIG}.</li>
  *   <li>If the resulting location string starts with a '/' assume it's a resource and try to
  *       load it as such; otherwise assume it's a URL.</li>

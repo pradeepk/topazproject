@@ -262,7 +262,7 @@ public class FoafPerson {
   /**
    * Set the url of the page listing the user's publications.
    *
-   * @param pubs the url; may be null.
+   * @param publications the url; may be null.
    */
   public void setPublications(URI publications) {
     this.publications = publications;

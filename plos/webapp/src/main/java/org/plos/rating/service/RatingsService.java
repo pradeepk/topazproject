@@ -60,7 +60,6 @@ public class RatingsService {
    * @param articleURIStr the URI of the article to be rated.
    * @param values        the values with which to initialize the rating
    *                      whether it is new or to be updated.
-   * @return a the new rating id
    * @throws RatingsServiceException
    */
   public void saveOrUpdateRating(final PlosOneUser user,

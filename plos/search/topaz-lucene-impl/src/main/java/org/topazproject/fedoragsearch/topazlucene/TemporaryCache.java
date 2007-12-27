@@ -53,7 +53,7 @@ public class TemporaryCache implements Runnable {
    * Return an object from the cache (if it hasn't expired).
    *
    * @param key The key for the object being retrieved.
-   * @returns The cached object or null if the item is not found.
+   * @return The cached object or null if the item is not found.
    */
   public synchronized Object get(Object key) {
     SoftReference ref = (SoftReference) cache.get(key);

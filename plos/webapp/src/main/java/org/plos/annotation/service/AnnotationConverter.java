@@ -72,7 +72,7 @@ public class AnnotationConverter {
    * 
    * @param replies
    * @param com
-   * @return
+   * @return the hierarchical replies
    * @throws ApplicationException
    */
   public Reply[] convert(final ReplyInfo[] replies, Commentary com) throws ApplicationException {

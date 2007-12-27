@@ -157,7 +157,7 @@ public interface Mapper {
   /**
    * Tests if the predicate uri represents an inverse.
    *
-   * @return
+   * @return true if the predicate uri points towards us rather than away
    */
   public boolean hasInverseUri();
 

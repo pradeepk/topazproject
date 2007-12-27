@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
  * and it must be named <var>id</var>; the result of running the query must be 0 or 1 rows.
  * Furthermore, as with {@link Entity  Entity} one field must be marked {@link Id @Id} (in addition
  * to the @Projection annotation). This makes a View behave similar to an Entity in that each
- * instance has an id by which it can be retrieved (using {@link Session#get Session.get()}) and
+ * instance has an id by which it can be retrieved (using {@link org.topazproject.otm.Session#get Session.get()}) and
  * under which it is cached. This also allows View's to be used as fields in other View's and to
  * be used as result objects in OQL and Criteria queries (they may not be dereferenced, though).
  * View's may <em>not</em> be saved or deleted, however.
@@ -37,21 +37,21 @@ import java.lang.annotation.Target;
  *
  * <p>Example:
  * <pre>
- *   @View(query = "select a.uri id, (select oi.uri pid, (select oi.representations from ObjectInfo oi2) reps from ObjectInfo oi where oi = a.parts order by pid) parts from Article a where a.uri = :id order by id;")
+ *   &#64;View(query = "select a.uri id, (select oi.uri pid, (select oi.representations from ObjectInfo oi2) reps from ObjectInfo oi where oi = a.parts order by pid) parts from Article a where a.uri = :id order by id;")
  *   class MyView {
- *     @Id @Projection("id")
+ *     &#64;Id &#64;Projection("id")
  *     String id;
  *
- *     @Projection("parts")
+ *     &#64;Projection("parts")
  *     List&lt;MyPart&gt; parts;
  *   }
  *
- *   @SubView
+ *   &#64;SubView
  *   class MyPart {
- *     @Projection("pid")
+ *     &#64;Projection("pid")
  *     String id;
  *
- *     @Projection("reps")
+ *     &#64;Projection("reps")
  *     Set&lt;String&gt; representations;
  *   }
  * </pre>

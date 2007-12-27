@@ -872,7 +872,6 @@ public abstract class UserProfileAction extends UserActionSupport {
 
   /**
    * Getter for isDisplayNameSet.
-   * @return Value of isDisplayNameSet.
    */
   protected void setIsDisplayNameSet(final boolean inIsDisplayNameSet) {
     isDisplayNameSet = inIsDisplayNameSet;

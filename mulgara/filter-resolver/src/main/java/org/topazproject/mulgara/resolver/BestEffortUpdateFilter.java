@@ -104,7 +104,7 @@ public class BestEffortUpdateFilter implements UpdateFilter {
   }
 
   /** 
-   * If the URI is a fedora URI ({@link fedora.common.Constants.FEDORA#uri FEDORA.uri}) then
+   * If the URI is a fedora URI ({@link fedora.common.Constants#FEDORA FEDORA.uri}) then
    * return the URI minus the fedora prefix. Else apply the prefix map; if the resulting PID
    * is too long to be a fedora pid, shorten it.
    */

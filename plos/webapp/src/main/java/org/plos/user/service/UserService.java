@@ -355,9 +355,8 @@ public class UserService {
   /**
    * Write the specified user profile and associates it with the specified user ID
    *
-   * @param topazUserId Topaz User ID
-   * @param profile     profile to be written
-   * @param userNameIsRequired whether userNameIsRequired
+   * @param inUser  topaz user object with the profile
+   * @param userNameIsRequired whether a username in the profile is required
    * @throws ApplicationException ApplicationException
    * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
@@ -563,7 +562,6 @@ public class UserService {
   /**
    * Get the roles for the user.
    * @param topazId topazId
-   * @see org.plos.user.service.UserRoleWebService#getRoles(String)
    */
   public String[] getRole(final String topazId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_ROLES, URI.create(topazId));

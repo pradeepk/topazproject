@@ -109,7 +109,7 @@ public class Citation {
   /**
    * The key or label referencing a citation from within another source (such as an article).
    *
-   * @returns the key or label for the citation (if available)
+   * @return the key or label for the citation (if available)
    */
   public String getKey() {
     return key;
@@ -127,7 +127,7 @@ public class Citation {
    * should consist of four numerals, such as 1984, although the standard styles can handle any year
    * whose last four nonpunctuation characters are numerals, such as '(about 1984)'
    *
-   * @returns the year of the citation (if available)
+   * @return the year of the citation (if available)
    */
   public Integer getYear() {
     return year;
@@ -146,21 +146,21 @@ public class Citation {
    * in references. This field should only be used if the data cannot be mapped
    * to Integer.
    *
-   * @returns the year of the citation (if available)
+   * @return the year of the citation (if available)
    */
   public String getDisplayYear() {
     return displayYear;
   }
 
   /**
-   * @param year the year of the citation
+   * @param displayYear the year of the citation
    */
   public void setDisplayYear(String displayYear) {
     this.displayYear = displayYear;
   }
 
   /**
-   * @returns the month of the citation (if available)
+   * @return the month of the citation (if available)
    */
   public String getMonth() {
     return month;
@@ -181,7 +181,7 @@ public class Citation {
   }
 
   /**
-   * @param volume the volume of this citation
+   * @param volumeNumber the volume of this citation
    */
   public void setVolumeNumber(Integer volumeNumber) {
     this.volumeNumber = volumeNumber;
@@ -190,7 +190,7 @@ public class Citation {
   /**
    * This should be used only if volumeNumber cannot be used.
    * 
-   * @returns the volume this citation is in 
+   * @return the volume this citation is in 
    */
   public String getVolume() {
     return volume;
@@ -217,7 +217,7 @@ public class Citation {
   }
 
   /**
-   * @param title the issue of the citation's article
+   * @param issue the issue of the citation's article
    */
   public void setIssue(String issue) {
     this.issue = issue;

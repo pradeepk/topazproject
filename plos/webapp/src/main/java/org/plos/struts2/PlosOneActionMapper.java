@@ -46,7 +46,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
   private static final Log log = LogFactory.getLog(PlosOneActionMapper.class);
 
   /**
-   * @see DefaultActionManager#getMapping(HttpServletRequest request).
+   * @see DefaultActionManager#getMapping(HttpServletRequest, ConfigurationManager).
    */
   public ActionMapping getMapping(HttpServletRequest request, ConfigurationManager configManager) {
 
@@ -146,7 +146,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
   }
 
   /**
-   * @see DefaultActionManager#getUriFromActionMapping(ActionMapping mapping).
+   * @see DefaultActionManager#getUriFromActionMapping(ActionMapping).
    */
   public String getUriFromActionMapping(ActionMapping mapping) {
 

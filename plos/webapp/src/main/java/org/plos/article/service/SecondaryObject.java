@@ -48,14 +48,14 @@ public class SecondaryObject {
   }
 
   /**
-   * @see ObjectInfo#getUri()
+   * @see ObjectInfo#getId()
    */
   public String getUri() {
     return objectInfo.getId().toString();
   }
 
   /**
-   * @see DublinCore#getTitle()
+   * @see org.plos.models.DublinCore#getTitle()
    */
   public String getTitle() {
     String title = objectInfo.getDublinCore().getTitle();
@@ -63,7 +63,7 @@ public class SecondaryObject {
   }
 
   /**
-   * @see DublinCore#getDescription()
+   * @see org.plos.models.DublinCore#getDescription()
    */
   public String getDescription() {
     String description = objectInfo.getDublinCore().getDescription();

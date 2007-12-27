@@ -71,7 +71,7 @@ public class ObjectProperty {
    * Get possible domains for this property. Domains are the owl classes that this
    * property appears in.
    *
-   * @returns a union of possible owl classes.
+   * @return a union of possible owl classes.
    */
   public DomainUnion getDomains() {
     return domains;

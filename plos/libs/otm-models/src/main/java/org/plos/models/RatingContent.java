@@ -76,7 +76,7 @@ public class RatingContent {
   /**
    * Set insightValue value.
    *
-   * @param Insight value.
+   * @param insight value.
    */
   public void setInsightValue(int insight) {
     this.insightValue = insight;
@@ -93,7 +93,7 @@ public class RatingContent {
   /**
    * Set reliabilityValue value.
    *
-   * @param Reliability value.
+   * @param reliability value.
    */
   public void setReliabilityValue(int reliability) {
     this.reliabilityValue = reliability;
@@ -110,7 +110,7 @@ public class RatingContent {
   /**
    * Set styleValue value.
    *
-   * @param Style value.
+   * @param style value.
    */
   public void setStyleValue(int style) {
     this.styleValue = style;
@@ -126,7 +126,7 @@ public class RatingContent {
     return calculateOverall(getInsightValue(), getReliabilityValue(), getStyleValue());
   }
 
-    /**
+  /**
    * Get comment title.
    *
    * @return Comment title.
@@ -137,7 +137,7 @@ public class RatingContent {
   /**
    * Set comment title.
    *
-   * @param Comment title.
+   * @param commentTitle title.
    */
   public void setCommentTitle(String commentTitle) {
     this.commentTitle = commentTitle;
@@ -154,7 +154,7 @@ public class RatingContent {
   /**
    * Set comment value.
    *
-   * @param Comment value.
+   * @param commentValue value.
    */
   public void setCommentValue(String commentValue) {
     this.commentValue = commentValue;
@@ -193,7 +193,7 @@ public class RatingContent {
    * @param insightValue Insight value.
    * @param reliabilityValue Reliability value.
    * @param styleValue Style value.
-   * @returns Weighted overall.
+   * @return Weighted overall.
    */
   public static double calculateOverall(int insightValue, int reliabilityValue, int styleValue) {
 
@@ -206,7 +206,7 @@ public class RatingContent {
    * @param insightValue Insight value.
    * @param reliabilityValue Reliability value.
    * @param styleValue Style value.
-   * @returns Weighted overall.
+   * @return Weighted overall.
    */
   public static double calculateOverall(double insightValue, double reliabilityValue, double styleValue) {
 

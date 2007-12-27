@@ -223,7 +223,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    * Use ArticleOtmService v native OTM as it's aware of Article semantics.
    * Called by Spring's bean wiring.
    *
-   * @param ArticleOtmService to set.
+   * @param articleOtmService the service to set.
    */
   @Required
   public void setArticleOtmService(ArticleOtmService articleOtmService) {

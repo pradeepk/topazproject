@@ -490,11 +490,11 @@ public class ArticleOtmService {
 
   /**
    * Get the most commented Articles.
-   * The actual # of Articles returned maybe < maxArticles
+   * The actual # of Articles returned maybe &lt; maxArticles
    * as PEP filtering is done on the results.
    *
    * @param maxArticles Maximum # of Articles to retrieve.
-   * @returns Article[] of most commented Articles.
+   * @return Article[] of most commented Articles.
    */
   public Article[] getCommentedArticles(final int maxArticles) {
     // sanity check args

@@ -48,7 +48,7 @@ public class RatingSummary extends Annotation {
   }
 
   /**
-   * @param rating The rating to set.
+   * @param ratingSummaryContent The rating to set.
    */
   public void setBody(RatingSummaryContent ratingSummaryContent) {
     this.body = ratingSummaryContent;

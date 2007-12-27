@@ -58,8 +58,6 @@ public class PDPFactory {
    * 
    * <p></p>
    *
-   * @param context The web-app context
-   *
    * @return Returns the PDPFactory instance
    *
    * @throws IOException on error in accessing the config file

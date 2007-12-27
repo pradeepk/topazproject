@@ -24,7 +24,7 @@ public class DefaultUpdateFilter implements UpdateFilter {
   private static final Logger logger = Logger.getLogger(DefaultUpdateFilter.class);
 
   /** 
-   * If the URI is a fedora URI ({@link fedora.common.Constants.FEDORA#uri FEDORA.uri}) then
+   * If the URI is a fedora URI ({@link fedora.common.Constants#FEDORA FEDORA.uri}) then
    * return the URI minus the fedora prefix; else return null.
    */
   public String getFedoraPID(URI subject, String[] models, String datastream) {

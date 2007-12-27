@@ -190,7 +190,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#grant
+   * @see org.plos.permission.service.Permissions#grant
    */
   public void grant(String resource, String[] permissions, String[] principals)
              throws OtmException {
@@ -198,7 +198,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#revoke
+   * @see org.plos.permission.service.Permissions#revoke
    */
   public void revoke(String resource, String[] permissions, String[] principals)
               throws OtmException {
@@ -206,7 +206,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#cancleGrants
+   * @see org.plos.permission.service.Permissions#cancleGrants
    */
   public void cancelGrants(String resource, String[] permissions, String[] principals)
                     throws OtmException {
@@ -215,7 +215,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#cancelRevokes
+   * @see org.plos.permission.service.Permissions#cancelRevokes
    */
   public void cancelRevokes(String resource, String[] permissions, String[] principals)
                      throws OtmException {
@@ -224,7 +224,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#listGrants
+   * @see org.plos.permission.service.Permissions#listGrants
    */
   public String[] listGrants(String resource, String principal)
                       throws OtmException {
@@ -232,7 +232,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#listRevokes
+   * @see org.plos.permission.service.Permissions#listRevokes
    */
   public String[] listRevokes(String resource, String principal)
                        throws OtmException {
@@ -240,7 +240,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#implyPermission
+   * @see org.plos.permission.service.Permissions#implyPermission
    */
   public void implyPermissions(String permission, String[] implies)
                         throws OtmException {
@@ -248,7 +248,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#cancelImplyPermission
+   * @see org.plos.permission.service.Permissions#cancelImplyPermission
    */
   public void cancelImplyPermissions(String permission, String[] implies)
                               throws OtmException {
@@ -256,7 +256,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#listImpliedPermissions
+   * @see org.plos.permission.service.Permissions#listImpliedPermissions
    */
   public String[] listImpliedPermissions(String permission, boolean transitive)
                                   throws OtmException {
@@ -264,7 +264,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#propagatePermissions
+   * @see org.plos.permission.service.Permissions#propagatePermissions
    */
   public void propagatePermissions(String resource, String[] to)
                             throws OtmException {
@@ -272,7 +272,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#cancelPropagatePermissions
+   * @see org.plos.permission.service.Permissions#cancelPropagatePermissions
    */
   public void cancelPropagatePermissions(String resource, String[] to)
                                   throws OtmException {
@@ -280,7 +280,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#listPermissionPropagations
+   * @see org.plos.permission.service.Permissions#listPermissionPropagations
    */
   public String[] listPermissionPropagations(String resource, boolean transitive)
                                       throws OtmException {
@@ -288,7 +288,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#isGranted
+   * @see org.plos.permission.service.Permissions#isGranted
    */
   public boolean isGranted(String resource, String permission, String principal)
                     throws OtmException {
@@ -320,7 +320,7 @@ public class PermissionsImpl implements Permissions {
   }
 
   /*
-   * @see org.topazproject.ws.permissions.Permission#isGranted
+   * @see org.plos.permission.service.Permissions#isGranted
    */
   public boolean isRevoked(String resource, String permission, String principal)
                     throws OtmException {

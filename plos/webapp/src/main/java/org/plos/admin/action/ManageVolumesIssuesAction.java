@@ -403,7 +403,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    *
    * Enable Struts Form to set the previous DOI as a String.
    *
-   * @param doi DOI of previous.
+   * @param prevDoi DOI of previous.
    */
   public void setPrev(String prevDoi) {
 
@@ -419,7 +419,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    *
    * Enable Struts Form to set the next DOI as a String.
    *
-   * @param doi DOI of next.
+   * @param nextDoi DOI of next.
    */
   public void setNext(String nextDoi) {
 

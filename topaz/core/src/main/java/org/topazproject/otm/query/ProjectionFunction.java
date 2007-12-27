@@ -46,8 +46,8 @@ public interface ProjectionFunction extends QueryFunction {
    * getItqlProjections()} returned anything other than null or a single-element array then this
    * must adjust the number of types.
    *
-   * @param vars the current list of types
-   * @param col  the current column
+   * @param types the current list of types
+   * @param col   the current column
    * @return the new list of types
    */
   List<Object> initTypes(List<Object> types, int col) throws OtmException;

@@ -222,7 +222,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   /**
    * Set Articles to add.
    *
-   * @param Comma separated list of articles to add.
+   * @param articlesToAdd a comma separated list of articles to add.
    */
   public void setArticlesToAdd(String articlesToAdd) {
     this.articlesToAdd = articlesToAdd;

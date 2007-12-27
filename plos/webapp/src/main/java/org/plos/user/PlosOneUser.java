@@ -188,7 +188,7 @@ public class PlosOneUser {
   }
 
   /**
-   * @param the user preferences to fill in.
+   * @param p the user preferences to fill in.
    */
   public void getUserPrefs(UserPreferences p) {
     p.setPrefsFromMap(userPrefs);

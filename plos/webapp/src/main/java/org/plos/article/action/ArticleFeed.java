@@ -541,7 +541,7 @@ public class ArticleFeed extends BaseActionSupport {
   /**
    * Set ehcache instance via spring
    *
-   * @param the ehcache instance
+   * @param feedCache the ehcache instance
    */
   public void setFeedCache(final Ehcache feedCache) {
     this.feedCache = feedCache;

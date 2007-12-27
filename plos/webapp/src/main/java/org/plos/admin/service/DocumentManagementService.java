@@ -653,7 +653,7 @@ public class DocumentManagementService {
   }
 
   /**
-   * @param plosDxUrl The plosDxUrl to set.
+   * @param plosDoiUrl The plosDxUrl to set.
    */
   @Required
   public void setPlosDoiUrl(String plosDoiUrl) {

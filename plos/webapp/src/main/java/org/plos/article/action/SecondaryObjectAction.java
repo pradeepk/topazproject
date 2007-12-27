@@ -135,7 +135,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
   }
 
   /**
-   * @param secondaryObjectUtil The secondaryObjectUtil to set.
+   * @param secondaryObjectService The secondaryObjectUtil to set.
    */
   public void setSecondaryObjectService(ArticleXMLUtils secondaryObjectService) {
     this.secondaryObjectService = secondaryObjectService;

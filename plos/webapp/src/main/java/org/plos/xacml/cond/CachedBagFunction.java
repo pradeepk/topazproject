@@ -55,8 +55,7 @@ import net.sf.ehcache.Element;
  */
 public class CachedBagFunction implements Function {
   /**
-   * XACML function name for {@link org.topazproject.ws.permissions.Permissions#isGranted}
-   * function.
+   * XACML function name for this function.
    */
   public static final String FUNCTION_CACHEDBAG =
     "urn:topazproject:names:tc:xacml:1.0:function:cached-bag";

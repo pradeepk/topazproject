@@ -71,7 +71,7 @@ public class Commentary implements Comparator<Commentary> {
    * 
    * @param a
    * @param b
-   * @return
+   * @return a number less than 0 if <var>a</var> less than <var>b</var>, a number greater than 0 if <var>a</var> greater than <var>b</var>, or 0 if <var>a</var> equals <var>b</var>
    */
   public int compare (Commentary a, Commentary b){
     String dateA, dateB;

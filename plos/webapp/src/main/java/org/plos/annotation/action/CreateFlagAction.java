@@ -44,7 +44,6 @@ public class CreateFlagAction extends AnnotationActionSupport {
   }
 
   /**
-   * {@inheritDoc}
    * Create a flag for a given annotation
    */
   public String createAnnotationFlag() throws Exception {
@@ -52,7 +51,6 @@ public class CreateFlagAction extends AnnotationActionSupport {
   }
 
   /**
-   * {@inheritDoc}
    * Create a flag for a given reply
    */
   public String createReplyFlag() throws Exception {

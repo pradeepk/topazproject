@@ -23,10 +23,9 @@ import antlr.ASTFactory;
  */
 public interface QueryFunction {
   /**
-   * Get the function's name. This must be the same as was returned in query-function definition.
+   * Get the function's name.
    *
    * @return the function's name
-   * @see QueryFunctionDef#getName
    */
   String getName();
 

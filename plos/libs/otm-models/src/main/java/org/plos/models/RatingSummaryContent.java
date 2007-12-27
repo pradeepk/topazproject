@@ -51,8 +51,13 @@ public class RatingSummaryContent {
   /**
    * Creates a new RatingSummaryContent object.
    *
-   * @param totalValue total value
-   * @param numRatings number of ratings
+   * @param insightNumRatings     number of insight ratings
+   * @param insightTotal          total of insight ratings
+   * @param reliabilityNumRatings number of reliability ratings
+   * @param reliabilityTotal      total of reliability ratings
+   * @param styleNumRatings       number of style ratings
+   * @param styleTotal            total of style ratings
+   * @param numUsersThatRated     number of users that make a rating
    */
   public RatingSummaryContent(int insightNumRatings, double insightTotal, int reliabilityNumRatings,
                               double reliabilityTotal, int styleNumRatings, double styleTotal,

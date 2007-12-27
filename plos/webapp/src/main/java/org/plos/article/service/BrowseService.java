@@ -210,7 +210,7 @@ public class BrowseService {
   /**
    * Get Issue information.
    *
-   * @param issue DOI of Issue.
+   * @param doi DOI of Issue.
    * @return the Issue information.
    */
   public IssueInfo getIssueInfo(final URI doi) {

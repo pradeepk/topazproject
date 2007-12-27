@@ -78,7 +78,7 @@ public abstract class JunctionFilterDefinition extends AbstractFilterDefinition 
 
   /** 
    * Common filter implementation for junction filters. The {@link #getCriteria getCriteria()} and
-   * {@link @getQuery getQuery()} methods must not be invoked, and throw an
+   * {@link #getQuery getQuery()} methods must not be invoked, and throw an
    * {@link java.lang.UnsupportedOperationException UnsupportedOperationException}. Instead, {@link
    * #getFilters getFilters()} may be invoked to get the list component filters.
    */

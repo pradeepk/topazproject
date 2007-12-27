@@ -38,7 +38,7 @@ public interface ErrorCollector {
   /** 
    * Get the errors generated as a single string.
    * 
-   * @param join the string used to join the individual errors; if null, a {@link NL newline} is
+   * @param join the string used to join the individual errors; if null, a {@link #NL newline} is
    *             used
    * @return the list of errors as a single string
    */
@@ -47,7 +47,7 @@ public interface ErrorCollector {
   /** 
    * Get the warnings generated as a single string.
    * 
-   * @param join the string used to join the individual warnings; if null, a {@link NL newline} is
+   * @param join the string used to join the individual warnings; if null, a {@link #NL newline} is
    *             used
    * @return the list of warnings as a single string
    */

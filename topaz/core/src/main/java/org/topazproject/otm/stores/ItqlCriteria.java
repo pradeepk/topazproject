@@ -247,7 +247,7 @@ public class ItqlCriteria {
   /**
    * Create the results list from an Itql Query response.
    *
-   * @param a the ITQL query response
+   * @param ans the ITQL query response
    *
    * @return list of results
    *

@@ -21,7 +21,8 @@ public class TOCArticleGroup {
   
   /**
    * The heading displayed for this article group. 
-   * @return
+   *
+   * @return the heading, or the string "Undefined"
    */
   public String getHeading() {
     if (heading != null) {

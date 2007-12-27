@@ -40,7 +40,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    *
    * For Spring wiring.
    *
-   * @param ratingService RatingService.
+   * @param ratingsService RatingService.
    */
   public void setRatingsService(RatingsService ratingsService) {
     this.ratingsService = ratingsService;

@@ -234,7 +234,7 @@ public class FetchArticleService {
    * @param articleURI articleURI
    * @return Article
    * @throws ApplicationException ApplicationException
-   * @see ArticleOtmService#Article(java.net.URI)
+   * @see ArticleOtmService#getArticle(java.net.URI)
    */
   public Article getArticleInfo(final String articleURI) throws ApplicationException {
     // do caching here rather than at articleOtmService level because we want the cache key
