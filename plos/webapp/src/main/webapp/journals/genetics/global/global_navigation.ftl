@@ -6,10 +6,12 @@
     <@s.url action="browseIssue" namespace="/article" field="issue"  includeParams="none" id="browseIssueURL"/>
     <@s.url action="browseVolume" namespace="/article" field="volume" includeParams="none" id="archiveURL"/>
     <@s.url action="toc" namespace="/static" includeParams="none" id="tocStatic"/> <!-- This is a temporary action to link to the static toc page -->
+   <@s.url action="archive" namespace="/static" includeParams="none" id="archiveStatic"/><!-- This is a temporary action to link to the static archive page -->
+
     <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
           <li><a href="${tocStatic}">Current Issue</a></li> <!-- Once dynamic TOC is in place, href var should be changed to "browseIssueURL" Remember to also change links on index.ftl and browse.ftl -->
-          <!-- <li><a href="${archiveURL}">Journal Archive</a></li> Commented out until we have the Archive page in place. Remember to uncomment link in TOC rhc too! -->
+          <li><a href="${archiveStatic}">Journal Archive</a></li><!-- Once dynamic TOC is in place, href var should be changed to "archiveURL". Remember to uncomment link in TOC rhc too. -->
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
           <li><a href="http://collections.plos.org/plosntds/">Collections</a></li>
@@ -61,7 +63,7 @@
           <li><a href="${developing}">Developing Countries</a></li>
           <li><a href="${policies}">Editorial and Publishing Policies</a></li>
           <li><a href="${guidelines}">Author Guidelines</a></li>
-          <li><a href="${figure}">Table and Figure Guidelines</a></li>
+          <li><a href="${figure}">Figure and Table Guidelines</a></li>
           <li><a href="${checklist}">Submit Your Paper</a></li>
           <li><a href="${reviewer}">Reviewer Guidelines</a></li>
         </ul>
