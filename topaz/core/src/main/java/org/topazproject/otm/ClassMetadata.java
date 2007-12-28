@@ -51,12 +51,13 @@ public class ClassMetadata<T> {
    *
    * @param clazz the class 
    * @param name the entity name for use in queries
-   * @param types set of rdf:type values that identify this class
    * @param type the most specific rdf:type that identify this class
+   * @param types set of rdf:type values that identify this class
    * @param model the graph/model where this class is persisted
    * @param uriPrefix the uri-prefix for constructing predicate-uris for fields from their names 
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
+   * @param blobField loader for the blob
    */
   public ClassMetadata(Class<T> clazz, String name, String type, Set<String> types, String model,
                        String uriPrefix, Mapper idField, Collection<Mapper> fields, 
