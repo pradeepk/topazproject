@@ -65,6 +65,12 @@ public class NativeQueryTest extends AbstractOtmTest {
     log.info("Testing native query ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
+          String model = factory.getClassMetadata(PublicAnnotation.class).getModel();
+          model = factory.getModel(model).getUri().toString();
+
+          session.doNativeUpdate("delete select $s $p $o from <" + model +
+                                 "> where $s $p $o from <" + model + ">;");
+
           URI        id1 = URI.create("http://localhost/annotation/1");
           URI        id2 = URI.create("http://localhost/annotation/2");
           Annotation a1  = new PublicAnnotation(id1);
@@ -83,9 +89,6 @@ public class NativeQueryTest extends AbstractOtmTest {
 
           session.saveOrUpdate(a1);
           session.saveOrUpdate(a2);
-
-          String model = factory.getClassMetadata(PublicAnnotation.class).getModel();
-          model = factory.getModel(model).getUri().toString();
 
           Results r  = session.doNativeQuery("select $s $p $o from <" + model + "> where $s $p $o;");
           Map     m1 = new HashMap();
@@ -110,6 +113,87 @@ public class NativeQueryTest extends AbstractOtmTest {
           assertEquals("bb", m2.get(URI.create(Rdf.dc + "creator")));
           assertEquals("foo", m1.get(URI.create(Rdf.dc + "title")));
           assertNull(m2.get(URI.create(Rdf.dc + "title")));
+        }
+      });
+  }
+
+  @Test
+  public void testNativeQuery2() throws OtmException {
+    log.info("Testing native update and query ...");
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          String model = factory.getModel("ri").getUri().toString();
+
+          session.doNativeUpdate("delete select $s $p $o from <" + model +
+                                 "> where $s $p $o from <" + model + ">;");
+
+          session.doNativeUpdate("insert <s:1> <p:1> '1' " +
+            "<s:2> <p:2> $bn1 $bn1 <p:3> '3'^^<xsd:int> " +
+            "<s:4> <p:4> <l:4> " +
+            "into <" + model + ">;");
+
+          Results r = session.doNativeQuery(
+                              "select $s $p $o from <" + model + "> where $s $p $o order by $p;");
+
+          assertEquals(3, r.getVariables().length);
+          assertEquals("s", r.getVariables()[0]);
+          assertEquals("p", r.getVariables()[1]);
+          assertEquals("o", r.getVariables()[2]);
+
+          int cnt = 0;
+
+          // res 1
+          assertTrue(r.next());
+          assertEquals(cnt++, r.getRowNumber());
+
+          assertEquals(Results.Type.URI, r.getType("s"));
+          assertEquals(Results.Type.URI, r.getType("p"));
+          assertEquals(Results.Type.LITERAL, r.getType("o"));
+
+          assertEquals(URI.create("s:1"), r.getURI("s"));
+          assertEquals(URI.create("p:1"), r.getURI("p"));
+          assertEquals("1", r.getLiteral("o").getValue());
+          assertNull(r.getLiteral("o").getDatatype());
+
+          // res 2
+          assertTrue(r.next());
+          assertEquals(cnt++, r.getRowNumber());
+
+          assertEquals(Results.Type.URI, r.getType("s"));
+          assertEquals(Results.Type.URI, r.getType("p"));
+          assertEquals(Results.Type.BLANK_NODE, r.getType("o"));
+
+          assertEquals(URI.create("s:2"), r.getURI("s"));
+          assertEquals(URI.create("p:2"), r.getURI("p"));
+          String bn = (String) r.get("o");
+
+          // res 3
+          assertTrue(r.next());
+          assertEquals(cnt++, r.getRowNumber());
+          assertEquals(Results.Type.BLANK_NODE, r.getType("s"));
+          assertEquals(Results.Type.URI, r.getType("p"));
+          assertEquals(Results.Type.LITERAL, r.getType("o"));
+
+          assertEquals(bn, r.get("s"));
+          assertEquals(URI.create("p:3"), r.getURI("p"));
+          assertEquals("3", r.getLiteral("o").getValue());
+          assertEquals(URI.create(Rdf.xsd + "int"), r.getLiteral("o").getDatatype());
+
+          // res 4
+          assertTrue(r.next());
+          assertEquals(cnt++, r.getRowNumber());
+          assertEquals(Results.Type.URI, r.getType("s"));
+          assertEquals(Results.Type.URI, r.getType("p"));
+          assertEquals(Results.Type.URI, r.getType("o"));
+
+          assertEquals(URI.create("s:4"), r.getURI("s"));
+          assertEquals(URI.create("p:4"), r.getURI("p"));
+          assertEquals(URI.create("l:4"), r.getURI("o"));
+
+          // done
+          assertFalse(r.next());
+          assertEquals(4, cnt);
         }
       });
   }

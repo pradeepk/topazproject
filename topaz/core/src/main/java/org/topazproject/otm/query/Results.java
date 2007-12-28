@@ -32,7 +32,7 @@ public abstract class Results {
   protected Object[] curRow;
 
   /** possible result types */
-  public enum Type { CLASS, LITERAL, URI, SUBQ_RESULTS, UNKNOWN };
+  public enum Type { CLASS, LITERAL, URI, BLANK_NODE, SUBQ_RESULTS, UNKNOWN };
 
   /** a literal in a result */
   public static class Literal {
@@ -238,6 +238,8 @@ public abstract class Results {
         return ((Literal) get(idx)).getValue();
       case URI:
         return ((URI) get(idx)).toString();
+      case BLANK_NODE:
+        return (String) get(idx);
       case SUBQ_RESULTS:
         throw new QueryException("cannot convert subquery result to a string");
 
@@ -257,6 +259,7 @@ public abstract class Results {
 
       case CLASS:
       case URI:
+      case BLANK_NODE:
       case SUBQ_RESULTS:
         throw new QueryException("result object is not a literal; type=" + types[idx]);
 
@@ -300,6 +303,7 @@ public abstract class Results {
 
       case LITERAL:
       case CLASS:
+      case BLANK_NODE:
       case SUBQ_RESULTS:
         throw new QueryException("result object is not a uri; type=" + types[idx]);
 
@@ -346,6 +350,7 @@ public abstract class Results {
 
       case LITERAL:
       case CLASS:
+      case BLANK_NODE:
       case URI:
         throw new QueryException("result object is not a subquery result; type=" + types[idx]);
 

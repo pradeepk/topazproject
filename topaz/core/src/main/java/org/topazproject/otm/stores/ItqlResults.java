@@ -73,6 +73,8 @@ abstract class ItqlResults extends Results {
               types[idx] = Type.LITERAL;
             else if (qa.isURI(idx))
               types[idx] = Type.URI;
+            else if (qa.isBlankNode(idx))
+              types[idx] = Type.BLANK_NODE;
             else if (qa.isSubQueryResults(idx))
               types[idx] = Type.SUBQ_RESULTS;
           }
@@ -119,7 +121,7 @@ abstract class ItqlResults extends Results {
   }
 
   /** 
-   * Get a single result object. This handles LITERAL, URI, and UNKNOWN only.
+   * Get a single result object. This handles LITERAL, URI, BLANK_NODE, and UNKNOWN only.
    * 
    * @param idx   which object to get
    * @param type  the object's type
@@ -140,11 +142,16 @@ abstract class ItqlResults extends Results {
       case URI:
         return qa.getURI(idx);
 
+      case BLANK_NODE:
+        return qa.getBlankNode(idx);
+
       case UNKNOWN:
         if (qa.isLiteral(idx))
           types[idx] = Type.LITERAL;
         else if (qa.isURI(idx))
           types[idx] = Type.URI;
+        else if (qa.isBlankNode(idx))
+          types[idx] = Type.BLANK_NODE;
         else if (qa.isSubQueryResults(idx))
           types[idx] = Type.SUBQ_RESULTS;
         else
