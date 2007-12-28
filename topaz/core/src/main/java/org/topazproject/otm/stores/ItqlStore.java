@@ -819,6 +819,10 @@ public class ItqlStore extends AbstractTripleStore {
       throw new QueryException("error performing query '" + query + "'", ae);
     }
 
+    if (ans.get(0).getMessage() != null)
+      throw new QueryException("error performing query '" + query + "' - message was: " +
+                               ans.get(0).getMessage());
+
     return new ItqlNativeResults(ans.get(0), txn.getSession());
   }
 
