@@ -9,6 +9,8 @@
  */
 package org.topazproject.interpreter;
 
+import org.topazproject.otm.query.Results;
+
 /** Base class for itql/rdf types below */
 class Value {
   /** The raw value from mulgara */
@@ -51,35 +53,33 @@ class Row {
   def vars
   def hdrs = [ ]
   def vals = [ ]
-  Row(sol, vars) {
+
+  Row(res, vars) {
     // TODO: Handle now vars (like count())
     this.vars = vars
     vars.each() { hdrs.add(it) }
     vars.each() { var ->
-      def val = sol."$var"."@resource".toString()
-      if (val) {
-        val = new Resource(val)
-      } else {
-        val = sol."$var"."@blank-node".toString()
-        if (val) {
-          val = new Blank(val)
-        } else if (sol."$var".children().size() == 0) {
-          val = sol."$var".toString().trim()
-          if (val) {
-            // TODO: Capture more data-types
-            switch (sol."$var"."@datatype") {
-              case "http://www.w3.org/2001/XMLSchema#int":  val = new RdfInt(val); break
-              case "http://www.w3.org/2001/XMLSchema#date": val = new RdfDate(val); break
-              default: val = new Literal(val)
-            }
-          } else {
-            val = new Empty() // If a value does not exist in a sub-query
+      def val
+      switch (res.getType(var)) {
+        case Results.Type.URI:        val = new Resource(res.getString(var)); break
+        case Results.Type.BLANK_NODE: val = new Blank(res.getString(var)); break
+        case Results.Type.LITERAL:
+          val = res.getLiteral(var)
+          switch (val.getDatatype()?.toString()) {
+            case "http://www.w3.org/2001/XMLSchema#int":  val = new RdfInt(val.value); break
+            case "http://www.w3.org/2001/XMLSchema#date": val = new RdfDate(val.value); break
+            default: val = new Literal(val.value)
           }
-        } else if (!val) {
+          break
+        case Results.Type.SUBQ_RESULTS:
           // TODO: Handle a subquery that returns multiple subrows per row
-          def subvars = sol."$var".variables.children().list()*.name()
-          val = new Row(sol."$var".solution, subvars)
-        }
+          val = res.getSubQueryResults(var)
+          if (val.next())
+            val = new Row(val, val.variables)
+          else
+            val = new Empty()
+          break
+        default: val = new Value(res.getString(var));
       }
       vals.add(val)
     }
@@ -125,12 +125,13 @@ class Answer {
   /**
    * Construct an Answer
    *
-   * @param ans should be results from XmlSlurper. i.e.
-   *            new XmlSlurper().parseText(itql.doQuery(...)).query[0]
+   * @param res should be Result from Session
    */
-  Answer(ans) {
-    vars = ans.variables.children().list()*.name()
-    ans.solution.each() { data.add(new Row(it, vars)) }
+  Answer(res) {
+    vars = res.variables
+    println "variables: ${vars}"
+    while (res.next())
+      data.add(new Row(res, vars))
   }
 
   /** flatten any subquery results into main query */

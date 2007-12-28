@@ -14,17 +14,7 @@
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-client</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>otm-extras</artifactId>
     </dependency>
 
     <dependency>
@@ -89,6 +79,25 @@
     <dependency>
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mulgara</groupId>
+      <artifactId>mulgara</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>string-compare-resolver</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

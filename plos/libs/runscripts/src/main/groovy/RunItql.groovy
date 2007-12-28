@@ -15,6 +15,7 @@ import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.owl.OwlClass;
 import org.topazproject.otm.owl.ObjectProperty;
 import org.topazproject.otm.owl.Metadata;
+import org.topazproject.otm.query.Results;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 import jline.ConsoleReader;
@@ -50,7 +51,7 @@ def file = (opt.f) ? new File(opt.f).newInputStream() : System.in
 bPrompt = (opt.p || !opt.f)
 bInit   = (opt.i || !opt.f)
 pp = !opt.N
-mode = opt.m
+mode = opt.m ?: table
 echo = opt.v || opt.e || !opt.f
 trunc = opt.t
 running = true
@@ -65,7 +66,6 @@ if (verbose) {
 metamodel = "local:///topazproject#metadata"
 
 factory = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
-aliases = factory.listAliases()
 factory.addModel(new ModelConfig("metadata", URI.create(metamodel), null))
 factory.preload(OwlClass.class)
 factory.preload(ObjectProperty.class)
@@ -80,17 +80,17 @@ These are interpreted as follows:
   % - Remainder of line executed as groovy. See ".help variables"
   . - Runs special commands. See ".help cmds"
 
-Availalbe topcis:
+Available topcis:
   variables cmds .alias .meta .quit init'''
 help["cmds"] = '''The following commands are supported: .alias, .meta, .quit
 Run ".help .<cmd>" for help with a specific command'''
 help[".alias"] = """.alias [load|list|save|set alias uri]
-  load - loads any aliases defined in <$metamodel>
-  save - saves all currently defined aliases into <$metamodel>
+  load - loads any aliases defined in <${metamodel}>
+  save - saves all currently defined aliases into <${metamodel}>
   list - lists currently active aliases (but doesn't load them)
   set alias uri - adds an alias to the interpreter (but doesn't save it)"""
 help[".meta"]  = """.meta [classes|show type|showall|load ...]
-  classes   - Shows all the classes defined in <$metamodel>
+  classes   - Shows all the classes defined in <${metamodel}>
   show type - Shows information about a specific OWL class
   showall   - Shows information about all loaded classes
   load jar-files|dirs ... - Load owl metadata for supplied classes"""
@@ -107,7 +107,7 @@ because bar is not in quotes. '%println mode' will printout the value of the
 variable mode.
 
 Special variables:
-  mode (str) - Sets dispaly output. General options are: xml, csv, tsv, table
+  mode (str) - Sets display output. General options are: csv, tsv, table
                You can also append sub-modes: quote reduce
                These quote literals and uris appropriately and/or reduce uris 
                via aliases for easier viewing. eg. %mode="table quote reduce"
@@ -135,15 +135,15 @@ def meta(args) {
 def showClasses() {
   def q = '''select $class $model from <''' + metamodel + '''>
               where $class <rdf:type> <owl:Class> and $class <topaz:inModel> $model;'''
-  showTable(new XmlSlurper().parseText(itql.doQuery(q, aliases)))
+  showTable(doQuery(q))
 }
 
 def showAllClasses() {
   def q = '''select $class $model from <''' + metamodel + '''>
               where $class <rdf:type> <owl:Class> and $class <topaz:inModel> $model;'''
-  new XmlSlurper().parseText(itql.doQuery(q, aliases)).query.solution.class.'@resource'.each() {
-    showClass(it.toString())
-  }
+  def res = doQuery(q)
+  while (res.next())
+    showClass(res.getString('class'))
 }
 
 def showClass(cls) {
@@ -174,15 +174,18 @@ def showClass(cls) {
 """
   if (verbose)
     println q
-  def ans = new XmlSlurper().parseText(itql.doQuery(q, aliases))
-  showTable(ans)
+  showTable(doQuery(q))
 }
 
 def alias(args) {
   switch(args[0]) {
   case 'load': loadAliases(); break
   case 'list': showAliases(); break
-  case 'set' : aliases[args[1]] = URI.create(args[2]).toString(); break
+  case 'set' :
+    factory.addAlias(args[1], URI.create(args[2]).toString())
+    session.close()
+    session = factory.openSession()
+    break
   case 'save': println "Unimplemented"; break
   case 'help': println ".alias [load|list|save|set alias uri]"; break
   }
@@ -191,23 +194,28 @@ def alias(args) {
 def loadAliases() {
   def query = """
     select \$uri \$alias 
-      from <$metamodel> 
+      from <${metamodel}> 
      where \$uri <http://rdf.topazproject.org/RDF/hasAlias> \$alias;
 """
-  def result = itql.doQuery("$query;", aliases)
-  def answer = new XmlSlurper().parseText(result)
-  answer.query[0].solution.each() { sol ->
-    aliases[ sol.alias.toString() ] = sol.uri."@resource".toString()
-  }
+  def result = doQuery(query)
+
+  for (alias in factory.listAliases().keySet())
+    factory.removeAlias(alias)
+  while (result.next())
+    factory.addAlias(result.getString('alias'), result.getString('uri'))
+
+  session.close()
+  session = factory.openSession()
 }
 
 def showAliases() {
+  def aliases = factory.listAliases()
   def len = new ArrayList(aliases.keySet())*.size().max()
   aliases.keySet().sort().each() { printf "%${len}s: %s\n", it, aliases[it] }
 }
 
 def reduceUri(uri) {
-  for (alias in aliases) {
+  for (alias in factory.listAliases()) {
     if (uri == alias.value) return uri
     def val = uri.replace(alias.value, alias.key + ":")
     if (val != uri) return val
@@ -222,53 +230,47 @@ def prompt() {
 }
 
 def reduce(s) {
-  for (alias in aliases)
+  for (alias in factory.listAliases())
     s = s.replaceAll(alias.value, alias.key + ":")
   return s
 }
 
 def expand(s) {
-  for (alias in aliases)
+  for (alias in factory.listAliases())
     s = s.replaceAll(alias.key + ":", alias.value)
   return s
 }
 
 def showResults(result) {
-  def ans = new XmlSlurper().parseText(result)
-  if (ans.query.message.text()) {
-    if (echo) println ans.query.message
-  } else if (ans.query[0].solution) {
-    switch (mode) {
-      case ~/.*csv.*/: showCsv(ans); break
-      case ~/.*tsv.*/: showTsv(ans); break
-      case ~/.*tab.*/: showTable(ans); break
-      default:
-        if (mode =~ "red") result = reduce(result)
-        if (pp)
-          new XmlNodePrinter().print(new XmlParser().parseText(result))
-        else
-          print "$result\n"
+    println result
+  if (result instanceof String) {
+    if (echo) println result
+  } else if (result instanceof Results) {
+    switch (mode) { case ~/.*csv.*/: showCsv(result); break
+      case ~/.*tsv.*/: showTsv(result); break
+      case ~/.*tab.*/: showTable(result); break
+      default: showTable(result)
     }
   } else {
-    print "$result\n"
+    println result
   }
 }
 
-def showCsv(xmlResult) {
-  def ans = new Answer(xmlResult.query[0])
+def showCsv(res) {
+  def ans = new Answer(res)
   ans.flatten()
   def ops = [ ]
-  if (mode =~ "red") ops.add(ans.createReduceClosure(aliases))
+  if (mode =~ "red") ops.add(ans.createReduceClosure(factory.listAliases()))
   if (mode =~ "quote") ops.add(ans.csvQuoteClosure)
   ans.quote(ops)
   ans.each() { println it.toString()[1..-2] }
 }
 
-def showTsv(xmlResult) {
-  def ans = new Answer(xmlResult.query[0])
+def showTsv(res) {
+  def ans = new Answer(res)
   ans.flatten()
   def ops = [ ]
-  if (mode =~ "red") ops.add(ans.createReduceClosure(aliases))
+  if (mode =~ "red") ops.add(ans.createReduceClosure(factory.listAliases()))
   if (mode =~ "quote") ops.add(ans.rdfQuoteClosure)
   ans.quote(ops)
   ans.each() { row ->
@@ -278,17 +280,18 @@ def showTsv(xmlResult) {
       print it
       if (++col < cols) print "\t"
     }
-    print "\n"
+    println()
   }
 }
 
-def showTable(xmlResult) {
-  def ans = new Answer(xmlResult.query[0])
+def showTable(res) {
+  def ans = new Answer(res)
   def cnt = ans.data.size()
+    println "cnt = ${cnt}"
   ans.flatten()
   def ops = [ ]
   if (trunc instanceof Integer && trunc > 3) ops.add(ans.createTruncateClosure(trunc))
-  if (mode =~ "red") ops.add(ans.createReduceClosure(aliases))
+  if (mode =~ "red") ops.add(ans.createReduceClosure(factory.listAliases()))
   if (mode =~ "quote") ops.add(ans.rdfQuoteClosure)
   ans.quote(ops)
   def lengths = ans.getLengths()
@@ -331,13 +334,35 @@ def execute(query) {
   try {
     query = expandVars(query)
     if (verbose)
-      print "$query\n"
-    result = itql.doQuery("$query;", aliases)
+      println query
+    def result = doQuery(query)
     showResults result
   } catch (Throwable e) {
-    print "Error running query:\n$e\n"
+    println "Error running query '${query}':"
+    Throwable c = e;
+    while (c.cause)
+      c = c.cause
+    println c
     if (verbose)
       e.printStackTrace()
+  }
+}
+
+def doQuery(query) {
+  def tx = session.beginTransaction()
+  try {
+    if (!query.trim().endsWith(';'))
+      query <<= ';'
+    return session.doNativeQuery(query.toString())
+  } catch (Exception e) {
+    // really hacky...
+    def m = e.getMessage() =~ /error performing query .* message was: (.*)/
+    println e
+    if (m.count)
+      return m[0][1]
+    throw e
+  } finally {
+    tx.commit()
   }
 }
 
@@ -354,7 +379,8 @@ def eval(s) {
     this.expandVars = { expandVars(it) }
     evaluate(s)
   } catch (Throwable e) {
-    print "Error evaluating groovy: %$s\n:$e\n"
+    println "Error evaluating groovy: %$s"
+    println e
     if (verbose)
       e.printStackTrace()
   }
@@ -427,9 +453,8 @@ prompt()
 // Use jline for some attempt at readline functionality
 def cr = new ConsoleReader(file, writer)
 cr.setDefaultPrompt("itql> ")
-cr.setUseHistory(false)
 try {
-  histfile = new File(System.getProperty("user.home") + File.pathSeparator + ".runitql_history")
+  histfile = new File(System.getProperty("user.home"), ".runitql_history")
   cr.setHistory(new History(histfile))
 } catch (IOException e) {
   println "Error loading history: $e"
@@ -440,4 +465,4 @@ while (running && (line = cr.readLine()) != null) { // Loop over lines with jlin
   processLine(line, cr, true)
 }
 
-print "\n"
+println()
