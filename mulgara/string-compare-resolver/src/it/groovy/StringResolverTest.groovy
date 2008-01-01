@@ -17,10 +17,12 @@ class StringResolverTest extends GroovyTestCase {
   String TEST_MODEL = '<local:///topazproject#EqualIgnoreCaseTests>'
   String RSLV_MODEL = '<local:///topazproject#str>'
   String RSLV_TYPE  = '<http://topazproject.org/models#StringCompare>'
+  SessionFactory sf = SessionFactoryFinder.newSessionFactory(MULGARA.toURI());
   ItqlInterpreterBean itql
 
+  // somewhere: sf.delete()
+
   void setUp() {
-    SessionFactory sf = SessionFactoryFinder.newSessionFactory(MULGARA.toURI());
     itql = new ItqlInterpreterBean(sf.newSession(), sf.getSecurityDomain());
     itql.setAliasMap([topaz:'http://rdf.topazproject.org/RDF/'.toURI()])
     itql.executeUpdate("create ${RSLV_MODEL} ${RSLV_TYPE};")
@@ -28,6 +30,10 @@ class StringResolverTest extends GroovyTestCase {
     itql.executeUpdate("insert <foo:1> <bar:is> 'a' into ${TEST_MODEL};")
     itql.executeUpdate("insert <foo:2> <bar:is> 'b' into ${TEST_MODEL};")
     itql.executeUpdate("insert <foo:X> <bar:is> 'c' into ${TEST_MODEL};")
+  }
+
+  void tearDown() {
+    itql.close();
   }
 
   void testEqualIgnoresCase() {
