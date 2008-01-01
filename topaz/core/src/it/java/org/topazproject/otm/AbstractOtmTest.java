@@ -70,10 +70,10 @@ public abstract class AbstractOtmTest {
       new ModelConfig("str", URI.create("local:///topazproject#str"),
                                       URI.create("http://topazproject.org/models#StringCompare")),
     };
-    URI storeUri = URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService");
+    URI storeUri = URI.create("local:///topazproject");
     TripleStore tripleStore = new ItqlStore(storeUri);
     factory.setTripleStore(tripleStore);
-    factory.setBlobStore(new SimpleBlobStore("blob-store"));
+    factory.setBlobStore(new SimpleBlobStore("target/blob-store"));
 
     for (ModelConfig model : models)
       factory.addModel(model);

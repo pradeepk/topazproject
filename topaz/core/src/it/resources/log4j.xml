@@ -17,6 +17,14 @@
     <level value="warn" />
   </logger>
 
+  <logger name="org.mulgara">
+    <level value="warn" />
+  </logger>
+
+  <logger name="org.mulgara.itql.ItqlInterpreter">
+    <level value="error" />
+  </logger>
+
   <!--
   <logger name="org.topazproject.otm">
     <level value="debug" />

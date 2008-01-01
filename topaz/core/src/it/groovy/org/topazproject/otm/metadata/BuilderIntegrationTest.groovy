@@ -25,7 +25,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   def store;
 
   void setUp() {
-    store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
+    store = new ItqlStore("local:///topazproject".toURI())
     rdf = new RdfBuilder(
         sessFactory:new SessionFactoryImpl(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
 

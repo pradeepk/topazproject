@@ -56,7 +56,7 @@ public class OwlTest {
   @BeforeClass
   public void setUpFactory() throws OtmException {
     factory.setTripleStore(
-      new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
+      new ItqlStore(URI.create("local:///topazproject")));
 
     ModelConfig otm = new ModelConfig(VINModel, VINModelUri, null);
     factory.addModel(otm);
@@ -75,7 +75,7 @@ public class OwlTest {
   @BeforeClass
   public void setUpMetaFactory() throws OtmException {
     metaFactory.setTripleStore(
-      new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
+      new ItqlStore(URI.create("local:///topazproject")));
     ModelConfig meta =
       new ModelConfig("metadata", URI.create("local:///topazproject#metadata"), null);
     metaFactory.addModel(meta);

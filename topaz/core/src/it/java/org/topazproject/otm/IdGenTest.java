@@ -79,7 +79,7 @@ public class IdGenTest {
   @BeforeClass
   public void setUpFactory() throws OtmException {
     factory.setTripleStore(
-      new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
+      new ItqlStore(URI.create("local:///topazproject")));
 
     ModelConfig idtest = new ModelConfig("idtest", URI.create("local:///topazproject#idtest"), null);
     ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#idgentest-ri"), null);

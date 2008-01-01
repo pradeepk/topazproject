@@ -35,8 +35,8 @@ public class AbstractTest extends GroovyTestCase {
   protected def models = [['ri', 'otmtest1', null]];
 
   void setUp() {
-    store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
-    blobStore = new SimpleBlobStore("blob-store");
+    store = new ItqlStore("local:///topazproject".toURI())
+    blobStore = new SimpleBlobStore("target/blob-store");
     rdf = new RdfBuilder(
         sessFactory:new SessionFactoryImpl(tripleStore:store, blobStore:blobStore), defModel:'ri', defUriPrefix:'topaz:')
 
