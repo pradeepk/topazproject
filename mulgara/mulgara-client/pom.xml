@@ -4,7 +4,7 @@
   <artifactId>mulgara-client</artifactId>
   <packaging>jar</packaging>
   <version>0.8.2-SNAPSHOT</version>
-  <name>Mulgara Webservice Client</name>
+  <name>Mulgara Client</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
