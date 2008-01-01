@@ -52,7 +52,6 @@ class CriteriaGenerator extends TreeParser("OqlTreeParser");
 
 options {
     importVocab = Query;
-    k           = 2;
 }
 
 {
