@@ -84,20 +84,12 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo.groovy</groupId>
         <artifactId>groovy-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <!-- <goal>generateStubs</goal> -->
-              <!-- <goal>generateTestStubs</goal> -->
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
+
       <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -109,8 +101,6 @@
       </plugin>
       -->
     </plugins>
-
-    <defaultGoal>install</defaultGoal>
   </build>
 
   <profiles>

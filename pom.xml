@@ -74,6 +74,7 @@
 
   <modules>
     <module>build/ant-tasks-plugin</module>
+    <module>build/integration-tests-plugin</module>
     <module>mulgara</module>
     <module>fedora</module>
     <module>topaz</module>
@@ -586,201 +587,6 @@
   
   <profiles>
 
-    <!-- it-helper: Integration-test helper - Turn on integration testing within modules -->
-
-    <profile>
-      <id>it-helper</id>
-
-      <dependencies>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <version>1.2.13</version>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-      
-      <build>
-        <!-- We're doing integration testing, so get test resources from appropriate location. -->
-        <!-- XXX: Ideally we'd do this via configuration/resources in the maven-resourses-plugin,
-             but there is a jira ticket open that this is broken, so we're mashing up resources
-             for unit and integration testing. Be warned not to use different resources with
-             identical names but differnt content in it/resources and test/resources! -->
-        <testResources>
-          <testResource>
-            <directory>src/it/resources</directory>
-          </testResource>
-          <testResource>
-            <directory>src/test/resources</directory>
-          </testResource>
-        </testResources>
-
-        <!-- This doesn't work in profiles (yet) - using build-helper-maven-plugin instead
-        <testSourceDirectory>src/it/java</testSourceDirectory> -->
-
-        <!-- XXX: Should some/all of this be inside the <pluginManagement> section?
-             That would allow us to more easily modify integration-testing options in
-             sub-modules (assuming integration testing is ever run directly in the
-             sub-modules themselves).
-             If we start running this profile across all sub-modules, this may give
-             less trouble but will require entries in modules that want to run
-             integration tests. -->
-        
-        <plugins>
-          
-          <!-- Add src/it/java to test-sources since <testSourceDirectory> does not work
-               within profiles and because maven-compiler-plugin's testCompile goal ignores
-               configuration/compileSourceRoots configuration -->
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>generate-test-sources</phase>
-                <goals><goal>add-test-source</goal></goals>
-                <configuration>
-                  <sources><source>src/it/java</source></sources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <!-- Use surefire to run integration tests -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>     <!-- don't run the tests in the test phase -->
-            </configuration>
-            <executions>
-              <execution>
-                <id>it-test</id>
-                <phase>integration-test</phase>
-                <goals><goal>test</goal></goals>
-                <configuration>
-                  <skip>false</skip><!-- instead, run the tests in the integration-test phase -->
-                  <trimStackTrace>false</trimStackTrace>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <!-- Blow away the target/test-classes directory so non it-helper builds don't
-               get confused. (Would be better to build in it-classes (or move classes there
-               when testing, but maven is so f**king broken as to make that impossible). -->
-          <plugin>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>post-integration-test</phase>
-                <goals><goal>run</goal></goals>
-                <configuration>
-                  <tasks>
-                    <jar destfile="${project.build.directory}/test-classes.jar"
-                      basedir="${project.build.directory}/test-classes" />
-                    <delete dir="${project.build.directory}/test-classes" />
-                  </tasks>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.codehaus.mojo.groovy</groupId>
-            <artifactId>groovy-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>testCompile</id>
-                <goals><goal>testCompile</goal></goals>
-                <configuration>
-                  <sources>
-                    <fileset>
-                      <directory>${pom.basedir}/src/it/groovy</directory>
-                      <includes>
-                        <include>**/*.groovy</include>
-                      </includes>
-                    </fileset>
-                  </sources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-        </plugins>
-
-        <!-- pluginManagement: Default plugin information to be made available for
-             reference by modules derived from this one. This plugin configuration
-             will not be resolved or bound to the lifecycle unless referenced. Any
-             local configuration for a given plugin will override the plugin's
-             entire definition here. -->
-        
-        <pluginManagement>
-          <plugins>
-            
-            <!-- deploy for integration testing -->
-            <plugin>
-              <groupId>org.codehaus.cargo</groupId>
-              <artifactId>cargo-maven2-plugin</artifactId>
-              <version>0.3.1</version>
-              <configuration>
-                <wait>false</wait>
-                <container>
-                  <containerId>jetty4x</containerId>
-                  <type>embedded</type>
-                  <output>${project.build.directory}/jetty.log</output>
-                  <log>${project.build.directory}/cargo.log</log>
-                  <dependencies>
-                    <dependency>
-                      <groupId>log4j</groupId>
-                      <artifactId>log4j</artifactId>
-                    </dependency>
-                    <dependency>
-                      <location>${user.home}/.m2/topaz/container-classes</location>
-                    </dependency>
-                    <dependency>
-                      <location>${basedir}/src/it/container-classes</location>
-                    </dependency>
-                  </dependencies>
-                </container>
-                <configuration> 
-                  <home>${project.build.directory}/jetty</home>
-                  <properties>
-                    <cargo.servlet.port>9997</cargo.servlet.port>
-                    <cargo.logging>high</cargo.logging>
-                  </properties>
-                  <deployables>
-                    <deployable>
-                      <groupId>${pom.parent.groupId}</groupId>
-                      <artifactId>${pom.parent.artifactId}-webapp</artifactId>
-                      <type>war</type>
-                      <properties>
-                        <context>${pom.parent.artifactId}</context>
-                      </properties>
-                    </deployable>
-                  </deployables>
-                </configuration>
-              </configuration> 
-              <executions>
-                <execution>
-                  <id>jetty-start</id>
-                  <phase>pre-integration-test</phase>
-                  <goals><goal>start</goal></goals>
-                </execution>
-                <execution>
-                  <id>jetty-stop</id>
-                  <phase>post-integration-test</phase>
-                  <goals><goal>stop</goal></goals>
-                </execution>
-              </executions>
-            </plugin>
-          
-          </plugins>
-        </pluginManagement>
-        
-      </build>
-
-    </profile>
-
     <!-- it-startenv: Start and stop fedora/ecqs/mulgara before and after integration testing -->
     
     <profile>
@@ -858,6 +664,54 @@
           <artifactId>axistools-maven-plugin</artifactId>
           <version>1.0</version>
         </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo.groovy</groupId>
+          <artifactId>groovy-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>compile</id>
+              <goals>
+                <!-- <goal>generateStubs</goal> -->
+                <goal>compile</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>copy-test-sources</id>
+              <phase>generate-test-sources</phase>
+              <goals><goal>execute</goal></goals>
+              <configuration>
+                <source>
+                  String runDir = "${project.build.directory}/groovy-test-sources"
+                  String srcDir = project.properties['running-integration-tests'] ?
+                                    "${pom.basedir}/src/it/groovy" : "${pom.basedir}/src/test/groovy"
+
+                  ant.delete(dir: runDir, quiet: true)
+                  if (new File(srcDir).exists()) {
+                    ant.copy(toDir: runDir) {
+                      fileset(dir: srcDir)
+                    }
+                  }
+                </source>
+              </configuration>
+            </execution>
+            <execution>
+              <id>compile-tests</id>
+              <phase>test-compile</phase>
+              <goals><goal>testCompile</goal></goals>
+              <configuration>
+                <sources>
+                  <fileset>
+                    <directory>${project.build.directory}/groovy-test-sources</directory>
+                    <includes>
+                      <include>**/*.groovy</include>
+                    </includes>
+                  </fileset>
+                </sources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -879,6 +733,19 @@
           <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>integration-tests-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>run-it</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
 
     <defaultGoal>install</defaultGoal>
