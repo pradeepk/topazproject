@@ -3,8 +3,10 @@ package org.topazproject.otm.query;
 
 import java.io.StringReader;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import antlr.collections.AST;
 
@@ -12,12 +14,13 @@ import junit.framework.TestCase;
 
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
-import org.topazproject.otm.samples.Article;
-import org.topazproject.otm.samples.PublicAnnotation;
-import org.topazproject.otm.samples.ReplyThread;
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 
 public class QueryTest extends TestCase {
   private static final String[] parseOkQueries = {
@@ -148,9 +151,8 @@ public class QueryTest extends TestCase {
   private Session getSession() throws OtmException {
     if (session == null) {
       SessionFactory factory = new SessionFactoryImpl();
-      factory.preload(ReplyThread.class);
-      factory.preload(PublicAnnotation.class);
       factory.preload(Article.class);
+      factory.preload(Reply.class);
 
       ModelConfig mc = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
       factory.addModel(mc);
@@ -198,7 +200,7 @@ public class QueryTest extends TestCase {
   }
 
   public void testPredTransformer() throws Exception {
-    //String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or foobar(a) and pp := a.replies and x:foobar(cast(a.categories, org.topazproject.otm.samples.Reply).type, a.<topaz:hasCategory>, blah(a.replies.creator, pp.creator)) and a.{p -> p = a.replies or foo(p) and cast(p, org.topazproject.otm.samples.Reply).title = <foo:bar>} = '42';";
+    //String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or foobar(a) and pp := a.replies and x:foobar(cast(a.categories, org.topazproject.otm.query.QueryTest.Reply).type, a.<topaz:hasCategory>, blah(a.replies.creator, pp.creator)) and a.{p -> p = a.replies or foo(p) and cast(p, org.topazproject.otm.query.QueryTest.Reply).title = <foo:bar>} = '42';";
     String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p -> p = a.replies or cast(p, Reply).title = <foo:bar>} = '42';";
     //String qry = "select a from Article a where a = <f:42> or a = <f:52>;";
     //String qry = "select ann n from Annotation ann where cast(ann.annotates, Article).title != 'Yo ho ho' order by n;";
@@ -350,5 +352,31 @@ public class QueryTest extends TestCase {
       ;//System.out.println("Warnings " + op + ": '" + wrns + "'");
 
     assertTrue(errs.length() == 0);
+  }
+
+  @Entity(type = Rdf.topaz + "Article", name = "Article", model = "ri")
+  private static class Article {
+    @Id
+    public URI uri;
+
+    @Predicate(uri = Rdf.dc + "title")
+    public String      title;
+    @Predicate(uri = Rdf.topaz + "hasCategory")
+    public String[]    categories;
+    @Predicate(uri = Rdf.topaz + "inReplyTo", inverse=true, notOwned=true)
+    public List<Reply> replies = new ArrayList<Reply>();
+  }
+
+  @Entity(type = Rdf.topaz + "Reply", name = "Reply", model = "ri")
+  private static class Reply {
+    @Id
+    public URI id;
+
+    @Predicate(uri = Rdf.rdf + "type", dataType=Rdf.xsd + "anyURI")
+    public String type;
+    @Predicate(uri = Rdf.dc + "title")
+    public String title;
+    @Predicate(uri = Rdf.dc + "creator")
+    public String creator;
   }
 }
