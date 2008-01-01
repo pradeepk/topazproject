@@ -57,8 +57,8 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antlr-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>antlr-maven-plugin</artifactId>
         <configuration>
           <grammars>query.g, predicates.g, param_resolver.g, itql_constr.g, itql_redux.g, itql_filter.g, itql_writer.g, to_criteria.g</grammars>
         </configuration>
