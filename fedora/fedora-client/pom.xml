@@ -71,6 +71,17 @@
           </dependency>
         </dependencies>
       </plugin>
+
+      <plugin>
+        <!-- disable the integration-tests plugin, because we need fedora running for them -->
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>integration-tests-plugin</artifactId>
+        <configuration>
+          <sources>
+            <source>null</source>
+          </sources>
+        </configuration>
+      </plugin>
     </plugins> 
   </build>
 </project>
