@@ -107,29 +107,59 @@
     <profile>
       <id>coverage</id>
 
-      <dependencies>
-        <dependency>
-          <groupId>cobertura</groupId>
-          <artifactId>cobertura</artifactId>
-          <version>1.9-SNAPSHOT</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-
       <build>
         <plugins>
           <plugin>
-            <!-- this is so the cobertura plugin can find the groovy sources too -->
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>add-source</id>
+                <!-- this is so the cobertura plugin can find the groovy sources too -->
+                <id>add-groovy-sources</id>
                 <phase>generate-sources</phase>
                 <goals><goal>add-source</goal></goals>
                 <configuration>
                   <sources>
                     <source>${pom.basedir}/src/main/groovy</source>
+                  </sources>
+                </configuration>
+              </execution>
+              <execution>
+                <!-- this is so the cobertura plugin finds all the tests -->
+                <id>add-it-sources</id>
+                <phase>generate-test-sources</phase>
+                <goals><goal>add-test-source</goal></goals>
+                <configuration>
+                  <sources>
+                    <source>${pom.basedir}/src/it/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>compile-all-groovy-tests</id>
+                <phase>test-compile</phase>
+                <goals><goal>testCompile</goal></goals>
+                <configuration>
+                  <sources>
+                    <fileset>
+                      <directory>${pom.basedir}/src/test/groovy</directory>
+                      <includes>
+                        <include>**/*.groovy</include>
+                      </includes>
+                    </fileset>
+                    <fileset>
+                      <directory>${pom.basedir}/src/it/groovy</directory>
+                      <includes>
+                        <include>**/*.groovy</include>
+                      </includes>
+                    </fileset>
                   </sources>
                 </configuration>
               </execution>
@@ -139,6 +169,7 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>cobertura-maven-plugin</artifactId>
+            <version>2.2</version>
             <configuration>
               <instrumentation>
                 <ignores>
@@ -148,6 +179,15 @@
             </configuration>
           </plugin>
         </plugins>
+
+        <testResources>
+          <testResource>
+            <directory>${pom.basedir}/src/it/resources</directory>
+          </testResource>
+          <testResource>
+            <directory>${pom.basedir}/src/test/resources</directory>
+          </testResource>
+        </testResources>
 
         <defaultGoal>cobertura:cobertura</defaultGoal>
       </build>
