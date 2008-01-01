@@ -717,6 +717,18 @@
             </execution>
           </executions>
         </plugin>
+
+        <plugin>
+          <groupId>org.topazproject.plugins</groupId>
+          <artifactId>integration-tests-plugin</artifactId>
+          <executions>
+            <execution>
+              <goals>
+                <goal>run-it</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -738,19 +750,6 @@
           <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.topazproject.plugins</groupId>
-        <artifactId>integration-tests-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>run-it</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
 
     <defaultGoal>install</defaultGoal>

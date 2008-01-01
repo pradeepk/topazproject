@@ -28,4 +28,13 @@
     <module>extras</module>
     <module>util</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>integration-tests-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
