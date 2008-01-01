@@ -75,6 +75,7 @@
   <modules>
     <module>build/ant-tasks-plugin</module>
     <module>build/integration-tests-plugin</module>
+    <module>build/topaz-skin</module>
     <module>mulgara</module>
     <module>fedora</module>
     <module>topaz</module>
@@ -484,7 +485,8 @@
     <plugins>
       
       <!-- TODO: This plugin seems to generate 0-data. Needs investigation -->
-      <!-- <plugin>
+      <!--
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
         <configuration>
@@ -492,7 +494,8 @@
             <ruleset>/rulesets/basic.xml</ruleset>
           </rulesets>
         </configuration>
-      </plugin> -->
+      </plugin>
+      -->
       
       <!-- Java Cross-References (very nice!) -->
       <plugin>
@@ -500,7 +503,8 @@
       </plugin>
       
       <!-- Finds specific keywords in Java sources -->
-      <!-- <plugin>
+      <!--
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
         <configuration>
@@ -512,7 +516,8 @@
             <tag>XXX</tag>
           </tags>
         </configuration>
-      </plugin> -->
+      </plugin>
+      -->
       
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -546,25 +551,45 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId> 
-        <artifactId>surefire-report-maven-plugin</artifactId> 
+      <plugin> 
+        <artifactId>maven-surefire-report-plugin</artifactId> 
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>report-only</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
 
-      <!-- TODO: surefire report moved to apache.org, but borken?
-      <plugin> 
-        <groupId>org.apache.maven.plugins</groupId> 
-        <artifactId>maven-surefire-report-plugin</artifactId> 
-      </plugin> -->
-      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+      </plugin>
+
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
+        <inherited>true</inherited>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>dependencies</report>
+              <report>dependency-convergence</report>
+              <report>mailing-list</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
-      
+
       <!-- TODO: Neeed to use our own style.xml - see target/checkstyle*.xml for ex -->
-      <!-- <plugin>
+      <!--
+      <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin> -->
+      </plugin>
+      -->
 
       <!-- changelog for past 2 weeks -->
       <!-- <plugin>

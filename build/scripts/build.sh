@@ -59,7 +59,7 @@ fi
 # Build site info
 if [ ${N} -eq 0 ]; then
   echo "Build site"
-  ${MVN} ${MVNARGS} site
+  ${MVN} ${MVNARGS} site-deploy
   N=$?
 fi
 
