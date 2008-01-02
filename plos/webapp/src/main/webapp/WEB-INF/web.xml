@@ -213,19 +213,14 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
   </filter-mapping>
 
 
-  <filter-mapping>
-    <filter-name>SimplePageCachingFilter</filter-name>
-    <url-pattern>/article/fetchArticle.action</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
-  </filter-mapping>
+  
 
-  <filter-mapping>
-    <filter-name>SimplePageCachingFilter</filter-name>
-    <url-pattern>/article/fetchAnnotatedArticle.action</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
-  </filter-mapping>
+
+
+  
+
+
+
 
   <filter-mapping>
     <filter-name>SimplePageCachingFilter</filter-name>
