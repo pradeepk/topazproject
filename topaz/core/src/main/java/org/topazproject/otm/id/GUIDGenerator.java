@@ -9,7 +9,9 @@
  */
 package org.topazproject.otm.id;
 
-import java.util.UUID; // Requires Java 1.5
+import java.util.UUID;
+
+import org.topazproject.otm.Transaction;
 
 /**
  * Generate unique ids based on rfc 4122.
@@ -25,7 +27,7 @@ import java.util.UUID; // Requires Java 1.5
 public class GUIDGenerator implements IdentifierGenerator {
   private String uriPrefix;
 
-  public String generate() {
+  public String generate(Transaction txn) {
     return uriPrefix + UUID.randomUUID().toString();
   }
 

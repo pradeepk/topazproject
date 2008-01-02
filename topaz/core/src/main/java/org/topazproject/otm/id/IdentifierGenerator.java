@@ -10,6 +10,7 @@
 package org.topazproject.otm.id;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Transaction;
 
 /**
  * The general contract between a class that generates unique identifiers and the Session.
@@ -23,9 +24,11 @@ public interface IdentifierGenerator {
   /**
    * Generate a new identifier.
    *
+   * @param txn the transaction scope in which to generate this id
+   *
    * @return a new identifier
    */
-  String generate() throws OtmException;
+  String generate(Transaction txn) throws OtmException;
 
   /**
    * Set the uri-prefix to use for the generated ids

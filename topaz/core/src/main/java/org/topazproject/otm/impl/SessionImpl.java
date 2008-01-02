@@ -745,7 +745,10 @@ public class SessionImpl extends AbstractSession {
       if (generator == null)
         throw new OtmException("No id generation for " + o.getClass() + " on " + idField);
 
-      id = generator.generate();
+      if (txn == null)
+        throw new OtmException("No active transaction");
+
+      id = generator.generate(txn);
       idField.set(o, Collections.singletonList(id)); // So user can get at it after saving
 
       if (log.isDebugEnabled())
