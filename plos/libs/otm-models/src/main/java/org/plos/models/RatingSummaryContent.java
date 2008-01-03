@@ -37,6 +37,8 @@ public class RatingSummaryContent {
   private double reliabilityTotal;
   private int    styleNumRatings;
   private double styleTotal;
+  private int    singleRatingNumRatings;
+  private double singleRatingTotal;
   private int    numUsersThatRated;
 
   private static final Log log = LogFactory.getLog(RatingSummaryContent.class);
@@ -64,6 +66,21 @@ public class RatingSummaryContent {
     this.styleNumRatings       = styleNumRatings;
     this.styleTotal            = styleTotal;
     this.numUsersThatRated     = numUsersThatRated;
+  }
+
+  /**
+   * Constructor - For aggregating {@link RatingContent}s that 
+   * are representative of single valued ratings.
+   * @param singleRatingNumRatings
+   * @param singleRatingTotal
+   * @param numUsersThatRated
+   */
+  public RatingSummaryContent(int singleRatingNumRatings, double singleRatingTotal,
+      int numUsersThatRated) {
+    super();
+    this.singleRatingNumRatings = singleRatingNumRatings;
+    this.singleRatingTotal = singleRatingTotal;
+    this.numUsersThatRated = numUsersThatRated;
   }
 
   /**
@@ -159,6 +176,34 @@ public class RatingSummaryContent {
   }
 
   /**
+   * @return the singleRatingNumRatings
+   */
+  public int getSingleRatingNumRatings() {
+    return singleRatingNumRatings;
+  }
+
+  /**
+   * @param singleRatingNumRatings the singleRatingNumRatings to set
+   */
+  public void setSingleRatingNumRatings(int singleRatingNumRatings) {
+    this.singleRatingNumRatings = singleRatingNumRatings;
+  }
+
+  /**
+   * @return the singleRatingTotal
+   */
+  public double getSingleRatingTotal() {
+    return singleRatingTotal;
+  }
+
+  /**
+   * @param singleRatingTotal the singleRatingTotal to set
+   */
+  public void setSingleRatingTotal(double singleRatingTotal) {
+    this.singleRatingTotal = singleRatingTotal;
+  }
+  
+  /**
    * @return Returns the overall Rating.
    */
   public double getOverall() {
@@ -167,6 +212,13 @@ public class RatingSummaryContent {
       getInsightTotal() / getInsightNumRatings(),
       getReliabilityTotal() / getReliabilityNumRatings(),
       getStyleTotal() / getStyleNumRatings());
+  }
+  
+  /**
+   * @return The calculated single rating. 
+   */
+  public double getSingleRating() {
+    return getSingleRatingTotal() / getSingleRatingNumRatings();
   }
 
   /**
@@ -199,6 +251,9 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings += 1;
       styleTotal      += value;
+    } else if (ratingType.equals(Rating.SINGLE_RATING_TYPE)) {
+      singleRatingNumRatings += 1;
+      singleRatingTotal      += value;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when adding a Rating to a RatingSummary.";
@@ -224,6 +279,9 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings -= 1;
       styleTotal      -= value;
+    } else if (ratingType.equals(Rating.SINGLE_RATING_TYPE)) {
+      singleRatingNumRatings -= 1;
+      singleRatingTotal      -= value;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when removing a Rating from a RatingSummary.";
@@ -246,6 +304,8 @@ public class RatingSummaryContent {
       return reliabilityTotal / reliabilityNumRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleTotal / styleNumRatings;
+    } else if (ratingType.equals(Rating.SINGLE_RATING_TYPE)) {
+      return singleRatingTotal / singleRatingNumRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retrieving the average Rating from a RatingSummary.";
@@ -268,6 +328,8 @@ public class RatingSummaryContent {
       reliabilityNumRatings = numRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings = numRatings;
+    } else if (ratingType.equals(Rating.SINGLE_RATING_TYPE)) {
+      singleRatingNumRatings = numRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when assigning the number of Ratings for a RatingSummary.";
@@ -290,6 +352,8 @@ public class RatingSummaryContent {
       return reliabilityNumRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleNumRatings;
+    } else if (ratingType.equals(Rating.SINGLE_RATING_TYPE)) {
+      return singleRatingNumRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retriving the number of Ratings for a RatingSummary.";
@@ -312,6 +376,8 @@ public class RatingSummaryContent {
       reliabilityTotal = total;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleTotal = total;
+    } else if (ratingType.equals(Rating.SINGLE_RATING_TYPE)) {
+      singleRatingTotal = total;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when assigning a total Ratings value for a RatingSummary.";
@@ -334,6 +400,8 @@ public class RatingSummaryContent {
       return reliabilityTotal;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleTotal;
+    } else if (ratingType.equals(Rating.SINGLE_RATING_TYPE)) {
+      return singleRatingTotal;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retrieving a total Ratings value for a RatingSummary.";
