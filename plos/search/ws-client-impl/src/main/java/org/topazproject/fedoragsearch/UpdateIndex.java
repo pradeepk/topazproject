@@ -8,9 +8,13 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.fedoragsearch.service;
+package org.topazproject.fedoragsearch;
 
 import java.net.URL;
+
+import org.topazproject.fedoragsearch.service.FgsOperations;
+import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
+
 
 /**
  * Utility to manually update fedoragsearch index.
