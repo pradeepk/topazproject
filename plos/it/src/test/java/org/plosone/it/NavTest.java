@@ -108,15 +108,20 @@ public class NavTest extends AbstractPlosOneTest {
   public void testAnnotationLoginRedirect(String article, String journal, String browser) {
     log.info("Testing annotation-login-redirect [article='" + article + "', journal='" + journal + "', browser='" + browser
         + "'] ... ");
-    PlosOneWebTester tester = getTester(journal, browser);
-    ArticlePage ap = new ArticlePage(tester, journal, article);
-    ap.gotoPage();
-    ap.logOut();
-    ap.createAnnotation("Test title", "Test Body");
-    ap.loginAs("test", "plostest@gmail.com");
-    ap.verifyPage();
-    ap.logOut();
-    ap.verifyPage();
+    try {
+      PlosOneWebTester tester = getTester(journal, browser);
+      ArticlePage ap = new ArticlePage(tester, journal, article);
+      ap.gotoPage();
+      ap.logOut();
+      ap.createAnnotation("Test title", "Test Body");
+      ap.loginAs("test", "plostest@gmail.com");
+      ap.verifyPage();
+      ap.logOut();
+      ap.verifyPage();
+    } catch (Error e) {
+      log.info("Test Failed!", e);
+      throw e;
+    }
   }
 
   @Test(dataProvider = "articles")
