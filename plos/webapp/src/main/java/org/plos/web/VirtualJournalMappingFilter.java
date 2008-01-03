@@ -11,8 +11,8 @@
 package org.plos.web;
 
 import java.io.IOException;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -24,8 +24,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
@@ -34,6 +32,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
+
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * A Filter that maps incoming URI Requests to an appropriate virtual journal resources.
@@ -52,23 +52,7 @@ public class VirtualJournalMappingFilter implements Filter {
 
   private static final Log log = LogFactory.getLog(VirtualJournalMappingFilter.class);
 
-  private static Ehcache fileSystemCache  = null;
-  static {
-    try {
-      CacheManager cacheManager = CacheManager.getInstance();
-      fileSystemCache = cacheManager.getEhcache("VirtualJournalMappingFilter");
-    } catch (CacheException ce) {
-      log.error("Error getting cache-manager", ce);
-    } catch (IllegalStateException ise) {
-      log.error("Error getting cache", ise);
-    }
-
-    if (fileSystemCache == null) {
-      log.error("No cache configuration found for VirtualJournalMappingFilter");
-    } else {
-      log.info("Cache configuration found for VirtualJournalMappingFilter");
-    }
-  }
+  private Ehcache virtualJournalMappingFilterCache;
 
   // Cache Element value to indicate resource exists
   private static final String RESOURCE_EXISTS = "EXISTS";
@@ -167,7 +151,7 @@ private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest
     final String defaultRequestUri  = defaultedValues[3];
 
     // look in cache 1st for virtual resource
-    Element cachedVirtualResourceElement = fileSystemCache.get(virtualRequestUri);
+    Element cachedVirtualResourceElement = virtualJournalMappingFilterCache.get(virtualRequestUri);
     if (cachedVirtualResourceElement == null) {
       if (log.isDebugEnabled()) {
         log.debug("cache miss for virtual resource: " + virtualRequestUri);
@@ -189,7 +173,7 @@ private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest
         cachedVirtualResourceElement = new Element(virtualRequestUri, RESOURCE_DOES_NOT_EXIST);
       }
       // populate cache with existence
-      fileSystemCache.put(cachedVirtualResourceElement);
+      virtualJournalMappingFilterCache.put(cachedVirtualResourceElement);
 
       if (log.isDebugEnabled()) {
         log.debug("ServletContext.getResource(" + virtualRequestUri + "): "
@@ -240,5 +224,15 @@ private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest
         return pathInfo;
       }
     };
+  }
+
+  /**
+   * Set VirtualJournalMappingFilterCache instance via Spring.
+   *
+   * @param virtualJournalMappingFilterCache The Ehcache instance.
+   */
+  @Required
+  public void setVirtualJournalMappingFilterCache(final Ehcache virtualJournalMappingFilterCache) {
+    this.virtualJournalMappingFilterCache = virtualJournalMappingFilterCache;
   }
 }

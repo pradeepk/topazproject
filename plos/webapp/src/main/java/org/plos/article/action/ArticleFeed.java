@@ -165,7 +165,7 @@ public class ArticleFeed extends BaseActionSupport {
                   " Created " + new Date(e.getCreationTime()) +
                   " last access " + new Date(e.getLastAccessTime()) +
                   " hit count " + e.getHitCount());
-      wireFeed = (WireFeed) e.getObjectValue();
+      wireFeed = (WireFeed) e.getValue();
     } else {
       wireFeed = getFeed(uri);
       feedCache.put(new net.sf.ehcache.Element(cacheKey, wireFeed));
