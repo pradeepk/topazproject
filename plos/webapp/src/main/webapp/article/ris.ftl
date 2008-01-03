@@ -20,7 +20,7 @@ VL  - ${citation.volume}
 IS  - ${citation.issue}
 UR  - ${citation.URL}
 SP  - ${citation.startPage}
-EP  - ${citation.endPage}
+EP  - ${citation.endPage!''}
 PB  - ${citation.publisherName}
 ER  - 
 

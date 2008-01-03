@@ -19,7 +19,7 @@
     month = {${citation.publicationDate?string("MMM")}},
     volume = {${citation.volume}},
     url = {${citation.URL}},
-    pages = {${citation.startPage}},
+    pages = {${citation.startPage}<#if citation.endPage?has_content>--${citation.endPage}</#if>},
     abstract = {${citation.articleAbstract!''}},
     number = {${citation.issue}}
 }        
