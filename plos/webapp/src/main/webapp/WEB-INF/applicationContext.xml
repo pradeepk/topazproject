@@ -89,7 +89,6 @@
     <property name="ingestedDocumentDirectory" value="${pub.spring.ingest.destination}"/>
     <!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>
-    <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="plosDoiUrl" value="${pub.spring.crossref.plos.doiurl}"/>
     <property name="plosEmail" value="${pub.spring.crossref.plos.email}"/>
     <property name="sendToXref" value="${pub.spring.crossref.sendToXref}"/>
