@@ -8,7 +8,7 @@
       <div id="thumbnail">
       
         <@s.url id="currentIssueURL" action="browseIssue" namespace="/journals/ntd/article"
-                issue="${currentIssue.id}" field="issue" includeParams="none"/>
+                issue="${currentIssue.id}" includeParams="none"/>
 <#if currentIssue.imageArticle?exists>
         <@s.url id="currentIssueImgURL" action="fetchObject" namespace="/article" 
                 uri="${currentIssue.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
@@ -30,7 +30,7 @@
     <ul id="volumeTabs" class="plostabs">
       <#assign volNum = 1/>
       <#list volumeInfos as volumeInfo>
-        <li><a href="#" rel="Vol_${volNum}">${volumeInfo.displayName}</a></li>
+        <li><a href="#" rel="Vol_${volNum}" >${volumeInfo.displayName}</a></li>
         <#assign volNum = volNum +1/>
       </#list>
     </ul>
@@ -66,6 +66,9 @@ var volTabs=new ddtabcontent("volumeTabs")
 volTabs.setpersist(true)
 volTabs.setselectedClassTarget("linkparent") //"link" or "linkparent"
 volTabs.init()
+<#if volNum gt 1>
+volTabs.expandit(0) // select the first tab (if there is one or more defined)
+</#if>
 </script>
 
 </#if><!-- end : volumeInfos?exists -->
