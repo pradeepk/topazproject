@@ -4,7 +4,6 @@ Global Homepages Style Sheet for PLoS Journals
 
 Created on: August 22, 2006
 Created by: Margaret Shear
-Modified on: September 19, 2007
 Modified by: Sebastian Toomey
 ----------------------------------------------------------
 All journal specific styles, colors are on individual
@@ -271,10 +270,91 @@ div#rss a span strong	{margin: 4px 0 5px 0; font-size:1.7em; font-weight:normal;
 div#browseWidget { background: url(../images/pone_home_browse_bg.gif) no-repeat left center; }
 div#browseWidget p { margin:0 0 0 30px; padding:0; font-weight:bold;}
 
-/* NOTE: horizontal tab styles moved to pone_screen.css */
-
 /* apply to all article lists on homepage */
 ul.articles,
 ul.articles li		{ margin: 0; padding: 0; list-style-type: none; }
 ul.articles			{ margin: 5px 4px 10px 0;  padding: 10px 10px 0 6px;}
 #home ul.articles li		{ font-size: .9em; margin-left:10px; padding: 3px 0 3px 10px; list-style:none; background: url(../images/pone_home_articles_li_bg.gif) no-repeat 0 10px;}
+
+/* NOTE: horizontal tab styles that I'd previously moved to pone_screen.css are now below. These styles are for the Homepage ONLY. Alex's new tab CSS for the Journal Archive page is now on it's own stylesheet: plostabs.css */
+/* tabs and tabbed box */
+div.horizontalTabs		{
+  float:left;
+  border:0; 
+  padding:0!important; 
+  margin:0!important;
+  background:transparent;
+  width:490px;
+}
+div.horizontalTabs:after {
+  content:"."; 
+  display: block; 
+  height:20px; 
+  clear:both; 
+  visibility:hidden;
+}
+ul#tabsContainer  		{
+  float:left;
+  margin:0!important; 
+  padding:0 0 0 10px!important; /* "!important" required for IE7 */
+  line-height:normal;
+  background:transparent url("../images/tab_bg.gif") repeat-x bottom;
+  width:480px;
+}
+ul#tabsContainer ul		{ 
+  margin:0; 
+  padding:10px 10px 0;
+}
+ul#tabsContainer li		{ 
+  cursor:pointer; 
+  float:left;
+  background:url("../images/tab_left.gif") no-repeat 0% 0%;
+  margin:0 2px;
+	padding:0 0 0 8px;
+  list-style:none;
+  font-size:.9em;
+  font-weight:bold; 
+  color:#666;
+}
+ul#tabsContainer li span {
+  display:block;
+  float:left;
+  background:url("../images/tab_right.gif") no-repeat 100% 0%;
+  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */
+}
+ul#tabsContainer li.active {
+  background-position:0% -40px;
+}
+ul#tabsContainer li.active span { 
+  background-position:100% -40px;
+	padding-bottom: 9px!important;  
+}
+.horizontalTabs .contentwrap {
+  float:left;
+  width:488px;
+  margin:0!important;
+  padding:0!important;
+  background:#ffffff; 
+  border:1px solid #bababa;
+  border-top:0;
+}
+.horizontalTabs ul { 
+  border:0; /* suppresses "border-bottom:2px solid #acf1ff" from pone_screen.css, ln. #511 */
+}
+.horizontalTabs .contentwrap ul { 
+  list-style:none; 
+  margin:10px 10px 0 10px!important; 
+  padding:0!important;
+}
+.horizontalTabs .contentwrap li	{ 
+  display:list-item;
+  background-image:none!important; 
+  list-style:none; 
+  margin:0!important; 
+  padding:0!important;
+  padding-bottom:1em!important;
+  line-height:1.5em;
+}
+.horizontalTabs .contentwrap li	a { font-weight:bold; }
+.horizontalTabs .contentwrap li.more	{ border-top:1px solid #ccc!important; padding-top:.4em!important; }
+.horizontalTabs .contentwrap li.more a	{ font-weight:normal!important; text-decoration:underline!important; }
