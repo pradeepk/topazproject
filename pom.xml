@@ -73,9 +73,7 @@
   </scm>
 
   <modules>
-    <module>build/ant-tasks-plugin</module>
-    <module>build/integration-tests-plugin</module>
-    <module>build/topaz-skin</module>
+    <module>build</module>
     <module>mulgara</module>
     <module>fedora</module>
     <module>topaz</module>
