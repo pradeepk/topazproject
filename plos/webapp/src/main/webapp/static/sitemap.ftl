@@ -8,7 +8,11 @@
 <ul>
 	<li><a href="/" title="PLoS ONE | Home page">Home page</a></li>
 	<li><a href="rssFeeds.action" title="PLoS ONE | RSS Feeds">PLoS RSS Feeds</a></li>
-	<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" title="PLoS ONE | Account Login">Login</a></li>	
+	<#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
+      <li><a id="loginLogoutLink" href="${logoutURL}" title="Logout">Logout</a></li>
+    <#else>
+      <li><a id="loginLogoutLink" href="${loginURL}" title="PLoS ONE | Account Login">Login</a></li>
+    </#if>
 	<li><a href="${freemarker_config.registrationURL}" title="PLoS ONE | Create a New Account">Create Account</a></li>
 	<li><a href="${feedbackURL}" title="PLoS ONE | Send Us Your Feedback">Send Us Feedback</a></li>
 	<li><a href="releaseNotes.action" title="PLoS ONE | Release Notes">Release Notes</a></li>
