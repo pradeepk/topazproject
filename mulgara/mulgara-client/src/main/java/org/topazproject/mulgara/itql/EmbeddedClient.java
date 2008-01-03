@@ -173,10 +173,6 @@ class EmbeddedClient extends IIBClient {
     return d;
   }
 
-  private static void deleteOnExit(File d) {
-    ;
-  }
-
   private static class EmbeddedSessionFactory implements SessionFactory {
     private final URI      uri;
     private final URL      conf;
