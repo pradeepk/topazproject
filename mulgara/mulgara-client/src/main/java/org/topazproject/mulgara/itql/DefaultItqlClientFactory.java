@@ -21,6 +21,8 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
   private static final String MEM_CONF = "mulgara-mem-config.xml";
   private static final String DSK_CONF = "mulgara-emb-config.xml";
 
+  private String dbDir = null;
+
   /** 
    * Create a new itql-client instance. Uri schemes are currently mapped as follows:
    * <dl>
@@ -49,10 +51,33 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
     if (scheme.equals("soap"))
       return new SoapClient(new URI("http", uri.getSchemeSpecificPart(), uri.getFragment()));
     if (scheme.equals("local"))
-      return new EmbeddedClient(uri, null, getClass().getResource(DSK_CONF), this);
+      return new EmbeddedClient(uri, getDbDir(uri), getClass().getResource(DSK_CONF), this);
     if (scheme.equals("mem"))
-      return new EmbeddedClient(uri, null, getClass().getResource(MEM_CONF), this);
+      return new EmbeddedClient(uri, getDbDir(uri), getClass().getResource(MEM_CONF), this);
 
     throw new IllegalArgumentException("Unsupported scheme '" + scheme + "' from '" + uri + "'");
+  }
+
+  /** 
+   * Set the database directory to use for all embedded instances. If finer grained control is
+   * needed, override {@link #getDbDir getDbDir} instead.
+   * 
+   * @param dir the directory to use; if null, a (different) temporary directory will be used
+   *            for each instance.
+   */
+  public void setDbDir(String dir) {
+    dbDir = dir;
+  }
+
+  /** 
+   * Get the database to use for an embedded instance.
+   * 
+   * @param uri the uri of the database
+   * @return the directory to use for the database; if null, a (different) temporary directory will
+   *         be used for each instance.
+   * @see setDbDir
+   */
+  public String getDbDir(URI uri) {
+    return dbDir;
   }
 }
