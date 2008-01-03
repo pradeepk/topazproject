@@ -619,23 +619,17 @@ public class JournalService {
 
   /* must be invoked with journalCache monitor held and active tx on session and in local context */
   private Journal getJournalInternal(String jName) {
-    Journal journal = null;
     Element e = journalCache.get(jName);
     if (e == null) {
       isLocal = true;
       try {
-        journal = retrieveJournalFromDB(jName, session);
-        if (journal != null) {
-          journalCache.put(new Element(jName, new JournalWrapper(journal)));
-        }
+        journalCache.put(e = new Element(jName, new JournalWrapper(null)));
       } finally {
         isLocal = false;
       }
-    } else {
-      journal = ((JournalWrapper) e.getValue()).getJournal();
     }
 
-    return journal;
+    return ((JournalWrapper) e.getValue()).getJournal();
   }
 
   /**
