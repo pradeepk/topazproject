@@ -11,6 +11,7 @@
 .pone_rating .current-rating { background-position: left bottom; display: block; }
 .pone_rating .average-rating { left: -20px; }
 .pone_rating .overall-rating { left: -20px; padding-left: 0; }
+.pone_rating .single-rating  { left: -20px; padding-left: 0; }
 .pone_rating .pct0 { width: 0%;	}
 .pone_rating .pct10 { width: 10%;	}
 .pone_rating .pct20 { width: 20%;	}
@@ -48,6 +49,7 @@ div.rsep { margin-top: 10px;  margin-right: -5px; padding: 0; border: none; back
 .inline-rating-rhc { float:left; margin-top:3px !important; position:static; } 
 .inline-rating-rhc .current-rating { float:none; position:static; }
 .inline-rating-rhc .overall-rating { margin-left:0; }
+.inline-rating-rhc .single-rating { margin-left:0; }
 
 .inline-rating { margin: 11px 85px -11px -85px; }
 /* This is a hack for Safari.  This needs to go last because any instruction after this next line will be ignored  */

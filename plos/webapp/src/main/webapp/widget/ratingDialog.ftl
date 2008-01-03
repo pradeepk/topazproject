@@ -18,6 +18,7 @@
 
             <span id="submitRatingMsg" class="error"></span>
               
+			<#if isResearchArticle == true>
 			<label for="insight">Insight</label>
 			<ul class="star-rating pone_rating edit" title="Rate insight" id="rateInsight">
 				<li class="current-rating pct0"></li>
@@ -50,7 +51,19 @@
 				<li><a href="javascript:void(0);" title="Elegant" class="five-stars" onclick="topaz.rating.setRatingCategory(this, 'style', 5);">5</a></li>
 			</ul>		
 	      	<input type="hidden" name="style" title="style" value="" />
-				
+	        <#else>
+			<label for="singleRating">Rating</label>
+			<ul class="star-rating pone_rating edit" title="Rate single" id="rateSingleRating">
+				<li class="current-rating pct0"></li>
+				<li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 1);">1</a></li>
+				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 2);">2</a></li>
+				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 3);">3</a></li>
+				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 4);">4</a></li>
+				<li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 5);">5</a></li>
+			</ul>		
+	      	<input type="hidden" name="singleRating" title="singleRating" value="" />
+	        </#if>
+							
             <label for="cTitle" class="commentPublic"><span class="none">Enter your comment title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
 
             <input type="text" name="cTitle" id="cTitle" value="Enter your comment title..." class="title commentPublic" alt="Enter your comment title..." />

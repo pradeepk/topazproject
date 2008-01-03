@@ -36,6 +36,7 @@
           <div class="ratingDetail">
             <div class="posterRating">
               <ol class="ratingAvgs">
+              <#if isResearchArticle == true>
                 <#if articleRatingSummary.insight?exists>
                   <li><label for="insight">Insight</label>
                       <ul class="star-rating pone_rating" title="insight">
@@ -68,6 +69,14 @@
                     </ul>
                   </li>
                 </#if>
+              <#else>
+              	  <li><label for="singleRating">&nbsp;</label>
+                    <ul class="star-rating pone_rating" title="singleRating">
+                      <#assign singleRatingPct = (20 * articleRatingSummary.singleRating)?string("##0")>
+                      <li class="current-rating average pct${singleRatingPct}">Currently ${articleRatingSummary.singleRating?string("0.#")}/5 Stars.</li>
+                    </ul>
+                  </li>
+              </#if>
               </ol>
             </div>
             <blockquote>

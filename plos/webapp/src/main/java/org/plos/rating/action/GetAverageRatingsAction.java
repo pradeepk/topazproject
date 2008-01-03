@@ -10,49 +10,53 @@
 package org.plos.rating.action;
 
 import java.net.URI;
-
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.action.BaseActionSupport;
-
+import org.plos.article.service.FetchArticleService;
+import org.plos.model.article.ArticleType;
+import org.plos.models.Article;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
 import org.plos.rating.service.RatingsPEP;
-
 import org.plos.user.PlosOneUser;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.util.TransactionHelper;
-
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * General Rating action class to store and retrieve summary ratings on an article.
  *
  * @author stevec
  */
+@SuppressWarnings("serial")
 public class GetAverageRatingsAction extends BaseActionSupport {
   private Session          session;
+  private FetchArticleService fetchArticleService;
   private String           articleURI;
+  private boolean          isResearchArticle;
   private double           insightAverage;
   private double           styleAverage;
+  private double           singleRatingAverage;
   private double           reliabilityAverage;
   private double           insightRoundedAverage;
   private double           styleRoundedAverage;
   private double           reliabilityRoundedAverage;
+  private double           singleRatingRoundedAverage;
   private int              numInsightRatings;
   private int              numStyleRatings;
   private int              numReliabilityRatings;
+  private int              numSingleRatingRatings;
   private int              numUsersThatRated;
   private double           totalInsight;
   private double           totalStyle;
   private double           totalReliability;
+  private double           totalSingleRating;
   private boolean          hasRated = false;
   private static final Log log      = LogFactory.getLog(GetAverageRatingsAction.class);
   private RatingsPEP       pep;
@@ -72,6 +76,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    *
    * @return WebWork action status
    */
+  @Override
   public String execute() {
     final PlosOneUser   user               = PlosOneUser.getCurrentUser();
 
@@ -79,6 +84,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
 
     return TransactionHelper.doInTx(session,
                               new TransactionHelper.Action<String>() {
+      @SuppressWarnings("unchecked")
       public String run(Transaction tx) {
         RatingSummary ratingSummary      = null;
 
@@ -109,6 +115,11 @@ public class GetAverageRatingsAction extends BaseActionSupport {
           numStyleRatings       = ratingSummary.getBody().getStyleNumRatings();
           totalStyle            = ratingSummary.getBody().retrieveTotal(Rating.STYLE_TYPE);
 
+          singleRatingAverage          = ratingSummary.getBody().retrieveAverage(Rating.SINGLE_RATING_TYPE);
+          singleRatingRoundedAverage   = RatingContent.roundTo(singleRatingAverage, 0.5);
+          numSingleRatingRatings       = ratingSummary.getBody().getSingleRatingNumRatings();
+          totalSingleRating            = ratingSummary.getBody().retrieveTotal(Rating.SINGLE_RATING_TYPE);
+          
           numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
         }
 
@@ -132,6 +143,15 @@ public class GetAverageRatingsAction extends BaseActionSupport {
 
   }
 
+  /** 
+	 * Set the fetch article service
+   * @param fetchArticleService fetchArticleService
+   */
+  @Required
+  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
+  }
+
   /**
    * Gets the URI of the article being rated.
    *
@@ -146,8 +166,32 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    *
    * @param articleURI The articleUri to set.
    */
-  public void setArticleURI(String articleURI) {
+  public void setArticleURI(String articleURI) throws Exception {
+    if(articleURI != null && articleURI.equals(this.articleURI)) {
+      return;
+    }
     this.articleURI = articleURI;
+    
+    // resolve article type and supported properties
+    Article artInfo = fetchArticleService.getArticleInfo(articleURI); 
+    assert artInfo != null : "artInfo is null (Should have already been cached.  Is the articleURI correct?)";
+    ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
+    assert articleType != null;
+    articleType = ArticleType.getDefaultArticleType();
+    for (URI artTypeUri : artInfo.getArticleType()) {
+      if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
+        break;
+      }
+    }
+    isResearchArticle = ArticleType.isResearchArticle(articleType);
+  }
+
+  /**
+   * @return the isResearchArticle
+   */
+  public boolean getIsResearchArticle() {
+    return isResearchArticle;
   }
 
   /**
@@ -202,6 +246,20 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    */
   public void setNumReliabilityRatings(int numReliabilityRatings) {
     this.numReliabilityRatings = numReliabilityRatings;
+  }
+
+  /**
+   * @return the numSingleRatingRatings
+   */
+  public int getNumSingleRatingRatings() {
+    return numSingleRatingRatings;
+  }
+
+  /**
+   * @param numSingleRatingRatings the numSingleRatingRatings to set
+   */
+  public void setNumSingleRatingRatings(int numSingleRatingRatings) {
+    this.numSingleRatingRatings = numSingleRatingRatings;
   }
 
   /**
@@ -279,6 +337,20 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * @return the singleRatingAverage
+   */
+  public double getSingleRatingAverage() {
+    return singleRatingAverage;
+  }
+
+  /**
+   * @param singleRatingAverage the singleRatingAverage to set
+   */
+  public void setSingleRatingAverage(double singleRatingAverage) {
+    this.singleRatingAverage = singleRatingAverage;
+  }
+
+  /**
    * Gets the total on insight ratings.
    *
    * @return Returns the totalInsight.
@@ -312,6 +384,20 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    */
   public void setTotalReliability(double totalReliability) {
     this.totalReliability = totalReliability;
+  }
+
+  /**
+   * @return the totalSingleRating
+   */
+  public double getTotalSingleRating() {
+    return totalSingleRating;
+  }
+
+  /**
+   * @param totalSingleRating the totalSingleRating to set
+   */
+  public void setTotalSingleRating(double totalSingleRating) {
+    this.totalSingleRating = totalSingleRating;
   }
 
   /**
@@ -394,6 +480,20 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    */
   public void setReliabilityRoundedAverage(double reliabilityRoundedAverage) {
     this.reliabilityRoundedAverage = reliabilityRoundedAverage;
+  }
+
+  /**
+   * @return the singleRatingRoundedAverage
+   */
+  public double getSingleRatingRoundedAverage() {
+    return singleRatingRoundedAverage;
+  }
+
+  /**
+   * @param singleRatingRoundedAverage the singleRatingRoundedAverage to set
+   */
+  public void setSingleRatingRoundedAverage(double singleRatingRoundedAverage) {
+    this.singleRatingRoundedAverage = singleRatingRoundedAverage;
   }
 
   /**

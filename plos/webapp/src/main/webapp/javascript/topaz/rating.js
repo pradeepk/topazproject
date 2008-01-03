@@ -40,7 +40,8 @@ topaz.rating = {
     	
     	if (currentNode.className.match("edit") != null) {
 	    	var rateChildNodes = currentNode.childNodes;
-	      var rateItem = currentNode.id.substr(4).toLowerCase();
+	      var rateItem = currentNode.id.substr(4);
+        rateItem = rateItem.charAt(0).toLowerCase() + rateItem.substring(1); 
 	      var rateItemCount = jsonObj[rateItem];
 					     
 	      var indexInt = 0;

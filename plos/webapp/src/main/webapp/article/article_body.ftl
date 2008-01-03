@@ -8,6 +8,7 @@
 		<input type="hidden" name="userIdList" value="" />
 		<input type="hidden" name="otherIdList" value="" />
 		<input type="hidden" name="annotationId" value="${annotationId}" />
+		<input type="hidden" name="isResearchArticle" value="${isResearchArticle?string}" />
 	</form>
 
 	<div id="articleContainer">
