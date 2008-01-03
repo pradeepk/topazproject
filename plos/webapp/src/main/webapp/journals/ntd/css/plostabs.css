@@ -75,9 +75,8 @@ padding:0pt 0pt 0pt 8px;
 .plosTabPane {
 	padding:30px 0pt 20px 30px;
 	background:#FFFFFF none repeat scroll 0%;
-  border-color:-moz-use-text-color #BABABA rgb(186, 186, 186);
-  border-style:none solid solid;
-  border-width:0pt 1px 1px;
+  border:1px solid #bababa;
+  border-top:0;
   float:left;
   margin:0pt;
   width:870px;
