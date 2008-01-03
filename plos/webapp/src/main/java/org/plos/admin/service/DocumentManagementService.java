@@ -46,6 +46,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import net.sf.ehcache.Ehcache;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -73,9 +75,6 @@ import org.plos.util.FileUtils;
 import org.topazproject.otm.Session;
 import org.topazproject.xml.transform.cache.CachedSource;
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import com.opensymphony.oscache.web.ServletCacheAdministrator;
-
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -98,8 +97,8 @@ public class DocumentManagementService {
 
   private File xslTemplate;
 
-  private GeneralCacheAdministrator articleCacheAdministrator;
-
+  private Ehcache articleAnnotationCache;
+  
   private BrowseService browseService;
 
   private JournalService journalService;
@@ -215,9 +214,7 @@ public class DocumentManagementService {
     }
 
     browseService.notifyArticlesDeleted(objectURIs);
-    for (String objectURI : objectURIs)   // for annotations service
-      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
-    ServletCacheAdministrator.getInstance(servletContext).flushAll();
+    fetchArticleService.removeFromArticleCache(objectURIs);
 
     return msgs;
   }
@@ -618,11 +615,12 @@ public class DocumentManagementService {
   }
 
   /**
-   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
    */
   @Required
-  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
-    this.articleCacheAdministrator = articleCacheAdministrator;
+  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**

@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.opensymphony.oscache.base.NeedsRefreshException;
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import net.sf.ehcache.Ehcache;
+
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -46,13 +46,14 @@ import org.topazproject.otm.spring.OtmTransactionManager;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionStatus;
+import org.plos.util.CacheAdminHelper;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
  * use PlosOneUser to
- * 
+ *
  * @author Stephen Cheng
- * 
+ *
  */
 public class UserService {
   private static final Log      log = LogFactory.getLog(UserService.class);
@@ -61,10 +62,13 @@ public class UserService {
   private Session               session;
   private OtmTransactionManager txManager;
 
+  private static final String USER_LOCK = "UserCache-Lock-";
+  private static final String USER_KEY  = "UserCache-User-";
+
   private final UsersPEP pep;
 
   private PermissionWebService permissionWebService;
-  private GeneralCacheAdministrator userCacheAdministrator;
+  private Ehcache userCache;
 
   private String applicationId;
   private String emailAddressUrl;
@@ -81,7 +85,7 @@ public class UserService {
 
   /**
    * Create a new user account and associate a single authentication id with it.
-   * 
+   *
    * @param authId the user's authentication id from CAS
    * @return the user's internal id
    * @throws ApplicationException if the <var>authId</var> is a duplicate
@@ -115,7 +119,7 @@ public class UserService {
 
   /**
    * Deletes the given user from Topaz. Visible for testing only.
-   * 
+   *
    * @param topazUserId
    *          the Topaz User ID
    * @throws ApplicationException ApplicationException
@@ -142,36 +146,34 @@ public class UserService {
 
   /**
    * Returns the username for a user given a Topaz UserId.  Because usernames cannot be changed and
-   * can always be viewed by anyone, we use a simple cache here. 
-   * 
+   * can always be viewed by anyone, we use a simple cache here.
+   *
    * @param topazUserId topazUserId
    * @return username username
    * @throws ApplicationException ApplicationException
    */
   public String getUsernameByTopazId(final String topazUserId) throws ApplicationException {
-    String retVal = null;
-    try {
-      // Get from the cache
-      retVal = (String) userCacheAdministrator.getFromCache(topazUserId);
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved user from cache: " + topazUserId);
-      }
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-      if (log.isDebugEnabled()) {
-        log.debug("trying to get from mulgara:" + topazUserId);
-      }
-      try {
-        String dispName = getDisplayName(topazUserId);
-        userCacheAdministrator.putInCache(topazUserId, dispName);
-        updated = true;
-        retVal = dispName;
-      } finally {
-        if (!updated)
-          userCacheAdministrator.cancelUpdate(topazUserId);
-      }
+
+    final Object lock = (USER_LOCK + topazUserId).intern();
+
+    Object result = CacheAdminHelper.getFromCache(userCache, USER_KEY + topazUserId, -1, lock,
+                                                  "userName",
+                                                  new CacheAdminHelper.EhcacheUpdater<Object>() {
+        public Object lookup() {
+          try {
+            String displayName = getDisplayName(topazUserId);
+            return displayName;
+          } catch (ApplicationException ae) {
+            return ae;
+          }
+        }
+    });
+
+    if (result instanceof ApplicationException) {
+      throw (ApplicationException) result;
     }
-    return retVal;
+    
+    return (String) result;
   }
 
   private String getDisplayName(final String topazUserId) throws ApplicationException {
@@ -187,7 +189,7 @@ public class UserService {
 
   /**
    * Gets the user specified by the Topaz userID passed in
-   * 
+   *
    * @param topazUserId Topaz User ID
    * @return user associated with the topazUserId
    * @throws ApplicationException on access-check failure
@@ -213,7 +215,7 @@ public class UserService {
 
   /**
    * Gets the user specified by the authentication ID (CAS ID currently)
-   * 
+   *
    * @param authId authentication ID
    * @return the user associated with the authID
    * @throws ApplicationException on access-check failure
@@ -231,7 +233,7 @@ public class UserService {
 
   /**
    * Sets the state of the user account
-   * 
+   *
    * @param userId Topaz User ID
    * @param state  new state of the user
    * @throws ApplicationException ApplicationException
@@ -246,7 +248,7 @@ public class UserService {
 
   /**
    * Gets the current state of the user
-   * 
+   *
    * @param userId Topaz userID
    * @return current state of the user
    * @throws ApplicationException ApplicationException
@@ -260,7 +262,7 @@ public class UserService {
 
   /**
    * Retrieves first authentication ID for a given Topaz userID.
-   * 
+   *
    * @param topazId Topaz userID
    * @return first authentiation ID associated with the Topaz userID
    * @throws ApplicationException ApplicationException
@@ -274,7 +276,7 @@ public class UserService {
 
   /**
    * Returns the Topaz userID the authentiation ID passed in is associated with
-   * 
+   *
    * @param authId authentication ID you are looking up
    * @return Topaz userID for a given authentication ID
    * @throws ApplicationException on access-check failure
@@ -375,7 +377,7 @@ public class UserService {
     ua.setProfile(inUser.getUserProfile());
     session.saveOrUpdate(ua);
 
-    userCacheAdministrator.flushEntry(inUser.getUserId());
+    userCache.remove(USER_KEY + inUser.getUserId());
   }
 
   /**
@@ -657,17 +659,11 @@ public class UserService {
   }
 
   /**
-   * @return Returns the userCache.
+   * @param userCache The User cache to use.
    */
-  public GeneralCacheAdministrator getUserCacheAdministrator() {
-    return userCacheAdministrator;
-  }
-
-  /**
-   * @param userCache The userCache to set.
-   */
-  public void setUserCacheAdministrator(GeneralCacheAdministrator userCache) {
-    this.userCacheAdministrator = userCache;
+  @Required
+  public void setUserCache(Ehcache userCache) {
+    this.userCache = userCache;
   }
 
   /**
@@ -709,9 +705,9 @@ public class UserService {
     return result;
   }
 
-  /** 
-   * Set the OTM session. Called by spring's bean wiring. 
-   * 
+  /**
+   * Set the OTM session. Called by spring's bean wiring.
+   *
    * @param session the otm session
    */
   @Required

@@ -3,8 +3,6 @@
  */
 package org.plos.article.service;
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -15,10 +13,9 @@ import org.plos.annotation.service.Annotator;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.Article;
-import org.plos.util.CacheAdminHelper;
-import org.plos.util.FileUtils;
-import org.plos.util.TextUtils;
 import org.plos.util.ArticleXMLUtils;
+import org.plos.util.CacheAdminHelper;
+import org.plos.util.TextUtils;
 
 import org.w3c.dom.Document;
 
@@ -36,12 +33,23 @@ import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
+import net.sf.ehcache.Ehcache;
+import org.plos.article.action.CreateCitation;
+import org.springframework.beans.factory.annotation.Required;
 
 
 /**
- * Fetch article service
+ * Fetch article service.
  */
 public class FetchArticleService {
+
+  /**
+   * All Article(transformed)/ArticleInfo/Annotation/Citation cache activity is syncronized on
+   * ARTICLE_LOCK.
+   */
+  public  static final String ARTICLE_LOCK     = "ArticleAnnotationCache-Lock-";
+  private static final String ARTICLE_KEY      = "ArticleAnnotationCache-Article-";
+  private static final String ARTICLEINFO_KEY  = "ArticleAnnotationCache-ArticleInfo-";
 
   private String encodingCharset;
   private ArticleXMLUtils articleXmlUtils;
@@ -49,9 +57,8 @@ public class FetchArticleService {
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private AnnotationWebService annotationWebService;
 
-  private GeneralCacheAdministrator articleCacheAdministrator;
-
-  private static final String CACHE_KEY_ARTICLE_INFO = "CACHE_KEY_ARTICLE_INFO";
+  private Ehcache articleAnnotationCache;
+  private Ehcache simplePageCachingFilter;
 
   private String getTransformedArticle(final String articleURI) throws ApplicationException {
     try {
@@ -78,16 +85,15 @@ public class FetchArticleService {
    */
   public String getURIAsHTML(final String articleURI) throws ApplicationException,
                           RemoteException, NoSuchArticleIdException {
-    String escapedURI = FileUtils.escapeURIAsPath(articleURI);
+    final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
 
-    Object res = CacheAdminHelper.getFromCache(articleCacheAdministrator,
-                                               articleURI/* + topazUserId*/, -1,
-                                               new String[] { escapedURI }, "transformed article",
-                                               new CacheAdminHelper.CacheUpdater<Object>() {
-        public Object lookup(boolean[] updated) {
+    Object res = CacheAdminHelper.getFromCache(articleAnnotationCache,
+                                               ARTICLE_KEY  + articleURI, -1, lock,
+                                               "transformed article",
+                                               new CacheAdminHelper.EhcacheUpdater<Object>() {
+        public Object lookup() {
           try {
             String a = getTransformedArticle(articleURI);
-            updated[0] = true;
             return a;
           } catch (Exception e) {
             return e;
@@ -210,17 +216,20 @@ public class FetchArticleService {
   }
 
   /**
-   * @return Returns the articleCacheAdministrator.
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
    */
-  public GeneralCacheAdministrator getArticleCacheAdministrator() {
-    return articleCacheAdministrator;
+  @Required
+  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**
-   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   * @param simplePageCachingFilter The simplePageCachingFilter (action page results) cache to use.
    */
-  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
-    this.articleCacheAdministrator = articleCacheAdministrator;
+  @Required
+  public void setSimplePageCachingFilter(Ehcache simplePageCachingFilter) {
+    this.simplePageCachingFilter = simplePageCachingFilter;
   }
 
   /**
@@ -238,16 +247,14 @@ public class FetchArticleService {
    */
   public Article getArticleInfo(final String articleURI) throws ApplicationException {
     // do caching here rather than at articleOtmService level because we want the cache key
-    // and group to be article specific
-    Article artInfo = CacheAdminHelper.getFromCache(articleCacheAdministrator,
-                                             articleURI + CACHE_KEY_ARTICLE_INFO, -1,
-                                             new String[] { FileUtils.escapeURIAsPath(articleURI) },
-                                             "objectInfo",
-                                             new CacheAdminHelper.CacheUpdater<Article>() {
-        public Article lookup(boolean[] updated) {
+    // to be article specific
+    final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
+    Article artInfo = CacheAdminHelper.getFromCache(articleAnnotationCache,
+                                             ARTICLEINFO_KEY + articleURI, -1, lock, "objectInfo",
+                                             new CacheAdminHelper.EhcacheUpdater<Article>() {
+        public Article lookup() {
           try {
             Article artInfo = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
-            updated[0] = true;
             if (log.isDebugEnabled())
               log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
             return artInfo;
@@ -266,5 +273,32 @@ public class FetchArticleService {
       throw new ApplicationException("Failed to get object info " + articleURI);
 
     return artInfo;
+  }
+
+  /**
+   * Remove objectUris from the articleAnnotationCache.
+   *
+   * All (ARTICLE_KEY, ARTICLEINFO_KEY, AnnotationWebService.ANNOTATION_KEY,
+   * CreateCitation.CITATION_KEY) + objectUri will be removed.
+   * Removal is syncronized on ARTICLE_LOCK + objectUri.
+   * Removal of Articles invalidates the SimplePageCachingFilter (action page results) cache.
+   * 
+   *
+   * @param objectUris Object Uris to flush.
+   */
+  public void removeFromArticleCache(final String[] objectUris) {
+
+    for (final String objectUri : objectUris) {
+      final Object lock = (ARTICLE_LOCK + objectUri).intern();  // lock @ Article level
+      synchronized (lock) {
+        articleAnnotationCache.remove(ARTICLE_KEY     + objectUri);
+        articleAnnotationCache.remove(ARTICLEINFO_KEY + objectUri);
+        articleAnnotationCache.remove(AnnotationWebService.ANNOTATION_KEY + objectUri);
+        articleAnnotationCache.remove(CreateCitation.CITATION_KEY + objectUri);
+      }
+    }
+
+    // TODO: would be ideal to invalidate cache after every Article removal, performance issues?
+    simplePageCachingFilter.removeAll();
   }
 }

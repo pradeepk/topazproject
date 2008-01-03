@@ -23,10 +23,12 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
+import net.sf.ehcache.Ehcache;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.article.service.FetchArticleService;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
 
@@ -35,7 +37,6 @@ import org.plos.models.Comment;
 import org.plos.permission.service.PermissionWebService;
 
 import org.plos.util.CacheAdminHelper;
-import org.plos.util.FileUtils;
 import org.plos.user.PlosOneUser;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -44,20 +45,19 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-
 /**
  * Wrapper over annotation(not the same as reply) web service
  */
 public class AnnotationWebService extends BaseAnnotationService {
-  private GeneralCacheAdministrator articleCacheAdministrator;
-  private static final String       CACHE_KEY_ANNOTATION     = "ANNOTATION";
+  public static final String ANNOTATION_KEY = "ArticleAnnotationCache-Annotation-";
   private static final Log          log                      =
     LogFactory.getLog(AnnotationWebService.class);
   private AnnotationsPEP            pep;
   private FedoraHelper              fedora;
   private Session                   session;
   private PermissionWebService      permissions;
+  private FetchArticleService fetchArticleService;
+  private Ehcache articleAnnotationCache;
   private static final String       PLOSONE_0_6_DEFAULT_TYPE =
     "http://www.w3.org/2000/10/annotationType#Annotation";
 
@@ -163,10 +163,9 @@ public class AnnotationWebService extends BaseAnnotationService {
       }
     }
 
-    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(target));
-
+    fetchArticleService.removeFromArticleCache(new String[] {target});
     if (log.isDebugEnabled()) {
-      log.debug("flushing cache group: " + FileUtils.escapeURIAsPath(target));
+      log.debug("removed " + target + " from articleAnnotationCache");
     }
 
     return newId;
@@ -228,7 +227,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (a != null) {
       session.delete(a);
-      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(a.getAnnotates()));
+      fetchArticleService.removeFromArticleCache(new String[] {a.getAnnotates().toString()});
       fedora.purgeObjects(new String[] { fedora.uri2PID(a.getBody().toString()) });
     }
   }
@@ -246,11 +245,13 @@ public class AnnotationWebService extends BaseAnnotationService {
                                    throws RemoteException {
     pep.checkAccess(pep.LIST_ANNOTATIONS, URI.create(target));
 
-    return CacheAdminHelper.getFromCache(articleCacheAdministrator, target + CACHE_KEY_ANNOTATION,
-                                         -1, new String[] { FileUtils.escapeURIAsPath(target) },
+    final Object lock = (FetchArticleService.ARTICLE_LOCK + target).intern();// lock @ Article level
+
+    return CacheAdminHelper.getFromCache(articleAnnotationCache, ANNOTATION_KEY + target,
+                                         -1, lock,
                                          "annotation list",
-                                         new CacheAdminHelper.CacheUpdater<AnnotationInfo[]>() {
-        public AnnotationInfo[] lookup(boolean[] updated) {
+                                         new CacheAdminHelper.EhcacheUpdater<AnnotationInfo[]>() {
+        public AnnotationInfo[] lookup() {
           // xxx: See trac #357. The previous default was incorrect.
           // Support both the old and the new to be compatible. (till data migration)
           List<Comment> all =
@@ -286,7 +287,6 @@ public class AnnotationWebService extends BaseAnnotationService {
           for (Comment a : l)
             annotations[i++] = new AnnotationInfo(a, fedora);
 
-          updated[0] = true;
           if (log.isDebugEnabled())
             log.debug("retrieved annotation list from TOPAZ for target: " + target);
 
@@ -392,21 +392,12 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
-   * DOCUMENT ME!
-   *
-   * @return Returns the articleCacheAdministrator.
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
    */
-  public GeneralCacheAdministrator getArticleCacheAdministrator() {
-    return articleCacheAdministrator;
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @param articleCacheAdministrator The articleCacheAdministrator to set.
-   */
-  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
-    this.articleCacheAdministrator = articleCacheAdministrator;
+  @Required
+  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**
@@ -417,6 +408,16 @@ public class AnnotationWebService extends BaseAnnotationService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  /**
+   * Set the fetchArticleService.
+   * 
+   * @param fetchArticleService To use.
+   */
+  @Required
+  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 
   /**
