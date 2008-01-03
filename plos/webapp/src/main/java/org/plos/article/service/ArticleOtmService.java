@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 
+import org.plos.article.util.ArticleDeleteException;
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.IngestException;
 import org.plos.article.util.DuplicateArticleIdException;
@@ -150,7 +151,8 @@ public class ArticleOtmService {
    * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public void delete(String article) throws RemoteException, NoSuchArticleIdException, IOException {
+  public void delete(String article)
+          throws RemoteException, NoSuchArticleIdException, IOException, ArticleDeleteException {
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));

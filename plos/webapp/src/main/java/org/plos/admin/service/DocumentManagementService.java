@@ -62,6 +62,7 @@ import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
 import org.plos.article.service.RepresentationInfo;
+import org.plos.article.util.ArticleDeleteException;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.IngestException;
 import org.plos.article.util.NoSuchArticleIdException;
@@ -187,8 +188,8 @@ public class DocumentManagementService {
    * @throws RemoteException
    * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI)
-      throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
+  public void delete(String objectURI) throws RemoteException, ServiceException,
+          NoSuchArticleIdException, IOException, ArticleDeleteException {
     articleOtmService.delete(objectURI);
   }
 
