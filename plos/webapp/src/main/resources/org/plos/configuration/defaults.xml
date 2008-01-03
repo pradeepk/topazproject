@@ -47,6 +47,7 @@
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/research-article</typeUri>
         <typeHeading>Research Article</typeHeading>
+        <imageSetConfigName>compressedLargeImages</imageSetConfigName>
         <default>true</default>
       </articleType>
       <articleType>

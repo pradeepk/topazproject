@@ -155,6 +155,16 @@
         <executable-path>/usr/bin/convert</executable-path>
         <identify-path>/usr/bin/identify</identify-path>
         <temp-directory>/tmp</temp-directory>
+        <imageSetConfigs>
+          <imageSet name="#default">
+            <small width="70" quality="70"/>
+            <medium maxDimension="600" quality="80"/>
+            <large quality="95"/>
+          </imageSet>
+          <imageSet name="compressedLargeImages">
+            <large quality="80"/>
+          </imageSet>
+        </imageSetConfigs>
       </image-magick>
     </utilities>
 
