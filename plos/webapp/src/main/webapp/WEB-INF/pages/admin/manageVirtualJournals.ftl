@@ -1,27 +1,29 @@
+<#macro trimBrackets bracketedString>
+  <#if bracketedString??>
+    <#assign unbracketedString=bracketedString>
+    <#if unbracketedString?starts_with("[")>
+      <#assign unbracketedString=unbracketedString?substring(1)>
+    </#if>
+    <#if unbracketedString?ends_with("]")>
+      <#assign unbracketedString=unbracketedString?substring(0, unbracketedString?length - 1)>
+    </#if>
+  <#else>
+    <#assign unbracketedString="">
+  </#if>
+</#macro>
 <html>
   <head>
     <title>PLoS ONE: Administration: Manage Virtual Journals</title>
   </head>
   <body>
-    <h1>PLoS ONE: Administration: Manage Virtual Journals</h1>
+    <h1 style="text-align: center">PLoS ONE: Administration: Manage Virtual Journals</h1>
 
     <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
-    <p style="text-align: right">Return to <@s.a href="${adminTop}">Admin Top</@s.a></p>
-    <br />
+    <p style="text-align: right">
+      <@s.a href="${adminTop}">Admin Top</@s.a></p>
+    <hr/>
 
-    <hr />
-
-    <fieldset>
-      <legend><b>Messages</b></legend>
-      <p>
-        <#list actionMessages as message>
-          ${message} <br/>
-        </#list>
-      </p>
-    </fieldset>
-    <br />
-
-    <hr />
+    <#include "templates/messages.ftl">
 
     <#list journals as journal>
       <fieldset>
@@ -61,6 +63,15 @@
                   label="Current Issue (DOI)" size="42" />
               </td>
             </tr>
+           <!--
+            <tr>
+              <td colspan="2">
+                <@trimBrackets journal.volumes!'' />
+                <@s.textfield name="volumes" label="Volumes" size="96"
+                  value="${unbracketedString}"/>
+              </td>
+            </tr>
+            -->
             <tr><th colspan="2">Simple Collection</th></tr>
             <tr>
               <td colspan="2"><@s.textfield name="articlesToAdd" label="Add" size="100"/></td>
