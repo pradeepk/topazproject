@@ -10,9 +10,7 @@
 
 package org.topazproject.otm.query;
 
-import java.util.List;
 import antlr.RecognitionException;
-import org.topazproject.otm.SessionFactory;
 
 /** 
  * A listener for OQL transform events.

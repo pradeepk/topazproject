@@ -10,7 +10,6 @@
 package org.topazproject.otm.stores;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 
 import java.util.ArrayList;

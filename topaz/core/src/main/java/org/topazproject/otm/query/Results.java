@@ -11,7 +11,6 @@
 package org.topazproject.otm.query;
 
 import java.net.URI;
-import java.util.Arrays;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.serializer.Serializer;

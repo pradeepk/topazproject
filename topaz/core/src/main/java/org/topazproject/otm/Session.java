@@ -9,34 +9,10 @@
  */
 package org.topazproject.otm;
 
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyObject;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.topazproject.otm.event.PreInsertEventListener;
-import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.filter.FilterDefinition;
-import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Mapper.CascadeType;
-import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -51,12 +27,12 @@ public interface Session {
    * on a transaction commit. 'manual' will require the user to call flush. Default is 'always'.
    */
   public static enum FlushMode {
-    always { 
+    always {
       public boolean implies(FlushMode fm) {
         return this.equals(fm) || FlushMode.commit.implies(fm);
       }
     }, commit, manual;
-    
+
     public boolean implies(FlushMode fm) {
       return this.equals(fm);
     }

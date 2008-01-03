@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
-import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.OtmException;
 
 /**
