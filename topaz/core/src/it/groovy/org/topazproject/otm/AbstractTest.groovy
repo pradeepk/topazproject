@@ -10,6 +10,7 @@
 
 package org.topazproject.otm;
 
+import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -35,7 +36,8 @@ public class AbstractTest extends GroovyTestCase {
   protected def models = [['ri', 'otmtest1', null]];
 
   void setUp() {
-    store = new ItqlStore("local:///topazproject".toURI())
+    store = new ItqlStore("local:///topazproject".toURI(),
+                          new DefaultItqlClientFactory(dbDir: "target/mulgara-db"))
     blobStore = new SimpleBlobStore("target/blob-store");
     rdf = new RdfBuilder(
         sessFactory:new SessionFactoryImpl(tripleStore:store, blobStore:blobStore), defModel:'ri', defUriPrefix:'topaz:')

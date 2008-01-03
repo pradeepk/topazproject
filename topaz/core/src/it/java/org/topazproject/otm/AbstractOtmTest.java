@@ -14,6 +14,7 @@ import java.net.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.DetachedCriteria;
@@ -71,7 +72,9 @@ public abstract class AbstractOtmTest {
                                       URI.create("http://topazproject.org/models#StringCompare")),
     };
     URI storeUri = URI.create("local:///topazproject");
-    TripleStore tripleStore = new ItqlStore(storeUri);
+    DefaultItqlClientFactory cf = new DefaultItqlClientFactory();
+    cf.setDbDir("target/mulgara-db");
+    TripleStore tripleStore = new ItqlStore(storeUri, cf);
     factory.setTripleStore(tripleStore);
     factory.setBlobStore(new SimpleBlobStore("target/blob-store"));
 
