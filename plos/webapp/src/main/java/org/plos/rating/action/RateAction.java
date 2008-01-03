@@ -120,6 +120,7 @@ public class RateAction extends BaseActionSupport {
       // ensure the single rating specified
       if(singleRating == 0) {
         addActionError("A rating must be specified.");
+        return INPUT;
       }
     }
 
