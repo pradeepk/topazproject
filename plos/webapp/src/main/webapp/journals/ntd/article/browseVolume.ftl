@@ -15,7 +15,7 @@
         <a href="${currentIssueURL}"><img alt="Issue Image" src="${currentIssueImgURL}" width="120" height="120" /></a>
 </#if>
         <a href="${currentIssueURL}">${currentIssue.displayName}</a>
-        <p>${currentVolume.displayName}, ${currentIssueNumber}</p>
+        <p>${currentVolume.displayName}</p>
       </div>
       <h3>About This Image</h3>
       ${currentIssue.description}
@@ -44,9 +44,11 @@
           <@s.url id="issueURL" action="browseIssue" namespace="/journals/ntd/article"
                   issue="${issueInfo.id}" includeParams="none"/>
           <div class="thumbnail">
+<#if issueInfo.imageArticle?exists>
             <@s.url id="issueImgURL" action="fetchObject" namespace="/article" 
                     uri="${issueInfo.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
             <a href="${issueURL}"><img alt="Issue Image" src="${issueImgURL}" width="120" height="120"/></a>
+</#if>
             <a href="${issueURL}">${issueInfo.displayName}</a>
             <!-- <p>Vol.${volNum}, No.${issueNum}</p> -->
           </div>
