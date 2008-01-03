@@ -11,6 +11,8 @@ package org.plos.models;
 
 import java.net.URI;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -30,6 +32,9 @@ public class Journal extends Aggregation {
   /** DOI of "current issue" */
   @Predicate(uri = PLoS.plos + "Journal/currentIssue")
   private URI currentIssue;
+  
+  @Predicate(uri = PLoS.plos + "Journal/volumes")
+  private List<URI> volumes = new ArrayList();
 
   @Predicate(uri = PLoS.plos + "Journal/image")
   private URI image;
@@ -106,5 +111,40 @@ public class Journal extends Aggregation {
    */
   public void setCurrentIssue(URI currentIssue) {
     this.currentIssue = currentIssue;
+  }
+
+  /**
+   * Get the Volumes for this journal.
+   *
+   * @return the Volumes for this journal.
+   */
+  public List<URI> getVolumes() {
+    return volumes;
+  }
+
+  /**
+   * Set the Volumes for this journal.
+   *
+   * @param volumes the Volumes for this journal.
+   */
+  public void setVolumes(List<URI> volumes) {
+    this.volumes= volumes;
+  }
+
+  /**
+   * String representation for debugging.
+   * 
+   * @return String representation for debugging.
+   */
+  @Override
+  public String toString() {
+    return "Journal: ["
+            + "eIssn: " + getEIssn()
+            + ", key: " + getKey()
+            + ", image: " + getImage()
+            + ", currentIssue: " + getCurrentIssue()
+            + ", volumes: " + getVolumes()
+            + ", " + super.toString()
+            + "]";
   }
 }

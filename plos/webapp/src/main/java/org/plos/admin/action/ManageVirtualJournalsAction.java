@@ -35,6 +35,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   private String journalToModify;
   private URI image;
   private URI currentIssue;
+  private String volumes;
   private String articlesToAdd;
   private String[] articlesToDelete;
   private Session session;
@@ -46,6 +47,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   /**
    * Manage Journals.  Display Journals and processes all add/deletes.
    */
+  @Override
   public String execute() throws Exception  {
     if (log.isDebugEnabled()) {
       log.debug("journalToModify: " + journalToModify + ", articlesToAdd: " + articlesToAdd
@@ -67,7 +69,8 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
         return null;
       }
 
-      // current Journal Articles
+      // current Journal Volumes/Articles
+      List<URI> volumeDois = journal.getVolumes();
       List<URI> articles = journal.getSimpleCollection();
 
       // process modifications
@@ -86,6 +89,18 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
         journal.setCurrentIssue(currentIssue);
         addActionMessage("Current Issue set to: " + currentIssue);
       }
+
+      // process Volumes
+      volumeDois.clear();
+      if (volumes != null && volumes.length() != 0) {
+        for (final String volume : volumes.split("[,\\s]+")) {
+          URI volumeDoi = getURI(volume);
+          if (volumeDoi != null) {
+            volumeDois.add(volumeDoi);
+          }
+        }
+      }
+      journal.setVolumes(volumeDois);
 
       // process adds
       if (articlesToAdd != null && articlesToAdd.length() != 0) {
@@ -190,6 +205,15 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    */
   public void setCurrentIssue(String currentIssue) {
     this.currentIssue = URI.create(currentIssue);
+  }
+
+  /**
+   * Set Volumes.
+   *
+   * @param Comma separated list of volumes.
+   */
+  public void setVolumes(String volumes) {
+    this.volumes = volumes;
   }
 
   /**

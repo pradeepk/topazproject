@@ -1,5 +1,5 @@
 /* $HeadURL$
- * $Id$ 
+ * $Id$
  *
  * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
@@ -17,10 +17,10 @@ import java.util.List;
 
 import org.plos.model.article.ArticleInfo;
 
-
 /**
  * The info about a single Issue that the UI needs.
- * @version $Rev$ $Date$
+ *
+ * This class is immutable.
  */
 public class IssueInfo implements Serializable {
 
@@ -35,8 +35,8 @@ public class IssueInfo implements Serializable {
 
   // XXX TODO, List<URI> w/Article DOI vs. List<ArticleInfo>???
 
-  public IssueInfo(URI id, String displayName, URI prevIssue, URI nextIssue,
-                   URI imageArticle, String description) {
+  public IssueInfo(URI id, String displayName, URI prevIssue, URI nextIssue, URI imageArticle,
+          String description, URI parentVolume) {
 
     this.id = id;
     this.displayName = displayName;
@@ -44,12 +44,13 @@ public class IssueInfo implements Serializable {
     this.nextIssue = nextIssue;
     this.imageArticle = imageArticle;
     this.description = description;
+    this.parentVolume = parentVolume;
   }
 
   public void addArticleToIssue(ArticleInfo article) {
     articlesInIssue.add(article);
   }
-  
+
   /**
    * Get the id.
    *
@@ -104,15 +105,16 @@ public class IssueInfo implements Serializable {
     return description;
   }
 
-  public List<ArticleInfo> getArticlesInIssue() {
-    return articlesInIssue;
-  }
-
+  /**
+   * Get the "parent" Volume.
+   *
+   * @return the "parent" Volume.
+   */
   public URI getParentVolume() {
     return parentVolume;
   }
 
-  public void setParentVolume(URI parentVolume) {
-    this.parentVolume = parentVolume;
+  public List<ArticleInfo> getArticlesInIssue() {
+    return articlesInIssue;
   }
 }

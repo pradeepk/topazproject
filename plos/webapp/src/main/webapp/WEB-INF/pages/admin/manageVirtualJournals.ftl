@@ -63,7 +63,6 @@
                   label="Current Issue (DOI)" size="42" />
               </td>
             </tr>
-           <!--
             <tr>
               <td colspan="2">
                 <@trimBrackets journal.volumes!'' />
@@ -71,7 +70,6 @@
                   value="${unbracketedString}"/>
               </td>
             </tr>
-            -->
             <tr><th colspan="2">Simple Collection</th></tr>
             <tr>
               <td colspan="2"><@s.textfield name="articlesToAdd" label="Add" size="100"/></td>

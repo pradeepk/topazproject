@@ -29,11 +29,12 @@ public class BrowseVolumeAction extends BaseActionSupport {
   private String gotoVolume;
   private Session session;
 
+  @Override
   public String execute() throws Exception {
-    volumeInfos = browseService.getVolumeInfos();
+    Journal currentJournal = journalService.getCurrentJournal(session);
+    volumeInfos = browseService.getVolumeInfos(currentJournal.getVolumes());
     Collections.reverse(volumeInfos);
     currentVolume = volumeInfos.get(0);
-    Journal currentJournal = journalService.getCurrentJournal(session);
 
     currentIssue = browseService.getIssueInfo(currentJournal.getCurrentIssue());
     if (currentIssue != null) {

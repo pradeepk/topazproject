@@ -23,6 +23,7 @@ import org.topazproject.otm.SessionFactory
 import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.criterion.DetachedCriteria
 import org.topazproject.otm.criterion.EQCriterion
+import org.topazproject.otm.criterion.NECriterion
 import org.topazproject.otm.criterion.Restrictions
 import org.topazproject.otm.stores.ItqlStore
 import org.topazproject.xml.transform.cache.CachedSource
@@ -74,6 +75,7 @@ factory.addModel(p);
 factory.addModel(cModel);
 factory.preload(DetachedCriteria.class);
 factory.preload(EQCriterion.class);
+factory.preload(NECriterion.class);
 factory.preload(EditorialBoard.class);
 factory.preload(Issue.class);
 factory.preload(Journal.class);
@@ -107,20 +109,33 @@ eqEIssn.setSerializedValue(journal.eIssn)
 DetachedCriteria filterByEIssn = (new DetachedCriteria("Article")).add(eqEIssn)
 
 // create a filter, include Volumes for this Journal
+/* XXX: allow all Volumes through
 EQCriterion eqVolume = (EQCriterion)Restrictions.eq("journal", journal.eIssn)
 eqVolume.setSerializedValue(journal.eIssn)
 DetachedCriteria filterForVolume = (new DetachedCriteria("Volume")).add(eqVolume)
+*/
+// XXX: let all Volumes through Filter
+NECriterion existsVolume = (NECriterion)Restrictions.ne("displayName", "")
+existsVolume.setSerializedValue("")
+DetachedCriteria filterForVolume = (new DetachedCriteria("Volume")).add(existsVolume)
 
 // create a filter, include Issues for this Journal
+/* XXX: allow all Issues through
 EQCriterion eqIssue = (EQCriterion)Restrictions.eq("journal", journal.eIssn)
 eqIssue.setSerializedValue(journal.eIssn)
 DetachedCriteria filterForIssue = (new DetachedCriteria("Issue")).add(eqIssue)
+*/
+// XXX: let all Issues through Filter
+NECriterion existsIssue = (NECriterion)Restrictions.ne("displayName", "")
+existsIssue.setSerializedValue("")
+DetachedCriteria filterForIssue = new DetachedCriteria("Issue").add(existsIssue)
 
 journal.setSmartCollectionRules([filterByEIssn, filterForVolume, filterForIssue])
 
 println "Journal.key:   " + journal.key
 println "Journal.eIssn: " + journal.eIssn
 println "Journal.dublinCore.title: " + journal.dublinCore.title
+println "Journal.volumes: " + journal.volumes
 println "Journal.simpleCollection: " + journal.simpleCollection
 println "Journal.smartCollectionRules: " + journal.smartCollectionRules
 
