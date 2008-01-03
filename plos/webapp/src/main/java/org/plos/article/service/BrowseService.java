@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -218,7 +219,10 @@ public class BrowseService {
 
     // get the Issue
     final Issue issue = session.get(Issue.class, doi.toString());
-    if (issue == null) { return null; }
+    if (issue == null) {
+      log.error("Faiiled to retrieve Issue for doi='"+doi.toString()+"'");
+      return null; 
+    }
 
     // get the image Article
     URI imageArticle = null;
@@ -235,6 +239,8 @@ public class BrowseService {
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(),
         issue.getPrevIssue(), issue.getNextIssue(), imageArticle, description);
 
+    issueInfo.setParentVolume(issue.getVolume());
+    
     for (URI articleDoi : issue.getSimpleCollection()) {
       ArticleInfo articleInIssue = getArticleInfo(articleDoi);
       if (articleInIssue == null) {
@@ -254,8 +260,8 @@ public class BrowseService {
   public List<VolumeInfo> getVolumeInfos() {
     // XXX look up VolumeInfos in Cache
 
-    List<VolumeInfo> volumeInfos = new ArrayList();
     // get the Volumes
+    HashMap<URI, VolumeInfo> volsMap = new HashMap<URI, VolumeInfo>();
     for (final Volume volume : (List<Volume>) session.createCriteria(Volume.class).list()) {
 
       // get the image Article, may be null
@@ -277,10 +283,55 @@ public class BrowseService {
       final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
         volume.getPrevVolume(), volume.getNextVolume(), imageArticle, description,
         issueInfos);
-      volumeInfos.add(volumeInfo);
+      volsMap.put(volume.getId(), volumeInfo);
     }
 
-    return volumeInfos;
+    // Create a linked list ordered by getNextVolume()
+    LinkedList<VolumeInfo> orderedList = new LinkedList<VolumeInfo>();
+    VolumeInfo vi = volsMap.values().iterator().next();
+    orderedList.add(vi);
+    volsMap.remove(vi.getId());
+    while (vi.getNextVolume() != null) {
+      verifyVolumeInfoLinks(vi, volsMap.get(vi.getNextVolume()));
+      vi = volsMap.get(vi.getNextVolume());
+      orderedList.add(vi);
+      volsMap.remove(vi.getId());
+    }
+    vi = orderedList.getFirst();
+    while (vi.getPrevVolume() != null) {
+      verifyVolumeInfoLinks(volsMap.get(vi.getPrevVolume()), vi);
+      vi = volsMap.get(vi.getPrevVolume());
+      orderedList.addFirst(vi);
+      volsMap.remove(vi.getId());
+    }
+    if (volsMap.size() != 0) {
+      StringBuffer sb = new StringBuffer();
+      for (URI volURI : volsMap.keySet()) {
+        sb.append("\"");
+        sb.append(volURI.toString());
+        sb.append("\" ");
+      }
+      log.error("Found inconsistency in volume definitions. The following " +
+      		"volumes are not linked to by other volumes. "+sb.toString());
+    }
+    
+    return orderedList;
+  }
+
+  /**
+   * Verify that volumeInfo A and B point to each other's IDs correctly. Report an error otherwise. 
+   * @param volA
+   * @param volB
+   */
+  private void verifyVolumeInfoLinks(VolumeInfo volA, VolumeInfo volB) {
+    if (!volA.getNextVolume().equals(volB.getId())) {
+      log.error("Found inconsistency in volume definitions. Volume '"+volA.getId()+"' NextVolume should point to '"+
+          volB.getId()+"' but points to '"+volA.getNextVolume()+"'");
+    }
+    if (!volB.getPrevVolume().equals(volA.getId())) {
+      log.error("Found inconsistency in volume definitions. Volume '"+volB.getId()+"' PrevVolume should point to '"+
+          volA.getId()+"' but points to '"+volB.getPrevVolume()+"'");
+    }
   }
 
   private Object getCatInfo(String key, String desc, boolean load) {

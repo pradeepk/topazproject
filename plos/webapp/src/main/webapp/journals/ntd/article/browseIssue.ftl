@@ -16,7 +16,7 @@
   <!-- begin : right-hand column -->
   <div id="rhc">
     <div id="sideNav">
-    <@s.url id="archiveURL" action="browseVolume" namespace="/journals/ntd/article" field="volume" includeParams="none"/>
+    <@s.url id="archiveURL" action="browseVolume" namespace="/journals/ntd/article" field="volume" includeParams="gotoVolume=${issueInfo.parentVolume}"/>
       <p id="issueNav">
         <#assign needSpacer=false/>
         <#if issueInfo.prevIssue?exists>
@@ -24,8 +24,8 @@
           <a href="${prevIssueURL}">&lt;Previous Issue</a>
           <#assign needSpacer=true/>
         </#if>
-        <!-- <#if needSpacer> | </#if> -->
-        <!-- <a href="${archiveURL}">Archive</a> Commented out until we have the Archive page in place. Remember to uncomment spacers and the link in the navbar too! -->
+        <#if needSpacer> | </#if>
+        <a href="${archiveURL}">Archive</a>
         <#assign needSpacer=true/>
         <#if issueInfo.nextIssue?exists>
           <@s.url id="nextIssueURL" action="browseIssue" namespace="/journals/ntd/article" field="issue" issue="${issueInfo.nextIssue}" includeParams="none"/>
@@ -60,7 +60,6 @@
         </div>
         <h3>About This Image</h3>
         ${issueInfo.description}
-        <p id="credit"><em>Image Credit:</em> Credit information goes here.</p>
       </div>
     </#if>
     <!-- begin : articleTypes -->

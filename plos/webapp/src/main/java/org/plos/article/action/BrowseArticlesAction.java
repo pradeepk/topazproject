@@ -32,6 +32,7 @@ import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleType;
 import org.plos.model.article.Years;
+import org.plos.models.Issue;
 import org.plos.models.Journal;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -43,7 +44,7 @@ import org.topazproject.otm.Session;
  */
 public class BrowseArticlesAction extends BaseActionSupport {
 
-  private static final Log           log  = LogFactory.getLog(BrowseArticlesAction.class);
+  private static final Log log  = LogFactory.getLog(BrowseArticlesAction.class);
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   private static final String feedCategoryPrefix =
@@ -52,7 +53,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private static final int    PAGE_SIZE    = 10;
   private static final String DATE_FIELD   = "date";
   private static final String ISSUE_FIELD  = "issue";
-  private static final String VOLUME_FIELD = "volume";
 
   private static final int UNSET      = -1;
   private static final int PAST_MONTH = -2;
@@ -65,7 +65,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private int    year     = UNSET;
   private int    month    = UNSET;
   private int    day      = UNSET;
-  private String issue;
 
   private Session                         session;
   private JournalService                  journalService;
@@ -74,17 +73,11 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private Years             articleDates;
   private List<ArticleInfo> articleList;
   private int                             totalArticles;
-  private IssueInfo         issueInfo;
-  private List<VolumeInfo>  volumeInfos;
-  private ArrayList<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
+  private String archiveURL = "";
 
   public String execute() throws Exception {
     if (DATE_FIELD.equals(getField())) {
       return browseDate();
-    } else if (ISSUE_FIELD.equals(getField())) {
-      return browseIssue();
-    } else if (VOLUME_FIELD.equals(getField())) {
-      return browseVolume();
     } else {
       return browseCategory();
     }
@@ -155,88 +148,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     return SUCCESS;
   }
 
-  private String browseIssue() {
-    // was issued specified, or use Journal.currentIssue?
-    if (issue == null || issue.length() == 0) {
-      // get the Journal's currentIssue
-      Journal journal = journalService.getJournal();
-      if (journal != null) {
-        URI currentIssue = journal.getCurrentIssue();
-        if (currentIssue != null)
-          issue = currentIssue.toString();
-      }
-    }
-
-    // if still no issue, create an IssueInfo
-    if (issue == null || issue.length() == 0) {
-      issueInfo = new IssueInfo(null, "No current Issue is defined for this Journal", 
-                                null, null, null, null);
-
-      return SUCCESS;
-    }
-
-    // look up Issue
-    issueInfo = browseService.getIssueInfo(URI.create(issue));
-    if (issueInfo == null) { return ERROR; }
-
-    // clear out the articleGroups and rebuild the list with one TOCArticleGroup
-    // for each ArticleType to be displayed in the order defined by
-    // ArticleType.getOrderedListForDisplay()
-    articleGroups = new ArrayList<TOCArticleGroup>();
-    TOCArticleGroup defaultArticleGroup = null;
-    for (ArticleType at : ArticleType.getOrderedListForDisplay()) {
-      TOCArticleGroup newArticleGroup = new TOCArticleGroup(at);
-      articleGroups.add(newArticleGroup);
-      if (at == ArticleType.getDefaultArticleType()) {
-        defaultArticleGroup = newArticleGroup;
-      }
-    }
-
-    // For every article that is of the same ArticleType as a
-    // TOCArticleGroup, add it to that group. Articles can appear in
-    // multiple TOCArticleGroups.
-    for (ArticleInfo ai : issueInfo.getArticlesInIssue()) {
-      boolean articleAdded = false;
-      for (TOCArticleGroup ag : articleGroups) {
-        for (ArticleType articleType : ai.getArticleTypes()) {
-          if (ag.getArticleType().equals(articleType)) {
-            ag.addArticle(ai);
-            articleAdded = true;
-            break;
-          }
-        }
-      }
-      // If the article wasn't added to any TOCArticleGroup,
-      // then add it to the default group (if one had been defined)
-      if ((!articleAdded) && (defaultArticleGroup != null)) {
-        defaultArticleGroup.addArticle(ai);
-      }
-    }
-    
-    // Remove all empty TOCArticleGroups (avoid ConcurrentModificationException by 
-    // building a new ArrayList of non-empty article groups). 
-    int i = 1;
-    ArrayList<TOCArticleGroup> newArticleGroups = new ArrayList<TOCArticleGroup>();
-    for (TOCArticleGroup grp : articleGroups) {
-      if (grp.articles.size() != 0) {
-        newArticleGroups.add(grp);
-        grp.setId("tocGrp_"+i);
-        i++;
-      }
-    }
-    articleGroups = newArticleGroups;
-    
-    return SUCCESS;
-  }
-
-  private String browseVolume() {
-
-    // look up VolumeInfos
-    volumeInfos = browseService.getVolumeInfos();
-
-    return SUCCESS;
-  }
-
+  
   /**
    * @return Returns the field.
    */
@@ -338,12 +250,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
     this.pageSize = pageSize;
   }
 
-  /**
-   * @param issue The issue for ToC view.
-   */
-  public void setIssue(String issue) {
-    this.issue = issue;
-  }
 
   /**
    * return a set of the articleDates broken down by year, month, and day.
@@ -376,19 +282,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
     return totalArticles;
   }
 
-  /**
-   * @return the IssueInfo.
-   */
-  public IssueInfo getIssueInfo() {
-    return issueInfo;
-  }
-
-  /**
-   * @return the VolumeInfos.
-   */
-  public List<VolumeInfo> getVolumeInfos() {
-    return volumeInfos;
-  }
 
   /**
    * Set the OTM Session.
@@ -433,7 +326,4 @@ public class BrowseArticlesAction extends BaseActionSupport {
                                super.getRssPath();
   }
 
-  public ArrayList<TOCArticleGroup> getArticleGroups() {
-    return articleGroups;
-  }
 }
