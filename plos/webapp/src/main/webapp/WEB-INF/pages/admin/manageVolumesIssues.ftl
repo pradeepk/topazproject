@@ -32,13 +32,11 @@
 
     <!-- create a Volume -->
     <fieldset>
-      <legend><b>Create Volume</b></legend>
+      <legend><b>Create Volume in ${journal.key}</b></legend>
 
       <@s.form id="manageVolumesIssues_createVolume" name="manageVolumesIssues_createVolume"
         namespace="/admin" action="manageVolumesIssues" method="post">
 
-        <@s.hidden name="journalKey" label="Journal Key" required="true"
-          value="${journal.key}"/>
         <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
           value="CREATE_VOLUME"/>
 
@@ -61,13 +59,13 @@
           </tr>
         </table>
         <br/>
-        <@s.submit value="Create Volume"/>
+        <@s.submit value="Create Volume in ${journal.key}"/>
       </@s.form>
     </fieldset>
 
     <!-- list Volumes -->
     <fieldset>
-      <legend><b>Existing Volumes</b></legend>
+      <legend><b>Existing Volumes in ${journal.key}</b></legend>
 
         <table border="1" cellpadding="2" cellspacing="0">
           <tr>
@@ -84,8 +82,6 @@
                 name="manageVolumesIssues_updateVolume"
                 namespace="/admin" action="manageVolumesIssues" method="post">
 
-                <@s.hidden name="journalKey" label="Journal Key" required="true"
-                  value="${journal.key}"/>
                 <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
                   value="UPDATE_VOLUME"/>
 
@@ -126,13 +122,11 @@
 
     <!-- create a Issue -->
     <fieldset>
-      <legend><b>Create Issue</b></legend>
+      <legend><b>Create Issue in latest Volume</b></legend>
 
       <@s.form id="manageVolumesIssues_createIssue" name="manageVolumesIssues_createIssue"
         namespace="/admin" action="manageVolumesIssues" method="post">
 
-        <@s.hidden name="journalKey" label="Journal Key" required="true"
-          value="${journal.key}"/>
         <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
           value="CREATE_ISSUE"/>
 
@@ -155,13 +149,13 @@
           </tr>
         </table>
         <br/>
-        <@s.submit value="Create Issue"/>
+        <@s.submit value="Create Issue in latest Volume"/>
       </@s.form>
     </fieldset>
 
     <!-- list Issues -->
     <fieldset>
-      <legend><b>Existing Issues</b></legend>
+      <legend><b>Existing Issues in ${journal.key}</b></legend>
       <table border="1" cellpadding="2" cellspacing="0">
         <tr>
           <th>Update</th>
@@ -177,8 +171,6 @@
               name="manageVolumesIssues_updateIssue"
               namespace="/admin" action="manageVolumesIssues" method="post">
 
-              <@s.hidden name="journalKey" label="Journal Key" required="true"
-                value="${journal.key}"/>
               <@s.hidden name="manageVolumesIssuesAction" label="Action" required="true"
                 value="UPDATE_ISSUE"/>
 
