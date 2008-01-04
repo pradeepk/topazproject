@@ -9,10 +9,14 @@
  */
 package org.topazproject.otm.stores;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import java.net.URI;
 
@@ -249,10 +253,10 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
 
       f = toFile(txn, id);
 
-      FileOutputStream o = null;
+      OutputStream o = null;
 
       try {
-        o = new FileOutputStream(f);
+        o = new BufferedOutputStream(new FileOutputStream(f));
         o.write(blob);
         o.close();
         o = null;
@@ -299,9 +303,9 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
       if (deleteMap.get(id) != null)
         return null;
 
-      Lock             l   = null;
-      FileInputStream  in  = null;
-      FileOutputStream out = null;
+      Lock         l   = null;
+      InputStream  in  = null;
+      OutputStream out = null;
 
       try {
         File copy = null;
@@ -323,13 +327,13 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
           copy = toFile(txn, id);
         }
 
-        in = new FileInputStream(f);
+        in = new BufferedInputStream(new FileInputStream(f));
 
         byte[] blob = new byte[(int) f.length()];
         in.read(blob);
 
         if (copy != null) {
-          out = new FileOutputStream(copy);
+          out = new BufferedOutputStream(new FileOutputStream(copy));
           out.write(blob);
           out.close();
           out = null;
