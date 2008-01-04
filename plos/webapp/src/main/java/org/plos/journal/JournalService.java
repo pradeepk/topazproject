@@ -660,8 +660,9 @@ public class JournalService {
 
   /**
    * Get the current JournalInfo object. 
-   * @param session
-   * @return
+   *
+   * @param session the otm session to use
+   * @return the journal, or null if none found.
    */
   public Journal getCurrentJournal(Session session) {
     // TODO - Use some plos-only 'JournalInfo' domain model object?

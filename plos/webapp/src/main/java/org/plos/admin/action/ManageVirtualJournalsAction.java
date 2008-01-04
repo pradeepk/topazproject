@@ -198,7 +198,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   /**
    * Set Volumes.
    *
-   * @param Comma separated list of volumes.
+   * @param volumes a comma separated list of volumes.
    */
   public void setVolumes(String volumes) {
     this.volumes = volumes;

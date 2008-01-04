@@ -57,7 +57,7 @@ public class BrowseVolumeAction extends BaseActionSupport {
    * The sequence number of the current issue. This is calculated in the execute
    * method and displayed in the view.
    * 
-   * @return
+   * @return the current issue number
    */
   public int getCurrentIssueNumber() {
     return currentIssueNumber;
@@ -66,7 +66,7 @@ public class BrowseVolumeAction extends BaseActionSupport {
   /**
    * The current issue as defined for the Journal.
    * 
-   * @return
+   * @return the current issue
    */
   public IssueInfo getCurrentIssue() {
     return currentIssue;
