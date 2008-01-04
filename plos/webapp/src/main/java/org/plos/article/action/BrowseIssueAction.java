@@ -1,3 +1,12 @@
+/* $HeadURL:: $
+ * $Id$
+ *
+ * Copyright (c) 2006-2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.plos.article.action;
 
 import java.net.URI;
@@ -7,6 +16,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
@@ -15,9 +25,17 @@ import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleType;
 import org.plos.models.Journal;
+import org.plos.util.ArticleXMLUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 
+/**
+ * BrowseIssueAction retrieves data for presentation of an issue and a table of contents. Articles 
+ * contained in the issue are grouped into article types. 
+ * 
+ * @author Alex Worden
+ *
+ */
 public class BrowseIssueAction extends BaseActionSupport{
   private static final Log log  = LogFactory.getLog(BrowseIssueAction.class);
 
@@ -26,7 +44,10 @@ public class BrowseIssueAction extends BaseActionSupport{
   private JournalService journalService;
   private BrowseService browseService;
   private IssueInfo issueInfo;
+  private String issueDescription;
   private ArrayList<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
+
+  private ArticleXMLUtils articleXmlUtils;
   
   @Override
   public String execute() {
@@ -81,6 +102,13 @@ public class BrowseIssueAction extends BaseActionSupport{
       return ERROR; 
     }
 
+    try {
+      issueDescription = articleXmlUtils.transformToHtml(issueInfo.getDescription());
+    } catch (ApplicationException e) {
+      log.error("Failed to translate issue description to HTML.", e);
+      issueDescription = issueInfo.getDescription(); // Just use the untranslated issue description
+    }
+    
     // clear out the articleGroups and rebuild the list with one TOCArticleGroup
     // for each ArticleType to be displayed in the order defined by
     // ArticleType.getOrderedListForDisplay()
@@ -98,20 +126,13 @@ public class BrowseIssueAction extends BaseActionSupport{
     // TOCArticleGroup, add it to that group. Articles can appear in
     // multiple TOCArticleGroups.
     for (ArticleInfo ai : issueInfo.getArticlesInIssue()) {
-      boolean articleAdded = false;
       for (TOCArticleGroup ag : articleGroups) {
         for (ArticleType articleType : ai.getArticleTypes()) {
           if (ag.getArticleType().equals(articleType)) {
             ag.addArticle(ai);
-            articleAdded = true;
             break;
           }
         }
-      }
-      // If the article wasn't added to any TOCArticleGroup,
-      // then add it to the default group (if one had been defined)
-      if ((!articleAdded) && (defaultArticleGroup != null)) {
-        defaultArticleGroup.addArticle(ai);
       }
     }
     
@@ -180,11 +201,26 @@ public class BrowseIssueAction extends BaseActionSupport{
   }
   
   /**
+   * Spring injected 
+   * 
+   * @param axu
+   */
+  @Required
+  public void setArticleXmlUtils(ArticleXMLUtils axu) {
+    articleXmlUtils = axu;
+  }
+  
+  /**
    * Spring injected method sets the browseService. 
    * @param browseService The browseService to set.
    */
   @Required
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
+  }
+
+
+  public String getIssueDescription() {
+    return issueDescription;
   }
 }
