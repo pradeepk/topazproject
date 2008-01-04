@@ -173,9 +173,6 @@ public class StringCompareResolver implements Resolver {
       Tuples tuples;
 
       if (subj instanceof Variable) {
-        // extract the variable from the constraint
-        Variable variable = (Variable) subj;
-
         // convert the comparison string into a range
         SPObjectFactory spoFact = resolverSession.getSPObjectFactory();
         String   lowValue  = impl.lowValue(comp);
