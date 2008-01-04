@@ -31,6 +31,8 @@ public class Rating extends Annotation {
   public static final String RELIABILITY_TYPE = Rdf.topaz + "ReliabilityRating";
   /** Overall */
   public static final String OVERALL_TYPE = Rdf.topaz + "OverallRating";
+  /** Single Rating */
+  public static final String SINGLE_RATING_TYPE = Rdf.topaz + "SingleRating";
 
   @Predicate(uri = Annotea.NS + "body")
   private RatingContent body;

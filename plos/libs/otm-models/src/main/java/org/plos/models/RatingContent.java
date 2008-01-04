@@ -40,6 +40,7 @@ public class RatingContent {
   private int insightValue;
   private int reliabilityValue;
   private int styleValue;
+  private int singleRatingValue;
   private String commentTitle;
   private String commentValue;
 
@@ -51,6 +52,19 @@ public class RatingContent {
   public RatingContent() {
 
     this(0, 0, 0, null, null);
+  }
+
+  /**
+   * Constructor - Used for single ratings (just one overall rating "category")
+   * @param singleRatingValue
+   * @param commentTitle
+   * @param commentValue
+   */
+  public RatingContent(int singleRatingValue, String commentTitle, String commentValue) {
+    super();
+    this.singleRatingValue = singleRatingValue;
+    this.commentTitle = commentTitle;
+    this.commentValue = commentValue;
   }
 
   /**
@@ -114,6 +128,14 @@ public class RatingContent {
    */
   public void setStyleValue(int style) {
     this.styleValue = style;
+  }
+
+  public int getSingleRatingValue() {
+    return singleRatingValue;
+  }
+
+  public void setSingleRatingValue(int singleRatingValue) {
+    this.singleRatingValue = singleRatingValue;
   }
 
   /**
@@ -199,7 +221,7 @@ public class RatingContent {
 
     return calculateOverall((double) insightValue, (double) reliabilityValue, (double) styleValue);
   }
-
+  
   /**
    * Calculate weighted overall.
    *
