@@ -38,7 +38,8 @@ public class BaseAdminActionSupport  extends BaseActionSupport {
       flaggedComments = flagManagementService.getFlaggedComments();
     } catch (Exception e) {
       log.error("Admin console Exception", e);
-      addActionMessage("Exception: " + e);
+      addActionError("Exception: " + e);
+      return ERROR;
     }
     return SUCCESS;
   }
