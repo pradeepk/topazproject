@@ -60,7 +60,7 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
 
   /** 
    * Set the database directory to use for all embedded instances. If finer grained control is
-   * needed, override {@link #getDbDir getDbDir} instead.
+   * needed, override {@link #getDbDir(URI) getDbDir} instead.
    * 
    * @param dir the directory to use; if null, a (different) temporary directory will be used
    *            for each instance.
@@ -75,7 +75,7 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
    * @param uri the uri of the database
    * @return the directory to use for the database; if null, a (different) temporary directory will
    *         be used for each instance.
-   * @see setDbDir
+   * @see #setDbDir(String)
    */
   public String getDbDir(URI uri) {
     return dbDir;
