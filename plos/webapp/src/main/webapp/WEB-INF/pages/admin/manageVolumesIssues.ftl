@@ -91,7 +91,8 @@
 
                 <td align="center">
                   <#if volume.image?exists>
-                    <@s.url id="volumeImage" value="${volume.image}" />
+                    <@s.url id="volumeImage" action="fetchObject" namespace="/article"
+                      uri="${volume.image}.g001" representation="PNG_S" includeParams="none"/>
                     <#assign altText="Volume Image" />
                   <#else>
                     <@s.url id="volumeImage" value="" />
@@ -183,7 +184,8 @@
 
               <td align="center">
                 <#if issue.image?exists>
-                  <@s.url id="issueImage" value="${issue.image}" />
+                  <@s.url id="issueImage" action="fetchObject" namespace="/article"
+                    uri="${issue.image}.g001" representation="PNG_S" includeParams="none"/>
                   <#assign altText="Issue Image" />
                 <#else>
                   <@s.url id="issueImage" value="" />

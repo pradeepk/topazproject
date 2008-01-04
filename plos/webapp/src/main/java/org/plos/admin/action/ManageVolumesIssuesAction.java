@@ -27,6 +27,7 @@ import org.plos.models.Volume;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Session;
+import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * Allow Admin to Manage Volumes/ Issues.
@@ -84,10 +85,11 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     journal = journalService.getJournal(journalKey);
     if (journal == null) {
       final String errorMessage = "Error getting journal: " + journalKey;
-      addActionMessage(errorMessage);
+      addActionError(errorMessage);
       log.error(errorMessage);
       return null;
     }
+
 
     // get Volumes for this Journal
     volumes.clear();
@@ -97,7 +99,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           volumes.add(volume);
       } else {
         final String errorMessage = "Error getting volume: " + volumeDoi;
-        addActionMessage(errorMessage);
+        addActionError(errorMessage);
         log.error(errorMessage);
       }
     }
@@ -114,7 +116,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
               issues.add(issue);
           } else {
             final String errorMessage = "Error getting issue: " + issueDoi;
-            addActionMessage(errorMessage);
+            addActionError(errorMessage);
             log.error(errorMessage);
           }
       }
@@ -136,7 +138,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private String createVolume() {
     // the DOI must be unique
     if (session.get(Volume.class, doi.toString()) != null) {
-      addActionMessage("Duplicate DOI, Volume, " + doi + ", already exists.");
+      addActionError("Duplicate DOI, Volume, " + doi + ", already exists.");
       return ERROR;
     }
 
@@ -162,6 +164,13 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
     addActionMessage("Created Volume: " + newVolume.toString());
 
+    // add Volume to current Journal
+    Journal currentJournal = journalService.getJournal();
+    currentJournal.getVolumes().add(doi);
+    session.saveOrUpdate(currentJournal);
+    journalService.journalWasModified(currentJournal);
+    addActionMessage("Volume was added to current Journal: " + currentJournal);
+
     return SUCCESS;
   }
 
@@ -177,7 +186,16 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     // delete the Volume?
     if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
       session.delete(volume);
-      addActionMessage("Deleted Volume: " + volume.toString());
+      addActionMessage("Deleted Volume: " + volume);
+      // update Journal?
+      Journal currentJournal = journalService.getJournal();
+      List<URI> currentVolumes = currentJournal.getVolumes();
+      if (currentVolumes.contains(doi)) {
+        currentVolumes.remove(doi);
+        session.saveOrUpdate(currentJournal);
+        journalService.journalWasModified(currentJournal);
+        addActionMessage("Deleted Volume from Journal: " + currentJournal);
+      }
       return SUCCESS;
     }
 
@@ -212,7 +230,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private String createIssue() {
     // the DOI must be unique
     if (session.get(Issue.class, doi.toString()) != null) {
-      addActionMessage("Duplicate DOI, Issue, " + doi + ", already exists.");
+      addActionError("Duplicate DOI, Issue, " + doi + ", already exists.");
       return ERROR;
     }
 
@@ -238,6 +256,16 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
     addActionMessage("Created Issue: " + newIssue.toString());
 
+    // add Issue to latest Volume
+    final Journal currentJournal = journalService.getJournal();
+    Volume latestVolume = session.get(Volume.class, currentJournal.getVolumes()
+            .get(currentJournal.getVolumes().size() - 1).toString());
+    latestVolume.getSimpleCollection().add(doi);
+    session.saveOrUpdate(latestVolume);
+    addActionMessage("Added Issue to Volume: " + latestVolume);
+    journalService.journalWasModified(currentJournal);
+    addActionMessage("Updated Journal: " + currentJournal);
+
     return SUCCESS;
   }
 
@@ -253,7 +281,22 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     // delete the Issue?
     if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
       session.delete(issue);
-      addActionMessage("Deleted Issue: " + issue.toString());
+      addActionMessage("Deleted Issue: " + issue);
+
+      // update Volume?
+      List<Volume> containingVolumes = session.createCriteria(Volume.class)
+              .add(Restrictions.eq("simpleCollection", doi)).list();
+      if (containingVolumes.size() > 0) {
+        for (Volume containingVolume : containingVolumes) {
+          containingVolume.getSimpleCollection().remove(doi);
+          session.saveOrUpdate(containingVolume);
+          addActionMessage("Deleted Issue from Volume: " + containingVolume);
+        }
+        // XXX: assume current Journal needs updating, should be smarter
+        final Journal currentJournal = journalService.getJournal();
+        journalService.journalWasModified(currentJournal);
+        addActionMessage("Updated Journal: " + currentJournal);
+      }
       return SUCCESS;
     }
 
