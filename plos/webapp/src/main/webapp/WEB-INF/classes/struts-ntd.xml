@@ -159,12 +159,6 @@
       </result>
     </action>
 
-    <action name="toc" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/ntd/static/toc.ftl</param>
-      </result>
-    </action>
-
     <action name="users" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/ntd/static/users.ftl</param>

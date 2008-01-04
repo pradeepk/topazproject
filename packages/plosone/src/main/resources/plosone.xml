@@ -1368,14 +1368,6 @@
         </css>
       </page>
       <page>
-        <name>/journals/compbiol/static/toc.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/compbiol/static/users.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1575,14 +1567,6 @@
       </page>
       <page>
         <name>/journals/genetics/static/sitemap.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/genetics/static/toc.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1828,14 +1812,6 @@
       </page>
       <page>
         <name>/journals/ntd/static/sitemap.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/ntd/static/toc.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
