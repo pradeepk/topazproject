@@ -39,13 +39,13 @@
     <hosts>
       <!-- Set hosts.default to FQHN (not localhost) if installing all components on one host
            (or to webhead FQHN for multiple host installation) -->
-      <default>plosone-ruman</default>
-      <mailhost>mail1.plos.org</mailhost>
+      <default>localhost</default>
+      <mailhost>localhost</mailhost>
       <!-- For multibox install, change the following entires to the appropriate FQHNs -->
-      <cas>plosone-branch.plos.org</cas>
-      <registration>plosone-branch.plos.org</registration>
-      <fedora>plosone-branch.plos.org</fedora>
-      <mulgara>plosone-branch.plos.org</mulgara>
+      <cas>${network.hosts.default}</cas>
+      <registration>${network.hosts.cas}</registration>
+      <fedora>${network.hosts.default}</fedora>
+      <mulgara>${network.hosts.default}</mulgara>
       <plosone>${network.hosts.default}</plosone>
       <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
     </hosts>
@@ -78,7 +78,7 @@
         <journal>PLoSONE</journal>
         <description>PLoSONE</description>
         <mappingPrefix></mappingPrefix>
-        <url>http://plosone-ruman</url>
+        <url>http://plosone...</url>
       </default>
       <!-- entries to config each virtual journal -->
       <!-- comma separated list of virtual journal names -->
@@ -90,7 +90,7 @@
         <rules>
           <host>clinicaltrials.*</host>
         </rules>
-        <url>http://clinicaltrials-ruman</url>
+        <url>http://clinicaltrials...</url>
         <pub>
           <feed>
             <title>PLoS Clinical Trials</title>
@@ -105,7 +105,7 @@
         <rules>
           <host>ploscompbiol.*</host>
         </rules>
-        <url>http://ploscompbiol-ruman</url>
+        <url>http://ploscompbiol...</url>
         <pub>
           <feed>
             <title>PLoS Computational Biology</title>
@@ -120,7 +120,7 @@
         <rules>
           <host>plosgenetics.*</host>
         </rules>
-        <url>http://plosgenetics-ruman</url>
+        <url>http://plosgenetics...</url>
         <pub>
           <feed>
             <title>PLoS Genetics</title>
@@ -135,7 +135,7 @@
         <rules>
           <host>plosntds.*</host>
         </rules>
-        <url>http://plosntds-ruman</url>
+        <url>http://plosntds...</url>
         <pub>
           <feed>
             <title>PLoS Neglected Tropical Diseases</title>
@@ -150,7 +150,7 @@
         <rules>
           <host>plospathogens.*</host>
         </rules>
-        <url>http://plospathogens-ruman</url>
+        <url>http://plospathogens...</url>
         <pub>
           <feed>
             <title>PLoS Pathogens</title>
@@ -201,27 +201,27 @@
      -->
     <doi-journals>
       <journal>
-        <url>http://plosone-ruman:8080/</url>
+        <url>http://plosone.../</url>
         <regex>10\.1371/journal\.pone\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://clinicaltrials-ruman:8080/</url>
+        <url>http://clinicaltrials.../</url>
         <regex>10\.1371/journal\.pctr\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://plosntds-ruman:8080/</url>
+        <url>http://plosntds.../</url>
         <regex>10\.1371/journal\.pntd\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://plospathogens-ruman:8080/</url>
+        <url>http://plospathogens.../</url>
         <regex>10\.1371/journal\.ppat\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://plosgenetics-ruman:8080/</url>
+        <url>http://plosgenetics.../</url>
         <regex>10\.1371/journal\.pgen\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://ploscompbiol-ruman:8080/</url>
+        <url>http://ploscompbiol.../</url>
         <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
       </journal>
     </doi-journals>
@@ -230,8 +230,8 @@
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
         <plos>
-          <doiurl>http://localhost:8080/plosone-doi-resolver</doiurl>        <!-- URL where your URIs can be found -->
-          <email>webmaster@plos.org</email>  <!-- email address to send info to -->
+          <doiurl>http://...</doiurl>        <!-- URL where your URIs can be found -->
+          <email>your@email.address</email>  <!-- email address to send info to -->
         </plos>
         <login>crossref-username</login>     <!-- crossref login -->
         <password>your-password</password>   <!-- crossref password -->
