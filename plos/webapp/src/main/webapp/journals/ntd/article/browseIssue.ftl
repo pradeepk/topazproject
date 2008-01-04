@@ -61,9 +61,10 @@
 	  </a>
         </div>
         <h3>About This Image</h3>
-        ${issueInfo.description}
+        ${issueDescription}
       </div>
     </#if>
+    <div class="clearer">&nbsp;</div>
     <!-- begin : articleTypes -->
     <div id="articleTypeList">
       <#list articleGroups as articleGrp>

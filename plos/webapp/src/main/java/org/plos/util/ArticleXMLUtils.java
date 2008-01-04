@@ -55,6 +55,7 @@ import org.xml.sax.SAXException;
  * Used to transform article with annotations, captions of tables/figures, and citation information.
  *
  * @author Stephen Cheng
+ * @author Alex Worden
  *
  */
 public class ArticleXMLUtils {
@@ -70,6 +71,7 @@ public class ArticleXMLUtils {
   private ArticleOtmService articleService;
   private String articleRep;
   private Map<String, String> xmlFactoryProperty;
+  private Templates objInfoXsltTemplate; // Initialized from the objInfo.xsl template
 
   /**
    * Initialization method called by Spring
@@ -159,7 +161,7 @@ public class ArticleXMLUtils {
     builder.setEntityResolver(CachedSource.getResolver());
     return builder;
   }
-
+  
   private Transformer getTranslet() throws TransformerException, FileNotFoundException {
     if (null == translet) {
       // Instantiate the TransformerFactory, and use it with a StreamSource
@@ -263,4 +265,54 @@ public class ArticleXMLUtils {
   public DocumentBuilderFactory getFactory() {
     return factory;
   }
+  
+  
+  /**
+   * Transform article XML to HTML for inclusion in the feed
+   */
+  public String transformArticleDescriptionToHtml(String description) throws ApplicationException {
+    String transformedString;
+    try {
+      final DocumentBuilder builder = createDocBuilder();
+      Document desc = builder.parse(new InputSource(new StringReader("<desc>" + description + "</desc>")));
+      final DOMSource domSource = new DOMSource(desc);
+      final Transformer transformer = getSecondaryObjectTranslet();
+      final Writer writer = new StringWriter();
+
+      transformer.transform(domSource,new StreamResult(writer));
+      transformedString = writer.toString();
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+
+    // PLoS stylesheet leaves "END_TITLE" as a marker for other processes
+    transformedString = transformedString.replace("END_TITLE", "");
+    return transformedString;
+  }
+
+  /**
+   * Get a translet - a compiled stylesheet - for the secondary objects.
+   *
+   * @return translet
+   * @throws TransformerException TransformerException
+   * @throws FileNotFoundException FileNotFoundException
+   */
+  public Transformer getSecondaryObjectTranslet() throws ApplicationException, TransformerException, FileNotFoundException, URISyntaxException {
+    if (objInfoXsltTemplate == null) {
+      // Instantiate the TransformerFactory, and use it with a StreamSource
+      // XSL stylesheet to create a translet as a Templates object.
+      final TransformerFactory tFactory = TransformerFactory.newInstance();
+      final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate", "/objInfo.xsl"));
+      if (resource == null) {
+        throw new ApplicationException("Failed to get stylesheet");
+      }
+      objInfoXsltTemplate = tFactory.newTemplates(new StreamSource(new File(resource.toURI())));
+    }
+
+    // For each thread, instantiate a new Transformer, and perform the
+    // transformations on that thread from a StreamSource to a StreamResult;
+    return objInfoXsltTemplate.newTransformer();
+  }
+
+  
 }

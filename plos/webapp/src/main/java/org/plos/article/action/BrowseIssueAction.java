@@ -102,11 +102,17 @@ public class BrowseIssueAction extends BaseActionSupport{
       return ERROR; 
     }
 
-    try {
-      issueDescription = articleXmlUtils.transformToHtml(issueInfo.getDescription());
-    } catch (ApplicationException e) {
-      log.error("Failed to translate issue description to HTML.", e);
-      issueDescription = issueInfo.getDescription(); // Just use the untranslated issue description
+    // Translate the currentIssue description to HTML
+    if (issueInfo.getDescription() != null) {
+      try {
+        issueDescription = articleXmlUtils.transformArticleDescriptionToHtml(issueInfo.getDescription());
+      } catch (ApplicationException e) {
+        log.error("Failed to translate issue description to HTML.", e);
+        issueDescription = issueInfo.getDescription(); // Just use the untranslated issue description
+      }
+    } else {
+      log.error("The currentIssue description was null. Issue DOI='"+issueInfo.getId()+"'");
+      issueDescription = "No description found for this issue";
     }
     
     // clear out the articleGroups and rebuild the list with one TOCArticleGroup

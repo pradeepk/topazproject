@@ -9,24 +9,8 @@
  */
 package org.plos.article.action;
 
-import org.apache.struts2.ServletActionContext;
-
-import com.sun.syndication.feed.WireFeed;
-import com.sun.syndication.feed.atom.Content;
-import com.sun.syndication.feed.atom.Entry;
-import com.sun.syndication.feed.atom.Feed;
-import com.sun.syndication.feed.atom.Link;
-import com.sun.syndication.feed.atom.Person;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -35,46 +19,39 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+
+import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.struts2.ServletActionContext;
+import org.jdom.Element;
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
-import org.plos.models.DublinCore;
-import org.plos.models.Citation;
 import org.plos.models.Category;
+import org.plos.models.Citation;
+import org.plos.models.DublinCore;
 import org.plos.models.UserProfile;
+import org.plos.util.ArticleXMLUtils;
 import org.plos.util.FileUtils;
 import org.plos.web.VirtualJournalContext;
 
-import org.topazproject.xml.transform.cache.CachedSource;
-
-import org.w3c.dom.Document;
-
-import org.xml.sax.InputSource;
-
-import org.jdom.Element;
-
-import net.sf.ehcache.Ehcache;
+import com.sun.syndication.feed.WireFeed;
+import com.sun.syndication.feed.atom.Content;
+import com.sun.syndication.feed.atom.Entry;
+import com.sun.syndication.feed.atom.Feed;
+import com.sun.syndication.feed.atom.Link;
+import com.sun.syndication.feed.atom.Person;
 
 /**
  * Get a variety of Article Feeds.
@@ -87,7 +64,6 @@ public class ArticleFeed extends BaseActionSupport {
   private ArticleOtmService articleOtmService;
   private Ehcache feedCache;
 
-  private Templates toHtmlTranslet;
   private DocumentBuilderFactory factory;
 
   // WebWorks will set from URI param
@@ -96,7 +72,6 @@ public class ArticleFeed extends BaseActionSupport {
   private String category;
   private String author;
   private int maxResults = -1;
-  private String representation;
   private boolean relativeLinks = false;
   private boolean extended = false;
   private String title;
@@ -115,6 +90,7 @@ public class ArticleFeed extends BaseActionSupport {
   private static final String ATOM_NS = "http://www.w3.org/2005/Atom"; // Tmp hack for categories
 
   final int DEFAULT_FEED_DURATION = configuration.getInteger("pub.feed.defaultDuration", 3);
+  private ArticleXMLUtils articleXmlUtils;
 
   /**
    * Returns a feed based on interpreting the URI.
@@ -483,7 +459,7 @@ public class ArticleFeed extends BaseActionSupport {
           text.append("<p>by ").append(authorNames).append("</p>\n");
         }
         if (dc.getDescription() != null) {
-          text.append(transformToHtml(dc.getDescription()));
+          text.append(articleXmlUtils.transformArticleDescriptionToHtml(dc.getDescription()));
         }
         description.setValue(text.toString());
       } catch (Exception e) {
@@ -620,69 +596,6 @@ public class ArticleFeed extends BaseActionSupport {
   }
 
   /**
-   * Representation to return results in.
-   */
-  public void setRepresentation(final String representation) {
-    this.representation = representation;
-  }
-  /**
-   * Transform article XML to HTML for inclusion in the feed
-   */
-  private String transformToHtml(String description) throws ApplicationException {
-    String transformedString = description;
-    try {
-      final DocumentBuilder builder = createDocBuilder();
-      Document desc = builder.parse(new InputSource(new StringReader("<desc>" + description + "</desc>")));
-      final DOMSource domSource = new DOMSource(desc);
-      final Transformer transformer = getTranslet();
-      final Writer writer = new StringWriter();
-
-      transformer.transform(domSource,new StreamResult(writer));
-      transformedString = writer.toString();
-    } catch (Exception e) {
-      throw new ApplicationException(e);
-    }
-
-    // PLoS stylesheet leaves "END_TITLE" as a marker for other processes
-    transformedString = transformedString.replace("END_TITLE", "");
-    return transformedString;
-  }
-
-  /**
-   * Get a translet - a compiled stylesheet - for the secondary objects.
-   *
-   * @return translet
-   * @throws TransformerException TransformerException
-   * @throws FileNotFoundException FileNotFoundException
-   */
-  private Transformer getTranslet() throws ApplicationException, TransformerException, FileNotFoundException, URISyntaxException {
-    if (toHtmlTranslet == null) {
-      // Instantiate the TransformerFactory, and use it with a StreamSource
-      // XSL stylesheet to create a translet as a Templates object.
-      final TransformerFactory tFactory = TransformerFactory.newInstance();
-      final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate", "/objInfo.xsl"));
-      if (resource == null) {
-        throw new ApplicationException("Failed to get stylesheet");
-      }
-      toHtmlTranslet = tFactory.newTemplates(new StreamSource(new File(resource.toURI())));
-    }
-
-    // For each thread, instantiate a new Transformer, and perform the
-    // transformations on that thread from a StreamSource to a StreamResult;
-    return toHtmlTranslet.newTransformer();
-  }
-
-  /**
-   * Create a DocumentBuilder with a cache aware entity resolver.
-   */
-  private DocumentBuilder createDocBuilder() throws ParserConfigurationException {
-    // Create the builder w/specific entity resolver.
-    final DocumentBuilder builder = factory.newDocumentBuilder();
-    builder.setEntityResolver(CachedSource.getResolver());
-    return builder;
-  }
-
-  /**
    *  Get a String from the Configuration looking first for a Journal override.
    *
    * @param configuration to use.
@@ -700,5 +613,14 @@ public class ArticleFeed extends BaseActionSupport {
   private String getCurrentJournal() {
     return ((VirtualJournalContext) ServletActionContext.getRequest().
       getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
+  }
+
+  /**
+   * Called by Spring to initialize an articleXmlUtils reference. 
+   * 
+   * @param articleXmlUtils The articleXmlUtils to set.
+   */
+  public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
+    this.articleXmlUtils = articleXmlUtils;
   }
 }

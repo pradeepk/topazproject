@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
 import org.plos.configuration.ConfigurationStore;
@@ -13,6 +14,7 @@ import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.models.Journal;
+import org.plos.util.ArticleXMLUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 
@@ -28,6 +30,8 @@ public class BrowseVolumeAction extends BaseActionSupport {
   private List<VolumeInfo> volumeInfos;
   private String gotoVolume;
   private Session session;
+  private String currentIssueDescription;
+  private ArticleXMLUtils articleXmlUtils;
 
   @Override
   public String execute() throws Exception {
@@ -49,7 +53,22 @@ public class BrowseVolumeAction extends BaseActionSupport {
           issueNum++;
         }
       }
+      
+      // Translate the currentIssue description to HTML
+      if (currentIssue.getDescription() != null) {
+        try {
+          currentIssueDescription = articleXmlUtils.transformArticleDescriptionToHtml(currentIssue.getDescription());
+        } catch (ApplicationException e) {
+          log.error("Failed to translate issue description to HTML.", e);
+          currentIssueDescription = currentIssue.getDescription(); // Just use the untranslated issue description
+        }
+      } else {
+        log.error("The currentIssue description was null. Issue DOI='"+currentIssue.getId()+"'");
+        currentIssueDescription = "No description found for this issue";
+      }
+      
     }
+    
     return SUCCESS;
   }
 
@@ -99,6 +118,7 @@ public class BrowseVolumeAction extends BaseActionSupport {
     this.journalService = journalService;
   }
 
+  
   /**
    * Returns the last linked volume for this journal - which is assumed to be
    * the current volume.
@@ -125,13 +145,26 @@ public class BrowseVolumeAction extends BaseActionSupport {
   }
 
   /**
-   * Spring should automagically set the OTM Session.
+   * Spring injected
    * 
-   * @param session
-   *          The OTM Session to set.
+   * @param session The OTM Session to set by Spring.
    */
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+  
+  /**
+   * Spring injected
+   * 
+   * @param axu
+   */
+  @Required
+  public void setArticleXmlUtils(ArticleXMLUtils axu) {
+    this.articleXmlUtils = axu;
+  }
+
+  public String getCurrentIssueDescription() {
+    return currentIssueDescription;
   }
 }

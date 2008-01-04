@@ -18,7 +18,7 @@
         <p>${currentVolume.displayName}</p>
       </div>
       <h3>About This Image</h3>
-      ${currentIssue.description}
+      ${currentIssueDescription}
       <div class="clearer">&nbsp;</div>
     </div>
 
