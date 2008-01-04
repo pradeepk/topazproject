@@ -145,10 +145,6 @@
             <td><@s.textfield name="displayName" size="72" required="true"/></td>
           </tr>
           <tr>
-            <th align="right">Volume</th>
-            <td><@s.textfield name="volume" size="72"/></td>
-          </tr>
-          <tr>
             <th align="right">Image Article (DOI)</th>
             <td><@s.textfield name="image" size="72"/></td>
           </tr>
@@ -171,7 +167,6 @@
           <th>Delete</th>
           <th>Id</th>
           <th>Display Name</th>
-          <th>Volume</th>
           <th>Image</th>
           <th>Articles</th>
         </tr>
@@ -205,9 +200,6 @@
               <td>
                 <@s.textfield name="displayName" size="24" required="true"
                   value="${issue.displayName}"/>
-              </td>
-              <td>
-                <@s.textfield name="volume" size="32" value="${issue.volume!''}"/>
               </td>
               <td>
                 <@s.textfield name="image" size="32" value="${issue.image!''}"/>
