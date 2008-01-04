@@ -45,22 +45,14 @@
 
     <articleTypeList>
       <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/research-article</typeUri>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</typeUri>
         <typeHeading>Research Article</typeHeading>
-        <imageSetConfigName>compressedLargeImages</imageSetConfigName>
         <default>true</default>
       </articleType>
       <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/editorial</typeUri>
-        <typeHeading>Editorial</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/correction</typeUri>
-        <typeHeading>Correction</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/article-commentary</typeUri>
-        <typeHeading>Expert Commentary</typeHeading>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Issue%20Image</typeUri>
+        <typeHeading>Issue Image</typeHeading>
+        <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>
     
@@ -68,46 +60,30 @@
     <virtualJournals>
       <!-- default values used if no virtual journal rules match -->
       <default>
-        <journal>PLoSONE</journal>
+        <journal>Topaz Journal</journal>
         <description></description>
         <mappingPrefix></mappingPrefix>
-        <url>http://www.plosone.org</url>
+        <url>http://www.topazproject.org</url>
       </default>
       <!-- entries to config each virtual journal -->
       <!-- comma separated list of virtual journal names -->
-      <journals>PLoSClinicalTrials,PLoSNTD</journals>
-      <PLoSClinicalTrials>
-        <description>Clinical Trials</description>
-        <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
+      <journals>VirtualJournal</journals>
+      <VirtualJournal>
+        <description>Virtual Journal</description>
+        <mappingPrefix>/journals/virtualJournal</mappingPrefix>
         <rules>
-          <host>clinicaltrials\..*</host>
-          <plosJournal>clinicaltrials</plosJournal>
+          <host>virtual\..*</host>
+          <plosJournal>VirtualJournal</plosJournal>
         </rules>
-        <url>http://clinicaltrials.ploshubs.org</url>
+        <url>http://virtual.topazproject.org</url>
         <!-- Atom feed overrides -->
         <pub>
           <feed>
-            <title>PLoS Clinical Trials</title>
-            <id>info:doi/10.1371/feed.phct</id>
+            <title>Virtual Journal</title>
+            <id>info:doi/10.1371/feed.tpvj</id>
           </feed>
         </pub>
-      </PLoSClinicalTrials>
-      <PLoSNTD>
-        <description>PLoS Neglected Tropical Diseases</description>
-        <mappingPrefix>/journals/ntd</mappingPrefix>
-        <rules>
-          <host>plosntds\..*</host>
-          <plosJournal>ntd</plosJournal>
-        </rules>
-        <url>http://plosntds.org</url>
-        <!-- Atom feed overrides -->
-        <pub>
-          <feed>
-            <title>PLoS Neglected Tropical Diseases</title>
-            <id>info:doi/10.1371/feed.pntd</id>
-          </feed>
-        </pub>
-      </PLoSNTD>
+      </VirtualJournal>
       <!-- virtual journal config entry
       <${journalName}>
         <description>${display for Admin, etc.}</description>
@@ -116,6 +92,12 @@
           <${httpHeader}>${regex to match against HTTP Header value}</${httpHeader}>
           <${httpHeader}>${regex to match against HTTP Header value}</${httpHeader}>
         </rules>
+        <pub>
+          <feed>
+            <title>${journalName}</title>
+            <id>info:doi/10.1371/feed.${journalCode}</id>
+          </feed>
+        </pub>
       </${journalName}>
       -->
     </virtualJournals>
@@ -136,12 +118,12 @@
     <email><general>webmaster@plos.org</general></email>
     <copyright>This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/</copyright>
 
-    <!-- defaults for generating a PLoS ONE Atom Feed -->
+    <!-- defaults for generating an Atom Feed -->
     <feed>
-      <title>PLoS ONE</title>
+      <title>Topaz Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
       <icon>${webserver-url}images/pone_favicon.ico</icon>
-      <id>info:doi/1371/feed.pone</id> <!-- Unique id. Should change for different criteria -->
+      <id>info:doi/1371/feed.tpjo</id> <!-- Unique id. Should change for different criteria -->
       <extended> <!-- Configuration of extended atom feeds -->
         <prefix>plos</prefix> <!-- namespace prefix for custom elements -->
         <namespace>http://www.plos.org/atom/ns#plos</namespace> <!-- custom element namespace -->
