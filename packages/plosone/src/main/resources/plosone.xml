@@ -129,7 +129,7 @@
         </pub>
       </PLoSGenetics>
       <PLoSNTD>
-        <journal>PLoSNTDs</journal>
+        <journal>PLoSNTD</journal>
         <description>PloS Neglected Tropical Diseases</description>
         <mappingPrefix>/journals/ntd</mappingPrefix>
         <rules>
@@ -1425,51 +1425,6 @@
         </javascript>
       </page>
       <page>
-        <name>/journals/genetics/article/browseIssue.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_article.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/journals/genetics/article/browseVolume.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/plostabs.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/dynamicDrive/tabcontent.js</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-        </javascript>
-      </page>
-      <page>
         <name>/article/article_body.ftl</name>
         <title>CODE_ARTICLE_TITLE</title>
       </page>
@@ -1691,10 +1646,8 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
           <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/floatingMenu.js</file>
@@ -1702,7 +1655,7 @@
           <file>/javascript/dojoRequire_article.ftl</file>
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_article.js</file>
+          <file>/javascript/init_float.js</file>
         </javascript>
       </page>
       <page>
@@ -1714,15 +1667,11 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
           <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
           <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
           <file>/javascript/dynamicDrive/tabcontent.js</file>
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
@@ -1940,51 +1889,6 @@
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
           <file>/javascript/init_home.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/journals/pathogens/article/browseIssue.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_article.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/journals/pathogens/article/browseVolume.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/plostabs.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/dynamicDrive/tabcontent.js</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
         </javascript>
       </page>
       <page>

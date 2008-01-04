@@ -34,17 +34,27 @@
           <#assign needSpacer=true/>
         </#if>
       </p>
-    <div id="floatMarker">&nbsp;</div>
-    <!-- <div id="postcomment" class="fixed"> class of 'fixed' is what floats the menu. "postcomment" wrapper is probably not needed here. -->
-    <div id="sectionNavTop" class="tools fixed">
-      <ul>
-        <li><a class="first" href="#top">Top</a></li>
-        <#list articleGroups as articleGrp>
-          <li><a href="#${articleGrp.id}">${articleGrp.heading}</a></li>
-        </#list>
-      </ul>
-    </div><!-- end : sectionNav -->
-    <!-- </div>end : postcomment -->
+      <div id="floatMarker">&nbsp;</div>
+      <div id="postcomment">
+        <div id="sectionNavTop" class="tools">
+          <ul>
+            <li><a class="first" href="#top">Top</a></li>
+            <#list articleGroups as articleGrp>
+              <li><a href="#${articleGrp.id}">${articleGrp.heading}</a></li>
+            </#list>
+          </ul>
+        </div><!-- end : sectionNav -->
+      </div>
+      <div id="postcommentfloat" class="fixed">
+        <div id="sectionNavTopFloat" class="tools">
+          <ul>
+            <li><a class="first" href="#top">Top</a></li>
+            <#list articleGroups as articleGrp>
+              <li><a href="#${articleGrp.id}">${articleGrp.heading}</a></li>
+            </#list>
+          </ul>
+        </div>
+      </div><!-- end : postcomment -->
     </div><!-- end : sideNav -->
   </div><!-- end : right-hand column -->
   <!-- begin : primary content area -->
@@ -83,3 +93,5 @@
     <!-- end : articleTypes -->
   </div>
 </div> <!-- end : toc content-->
+
+
