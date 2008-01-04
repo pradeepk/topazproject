@@ -1,11 +1,7 @@
 TY  - JOUR
 T1  - ${citation.articleTitle}
 <#list citation.authors as author>
-<#if author.isPrimary>
-  <#assign authorTag = "A1">
-<#else>
-  <#assign authorTag = "A2">
-</#if>
+<#assign authorTag = "A1">
 <#if author.suffix?exists>
   <#assign authorSuffix = ", " + author.suffix>
 <#else>
