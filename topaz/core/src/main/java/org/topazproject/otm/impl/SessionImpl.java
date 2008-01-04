@@ -372,7 +372,7 @@ public class SessionImpl extends AbstractSession {
      states.remove(o);
      store.delete(cm, cm.getFields(), id.getId(), o, txn);
      if (bf != null)
-       bs.delete(id.getId(), txn);
+       bs.delete(cm, id.getId(), txn);
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
@@ -405,10 +405,10 @@ public class SessionImpl extends AbstractSession {
 
       if (bf != null) {
         if (update)
-          bs.delete(id.getId(), txn);
+          bs.delete(cm, id.getId(), txn);
         byte[] blob = (byte[]) bf.getRawValue(o, false);
         if (blob != null)
-          bs.insert(id.getId(), blob, txn);
+          bs.insert(cm, id.getId(), blob, txn);
       }
 
     }
@@ -435,7 +435,7 @@ public class SessionImpl extends AbstractSession {
 
     Loader bf = cm.getBlobField();
     if (bf != null)
-      bf.setRawValue(instance, sessionFactory.getBlobStore().get(id.getId(), txn));
+      bf.setRawValue(instance, sessionFactory.getBlobStore().get(cm, id.getId(), txn));
 
     if (!cm.isView()) {
       for (Mapper m : cm.getFields())

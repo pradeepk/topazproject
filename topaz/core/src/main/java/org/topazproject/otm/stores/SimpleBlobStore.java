@@ -32,6 +32,7 @@ import java.util.Set;
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.AbstractStore;
 import org.topazproject.otm.BlobStore;
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
@@ -50,7 +51,7 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   private Map<String, Lock> locks  = new HashMap<String, Lock>();
   private List<File>        txns   = new ArrayList<File>();
 
-/**
+  /**
    * Creates a new SimpleBlobStore object.
    *
    * @throws OtmException on an error
@@ -59,7 +60,7 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
     this(new File(new File(System.getProperty("usr.dir")), "blobstore"));
   }
 
-/**
+  /**
    * Creates a new SimpleBlobStore object.
    *
    * @param root the root directory for blobstore
@@ -145,7 +146,7 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public void insert(String id, byte[] blob, Transaction txn)
+  public void insert(ClassMetadata cm, String id, byte[] blob, Transaction txn)
               throws OtmException {
     SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) txn.getConnection(this);
     ebsc.insert(id, blob);
@@ -154,7 +155,8 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public void delete(String id, Transaction txn) throws OtmException {
+  public void delete(ClassMetadata cm, String id, Transaction txn)
+              throws OtmException {
     SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) txn.getConnection(this);
     ebsc.delete(id);
   }
@@ -162,7 +164,8 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public byte[] get(String id, Transaction txn) throws OtmException {
+  public byte[] get(ClassMetadata cm, String id, Transaction txn)
+             throws OtmException {
     SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) txn.getConnection(this);
 
     return ebsc.get(id);
