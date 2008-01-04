@@ -37,7 +37,7 @@
     </div>
     <div id="contentHeader">
       <p>Open Access</p>
-      <p id="articleType">${articleTypeHeading}</p>
+      <p id="articleType">${articleType.heading}</p>
     </div>
     <#if publisher != "">
       <div id="publisher"><p>${publisher}</p></div>
