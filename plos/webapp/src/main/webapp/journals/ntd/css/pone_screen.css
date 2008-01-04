@@ -203,8 +203,8 @@ div#topBanner div 	{ padding-top: 4px; } /* sets top padding on all banner slots
 
 div#hdr 			{ height: 150px; position: relative; z-index: 997;}
 #hdr #logo			{ background: transparent url(../images/pone_hdr_logo.gif) no-repeat top left; color: #039; }
-#hdr #logo 			{ width: 501px; height: 128px; position: absolute; top: 1px; left: 8px; margin: 0; font-size: 1.6em; }
-#hdr #logo a 		{ width: 300px; height: 100px; display: block; }
+#hdr #logo 			{ width: 501px; height: 128px; position: absolute; top: 26px; left: 8px; margin: 0; font-size: 1.6em; }
+#hdr #logo a 		{ width: 300px; height: 90px; display: block; position:relative; }
 #hdr #logo span,
 #hdr #tagline span 	{ display: block; width: 0; height: 0; overflow: hidden; }
 
@@ -279,10 +279,10 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 #user p 	{ margin: 0; padding: 0; display: inline;}
 #user ul li { list-style-type: none;display: inline; }
 #user li a:link,
-#user li a:visited 	{ padding: 0; margin-left: 4px;}
+#user li a:visited 	{ padding: 0; margin-left:0 2px; text-decoration: none;}
 #user a:link,
 #user a:visited {  color: #060!important; }
-#user a:hover { text-decoration: none; }
+#hdr #user a:hover { text-decoration: underline; }
 
 
 /* links wraps browse and RSS buttons */
