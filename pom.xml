@@ -389,7 +389,7 @@
       <artifactId>maven-artifact-ant</artifactId>
       <version>2.0.4</version>
     </dependency>
-    
+
     <dependency>
       <groupId>tomcat</groupId>
       <artifactId>apache-tomcat</artifactId>
@@ -478,45 +478,46 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  
+
   <reporting>
     <plugins>
-      
-      <!-- TODO: This plugin seems to generate 0-data. Needs investigation -->
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <configuration>
-          <rulesets>
-            <ruleset>/rulesets/basic.xml</ruleset>
-          </rulesets>
-        </configuration>
-      </plugin>
-      -->
-      
       <!-- Java Cross-References (very nice!) -->
       <plugin>
         <artifactId>maven-jxr-plugin</artifactId>
       </plugin>
-      
+
+      <!-- code style checks -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <sourceEncoding>UTF-8</sourceEncoding>
+          <targetJdk>1.5</targetJdk>
+          <failOnViolation>false</failOnViolation>
+          <excludes>
+            <exclude>dk/defxws/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <!-- Finds specific keywords in Java sources -->
-      <!--
+      <!-- Hmm, seems to very slow and use a lot of mem - need to investigate
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.1</version>
         <configuration>
           <tags>
             <tag>TODO</tag>
-            <tag>@todo</tag>
-            <tag>@deprecated</tag>
             <tag>FIXME</tag>
             <tag>XXX</tag>
+            <tag>@deprecated</tag>
           </tags>
         </configuration>
       </plugin>
       -->
-      
+
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
@@ -528,6 +529,20 @@
           <charset>UTF-8</charset>
           <use>false</use>
           <header>&lt;a href='http://gandalf.topazproject.org/trac/log/head?rev=${svnversion}&amp;verbose=on' target='_top'>r${svnversion}&lt;/a></header>
+          <groups>
+            <group>
+              <title>Core OTM Packages</title>
+              <packages>org.topazproject.otm*</packages>
+            </group>
+            <group>
+              <title>Core Support Packages</title>
+              <packages>org.topazproject.mulgara*:org.topazproject.fedora*:fedora.server*:org.topazproject.configuration:org.topazproject.logging*</packages>
+            </group>
+            <group>
+              <title>PubApp Packages</title>
+              <packages>org.plos*:dk.defxws*:org.apache*:org.topazproject.dom.ranges:org.topazproject.fedoragsarch*:org.topazproject.ws*:org.topazproject.xml*</packages>
+            </group>
+          </groups>
           <links>
             <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
             <link>http://www.fedora.info/download/2.1.1/userdocs/server/serverdocs</link>
@@ -608,16 +623,16 @@
           </reportSet>
         </reportSets>
       </plugin> -->
-      
+
     </plugins>
   </reporting>
 
   <!-- Profiles Section: Define custom profiles here -->
-  
+
   <profiles>
 
     <!-- it-startenv: Start and stop fedora/ecqs/mulgara before and after integration testing -->
-    
+
     <profile>
       <id>it-startenv</id>
       <dependencies>
@@ -670,9 +685,9 @@
         </plugins>
       </build>
     </profile>
-    
+
   </profiles>
-        
+
   <build>
     <pluginManagement>
       <plugins>
@@ -680,7 +695,7 @@
           <groupId>org.mortbay.jetty</groupId>
           <artifactId>maven-jetty-plugin</artifactId>
           <version>6.1.4</version>
-        </plugin>        
+        </plugin>
 
         <plugin>
           <groupId>org.topazproject.patch.plugin</groupId>
