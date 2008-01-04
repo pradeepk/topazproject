@@ -464,8 +464,8 @@
 
     <utilities>
       <image-magick>
-        <executable-path>C:/Program Files/ImageMagick-6.3.7-Q16/convert.exe</executable-path>
-        <temp-directory>C:/TEMP</temp-directory>
+        <executable-path>/usr/bin/convert</executable-path>
+        <temp-directory>/tmp</temp-directory>
         <imageSetConfigs>
           <imageSet name="#default">
             <small width="70" quality="80"/>
