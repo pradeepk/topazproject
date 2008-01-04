@@ -28,13 +28,8 @@ import org.mulgara.resolver.spi.ResolverSession;
  * @author Ronald Tschalär
  */
 public class StringCompareResolverFactory implements ResolverFactory {
-  private static final Logger logger = Logger.getLogger(StringCompareResolverFactory.class);
-
   /** the model type we handle */
   public static final URI MODEL_TYPE = URI.create("http://topazproject.org/models#StringCompare");
-
-  /** The preallocated local node representing models representing all non-blank nodes.  */
-  private long modelType;
 
   private StringCompareImpl impls[] = new StringCompareImpl[] {
     new EqualsIgnoreCaseImpl(),
@@ -68,7 +63,6 @@ public class StringCompareResolverFactory implements ResolverFactory {
     initializer.addModelType(MODEL_TYPE, this);
 
     // set up our data
-    modelType = initializer.preallocate(new URIReferenceImpl(MODEL_TYPE));
     for (StringCompareImpl impl: impls) {
       URI uri = URI.create("http://rdf.topazproject.org/RDF/" + impl.getOp());
       impl.setNode(initializer.preallocate(new URIReferenceImpl(uri)));

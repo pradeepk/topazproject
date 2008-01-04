@@ -28,8 +28,6 @@ import org.apache.log4j.Logger;
  * @author Ronald Tschalär
  */
 public class BackupUpdateFilter implements UpdateFilter {
-  private static final Logger logger = Logger.getLogger(BackupUpdateFilter.class);
-
   private final String pidBase;
 
   public BackupUpdateFilter(Configuration config, String base) throws IOException {

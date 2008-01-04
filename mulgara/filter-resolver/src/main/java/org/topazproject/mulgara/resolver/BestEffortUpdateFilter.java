@@ -61,8 +61,6 @@ import fedora.common.PID;
  * @author Ronald Tschalär
  */
 public class BestEffortUpdateFilter implements UpdateFilter {
-  private static final Logger logger = Logger.getLogger(BestEffortUpdateFilter.class);
-
   private static final int    MAX_PID_LEN = PID.MAX_LENGTH;
   private static final BitSet PID_CHARS;
 
