@@ -147,7 +147,7 @@ class CacheInvalidator extends QueueingFilterHandler {
     for (int idx = 0; idx < amList.getLength(); idx++) {
       Element am = (Element) amList.item(idx);
 
-      NodeList eList = rules.getElementsByTagName("entry");
+      NodeList eList = am.getElementsByTagName("entry");
       for (int idx2 = 0; idx2 < eList.getLength(); idx2++) {
         Element e = (Element) eList.item(idx2);
         Element a = (Element) e.getElementsByTagName("alias").item(0);
