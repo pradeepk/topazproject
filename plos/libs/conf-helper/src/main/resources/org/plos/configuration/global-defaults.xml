@@ -157,12 +157,12 @@
         <temp-directory>/tmp</temp-directory>
         <imageSetConfigs>
           <imageSet name="#default">
-            <small width="70" quality="70"/>
+            <small width="70" quality="80"/>
             <medium maxDimension="600" quality="80"/>
-            <large quality="95"/>
-          </imageSet>
-          <imageSet name="compressedLargeImages">
             <large quality="80"/>
+          </imageSet>
+          <imageSet name="issueImage">
+            <small width="120"/>
           </imageSet>
         </imageSetConfigs>
       </image-magick>

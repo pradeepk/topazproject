@@ -60,8 +60,8 @@
     <virtualJournals>
       <!-- default values used if no virtual journal rules match -->
       <default>
-        <journal>Topaz Journal</journal>
-        <description></description>
+        <journal>TopazJournal</journal>
+        <description>Topaz Journal</description>
         <mappingPrefix></mappingPrefix>
         <url>http://www.topazproject.org</url>
       </default>
@@ -208,15 +208,15 @@
    -->
 
   <freemarker>
-    <default-journal-name>PLoSONE</default-journal-name>
+    <default-journal-name>TopazJournal</default-journal-name>
     <journal>
-      <name>PLoSONE</name>
-      <metaKeywords>PLoS\, Public Library of Science\, Open Access\, Open-Access\, Science\, Medicine\, Biology\, Research\, Peer-review\, Inclusive\, Interdisciplinary\, Ante-disciplinary\, Physics\, Chemistry\, Engineering</metaKeywords>
-      <metaDescription>PLoS ONE: an inclusive\, peer-reviewed\, open-access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole world.</metaDescription>
-      <articleTitlePrefix>PLoS ONE: </articleTitlePrefix>
-      <displayName>PLoS ONE</displayName>
+      <name>Topaz Journal</name>
+      <metaKeywords>Topaz\, RDF\, Ronald Tschalär</metaKeywords>
+      <metaDescription>Topaz is a new Open Source software applications development project to create an innovative, end-to-end electronic publishing system that will become a powerful driver of the Open Access movement.</metaDescription>
+      <articleTitlePrefix>Topaz Journal: </articleTitlePrefix>
+      <displayName>Topaz Journal</displayName>
       <default>
-        <title>PLoS ONE : Publishing science\, accelerating research</title>
+        <title>Topaz : It's refreshing.</title>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -233,7 +233,25 @@
           <file>/javascript/init_navigation.js</file>
         </javascript>
       </default>
-
+      <page>
+        <name>/index.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_home.css</file>
+          <file>/css/pone_article_markup.css</file>
+        </css>
+        <javascript>
+          <file>/javascript/dojo/dojo_home.js</file>
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/domUtil.js</file>
+          <file>/javascript/topaz/htmlUtil.js</file>
+          <file>/javascript/dojoRequire_default.ftl</file>
+          <file>/javascript/config_home.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+        </javascript>
+      </page>
       <page>
         <name>/article/article_body.ftl</name>
         <title>CODE_ARTICLE_TITLE</title>
@@ -262,7 +280,6 @@
           <file>/javascript/init_article.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/discussion/discussion.ftl</name>
         <javascript>
@@ -279,7 +296,6 @@
           <file>/javascript/init_discussion.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/discussion/startDiscussion.ftl</name>
         <javascript>
@@ -296,7 +312,6 @@
           <file>/javascript/init_newDiscussion.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/rating/index.ftl</name>
         <css>
@@ -321,7 +336,6 @@
           <file>/javascript/init_discussion.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/article/imageWindow.ftl</name>
         <css>
@@ -340,7 +354,6 @@
           <file>/javascript/init_slideshow.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/article/imageWindowLarge.ftl</name>
         <css>
@@ -353,7 +366,6 @@
           <file>/javascript/dojoRequire_slideshow.ftl</file>
         </javascript>
       </page>
-
       <page>
         <name>/article/emailArticle.ftl</name>
         <css>
@@ -363,7 +375,6 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-
       <page>
         <name>/article/emailSuccess.ftl</name>
         <css>
@@ -373,7 +384,6 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-      
       <page>
         <name>/article/browse.ftl</name>
         <css>
@@ -382,7 +392,6 @@
           <file>/css/pone_article_markup.css</file>
         </css>
       </page>
-
       <page>
         <name>/feedback/feedbackEntry.ftl</name>
         <css>
@@ -392,7 +401,6 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-
       <page>
         <name>/feedback/feedbackSuccess.ftl</name>
         <css>
@@ -402,7 +410,6 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-
       <page>
         <name>/user/alerts.ftl</name>
         <css>
@@ -421,7 +428,6 @@
           <file>/javascript/init_navigation.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/user/createNewUser.ftl</name>
         <javascript>
@@ -437,7 +443,6 @@
           <file>/javascript/init_newProfile.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/user/editPlosAlerts.ftl</name>
         <css>
@@ -459,7 +464,6 @@
           <file>/javascript/init_plosAlerts.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/user/editUser.ftl</name>
         <css>
@@ -483,7 +487,6 @@
           <file>/javascript/init_profile.js</file>
         </javascript>
       </page>
-
       <page>
         <name>/static/about.ftl</name>
         <css>
@@ -492,291 +495,20 @@
           <file>/css/pone_static.css</file>
         </css>
       </page>
-
-      <page>
-        <name>/static/authors.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/browse.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-          <file>/css/pone_article_markup.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/checklist.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/commentGuidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/competing.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/contact.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/edboard.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/faq.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/figure_guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/help.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/information.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/latex.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/license.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/media.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/policies.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/privacy.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/policies.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/ratingGuidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/releaseNotes.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/reviewer_guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/rss_feeds.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/rssInfo.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/serverError.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/sitemap.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/terms.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/users.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/static/whypublish.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/index.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_home.css</file>
-          <file>/css/pone_article_markup.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/dojo/dojo_home.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/htmlUtil.js</file>
-          <file>/javascript/dojoRequire_default.ftl</file>
-          <file>/javascript/config_home.js</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-        </javascript>
-      </page>
     </journal>
+
+    <!-- Virtual Journal. Anything you want to override must be listed here -->
     <journal>
-      <name>PLoSClinicalTrials</name>
-      <metaKeywords>clinical trials\, clinical trial\, trial results\, medical publishing\, plos\, public library of science\, open access\, open-access\, science\, medical research\, clinical research\, human studies\, experimental treatment\, disease\, drug\, drugs\, device\, devices\, vaccine\, vaccines\, phase I\, phase II\, phase III\, phase IV\, journal\, portal\, gateway\, resource</metaKeywords>
-      <metaDescription>PLoS Hub for Clinical Trials: Connecting the community with open-access\, peer-reviewed clinical trials research.</metaDescription>
-      <articleTitlePrefix>PLoS Hub for Clinical Trials:  </articleTitlePrefix>
-      <displayName>PLoS Hub for Clinical Trials</displayName>
+      <name>Virtual Journal</name>
+      <metaKeywords>Virtual Journal\, Secondary\, Generic\, Default</metaKeywords>
+      <metaDescription>This is an example second journal on Topaz.</metaDescription>
+      <articleTitlePrefix>Virtual Journal:  </articleTitlePrefix>
+      <displayName>Virtual Journal</displayName>
       <default>
-        <title>PLoS Hub for Clinical Trials: Connecting communities with open-access research</title>
+        <title>Virtual Journal: Serving as an Example for the Topaz Configuration community</title>
       </default>
       <page>
-        <name>/journals/clinicalTrials/index.ftl</name>
+        <name>/journals/virtual/index.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -797,377 +529,14 @@
         <name>/article/article_body.ftl</name>
         <title>CODE_ARTICLE_TITLE</title>
       </page>
-
       <page>
-        <name>/journals/clinicalTrials/static/about.ftl</name>
+        <name>/journals/virtual/static/about.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
           <file>/css/pone_static.css</file>
         </css>
       </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/authors.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/browse.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-          <file>/css/pone_article_markup.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/checklist.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/contact.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/faq.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/information.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/rssFeeds.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/sitemap.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/clinicalTrials/static/users.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-    </journal>
-    <journal>
-      <name>PLoSNTD</name>
-      <metaKeywords>plos neglected tropical diseases\, plos ntds\, plos ntd\, plos\, public library of science\, open access\, open-access\, online science journal\, plos journal\, neglected tropical diseases\, infectious diseases\, tropical diseases\, scientific\, medical\, public health\, pathology\, epidemiology\, treatment\, control\, prevention\, public policy</metaKeywords>
-      <metaDescription>PLoS Neglected Tropical Diseases is an open-access journal publishing peer-reviewed research on the world\'s most neglected tropical diseases\, such as elephantiasis\, river blindness\, leprosy\, hookworm\, schistosomiasis\, and African sleeping sickness</metaDescription>
-      <articleTitlePrefix>PLoS Neglected Tropical Diseases:  </articleTitlePrefix>
-      <displayName>PLoS Neglected Tropical Diseases</displayName>
-      <default>
-        <title>PLoS Neglected Tropical Diseases: Connecting communities with open-access research</title>
-      </default>
-      <page>
-        <name>/journals/ntd/index.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_home.css</file>
-          <file>/css/pone_article_markup.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/dojo/dojo_home.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/htmlUtil.js</file>
-          <file>/javascript/dojoRequire_default.ftl</file>
-          <file>/javascript/config_home.js</file>
-          <file>/javascript/topaz/horizontalTabs.js</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_home.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/journals/ntd/article/browseIssue.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_article.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/journals/ntd/article/browseVolume.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/plostabs.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/dynamicDrive/tabcontent.js</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/article/article_body.ftl</name>
-        <title>CODE_ARTICLE_TITLE</title>
-      </page>
-      
-      <page>
-        <name>/journals/ntd/static/about.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/ae_checklist.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/authors.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/browse.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-          <file>/css/pone_article_markup.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/checklist.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/contact.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/developing.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/downloads.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/edboard.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/eic.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      
-      <page>
-        <name>/journals/ntd/static/guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/hotez_who.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/information.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/policies.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/reviewer_guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/revised_checklist.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      
-      <page>
-        <name>/journals/ntd/static/rssFeeds.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/scope.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      
-      <page>
-        <name>/journals/ntd/static/sitemap.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/toc.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/users.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
-      <page>
-        <name>/journals/ntd/static/whypublish.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-
     </journal>
   </freemarker>
 </config>

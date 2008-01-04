@@ -14,6 +14,34 @@
 <config>
   <pub>
     <app-context>/plosone-webapp</app-context>
+    <!-- virtual journal config -->
+    <virtualJournals>
+      <!-- default values used if no virtual journal rules match -->
+      <default>
+        <journal>PLoSONE</journal>
+        <description>PLoSONE</description>
+        <mappingPrefix></mappingPrefix>
+        <url>http://plosone...</url>
+      </default>
+      <!-- entries to config each virtual journal -->
+      <!-- comma separated list of virtual journal names -->
+      <journals>PLoSClinicalTrials</journals>
+      <PLoSClinicalTrials>
+        <journal>PLoSClinicalTrials</journal>
+        <description>PloS Clinical Trials</description>
+        <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
+        <rules>
+          <host>clinicaltrials.*</host>
+        </rules>
+        <url>http://clinicaltrials...</url>
+        <pub>
+          <feed>
+            <title>PLoS Clinical Trials</title>
+            <id>info:doi/10.1371/feed.phct</id>
+          </feed>
+        </pub>
+      </PLoSClinicalTrials>
+    </virtualJournals>
   </pub>
   <dummy>
     <sso>
@@ -25,6 +53,8 @@
     <devMode>true</devMode>
   </struts>
   <freemarker>
+    <default-journal-name>PLoSONE</default-journal-name>
+    <!-- PLoSONE -->
     <journal>
       <name>PLoSONE</name>
       <default>
@@ -45,7 +75,19 @@
           <file>/javascript/init_navigation.js</file>  
         </javascript>
       </default>
-  
+      <page>
+        <name>/index.ftl</name>
+        <javascript>
+          <file>/javascript/dojo/dojo.js</file>
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/domUtil.js</file>
+          <file>/javascript/topaz/htmlUtil.js</file>
+          <file>/javascript/dojoRequire_default.ftl</file>
+          <file>/javascript/config_home.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+        </javascript>
+      </page>
       <page>
         <name>/article/article_body.ftl</name>
         <javascript>
@@ -67,7 +109,6 @@
           <file>/javascript/init_article.js</file>   
         </javascript>
       </page>
-  
       <page>
         <name>/discussion/discussion.ftl</name>
         <javascript>
@@ -84,7 +125,6 @@
           <file>/javascript/init_discussion.js</file>
         </javascript>
       </page>
-  
       <page>
         <name>/discussion/startDiscussion.ftl</name>
         <javascript>
@@ -101,7 +141,6 @@
           <file>/javascript/init_newDiscussion.js</file>
         </javascript>
       </page>
-  
       <page>
         <name>/rating/index.ftl</name>
         <css>
@@ -126,7 +165,6 @@
           <file>/javascript/init_discussion.js</file>
         </javascript>
       </page>
-  
       <page>
         <name>/article/imageWindow.ftl</name>
         <css>
@@ -145,7 +183,6 @@
           <file>/javascript/init_slideshow.js</file>
         </javascript>
       </page>
-  
       <page>
         <name>/article/imageWindowLarge.ftl</name>
         <css>
@@ -158,7 +195,6 @@
           <file>/javascript/dojoRequire_slideshow.ftl</file>
         </javascript>
       </page>
-  
       <page>
         <name>/user/alerts.ftl</name>
         <css>
@@ -177,7 +213,6 @@
           <file>/javascript/init_navigation.js</file>
         </javascript>
       </page>
-  
       <page>
         <name>/user/createNewUser.ftl</name>
         <javascript>
@@ -193,7 +228,6 @@
           <file>/javascript/init_newProfile.js</file>
         </javascript>
       </page>
-  
       <page>
         <name>/user/editPlosAlerts.ftl</name>
         <css>
@@ -215,7 +249,6 @@
           <file>/javascript/init_plosAlerts.js</file>
         </javascript>
       </page>
-  
       <page>
         <name>/user/editUser.ftl</name>
         <css>
@@ -237,20 +270,6 @@
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
           <file>/javascript/init_profile.js</file>
-        </javascript>
-      </page>
-  
-      <page>
-        <name>/index.ftl</name>
-        <javascript>
-          <file>/javascript/dojo/dojo.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/htmlUtil.js</file>
-          <file>/javascript/dojoRequire_default.ftl</file>
-          <file>/javascript/config_home.js</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
         </javascript>
       </page>
     </journal>
@@ -276,85 +295,6 @@
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/htmlUtil.js</file>
           <file>/javascript/dojoRequire_default.ftl</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/article/article_body.ftl</name>
-        <title>CODE_ARTICLE_TITLE</title>
-      </page>
-    </journal>
-    <journal>
-      <name>PLoSNTD</name>
-      <metaKeywords>neglected tropical diseases, medical publishing\, plos\, public library of science\, open access\, open-access\, science\, medical research\, clinical research\, human studies\, experimental treatment\, disease\, drug\, drugs\, device\, devices\, vaccine\, vaccines\, phase I\, phase II\, phase III\, phase IV\, journal\, portal\, gateway\, resource</metaKeywords>
-      <metaDescription>PLoS Hub â Neglected Tropical Diseases: Connecting the community with open-access\, peer-reviewed research.</metaDescription>
-      <articleTitlePrefix>PLoS Hub - Clinical Trials:  </articleTitlePrefix>
-      <displayName>PLoS Hub - Neglected Tropical Diseases</displayName>
-      <default>
-        <title>PLoS Hub - Neglected Tropical Diseases: Connecting communities with open-access research</title>
-      </default>
-      <page>
-        <name>/journals/ntd/index.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_home.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/dojo/dojo_home.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/htmlUtil.js</file>
-          <file>/javascript/dojoRequire_default.ftl</file>
-          <file>/javascript/config_home.js</file>
-          <file>/javascript/topaz/horizontalTabs.js</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_home.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/journals/ntd/article/browseIssue.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/init_global.js</file>
-          <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_article.js</file>
-        </javascript>
-      </page>
-      <page>
-        <name>/journals/ntd/article/browseVolume.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/plostabs.css</file>
-        </css>
-        <javascript>
-          <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
-          <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
-          <file>/javascript/topaz/formUtil.js</file>
-          <file>/javascript/topaz/domUtil.js</file>
-          <file>/javascript/topaz/floatingMenu.js</file>
-          <file>/javascript/topaz/navigationUtil.js</file>
-          <file>/javascript/dojoRequire_article.ftl</file>
-          <file>/javascript/dynamicDrive/tabcontent.js</file>
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
         </javascript>
