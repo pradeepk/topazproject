@@ -289,10 +289,10 @@ public class RateAction extends BaseActionSupport {
     setInsight(rating.getBody().getInsightValue());
     setReliability(rating.getBody().getReliabilityValue());
     setStyle(rating.getBody().getStyleValue());
+    setSingleRating(rating.getBody().getSingleRatingValue());
 
     setCommentTitle(rating.getBody().getCommentTitle());
     setComment(rating.getBody().getCommentValue());
-        setSingleRating(rating.getBody().getSingleRatingValue());
 
     return SUCCESS;
   }
