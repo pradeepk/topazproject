@@ -12,7 +12,7 @@
 
 @article{${citation.DOI},
     author = {${authorList}},
-    journal = {${citation.journalTitle}},
+    journal = {${citation.journalName}},
     publisher = {${citation.publisherName}},
     title = {${citation.articleTitle}},
     year = {${citation.publicationDate?string("yyyy")}},
@@ -21,7 +21,8 @@
     url = {${citation.URL}},
     pages = {${citation.startPage}<#if citation.endPage?has_content>--${citation.endPage}</#if>},
     abstract = {${citation.articleAbstract!''}},
-    number = {${citation.issue}}
+    number = {${citation.issue}},
+    doi = {${citation.DOI}}
 }        
 
 

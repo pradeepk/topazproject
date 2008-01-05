@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 public class CitationInfo {
   private String articleTitle;
   private Date publicationDate;
+  private String journalName; 
   private String journalTitle;
   private String publisherName;
   private Author[] authors;
@@ -113,6 +114,18 @@ public class CitationInfo {
    */
   public void setIssue(String issue) {
     this.issue = issue;
+  }
+  /**
+   * @return the journalName
+   */
+  public String getJournalName() {
+    return journalName;
+  }
+  /**
+   * @param journalName the journalName to set
+   */
+  public void setJournalName(String journalName) {
+    this.journalName = journalName;
   }
   /**
    * @return Returns the journalTitle.

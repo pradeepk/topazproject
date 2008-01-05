@@ -21,6 +21,7 @@
         </xsl:choose>
       </publicationDate>
       <articleTitle><xsl:value-of select="article/front/article-meta/title-group/article-title"/></articleTitle>
+      <journalName><xsl:value-of select="article/front/journal-meta/journal-id[@journal-id-type='nlm-ta']"/></journalName>
       <journalTitle><xsl:value-of select="article/front/journal-meta/journal-title[1]"/></journalTitle>
       <publisherName><xsl:value-of select="article/front/journal-meta/publisher/publisher-name"/></publisherName>
       <startPage><xsl:value-of select="article/front/article-meta/elocation-id"/></startPage>

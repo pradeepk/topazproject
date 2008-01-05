@@ -12,6 +12,7 @@ ${authorTag}  - ${author.surname}, ${author.givenNames}${authorSuffix}
 Y1  - ${citation.publicationDate?string("yyyy/MM/dd")}
 N2  - ${citation.articleAbstract!''}
 JF  - ${citation.journalTitle}
+JA  - ${citation.journalName}
 VL  - ${citation.volume}
 IS  - ${citation.issue}
 UR  - ${citation.URL}
@@ -19,4 +20,5 @@ SP  - ${citation.startPage}
 EP  - ${citation.endPage!''}
 PB  - ${citation.publisherName}
 ER  - 
+M3  - doi:${citation.DOI}
 
