@@ -33,6 +33,7 @@ public class ArticleRatingSummary {
   private int    insight;
   private int    reliability;
   private double overall;
+  private int    singleRating;
   private String commentTitle;
   private String commentValue;
 
@@ -42,13 +43,14 @@ public class ArticleRatingSummary {
     this.articleTitle = articleTitle;
   }
 
-  public void addRating(Rating rating) {
+  public void setRating(Rating rating) {
 
     this.ratingId    = rating.getId();
     this.insight     = rating.getBody().getInsightValue();
     this.style       = rating.getBody().getStyleValue();
     this.reliability = rating.getBody().getReliabilityValue();
     this.overall     = rating.getBody().getOverallValue();
+    this.singleRating = rating.getBody().getSingleRatingValue();
 
     // escape any markup
     this.commentTitle = TextUtils.escapeHtml(rating.getBody().getCommentTitle());
@@ -80,7 +82,7 @@ public class ArticleRatingSummary {
     return articleTitle;
   }
 
-  public void setCreated(Date created) {
+	public void setCreated(Date created) {
     this.created = created;
   }
   public Date getCreated() {
@@ -126,6 +128,13 @@ public class ArticleRatingSummary {
 
   public double getOverallRounded() {
     return RatingContent.roundTo(overall, 0.5);
+  }
+
+  public void setSingleRating(int singleRating) {
+    this.singleRating = singleRating;
+  }
+  public int getSingleRating() {
+    return singleRating;
   }
 
   /**

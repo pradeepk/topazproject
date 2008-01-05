@@ -21,6 +21,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.action.BaseActionSupport;
+import org.plos.article.service.FetchArticleService;
+import org.plos.model.article.ArticleType;
+import org.plos.models.Article;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
@@ -39,15 +42,19 @@ import org.springframework.beans.factory.annotation.Required;
  *
  * @author Stephen Cheng
  */
+@SuppressWarnings("serial")
 public class RateAction extends BaseActionSupport {
   private double           insight;
   private double           reliability;
   private double           style;
+  private double           singleRating;
   private String           articleURI;
+  private boolean          isResearchArticle;
   private String           commentTitle;
   private String           comment;
   private Session          session;
   private RatingsPEP       pep;
+  private FetchArticleService fetchArticleService;
 
   private ProfanityCheckingService profanityCheckingService;
   private static final Log log = LogFactory.getLog(RateAction.class);
@@ -60,6 +67,14 @@ public class RateAction extends BaseActionSupport {
       throw new Error("Failed to create Ratings PEP", e);
     }
     return pep;
+  }
+  
+  /**
+   * @param fetchArticleService the fetchArticleService to set
+   */
+  @Required
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 
   /**
@@ -91,10 +106,18 @@ public class RateAction extends BaseActionSupport {
 
     getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
 
-    // must rate at least one value
-    if (insight == 0 && reliability == 0 && style == 0) {
-      addActionError("At least one category must be rated");
-      return INPUT;
+    if(isResearchArticle) {
+      // must rate at least one rating category
+      if (insight == 0 && reliability == 0 && style == 0) {
+        addActionError("At least one category must be rated");
+        return INPUT;
+      }
+    }
+    else {
+      // ensure the single rating specified
+      if(singleRating == 0) {
+        addActionError("A rating must be specified.");
+      }
     }
 
     // reject profanity in content
@@ -202,6 +225,19 @@ public class RateAction extends BaseActionSupport {
       articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE, (int) style);
     }
 
+    // if they had a prior single Rating, remove it from the RatingSummary
+    if (articleRating.getBody().getSingleRatingValue() > 0) {
+      articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE, articleRating.getBody().getSingleRatingValue());
+    }
+
+    // update single Article Rating, don't care if new, update or 0
+    articleRating.getBody().setSingleRatingValue((int) singleRating);
+
+    // if user rated single, add to to Article RatingSummary
+    if (singleRating > 0) {
+      articleRatingSummary.getBody().addRating(Rating.SINGLE_RATING_TYPE, (int) singleRating);
+    }
+
     // Rating comment
     articleRating.getBody().setCommentTitle(commentTitle);
     articleRating.getBody().setCommentValue(comment);
@@ -255,6 +291,7 @@ public class RateAction extends BaseActionSupport {
 
     setCommentTitle(rating.getBody().getCommentTitle());
     setComment(rating.getBody().getCommentValue());
+        setSingleRating(rating.getBody().getSingleRatingValue());
 
     return SUCCESS;
   }
@@ -274,8 +311,32 @@ public class RateAction extends BaseActionSupport {
    *
    * @param articleURI The articleUri to set.
    */
-  public void setArticleURI(String articleURI) {
+  public void setArticleURI(String articleURI) throws Exception {
+    if(articleURI != null && articleURI.equals(this.articleURI)) {
+      return;
+    }
     this.articleURI = articleURI;
+    
+    // resolve article type and supported properties
+    Article artInfo = fetchArticleService.getArticleInfo(articleURI); 
+    assert artInfo != null : "artInfo is null (Should have already been cached.)  Is the articleURI correct?)";
+    ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
+    assert articleType != null;
+    articleType = ArticleType.getDefaultArticleType();
+    for (URI artTypeUri : artInfo.getArticleType()) {
+      if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
+        break;
+      }
+    }
+    isResearchArticle = ArticleType.isResearchArticle(articleType);
+  }
+
+  /**
+   * @return the isResearchArticle
+   */
+  public boolean getIsResearchArticle() {
+    return isResearchArticle;
   }
 
   /**
@@ -349,6 +410,20 @@ public class RateAction extends BaseActionSupport {
   public double getOverall() {
 
     return RatingContent.calculateOverall(getInsight(), getReliability(), getStyle());
+  }
+
+  /**
+   * @return the singleRating
+   */
+  public double getSingleRating() {
+    return singleRating;
+  }
+
+  /**
+   * @param singleRating the singleRating to set
+   */
+  public void setSingleRating(double singleRating) {
+    this.singleRating = singleRating;
   }
 
   /**

@@ -21,31 +21,35 @@ import java.util.List;
 import java.util.SortedMap;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.PLoS;
 
+@SuppressWarnings("serial")
 public class ArticleType implements Serializable {
-  private static final Log log = LogFactory.getLog(ArticleType.class);
-  
+  /**
+   * The article heading denoting a research type article.
+   */
+  public static final String ARTICLE_TYPE_HEADING_RESEARCH = "Research Article";
+
+  // private static final Log log = LogFactory.getLog(ArticleType.class);
+
   private static HashMap<String, ArticleType> _knownArticleTypes = new HashMap<String, ArticleType>();
   private static List<ArticleType> _articleTypeOrder = new ArrayList<ArticleType>();
   private static HashMap<String, ArticleType> _newArticleTypes = new HashMap<String, ArticleType>();
   private static ArticleType theDefaultArticleType = null;
   static {
-  	configureArticleTypes(ConfigurationStore.getInstance().getConfiguration());
+    configureArticleTypes(ConfigurationStore.getInstance().getConfiguration());
   }
-  
+
   private URI uri;
   private String heading;
   private String imageConfigName;
-  
+
   private ArticleType(URI articleTypeUri, String displayHeading) {
     uri = articleTypeUri;
     heading = displayHeading;
   }
-  
+
   /**
    * Returns an ArticleType if configured in defaults.xml (etc) or null otherwise
    * @param uri
@@ -54,7 +58,7 @@ public class ArticleType implements Serializable {
   public static ArticleType getKnownArticleTypeForURI(URI uri) {
     return _knownArticleTypes.get(uri.toString());
   }
-  
+
   /**
    * Returns an ArticleType object for the given URI. If one does not exist for that URI and
    * createIfAbsent is true, a new ArticleType shall be created and added to a list of types 
@@ -84,7 +88,7 @@ public class ArticleType implements Serializable {
     }
     return at;
   }
-  
+
   public static ArticleType addArticleType(URI uri, String heading) {
     if (_knownArticleTypes.containsKey(uri.toString())) {
       return _knownArticleTypes.get(uri.toString());
@@ -102,7 +106,7 @@ public class ArticleType implements Serializable {
   public String getHeading() {
     return heading;
   }
-  
+
   /**
    * Returns an unmodifiable ordered list of known ArticleTypes as read in order from the configuration
    * in configureArticleTypes(). 
@@ -112,7 +116,7 @@ public class ArticleType implements Serializable {
   public static List<ArticleType> getOrderedListForDisplay() {
     return Collections.unmodifiableList(_articleTypeOrder);
   }
-  
+
   /**
 	 * Read in the ArticleTypes from the pubApp configuration (hint: normally defined in defauls.xml) 
 	 * and add them to the list of known ArticleType(s). The order of article types found in the 
@@ -148,12 +152,38 @@ public class ArticleType implements Serializable {
 	  this.imageConfigName = imgConfigName;
   }
 	
-	public String getImageSetConfigName() {
-	  return imageConfigName;
-	}
+  public String getImageSetConfigName() {
+    return imageConfigName;
+  }
 
   public static ArticleType getDefaultArticleType() {
-		return theDefaultArticleType;
-	}
+    return theDefaultArticleType;
+  }
+  
+  /**
+   * Is the given {@link ArticleType} research related?
+   * @param articleType
+   * @return true/false
+   */
+  public static boolean isResearchArticle(ArticleType articleType) {
+    return articleType == null ? false : ARTICLE_TYPE_HEADING_RESEARCH.equals(articleType.getHeading());
+  }
 
+  /**
+   * Is the collection of {@link ArticleType}s research related?
+   * <p>
+   * This method returns <code>true</code> when one occurrence of {@link ArticleType#ARTICLE_TYPE_HEADING_RESEARCH}
+   * is encountered.
+   * 
+   * @param articleTypeURIs
+   * @return true/false
+   */
+  public static boolean isResearchArticle(Collection<ArticleType> articleTypes) {
+    if(articleTypes != null) {
+      for(ArticleType at : articleTypes) {
+        if(isResearchArticle(at)) return true;
+      }
+    }
+    return false;
+  }
 }
