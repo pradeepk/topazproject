@@ -12,6 +12,7 @@ package org.topazproject.otm.id;
 import java.util.UUID;
 
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.ClassMetadata;
 
 /**
  * Generate unique ids based on rfc 4122.
@@ -27,7 +28,7 @@ import org.topazproject.otm.Transaction;
 public class GUIDGenerator implements IdentifierGenerator {
   private String uriPrefix;
 
-  public String generate(Transaction txn) {
+  public String generate(ClassMetadata cm, Transaction txn) {
     return uriPrefix + UUID.randomUUID().toString();
   }
 
