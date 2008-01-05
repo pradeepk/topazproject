@@ -17,15 +17,15 @@
 
 .pone-form fieldset {
 	position: relative;
-	border-top: 2px solid #67a96d;
-	border-bottom: 2px solid #67a96d;
+	border-top: 2px solid #667893;
+	border-bottom: 2px solid #667893;
 	border-right-width: 0px;
 	border-left-width: 0px;
 	border-right-style: none;
 	border-left-style: none;
 	margin: 15px 0;
 	padding: 0px 0px 15px;
-	background: #c3ffb3 url(../images/pone_forms_bg.gif) repeat-x left top;
+	background: #c7d6ed url(../images/pone_forms_bg.gif) repeat-x left top;
 }
 .pone-form fieldset legend {
 	font-family: Georgia, "Times New Roman", Times, serif;
@@ -42,7 +42,7 @@
 	display: block;
 	padding-bottom: 10px;
 	padding-left: 10px;
-	border-bottom-color: #b8f0a9;
+	border-bottom-color: #aab8cd;
 	border-bottom-style: solid;
 	border-bottom-width: 2px;
 	background-color: transparent;
