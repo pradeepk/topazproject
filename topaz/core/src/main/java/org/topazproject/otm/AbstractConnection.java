@@ -65,18 +65,18 @@ public abstract class AbstractConnection implements Connection {
   /**
    * Override in sub-classes to do the actual prepare on this Connection.
    */
-  protected void doPrepare() {
+  protected void doPrepare() throws OtmException {
   }
 
   /**
    * Override in sub-classes to do the actual commit on this Connection.
    */
-  protected void doCommit() {
+  protected void doCommit() throws OtmException {
   }
 
   /**
    * Override in sub-classes to do the actual rollback on this Connection.
    */
-  protected void doRollback() {
+  protected void doRollback() throws OtmException {
   }
 }
