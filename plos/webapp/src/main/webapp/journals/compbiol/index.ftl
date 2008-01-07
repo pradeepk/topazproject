@@ -32,12 +32,12 @@
             </div>
             <!-- end : calls to action blocks -->
             <div class="block">
-              <h2>Featured Collection</h2>
+              <h2>Perspective</h2>
               <@s.url id="featured" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000065"/>
               <div class="article section lastSection">
-                <h3><@s.a href="${featured}" title="Read Open-Access Article">Aging, Bench to Bedside: A Collection in <em>PLoS Genetics</em></@s.a></h3>
+                <h3><@s.a href="${featured}" title="Read Open-Access Article">Computational Biology in Argentina</em></@s.a></h3>
                 <img src="images/imgPlaceholder_90px.gif" alt="article image" />
-                <p>In his <a href="#">Perspective</a>, Thomas Nystrom addresses aging in bacteria, while Leonard Hayflick closes this new Collection with <a href="#">'Entropy Explains Aging, Genetic Determinism Explains Longevity, and Undefined Terminology Explains Misunderstanding Both'</a>.</p>
+                <p>Sebastian Bassi and colleagues from the Universidad Nacional de Quilmes, Buenos Aires, reflect on the identity of the interdisciplinary field of computational biology both generally and specifically in their country, Argentina.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
             </div>
@@ -48,9 +48,9 @@
               <@s.url id="newNoted2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000001"/>
               <@s.url id="newNoted3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000067"/>
               <div class="article section">
-                <h3><@s.a href="${newNoted1}" title="Read Open-Access Article">Genome-Wide Analysis of Rad52 Foci Reveals Diverse Mechanisms Impacting Recombination</@s.a></h3>
+                <h3><@s.a href="${newNoted1}" title="Read Open-Access Article">Genes and (Common) Pathways Underlying Drug Addiction</@s.a></h3>
                 <img src="images/imgPlaceholder_90px.gif" alt="article image" />
-                <p>This cell biological approach demonstrates the diversity of processes that converge on homologous recombination, protect against spontaneous DNA damage, and facilitate efficient repair.</p>
+                <p>In order to explore genes and pathways underlying addiction, Wei et al. from Beijing University integrated data derived from multiple technology platforms and collected 2,343 items of evidence linking genes and chromosome regions to addiction.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
               <div class="article section">
@@ -59,20 +59,26 @@
                 <p>This study identifies a new role for miRNAs in <em>Caenorhabditis elegans</em> and also demonstrates that most miRNAs are not essential for development.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
-              <div class="article section lastSection">
-                <h3><@s.a href="${newNoted3}" title="Read Open-Access Article">Sustained Post-Mating Response in Drosophila melanogaster Requires Multiple Seminal Fluid Proteins</@s.a></h3>
+              <div class="article section">
+                <h3><@s.a href="${newNoted3}" title="Read Open-Access Article">Social Interactions in Myxobacterial Swarming</@s.a></h3>
                 <img src="images/imgPlaceholder_90px.gif" alt="article image" />
-                <p>In addition to assigning functions to particular seminal proteins, these results suggest that fruit flies can serve as a model with which to dissect the functions of conserved protein classes in seminal fluid.</p>
+                <p>Alber and colleagues introduce a cell-based model to study how interactions between neighboring cells facilitate bacterial swarming.</p>
+                <div class="clearer">&nbsp;</div>
+              </div>
+              <div class="article section lastSection">
+                <h3><@s.a href="${newNoted3}" title="Read Open-Access Article">Density Dependence Triggers Runaway Selection of Reduced Senescence</@s.a></h3>
+                <img src="images/imgPlaceholder_90px.gif" alt="article image" />
+                <p>Seymour and Doncaster explore the invasion of mutations that increase/decrease the rate of senescence into populations with explicit density dependence. Their model reveals circumstances in which senescence is not inevitable.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
             </div><!-- end : block -->
             <div class="other block">
               <h2>Other PLoS Content</h2>
               <div class="section lastSection">
-                <h3><a href="http://www.plosntds.org/"><em>PLoS Neglected Tropical Diseases</em></a></h3>
+                <h3><a href="http://www.plosone.org/"><em>PLoS ONE</em></a></h3>
                 <ul class="articles">
-                  <li><a href="#" title="Read Open Access Article">Functional and Structural Insights Revealed by Molecular Dynamics Simulations of an Essential RNA Editing Ligase in <em>Trypanosoma brucei</em></a> 
-                  <p>Molecular dynamics simulations are used by Andy McCammon to investigate the dynamics of RNA editing ligase 1 (TbREL1) in the parasite responsible for African sleeping sickness.</p></li>
+                  <li><a href="#" title="Read Open Access Article">Linking Gene Expression and Functional Network Data in Human Heart Failure and Some Additional Text to Make a Longer Title for Testing</a>
+                  <!-- I dont think these should get blurbs <p>The authors, from the University of Ulster, assembled a global PPI network in human heart failure, establishing the significance of relationships between the differentiation of gene expression and connectivity degrees.</p>--></li>
                 </ul>
               </div>
             </div><!-- end : other block -->
@@ -86,7 +92,7 @@
             <!-- end : issue block -->
             <!-- begin : mission block -->
             <div id="mission" class="block">
-              <p><strong><em><a href="${info}">PLoS Genetics</a></em></strong> is a <a href="#">peer-reviewed</a>, open-access journal that reflects the full breadth and interdisciplinary nature of <a href="#">genetics</a> and <a href="#">genomics</a> research by publishing outstanding original contributions in all areas of biology. View a list of <a href="#">Google Scholar</a> citations and read about our first <a href="#">ISI impact factor</a> of 7.67.</p>
+              <p><strong><em><a href="${info}">PLoS Computational Biology</a></em></strong> is a peer-reviewed, open-access journal featuring works of exceptional significance that further our understanding of living systems at all scales through the application of computational methods. It is the official journal of the <a href="http://www.iscb.org/">International Society for Computational Biology.</a></p>
             </div>
             <!-- end : mission block -->
             <!-- begin : iscb block -->
