@@ -2,22 +2,22 @@
 <ul class="articles">
 	<@s.url id="art1URL" namespace="/article" action="fetchArticle" includeParams="none" articleURI="info:doi/10.1371/journal.pntd.0000033"/>	
 	<li><a href="${art1URL}" title="Read Open Access Article">
-	Comparing Models for Early Warning Systems of Neglected Tropical Diseases
+	Chemotaxis in <em>Escherichia coli</em>: A Molecular Model for Robust Precise Adaptation
 	</a></li>
 	
 	<@s.url id="art2URL" namespace="/article" action="fetchArticle" includeParams="none" articleURI="info:doi/10.1371/journal.pntd.0000085"/>
 	<li><a href="${art2URL}" title="Read Open Access Article">
-	Epidemiology and Clinical Features of Patients with Visceral Leishmaniasis Treated by an MSF Clinic in Bakol Region, Somalia, 2004-2006
+	Genes and (Common) Pathways Underlying Drug Addiction
 	</a></li>
 	
 	<@s.url id="art3URL" namespace="/article" action="fetchArticle" includeParams="none" articleURI="info:doi/10.1371/journal.pntd.0000002"/>		
 	<li><a href="${art3URL}" title="Read Open Access Article">
-	Development of Highly Organized Lymphoid Structures in Buruli Ulcer Lesions after Treatment with Rifampicin and Streptomycin
+	Noise Propagation and Signaling Sensitivity in Biological Networks: A Role for Positive Feedback
 	</a></li>
 	
   <@s.url id="art4URL" namespace="/article" action="fetchArticle" includeParams="none" articleURI="info:doi/10.1371/journal.pntd.0000075"/>			
 	<li><a href="${art4URL}" title="Read Open Access Article">
-	Occurrence of <em>Strongyloides stercoralis</em> in Yunnan Province, China, and Comparison of Diagnostic Methods
+	Social Interactions in Myxobacterial Swarming
 	</a></li>
 		
 	<!-- Do not edit below this comment -->
