@@ -77,7 +77,7 @@ public @interface Predicate {
   CascadeType[] cascade() default {CascadeType.all};
 
   /**
-   * Cascading preferences for this field. 
+   * Fetch preferences for this field. Valid only for association fields.
    */
   FetchType fetch() default FetchType.lazy;
 }
