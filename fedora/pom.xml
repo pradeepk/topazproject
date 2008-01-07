@@ -27,5 +27,6 @@
     <module>fedora-client</module>
     <module>fedora-patches</module>
     <module>fedora-bundle</module>
+    <module>fedora-blobstore</module>
   </modules>
 </project>
