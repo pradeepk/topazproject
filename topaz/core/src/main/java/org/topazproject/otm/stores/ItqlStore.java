@@ -417,7 +417,7 @@ public class ItqlStore extends AbstractTripleStore {
       throw new OtmException("Error parsing answer", ae);
     }
 
-    if (fvalues.size() == 0 && rvalues.size() == 0)
+    if (fvalues.size() == 0 && rvalues.size() == 0 && cm.getBlobField() == null)
       return null;
 
     // figure out class to instantiate
