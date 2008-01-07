@@ -28,6 +28,7 @@ public class CitationInfo {
   private String journalTitle;
   private String publisherName;
   private Author[] authors;
+  private CollaborativeAuthor[] collaborativeAuthors;
   private String startPage;
   private String endPage;
   private String volume;
@@ -78,6 +79,18 @@ public class CitationInfo {
    */
   public void setAuthors(Author[] authors) {
     this.authors = authors;
+  }
+  /**
+   * @return the collaborativeAuthors
+   */
+  public CollaborativeAuthor[] getCollaborativeAuthors() {
+    return collaborativeAuthors;
+  }
+  /**
+   * @param collaborativeAuthors the collaborative authors to set
+   */
+  public void setCollaborativeAuthor(CollaborativeAuthor[] collaborativeAuthors) {
+    this.collaborativeAuthors = collaborativeAuthors;
   }
   /**
    * @return Returns the dOI.

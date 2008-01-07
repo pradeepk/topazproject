@@ -47,6 +47,13 @@
           </org.plos.article.service.Author>
         </xsl:for-each>
       </authors>
+      <collaborativeAuthors>
+        <xsl:for-each select="//article/front/article-meta/contrib-group/contrib[@contrib-type='author']/collab[@collab-type='authors']">
+          <org.plos.article.service.CollaborativeAuthor>
+            <nameRef><xsl:value-of select="."/></nameRef>
+          </org.plos.article.service.CollaborativeAuthor>
+        </xsl:for-each>
+      </collaborativeAuthors>
     </org.plos.article.service.CitationInfo>
   </xsl:template>
 
