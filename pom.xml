@@ -85,7 +85,6 @@
     <module>fedora</module>
     <module>topaz</module>
     <module>plos</module>
-    <module>packages</module>
   </modules>
 
   <properties>
@@ -674,8 +673,8 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t00802</fedora-version>
-                  <ecqs-version>2.0.6-1-t00802</ecqs-version>
+                  <fedora-version>2.1.1-t00802_rc2-SNAPSHOT</fedora-version>
+                  <ecqs-version>2.0.6-1-t00802_rc2-SNAPSHOT</ecqs-version>
                 </configuration>
               </execution>
               <execution>
