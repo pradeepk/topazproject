@@ -202,7 +202,6 @@ public class FedoraBlobTest {
     void run(Session session) throws OtmException;
   }
 
-  @Entity(model = "ri")
   public static class Test1 {
     @Id
     @GeneratedValue(generatorClass = "org.topazproject.fedora.otm.FedoraIdGenerator", uriPrefix = "info:fedora/test1/")

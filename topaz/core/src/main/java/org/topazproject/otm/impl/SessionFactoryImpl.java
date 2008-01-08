@@ -227,7 +227,7 @@ public class SessionFactoryImpl implements SessionFactory {
     Class<T> c = cm.getSourceClass();
     metadata.put(c, cm);
     cnamemap.put(c.getName(), cm);
-    if (cm.isEntity() || cm.isView())
+    if (cm.isEntity() || cm.isView() || (cm.getBlobField() != null))
       createProxy(c, cm);
 
     String type = cm.getType();

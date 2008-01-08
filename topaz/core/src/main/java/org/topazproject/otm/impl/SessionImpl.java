@@ -370,9 +370,10 @@ public class SessionImpl extends AbstractSession {
         log.debug("deleting from store: " + id);
 
      states.remove(o);
-     store.delete(cm, cm.getFields(), id.getId(), o, txn);
      if (bf != null)
        bs.delete(cm, id.getId(), txn);
+     else
+       store.delete(cm, cm.getFields(), id.getId(), o, txn);
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
@@ -400,10 +401,11 @@ public class SessionImpl extends AbstractSession {
       }
       if (fields == null)
         fields = cm.getFields();
-      store.delete(cm, fields, id.getId(), o, txn);
-      store.insert(cm, fields, id.getId(), o, txn);
 
-      if (bf != null) {
+      if (bf == null) {
+        store.delete(cm, fields, id.getId(), o, txn);
+        store.insert(cm, fields, id.getId(), o, txn);
+      } else {
         switch(states.digestUpdate(o, bf)) {
         case delete:
           bs.delete(cm, id.getId(), txn);
@@ -432,9 +434,18 @@ public class SessionImpl extends AbstractSession {
     if (cm.isView())
       instance = loadView(cm, id.getId(), instance, txn,
                                   new ArrayList<Filter>(filters.values()), filterObj);
-    else
+    else if (cm.getBlobField() == null)
       instance = store.get(cm, id.getId(), instance, txn, 
                                   new ArrayList<Filter>(filters.values()), filterObj);
+    else if (instance == null) {
+      try {
+        instance = cm.getSourceClass().newInstance();
+      } catch (Throwable t) {
+        throw new OtmException("Failed to instantiate a new object for " + cm, t);
+      }
+      cm.getIdField().set(instance, Collections.singletonList(id.getId()));
+    }
+
     if (instance == null)
       return instance;
 

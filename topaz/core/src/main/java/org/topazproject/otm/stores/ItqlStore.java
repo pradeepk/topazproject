@@ -417,7 +417,7 @@ public class ItqlStore extends AbstractTripleStore {
       throw new OtmException("Error parsing answer", ae);
     }
 
-    if (fvalues.size() == 0 && rvalues.size() == 0 && cm.getBlobField() == null)
+    if (fvalues.size() == 0 && rvalues.size() == 0)
       return null;
 
     // figure out class to instantiate
@@ -616,7 +616,7 @@ public class ItqlStore extends AbstractTripleStore {
 
     for (Mapper p : cm.getFields()) {
       ClassMetadata<?> c = sf.getClassMetadata(p.getComponentType());
-      if (c != null)
+      if ((c != null) && ((c.getTypes().size() + c.getFields().size()) > 0))
         clss.add(c);
     }
 

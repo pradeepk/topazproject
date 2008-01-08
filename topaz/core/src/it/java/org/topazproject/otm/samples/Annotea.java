@@ -13,9 +13,11 @@ import java.util.Date;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Blob;
-import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.UriPrefix;
 
 /**
  * Annotea meta-data.
@@ -30,8 +32,7 @@ public class Annotea {
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
   private Date                                              created;
-  @Blob
-  private byte[]                                            body;
+  private Body                                              body;
   @Predicate(uri = Rdf.rdf + "type")
   private String                                            type;
   @Predicate(uri = Rdf.dc + "creator")
@@ -112,9 +113,9 @@ public class Annotea {
   /**
    * Get body.
    *
-   * @return body as String.
+   * @return body.
    */
-  public byte[] getBody() {
+  public Body getBody() {
     return body;
   }
 
@@ -123,7 +124,7 @@ public class Annotea {
    *
    * @param body the value to set.
    */
-  public void setBody(byte[] body) {
+  public void setBody(Body body) {
     this.body = body;
   }
 
@@ -179,5 +180,56 @@ public class Annotea {
    */
   public void setState(int state) {
     this.state = state;
+  }
+
+  public static class Body {
+    @Id
+    @GeneratedValue
+    private String                   id;
+    @Blob
+    private byte[]                   blob;
+
+    public Body() {
+    }
+
+    public Body(byte[] blob) {
+      this.blob = blob;
+    }
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get blob.
+     *
+     * @return blob as byte[].
+     */
+    public byte[] getBlob() {
+      return blob;
+    }
+
+    /**
+     * Set blob.
+     *
+     * @param blob the value to set.
+     */
+    public void setBlob(byte[] blob) {
+      this.blob = blob;
+    }
   }
 }

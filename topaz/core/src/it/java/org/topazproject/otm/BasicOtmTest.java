@@ -26,6 +26,7 @@ import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Annotea;
+import org.topazproject.otm.samples.Annotea.Body;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.ClassWithEnum;
 import org.topazproject.otm.samples.Grants;
@@ -84,9 +85,9 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertTrue(session.contains(a));
           session.evict(a);
           assertTrue(!session.contains(a));
-          session.saveOrUpdate(a);
           a.setType(Annotation.NS + "Comment");
-          a.setBody(blob);
+          a.setBody(new Body(blob));
+          session.saveOrUpdate(a);
         }
       });
     doInSession(new Action() {
@@ -116,7 +117,8 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals(42, a.getState());
           assertEquals("Pradeep", a.getCreator());
           assertEquals(Annotation.NS + "Comment", a.getType());
-          assertEquals(blob, a.getBody());
+          assertNotNull(a.getBody());
+          assertEquals(blob, a.getBody().getBlob());
           assertEquals("FOO", a.foobar.foo);
           assertEquals("BAR", a.foobar.bar);
 
