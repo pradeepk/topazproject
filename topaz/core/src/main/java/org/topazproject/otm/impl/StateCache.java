@@ -12,7 +12,10 @@ package org.topazproject.otm.impl;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 
+import java.security.MessageDigest;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.mapping.Loader;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -36,6 +40,8 @@ class StateCache {
   private Map<ObjectReference<?>, InstanceState> states =
     new HashMap<ObjectReference<?>, InstanceState>(1001);
   private ReferenceQueue<ObjectReference<?>>     queue  = new ReferenceQueue<ObjectReference<?>>();
+
+  static enum BlobChange {noChange, insert, update, delete};
 
   /**
    * Insert an object into the cache.
@@ -74,6 +80,19 @@ class StateCache {
   }
 
   /**
+   * Update a blob digest.
+   *
+   * @param o the object
+   * @param bf the blob field
+   *
+   * @return a value indicating how the blob changed
+   */
+  public BlobChange digestUpdate(Object o, Loader bf) throws OtmException {
+    // expected to be called after update - so no expunge and no null check
+    return states.get(new ObjectReference(o)).digestUpdate(o, bf);
+  }
+
+  /**
    * Removes an object from the cache.
    *
    * @param o the object to remove
@@ -102,6 +121,8 @@ class StateCache {
   private static class InstanceState {
     private final Map<Mapper, List<String>> vmap; // serialized field values
     private Map<String, List<String>>       pmap; // serialized predicate map values
+    private int blobLen = 0;
+    private byte[] blobDigest;
 
     public <T>InstanceState(T instance, ClassMetadata<T> cm, Session session) throws OtmException {
       vmap                   = new HashMap<Mapper, List<String>>();
@@ -147,6 +168,35 @@ class StateCache {
 
       return mappers;
     }
+
+    public BlobChange digestUpdate(Object instance, Loader blobField) throws OtmException {
+      byte[] blob = (byte[])blobField.getRawValue(instance, false);
+      int len = 0;
+      byte[] digest = null;
+      if (blob != null) {
+        len = blob.length;
+        try {
+          digest = MessageDigest.getInstance("SHA-1").digest(blob);
+        } catch (Exception e) {
+          throw new OtmException("Failed to create a digest", e);
+        }
+      }
+      BlobChange ret;
+      if ((len == blobLen) && Arrays.equals(blobDigest, digest))
+        ret = BlobChange.noChange;
+      else if (blobDigest == null)
+        ret = BlobChange.insert;
+      else if (digest == null)
+        ret = BlobChange.delete;
+      else
+        ret = BlobChange.update;
+
+      blobLen = len;
+      blobDigest = digest;
+
+      return ret;
+    }
+
   }
 
   /**

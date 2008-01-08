@@ -382,7 +382,7 @@ public class SessionImpl extends AbstractSession {
       if (log.isDebugEnabled()) {
         if (fields == null)
           log.debug("Saving " + id + " to store.");
-        else if (fields.size() == cm.getFields().size()) 
+        else if (fields.size() == cm.getFields().size())
             log.debug("Full update for " + id + ".");
         else if (fields.size() == 0)
           log.debug("Update skipped for " + id + ". No changes to the object state.");
@@ -404,13 +404,20 @@ public class SessionImpl extends AbstractSession {
       store.insert(cm, fields, id.getId(), o, txn);
 
       if (bf != null) {
-        if (update)
+        switch(states.digestUpdate(o, bf)) {
+        case delete:
           bs.delete(cm, id.getId(), txn);
-        byte[] blob = (byte[]) bf.getRawValue(o, false);
-        if (blob != null)
-          bs.insert(cm, id.getId(), blob, txn);
+          break;
+        case update:
+          bs.delete(cm, id.getId(), txn);
+        case insert:
+          bs.insert(cm, id.getId(), (byte[]) bf.getRawValue(o, false), txn);
+          break;
+        case noChange:
+        default:
+          break;
+        }
       }
-
     }
   }
 
@@ -449,8 +456,11 @@ public class SessionImpl extends AbstractSession {
     if (instance instanceof PostLoadEventListener)
       ((PostLoadEventListener)instance).onPostLoad(this, instance);
 
-    if (!cm.isView())
+    if (!cm.isView()) {
       states.insert(instance, cm, this);
+      if (bf != null)
+        states.digestUpdate(instance, bf);
+    }
 
     return instance;
   }
