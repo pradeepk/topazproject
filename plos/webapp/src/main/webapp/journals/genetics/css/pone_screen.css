@@ -508,7 +508,6 @@ span.public-active a.bug.public-active,
 span.public-active a:hover.bug.public-active		{ background-color: #0BF;}
 span.public { border:1px solid #fff; }
 
-
 a.bug.author,
 a:visited.bug.author,
 span-active a.bug,
@@ -519,36 +518,30 @@ span.author-active a:visited.bug,
 a.bug.author-active,
 a:hover.bug.author-active		{ background-color: #f63;}
 
-
 div.beta				{ text-align: center; font-size: .9em; color: #666; margin: 0;}
-
 
 /* ------ DOM Styles ------- */
 .commentPrivate { display: block; }
 .commentPublic { display: none; }
 
 /* ------ User Profile Page Styles ------*/
-
-div#content.profile 	{ border: 2px solid #c90; border-width: 2px 0; background: #c3ffb3 url(../images/pone_forms_bg.gif) repeat-x top; padding: 20px 0; width: 70%; margin-left: auto; margin-right: auto; position: relative;}
+div#content.profile 	{ border: 2px solid #c90; border-width: 2px 0; background: #fdf2c4 url(../images/pone_forms_bg.gif) repeat-x top; padding: 20px 0; width: 70%; margin-left: auto; margin-right: auto; position: relative;}
 div.profile img { float: left; margin: 20px 0 0 20px;}
 div.profile h1	{ position: absolute; left: 120px; margin: 0; padding-bottom: 10px; padding-top: 10px;top: 60px;}
 div.profile h2	{ background-image: none; clear: left; }
-
-
 div.profile ol { list-style-type: none; margin: 25px 0px 0px; padding: 0px; clear: left; padding-top: 20px; }
 div.profile ol li { list-style: none; display: block; padding: 0 20px 10px 20px; padding-left: 20px; border-bottom-color: #b8f0a9; border-bottom-style: solid;border-bottom-width: 2px; background-color: transparent; background-image: none; padding-top: 5px; clear: both; }
 div.profile li em{ color: #555; font-size: .9em;}
 div.profile ol li span.heading{ font-weight: bold; display: block; }
-div.profile ol li input { width: 200px; border: 1px solid #ACF1FF; padding: 2px; }
+div.profile ol li input { width: 200px; border: 1px solid #fce175; padding: 2px; }
 div.profile ol li .long-input { width: 324px; } 
-div.profile ol li select { width: 206px; border: 1px solid #ACF1FF; padding: 2px; }
+div.profile ol li select { width: 206px; border: 1px solid #fce175; padding: 2px; }
 div.profile ol li .radio { width: 14px;}
 div.profile ol li .checkbox { width: 14px;}
-div.profile textarea {width: 324px; border: 1px solid #ACF1FF; }
+div.profile textarea {width: 324px; border: 1px solid #fce175; }
 div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
 /* ------ EdBoard Styles ----*/
-
 .edboard dl { text-align: right; margin: 0 240px 0 0; }
 .edboard dt { font-weight: bold; display: block; float: left; padding-left: 5px; margin-top: 5px; position: relative;}
 .edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #fdf2c4; border-top: 6px solid #fdf2c4; font-size: .85em; text-indent: 10px; }
@@ -556,7 +549,6 @@ div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 .static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}
 
 /* ------ Search Styles ----*/
-
 #search-results ul 		{ margin: 0 30px 0 0; padding: 0; list-style-type: none; line-height: 1.6em;}
 #search-results li		{ margin: 12px 8px; background: url(../images/pone_sectionnav_li_bg.gif) no-repeat 0 4px; padding-left: 12px; }
 #search-results li span	{ display: block; }
