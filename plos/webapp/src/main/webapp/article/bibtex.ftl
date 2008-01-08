@@ -9,6 +9,12 @@
   <#assign authorList = authorList + author.givenNames>
   <#if author_has_next><#assign authorList = authorList + " AND "></#if>
 </#list>
+<#if citation.collaborativeAuthors?has_content>
+  <#assign authorList = authorList + " AND ">
+  <#list citation.collaborativeAuthors as collab>
+    <#assign authorList = authorList + collab.nameRef + ", ">
+  </#list>
+</#if>
 
 @article{${citation.DOI},
     author = {${authorList}},
