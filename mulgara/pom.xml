@@ -13,14 +13,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>mulgara</artifactId>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.2_rc2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Mulgara Libs</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2_rc2-SNAPSHOT</version>
   </parent>
 
   <modules>

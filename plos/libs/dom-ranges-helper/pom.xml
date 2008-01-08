@@ -4,13 +4,13 @@
   <parent>
     <artifactId>plosone-libs</artifactId>
     <groupId>org.plosone</groupId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2_rc2-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dom-ranges-helper</artifactId>
   <name>DOM ranges helper</name>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.2_rc2-SNAPSHOT</version>
 
   <dependencies>
     <dependency>

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone-libs</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2_rc2-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -94,9 +94,7 @@
                 <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
                   <classpath refid="maven.compile.classpath" />
                 </taskdef>
-                <groovyc
-                    destdir="${project.build.outputDirectory}"
-                    srcdir="${basedir}/src/main/groovy/" listfiles="true">
+                <groovyc destdir="${project.build.outputDirectory}" srcdir="${basedir}/src/main/groovy/" listfiles="true">
                   <classpath refid="maven.compile.classpath" />
                 </groovyc>
               </tasks>

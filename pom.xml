@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.2_rc2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -556,8 +556,7 @@
                 <goals><goal>run</goal></goals>
                 <configuration>
                   <tasks>
-                    <jar destfile="${project.build.directory}/test-classes.jar"
-                      basedir="${project.build.directory}/test-classes" />
+                    <jar destfile="${project.build.directory}/test-classes.jar" basedir="${project.build.directory}/test-classes" />
                     <delete dir="${project.build.directory}/test-classes" />
                   </tasks>
                 </configuration>
