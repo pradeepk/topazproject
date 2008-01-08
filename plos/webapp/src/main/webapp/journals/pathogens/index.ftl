@@ -32,12 +32,12 @@
             </div>
             <!-- end : calls to action blocks -->
             <div class="block">
-              <h2>Featured Collection</h2>
+              <h2>Featured Review</h2>
               <@s.url id="featured" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000065"/>
               <div class="article section lastSection">
-                <h3><@s.a href="${featured}" title="Read Open-Access Article">Aging, Bench to Bedside: A Collection in <em>PLoS Genetics</em></@s.a></h3>
+                <h3><@s.a href="${featured}" title="Read Open-Access Article">Nod-Like Receptors: Cytosolic Watchdogs for Immunity against Pathogens</@s.a></h3>
                 <img src="images/imgPlaceholder_90px.gif" alt="article image" />
-                <p>In his <a href="#">Perspective</a>, Thomas Nystrom addresses aging in bacteria, while Leonard Hayflick closes this new Collection with <a href="#">'Entropy Explains Aging, Genetic Determinism Explains Longevity, and Undefined Terminology Explains Misunderstanding Both'</a>.</p>
+                <p>Sirard et al posit that decoding microbial strategies evolved to circumvent Nod-Like Receptors sensing will provide clues for the development of rational therapies aimed at curing and/or preventing common and emerging immunopathologies.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
             </div>
@@ -48,33 +48,38 @@
               <@s.url id="newNoted2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000001"/>
               <@s.url id="newNoted3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pntd.0000067"/>
               <div class="article section">
-                <h3><@s.a href="${newNoted1}" title="Read Open-Access Article">Genome-Wide Analysis of Rad52 Foci Reveals Diverse Mechanisms Impacting Recombination</@s.a></h3>
+                <h3><@s.a href="${newNoted1}" title="Read Open-Access Article">Discordant Evolution of the Adjacent Antiretroviral Genes TRIM22 and TRIM5 in Mammals</@s.a></h3>
                 <img src="images/imgPlaceholder_90px.gif" alt="article image" />
-                <p>This cell biological approach demonstrates the diversity of processes that converge on homologous recombination, protect against spontaneous DNA damage, and facilitate efficient repair.</p>
+                <p>Sawyer, Emerman and Malik present an evolutionary comparison of the human, dog and cow genes responsible for post-entry defense against retroviral infection that indicates a particular structural loop may be a viral recognition motif spanning a hundred million years of mammalian evolution.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
               <div class="article section">
-                <h3><@s.a href="${newNoted2}" title="Read Open-Access Article">Most <em>Caenorhabditis elegans</em> microRNAs Are Individually Not Essential for Development or Viability</@s.a></h3>
+                <h3><@s.a href="${newNoted2}" title="Read Open-Access Article">Hemolytic C-Type Lectin CEL-III from Sea Cucumber Expressed in Transgenic Mosquitoes Impairs Malaria Parasite Development</@s.a></h3>
                 <img src="images/imgPlaceholder_90px.gif" alt="article image" />
-                <p>This study identifies a new role for miRNAs in <em>Caenorhabditis elegans</em> and also demonstrates that most miRNAs are not essential for development.</p>
+                <p>Yoshida et al genetically modified mosquitoes to express lectin isolated from sea cucumbers in order to study its effects on the development of malaria parasites, and the results show promise as a new approach in the fight against malaria.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
               <div class="article section lastSection">
-                <h3><@s.a href="${newNoted3}" title="Read Open-Access Article">Sustained Post-Mating Response in Drosophila melanogaster Requires Multiple Seminal Fluid Proteins</@s.a></h3>
+                <h3><@s.a href="${newNoted3}" title="Read Open-Access Article">Analysis of Cells Targeted by Salmonella Type III Secretion In Vivo</@s.a></h3>
                 <img src="images/imgPlaceholder_90px.gif" alt="article image" />
-                <p>In addition to assigning functions to particular seminal proteins, these results suggest that fruit flies can serve as a model with which to dissect the functions of conserved protein classes in seminal fluid.</p>
+                <p>Geddes, Cruz and Heffron challenge prevailing views on the types of cells targeted by <em>Salmonella</em> infection. Their findings could impact treatment of the disease.</p>
                 <div class="clearer">&nbsp;</div>
               </div>
             </div><!-- end : block -->
             <div class="other block">
               <h2>Other PLoS Content</h2>
               <div class="section">
-                <h3>Browse articles in the Genetics and Genomics subject area</h3>
-                <p><a href="#"><em>PLoS Biology</em></a>, <a href="#"><em>PLoS Medicine</em></a>, <a href="#"><em>PLoS Computational Biology</em></a>, <a href="#"><em>PLoS Pathogens</em></a>, <a href="#"><em>PLoS ONE</em></a>, and <a href="#"><em>PLoS Neglected Tropical Diseases</em></a></p>
+                <h3><a href="http://www.plosone.org/"><em>PLoS Neglected Tropical Diseases</em></a></h3>
+                <ul class="articles">
+                  <li><a href="#" title="Read Open Access Article">Treatment of Helminth Co-Infection in Individuals with HIV-1: A Systematic Review of the Literature</a></li>
+                </ul>
               </div>
               <div class="section lastSection">
-                <h3>Browse Article Collections</h3>
-                <p><a href="#"><em>PLoS Biology</em></a>, <a href="#"><em>PLoS Medicine</em></a>, and <a href="#"><em>PLoS Computational Biology</em></a></p>
+                <h3><a href="http://www.plosone.org/"><em>PLoS Medicine</em></a></h3>
+                <ul class="articles">
+                  <li><a href="#" title="Read Open Access Article"><em>Plasmodium vivax</em> Invasion of Human Erythrocytes Inhibited by Antibodies Directed against the Duffy Binding Protein</a></li>
+                  <li><a href="#" title="Read Open Access Article">Towards a Vaccine against Plasmodium vivax Malaria</a></li>
+                </ul>
               </div>
             </div><!-- end : other block -->
           </div><!-- end : col last -->
@@ -87,7 +92,7 @@
             <!-- end : issue block -->
             <!-- begin : mission block -->
             <div id="mission" class="block">
-              <p><strong><em><a href="${info}">PLoS Genetics</a></em></strong> is a <a href="#">peer-reviewed</a>, open-access journal that reflects the full breadth and interdisciplinary nature of <a href="#">genetics</a> and <a href="#">genomics</a> research by publishing outstanding original contributions in all areas of biology. View a list of <a href="#">Google Scholar</a> citations and read about our first <a href="#">ISI impact factor</a> of 7.67.</p>
+              <p><strong><em><a href="${info}">PLoS Pathogens</a></em></strong> is an <a href="${license}">open-access</a> journal that publishes important new ideas on bacteria, fungi, parasites, prions, and viruses that contribute to our understanding of the biology of pathogens and pathogen-host interactions.</p>
             </div>
             <!-- end : mission block -->
             <!-- begin : advocacy blocks -->
