@@ -17,11 +17,33 @@
   <packaging>pom</packaging>
   <name>Build Helpers</name>
   
+  <!--
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
     <version>0.8.2-SNAPSHOT</version>
   </parent>
+  -->
+
+  <properties>
+    <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <aggregate>true</aggregate>
+    <topazproject.site.url>file://${topazproject.install.dir}/topazdocs</topazproject.site.url>
+  </properties>
+
+  <distributionManagement>
+    <repository>
+      <id>topaz</id>
+      <url>http://gandalf.topazproject.org/maven2/</url>
+    </repository>
+    <site>
+      <id>gandalf-docs</id>
+      <url>${topazproject.site.url}/${pom.artifactId}</url>
+    </site>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -29,6 +51,12 @@
         <groupId>org.codehaus.mojo.groovy</groupId>
         <artifactId>groovy-mojo-support</artifactId>
         <version>1.0-beta-3</version>
+      </dependency>
+
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.14</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -39,6 +67,7 @@
         <plugin>
           <groupId>org.codehaus.mojo.groovy</groupId>
           <artifactId>groovy-maven-plugin</artifactId>
+          <version>1.0-beta-3</version>
           <executions>
             <execution>
               <goals>
@@ -50,11 +79,14 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <defaultGoal>install</defaultGoal>
   </build>
 
   <modules>
     <module>ant-tasks-plugin</module>
     <module>integration-tests-plugin</module>
+    <module>reports-plugin</module>
     <module>topaz-skin</module>
   </modules>
 </project>
