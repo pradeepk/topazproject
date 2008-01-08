@@ -1,20 +1,18 @@
 #!/bin/sh
 
-p5="0\\.8\\.1"
-r5="0.8.2-SNAPSHOT"
-pt="-t00801"
-rt="-t00802-SNAPSHOT"
+pt="-t00802_rc1"
+rt="-t00802-rc2-SNAPSHOT"
 rel=SNAPSHOT
 
 for f in \
     pom.xml \
-    plosone/search/fedoragsearch-server/pom.xml \
-    plosone/search/ws-server-impl/pom.xml \
-    plosone/search/topaz-lucene-impl/pom.xml \
+    plos/search/fedoragsearch-server/pom.xml \
+    plos/search/ws-server-impl/pom.xml \
+    plos/search/topaz-lucene-impl/pom.xml \
     build/ant-tasks-plugin/src/main/scripts/ecqs.mojos.xml \
     build/ant-tasks-plugin/src/main/scripts/fedora.mojos.xml \
-    re-package/fedora/pom.xml \
-    re-package/ecqs/pom.xml \
+    fedora/fedora-bundle/pom.xml \
+    plos/ecqs-bundle/pom.xml \
     packages/cas/pom.xml \
     packages/fedora/pom.xml \
   ; do

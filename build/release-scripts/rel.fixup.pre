@@ -1,30 +1,23 @@
 #!/bin/sh
 
-p5="0\\.8\\.1-SNAPSHOT"
-r5="0.8.1"
-pt="-t00801-SNAPSHOT"
-rt="-t00801"
+pt="-t00802-SNAPSHOT"
+rt="-t00802_rc1"
 rel="1"
 
 for f in \
     pom.xml \
-    plosone/search/fedoragsearch-server/pom.xml \
-    plosone/search/ws-server-impl/pom.xml \
-    plosone/search/topaz-lucene-impl/pom.xml \
+    plos/search/fedoragsearch-server/pom.xml \
+    plos/search/ws-server-impl/pom.xml \
+    plos/search/topaz-lucene-impl/pom.xml \
     build/ant-tasks-plugin/src/main/scripts/ecqs.mojos.xml \
     build/ant-tasks-plugin/src/main/scripts/fedora.mojos.xml \
-    re-package/fedora/pom.xml \
-    re-package/ecqs/pom.xml \
+    fedora/fedora-bundle/pom.xml \
+    plos/ecqs-bundle/pom.xml \
     packages/cas/pom.xml \
     packages/fedora/pom.xml \
   ; do
   perl -p -i -e "s/$pt/$rt/g" "$f"
 done
-
-# edit these
-#    plosone/search/ws-server-impl/pom.xml
-#    packages/cas/pom.xml \
-
 
 for f in packages/*/pom.xml ; do
   perl -p -i -e "s/<release>.*?<\/release>/<release>$rel<\/release>/g" "$f"
