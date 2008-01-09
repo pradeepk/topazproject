@@ -51,6 +51,23 @@
     <url>http://www.topazproject.org/continuum</url>
   </ciManagement>
 
+  <mailingLists>
+    <mailingList>
+      <name>Topaz project general users mailing list</name>
+      <subscribe>topaz-general-subscribe@topazproject.org</subscribe>
+      <unsubscribe>topaz-general-unsubscribe@topazproject.org</unsubscribe>
+      <post>topaz-general@topazproject.org</post>
+      <archive>http://lists.topazproject.org/pipermail/topaz-general/</archive>
+    </mailingList>
+    <mailingList>
+      <name>Topaz project developer mailing list</name>
+      <subscribe>topaz-dev-subscribe@topazproject.org</subscribe>
+      <unsubscribe>topaz-dev-unsubscribe@topazproject.org</unsubscribe>
+      <post>topaz-dev@topazproject.org</post>
+      <archive>http://lists.topazproject.org/pipermail/topaz-dev/</archive>
+    </mailingList>
+  </mailingLists>
+
   <repositories>
     <repository>
       <id>topaz</id>
