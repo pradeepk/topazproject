@@ -36,7 +36,10 @@ import org.mulgara.resolver.spi.ResolverSession;
 import org.mulgara.resolver.spi.Statements;
 
 /** 
- * This logs all transactions (committed statements) to a log file.
+ * This logs all transactions (committed statements) to a log file. The format is that of itql
+ * create, drop, insert, and delete commands, so that the log file can easily be replayed via
+ * Mulgara's itql interfaces. It is meant to provide a real-time backup in case of catastrophic
+ * db failure or corruption.
  * 
  * Configuration properties:
  * <dl>

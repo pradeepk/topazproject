@@ -50,7 +50,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 
 /** 
- * This invalidates the topaz caches on mulgara updates.
+ * This sends out invalidation messages to Ehcache cache's based on a set of configured rules.
  * 
  * Configuration properties:
  * <dl>
@@ -65,6 +65,84 @@ import net.sf.ehcache.Ehcache;
  *       resource; otherwise as a URL. If null, the default config location "/ehcache.xml" is
  *       used.</dd>
  * </dl>
+ *
+ * The DTD for the rules is:
+ * <pre>
+ * &lt;!DOCTYPE rules [
+ *   &lt;!ELEMENT rules ((rule | aliasMap)*)&gt;
+ *   &lt;!ELEMENT rule     (match, object)&gt;
+ *   &lt;!ELEMENT aliasMap (entry)*&gt;
+ * 
+ *   &lt;!ELEMENT match    (s?, p?, o?, m?)&gt;
+ *   &lt;!ELEMENT s        (#PCDATA)&gt;
+ *   &lt;!ELEMENT p        (#PCDATA)&gt;
+ *   &lt;!ELEMENT o        (#PCDATA)&gt;
+ *   &lt;!ELEMENT m        (#PCDATA)&gt;
+ * 
+ *   &lt;!ELEMENT object   (cache, (key | query))&gt;
+ *   &lt;!ELEMENT cache    (#PCDATA)&gt;
+ *   &lt;!ELEMENT key      (#PCDATA)&gt;
+ *   &lt;!ATTLIST key
+ *       field (s | p | o | m) #IMPLIED&gt;
+ *   &lt;!ELEMENT query    (#PCDATA)&gt;
+ *     &lt;!-- ${x} (where x = 's', 'p', 'o', or 'm') will be replaced with the corresponding
+ *        - value from the match.
+ *        --&gt;
+ * 
+ *   &lt;!ELEMENT entry    (alias, value)&gt;
+ *   &lt;!ELEMENT alias    (#PCDATA)&gt;
+ *   &lt;!ELEMENT value    (#PCDATA)&gt;
+ *     &lt;!-- ${dbUri} will be replaced with the current database-uri --&gt;
+ * ]&gt;
+ * </pre>
+ *
+ * Each rule consists of match section which determines when the rule is triggered, and an object
+ * section which determines which cache entries are invalidated. The match section is one or more
+ * elements that an inserted or deleted quad (triple + model) must match; only simple string
+ * matches are supported, and all specified elements must match.
+ *
+ * <p>The object section specifies the name of the cache to which the invalidation should be sent,
+ * and the key that should be invalidated. The key can either be one of the elements of the quad
+ * that was matched, or it can be an itql query. Queries must return exactly two columns, a key
+ * and a value. These (key, value) pairs are stored, and each time the rule is triggered the query
+ * is rerun and the new (key, value) pairs compared with the previously stored ones; all keys which
+ * were not present before, or are not present anymore, or whose values changed, will be
+ * invalidated.
+ *
+ * <p>Example rules:
+ * <pre>
+ *   &lt;rule&gt;
+ *     &lt;match&gt;
+ *       &lt;p&gt;topaz:hasRoles&lt;/p&gt;
+ *       &lt;m&gt;model:users&lt;/m&gt;
+ *     &lt;/match&gt;
+ *     &lt;object&gt;
+ *       &lt;cache&gt;permit-admin&lt;/cache&gt;
+ *       &lt;key field="s"/&gt;
+ *     &lt;/object&gt;
+ *   &lt;/rule&gt;
+ * </pre>
+ * With this rule, any time a triple, whose predicate is &lt;topaz:hasRoles&gt;, is inserted into
+ * or removed from the model &lt;model:users&gt;, the cache-entry having the triple's subject as
+ * the key is removed from the 'permit-admin' cache.
+ *
+ * <p>The following example shows the use of a query to determine the key to be invalidated:
+ * <pre>
+ *   &lt;rule&gt;
+ *     &lt;match&gt;
+ *       &lt;p&gt;topaz:propagate-permissions-to&lt;/p&gt;
+ *       &lt;m&gt;model:pp&lt;/m&gt;
+ *     &lt;/match&gt;
+ *     &lt;object&gt;
+ *       &lt;cache&gt;article-state&lt;/cache&gt;
+ *       &lt;query&gt;
+ *         select $s $state from &lt;model:ri&gt;
+ *             where (&lt;${s}&gt; &lt;topaz:articleState&gt; $state)
+ *             and (&lt;${s}&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;model:pp&gt;);
+ *       &lt;/query&gt;
+ *     &lt;/object&gt;
+ *   &lt;/rule&gt;
+ * </pre>
  *
  * @author Ronald Tschalär
  */

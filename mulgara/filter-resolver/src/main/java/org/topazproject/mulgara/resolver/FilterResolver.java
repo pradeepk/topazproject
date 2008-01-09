@@ -49,14 +49,19 @@ import org.mulgara.resolver.spi.ResolverSession;
 import org.mulgara.resolver.spi.Statements;
 
 /** 
- * The factory for {@link FilterResolver}s. The model URI used for this filter
- * is:
+ * A Mulgara resolver for filtering operations. This resolver "wraps" around the system resolver,
+ * passing all inserts, deletes, and queries through to the underlying model (after changing the
+ * model name), and then notifying the list of registered {@link FilterHandler handlers} whenever
+ * a model is created, removed, or modified. The name of the underlying model, as well as possibly
+ * other parameters, are specified in the model's URI. The syntax of URI's for the models handled
+ * by this resolver is:
  * <pre>
- *   &lt;dbURI&gt;#filter:model=&lt;modelName&gt;;ds=&lt;datastream&gt;
+ *   &lt;dbURI&gt;#filter:model=&lt;modelName&gt;(;&lt;pN&gt;=&lt;valueN&gt;)*
  * </pre>
- * For example:
+ * The &lt;modelName&gt; species the name of the (system) model this model is to wrap; the optional
+ * additional parameters are currently unused and are ignored. For example:
  * <pre>
- *   rmi://localhost:/fedora#filter:model=ri;ds=RELS-EXT
+ *   rmi://localhost/fedora#filter:model=ri
  * </pre>
  * 
  * @author Ronald Tschalär

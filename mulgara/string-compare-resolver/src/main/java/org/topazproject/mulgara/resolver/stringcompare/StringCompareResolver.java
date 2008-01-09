@@ -41,8 +41,8 @@ import org.mulgara.store.tuples.Tuples;
 import org.mulgara.store.tuples.TuplesOperations;
 
 /** 
- * A resolver that provides string-comparison operations. Currently only case-insensitive literal
- * comparisons are supported.
+ * A resolver that provides string-comparison operations. The actual implementations are in the
+ * {@link StringCompareImpl StringCompareImpl}'s.
  * 
  * @author Ronald Tschalär
  */
