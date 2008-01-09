@@ -44,32 +44,32 @@
   </licenses>
   <issueManagement>
     <system>trac</system>
-    <url>http://gandalf.topazproject.org/trac</url>
+    <url>http://www.topazproject.org/trac</url>
   </issueManagement>
   <ciManagement>
     <system>continuum</system>
-    <url>http://gandalf.topazproject.org/continuum</url>
+    <url>http://www.topazproject.org/continuum</url>
   </ciManagement>
 
   <repositories>
     <repository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://gandalf.topazproject.org/maven2</url>
+      <url>http://www.topazproject.org/maven2</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://gandalf.topazproject.org/maven2</url>
+      <url>http://www.topazproject.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/head/</developerConnection>
-    <connection>scm:svn:http://gandalf.topazproject.org/svn/head/</connection>
-    <url>http://gandalf.topazproject.org/svn/</url>
+    <developerConnection>scm:svn:http://svn.topazproject.org/svn/head/</developerConnection>
+    <connection>scm:svn:http://svn.topazproject.org/svn-pub/head/</connection>
+    <url>http://www.topazproject.org/trac/browser</url>
   </scm>
 
   <modules>
@@ -95,10 +95,10 @@
   <distributionManagement>
     <repository>
       <id>topaz</id>
-      <url>http://gandalf.topazproject.org/maven2/</url>
+      <url>http://www.topazproject.org/maven2/</url>
     </repository>
     <site>
-      <id>gandalf-docs</id>
+      <id>topaz-docs</id>
       <url>${topazproject.site.url}</url>
     </site>
   </distributionManagement>
@@ -532,7 +532,7 @@
           <encoding>UTF-8</encoding>
           <charset>UTF-8</charset>
           <use>false</use>
-          <header>&lt;a href='http://gandalf.topazproject.org/trac/log/head?rev=${svnversion}&amp;verbose=on' target='_top'>r${svnversion}&lt;/a></header>
+          <header>&lt;a href='http://www.topazproject.org/trac/log/head?rev=${svnversion}&amp;verbose=on' target='_top'>r${svnversion}&lt;/a></header>
           <groups>
             <group>
               <title>Core OTM Packages</title>
@@ -553,7 +553,7 @@
             <link>http://jakarta.apache.org/commons/configuration/apidocs</link>
             <link>http://tomcat.apache.org/tomcat-5.5-doc/catalina/docs/api</link>
             <link>http://sunxacml.sourceforge.net/javadoc</link>
-            <link>http://gandalf.topazproject.org/mulgara/api</link>
+            <link>http://www.topazproject.org/mulgara/api</link>
             <link>http://ws.apache.org/axis/java/apiDocs</link>
             <link>http://jakarta.apache.org/commons/logging/apidocs</link>
             <link>http://jrdf.sourceforge.net/0.3.4/doc/javadoc</link>
@@ -849,7 +849,7 @@
         <configuration>
           <goals>deploy</goals>                           <!-- disable site deploy -->
           <useReleaseProfile>false</useReleaseProfile>    <!-- no javadoc and source jars -->
-          <tagBase>http://gandalf.topazproject.org/svn/tags</tagBase>
+          <tagBase>http://svn.topazproject.org/svn/tags</tagBase>
           <preparationGoals>clean install</preparationGoals>
         </configuration>
       </plugin>

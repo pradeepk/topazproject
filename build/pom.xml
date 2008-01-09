@@ -37,10 +37,10 @@
   <distributionManagement>
     <repository>
       <id>topaz</id>
-      <url>http://gandalf.topazproject.org/maven2/</url>
+      <url>http://www.topazproject.org/maven2/</url>
     </repository>
     <site>
-      <id>gandalf-docs</id>
+      <id>topaz-docs</id>
       <url>${topazproject.site.url}/${pom.artifactId}</url>
     </site>
   </distributionManagement>

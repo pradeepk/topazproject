@@ -11,24 +11,24 @@
     <repository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://gandalf.topazproject.org/maven2</url>
+      <url>http://www.topazproject.org/maven2</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://gandalf.topazproject.org/maven2</url>
+      <url>http://www.topazproject.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
   
   <distributionManagement>
     <repository>
       <id>topaz</id>
-      <url>http://gandalf.topazproject.org/maven2/</url>
+      <url>http://www.topazproject.org/maven2/</url>
     </repository>
     <site>
-      <id>gandalf-docs</id>
+      <id>topaz-docs</id>
       <url>${topazproject.site.url}/plosone/ws-search/fedoragsearch-server</url>
     </site>
   </distributionManagement>

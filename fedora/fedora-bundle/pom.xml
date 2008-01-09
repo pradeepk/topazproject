@@ -6,7 +6,6 @@
   <packaging>jar</packaging>
   <version>2.1.1-t00802-SNAPSHOT</version>
   <name>Fedora with Topaz config</name>
-  <url>http://gandalf.topazproject.org/</url>
   <inceptionYear>2006</inceptionYear>
 
   <parent>
