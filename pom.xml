@@ -794,12 +794,14 @@
               <goals><goal>execute</goal></goals>
               <configuration>
                 <source>
-                  String runDir = "${project.build.directory}/groovy-test-sources"
-                  String srcDir = project.properties['running-integration-tests'] ?
-                                    "${pom.basedir}/src/it/groovy" : "${pom.basedir}/src/test/groovy"
+                  String s = File.separator
+                  File runDir = new File(project.build.directory, "groovy-test-sources")
+                  File srcDir = project.properties['running-integration-tests'] ?
+                                    new File(pom.basedir, "src${s}it${s}groovy") :
+                                    new File(pom.basedir, "src${s}test${s}groovy")
 
                   ant.delete(dir: runDir, quiet: true)
-                  if (new File(srcDir).exists()) {
+                  if (srcDir.exists()) {
                     ant.copy(toDir: runDir) {
                       fileset(dir: srcDir)
                     }
