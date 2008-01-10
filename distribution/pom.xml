@@ -40,42 +40,42 @@
             <id>bin</id>
             <phase>install</phase>
             <goals>
-	      <goal>single</goal>
+              <goal>single</goal>
             </goals>
             <configuration>
               <descriptors>
                 <descriptor>${basedir}/src/main/assembly/assembly-bin.xml</descriptor>
-	      </descriptors>
-	      <finalName>topaz-${pom.version}</finalName>
-	      <workDirectory>${project.build.directory}/assembly/bin</workDirectory>
+              </descriptors>
+              <finalName>topaz-${pom.version}</finalName>
+              <workDirectory>${project.build.directory}/assembly/bin</workDirectory>
             </configuration>
           </execution>
           <execution>
             <id>src</id>
             <phase>install</phase>
             <goals>
-	      <goal>single</goal>
+              <goal>single</goal>
             </goals>
             <configuration>
               <descriptors>
                 <descriptor>${basedir}/src/main/assembly/assembly-src.xml</descriptor>
-	      </descriptors>
-	      <finalName>topaz-${pom.version}</finalName>
-	      <workDirectory>${project.build.directory}/assembly/src</workDirectory>
+              </descriptors>
+              <finalName>topaz-${pom.version}</finalName>
+              <workDirectory>${project.build.directory}/assembly/src</workDirectory>
             </configuration>
           </execution>
           <execution>
             <id>jar</id>
             <phase>install</phase>
             <goals>
-	      <goal>single</goal>
+              <goal>single</goal>
             </goals>
             <configuration>
               <descriptors>
                 <descriptor>${basedir}/src/main/assembly/assembly-jar.xml</descriptor>
-	      </descriptors>
-	      <finalName>topaz-${pom.version}</finalName>
-	      <workDirectory>${project.build.directory}/assembly/jar</workDirectory>
+              </descriptors>
+              <finalName>topaz-${pom.version}</finalName>
+              <workDirectory>${project.build.directory}/assembly/jar</workDirectory>
             </configuration>
           </execution>
         </executions>
@@ -84,5 +84,5 @@
         </configuration>
       </plugin>
     </plugins>
-  </build>	
+  </build>      
 </project>
