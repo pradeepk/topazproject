@@ -13,20 +13,16 @@
         <include>NOTICE*</include>
       </includes>
     </fileSet>
-    <fileSet>
-      <directory>..</directory>
-      <outputDirectory></outputDirectory>
-      <includes>
-        <include>**/target/*.jar</include>
-      </includes>
-      <excludes>
-        <exclude>**/fedora/**</exclude>
-        <exclude>**/plos/**</exclude>
-        <exclude>**/build/**</exclude>
-        <exclude>**/conf-helper/**</exclude>
-        <exclude>**/filter-resolver/**</exclude>
-        <exclude>**/jdk2log4j-proxy/**</exclude>
-      </excludes>
-    </fileSet>
   </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>org.topazproject:otm</include>
+        <include>org.topazproject:otm-extras</include>
+        <include>org.topazproject:mulgara-client</include>
+        <include>org.topazproject:string-compare-resolver</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
 </assembly>
