@@ -7,10 +7,20 @@
   </formats>
   <fileSets>
     <fileSet>
+      <includes>
+        <include>README*</include>
+        <include>LICENSE*</include>
+        <include>NOTICE*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>..</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>src</outputDirectory>
+      <includes>
+        <include>**/src/**</include>
+        <include>**/pom.xml</include>
+      </includes>
       <excludes>
-        <exclude>**/target/**</exclude>
         <exclude>**/fedora/**</exclude>
         <exclude>**/plos/**</exclude>
         <exclude>**/build/**</exclude>
