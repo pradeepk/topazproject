@@ -5,14 +5,14 @@
   <groupId>org.topazproject.plugins</groupId>
   <artifactId>reports-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.2_rc2-SNAPSHOT</version>
   <name>Reports Helper Plugin</name>
   <description></description>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>build-helpers</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2_rc2-SNAPSHOT</version>
   </parent>
 
   <dependencies>

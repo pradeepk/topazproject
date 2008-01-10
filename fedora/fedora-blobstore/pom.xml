@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>fedora-blobstore</artifactId>
   <packaging>jar</packaging>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.2_rc2-SNAPSHOT</version>
   <name>Fedora as an OTM blobstore</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>fedora-libs</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2_rc2-SNAPSHOT</version>
   </parent>
   
   <dependencies>

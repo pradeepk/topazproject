@@ -671,7 +671,7 @@
           <plugin>
             <groupId>org.topazproject.plugins</groupId>
             <artifactId>ant-tasks</artifactId>
-            <version>0.8.2-SNAPSHOT</version>
+            <version>0.8.2_rc2-SNAPSHOT</version>
             <executions>
               <execution>
                 <id>it-startenv-exe</id>
@@ -717,7 +717,7 @@
           <plugin>
             <groupId>org.topazproject.plugins</groupId>
             <artifactId>reports-plugin</artifactId>
-            <version>0.8.2-SNAPSHOT</version>
+            <version>0.8.2_rc2-SNAPSHOT</version>
             <executions>
               <execution>
                 <goals><goal>configure-directories</goal></goals>
@@ -847,7 +847,7 @@
         <plugin>
           <groupId>org.topazproject.plugins</groupId>
           <artifactId>integration-tests-plugin</artifactId>
-          <version>0.8.2-SNAPSHOT</version>
+          <version>0.8.2_rc2-SNAPSHOT</version>
           <executions>
             <execution>
               <goals>
