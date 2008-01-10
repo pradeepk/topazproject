@@ -1,0 +1,32 @@
+<assembly>
+  <id>bin</id>
+  <formats>
+    <format>tar.gz</format>
+    <format>tar.bz2</format>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <includes>
+        <include>README*</include>
+        <include>LICENSE*</include>
+        <include>NOTICE*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>..</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>**/target/*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>**/fedora/**</exclude>
+        <exclude>**/plos/**</exclude>
+        <exclude>**/build/**</exclude>
+        <exclude>**/conf-helper/**</exclude>
+        <exclude>**/filter-resolver/**</exclude>
+        <exclude>**/jdk2log4j-proxy/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -49,6 +49,13 @@ set -e
 ${MVN} ${MVNARGS} clean install --batch-mode
 N=$?
 
+# Build distribution 
+if [ ${N} -eq 0 ]; then
+  echo "Build distribution"
+  (cd distribution; ${MVN} ${MVNARGS} clean install)
+  N=$?
+fi
+
 # Build RPMs if integration tests succeeded
 if [ ${N} -eq 0 -a -x /usr/bin/rpmbuild ]; then
   echo "Build RPMs"
