@@ -16,14 +16,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>topazproject-integrationtests</artifactId>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.2_rc2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Topaz integrationtests sub-module</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2_rc2-SNAPSHOT</version>
   </parent>
 
   <repositories>
