@@ -95,6 +95,7 @@
     <module>fedora</module>
     <module>topaz</module>
     <module>plos</module>
+    <module>packages</module>
   </modules>
 
   <properties>
