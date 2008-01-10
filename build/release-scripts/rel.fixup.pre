@@ -1,9 +1,7 @@
 #!/bin/sh
 
 pt="-t00802-SNAPSHOT"
-rt="-t00802"
-
-# RPM revision - should almost always be '1'
+rt="-t00802_rc1"
 rel="1"
 
 for f in \
@@ -20,11 +18,6 @@ for f in \
   ; do
   perl -p -i -e "s/$pt/$rt/g" "$f"
 done
-
-# edit these
-#    plosone/search/ws-server-impl/pom.xml
-#    packages/cas/pom.xml \
-
 
 for f in packages/*/pom.xml ; do
   perl -p -i -e "s/<release>.*?<\/release>/<release>$rel<\/release>/g" "$f"
