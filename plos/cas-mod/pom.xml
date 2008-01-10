@@ -4,14 +4,14 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-cas-mod</artifactId>
   <packaging>jar</packaging>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.2_rc2-SNAPSHOT</version>
   <name>PLoS module for ESUP CAS Quick Start</name>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2_rc2-SNAPSHOT</version>
   </parent>
 
   <dependencies>
