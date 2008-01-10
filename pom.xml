@@ -72,14 +72,14 @@
     <repository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://www.topazproject.org/maven2</url>
+      <url>http://maven.topazproject.org/maven2/</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://www.topazproject.org/maven2</url>
+      <url>http://maven.topazproject.org/maven2/</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -112,7 +112,7 @@
   <distributionManagement>
     <repository>
       <id>topaz</id>
-      <url>http://www.topazproject.org/maven2/</url>
+      <url>http://maven.topazproject.org/maven2/</url>
     </repository>
     <site>
       <id>topaz-docs</id>
