@@ -5,6 +5,7 @@
         <@s.url id="fetchArticleURL" namespace="/article" action="fetchArticle" articleURI="${articleURI}"/>
 
         <a href="${fetchArticleURL}" title="Back to original article" class="article icon">${articleTitle}
+        <#if isResearchArticle == true>
           <#if articleOverallRounded?exists>
             <span class="inline-rating inlineRatingEnd">
               <ul class="star-rating pone_rating" title="overall">
@@ -13,6 +14,16 @@
               </ul>
             </span>
           </#if>
+        <#else> 
+          <#if articleSingleRatingRounded?exists>
+            <span class="inline-rating inlineRatingEnd">
+              <ul class="star-rating pone_rating" title="single">
+                <#assign overallPct = (20 * articleSingleRatingRounded)?string("##0")>
+                <li class="current-rating pct${overallPct}">Currently ${articleSingleRatingRounded?string("0.#")}/5 Stars.</li>
+              </ul>
+            </span>
+          </#if>
+        </#if>
         </a>
         <!--<p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>-->
       </div>
