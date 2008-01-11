@@ -12,7 +12,7 @@ package org.topazproject.otm;
 import java.util.List;
 
 /**
- * A triple store connection handle.
+ * A connection handle to a triple store or blob store.
  *
  * @author Pradeep Krishnan
   */

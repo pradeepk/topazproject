@@ -16,9 +16,58 @@ import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.query.Results;
 
 /**
- * An otm session (similar to hibernate session). And similar to hibernate session, not thread
- * safe.
+ * The main runtime interface between a Java application and OTM. This is the central API
+ * class abstracting the notion of a persistence service.<br>
+ * <br><i>
+ * An OTM session is similar to a Hibernate session and most of the Hibernate documentation
+ * is applicable to OTM also. The following description is mostly copied from Hibernate.</i><br>
+ *<br>
+ * The lifecycle of a <tt>Session</tt> is bounded by the beginning and end of a logical
+ * transaction. (Long transactions might span several database transactions.)<br>
+ * <br>
+ * The main function of the <tt>Session</tt> is to offer create, read and delete operations
+ * for instances of mapped entity classes. Instances may exist in one of three states:<br>
+ * <br>
+ * <i>transient:</i> never persistent, not associated with any <tt>Session</tt><br>
+ * <i>persistent:</i> associated with a unique <tt>Session</tt><br>
+ * <i>detached:</i> previously persistent, not associated with any <tt>Session</tt><br>
+ * <br>
+ * Transient instances may be made persistent by calling <tt>saveOrUpdate()</tt>. 
+ * Persistent instances may be made transient by calling<tt> delete()</tt>. Any instance returned 
+ * by a <tt>get()</tt> or <tt>load()</tt> method is persistent. Detached instances may be made 
+ * persistent by calling <tt>saveOrUpdate()</tt>. The state of a transient or detached instance 
+ * may also be made persistent as a new persistent instance by calling <tt>merge()</tt>.<br>
+ * <br>
+ * Changes to <i>persistent</i> instances are detected at flush time and also result in a database
+ * update. There is no need to call a <tt>saveOrUpdate()</tt> again to trigger the update.<br>
+ * <br>
+ * It is not intended that implementors be threadsafe. Instead each thread/transaction
+ * should obtain its own instance from a <tt>SessionFactory</tt>.<br>
+ * <br>
+ * A typical transaction should use the following idiom:
+ * <pre>
+ * Session sess = factory.openSession();
+ * Transaction tx;
+ * try {
+ *     tx = sess.beginTransaction();
+ *     //do some work
+ *     ...
+ *     tx.commit();
+ * }
+ * catch (Exception e) {
+ *     if (tx!=null) tx.rollback();
+ *     throw e;
+ * }
+ * finally {
+ *     sess.close();
+ * }
+ * </pre>
+ * <br>
+ * If the <tt>Session</tt> throws an exception, the transaction must be rolled back
+ * and the session discarded. The internal state of the <tt>Session</tt> might not
+ * be consistent with the database after the exception occurs.
  *
+ * @see SessionFactory
  * @author Pradeep Krishnan
  */
 public interface Session {

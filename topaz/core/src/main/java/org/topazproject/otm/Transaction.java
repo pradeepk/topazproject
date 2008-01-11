@@ -10,7 +10,23 @@
 package org.topazproject.otm;
 
 /**
- * Transaction object.
+ * Allows the application to define units of work, while
+ * maintaining abstraction from the underlying transaction
+ * implementations on top of both a <tt>TripleStore</tt> and <tt>BlobStore</tt>.<br>
+ * <br>
+ * A transaction is associated with a <tt>Session</tt> and is
+ * usually instantiated by a call to <tt>Session.beginTransaction()</tt>.
+ * A single session might span multiple transactions since
+ * the notion of a session (a conversation between the application
+ * and the triplestore and blobstore) is of coarser granularity than the notion of
+ * a transaction. However, it is intended that there be at most one
+ * uncommitted <tt>Transaction</tt> associated with a particular
+ * <tt>Session</tt> at any time.<br>
+ * <br>
+ * Implementors are not intended to be threadsafe.
+ *
+ * @see Session#beginTransaction()
+ * @see org.hibernate.transaction.TransactionFactory
  *
  * @author Pradeep Krishnan
  */
@@ -24,7 +40,10 @@ public interface Transaction {
   public Session getSession();
 
   /**
-   * Gets a connection to the triplestore.
+   * Gets a connection to the given store. If a connection is
+   * not open to the given Store, the implementations may
+   * call {@link Store#openConnection openConnection} on the
+   * Store.
    *
    * @return the connection
    *

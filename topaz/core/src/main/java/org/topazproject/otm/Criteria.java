@@ -29,7 +29,29 @@ import org.topazproject.otm.query.Results;
 
 /**
  * An API for retrieving objects based on filtering and ordering conditions specified  using
- * {@link org.topazproject.otm.criterion.Criterion}.
+ * {@link org.topazproject.otm.criterion.Criterion}. This is convenient in situations where 
+ * the query that needs to be run is only constructed at run time. An example is an advanced
+ * search functionality where a user is selecting the conditions that need to be placed on
+ * the result set.
+ * <p>
+ * The conditions that are placed on the Criteria are usually built from the factory
+ * class {@link org.topazproject.otm.criterion.Restrictions Restrictions}. The Criteria
+ * itself is created from the {@link org.topazproject.otm.Session#createCriteria createCriteria()}
+ * method on the Session. eg.
+ *
+ * <pre>
+ * List&lt;Person&gt; people = session.createCriteria(Person.class)
+ *        .add(Restrictions.eq("knows","john")
+ *        .addOrder(Order.asc("age"))
+ *        .list();
+ * </pre>
+ *
+ * @see Session#createCriteria(java.lang.Class)
+ * @see org.topazproject.otm.criterion.Restrictions
+ * @see org.topazproject.otm.criterion.Order
+ * @see org.topazproject.otm.criterion.Criterion
+ * @see org.topazproject.otm.criterion.Parameter
+ * @see org.topazproject.otm.criterion.DetachedCriteria a disconnected version of this API
  *
  * @author Pradeep Krishnan
  */
