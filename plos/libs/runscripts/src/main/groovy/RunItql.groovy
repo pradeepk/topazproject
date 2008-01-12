@@ -357,7 +357,6 @@ def doQuery(query) {
   } catch (Exception e) {
     // really hacky...
     def m = e.getMessage() =~ /error performing query .* message was: (.*)/
-    println e
     if (m.count)
       return m[0][1]
     throw e
