@@ -46,32 +46,6 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
     this.context = (ServletEndpointContext) context;
   }
 
-  private ItqlInterpreterBean getInterpreter() throws QueryException {
-    HttpSession         session     = context.getHttpSession();
-    ItqlInterpreterBean interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
-
-    if (interpreter != null)
-      return interpreter;
-
-    /* Note: this check won't work properly on JVM's that return Long.MAX_VALUE for maxMemory().
-     * But on those it's hard to know ahead of time if you're getting low on memory...
-     */
-    Runtime rt = Runtime.getRuntime();
-
-    if ((rt.maxMemory() - rt.totalMemory() + rt.freeMemory()) < MIN_FREE_MEM)
-      throw new QueryException("Memory too low (probably too many sessions)");
-
-    SessionFactory sf = WebAppListenerInitMulgara.getSessionFactory();
-    interpreter = new ItqlInterpreterBean(sf.newSession(), sf.getSecurityDomain());
-
-    session.setAttribute(INTERPRETER_KEY, interpreter);
-
-    if (log.isDebugEnabled())
-      log.debug("Created ItqlInterpreterBean instance " + interpreter);
-
-    return interpreter;
-  }
-
   /*
    * @see javax.xml.rpc.server.ServletEndpointContext;
    */
@@ -79,44 +53,82 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
     context = null;
   }
 
+  private ItqlInterpreterBean getInterpreter(boolean create) throws QueryException {
+    HttpSession         session = context.getHttpSession();
+    ItqlInterpreterBean interpreter;
+
+    synchronized (session) {
+      interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
+
+      if (interpreter != null || !create)
+        return interpreter;
+
+      /* Note: this check won't work properly on JVM's that return Long.MAX_VALUE for maxMemory().
+       * But on those it's hard to know ahead of time if you're getting low on memory...
+       */
+      Runtime rt = Runtime.getRuntime();
+
+      if ((rt.maxMemory() - rt.totalMemory() + rt.freeMemory()) < MIN_FREE_MEM)
+        throw new QueryException("Memory too low (probably too many sessions)");
+
+      SessionFactory sf = WebAppListenerInitMulgara.getSessionFactory();
+      interpreter = new ItqlInterpreterBean(sf.newSession(), sf.getSecurityDomain());
+
+      session.setAttribute(INTERPRETER_KEY, interpreter);
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("Created ItqlInterpreterBean instance " + interpreter);
+
+    return interpreter;
+  }
+
   /**
    * @see ItqlInterpreterBean#close
    */
   public void close() {
-    HttpSession         session     = context.getHttpSession();
     ItqlInterpreterBean interpreter;
+    synchronized (context.getHttpSession()) {
+      try {
+        interpreter = getInterpreter(false);
+      } catch (QueryException qe) {
+        throw new Error("Can't happen", qe);
+      }
 
-    interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
+      if (interpreter == null) {
+        log.warn("close rcvd - but no interceptor in session");
+        return;
+      }
 
-    if (interpreter == null) {
-      log.warn("close rcvd - but no interceptor in session");
-      return;
+      context.getHttpSession().removeAttribute(INTERPRETER_KEY);
     }
-
-    session.removeAttribute(INTERPRETER_KEY);
 
     if (log.isDebugEnabled())
       log.debug("Closing ItqlInterpreterBean instance " + interpreter);
 
-    interpreter.close();
+    synchronized (interpreter) {
+      interpreter.close();
+    }
   }
 
   /**
    * @see ItqlInterpreterBean#beginTransaction
    */
   public void beginTransaction(String name) throws QueryException {
-    ItqlInterpreterBean interpreter = getInterpreter();
+    ItqlInterpreterBean interpreter = getInterpreter(true);
 
     if (log.isDebugEnabled())
       log.debug("beginTransaction(" + name + ") on " + interpreter);
 
-    try {
-      interpreter.beginTransaction(name);
-    } catch (QueryException e) {
-      if (log.isDebugEnabled())
-        log.debug("beginTransaction on " + interpreter + " failed.", e);
+    synchronized (interpreter) {
+      try {
+        interpreter.beginTransaction(name);
+      } catch (QueryException e) {
+        if (log.isDebugEnabled())
+          log.debug("beginTransaction on " + interpreter + " failed.", e);
 
-      throw e;
+        throw e;
+      }
     }
   }
 
@@ -124,15 +136,16 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
    * @see ItqlInterpreterBean#commit
    */
   public void commit(String name) throws QueryException {
-    HttpSession         session     = context.getHttpSession();
-    ItqlInterpreterBean interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
-
-    if (interpreter == null)
+    ItqlInterpreterBean interpreter = getInterpreter(false);
+    if (interpreter == null) {
       log.warn("rollback(" + name + ") rcvd - but no interceptor in session");
-    else {
-      if (log.isDebugEnabled())
-        log.debug("commit(" + name + ") on " + interpreter);
+      return;
+    }
 
+    if (log.isDebugEnabled())
+      log.debug("commit(" + name + ") on " + interpreter);
+
+    synchronized (interpreter) {
       try {
         interpreter.commit(name);
       } catch (QueryException e) {
@@ -148,15 +161,16 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
    * @see ItqlInterpreterBean#rollback
    */
   public void rollback(String name) throws QueryException {
-    HttpSession         session     = context.getHttpSession();
-    ItqlInterpreterBean interpreter = (ItqlInterpreterBean) session.getAttribute(INTERPRETER_KEY);
-
-    if (interpreter == null)
+    ItqlInterpreterBean interpreter = getInterpreter(false);
+    if (interpreter == null) {
       log.warn("rollback(" + name + ") rcvd - but no interceptor in session");
-    else {
-      if (log.isDebugEnabled())
-        log.debug("rollback(" + name + ") on " + interpreter);
+      return;
+    }
 
+    if (log.isDebugEnabled())
+      log.debug("rollback(" + name + ") on " + interpreter);
+
+    synchronized (interpreter) {
       try {
         interpreter.rollback(name);
       } catch (QueryException e) {
@@ -173,18 +187,20 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
    */
   public String executeQueryToString(String queryString)
                               throws Exception {
-    ItqlInterpreterBean interpreter = getInterpreter();
+    ItqlInterpreterBean interpreter = getInterpreter(true);
 
     if (log.isDebugEnabled())
       log.debug("executeQueryToString(" + queryString + ") on " + interpreter);
 
-    try {
-      return interpreter.executeQueryToString(queryString);
-    } catch (Exception e) {
-      if (log.isDebugEnabled())
-        log.debug("executeQueryToString on " + interpreter + " failed.", e);
+    synchronized (interpreter) {
+      try {
+        return interpreter.executeQueryToString(queryString);
+      } catch (Exception e) {
+        if (log.isDebugEnabled())
+          log.debug("executeQueryToString on " + interpreter + " failed.", e);
 
-      throw e;
+        throw e;
+      }
     }
   }
 
@@ -195,7 +211,7 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
     ItqlInterpreterBean interpreter;
 
     try {
-      interpreter = getInterpreter();
+      interpreter = getInterpreter(true);
     } catch (QueryException e) {
       throw new ItqlInterpreterException(e);
     }
@@ -203,13 +219,15 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
     if (log.isDebugEnabled())
       log.debug("executeUpdate(" + itql + ") on " + interpreter);
 
-    try {
-      interpreter.executeUpdate(itql);
-    } catch (ItqlInterpreterException e) {
-      if (log.isDebugEnabled())
-        log.debug("executeUpdate on " + interpreter + " failed.", e);
+    synchronized (interpreter) {
+      try {
+        interpreter.executeUpdate(itql);
+      } catch (ItqlInterpreterException e) {
+        if (log.isDebugEnabled())
+          log.debug("executeUpdate on " + interpreter + " failed.", e);
 
-      throw e;
+        throw e;
+      }
     }
   }
 }
