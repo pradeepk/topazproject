@@ -74,7 +74,7 @@ public class PermissionsImpl implements Permissions {
   private static final String ITQL_LIST                 =
     "select $p from ${MODEL} where <${resource}> $p <${principal}>;";
   private static final String ITQL_LIST_PP              =
-    "select $o from ${MODEL} where <${s}> <${p}> $o".replaceAll("\\Q${MODEL}", PP_MODEL);
+    "select $o from ${MODEL} where <${s}> <${p}> $o;".replaceAll("\\Q${MODEL}", PP_MODEL);
   private static final String ITQL_LIST_PP_TRANS        =
     ("select $o from ${MODEL} where <${s}> <${p}> $o "
     + " or (trans($s <${p}> $o) and $s <mulgara:is> <${s}>);").replaceAll("\\Q${MODEL}", PP_MODEL);
@@ -86,7 +86,7 @@ public class PermissionsImpl implements Permissions {
     + "and ($p <mulgara:is> <${permission}> or $p <mulgara:is> <${ALL}> "
     + "      or $p <${IMPLIES}> <${permission}> "
     + "      or (trans($p <${IMPLIES}> $perm) and $perm <mulgara:is> <${permission}>)) "
-    + "and ($o <mulgara:is> <${principal}> or $o <mulgara:is> <${ALL}>)" //
+    + "and ($o <mulgara:is> <${principal}> or $o <mulgara:is> <${ALL}>);" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
   private static final String ITQL_RESOURCE_PERMISSIONS =
@@ -99,7 +99,7 @@ public class PermissionsImpl implements Permissions {
     + "      or trans($impliedBy <${IMPLIES}> $p)) " //
     + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>))" + ")" //
+    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>))" + ");" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 
