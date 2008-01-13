@@ -26,7 +26,4 @@ public @interface UriPrefix {
 
     /** the String is a uri. **/
     String value();
-
-    /** the String is an alias. **/
-    String alias() default "";
 }
