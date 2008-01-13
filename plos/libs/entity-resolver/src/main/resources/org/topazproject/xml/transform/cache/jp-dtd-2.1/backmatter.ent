@@ -197,17 +197,18 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 
 
 <!--                    APPENDIX GROUP MODEL                       -->
-<!--                    Content model for the <app-group> element  
-                        Note: an exception is made to the full
-                        class-mix structure to allow <app>
-                        inside an <app-group> without requiring a
-                        class for it.                              -->
+<!--                    Content model for the <app-group> element  -->
 <!ENTITY % app-group-model   
                         "(title?, (%para-level;)*, 
                           (%app.class; | %ref-list.class;)*)"        > 
 
 
 <!--                    APPENDIX GROUP                             -->
+<!--                    A container element to hold one or more
+                        Appendices. This element was added to
+                        accommodate older DTDs that are based on the 
+                        AAP (later ISO 12083) model, where the element
+                        was known as Appendix Matter <appm>.       -->
 <!ELEMENT  app-group    %app-group-model;                            >
 
 
@@ -255,7 +256,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         Note: an exception is made to the full
                         class-mix structure to allow <gloss-group>
                         inside an <glossary> without requiring a
-                        class for it.                              -->
+                        separate class for it.                     -->
 <!ENTITY % glossary-model
                         "(title?, (%para-level;)*, gloss-group*)"    >
                         

@@ -194,14 +194,16 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         (e.g., "Materials and Methods" would be
                         type="materials|methods").  
                         Types values are:         
-                          intro     Introduction/Synopsis
+                          cases     Cases/Case Reports
+                          conclusions Conclusions/Comment
+                          discussion  Discussion/Interpretation
+                          intro     Introduction/Synopsis/Overview
                           materials Materials
                           methods   Methods/Methodology/Procedures
-                          subjects  Patients/Participants/Subjects
-                          cases     Cases/Case Reports
                           results   Results/Statement of Findings
-                          discussion  Discussion/Interpretation
-                          conclusions Conclusions/Comment
+                          subjects  Patients/Participants/Subjects
+                          supplementary-material
+                                    Supplementary Materials
              disp-level Sometimes in print or on screen, the display
                         or apparent hierarchical level of a section
                         is not the same as its real position in the

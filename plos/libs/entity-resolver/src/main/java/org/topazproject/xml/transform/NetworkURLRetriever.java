@@ -27,11 +27,12 @@ public class NetworkURLRetriever implements URLRetriever {
   /**
    * Retrieve the specified url from the network and return it.
    *
-   * @param url the address of the content to retrieve.
+   * @param url the url of the resource to retrieve
+   * @param id  the id of the resource to retrieve
    * @return a byte array containing the retrieved content.
    * @throws IOException if there was a problem fetching the content.
    */
-  public byte[] retrieve(String url) throws IOException {
+  public byte[] retrieve(String url, String id) throws IOException {
     if (log.isDebugEnabled())
       log.debug("Network retriever ('" + url + "')");
 

@@ -16,7 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Look up the URL in a resource cache.
+ * Look up the id in a resource cache.
  *
  * @author Ronald Tschalär
  * @version $Id$
@@ -43,20 +43,20 @@ public class ResourceURLRetriever implements URLRetriever {
     this.resourceLoader = resourceLoader;
   }
 
-  public byte[] retrieve(String url) throws IOException {
-    String resource = urlMap.getProperty(url);
+  public byte[] retrieve(String url, String id) throws IOException {
+    String resource = urlMap.getProperty(id);
 
     if (log.isDebugEnabled())
-      log.debug("Resource retriever ('" + url + "'): " +
+      log.debug("Resource retriever ('" + id + "'): " +
                 (resource != null ? "found" : "not found"));
 
     if (resource == null)
-      return (delegate != null) ? delegate.retrieve(url) : null;
+      return (delegate != null) ? delegate.retrieve(url, id) : null;
 
     // Deal with relative prefixes
     if (relativePrefix != null && !resource.startsWith("/"))
       resource = relativePrefix + resource;
-    
+
     return IOUtils.toByteArray(resourceLoader.getResourceAsStream(resource));
   }
 }

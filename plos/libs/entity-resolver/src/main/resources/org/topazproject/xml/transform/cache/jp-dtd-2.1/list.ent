@@ -317,7 +317,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    DEFINITION LIST HEAD ELEMENTS              -->
 <!--                    Elements for use in the <def-list> heading
                         elements <term-head> and <def-head>. 
-                        DESIGN NOTE: All inline mixes begin with an
+                        Design Note: All inline mixes begin with an
                         OR bar, but since %simple-phrase; is an 
                         inline mix, the OR bar is already there.   -->
 <!ENTITY % def-list-head-elements
@@ -367,7 +367,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    The elements that can be included along with
                         data characters inside the content model of
                         a <term>. 
-                        DESIGN NOTE: All inline mixes begin with an
+                        Design Note: All inline mixes begin with an
                         OR bar, but since %simple-phrase; is an 
                         inline mix, the OR bar is already there.   -->
 <!ENTITY % term-elements

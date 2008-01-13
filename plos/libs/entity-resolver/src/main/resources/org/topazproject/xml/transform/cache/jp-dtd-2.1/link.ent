@@ -375,7 +375,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    The elements that can be included along with
                         data characters inside the content model of
                         a <target>  
-                        DESIGN NOTE: All inline mixes begin with an
+                        Design Note: All inline mixes begin with an
                         OR bar, but since %link-elements; is an inline
                         mix, the OR bar is already there.          -->
 <!ENTITY % target-elements
@@ -405,7 +405,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    The elements that can be included along with
                         data characters inside the content model of
                         an <xref>  
-                        DESIGN NOTE: All inline mixes begin with an
+                        Design Note: All inline mixes begin with an
                         OR bar, but since %link-elements; is an inline
                         mix, the OR bar is already there.          -->
 <!ENTITY % xref-elements
@@ -416,9 +416,11 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    Used for any kind of internal article
                         referencing. The content of the reference 
                         (if present) will be displayed as the link.
-                        This element may be used to anything that
-                        has an "id".  The "ref-type" attribute says
-                        what the reference is pointing to.         -->
+                        This element may be used to point to any 
+                        element that takes an "id" attribute.
+                        The "ref-type" attribute may be used to name
+                        the element or type of object to which the 
+                        <xref> is pointing.                        -->
 <!ELEMENT  xref         (#PCDATA %xref-elements;)*                   >
 <!--         id         Unique identifier so the element may be
                         referenced (creating two-way link)

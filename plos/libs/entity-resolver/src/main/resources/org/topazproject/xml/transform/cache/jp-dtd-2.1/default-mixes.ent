@@ -274,7 +274,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 <!--                    EMPHASIS MIX ELEMENTS                      -->
 <!--                    Elements that may be used inside most of the
                         emphasis class elements                    
-                        DESIGN NOTE: Inline mixes begin with an
+                        Design Note: Inline mixes begin with an
                         OR bar                                     -->
 <!ENTITY % emphasized-text  
                         "| %address-link.class; | 
@@ -303,7 +303,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         other in an effort to allow designers to
                         modify entire groups of elements, but not
                         to change similar models individually .   
-                        DESIGN NOTE: Inline mixes begin with an
+                        Design Note: Inline mixes begin with an
                         OR bar                                     -->
 <!ENTITY % just-rendition
                         "| %emphasis.class;  | %subsup.class;"       >
@@ -330,7 +330,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         to individually change similar models. 
                         modify entire groups of elements, but not
                         to change similar models individually .     
-                        DESIGN NOTE: Inline mixes begin with an
+                        Design Note: Inline mixes begin with an
                         OR bar                                     -->
 <!ENTITY % rendition-plus                             
                         "| %emphasis.class;  | %subsup.class;"       >
@@ -341,7 +341,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         text is used, for example, inside a title.
                         Simple text plus inline display and math 
                         elements.                                  
-                        DESIGN NOTE: Inline mixes begin with an
+                        Design Note: Inline mixes begin with an
                         OR bar                                     -->
 <!ENTITY % simple-phrase
                         "| %address-link.class; |
@@ -358,7 +358,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         not to contain any of these things.
                         Note that there is no math and no links.
                         Simpler even than %simple-phrase;        
-                        DESIGN NOTE: Inline mixes begin with an
+                        Design Note: Inline mixes begin with an
                         OR bar                                     -->
 <!ENTITY % simple-text  "| %emphasis.class; | %inline-display.class; |
                          %inline-math.class; | %phrase.class; | 

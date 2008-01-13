@@ -1,5 +1,5 @@
 <!-- ============================================================= -->
-<!--  MODULE:    Math Element Classes                              -->
+<!--  MODULE:    Math Class Elements                               -->
 <!--  VERSION:   2.0                                               -->
 <!--  DATE:      August 2004                                       -->
 <!--                                                               -->
@@ -94,8 +94,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
 
      =============================================================
      Version 2.0                       (DAL/BTU) v2.0 (2004-08-30)
-     
-     
+          
      Major requirement changes led to the new release, producing
      DTD version "2.0":
        a) The splitting of the Archival and Interchange Tag Set 
@@ -245,6 +244,16 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
                         "(#PCDATA %inline-formula-elements;)*"       > 
 
 
+<!--                    INLINE FORMULA ATTRIBUTES                  -->
+<!--                    Attribute list for the <inline-formula<
+                        element                                    -->
+<!ENTITY % inline-formula-atts
+            "id         ID                                 #IMPLIED  
+             content-type
+                        CDATA                              #IMPLIED
+             xml:lang   NMTOKEN                            #IMPLIED" >
+
+
 <!--                    FORMULA, INLINE                            -->
 <!--                    Inline element for a mathematical
                         equation, expression, or formula           -->
@@ -261,9 +270,7 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
              id         Unique identifier so an inline-formula
                         can be referenced                          -->
 <!ATTLIST  inline-formula
-             alternate-form-of
-                        IDREF                              #IMPLIED
-             id         ID                                 #IMPLIED  >
+             %inline-formula-atts;                                   >
 
 
 <!--                    DISPLAY FORMULA ELEMENTS                   -->
@@ -326,4 +333,4 @@ Version  Reason/Occasion                   (who) vx.x (yyyy-mm-dd)
              %tex-math-atts;                                         >
 
 
-<!-- ================== End List Class Module ==================== -->
+<!-- ================== End Math Class Elements Module =========== -->

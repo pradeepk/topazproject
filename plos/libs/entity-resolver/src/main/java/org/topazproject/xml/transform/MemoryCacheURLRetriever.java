@@ -41,32 +41,33 @@ public class MemoryCacheURLRetriever implements URLRetriever {
   }
 
   /**
-   * Lookup the <code>url</code> in the cache. If found, return results. Otherwise, call
+   * Lookup the <code>id</code> in the cache. If found, return results. Otherwise, call
    * delegate to fetch content.
    * 
-   * @param url the url to retrieve
+   * @param url the url of the resource to retrieve
+   * @param id  the id of the resource to retrieve
    * @return the contents, or null if not found
    * @throws IOException if an error occurred retrieving the contents (other than not-found)
    */
-  public synchronized byte[] retrieve(String url) throws IOException {
-    SoftReference ref = (SoftReference) cache.get(url);
+  public synchronized byte[] retrieve(String url, String id) throws IOException {
+    SoftReference ref = (SoftReference) cache.get(id);
     byte[] res = (ref != null) ? (byte[]) ref.get() : null;
 
     if (log.isDebugEnabled())
-      log.debug("Memory cache('" + url + "'): " +
+      log.debug("Memory cache('" + id + "'): " +
                 (res != null ? "found" : ref != null ? "expired" : "not found"));
 
     if (res != null || delegate == null)
       return res;
 
-    res = delegate.retrieve(url);
+    res = delegate.retrieve(url, id);
     if (res == null)
       return null;
 
     if (log.isDebugEnabled())
-      log.debug("Caching '" + url + "'");
+      log.debug("Caching '" + id + "'");
 
-    cache.put(url, new SoftReference(res));
+    cache.put(id, new SoftReference(res));
     return res;
   }
 }

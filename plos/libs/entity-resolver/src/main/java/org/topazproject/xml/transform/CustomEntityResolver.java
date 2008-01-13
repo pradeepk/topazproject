@@ -62,7 +62,7 @@ public class CustomEntityResolver implements EntityResolver {
     if (log.isDebugEnabled())
       log.debug("Resolving entity '" + systemId + "'");
 
-    byte[] res = retriever.retrieve(systemId);
+    byte[] res = retriever.retrieve(systemId, publicId);
     if (log.isDebugEnabled())
       log.debug("Entity '" + systemId + "' " + (res != null ? "found" : "not found"));
 
