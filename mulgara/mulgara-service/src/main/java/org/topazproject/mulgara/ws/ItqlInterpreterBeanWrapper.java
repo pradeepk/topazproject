@@ -10,6 +10,8 @@
 package org.topazproject.mulgara.ws;
 
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
@@ -30,7 +32,7 @@ import org.mulgara.server.SessionFactory;
  *
  * @author Ronald Tschalär
  */
-public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
+public class ItqlInterpreterBeanWrapper implements ServiceLifecycle, HttpSessionListener {
   private static final Log    log             = LogFactory.getLog(ItqlInterpreterBeanWrapper.class);
   private static final long   MIN_FREE_MEM    = 10 * 1024 * 1024; // TODO: make this configurable
   private static final String INTERPRETER_KEY =
@@ -53,8 +55,34 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
     context = null;
   }
 
+  /*
+   * @see javax.servlet.http.HttpSessionListener;
+   */
+  public void sessionCreated(HttpSessionEvent se) {
+  }
+
+  /*
+   * @see javax.servlet.http.HttpSessionListener;
+   */
+  public void sessionDestroyed(HttpSessionEvent se) {
+    HttpSession session = se.getSession();
+
+    try {
+      if (getInterpreter(session, false) != null) {
+        log.warn("session timed out - forcing close");
+        close(session);
+      }
+    } catch (QueryException qe) {
+      throw new Error("Can't happen", qe);
+    }
+  }
+
   private ItqlInterpreterBean getInterpreter(boolean create) throws QueryException {
-    HttpSession         session = context.getHttpSession();
+    return getInterpreter(context.getHttpSession(), create);
+  }
+
+  private ItqlInterpreterBean getInterpreter(HttpSession session, boolean create)
+      throws QueryException {
     ItqlInterpreterBean interpreter;
 
     synchronized (session) {
@@ -87,10 +115,14 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
    * @see ItqlInterpreterBean#close
    */
   public void close() {
+    close(context.getHttpSession());
+  }
+
+  private void close(HttpSession session) {
     ItqlInterpreterBean interpreter;
-    synchronized (context.getHttpSession()) {
+    synchronized (session) {
       try {
-        interpreter = getInterpreter(false);
+        interpreter = getInterpreter(session, false);
       } catch (QueryException qe) {
         throw new Error("Can't happen", qe);
       }
@@ -100,7 +132,7 @@ public class ItqlInterpreterBeanWrapper implements ServiceLifecycle {
         return;
       }
 
-      context.getHttpSession().removeAttribute(INTERPRETER_KEY);
+      session.removeAttribute(INTERPRETER_KEY);
     }
 
     if (log.isDebugEnabled())

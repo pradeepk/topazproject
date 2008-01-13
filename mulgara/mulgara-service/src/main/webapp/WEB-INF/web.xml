@@ -13,6 +13,9 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <listener>
     <listener-class>org.topazproject.mulgara.ws.WebAppListenerInitMulgara</listener-class>
   </listener>
+  <listener>
+    <listener-class>org.topazproject.mulgara.ws.ItqlInterpreterBeanWrapper</listener-class>
+  </listener>
 
   <!-- Axis -->
   <listener>
