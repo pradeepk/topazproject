@@ -9,6 +9,8 @@
  */
 package org.topazproject.otm.samples;
 
+import org.topazproject.otm.annotations.Alias;
+import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Entity;
 
 /**

@@ -26,7 +26,7 @@ import org.topazproject.otm.mapping.Mapper.FetchType;
  * @author Eric Brown
  * @version $Id$
  */
-@Entity(type = Rdf.topaz + "Article", model = "ri")
+@Entity(type = "topaz:Article", model = "ri")
 public class Article extends ObjectInfo {
   @Predicate(uri = Rdf.dc_terms + "available")
   private Date     articleDate;

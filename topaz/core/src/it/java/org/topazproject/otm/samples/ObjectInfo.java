@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.annotations.Alias;
+import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
@@ -32,6 +34,8 @@ import org.topazproject.otm.annotations.PredicateMap;
  * @author Eric Brown
  */
 @Entity(model = "ri")
+@Aliases({@Alias(alias = "bazAlias", value = "http://www.baz.com"),
+          @Alias(alias = "barAlias", value = "http://www.bar.org/")})
 public class ObjectInfo {
   @Id
   private URI uri;
@@ -43,7 +47,7 @@ public class ObjectInfo {
   private String description;
   @Predicate(uri = Rdf.dc + "creator")
   private Set<String> authors = new HashSet<String>();
-  @Predicate(uri = Rdf.dc + "date", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dc:date", dataType = "xsd:date")
   private Date date;
   @Predicate(uri = Rdf.dc + "identifier")
   private String identifier; // looks like a uri -- doi as a uri (for doi to uri conversion?)

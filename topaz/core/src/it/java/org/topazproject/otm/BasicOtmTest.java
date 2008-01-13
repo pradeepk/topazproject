@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Annotea;
@@ -643,5 +644,23 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals(0, l.size());
         }
       });
+  }
+
+  @Test
+  public void testAliases() throws OtmException {
+    log.info("Testing aliases ...");
+
+    ClassMetadata<Article> cm = factory.getClassMetadata(Article.class);
+    assertEquals(Rdf.topaz + "Article", cm.getType());
+
+    Mapper m = cm.getMapperByName("date");
+    assertNotNull(m);
+    assertEquals(Rdf.dc + "date", m.getUri());
+    assertEquals(Rdf.xsd + "date", m.getDataType());
+
+    assertEquals("http://www.baz.com",  factory.listAliases().get("bazAlias"));
+    assertEquals("http://www.bar.org/", factory.listAliases().get("barAlias"));
+
+    // TODO: test expansion on uriPrefix
   }
 }

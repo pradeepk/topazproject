@@ -33,6 +33,8 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.annotations.Alias;
+import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Blob;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
@@ -74,7 +76,7 @@ public class AnnotationClassMetaFactory {
    * @param sf the session factory
    */
   public AnnotationClassMetaFactory(SessionFactory sf) {
-    this.sf                    = sf;
+    this.sf = sf;
   }
 
   /**
@@ -120,6 +122,17 @@ public class AnnotationClassMetaFactory {
       fields.addAll(superMeta.getFields());
     }
 
+    Aliases aliases = clazz.getAnnotation(Aliases.class);
+    if (aliases != null) {
+      for (Alias a : aliases.value())
+        sf.addAlias(a.alias(), a.value());
+    }
+    aliases = (clazz.getPackage() != null) ? clazz.getPackage().getAnnotation(Aliases.class) : null;
+    if (aliases != null) {
+      for (Alias a : aliases.value())
+        sf.addAlias(a.alias(), a.value());
+    }
+
     Entity entity = clazz.getAnnotation(Entity.class);
 
     if ((entity != null) && !"".equals(entity.model()))
@@ -128,13 +141,13 @@ public class AnnotationClassMetaFactory {
     UriPrefix uriPrefixAnn = clazz.getAnnotation(UriPrefix.class);
 
     if (uriPrefixAnn != null)
-      uriPrefix = uriPrefixAnn.value();
+      uriPrefix = sf.expandAlias(uriPrefixAnn.value());
 
     if (uriPrefix == null)
       uriPrefix = uriPrefixOfContainingClass;
 
     if ((entity != null) && !"".equals(entity.type())) {
-      type    = entity.type();
+      type    = sf.expandAlias(entity.type());
       types   = new HashSet<String>(types);
 
       if (!types.add(type))
@@ -314,7 +327,8 @@ public class AnnotationClassMetaFactory {
                              clazz.getName() + ", field=" + f.getName());
 
     String     uri      =
-      ((rdf != null) && !"".equals(rdf.uri())) ? rdf.uri() : ((ns != null) ? (ns + f.getName()) : null);
+      ((rdf != null) && !"".equals(rdf.uri())) ? sf.expandAlias(rdf.uri()) :
+                                                 ((ns != null) ? (ns + f.getName()) : null);
     String     var      =
       ((proj != null) && !"".equals(proj.value())) ? proj.value() : f.getName();
 
@@ -332,13 +346,11 @@ public class AnnotationClassMetaFactory {
                                + "' generator for " + toString(f), t);
       }
 
-      String uriPrefix = gv.uriPrefix();
+      String uriPrefix = sf.expandAlias(gv.uriPrefix());
 
       if (uriPrefix.equals("")) {
-        // Compute default uriPrefix: Rdf.topaz/clazz/f/generatorClass#
-        StringBuffer sb = new StringBuffer();
-        sb.append(Rdf.topaz).append(clazz.getName()).append('/').append(f.getName()).append('#');
-        uriPrefix = sb.toString();
+        // Compute default uriPrefix: Rdf.topaz/clazz/generatorClass#
+        uriPrefix = Rdf.topaz + clazz.getName() + '/' + f.getName() + '#';
       }
 
       try {
@@ -384,7 +396,7 @@ public class AnnotationClassMetaFactory {
 
     String dt            =
       ((rdf == null) || "".equals(rdf.dataType()))
-      ? sf.getSerializerFactory().getDefaultDataType(type) : rdf.dataType();
+      ? sf.getSerializerFactory().getDefaultDataType(type) : sf.expandAlias(rdf.dataType());
 
     if (Predicate.UNTYPED.equals(dt))
       dt = null;
@@ -575,14 +587,14 @@ public class AnnotationClassMetaFactory {
     return null;
   }
 
-  private static String getRdfType(Class<?> clazz) {
+  private String getRdfType(Class<?> clazz) {
     if (clazz == null)
       return null;
 
     Entity entity = clazz.getAnnotation(Entity.class);
 
     if ((entity != null) && !"".equals(entity.type()))
-      return entity.type();
+      return sf.expandAlias(entity.type());
 
     return getRdfType(clazz.getSuperclass());
   }

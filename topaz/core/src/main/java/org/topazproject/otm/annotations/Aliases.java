@@ -9,19 +9,19 @@
  */
 package org.topazproject.otm.annotations;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * An annotation for configuring a single alias for a uri.
+ * An annotation for configuring a list of aliases.
  *
  * @author Pradeep Krishnan
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Alias {
-    /** the String is a uri. **/
-    String value();
-
-    /** the String is an alias. **/
-    String alias();
+@Target({ElementType.TYPE, ElementType.PACKAGE})
+public @interface Aliases {
+    /** the list of aliases. **/
+    Alias[] value();
 }
