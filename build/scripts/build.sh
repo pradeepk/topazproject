@@ -76,7 +76,7 @@ echo ${SVNVERSION} > ${MVN_LAST_BUILD}
 # Deploy the OTM jars
 if [ ${N} -eq 0 ]; then
   echo "Deploying jars"
-  for pkg in "topaz/core" "topaz/extras" "mulgara/mulgara-client" "mulgara/string-compare-resolver" ; do
+  for pkg in "mulgara/string-compare-resolver" "mulgara/mulgara-client" "topaz/core" "topaz/extras" ; do
     ${MVN} ${MVNARGS} -f "$pkg/pom.xml" -Dmaven.test.skip=true deploy
   done
 fi
