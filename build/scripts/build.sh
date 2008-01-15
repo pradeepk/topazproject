@@ -73,6 +73,14 @@ fi
 # Update last build #
 echo ${SVNVERSION} > ${MVN_LAST_BUILD}
 
+# Deploy the OTM jars
+if [ ${N} -eq 0 ]; then
+  echo "Deploying jars"
+  for pkg in "topaz/core" "topaz/extras" "mulgara/mulgara-client" "mulgara/string-compare-resolver" ; do
+    ${MVN} ${MVNARGS} -f "$pkg/pom.xml" deploy
+  done
+fi
+
 # Update the last success
 if [ ${N} -eq 0 ]; then
   echo "BUILD SUCCEED for r${SVNVERSION}"
