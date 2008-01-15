@@ -77,7 +77,7 @@ echo ${SVNVERSION} > ${MVN_LAST_BUILD}
 if [ ${N} -eq 0 ]; then
   echo "Deploying jars"
   for pkg in "topaz/core" "topaz/extras" "mulgara/mulgara-client" "mulgara/string-compare-resolver" ; do
-    ${MVN} ${MVNARGS} -f "$pkg/pom.xml" deploy
+    ${MVN} ${MVNARGS} -f "$pkg/pom.xml" -Dmaven.test.skip=true deploy
   done
 fi
 
