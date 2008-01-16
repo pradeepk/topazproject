@@ -30,23 +30,24 @@
     <dependency>
       <groupId>info.fedora</groupId>
       <artifactId>fedora-client</artifactId>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.trippi</groupId>
       <artifactId>trippi</artifactId>
       <version>1.0.0</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.openrdf</groupId>
       <artifactId>rio</artifactId>
       <version>1.0.4</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
