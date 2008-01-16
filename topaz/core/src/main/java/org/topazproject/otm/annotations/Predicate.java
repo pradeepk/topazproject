@@ -67,9 +67,9 @@ public @interface Predicate {
   enum StoreAs {undefined, predicate, rdfList, rdfBag, rdfSeq, rdfAlt};
 
   /**
-   * Storage preference for this field. Defaults based on the type.
+   * Storage preference for this field. Mainly for collections for now.
    */
-  StoreAs storeAs() default StoreAs.undefined;
+  StoreAs storeAs() default StoreAs.predicate;
 
   /**
    * Cascading preferences for this field. 
