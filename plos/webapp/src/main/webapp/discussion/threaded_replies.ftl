@@ -49,7 +49,7 @@
 	
 	<!-- begin : main content -->
 	<div id="content">
-		<h1>Annotation and Responses</h1>
+		<h1>${baseAnnotation.commentTitle}</h1>
 		<div class="source">
 			<span>Original Article</span>
 			<@s.url id="origArticle" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${baseAnnotation.annotates}" annotationId="${baseAnnotation.id}"/>
@@ -101,7 +101,7 @@
 	</div>
 	
 			    <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${baseAnnotation.annotates}"/>
-				<p><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article</p>
+				<p><a href="${commentsURL}" class="commentary icon">See all ongoing discussions</a> on this article</p>
 	
 	<!-- end : main contents -->
 

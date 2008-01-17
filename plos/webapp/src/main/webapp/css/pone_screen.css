@@ -24,6 +24,7 @@ code		{ font-family: "Courier New", Courier, monospace; }
 em			{ font-style: italic; }
 
 img			{ border: 0; }
+label { cursor: pointer; }
 label em 	{ display: block; color: #c00; } /* em wraps all error messages within labels */
 .error 		{ display: block; color: #c00; font-style: normal; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
@@ -382,6 +383,7 @@ dl#relatedArticles dd a:hover { color:#008ED5; text-decoration:underline; }
 #rhc ul li a:visited 	{ background-color: transparent; background-position: 5% 50%; background-repeat: no-repeat; padding:1px 0 2px 0; padding-left:30px; border-bottom: 1px solid #ccc; margin: 0 3px; }
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
 #rhc ul li a.last		{ border-bottom-width: 0; }
+#rhc ol li a.commentary { background-image: none; padding: 2px 0 2px 0; font-weight: bold; }
 
 /* correction styles */
 div.correction span#oa { /* open access image */ background: #3D3D3D url(../images/pone_correction_oa.gif) no-repeat 0 0; }

@@ -795,7 +795,7 @@ topaz.annotation = {
           					(annotationConfig.isPublic ? "public" : "private") +
           					"-active";
   	var noteTitle = (annotationConfig.isAuthor ? "Author" : annotationConfig.isPublic ? "User" : "My") + 
-          					" Annotation " + 
+          					" Note " + 
           					(annotationConfig.isPublic ? "(Public)" : "(Private)");
   	var markerId     = annotationConfig.regionalDialogMarker;
   	var noteImg   = _namespace + "/images/" + "pone_note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
@@ -820,7 +820,7 @@ topaz.annotation = {
 	  link.className = 'bug public';
 	  //link.href = '#';
 	  //link.id = markerId;
-	  link.title = 'Click to preview this annotation';
+	  link.title = 'Click to preview this note';
 	  link.displayId = "";
 	  link.onclick = function() { topaz.displayComment.show(this); }
 	  link.onmouseover = function() { topaz.displayComment.mouseoverComment(this); }
@@ -838,7 +838,7 @@ topaz.annotation = {
                                '"  onclick="topaz.displayComment.show(this);"' + 
                                ' onmouseover="topaz.displayComment.mouseoverComment(this);"' + 
                                ' onmouseout="topaz.displayComment.mouseoutComment(this);"' + 
-                               ' title="Click to preview this annotation">1</a>' +
+                               ' title="Click to preview this note">1</a>' +
           							       html + '</span>');
 */
       var tempNode = document.createElement("div");
