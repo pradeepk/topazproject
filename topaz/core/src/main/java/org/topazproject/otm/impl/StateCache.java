@@ -141,6 +141,7 @@ class StateCache {
     public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session)
         throws OtmException {
       Collection<Mapper> mappers = new ArrayList<Mapper>();
+      boolean pmapChanged = false;
 
       for (Mapper m : cm.getFields()) {
         if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
@@ -149,9 +150,7 @@ class StateCache {
 
           if (!eq) {
             pmap      = nv;
-            mappers   = cm.getFields(); // all fields since predicate-map is a wild-card
-
-            break;
+            pmapChanged = true;
           }
         } else {
           List<String> ov = vmap.get(m);
@@ -165,6 +164,9 @@ class StateCache {
           }
         }
       }
+
+      if (pmapChanged)
+        mappers = cm.getFields(); // all fields since predicate-map is a wild-card
 
       return mappers;
     }

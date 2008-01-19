@@ -379,13 +379,16 @@ public class SessionImpl extends AbstractSession {
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
     } else {
       Collection<Mapper> fields = states.update(o, cm, this);
-      boolean update = (fields != null);
+      boolean firstTime = (fields == null);
+      if (firstTime)
+        fields = cm.getFields();
+      int nFields = fields.size();
       if (log.isDebugEnabled()) {
-        if (fields == null)
+        if (firstTime)
           log.debug("Saving " + id + " to store.");
-        else if (fields.size() == cm.getFields().size())
+        else if (nFields == cm.getFields().size())
             log.debug("Full update for " + id + ".");
-        else if (fields.size() == 0)
+        else if (nFields == 0)
           log.debug("Update skipped for " + id + ". No changes to the object state.");
         else {
           Collection<Mapper> skips = new ArrayList(cm.getFields());
@@ -399,12 +402,12 @@ public class SessionImpl extends AbstractSession {
           log.debug("Partial update for " + id + ". Skipped:" + buf);
         }
       }
-      if (fields == null)
-        fields = cm.getFields();
 
       if (bf == null) {
-        store.delete(cm, fields, id.getId(), o, txn);
-        store.insert(cm, fields, id.getId(), o, txn);
+        if (firstTime || (nFields > 0)) {
+          store.delete(cm, fields, id.getId(), o, txn);
+          store.insert(cm, fields, id.getId(), o, txn);
+        }
       } else {
         switch(states.digestUpdate(o, bf)) {
         case delete:
