@@ -496,6 +496,28 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
         blockedOn = con;
       }
     }
+
+    /**
+     * Suspend the thread association on locks held by this connection. 
+     * This doesn't mean locks are released. It is just that the thread 
+     * based dead-lock detection can now be bypassed. This makes the 
+     * SimpleBlobStore usable in a thread-pool situation such as 
+     * when exposed via RMI or SOAP to client apps. 
+     */
+    public void suspend() {
+      for (Lock lock : locks)
+        lock.thread = null;
+    }
+
+    /**
+     * Resume the thread association on locks held by this connection. 
+     * Locks are now attached to the current thread. See {@link suspend}.
+     */
+    public void resume() {
+      Thread thread = Thread.currentThread();
+      for (Lock lock : locks)
+        lock.thread = thread;
+    }
   }
 
   private static class Lock {
