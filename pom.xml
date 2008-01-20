@@ -581,6 +581,7 @@
             <link>http://www.hibernate.org/hib_docs/v3/api</link>
             <link>http://ehcache.sourceforge.net/javadoc</link>
             <link>http://static.springframework.org/spring/docs/2.0.x/api</link>
+            <link>http://hc.apache.org/httpclient-3.x/apidocs</link>
           </links>
         </configuration>
       </plugin>
