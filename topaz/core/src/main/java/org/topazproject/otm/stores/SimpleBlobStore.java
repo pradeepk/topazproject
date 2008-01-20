@@ -511,7 +511,7 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
 
     /**
      * Resume the thread association on locks held by this connection. 
-     * Locks are now attached to the current thread. See {@link suspend}.
+     * Locks are now attached to the current thread. See {@link #suspend}.
      */
     public void resume() {
       Thread thread = Thread.currentThread();
