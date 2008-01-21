@@ -11,6 +11,7 @@
   <artifactId>fedora-patches</artifactId>
   <name>Fedora Patches</name>
   <version>0.8.2_rc2-SNAPSHOT</version>
+  <description>A set of Fedora classes with Topaz-specific patches applied.</description>
 
   <dependencies>
     <dependency>

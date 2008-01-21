@@ -16,6 +16,7 @@
   <version>0.8.2_rc2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Build Helpers</name>
+  <description>Scripts, plugins, etc for building Topaz.</description>
   
   <!--
   <parent>

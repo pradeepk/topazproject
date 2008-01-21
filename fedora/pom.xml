@@ -16,6 +16,7 @@
   <version>0.8.2_rc2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Fedora Libs</name>
+  <description>Fedora related libraries for Topaz.</description>
   
   <parent>
     <groupId>org.topazproject</groupId>

@@ -4,6 +4,7 @@
   <artifactId>mulgara-service</artifactId>
   <packaging>war</packaging>
   <name>Mulgara Webservice Webapp</name>
+  <description>A re-packaging of Mulgara as a webapp (war), accessible using SOAP.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>

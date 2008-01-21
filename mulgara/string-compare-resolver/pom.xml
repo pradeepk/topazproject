@@ -6,6 +6,7 @@
   <packaging>jar</packaging>
   <version>0.8.2_rc2-SNAPSHOT</version>
   <name>Mulgara string-comparison resolver</name>
+  <description>A Mulgara resolver providing additional string-comparison functions.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>

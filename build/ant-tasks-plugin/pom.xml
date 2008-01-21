@@ -9,6 +9,7 @@
   <packaging>maven-plugin</packaging>
   
   <name>Topaz Ant Tasks</name>
+  <description>Maven plugins based on ant scripts.</description>
   
   <parent>
     <groupId>org.topazproject</groupId>

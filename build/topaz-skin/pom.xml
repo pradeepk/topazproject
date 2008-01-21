@@ -7,6 +7,7 @@
   <packaging>jar</packaging>
   <version>0.8.2_rc2-SNAPSHOT</version>
   <name>Simple site skin for Topaz</name>
+  <description>A simple Maven site skin for Topaz.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>

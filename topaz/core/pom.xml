@@ -4,6 +4,7 @@
   <packaging>jar</packaging>
   <version>0.8.2_rc2-SNAPSHOT</version>
   <name>Object/Triple Mapping</name>
+  <description>The core Topaz Object-Tripple-Mapping library.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>

@@ -7,6 +7,7 @@
   <version>2.1.1-t00802_rc2-SNAPSHOT</version>
   <name>Fedora with Topaz config</name>
   <inceptionYear>2006</inceptionYear>
+  <description>A re-packaging of Fedora with Topaz-specific configuration and patches.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>

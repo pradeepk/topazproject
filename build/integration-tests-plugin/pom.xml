@@ -7,6 +7,7 @@
   <packaging>maven-plugin</packaging>
   <version>0.8.2_rc2-SNAPSHOT</version>
   <name>Integration Tests Plugin</name>
+  <description>Maven plugin to set up and trigger the integration tests.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>

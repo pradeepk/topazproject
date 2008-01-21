@@ -5,6 +5,8 @@
   <packaging>jar</packaging>
   <version>0.8.2_rc2-SNAPSHOT</version>
   <name>Mulgara Client</name>
+  <description>A Mulgara client library to provide a common, consistent API for accessing
+    Mulgara remotely over various transports or running an embedded instance.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>
