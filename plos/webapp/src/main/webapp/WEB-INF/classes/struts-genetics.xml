@@ -51,12 +51,6 @@
       </result>
     </action>
 
-    <action name="aeChecklist" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/ae_checklist.ftl</param>
-      </result>
-    </action>
-
     <action name="authors" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/genetics/static/authors.ftl</param>
@@ -81,27 +75,9 @@
       </result>
     </action>
 
-    <action name="developing" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/developing.ftl</param>
-      </result>
-    </action>
-
-     <action name="downloads" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/downloads.ftl</param>
-      </result>
-    </action>
-
     <action name="edboard" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/genetics/static/edboard.ftl</param>
-      </result>
-    </action>
-
-    <action name="eic" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/eic.ftl</param>
       </result>
     </action>
 
@@ -111,12 +87,6 @@
       </result>
     </action>
 
-    <action name="hotezWho" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/hotez_who.ftl</param>
-      </result>
-    </action>
-    
     <action name="information" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/genetics/static/information.ftl</param>
