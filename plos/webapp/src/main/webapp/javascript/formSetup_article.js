@@ -1,3 +1,4 @@
+var _noteType;
 var _commentTitle;
 var _comments;
 var _ratingTitle;
@@ -8,7 +9,8 @@ var _ratingTitleCue		 = 'Enter your comment title...';
 var _ratingCommentCue   = 'Enter your comment...';
 
 function initAnnotationForm() {	
-	_commentTitle    = _annotationForm.cTitle;
+	_noteType = _annotationForm.cNoteType;
+  _commentTitle    = _annotationForm.cTitle;
 	_comments        = _annotationForm.cArea;
 	var privateFlag  = _annotationForm.privateFlag;
 	var publicFlag   = _annotationForm.publicFlag;
@@ -17,6 +19,11 @@ function initAnnotationForm() {
 	var btnCancel    = dojo.byId("btn_cancel");
 	var submitMsg    = dojo.byId('submitMsg');
 	
+  // Annotation Dialog Box: Note type field
+  dojo.event.connect(_noteType, "onchange", function () { 
+    dojo.byId('cdls').style.visibility = _noteType.value == 'correction' ? 'visible' : 'hidden';  
+  });
+  
 	// Annotation Dialog Box: Title field
 	dojo.event.connect(_commentTitle, "onfocus", function () { 
 	  topaz.formUtil.textCues.off(_commentTitle, _titleCue); 
@@ -111,13 +118,12 @@ function initAnnotationForm() {
 	/******************************************************
 	 * Ratings Initial Settings
 	 ******************************************************/
-	_ratingTitle               = _ratingsForm.cTitle;
+  _ratingTitle               = _ratingsForm.cTitle;
 	_ratingComments            = _ratingsForm.cArea;
 	var btnPostRating        = dojo.byId("btn_post_rating");
 	var btnCancelRating      = dojo.byId("btn_cancel_rating");
 	var submitRatingMsg        = dojo.byId('submitRatingMsg');
 	
-	// Annotation Dialog Box: Title field
 	dojo.event.connect(_ratingTitle, "onfocus", function () { 
 	  topaz.formUtil.textCues.off(_ratingTitle, _ratingTitleCue); 
 	});
@@ -187,6 +193,13 @@ function initAnnotationForm() {
     e.preventDefault();
   });
 
+}
+
+function showAnnotationDialog() {
+   // reset
+  _noteType.selectedIndex = 0;
+  dojo.byId('cdls').style.visibility = 'hidden';
+  _dlg.show();
 }
 
 function validateNewComment() {
@@ -270,6 +283,7 @@ function validateNewComment() {
 
          topaz.formUtil.textCues.reset(_commentTitle, _titleCue);
          topaz.formUtil.textCues.reset(_comments, _commentCue);
+         
           
          topaz.formUtil.enableFormFields(_annotationForm);
          return false;
