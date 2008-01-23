@@ -265,8 +265,7 @@ public class ArticleUtil {
     for (Category c : a.getCategories())
       ;
 
-    if (log.isDebugEnabled())
-      log.debug("deleting all objects for uri '" + article + "'");
+    log.info("deleting all objects for uri '" + article + "'");
 
     // delete the article from mulgara first (in case of problems)
     try {
@@ -277,8 +276,7 @@ public class ArticleUtil {
 
     oi = a;
     while (oi != null) {
-      if (log.isDebugEnabled())
-        log.debug("deleting uri '" + oi.getId() + "'");
+      log.info("deleting uri '" + oi.getId() + "'");
 
       // Remove article from full-text index first
       String result = "";
@@ -293,8 +291,7 @@ public class ArticleUtil {
         }
       }
 
-      if (log.isDebugEnabled())
-        log.debug("Removed '" + oi.getPid() + "' from full-text index:\n" + result);
+      log.info("Removed '" + oi.getPid() + "' from full-text index:\n" + result);
 
       // Remove from fedora
       try {
@@ -319,9 +316,9 @@ public class ArticleUtil {
         log.warn("Tried to remove non-existent object '" + c.getPid() + "'");
       }
     }
-    
+
     if (ade.getExceptionList().size()>0) {
-    	throw ade;
+
     }
   }
 
