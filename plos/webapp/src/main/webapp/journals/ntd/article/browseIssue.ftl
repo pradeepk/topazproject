@@ -16,22 +16,20 @@
   <!-- begin : right-hand column -->
   <div id="rhc">
     <div id="sideNav">
-    <@s.url id="archiveURL" action="browseVolume" namespace="/journals/ntd/article" includeParams="gotoVolume=${issueInfo.parentVolume}"/>
-      <p id="issueNav">
-        <#assign needSpacer=false/>
+          <p id="issueNav">
         <#if issueInfo.prevIssue?exists>
           <@s.url id="prevIssueURL" action="browseIssue" namespace="/journals/ntd/article" issue="${issueInfo.prevIssue}" includeParams="none"/>
           <a href="${prevIssueURL}">&lt;Previous Issue</a>
-          <#assign needSpacer=true/>
+           | 
         </#if>
-        <#if needSpacer> | </#if>
-        <a href="${archiveURL}">Archive</a>
-        <#assign needSpacer=true/>
+        <#if issueInfo.parentVolume?exists>
+          <@s.url id="archiveURL" action="browseVolume" namespace="/journals/ntd/article" includeParams="gotoVolume=${issueInfo.parentVolume}"/>
+          <a href="${archiveURL}">Archive</a>
+           | 
+        </#if>
         <#if issueInfo.nextIssue?exists>
           <@s.url id="nextIssueURL" action="browseIssue" namespace="/journals/ntd/article" issue="${issueInfo.nextIssue}" includeParams="none"/>
-          <!-- <#if needSpacer> | </#if> -->
           <a href="${nextIssueURL}">Next Issue&gt;</a>
-          <#assign needSpacer=true/>
         </#if>
       </p>
       <div id="floatMarker">&nbsp;</div>
