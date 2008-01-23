@@ -318,7 +318,7 @@ public class ArticleUtil {
     }
 
     if (ade.getExceptionList().size()>0) {
-
+      throw ade;
     }
   }
 
