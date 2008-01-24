@@ -137,7 +137,7 @@
                                     </doi_data>
                                 </component>
                             </xsl:for-each>
-                            <xsl:for-each select="//table-wrap">
+                            <xsl:for-each select="//table-wrap[@id]">
                                 <component parent_relation="isPartOf">
                                     <description><xsl:for-each select="caption/title"/></description>
                                     <doi_data>

@@ -317,4 +317,8 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <error-code>404</error-code>
     <location>/static/pageNotFound.action</location>
   </error-page>
+  
+  <session-config>
+    <session-timeout>1440</session-timeout>
+  </session-config>
 </web-app>

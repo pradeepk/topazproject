@@ -307,6 +307,12 @@
       </result>
     </action>
 
+    <action name="journalClub" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/journalClub.ftl</param>
+      </result>
+    </action>
+
     <action name="latex" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/latex.ftl</param>
@@ -388,6 +394,12 @@
     <action name="users" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/users.ftl</param>
+      </result>
+    </action>
+
+    <action name="userFaq" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/userFaq.ftl</param>
       </result>
     </action>
 

@@ -748,6 +748,7 @@
                          'directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850',
                         $apos,');return false;')"/>
   </xsl:variable>
+  <xsl:if test="graphic">
   <div class="figure">
     <xsl:call-template name="makeXpathLocation"/>
     <xsl:element name="a">
@@ -800,6 +801,10 @@
     </xsl:if>
 
   </div>
+  </xsl:if>
+  <xsl:if test="not(graphic)">
+    <xsl:apply-templates />
+  </xsl:if>
 </xsl:template>
 
 <xsl:template name="make-figs-and-tables">
@@ -940,8 +945,12 @@
 
 <xsl:template name="fund-compete">
   <xsl:for-each select="/article/back/fn-group">
-    <p><strong>Funding:</strong><xsl:text> </xsl:text><xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
-    <p><strong>Competing interests:</strong><xsl:text> </xsl:text> <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
+    <xsl:if test="fn[@fn-type='financial-disclosure']">
+      <p><strong>Funding:</strong><xsl:text> </xsl:text><xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
+    </xsl:if>
+    <xsl:if test="fn[@fn-type='conflict']">
+      <p><strong>Competing interests:</strong><xsl:text> </xsl:text> <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
+    </xsl:if>
   </xsl:for-each>
 </xsl:template>
 
@@ -978,11 +987,18 @@ Make article meta data
             <xsl:text>et al. </xsl:text>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:apply-templates select="name/surname"/>
-            <xsl:text> </xsl:text>
-            <xsl:call-template name="makeInitials">
-              <xsl:with-param name="string"><xsl:value-of select="name/given-names"/></xsl:with-param>
-            </xsl:call-template>
+            <xsl:choose> <!-- added this in to handle group author in citation -->
+              <xsl:when test="collab"><!-- added this in to handle group author in citation -->
+                <xsl:apply-templates select="collab"/><!-- added this in to handle group author in citation -->
+                </xsl:when><!-- added this in to handle group author in citation -->
+              <xsl:otherwise><!-- added this in to handle group author in citation -->
+                <xsl:apply-templates select="name/surname"/>
+                <xsl:text> </xsl:text>
+                <xsl:call-template name="makeInitials">
+		  <xsl:with-param name="string"><xsl:value-of select="name/given-names"/></xsl:with-param>
+		</xsl:call-template>
+              </xsl:otherwise><!-- added this in to handle group author in citation -->
+            </xsl:choose><!-- added this in to handle group author in citation -->
             <xsl:if test="position() != last()">
               <xsl:text>, </xsl:text>
             </xsl:if>
@@ -990,10 +1006,10 @@ Make article meta data
         </xsl:choose>
       </xsl:for-each>
       <xsl:text> (</xsl:text>
-      <xsl:value-of select="pub-date[@pub-type='collection']/year"/>
+      <xsl:value-of select="pub-date[@pub-type='collection']/year | pub-date[@pub-type='ppub']/year"/>
       <xsl:text>) </xsl:text>
       <xsl:apply-templates select="title-group/article-title"/><xsl:text>. </xsl:text>
-      <xsl:value-of select="../journal-meta/journal-title"/><xsl:text> </xsl:text>
+      <xsl:value-of select="../journal-meta/journal-id[@journal-id-type='nlm-ta']"/><xsl:text> </xsl:text>
       <xsl:value-of select="volume"/>(<xsl:value-of select="issue"/>):
       <xsl:value-of select="elocation-id"/>.
       doi:<xsl:value-of select="article-id[@pub-id-type='doi']"/>
@@ -1017,7 +1033,7 @@ Make article meta data
               </xsl:element>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:apply-templates select="name | collab" mode="front"/>,
+              <xsl:apply-templates select="name | collab" mode="front"/>
             </xsl:otherwise>
           </xsl:choose>
           <!-- the name element handles any contrib/xref and contrib/degrees -->
@@ -1028,8 +1044,10 @@ Make article meta data
                                       and not(self::role)]"
                                       mode="front"/>
           <xsl:variable name="matchto" select="xref/@rid"/>
-          <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
-<!--
+	  <xsl:if test="../following-sibling::aff">
+	    <xsl:text>, </xsl:text><xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
+	  </xsl:if>
+	  <!--
           <xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
           <xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>-->
       </p>
@@ -1056,26 +1074,18 @@ Make article meta data
       <xsl:value-of select="pub-date[@pub-type='epub']/year"/>
     </p>
     <p>
-      <strong>Copyright:</strong><xsl:text>  &#169; </xsl:text>
-      <xsl:apply-templates select="copyright-year | permissions/copyright-year" mode="front"/>
-            <!-- copyright: show statement -or- year -->
-          <!-- Most recent version of DTD recommends using the <permissions> wrapper
-               for the copyright data. We handle both cases here. -->
       <xsl:choose>
-        <xsl:when test="copyright-statement | permissions/copyright-statement">
-          <xsl:apply-templates select="copyright-statement | permissions/copyright-statement" mode="front"/>
+	<xsl:when test="copyright-statement[contains(., 'Attribution')]">
+	  <strong>Copyright:</strong><xsl:text>  &#169; </xsl:text><xsl:apply-templates select="copyright-year" /><xsl:text> </xsl:text><xsl:apply-templates select="copyright-statement" />
         </xsl:when>
         <xsl:otherwise>
-          <xsl:if test="copyright-year | permissions/copyright-year">
-            <span class="gen">
-              <xsl:text>Copyright: </xsl:text>
-            </span>
-            <xsl:apply-templates select="copyright-year | permissions/copyright-year" mode="front"/>
-            <xsl:apply-templates select="copyright-holder | permissions/copyright-holder"/>
-          </xsl:if>
-        </xsl:otherwise>
+	  <xsl:apply-templates select="copyright-statement" />
+	</xsl:otherwise>
       </xsl:choose>
     </p>
+    <!-- copyright: show statement -or- year -->
+    <!-- Most recent version of DTD recommends using the <permissions> wrapper
+         for the copyright data. We handle both cases here. -->
     <xsl:call-template name="fund-compete"/>
     <xsl:if test="../../back/glossary">
       <p>
@@ -1085,15 +1095,10 @@ Make article meta data
         </xsl:for-each>
       </p>
     </xsl:if>
-<!--  <p>
+    <!--p>
     <strong>DOI:</strong><xsl:text> </xsl:text>
     <xsl:value-of select="article-id[@pub-id-type='doi']"/>
-    </p>-->
-    <xsl:for-each select="author-notes/fn[@fn-type='current-aff']">
-      <p>
-        <xsl:apply-templates select="." mode="front"/>
-      </p>
-    </xsl:for-each>
+    </p-->
     <xsl:if test="author-notes/corresp">
       <p>
         <xsl:apply-templates select="author-notes/corresp" mode="front"/>
@@ -1104,6 +1109,11 @@ Make article meta data
         <a name="equal-contrib"></a><xsl:text>#</xsl:text> These authors contributed equally to this work.
       </p>
     </xsl:if>
+   <xsl:for-each select="author-notes/fn[@fn-type='current-aff']">
+      <p>
+        <xsl:apply-templates select="." mode="front"/>
+      </p>
+    </xsl:for-each>
     <xsl:for-each select="author-notes/fn[@fn-type='deceased']">
       <p>
         <xsl:apply-templates select="." mode="front"/>
@@ -1779,8 +1789,9 @@ Make article meta data
      <xsl:attribute name="href"><xsl:value-of select="concat($pubAppContext,'/article/fetchFirstRepresentation.action?uri=',$objURI)"/></xsl:attribute>
     <strong><xsl:apply-templates select="label"/></strong>
   </xsl:element>
+ 	<strong><xsl:apply-templates select="caption/title"/></strong>
  </h5>
-  <xsl:apply-templates select="*[not(self::label)]"/>
+  <xsl:apply-templates select="caption/p"/>
 </xsl:template>
 
 
@@ -1916,10 +1927,19 @@ Make article meta data
       </a>
     </xsl:when>
     <xsl:otherwise>
+      <xsl:if test="@content-type">
+        <span>
+          <xsl:attribute name="class"><xsl:value-of select="@content-type" /></xsl:attribute>
+          <xsl:call-template name="make-id"/>
+          <xsl:apply-templates/>
+        </span>   
+      </xsl:if>
+      <xsl:if test="not(@content-type)">
       <span class="capture-id">
         <xsl:call-template name="make-id"/>
         <xsl:apply-templates/>
       </span>
+       </xsl:if>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -2082,7 +2102,7 @@ Make article meta data
 <!-- the chooses before and after the element content
      tweak the display as appropriate -->
 
-<xsl:template match="label | alt-text | attrib | copyright-statement">
+<xsl:template match="label | alt-text | attrib">
   <!-- element-specific handling before content: -->
   <xsl:choose>
     <xsl:when test="ancestor::disp-formula">
@@ -2458,11 +2478,10 @@ Make article meta data
 </xsl:template>
 
 <!-- copyright-statement, copyright-year, copyright-holder -->
-
-<xsl:template match="copyright-statement | copyright-year | copyright-holder" mode="front">
+<!--xsl:template match="copyright-statement | copyright-year | copyright-holder" mode="front">
   <xsl:apply-templates/>
   <xsl:call-template name="nl-1"/>
-</xsl:template>
+</xsl:template-->
 
 <!-- history -->
 
@@ -3282,10 +3301,8 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- xref for fn, table-fn, or bibr becomes a superior number -->
-<!-- Displays the @rid, not the element content (if any) -->
 
-<xsl:template match="xref[@ref-type='fn']
-                  | xref[@ref-type='table-fn']">
+<xsl:template match="xref[@ref-type='fn']">
   <span class="xref">
     <xsl:call-template name="make-id"/>
     <sup>
@@ -3294,9 +3311,21 @@ Make article meta data
       <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
         <span class="gen"><xsl:text>, </xsl:text></span>
       </xsl:if>
-      <a href="#{@rid}">
-        <xsl:value-of select="@rid"/>
-      </a>
+      <a href="#{@rid}"><xsl:apply-templates/></a><!-- Displays the element content (if any), not the @rid -->
+    </sup>
+  </span>
+</xsl:template>
+
+<xsl:template match="xref[@ref-type='table-fn']">
+  <span class="xref">
+    <xsl:call-template name="make-id"/>
+    <sup>
+      <!-- if immediately-preceding sibling was an xref, punctuate
+           (otherwise assume desired punctuation is in the source).-->
+      <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
+        <span class="gen"><xsl:text>, </xsl:text></span>
+      </xsl:if>
+     	<xsl:apply-templates/><!-- Displays the footnote symbols (if any). Removed the hyperlink because table footnotes are not displayed on the web page, therefore there is nothing to hyperlink to. -->
     </sup>
   </span>
 </xsl:template>
@@ -3642,7 +3671,7 @@ Make article meta data
 
 
 <!-- permissions -->
-
+<!--
 <xsl:template match="permissions">
   <xsl:choose>
     <xsl:when test="copyright-statement">
@@ -3661,14 +3690,14 @@ Make article meta data
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
+-->
 
 <!-- copyright-statement whether or not part of permissions -->
-
+<!--
 <xsl:template match="copyright-statement">
   <p><xsl:apply-templates/></p>
 </xsl:template>
-
+-->
 
 <!-- ============================================================= -->
 <!--  50. UNMODED DATA ELEMENTS: PARTS OF A DATE                   -->
