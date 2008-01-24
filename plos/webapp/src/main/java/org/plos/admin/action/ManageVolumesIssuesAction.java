@@ -112,7 +112,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           // get Issues for this Journal
           issues.clear();
           for (final Volume volume : volumes) {
-            for (final URI issueDoi : volume.getIssueList()) {
+            for (final URI issueDoi : volume.getSimpleCollection()) {
               final Issue issue = session.get(Issue.class, issueDoi.toString());
                 if (issue != null) {
                     issues.add(issue);
@@ -170,7 +170,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
               if (issueToAdd.length() == 0) { continue; }
               issues.add(URI.create(issueToAdd.trim()));
             }
-            newVolume.setIssueList(issues);
+            newVolume.setSimpleCollection(issues);
           }
 
           session.saveOrUpdate(newVolume);
@@ -237,7 +237,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           } else {
             volumeIssues = null;
           }
-          volume.setIssueList(volumeIssues);
+          volume.setSimpleCollection(volumeIssues);
 
           session.saveOrUpdate(volume);
 
@@ -293,7 +293,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           final Journal currentJournal = journalService.getJournal();
           Volume latestVolume = session.get(Volume.class, currentJournal.getVolumes()
                   .get(currentJournal.getVolumes().size() - 1).toString());
-          latestVolume.getIssueList().add(doi);
+          latestVolume.getSimpleCollection().add(doi);
           session.saveOrUpdate(latestVolume);
           addActionMessage("Added Issue to Volume: " + latestVolume);
           journalService.journalWasModified(currentJournal);
@@ -332,7 +332,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
                     .add(Restrictions.eq("simpleCollection", doi)).list();
             if (containingVolumes.size() > 0) {
               for (Volume containingVolume : containingVolumes) {
-                containingVolume.getIssueList().remove(doi);
+                containingVolume.getSimpleCollection().remove(doi);
                 session.saveOrUpdate(containingVolume);
                 addActionMessage("Deleted Issue from Volume: " + containingVolume);
               }
