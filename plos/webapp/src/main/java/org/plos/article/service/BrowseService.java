@@ -239,14 +239,14 @@ public class BrowseService {
    * @param issue DOI of Issue.
    * @return the Issue information.
    */
-  private IssueInfo getIssueInfoInTx(Session session, final URI doi) {
+  private IssueInfo getIssueInfoInTx(Session session, final URI issueDOI) {
 
     // XXX look up IssueInfo in Cache
 
     // get the Issue
-    final Issue issue = session.get(Issue.class, doi.toString());
+    final Issue issue = session.get(Issue.class, issueDOI.toString());
     if (issue == null) {
-      log.error("Faiiled to retrieve Issue for doi='"+doi.toString()+"'");
+      log.error("Faiiled to retrieve Issue for doi='"+issueDOI.toString()+"'");
       return null; 
     }
 
@@ -263,29 +263,36 @@ public class BrowseService {
     }
     
     // derive prev/next Issue, "parent" Volume
-    URI prevIssue = null;
-    URI nextIssue = null;
-    URI parentVolume = null;
-    final List<Volume> volumes = session.createCriteria(Volume.class)
-            .add(Restrictions.eq("simpleCollection", doi)).list();
-    if (volumes.size() > 0) {
-      // TODO: using 1st Volume, use ??? when multiple
-      parentVolume = volumes.get(0).getId();
-      final List<URI> issues = volumes.get(0).getSimpleCollection();
-      final int issuePos = issues.indexOf(doi);
-      prevIssue = (issuePos == 0) ? null : issues.get(issuePos - 1);
-      nextIssue = (issuePos == issues.size() - 1) ? null : issues.get(issuePos + 1);
+    URI prevIssueURI = null;
+    URI nextIssueURI = null;
+    Volume parentVolume = null;
+    
+    // String oqlQuery = "select v from Volume v where v.issueList = <" + issueDOI + "> ;";
+    // Results results = session.createQuery(oqlQuery).execute();
+    
+    Results results = session.createQuery("select v from Volume v where v.issueList = :doi ;")
+    .setParameter("doi", issueDOI).execute();
+    
+    results.beforeFirst();
+    if (results.next()) {
+      parentVolume = (Volume)results.get("v"); 
+    }
+    if (parentVolume != null) {
+      final List<URI> issues = parentVolume.getIssueList();
+      final int issuePos = issues.indexOf(issueDOI);
+      prevIssueURI = (issuePos == 0) ? null : issues.get(issuePos - 1);
+      nextIssueURI = (issuePos == issues.size() - 1) ? null : issues.get(issuePos + 1);
     } else {
       log.warn("Issue: " + issue.getId() + ", not contained in any Volumes");
     }
 
-    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssue, nextIssue,
-                                        imageArticle, description, parentVolume);
+    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI, nextIssueURI,
+                                        imageArticle, description, parentVolume.getId());
         
     for (URI articleDoi : issue.getSimpleCollection()) {
       ArticleInfo articleInIssue = getArticleInfo(articleDoi, session.getTransaction());
       if (articleInIssue == null) {
-        log.warn("Article " + articleDoi + " missing; member of Issue " + doi);
+        log.warn("Article " + articleDoi + " missing; member of Issue " + issueDOI);
         continue;
       }
       issueInfo.addArticleToIssue(articleInIssue);
@@ -331,7 +338,7 @@ public class BrowseService {
             }
 
             List<IssueInfo> issueInfos = new ArrayList();
-            for (final URI issueDoi : volume.getSimpleCollection()) {
+            for (final URI issueDoi : volume.getIssueList()) {
               issueInfos.add(getIssueInfoInTx(session, issueDoi));
             }
 

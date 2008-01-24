@@ -110,7 +110,7 @@
                   <@s.textfield name="image" size="32" value="${volume.image!''}"/>
                 </td>
                 <td>
-                  <@trimBrackets volume.simpleCollection!'' />
+                  <@trimBrackets volume.issueList!'' />
                   <@s.textfield name="aggregation" size="96"
                     value="${unbracketedString}"/>
                 </td>

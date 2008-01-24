@@ -10,14 +10,19 @@
 package org.plos.models;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
- * Marker class to mark an Aggregation as a "Volume".
+ * Volume OTM model class. Extends Aggregation but does not use the 
+ * simpleCollection defined there as it's order is not preserved. 
+ * Instead, we use issueList to handle the aggregated issues. 
  *
- * @author Jeff Suttor
+ * @author Jeff Suttor, Alex Worden
  */
 @Entity(type = PLoS.plos + "Volume", model = "ri")
 public class Volume extends Aggregation {
@@ -30,6 +35,10 @@ public class Volume extends Aggregation {
   @Predicate(uri = PLoS.plos + "image")
   private URI image;
 
+  // The ordered list of DOIs of issues contained in this volume. 
+  @Predicate(uri = Rdf.dc_terms + "issueList", storeAs = Predicate.StoreAs.rdfSeq)
+  private List<URI> issueList = new ArrayList<URI>();
+  
   /**
    * Get the image for this Volume.
    *
@@ -79,7 +88,35 @@ public class Volume extends Aggregation {
     return "Volume: ["
             + "displayName: " + getDisplayName()
             + ", image: " + getImage()
+            + ", issueList: " + getIssueList()
             + ", " + super.toString()
             + "]";
+  }
+  
+  /**
+   * Retrieves an ordered list of issue DOIs contained in this volume
+   * @return ordered list of issue DOIs contained in this volume. 
+   */
+  public List<URI> getIssueList() {
+    /* Workaround for bug in original implementation...
+     * Migrate existing issue list from super.simpleCollection to 
+     * this.issueList. Remove all issue from super.simpleCollection.
+     * This code can probably be removed after 0.8.2.1 release but it 
+     * shouldn't do any harm to leave it in here. 
+     */
+    if ((this.issueList.size() == 0) && 
+        (super.getSimpleCollection().size() > 0)) {
+      this.issueList = super.getSimpleCollection();
+    }
+    return issueList;
+  }
+
+  /**
+   * Set the ordered list of issue DOIs contained in this volume
+   * @param issueList
+   */
+  public void setIssueList(List<URI> issueList) {
+     this.issueList = issueList;
+     super.setSimpleCollection(new ArrayList<URI>());
   }
 }
