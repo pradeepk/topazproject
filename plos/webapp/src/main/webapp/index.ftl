@@ -40,14 +40,15 @@
               </div>
               <div class="article section lastSection">
                 <h3>In the News</h3>
-                <p><@s.a href="${newNoted07}" title="Read Open-Access Article">Plant Geneticists Find <em>Veritas in Vino</em></@s.a></p>
-                <p>Viticulture takes a step forward with the publication of a high quality 504.6 megabase genome sequence of Pinot Noir grape including 29,585 genes 2 million single nucleotide polymophisms, a whole genome duplication which produced at least ten of the nineteen chromosomes, and much more...</p>
-                <!-- The list below is to be used for links out to media or blogs referencing the highlighted article-->
-                <!--
+                <h4><a href="/article/info%3Adoi%2F10.1371%2Fjournal.pone.0001431;jsessionid=663B0A0E2C0C2A81D9FF08EB2B6FC33F" title="Read Open-Access Article">Climate Influence on Deep Sea Populations</a></h4>
+                <p>The progressive depletion of world fisheries is an important socio-economic issue but a study by <a href="#">Joan B. Company</a> and colleagues describes how shrimp populations in the Mediterranean remain constant, thanks to deep-water currents. The coverage of the paper included:</p>
                 <ul class="articles refs">
-                  <li>source: <a href="#">article title</a></li>
+                  <li>Science: <a href="http://sciencenow.sciencemag.org/cgi/content/full/2008/116/2">Out of Disaster, Shrimp Are Reborn </a></li>
+                  <li>Journal Watch: <a href="http://journalwatch.conservationmagazine.org/2008/01/16/heavy-water-saves-shrimp/">Heavy Water Saves Shrimp</a></li>
+                  <li>Science Daily: <a href="http://www.sciencedaily.com/releases/2008/01/080116080316.htm">Climate Influences Deep Sea Populations</a></li>
+                  <li>Deep-Sea News: <a href="http://scienceblogs.com/deepseanews/2008/01/deep_shrimp_fishery_swept_away.php">Deep Shrimp Fishery Swept Away by Currents</a></li>
                 </ul>
-                -->
+
                 <div class="clearer">&nbsp;</div>
               </div>
             </div>
