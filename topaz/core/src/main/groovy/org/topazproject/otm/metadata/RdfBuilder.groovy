@@ -176,12 +176,12 @@ public class RdfBuilder extends BuilderSupport {
 
     if (node instanceof ClassDef) {
       ClassMetadata md = node.toClass(this)
-      if (md.isEntity())
+      if (md.isPersistable())
         sessFactory.setClassMetadata(md)
       return md.getSourceClass()
     } else if (node instanceof FieldDef && node.classType) {
       ClassMetadata md = node.classType.toClass(this)
-      if (md.isEntity())
+      if (md.isPersistable())
         sessFactory.setClassMetadata(md)
       return node
     } else {

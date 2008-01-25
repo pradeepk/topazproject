@@ -118,7 +118,7 @@ public class ClassMetadata<T> {
     this.idField   = idField;
     this.blobField = null;
 
-    this.types     = null;
+    this.types     = Collections.emptySet();
     this.fields    = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
 
     Map<String, List<Mapper>> varMap  = new HashMap<String, List<Mapper>>();
@@ -336,13 +336,18 @@ public class ClassMetadata<T> {
   }
 
   /**
-   * Tests if this meta-data is for an entity class. Entity classes have an id field, and
-   * graph/model
+   * Tests if this metadata is for a persistable class. To be persistable, the class must
+   * have an id field. It must also have a model or if a model is missing then there should not
+   * be any persistable fields or rdf types and must have a blob field.
    *
-   * @return true for entity type
+   * @return true only if this class can be persisted
    */
-  public boolean isEntity() {
-    return (idField != null) && (model != null);
+  public boolean isPersistable() {
+    if (idField == null)
+      return false;
+    if (model != null)
+      return true;
+    return ((types.size() + fields.size()) == 0) && (blobField != null);
   }
 
   /**

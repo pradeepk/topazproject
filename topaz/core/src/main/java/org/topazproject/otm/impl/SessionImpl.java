@@ -536,7 +536,7 @@ public class SessionImpl extends AbstractSession {
 
       case SUBQ_RESULTS:
         ClassMetadata<?> scm = sessionFactory.getClassMetadata(type);
-        boolean isSubView = scm != null && !scm.isView() && !scm.isEntity();
+        boolean isSubView = scm != null && !scm.isView() && !scm.isPersistable();
 
         List<Object> vals = new ArrayList<Object>();
 
