@@ -15,10 +15,10 @@
   <div id="user">
     <div>
     <@s.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile" tabId="preferences"/>
-        <p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session[freemarker_config.userAttributeKey].userId}" title="You are logged in as ${Session[freemarker_config.userAttributeKey].displayName}">--><strong>${Session[freemarker_config.userAttributeKey].displayName}</strong></a>!</p>
+        <p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session[freemarker_config.userAttributeKey].userId}" title="You are logged in as ${Session[freemarker_config.userAttributeKey].displayName}">--><strong>${Session[freemarker_config.userAttributeKey].displayName}</strong></a>! | </p>
         <ul>
           <@s.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=${Request[freemarker_config.journalContextAttributeKey].baseUrl}/logout.action"/>
-          <li><a href="${editProfileURL}" title="Edit your account preferences and alert settings">Preferences</a></li>
+          <li><a href="${editProfileURL}" title="Edit your account preferences and alert settings">Preferences</a> | </li>
           <li><a href="${logoutURL}" title="Logout">Logout</a></li>
         </ul>
     </div>
@@ -54,7 +54,7 @@
         <input src="${freemarker_config.context}/images/pone_search_btn1.gif" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
       </fieldset>
     </form>
-    <!-- <a href="#" id="advSearch">Advanced Search</a> uncomment for 0.9 -->
+    <a href="#" id="advSearch">Advanced Search</a>
   </div>
   <!-- end : dashboard -->
   <!-- begin : navigation -->
