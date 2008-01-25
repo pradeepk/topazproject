@@ -189,11 +189,6 @@ public class AnnotationClassMetaFactory {
       }
     }
 
-    if ((blobField != null) && ((types.size() + fields.size()) > 0))
-      throw new OtmException("The class " + clazz +
-          " violates an @Blob restriction. It has fields that are to be persisted as RDF statements.");
-
-
     return new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, 
                              fields, blobField);
   }

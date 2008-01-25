@@ -364,6 +364,7 @@ public class SessionImpl extends AbstractSession {
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
     Loader                bf            = cm.getBlobField();
+    boolean               tp            = (cm.getFields().size() + cm.getTypes().size()) > 0;
 
     if (delete) {
       if (log.isDebugEnabled())
@@ -372,7 +373,7 @@ public class SessionImpl extends AbstractSession {
      states.remove(o);
      if (bf != null)
        bs.delete(cm, id.getId(), txn);
-     else
+     if (tp)
        store.delete(cm, cm.getFields(), id.getId(), o, txn);
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
@@ -403,12 +404,13 @@ public class SessionImpl extends AbstractSession {
         }
       }
 
-      if (bf == null) {
+      if (tp) {
         if (firstTime || (nFields > 0)) {
           store.delete(cm, fields, id.getId(), o, txn);
           store.insert(cm, fields, id.getId(), o, txn);
         }
-      } else {
+      }
+      if (bf != null) {
         switch(states.digestUpdate(o, bf)) {
         case delete:
           bs.delete(cm, id.getId(), txn);
@@ -437,10 +439,10 @@ public class SessionImpl extends AbstractSession {
     if (cm.isView())
       instance = loadView(cm, id.getId(), instance, txn,
                                   new ArrayList<Filter>(filters.values()), filterObj);
-    else if (cm.getBlobField() == null)
+    else if ((cm.getTypes().size() + cm.getFields().size()) > 0)
       instance = store.get(cm, id.getId(), instance, txn, 
                                   new ArrayList<Filter>(filters.values()), filterObj);
-    else if (instance == null) {
+    else if ((cm.getBlobField() != null) && (instance == null)) {
       try {
         instance = cm.getSourceClass().newInstance();
       } catch (Throwable t) {
@@ -551,7 +553,7 @@ public class SessionImpl extends AbstractSession {
         throw new Error("unknown type " + r.getType(idx) + " encountered");
     }
   }
-  
+
   /**
    * Synchronize the Session Cache entries with the current state of the object; either
    * loaded from the database or supplied by the application.

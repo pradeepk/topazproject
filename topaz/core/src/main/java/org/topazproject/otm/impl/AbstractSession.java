@@ -279,7 +279,7 @@ abstract class AbstractSession implements Session {
     if (cm == null)
       throw new OtmException("No class metadata found for " + clazz);
 
-    if (cm.getModel() == null && !cm.isView() && (cm.getBlobField() == null))
+    if ((cm.getModel() == null) && !cm.isView() && (cm.getBlobField() == null))
       throw new OtmException("No graph/model found for " + clazz);
 
     return cm;
