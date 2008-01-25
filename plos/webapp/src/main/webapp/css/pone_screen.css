@@ -235,9 +235,9 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 
 
 /* Search Dashboard */
+#db { padding: 0; text-align: center; font-size: .8em; position: absolute; top: 48px; right: -22px; padding: 0; border-width: 0; color: #888; background: url(../images/pone_db_bg.gif) no-repeat top left; padding: 10px 15px 10px 13px;}
+#db fieldset 	{ padding: 0; margin: 0; background-color: transparent; vertical-align: top; width: 331px; border: none; }
 
-#db 			{ padding: 0; text-align: center; font-size: .8em; position: absolute; top: 44px; right: -20px; padding: 0; border-width: 0; color: #888; background: url(../images/pone_db_bg.gif) no-repeat top left; padding: 14px 15px 10px 15px;}
-#db fieldset 	{ padding: 0; margin: 0; background-color: transparent; vertical-align: top; width: 246px; border: none; }
 #db fieldset div{ position: relative; }
 #db fieldset legend,
 #db fieldset label
@@ -256,6 +256,10 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 	border-width: 0;
 }
 #db fieldset input.button { float: left; position: relative; top:-1px; }
+#db a#advSearch { display:block; width:65px; position:absolute; text-align:left; top:9px; left:265px; color:#fff; }
+#db a#advSearch:link,
+#db a#advSearch:visited { text-decoration:none; }
+#db a#advSearch:hover { text-decoration:underline; }
 
 /* new layout */
 #db fieldset input.button { padding: 0 5px; }
@@ -268,18 +272,18 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 #user p 	{ margin: 0; padding: 0; display: inline;}
 #user ul li { list-style-type: none;display: inline; }
 #user li a:link,
-#user li a:visited 	{ padding: 0; margin-left: 4px;}
+#user li a:visited 	{ padding: 0; margin-left:0 2px; text-decoration: none;}
 #user a:link,
-#user a:visited {  color: #FFF!important; }
-#user a:hover { text-decoration: none; }
+#user a:visited {  color: #fff!important; }
+#hdr #user a:hover { text-decoration: underline; }
 
 
 /* links wraps browse and RSS buttons */
 #links 		{ position: absolute; right: 0; padding: 0; right: 0;height: 38px; bottom: 8px;text-decoration: none; }
 ul#links 	{ margin: 0; padding: 0; list-style-type: none;}
 ul#links li { background: url(../images/pone_links_li_tr.gif) no-repeat 100% 0; list-style-type: none; display: block; padding: 0; margin: 0 0 0 4px; text-indent: 0; float: left;}
-	ul#links a,
-	ul#links a:visited	{ font-size: .85em; font-weight:bold; background: url(../images/pone_links_li_bg.gif) no-repeat top left;  padding:1px 0; padding-left: 20px; color: #fff; margin: 0 6px 0 0;text-decoration: none; display: block; }
+ul#links a,
+ul#links a:visited	{ font-size: .85em; font-weight:bold; background: url(../images/pone_links_li_bg.gif) no-repeat top left;  padding:1px 0; padding-left: 20px; color: #fff; margin: 0 6px 0 0;text-decoration: none; display: block; }
 ul#links li.browse a,
 ul#links li.browse a:visited { background-image: url(../images/pone_links_browse_bg.gif); }
 ul#links li.rss a,
