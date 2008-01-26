@@ -330,6 +330,13 @@ topaz.annotation = {
   findIeRange: function() {
     if (document.selection.type == "Text") {
       var range      = document.selection.createRange();
+
+      // textualize selection range if not already 
+      // and do element-based selection range validation if applicable 
+      if(this.validateAndTextualizeRange(range) == annotationConfig.excludeSelection) {
+        return annotationConfig.excludeSelection;
+      }
+
       var startRange = range.duplicate();
       var endRange   = startRange.duplicate();
       
@@ -401,28 +408,49 @@ topaz.annotation = {
    * @return "noSelect" upon error.
    */
   validateAndTextualizeRange: function(range) {
-    if(range.startContainer.nodeType == 1) {
-      // element-based user selection...
-      if(range.endContainer.nodeType != 1 || range.startContainer != range.endContainer) {
+    // IE
+    if (document.selection && document.selection.createRange) {
+      // textualize
+      // NOTE: IE's range.findText method will by design return false 
+      // if the selection spans over multiple elements when the selection range is element based 
+      if(!range.findText(range.text, 0, 0)) {
         return annotationConfig.excludeSelection;
       }
-      // enforce that only one element is selectable when we have an element-based user selection
-      // (this is usually an li tag)
-      if(Math.abs(range.startOffset - range.endOffset) != 1) {
-        annotationConfig.annSelErrMsg = 'Only one item may be selected for notation.';
+    }
+    // Mozilla
+    else if (window.getSelection) {
+      var nt = range.startContainer.nodeType;
+      if(nt == 1) {
+        // element-based user selection...
+        // enfore for element selections the range spans only a single element in its entirety
+        if(range.endContainer.nodeType != 1 || range.startContainer != range.endContainer) {
+          return annotationConfig.excludeSelection;
+        }
+        // enforce that only one element is selectable when we have an element-based user selection
+        // (this is usually an li tag)
+        if(Math.abs(range.startOffset - range.endOffset) != 1) {
+          annotationConfig.annSelErrMsg = 'Only one item may be selected for notation.';
+          return annotationConfig.excludeSelection;
+        }
+        // it is presumed all contained text w/in the following container (node) is selected
+        var ftn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.startOffset], true);
+        var ltn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.endOffset - 1], false);
+        range.setStart(ftn, 0);
+        range.setEnd(ltn, ltn.length);
+      }
+      else if(nt == 3) {
+        // text-based user selection...
+        // ensure we are not spanning multiple li tags
+        // NOTE: verified w/ Susanne DeRisi
+        // TODO finish
+      }
+      else {
+        // un-handled node type
         return annotationConfig.excludeSelection;
       }
-      // it is presumed all contained text w/in the following container (node) is selected
-      var ftn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.startOffset], true);
-      var ltn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.endOffset - 1], false);
-      range.setStart(ftn, 0);
-      range.setEnd(ltn, ltn.length);
     }
     else {
-      // text-based user selection...
-      // ensure we are not spanning multiple li tags
-      // NOTE: verified w/ Susanne DeRisi
-      // TODO finish
+      return 'noSelect';
     }
   },
 
@@ -586,11 +614,10 @@ topaz.annotation = {
 
     var pointEl = this.getFirstAncestorByXpath(pointSpan);
     //alert("pointEl = " + pointEl.element.nodeName + ", " + pointEl.xpathLocation);
-    
-    if (pointEl == annotationConfig.excludeSelection) 
+
+    if (!pointEl || pointEl == annotationConfig.excludeSelection) 
       return annotationConfig.excludeSelection;
-    
-   
+
     var point = new Object();
     point.element = pointEl.element;
     point.xpathLocation = pointEl.xpathLocation;

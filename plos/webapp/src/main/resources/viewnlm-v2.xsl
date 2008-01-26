@@ -3485,7 +3485,7 @@ Make article meta data
                    | glossary/title | def-list/title | ack/title
                    | back/notes/title">
   <xsl:call-template name="nl-1"/>
-  <h2 xPathLocation="noSelect">
+  <h2 xpathLocation="noSelect">
     <xsl:apply-templates/>
   </h2>
   <xsl:call-template name="nl-1"/>
