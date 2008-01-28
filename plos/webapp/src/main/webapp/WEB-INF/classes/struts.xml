@@ -208,7 +208,9 @@
 
   <package name="search" extends="default" namespace="/search">
     <action name="searchStart" class="org.plos.action.NoOpAction">
-      <result>/WEB-INF/pages/search/searchStart.ftl</result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/search/searchResults.ftl</param>
+      </result>
     </action>
 
     <action name="simpleSearch" class="org.plos.search.action.SearchAction" method="executeSimpleSearch">
@@ -221,9 +223,11 @@
     </action>
 
     <action name="advancedSearch" class="org.plos.search.action.SearchAction" method="executeAdvancedSearch">
-      <result name="input">/WEB-INF/pages/search/searchStart.ftl</result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/search/searchStart.ftl</param>
+      </result>
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/WEB-INF/pages/search/searchResults.ftl</param>
+        <param name="templateFile">/search/searchResults.ftl</param>
       </result>
     </action>
   </package>
