@@ -154,7 +154,7 @@ public class AnnotationClassMetaFactory {
         throw new OtmException("Duplicate rdf:type in class hierarchy " + clazz);
     }
 
-    String name = ((entity != null) && !"".equals(entity.name())) ? entity.name() : getName(clazz);
+    String name = getEntityName(clazz);
 
     for (Field f : clazz.getDeclaredFields()) {
       Collection<?extends Mapper> mappers = createMapper(f, clazz, top, uriPrefix, false);
@@ -372,7 +372,7 @@ public class AnnotationClassMetaFactory {
         p = new MapperImpl(null, loader, null);
       else
         p = new MapperImpl(null, loader, null, null, false, null,
-                                 Mapper.MapperType.PREDICATE, true, generator, null, null);
+                                 Mapper.MapperType.PREDICATE, true, generator, null, null, null);
 
       return Collections.singletonList(p);
     }
@@ -407,6 +407,7 @@ public class AnnotationClassMetaFactory {
       String  model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
 
       String  rt      = (serializer == null) ? getRdfType(type) : null;
+      String  assoc   = (serializer == null) ? getEntityName(type) : null;
 
       if (inverse && (model == null) && (serializer == null))
         model = getModel(type);
@@ -434,7 +435,7 @@ public class AnnotationClassMetaFactory {
       if (isView)
         p = new MapperImpl(var, loader, ft);
       else
-        p = new MapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft);
+        p = new MapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft, assoc);
 
       return Collections.singletonList(p);
     }
@@ -545,7 +546,7 @@ public class AnnotationClassMetaFactory {
                && String.class.isAssignableFrom((Class) targs[0]))
             return new MapperImpl(null, new ScalarFieldLoader(field, getter, setter, null), 
                                   null, null, false, model, Mapper.MapperType.PREDICATE_MAP,
-                                  true, null, null, null);
+                                  true, null, null, null, null);
         }
       }
     }
@@ -604,6 +605,18 @@ public class AnnotationClassMetaFactory {
       return entity.model();
 
     return getModel(clazz.getSuperclass());
+  }
+
+  private static String getEntityName(Class<?> clazz) {
+    if (clazz == null)
+      return null;
+
+    Entity entity = clazz.getAnnotation(Entity.class);
+
+    if ((entity != null) && !"".equals(entity.name()))
+      return entity.name();
+
+    return getName(clazz);
   }
 
   private static String toString(Field f) {

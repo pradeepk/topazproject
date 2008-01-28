@@ -32,6 +32,7 @@ public class MapperImpl implements Mapper {
   private final CascadeType[]       cascade;
   private final FetchType           fetchType;
   private final Loader              loader;
+  private final String              associatedEntity;
 
   /**
    * Creates a new MapperImpl object for a regular class.
@@ -47,11 +48,12 @@ public class MapperImpl implements Mapper {
    * @param generator if there is a generator for this field
    * @param cascade cascade options for this field
    * @param fetchType fetch type for associations. Must be null otherwise
+   * @param associatedEntity the entity name for associations
    */
   public MapperImpl(String uri, Loader loader, String dataType,
                         String rdfType, boolean inverse, String model, MapperType mapperType,
                         boolean entityOwned, IdentifierGenerator generator, 
-                        CascadeType[] cascade, FetchType fetchType) {
+                        CascadeType[] cascade, FetchType fetchType, String associatedEntity) {
     this.uri             = uri;
     this.var             = null;
     this.loader          = loader;
@@ -64,6 +66,7 @@ public class MapperImpl implements Mapper {
     this.generator       = generator;
     this.cascade         = cascade;
     this.fetchType       = fetchType;
+    this.associatedEntity = associatedEntity;
   }
 
   /**
@@ -86,6 +89,7 @@ public class MapperImpl implements Mapper {
     this.generator       = null;
     this.cascade         = null;
     this.fetchType       = fetchType;
+    this.associatedEntity = null;
   }
 
   /**
@@ -107,6 +111,7 @@ public class MapperImpl implements Mapper {
     this.generator       = other.getGenerator();
     this.cascade         = other.getCascade();
     this.fetchType       = other.getFetchType();
+    this.associatedEntity = other.getAssociatedEntity();
   }
 
   /*
@@ -263,5 +268,9 @@ public class MapperImpl implements Mapper {
 
   public Class getComponentType() {
     return ((org.topazproject.otm.mapping.java.FieldLoader)loader).getComponentType();
+  }
+  
+  public String getAssociatedEntity() {
+    return associatedEntity;
   }
 }

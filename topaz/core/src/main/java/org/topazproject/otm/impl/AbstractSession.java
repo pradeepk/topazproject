@@ -135,7 +135,7 @@ abstract class AbstractSession implements Session {
     if (m == null)
       throw new OtmException(path + " is not a valid field name for " + cm);
 
-    return new Criteria(this, criteria, m, checkClass(m.getComponentType()),
+    return new Criteria(this, criteria, m, checkClass(m.getAssociatedEntity()),
                         new ArrayList<Filter>(filters.values()));
   }
 
@@ -284,4 +284,17 @@ abstract class AbstractSession implements Session {
 
     return cm;
   }
+
+  protected ClassMetadata checkClass(String entityName) throws OtmException {
+    ClassMetadata cm = sessionFactory.getClassMetadata(entityName);
+
+    if (cm == null)
+      throw new OtmException("No class metadata found for " + entityName);
+
+    if ((cm.getModel() == null) && !cm.isView() && (cm.getBlobField() == null))
+      throw new OtmException("No graph/model found for " + entityName);
+
+    return cm;
+  }
+
 }

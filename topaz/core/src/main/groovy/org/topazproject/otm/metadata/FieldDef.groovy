@@ -90,6 +90,8 @@ public class FieldDef {
 
   protected def      defaultValue
 
+  private boolean loopDetect = false
+
   /**
    * This explicit constructor is so we can "split" the attributes into the per-class and
    * the per-field ones. Needed because we don't know whether this is a nested class definition
@@ -171,17 +173,17 @@ public class FieldDef {
       m = classType.toClass().fields.collect{ new MapperImpl(it, new EmbeddedClassMemberFieldLoader(container, it.getLoader())) }
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
-      String rt = (ser == null) ? getRdfType(rdf, f.getType()) : null;
+      ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
       FieldLoader l = new ScalarFieldLoader(f, get, set, ser);
       if (ser != null)
         ft = null;
-      m = [new MapperImpl(pred, l, dtype, rt, inverse, model, mt, owned, idGen,
-ct, ft)]
+      m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned, idGen,
+ct, ft, cm?.getName())]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
       Serializer ser      = rdf.sessFactory.getSerializerFactory().getSerializer(compType, dtype)
-      String rt = (ser == null) ? getRdfType(rdf, compType) : null;
+      ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
       if (ser != null)
         ft = null;
       FieldLoader l;
@@ -190,8 +192,8 @@ ct, ft)]
       else
         l = new CollectionFieldLoader(f, get, set, ser, compType);
 
-      m = [new MapperImpl(pred, l, dtype, rt, inverse, model, mt, owned,
-                             idGen, ct, ft)]
+      m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned,
+                             idGen, ct, ft, cm?.getName())]
     }
 
     // done
@@ -367,12 +369,19 @@ ct, ft)]
     return ft;
   }
 
-  private String getRdfType(RdfBuilder rdf, Class clazz) {
-    ClassMetadata cm = rdf.sessFactory.getClassMetadata(clazz);
-    if (cm == null) {
-      try { rdf.sessFactory.preload(clazz)} catch (Throwable t) {}
-      cm = rdf.sessFactory.getClassMetadata(clazz);
+  private ClassMetadata getAssoc(RdfBuilder rdf) {
+    if (javaType)
+      return rdf.sessFactory.getClassMetadata(javaType);
+    if (classType) {
+      // XXX: revisit; for now all tests pass
+      if (loopDetect)
+        return null;
+      loopDetect = true;
+      ClassMetadata cm = classType.toClass(rdf)
+      loopDetect = false;
+      return cm;
     }
-    return (cm != null) ? cm.getType() : null;
+    return null;
   }
+
 }

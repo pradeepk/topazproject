@@ -289,7 +289,7 @@ public class ClassMetadata<T> {
         candidate = m;
 
       if (uris.contains(rt)) {
-        uris.removeAll(sf.getClassMetadata(m.getComponentType()).getTypes());
+        uris.removeAll(sf.getClassMetadata(m.getAssociatedEntity()).getTypes());
         candidate = m;
       }
     }

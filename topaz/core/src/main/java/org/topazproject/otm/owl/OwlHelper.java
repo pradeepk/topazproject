@@ -146,7 +146,7 @@ public class OwlHelper {
             if (m.getDataType() != null)
               op.setRanges(new URI[] { URI.create(m.getDataType()) });
             else {
-              ClassMetadata<?> cm2 = factory.getClassMetadata(m.getComponentType());
+              ClassMetadata<?> cm2 = factory.getClassMetadata(m.getAssociatedEntity());
               if ((cm2 != null) && (cm2.getType() != null))
                 op.setRanges(new URI[] { URI.create(cm2.getType()) });
             }

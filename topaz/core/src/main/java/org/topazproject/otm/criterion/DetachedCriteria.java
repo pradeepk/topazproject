@@ -218,7 +218,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     if (cm == null)
       return null;
     Mapper m = cm.getMapperByName(alias);
-    return (m == null) ? null : sf.getClassMetadata(m.getComponentType());
+    return (m == null) ? null : sf.getClassMetadata(m.getAssociatedEntity());
   }
 
   /*
@@ -257,7 +257,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
         if (m == null)
           log.warn("onPreInsert: Field '" + alias + "' not found in " + cm);
         else {
-          cm = sf.getClassMetadata(m.getComponentType());
+          cm = sf.getClassMetadata(m.getAssociatedEntity());
           da.rdfType = (cm == null) ? null : URI.create(cm.getType());
           da.predicateUri = URI.create(m.getUri());
           da.inverse = m.hasInverseUri();
@@ -314,7 +314,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
           if (log.isDebugEnabled())
             log.debug("onPostLoad: converted " + da + " to '" + alias + "'");
 
-          cm = sf.getClassMetadata(m.getComponentType());
+          cm = sf.getClassMetadata(m.getAssociatedEntity());
 
           for (Criterion cr : criterionList)
             cr.onPostLoad(this, cm);

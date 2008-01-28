@@ -615,7 +615,7 @@ public class ItqlStore extends AbstractTripleStore {
     Set<ClassMetadata<?>> clss = new HashSet<ClassMetadata<?>>();
 
     for (Mapper p : cm.getFields()) {
-      ClassMetadata<?> c = sf.getClassMetadata(p.getComponentType());
+      ClassMetadata<?> c = sf.getClassMetadata(p.getAssociatedEntity());
       if ((c != null) && ((c.getTypes().size() + c.getFields().size()) > 0))
         clss.add(c);
     }
@@ -654,7 +654,7 @@ public class ItqlStore extends AbstractTripleStore {
         throws OtmException {
     String tmodel = modelUri;
     if (m.isAssociation())
-      tmodel = getModelUri(sf.getClassMetadata(m.getComponentType()).getModel(), txn);
+      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), txn);
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $s $n subquery (select $t from <").append(tmodel)
        .append("> where $o <rdf:type> $t) from <").append(modelUri).append("> where ")
@@ -675,7 +675,7 @@ public class ItqlStore extends AbstractTripleStore {
         throws OtmException {
     String tmodel = modelUri;
     if (m.isAssociation())
-      tmodel = getModelUri(sf.getClassMetadata(m.getComponentType()).getModel(), txn);
+      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), txn);
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $p subquery (select $t from <").append(tmodel)
        .append("> where $o <rdf:type> $t) from <")

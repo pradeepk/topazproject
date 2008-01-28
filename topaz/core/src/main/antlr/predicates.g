@@ -205,7 +205,7 @@ options {
         return null;
 
       ClassMetadata<?> md;
-      if ((md = sessFactory.getClassMetadata(m.getComponentType())) != null)
+      if ((md = sessFactory.getClassMetadata(m.getAssociatedEntity())) != null)
         return ExprType.classType(md, m.getMapperType());
 
       if (m.typeIsUri())

@@ -206,4 +206,11 @@ public interface Mapper {
 
   // XXX: temporary hack
   public Class getComponentType();
+  
+  /**
+   * For associations, the name of the associated entity.
+   * 
+   * @return the name of the associated entity or null if this is not an association mapping
+   */
+  public String getAssociatedEntity();
 }
