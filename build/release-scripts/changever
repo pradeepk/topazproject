@@ -16,13 +16,13 @@ poms=(`find . -name pom.xml -print -o -name target -prune -o -name install -prun
 declare -a topatch
 topatch=(
     pom.xml
-    plosone/search/fedoragsearch-server/pom.xml
-    plosone/search/ws-server-impl/pom.xml
-    plosone/search/topaz-lucene-impl/pom.xml
+    plos/search/fedoragsearch-server/pom.xml
+    plos/search/ws-server-impl/pom.xml
+    plos/search/topaz-lucene-impl/pom.xml
+    plos/ecqs-bundle/pom.xml
+    fedora/fedora-bundle/pom.xml
     build/ant-tasks-plugin/src/main/scripts/ecqs.mojos.xml
     build/ant-tasks-plugin/src/main/scripts/fedora.mojos.xml
-    re-package/fedora/pom.xml
-    re-package/ecqs/pom.xml
     packages/cas/pom.xml
     packages/fedora/pom.xml
 )

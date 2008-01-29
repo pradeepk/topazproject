@@ -15,7 +15,7 @@
     <dependency>
       <groupId>info.fedora</groupId>
       <artifactId>fedoragsearch-server</artifactId>
-      <version>2.1.1-t00802_rc2-SNAPSHOT</version>
+      <version>2.1.1-t00803-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
@@ -36,7 +36,7 @@
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
               <sourceDependencies>
-                <sourceDependency>info.fedora:fedoragsearch-server:2.1.1-t00802_rc2-SNAPSHOT:/fedoragsearch-service.wsdl</sourceDependency>
+                <sourceDependency>info.fedora:fedoragsearch-server:2.1.1-t00803-SNAPSHOT:/fedoragsearch-service.wsdl</sourceDependency>
               </sourceDependencies>
               <!--
               <implementationClassName>org.topazproject.ws.search.SearchServicePortSoapBindingImpl</implementationClassName>
