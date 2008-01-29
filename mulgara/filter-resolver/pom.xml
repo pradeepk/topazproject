@@ -4,7 +4,7 @@
   <groupId>org.topazproject</groupId>
   <artifactId>filter-resolver</artifactId>
   <packaging>jar</packaging>
-  <version>0.8.2_rc2-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
   <name>Mulgara filter resolver</name>
   <description>A Mulgara resolver which intercepts updates in order to trigger
     various actions, thereby providing functionality akin to sql triggers.</description>
@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>mulgara</artifactId>
-    <version>0.8.2_rc2-SNAPSHOT</version>
+    <version>0.8.3-SNAPSHOT</version>
   </parent>
 
   <dependencies>

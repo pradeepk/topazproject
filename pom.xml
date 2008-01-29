@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.8.2_rc2-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -671,7 +671,7 @@
           <plugin>
             <groupId>org.topazproject.plugins</groupId>
             <artifactId>ant-tasks</artifactId>
-            <version>0.8.2_rc2-SNAPSHOT</version>
+            <version>0.8.3-SNAPSHOT</version>
             <executions>
               <execution>
                 <id>it-startenv-exe</id>
@@ -688,8 +688,8 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t00802_rc2-SNAPSHOT</fedora-version>
-                  <ecqs-version>2.0.6-1-t00802_rc2-SNAPSHOT</ecqs-version>
+                  <fedora-version>2.1.1-t00803-SNAPSHOT</fedora-version>
+                  <ecqs-version>2.0.6-1-t00803-SNAPSHOT</ecqs-version>
                 </configuration>
               </execution>
               <execution>
@@ -717,7 +717,7 @@
           <plugin>
             <groupId>org.topazproject.plugins</groupId>
             <artifactId>reports-plugin</artifactId>
-            <version>0.8.2_rc2-SNAPSHOT</version>
+            <version>0.8.3-SNAPSHOT</version>
             <executions>
               <execution>
                 <goals><goal>configure-directories</goal></goals>
@@ -847,7 +847,7 @@
         <plugin>
           <groupId>org.topazproject.plugins</groupId>
           <artifactId>integration-tests-plugin</artifactId>
-          <version>0.8.2_rc2-SNAPSHOT</version>
+          <version>0.8.3-SNAPSHOT</version>
           <executions>
             <execution>
               <goals>

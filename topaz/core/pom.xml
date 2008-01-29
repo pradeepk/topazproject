@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>otm</artifactId>
   <packaging>jar</packaging>
-  <version>0.8.2_rc2-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
   <name>Object/Triple Mapping</name>
   <description>The core Topaz Object-Tripple-Mapping library.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topaz</artifactId>
-    <version>0.8.2_rc2-SNAPSHOT</version>
+    <version>0.8.3-SNAPSHOT</version>
   </parent>
   
   <dependencies>

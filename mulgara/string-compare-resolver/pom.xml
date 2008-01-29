@@ -4,14 +4,14 @@
   <groupId>org.topazproject</groupId>
   <artifactId>string-compare-resolver</artifactId>
   <packaging>jar</packaging>
-  <version>0.8.2_rc2-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
   <name>Mulgara string-comparison resolver</name>
   <description>A Mulgara resolver providing additional string-comparison functions.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>mulgara</artifactId>
-    <version>0.8.2_rc2-SNAPSHOT</version>
+    <version>0.8.3-SNAPSHOT</version>
   </parent>
 
   <dependencies>

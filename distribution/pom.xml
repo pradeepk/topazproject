@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>topaz-distribution</artifactId>
-  <version>0.8.2_rc2-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Topaz Distribution</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
-    <version>0.8.2_rc2-SNAPSHOT</version>
+    <version>0.8.3-SNAPSHOT</version>
   </parent>
 
   <!-- Dependencies here are specifically for building jar-with-dependencies.

@@ -5,12 +5,12 @@
   <artifactId>ws-search</artifactId>
   <packaging>pom</packaging>
   <name>Search Webservice</name>
-  <version>0.8.2_rc2-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
-    <version>0.8.2_rc2-SNAPSHOT</version>
+    <version>0.8.3-SNAPSHOT</version>
   </parent>
 
   <reporting>

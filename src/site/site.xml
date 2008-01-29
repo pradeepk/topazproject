@@ -7,6 +7,6 @@
   <skin>
     <groupId>org.topazproject</groupId>
     <artifactId>topaz-skin</artifactId>
-    <version>0.8.2_rc2-SNAPSHOT</version>
+    <version>0.8.3-SNAPSHOT</version>
   </skin>
 </project>

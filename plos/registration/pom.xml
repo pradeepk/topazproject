@@ -4,14 +4,14 @@
   <groupId>org.plos</groupId>
   <artifactId>plos-registration</artifactId>
   <packaging>pom</packaging>
-  <version>0.8.2_rc2-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
   <name>Plos Registration</name>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.8.2_rc2-SNAPSHOT</version>
+    <version>0.8.3-SNAPSHOT</version>
   </parent>
 
   <dependencies>
