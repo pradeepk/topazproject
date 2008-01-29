@@ -12,7 +12,7 @@ fromPatch=`groovy -e 'print new XmlSlurper().parse(new File("pom.xml")).profiles
 
 # Find all the poms we want to update
 declare -a poms
-poms=(`find . -name pom.xml -print -o -name target -prune -o -name install -prune`)
+poms=(`find . -name pom.xml -print -o -name target -prune -o -name install -prune` src/site/site.xml)
 declare -a topatch
 topatch=(
     pom.xml
@@ -37,11 +37,11 @@ read -p "Continue (y/n)? " ans
 # Change the patch versions in specific files
 for f in ${topatch[@]}; do
   echo "Patching $f to $toPatch"
-  perl -p -i -e "s/$fromPatch/$toPatch/g" "$f"
+  perl -p -i -e "s/\Q$fromPatch/$toPatch/g" "$f"
 done
 
 # Update all our poms
 for f in ${poms[@]}; do
   echo "Updating $f to $toVer"
-  perl -p -i -e "s/$fromVer/$toVer/g" "$f"
+  perl -p -i -e "s/\Q$fromVer/$toVer/g" "$f"
 done
