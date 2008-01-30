@@ -9,29 +9,35 @@
  */
 package org.plos.annotation.action;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.plos.action.BaseActionSupport;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.user.service.UserService;
 
 /**
- * To be subclassed by Action classes for Annotations and Replies that can use common stuff among them
+ * To be subclassed by Action classes for Annotations and Replies that can use
+ * common stuff among them
  */
 public abstract class AnnotationActionSupport extends BaseActionSupport {
   private AnnotationService annotationService;
   private UserService userService;
 
+  private static final Log log = LogFactory.getLog(AnnotationActionSupport.class);
+
   /**
    * Set the annotations service.
    * @param annotationService annotationService
    */
-  public final void setAnnotationService(final AnnotationService annotationService) {
+  public void setAnnotationService(final AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
 
   /**
    * @return the AnnotationService
    */
-  protected final AnnotationService getAnnotationService() {
+  protected AnnotationService getAnnotationService() {
     return annotationService;
   }
 
