@@ -716,7 +716,6 @@
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
           <file>/css/pone_static.css</file>
         </css>
       </page>
