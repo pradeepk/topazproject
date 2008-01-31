@@ -54,7 +54,8 @@
         <input src="${freemarker_config.context}/images/pone_search_btn1.gif" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
       </fieldset>
     </form>
-    <a href="#" id="advSearch">Advanced Search</a>
+    <@s.url action="advancedSearch" namespace="/search" includeParams="none" id="advancedSearch"/>
+    <a href="${advancedSearch}" id="advSearch">Advanced Search</a>
   </div>
   <!-- end : dashboard -->
   <!-- begin : navigation -->
