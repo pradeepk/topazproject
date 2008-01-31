@@ -92,6 +92,23 @@ class StateCache {
     return states.get(new ObjectReference(o)).digestUpdate(o, bf);
   }
 
+  /** 
+   * Start doing change-track monitoring on this field too.
+   * 
+   * @param o the object whose field was lazy loaded
+   * @param field the field that is lazy loaded
+   * @param session the session that is notifying this 
+   *
+   * @throws OtmException on an error
+   */
+  public void delayedLoadComplete(Object o, Mapper field, Session session) throws OtmException {
+    // expected to be called after insert - so no expunge
+    InstanceState is = states.get(new ObjectReference(o));
+    if (is != null)
+      is.delayedLoadComplete(o, field, session);
+  }
+
+
   /**
    * Removes an object from the cache.
    *
@@ -130,12 +147,16 @@ class StateCache {
       for (Mapper m : cm.getFields()) {
         if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
           pmap = (Map<String, List<String>>) m.getRawValue(instance, true);
-        else {
+        else if (m.getLoader().isLoaded(instance)) {
           List<String> nv =
             !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
           vmap.put(m, nv);
         }
       }
+    }
+
+    public void delayedLoadComplete(Object o, Mapper m, Session session) throws OtmException {
+      vmap.put(m, !m.isAssociation() ? m.get(o) : session.getIds(m.get(o)));
     }
 
     public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session)
@@ -152,7 +173,7 @@ class StateCache {
             pmap      = nv;
             pmapChanged = true;
           }
-        } else {
+        } else if (m.getLoader().isLoaded(instance)) {
           List<String> ov = vmap.get(m);
           List<String> nv =
             !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
@@ -198,7 +219,6 @@ class StateCache {
 
       return ret;
     }
-
   }
 
   /**

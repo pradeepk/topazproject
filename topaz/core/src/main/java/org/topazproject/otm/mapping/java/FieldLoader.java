@@ -12,7 +12,14 @@ package org.topazproject.otm.mapping.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -64,4 +71,21 @@ public interface FieldLoader extends Loader {
    * @return the serializer or null
    */
   public Serializer getSerializer();
+
+  /**
+   * Load the values into this field of the given object instance.
+   *
+   * @param root     the root object instance tracked by session
+   * @param instance the current nested embedded instance
+   * @param values   the values to set
+   * @param types    the type look ahead for associations
+   * @param mapper   the mapper that this loader is associated to (XXX:revisit) 
+   * @param session  the session under which the load is performed.
+   *                 Used for resolving associations etc.
+   *
+   * @throws OtmException if a field's value cannot be set
+   */
+  public void load(Object root, Object instance, List<String> values, 
+          Map<String, Set<String>> types, Mapper mapper, 
+          Session session) throws OtmException;
 }

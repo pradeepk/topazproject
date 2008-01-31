@@ -15,8 +15,17 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.serializer.Serializer;
 
@@ -191,6 +200,78 @@ public abstract class AbstractFieldLoader implements FieldLoader {
     } catch (Exception e) {
       throw new OtmException("Deserialization error on " + toString(), e);
     }
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public final void load(Object instance, List<String> values, 
+      Map<String, Set<String>> types, Mapper mapper, 
+      Session session) throws OtmException {
+    load(instance, instance, values, types, mapper, session);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void load(Object root, Object instance, List<String> values, 
+      Map<String, Set<String>> types, Mapper mapper, 
+      Session session) throws OtmException {
+
+    if (!mapper.isAssociation()) {
+      this.set(instance, values);
+      return;
+    }
+
+    List           assocs = new ArrayList();
+    loadAssocs(values, types, session, assocs);
+    this.set(instance, assocs);
+  }
+
+  /**
+   * Instantiate and load the associations into the given list.
+   *
+   * @param ids      the association ids
+   * @param types    the type look ahead for associations
+   * @param session  the session under which the load is performed.
+   *                 Used for resolving associations etc.
+   * @param assoc    the collection to load association instances to
+   *
+   * @throws OtmException on a failure in instantiating associations
+   */
+  protected void loadAssocs(List<String> ids, Map<String, Set<String>> types,
+      Session session, Collection assocs) throws OtmException {
+    SessionFactory sf     = session.getSessionFactory();
+
+    for (String id : ids) {
+      // lazy load
+      Class       cls = getComponentType();
+
+      Set<String> t   = types.get(id);
+
+      if ((t != null) && (t.size() > 0))
+        cls = sf.mostSpecificSubClass(cls, t);
+      else {
+        ClassMetadata c = sf.getClassMetadata(cls);
+
+        if ((c != null) && (c.getType() != null))
+          cls = null;
+      }
+
+      if (cls != null) {
+        Object a = session.load(cls, id);
+
+        if (a != null)
+          assocs.add(a);
+      }
+    }
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public boolean isLoaded(Object instance) {
+    return true;
   }
 
   /*

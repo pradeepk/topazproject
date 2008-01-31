@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.topazproject.otm.filter.FilterDefinition;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -358,4 +359,15 @@ public interface Session {
    * @return the names of the enabled filters
    */
   public Set<String> listFilters();
+
+  /** 
+   * Internal api; do not use. Called by field loaders to notify when a 
+   * lazy loaded field is loaded completely. The session can now start
+   * doing change-track monitoring and orphan-delete tracking on this field 
+   * too.
+   * 
+   * @param o the object whose field was lazy loaded
+   * @param field the field that is lazy loaded
+   */
+  public void delayedLoadComplete(Object o, Mapper field) throws OtmException;
 }

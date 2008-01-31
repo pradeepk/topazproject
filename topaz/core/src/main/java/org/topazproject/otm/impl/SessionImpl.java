@@ -317,6 +317,35 @@ public class SessionImpl extends AbstractSession {
   /*
    * inherited javadoc
    */
+  public void delayedLoadComplete(Object o, Mapper field) throws OtmException {
+    Id id = checkObject(o, true, false);
+
+    if (log.isDebugEnabled())
+      log.debug("loaded lazy loaded field '" + field.getName() + "' on " + id, 
+          trimStackTrace(new Throwable("trimmed-stack-trace"), 3, 8));
+
+    if (deleteMap.get(id) != null)
+      return;
+
+    ClassMetadata cm = sessionFactory.getClassMetadata(o.getClass());
+    states.delayedLoadComplete(o, field, this);
+
+    if (!field.isCascadable(CascadeType.deleteOrphan))
+      return;
+
+    Set<Wrapper> assocs = orphanTrack.get(id);
+    if (assocs == null)
+      orphanTrack.put(id, assocs = new HashSet<Wrapper>());
+
+    for (Object ao : field.get(o)) {
+      Id aid = checkObject(ao, true, false);
+      assocs.add(new Wrapper(aid, ao));
+    }
+  }
+
+  /*
+   * inherited javadoc
+   */
   public <T> T merge(T o) throws OtmException {
     Id id = checkObject(o, true, false);
 
@@ -614,6 +643,9 @@ public class SessionImpl extends AbstractSession {
         if (!p.isAssociation() || (p.getUri() == null))
           continue;
 
+        if (skipProxy && !p.getLoader().isLoaded(o))
+          continue;
+
         boolean deep = ((cascade != null) && p.isCascadable(cascade));
         boolean deepDelete = p.isCascadable(CascadeType.deleteOrphan);
         for (Object ao : p.get(o)) {
@@ -789,6 +821,19 @@ public class SessionImpl extends AbstractSession {
             + id + ">");
     }
     return oid;
+  }
+
+  private static Throwable trimStackTrace(Throwable t, int offset, int levels) {
+    StackTraceElement[] trace = t.getStackTrace();
+    if (trace.length > offset) {
+      if ((trace.length - offset) < levels)
+        levels = trace.length - offset;
+      StackTraceElement[] copy = new StackTraceElement[levels];
+      for (int i = 0; i < levels; i++)
+        copy[i] = trace[i+offset];
+      t.setStackTrace(copy);
+    }
+    return t;
   }
 
   // For use in sets where we want id equality rather than object equality.

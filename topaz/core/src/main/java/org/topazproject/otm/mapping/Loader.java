@@ -10,8 +10,11 @@
 package org.topazproject.otm.mapping;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 
 /**
  * Mapper for a java class field to rdf triples having a specific predicate.
@@ -75,5 +78,31 @@ public interface Loader {
    * @throws OtmException if a field's value cannot be set
    */
   public void setRawValue(Object o, Object value) throws OtmException;
+
+  /**
+   * Load the values into this field of the given object instance.
+   *
+   * @param instance the object
+   * @param values   the values to set
+   * @param types    the type look ahead for associations
+   * @param mapper   the mapper that this loader is associated to (XXX:revisit) 
+   * @param session  the session under which the load is performed.
+   *                 Used for resolving associations etc.
+   *
+   * @throws OtmException if a field's value cannot be set
+   */
+  public void load(Object instance, List<String> values, 
+          Map<String, Set<String>> types, Mapper mapper, 
+          Session session) throws OtmException;
+
+  /**
+   * Tests wether this field of the given object instance is loaded completely.
+   * Used mainly for testing if a lazy-loaded field is loaded or is still a proxy.
+   *
+   * @param instance the object
+   *
+   * @return true for all eager-loaded fields and lazy-loaded fields that are loaded completely
+   */
+  public boolean isLoaded(Object instance);
 
 }

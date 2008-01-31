@@ -206,7 +206,7 @@ public interface Mapper {
 
   // XXX: temporary hack
   public Class getComponentType();
-  
+
   /**
    * For associations, the name of the associated entity.
    * 

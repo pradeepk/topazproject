@@ -14,8 +14,11 @@ import java.lang.reflect.Method;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.serializer.Serializer;
 
@@ -93,6 +96,24 @@ public class EmbeddedClassMemberFieldLoader implements FieldLoader {
   /*
    * inherited javadoc
    */
+  public void load(Object instance, List<String> values, 
+      Map<String, Set<String>> types, Mapper mapper, 
+      Session session) throws OtmException {
+    load(instance, instance, values, types, mapper, session);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void load(Object root, Object instance, List<String> values, 
+      Map<String, Set<String>> types, Mapper mapper, 
+      Session session) throws OtmException {
+    field.load(root, container.getRawValue(instance, true), values, types, mapper, session);
+  }
+
+  /*
+   * inherited javadoc
+   */
   public Method getGetter() {
     return field.getGetter();
   }
@@ -146,8 +167,13 @@ public class EmbeddedClassMemberFieldLoader implements FieldLoader {
     return field.getSerializer();
   }
 
-  /**
-   * Run a value through the serializer. If no serializer is defined, the value is returned
+  /*
+   * inherited javadoc
+   */
+  public boolean isLoaded(Object instance) {
+    return field.isLoaded(instance);
+  }
+
   /*
    * inherited javadoc
    */

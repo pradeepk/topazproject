@@ -92,37 +92,8 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
     }
 
     // now assign values to fields
-    for (Mapper m : mvalues.keySet()) {
-      if (!m.isAssociation())
-        m.set(instance, mvalues.get(m));
-      else {
-        List assocs = new ArrayList();
-
-        for (String val : mvalues.get(m)) {
-          // lazy load
-          Class cls = m.getComponentType();
-
-          Set<String> t = types.get(val);
-
-          if ((t != null) && (t.size() > 0))
-            cls = sf.mostSpecificSubClass(cls, t);
-          else {
-            ClassMetadata c = sf.getClassMetadata(cls);
-            if ((c != null) && (c.getType() != null))
-              cls = null;
-          }
-
-          if (cls != null) {
-            Object a = session.load(cls, val);
-
-            if (a != null)
-              assocs.add(a);
-          }
-        }
-
-        m.set(instance, assocs);
-      }
-    }
+    for (Mapper m : mvalues.keySet())
+      m.getLoader().load(instance, mvalues.get(m), types, m, session);
 
     boolean found = false;
 

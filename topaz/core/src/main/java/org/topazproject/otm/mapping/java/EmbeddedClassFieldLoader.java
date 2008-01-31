@@ -13,6 +13,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.mapping.Mapper;
 
 /**
  * FieldLoader for an embedded class field. The {@link #get} and {@link #set} methods are 
@@ -57,4 +63,14 @@ public class EmbeddedClassFieldLoader extends AbstractFieldLoader {
   public void set(Object o, List vals) {
     throw new UnsupportedOperationException("Only raw get/set allowed");
   }
+
+  /*
+   * inherited javadoc
+   */
+  public void load(Object root, Object instance, List<String> values, 
+      Map<String, Set<String>> types, Mapper mapper, 
+      Session session) throws OtmException {
+    throw new UnsupportedOperationException("Only raw get/set allowed");
+  }
+
 }
