@@ -12,9 +12,6 @@ package org.plos.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * XPointer related utility methods.
  * 
@@ -23,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
  * @see http://www.w3.org/TR/xptr-xpointer
  */
 public abstract class XPointerUtils {
-  private static Log log = LogFactory.getLog(XPointerUtils.class);
 
   /**
    * Creates a string-range xpointer fragment.
@@ -71,11 +67,6 @@ public abstract class XPointerUtils {
    */
   public static String createXPointer(String prefix, String localPart, String encoding)
       throws UnsupportedEncodingException {
-    try {
-      return prefix + "#xpointer(" + URLEncoder.encode(localPart, encoding) + ")";
-    } catch (UnsupportedEncodingException e) {
-      log.error(e);
-      throw e;
-    }
+    return prefix + "#xpointer(" + URLEncoder.encode(localPart, encoding) + ")";
   }
 }
