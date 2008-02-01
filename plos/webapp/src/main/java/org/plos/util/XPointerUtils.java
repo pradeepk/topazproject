@@ -1,5 +1,11 @@
-/**
- * 
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2008 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
  */
 package org.plos.util;
 
@@ -28,7 +34,8 @@ public abstract class XPointerUtils {
    * @param length
    * @return string-range xpointer fragment
    */
-  public static String createStringRangeFragment(String location, String string, int offset, int length) {
+  public static String createStringRangeFragment(String location, String string, int offset,
+      int length) {
     return "string-range(" + location + ", '" + string + "', " + offset + ", " + length + ")[1]";
   }
 
@@ -66,8 +73,7 @@ public abstract class XPointerUtils {
       throws UnsupportedEncodingException {
     try {
       return prefix + "#xpointer(" + URLEncoder.encode(localPart, encoding) + ")";
-    }
-    catch (UnsupportedEncodingException e) {
+    } catch (UnsupportedEncodingException e) {
       log.error(e);
       throw e;
     }
