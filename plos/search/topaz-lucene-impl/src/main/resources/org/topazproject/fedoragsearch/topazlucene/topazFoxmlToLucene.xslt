@@ -73,7 +73,7 @@
 
   <xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
   <xsl:variable name="docBoost" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
-  
+
   <xsl:template match="/">
     <IndexDocument> 
       <xsl:attribute name="boost">
@@ -129,12 +129,67 @@
   
   <!-- Template to index our XML content -->
   <xsl:template name="topaz-xml">
-    <IndexField IFname="body" index="TOKENIZED" store="YES" termVector="NO">
-      <xsl:apply-templates mode="value-of"
-          select="document(concat($fedoraBaseURL, 'get/', $PID, '/', $articleDS))/article/body"/>
+    <xsl:apply-templates mode="topaz-xml"
+      select="document(concat($fedoraBaseURL, 'get/', $PID, '/', $articleDS))"/>
+  </xsl:template>
+
+  <!-- DEBUG -->
+  <!--
+  <xsl:template match="/">
+    <IndexDocument> 
+      <xsl:attribute name="boost">
+        <xsl:value-of select="$docBoost"/>
+      </xsl:attribute>
+
+      <xsl:apply-templates mode="topaz-xml"/>
+    </IndexDocument> 
+  </xsl:template>
+  -->
+
+  <!-- topaz-xml templates to index Article -->
+  <xsl:template match="article/front/journal-meta" mode="topaz-xml">
+    <IndexField IFname="journal-title" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates select="journal-title" mode="value-of"/>
+    </IndexField>
+  </xsl:template>
+  
+  <xsl:template match="article/front/article-meta" mode="topaz-xml">
+    <IndexField IFname="aff" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates select="aff" mode="value-of"/>
+    </IndexField>
+    <IndexField IFname="editor" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates select="contrib-group/contrib[@contrib-type='editor']" mode="value-of"/>
+    </IndexField>
+    <IndexField IFname="volume" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates select="volume" mode="value-of"/>
+    </IndexField>
+    <IndexField IFname="issue" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates select="issue" mode="value-of"/>
+    </IndexField>
+    <IndexField IFname="elocation-id" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates select="elocation-id" mode="value-of"/>
     </IndexField>
   </xsl:template>
 
+  <xsl:template match="article/body" mode="topaz-xml">
+    <IndexField IFname="body" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates mode="value-of"/>
+    </IndexField>
+  </xsl:template>
+
+  <xsl:template match="article/back" mode="topaz-xml">
+    <IndexField IFname="citation" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:apply-templates select="ref-list" mode="value-of"/>
+    </IndexField>
+  </xsl:template>
+
+  <!-- consume anything that's not explicitly indexed -->
+  <xsl:template match="*" mode="topaz-xml">
+    <xsl:apply-templates mode="topaz-xml"/>
+  </xsl:template>
+  <xsl:template match="text()" mode="topaz-xml"/>
+
+  <!-- value-of templates to output value of contents -->
   <xsl:template match="*" mode="value-of">
     <xsl:text> </xsl:text>
     <xsl:apply-templates select="*|text()" mode="value-of"/>
