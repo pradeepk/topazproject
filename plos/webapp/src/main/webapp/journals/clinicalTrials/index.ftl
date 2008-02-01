@@ -13,8 +13,8 @@
           <!-- SWT removed horizontalTabs -->
             <div id="new" class="block">
               <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
-              <h2><img class="badgenew" src="images/pone_home_new_badge.gif" alt="NEW!" />What is the PLoS Hub for Clinical Trials?</h2>
-              <p>Launched in September 2007, the PLoS Hub for Clinical Trials collects PLoS journal articles that relate to clinical trials. The Hub is a destination site for researchers to share their views and build a dynamic, interactive community.</p>
+              <h2>What is the PLoS Hub for Clinical Trials?</h2>
+              <p>The PLoS Hub for Clinical Trials collects PLoS journal articles that relate to clinical trials. The Hub is a site for researchers to share their views and build a dynamic, interactive community.</p>
               <p>Currently, the PLoS Hub for Clinical Trials features articles originally published in <em>PLoS Clinical Trials</em>, along with clinical trials articles from <em>PLoS ONE</em>.</p>
               <p>In the future, this new resource will expand to include articles from all the PLoS titles that publish clinical trials. It will also feature open-access articles from other journals plus user-generated content.</p>
               <p><a href="${info}">Find out more</a> and <a href="${feedbackURL}">tell us what you think</a>.</p>
@@ -88,7 +88,7 @@
                  document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
              //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=abd0d95d' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:184&#38;source=PHUBCT&#38;n=abd0d95d' border='0' alt=''></a></noscript>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=abd0d95d' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:184&#38;source=PHUBCT&#38;n=abd0d95d' border='0' alt=''/></a></noscript>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
@@ -102,7 +102,7 @@
                   document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a56536b2' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:185&#38;source=PHUBCT&#38;n=a56536b2' border='0' alt=''></a></noscript>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a56536b2' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:185&#38;source=PHUBCT&#38;n=a56536b2' border='0' alt=''/></a></noscript>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
@@ -115,20 +115,21 @@
                   document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a6f9fd36' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:186&#38;source=PHUBCT&#38;n=a6f9fd36' border='0' alt=''></a></noscript>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a6f9fd36' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:186&#38;source=PHUBCT&#38;n=a6f9fd36' border='0' alt=''/></a></noscript>
             <!-- end : advocacy blocks -->
+            <!-- start : info block -->
             <div class="info block">
               <h3>Highlights From Other Open Access Journals</h3>
               <p>Links to relevant content that is not currently in the Hub. We will be adding content in coming months.</p>
               <dl class="category">
                 <dt><em>PLoS Medicine</em></dt>
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040235">South Africa's Experience of the Closure of the Cellulose Sulphate Microbicide Trial</a></dd>
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0040184">Factors Associated with Findings of Published Trials of Drug&#8212;Drug Comparisons: Why Some Statins Appear More Efficacious than Others</a></dd>			
-                <dt><em>Trials</em> (BioMed Central)</dt>
-                <dd><a href="http://www.trialsjournal.com/content/8/1/19">Is looped nasogastric tube feeding more effective than conventional nasogastric tube feeding for dysphagia in acute stroke?</a></dd>
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050022">Market Failure and the Poverty of New Drugs in Maternal Health</a></dd>
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050021">Incorporating Molecular Tools into Early-Stage Clinical Trials</a></dd>	
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050020">CONSORT for Reporting Randomized Controlled Trials in Journal and Conference Abstracts: Explanation and Elaboration</a></dd>
+                 <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050008">Antitumor Activity of Rapamycin in a Phase I Trial for Patients with Recurrent PTEN-Deficient Glioblastoma</a></dd>
               </dl>
               <h3>From the Web</h3>
-			  <p><a href="http://www.who.int/ictrp/en/" title="World Health Organization | International Clinical Trials Registry Platform">Why register trials?</a> The World Health Organization Clinical Trial Registry Platform explains why and when to register, and provides a <a href="http://www.who.int/trialsearch/" title="World Health Organization | International Clinical Trials Registry Platform Search Portal">search engine</a> that works across registries.</p>
+              <p><a href="http://www.wma.net/e/ethicsunit/helsinki.htm" title="WMA.net | Ethics Unit: Declaration of Helsinki">World Medical Association undertakes review of Declaration of Helsinki</a></p>
             </div><!-- end : info block -->
            </div><!-- end : subcol first -->
           <!-- end : col 3 -->
@@ -147,7 +148,7 @@
                   document.write ("&#38;referer=" + escape(document.referrer));
                 document.write ("'><" + "/script>");
               //-->
-              </script><noscript><a href='http://ads.plos.org/adclick.php?n=a595dcde' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:181&#38;source=PHUBCT&#38;n=a595dcde' border='0' alt=''></a></noscript>
+              </script><noscript><a href='http://ads.plos.org/adclick.php?n=a595dcde' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:181&#38;source=PHUBCT&#38;n=a595dcde' border='0' alt=''/></a></noscript>
             </div><!-- end : block banner -->
           </div><!-- end : subcol last -->
         </div><!-- end : wrapper for cols 3 & 4 -->
