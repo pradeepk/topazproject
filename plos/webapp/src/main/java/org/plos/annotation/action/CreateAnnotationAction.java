@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.Context;
+import org.plos.annotation.ContextFormatter;
 import org.plos.util.ProfanityCheckingService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -67,8 +68,8 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
-        final Context context = new Context(startPath, startOffset, endPath, endOffset, target);
-        annotationId = getAnnotationService().createAnnotation(target, context.getXPointer(), supercedes, commentTitle, mimeType, comment, isPublic);
+        final String scontext = ContextFormatter.asXPointer(new Context(startPath, startOffset, endPath, endOffset, target));
+        annotationId = getAnnotationService().createAnnotation(target, scontext, supercedes, commentTitle, mimeType, comment, isPublic);
         if (log.isDebugEnabled()) {
           log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
         }
