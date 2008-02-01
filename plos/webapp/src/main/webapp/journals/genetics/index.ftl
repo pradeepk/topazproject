@@ -97,43 +97,46 @@
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+               
                document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
                document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&amp;what=zone:195&amp;source=NTD&amp;target=_top&amp;block=1");
-               document.write ("&amp;exclude=" + document.phpAds_used);
+               document.write ("&#38;what=zone:151&#38;source=GEN&#38;block=1");
+               document.write ("&#38;exclude=" + document.phpAds_used);
                if (document.referrer)
-                  document.write ("&amp;referer=" + escape(document.referrer));
+                  document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a1ec113d' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:195&amp;source=NTD&amp;n=a1ec113d' border='0' alt=''></a></noscript>
-                        <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=ae3f32ae' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:151&#38;source=GEN&#38;n=ae3f32ae' border='0' alt=''/></a></noscript>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+               
                document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
                document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&amp;what=zone:196&amp;source=NTD&amp;target=_top&amp;block=1");
-               document.write ("&amp;exclude=" + document.phpAds_used);
+               document.write ("&#38;what=zone:152&#38;source=GEN&#38;block=1");
+               document.write ("&#38;exclude=" + document.phpAds_used);
                if (document.referrer)
-                  document.write ("&amp;referer=" + escape(document.referrer));
+                  document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=ace5c997' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:196&amp;source=NTD&amp;n=ace5c997' border='0' alt=''></a></noscript>
-                        <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a85b49cf' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:152&#38;source=GEN&#38;n=a85b49cf' border='0' alt=''/></a></noscript>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+               
                document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
                document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-               document.write ("&amp;what=zone:197&amp;source=NTD&amp;target=_top&amp;block=1");
-               document.write ("&amp;exclude=" + document.phpAds_used);
+               document.write ("&#38;what=zone:153&#38;source=GEN&#38;block=1");
+               document.write ("&#38;exclude=" + document.phpAds_used);
                if (document.referrer)
-                  document.write ("&amp;referer=" + escape(document.referrer));
+                  document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=aec547bc' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:197&amp;source=NTD&amp;n=aec547bc' border='0' alt=''></a></noscript>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a7f95508' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:153&#38;source=GEN&#38;n=a7f95508' border='0' alt=''/></a></noscript>
             </div>
             <!-- end : advocacy blocks -->
             <!-- begin : stay-connected block -->
@@ -163,19 +166,20 @@
           <div class="subcol last">
             <div class="block banner"><!--skyscraper-->
               <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-<script language='JavaScript' type='text/javascript'>
-<!--
-   if (!document.phpAds_used) document.phpAds_used = ',';
-   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-   document.write ("&amp;what=zone:192&amp;source=NTD&amp;target=_top&amp;block=1&amp;blockcampaign=1");
-   document.write ("&amp;exclude=" + document.phpAds_used);
-   if (document.referrer)
-      document.write ("&amp;referer=" + escape(document.referrer));
-   document.write ("'><" + "/script>");
-//-->
-</script><noscript><a href='http://ads.plos.org/adclick.php?n=a93f3323' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:192&amp;source=NTD&amp;n=a93f3323' border='0' alt=''></a></noscript>
+              <script language='JavaScript' type='text/javascript'>
+              <!--
+                 if (!document.phpAds_used) document.phpAds_used = ',';
+                 phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+                 
+                 document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+                 document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+                 document.write ("&#38;what=zone:17&#38;source=GEN&#38;block=1&#38;blockcampaign=1");
+                 document.write ("&#38;exclude=" + document.phpAds_used);
+                 if (document.referrer)
+                    document.write ("&#38;referer=" + escape(document.referrer));
+                 document.write ("'><" + "/script>");
+              //-->
+              </script><noscript><a href='http://ads.plos.org/adclick.php?n=a51ac3e7' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:17&#38;source=GEN&#38;n=a51ac3e7' border='0' alt=''/></a></noscript>
             </div><!-- end : block banner -->
           </div><!-- end : subcol last -->
         </div><!-- end : wrapper for cols 3 & 4 -->
