@@ -14,7 +14,7 @@
           document.write ("&#38;referer=" + escape(document.referrer));
        document.write ("'><" + "/script>");
     //-->
-    </script><noscript><a href='http://ads.plos.org/adclick.php?n=a25fe88d' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:182&#38;source=PHUBCT&#38;n=a25fe88d' border='0' alt=''></a></noscript>
+    </script><noscript><a href='http://ads.plos.org/adclick.php?n=a25fe88d' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:182&#38;source=PHUBCT&#38;n=a25fe88d' border='0' alt=''/></a></noscript>
   </div>
   <!-- end : left banner slot -->
   <!-- begin : right banner slot -->
@@ -32,6 +32,6 @@
           document.write ("&#38;referer=" + escape(document.referrer));
        document.write ("'><" + "/script>");
     //-->
-    </script><noscript><a href='http://ads.plos.org/adclick.php?n=abc935c6' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:183&#38;source=PHUBCT&#38;n=abc935c6' border='0' alt=''></a></noscript>
+    </script><noscript><a href='http://ads.plos.org/adclick.php?n=abc935c6' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:183&#38;source=PHUBCT&#38;n=abc935c6' border='0' alt=''/></a></noscript>
 </div>
   <!-- end : right banner slot -->
