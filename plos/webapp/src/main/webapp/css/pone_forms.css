@@ -203,3 +203,15 @@ form#quickFind fieldset legend span { display:block; padding:0 0 1em;/* IE Win *
 form#quickFind li.btnWrap { text-align:center; padding:.25em 0; }
 input#button-find { font-weight:bold; font-size:1.1em; padding:0 1em; }
 
+/***********************************************/
+/* Search Results form styles                  */
+/***********************************************/ 
+div#search-results div#searchMore { margin-top:-0.5em; }
+div#search-results div#searchMore input#searchEdit { padding-left:0.1em; }
+div#search-results div#searchMore a,
+div#search-results div#searchMore input.button { font-weight:bold; }
+div#search-results div#searchMore em { font-weight:bold; font-style:normal; text-transform:uppercase; }
+div#search-results div#searchMore form { display:inline; }
+div#search-results div#searchMore form a { font-weight:normal; }
+
+
