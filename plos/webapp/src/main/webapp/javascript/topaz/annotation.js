@@ -131,7 +131,7 @@ topaz.annotation = {
       return false;
     }
     else if (!annotationConfig.rangeInfoObj) {
-      alert("Using your mouse, select the area of the article you wish to annotate.");
+      alert("Using your mouse, select the area of the article you wish to notate.");
       return false;
     }
     else {      
@@ -158,7 +158,7 @@ topaz.annotation = {
       var mod = this.analyzeRange(annotationConfig.rangeInfoObj);
      
       if (mod == annotationConfig.excludeSelection) {
-        alert("This area of text cannot be annotated.");
+        alert("This area of text cannot be notated.");
         getArticle();
         return false;
       }
@@ -585,7 +585,7 @@ topaz.annotation = {
 	 * created with an id of "POINT_SPAN".  The temporary span is then inserted into the range.
 	 * When the span is inserted back into the range, it is then within the context of the document
 	 * object.  So it's necessary to look for the temporary span again based on the id to use as a
-	 * marker.  Using getFirstAncestorByXpath(), the parent element that has a xpathlocation is 
+	 * marker.  Using getFirstXpathAncestor(), the parent element that has a xpathlocation is 
 	 * located.  If it returns "noSelect", that in turn is returned.  Otherwise, the offset of the 
 	 * marker from the parent element is calculated.  An object is created where the parent element
 	 * node, xpathlocation, and the offset is set called point.  The temporary span is removed.  The 
@@ -612,7 +612,7 @@ topaz.annotation = {
 
     var pointSpan = document.getElementById(POINT_SPAN_ID);
 
-    var pointEl = this.getFirstAncestorByXpath(pointSpan);
+    var pointEl = this.getFirstXpathAncestor(pointSpan);
     //alert("pointEl = " + pointEl.element.nodeName + ", " + pointEl.xpathLocation);
 
     if (!pointEl || pointEl == annotationConfig.excludeSelection) 
@@ -748,7 +748,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.getFirstAncestorByXpath(Node sourceNode)
+   * topaz.annotation.getFirstXpathAncestor(Node sourceNode)
    * 
    * Method traverses up the node tree looking for the first parent that contains the 
    * xpathlocation attribute.  When a parent node is found with the correct attribute,
@@ -761,7 +761,7 @@ topaz.annotation = {
    * @return	parentObj			Object							Object that stores the parent element
    * 																						 and its xpathlocation value.
    */
-  getFirstAncestorByXpath: function ( sourceNode ) {
+  getFirstXpathAncestor: function ( sourceNode ) {
     var parentalNode = sourceNode;
 
    {
@@ -777,7 +777,7 @@ topaz.annotation = {
         
         //alert("parentalNode.nodeName = " + parentalNode.nodeType);
         if (parentalNode.getAttributeNode('xpathLocation') != null && parentalNode.getAttributeNode('xpathLocation').nodeValue == annotationConfig.excludeSelection) {
-          //alert("getFirstAncestorByXpath: noSelect");
+          //alert("getFirstXpathAncestor: noSelect");
           return annotationConfig.excludeSelection;
         }
         else if (parentalNode.nodeName == 'BODY') {
@@ -794,7 +794,7 @@ topaz.annotation = {
     }
     catch(err) {
       //txt="There was an error on this page.\n\n";
-      //txt+="Error description: [getFirstAncestorByXpath] " + err.description + "\n\n";
+      //txt+="Error description: [getFirstXpathAncestor] " + err.description + "\n\n";
       //txt+="Click OK to continue.\n\n";
       //alert(txt);
     }
@@ -892,12 +892,13 @@ topaz.annotation = {
     //newSpan.id        = markerId;
     newSpan.annotationId = "";
 
-	  var newImg = document.createElement('img');
+	  /*
+    var newImg = document.createElement('img');
 	  newImg.src       = noteImg;
 	  newImg.title     = noteTitle;
 	  newImg.className = noteImgClass;
-    
-    //newSpan.appendChild(newImg);
+    newSpan.appendChild(newImg);
+    */
     
 	  var link = document.createElement("a");
 	  link.className = 'bug public';
@@ -1276,12 +1277,12 @@ topaz.annotation = {
       var spanToInsert;
       var existingNode = childContents[i];
       
-      // modify the existing span
+      // modify the existing note span
       if (existingNode.nodeName == "SPAN" && topaz.domUtil.isClassNameExist(existingNode, "note")) {
         spanToInsert = existingNode.cloneNode(true);
         spanToInsert.className = refWrapperNode.getAttributeNode("class").nodeValue;
       }
-      // wrap in a new span
+      // wrap in a new note span
       else {
         spanToInsert = refWrapperNode.cloneNode(true);
         spanToInsert.appendChild(existingNode.cloneNode(true));
@@ -1395,22 +1396,21 @@ topaz.annotation = {
 	 * @return	tempStr					String								The new normalized string.
 	 */
   normalizeText: function ( documentObj, resultStr ) {
-    var tempStr = resultStr;
-    
-    for (var i=0; i<documentObj.childNodes.length; i++) {
-      if (documentObj.childNodes[i].nodeType == 1) {
-        if (documentObj.childNodes[i].className.match('bug')) {
+    var tempStr = resultStr, carr = documentObj.childNodes, cn;
+    for (var i=0; i<carr.length; i++) {
+      cn = carr[i];
+      if (cn.nodeType == 1) {
+        if (cn.className.match('bug')) {
           // skip this
         }
         else {
-          tempStr = tempStr + this.normalizeText(documentObj.childNodes[i], '');
+          tempStr += this.normalizeText(cn, '');
         }
       }
-      else if (documentObj.childNodes[i].nodeType == 3) {
-        tempStr = tempStr + documentObj.childNodes[i].nodeValue;
+      else if (cn.nodeType == 3) {
+        tempStr += cn.nodeValue;
       }
     }
-    
     return tempStr;
   }
 }
