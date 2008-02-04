@@ -472,7 +472,17 @@ span.equation img       { margin: 0 auto; display: block; padding-bottom: 10px;}
 span.active				{ color: #000; } /* apply to all spans during hover state on the bug */
 
 a.bug,
-a:visited.bug			{ padding: 2px 7px 10px 7px; color: #fff; text-decoration: none; font-size: .85em; font-weight: bold; background-image: url(../images/pone_annotation_bug.gif); background-repeat: no-repeat; background-position: top left; position: relative; top: -8px;}
+a:visited.bug {
+  position:relative; 
+	top:-5px;
+  margin-right:2px;
+	padding:1px 11px 1px 4px;
+	color:#fff; 
+  text-decoration:none; 
+  font-size:.85em; 
+	font-weight:bold;
+  background:url(../images/pone_annotation_bug.gif) top right no-repeat;
+}
 
 a.bug.self-private,
 a:visited.bug.self-private,
