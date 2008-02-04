@@ -22,6 +22,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
+import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;

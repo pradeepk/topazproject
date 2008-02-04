@@ -22,9 +22,10 @@ import org.topazproject.otm.annotations.UriPrefix;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Reply.NS + "Reply")
+@Entity(type = Reply.RDF_TYPE)
 @UriPrefix(Reply.NS)
 public class Reply extends Annotea {
+  public static final String RDF_TYPE = Reply.NS + "Reply";
   /**
    * Thread Namespace
    */
@@ -34,7 +35,7 @@ public class Reply extends Annotea {
   private URI                                                          id;
   private URI                                                          root;
   private URI                                                          inReplyTo;
-  @Predicate(uri = Annotea.NS + "body")
+  @Predicate(uri = Annotea.W3C_NS + "body")
   private URI                                                          body;
 
 /**
@@ -124,5 +125,9 @@ public class Reply extends Annotea {
    */
   public void setId(URI id) {
     this.id = id;
+  }
+  
+  public String getType() {
+    return RDF_TYPE;
   }
 }

@@ -23,9 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.Context;
 import org.plos.annotation.ContextFormatter;
-import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationsPEP;
 import org.plos.annotation.service.Flag;
@@ -80,7 +80,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     listAnnotationAction.setTarget(target);
     assertEquals(SUCCESS, listAnnotationAction.execute());
 
-    for (final Annotation annotation : listAnnotationAction.getAnnotations()) {
+    for (final WebAnnotation annotation : listAnnotationAction.getAnnotations()) {
       final String annotationId1 = annotation.getId();
       resetAnnotationPermissionsToDefault(annotationId1, ANON_PRINCIPAL);
       DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId1, false);
@@ -114,7 +114,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug("annotation marked as deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
-    final Annotation annotation = retrieveAnnotation(annotationId);
+    final WebAnnotation annotation = retrieveAnnotation(annotationId);
     assertTrue(annotation.isDeleted());
     assertTrue(annotation.isPublic());
     
@@ -164,7 +164,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
 
-    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    final WebAnnotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
@@ -185,7 +185,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
 
-    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    final WebAnnotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
@@ -390,7 +390,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
-    final Annotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
+    final WebAnnotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
     assertEquals(declawedBody, savedAnnotation.getComment());
 
   }
@@ -405,7 +405,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
-    final Annotation savedAnnotation = retrieveAnnotation(annotationId1);
+    final WebAnnotation savedAnnotation = retrieveAnnotation(annotationId1);
     assertNotNull(savedAnnotation);
     assertEquals(declawedTitle, savedAnnotation.getCommentTitle());
 
@@ -454,7 +454,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
 
-    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    final WebAnnotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
@@ -466,7 +466,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final PermissionWebService permissionWebService = getPermissionWebService();
     annotationService.setAnnotationPublic(annotationId);
 
-    final Annotation annotation = retrieveAnnotation(annotationId);
+    final WebAnnotation annotation = retrieveAnnotation(annotationId);
     assertTrue(annotation.isPublic());
 
     final List<String> grantsList = Arrays.asList(permissionWebService.listGrants(annotationId, Constants.Permission.ALL_PRINCIPALS));
@@ -512,9 +512,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
     listAnnotationAction.execute();
-    Annotation[] annotations = listAnnotationAction.getAnnotations();
+    WebAnnotation[] annotations = listAnnotationAction.getAnnotations();
 
-    for (final Annotation annotation : annotations) {
+    for (final WebAnnotation annotation : annotations) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
       deleteAnnotationAction.deletePrivateAnnotation();
     }
@@ -577,9 +577,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
     listAnnotationAction.execute();
-    Annotation[] annotations = listAnnotationAction.getAnnotations();
+    WebAnnotation[] annotations = listAnnotationAction.getAnnotations();
 
-    for (final Annotation annotation : annotations) {
+    for (final WebAnnotation annotation : annotations) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
       deleteAnnotationAction.deletePrivateAnnotation();
     }
@@ -636,7 +636,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     return getReplyAction.getReply();
   }
 
-  private Annotation retrieveAnnotation(final String annotationId) throws Exception {
+  private WebAnnotation retrieveAnnotation(final String annotationId) throws Exception {
     final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
     getAnnotationAction.setAnnotationId(annotationId);
     assertEquals(SUCCESS, getAnnotationAction.execute());
@@ -700,9 +700,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
     AnnotationService service = getAnnotationService();
-    Annotation[] annotations = service.listAnnotations(subject);
+    WebAnnotation[] annotations = service.listAnnotations(subject);
 
-    for (final Annotation annotation : annotations) {
+    for (final WebAnnotation annotation : annotations) {
       service.deletePrivateAnnotation(annotation.getId(), true);
     }
 
@@ -737,9 +737,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
     String       title       = "Title";
     AnnotationService service = getAnnotationService();
-    Annotation[] annotations = service.listAnnotations(subject);
+    WebAnnotation[] annotations = service.listAnnotations(subject);
 
-    for (final Annotation annotation : annotations) {
+    for (final WebAnnotation annotation : annotations) {
       service.deletePrivateAnnotation(annotation.getId(), true);
     }
 
@@ -751,7 +751,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug(content);
 
     annotations = service.listAnnotations(subject);
-    for (final Annotation annotation : annotations)
+    for (final WebAnnotation annotation : annotations)
       service.deletePrivateAnnotation(annotation.getId(), true);
   }
 
@@ -767,7 +767,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertNotNull(annotationId);
 
     //Retrieve an annotation
-    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    final WebAnnotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
@@ -785,7 +785,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final String flagId = createFlag(reasonCode, annotationId, flagComment);
 
       //Retrieve a flagged annotation
-      final Annotation flaggedAnnotation = retrieveAnnotation(annotationId);
+      final WebAnnotation flaggedAnnotation = retrieveAnnotation(annotationId);
       assertEquals(target, flaggedAnnotation.getAnnotates());
       assertEquals(title, flaggedAnnotation.getCommentTitle());
       assertEquals(context, flaggedAnnotation.getContext());
@@ -814,19 +814,20 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertTrue(deletedFlag.isDeleted());
 
       //Retrieve an annotation
-      final Annotation flaggedAnnotationAfterFlagDeleted = retrieveAnnotation(annotationId);
+      final WebAnnotation flaggedAnnotationAfterFlagDeleted = retrieveAnnotation(annotationId);
       assertEquals(target, flaggedAnnotationAfterFlagDeleted.getAnnotates());
       assertTrue(flaggedAnnotationAfterFlagDeleted.isPublic());
       assertTrue(flaggedAnnotationAfterFlagDeleted.isFlagged());
       assertFalse(flaggedAnnotationAfterFlagDeleted.isDeleted());
 
       //Unflag the annotation
+      // TODO - this is testing ABSOLUTELY NOTHING USEFUL! 
       final UnflagAnnotationAction unflagAnnotationAction = getUnflagAnnotationAction();
       unflagAnnotationAction.setTargetId(annotationId);
       assertEquals(SUCCESS, unflagAnnotationAction.unflagAnnotation());
 
       //Retrieve an annotation
-      final Annotation flaggedAnnotationAfterFlagUnflagging = retrieveAnnotation(annotationId);
+      final WebAnnotation flaggedAnnotationAfterFlagUnflagging = retrieveAnnotation(annotationId);
       assertEquals(target, flaggedAnnotationAfterFlagUnflagging.getAnnotates());
       assertTrue(flaggedAnnotationAfterFlagUnflagging.isPublic());
       assertFalse(flaggedAnnotationAfterFlagUnflagging.isFlagged());
@@ -914,7 +915,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertNotNull(annotationId);
 
     //Retrieve an annotation
-    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    final WebAnnotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
 
     final String reasonCode = "spam";

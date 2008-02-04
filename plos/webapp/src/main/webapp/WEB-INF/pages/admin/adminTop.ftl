@@ -89,8 +89,29 @@
               <td width="20%"><a href="${flagURL}">${targetTitle}</a></td>
               <td>${flaggedComment.reasonCode}</td>
               <td>
-                <@s.checkbox name="commentsToUnflag" label="Remove Flag" fieldValue="${flaggedComment.target}_${flaggedComment.flagId}_${flaggedComment.targetType}"/><br/>
+                <@s.checkbox name="commentsToUnflag" label="Remove Flag" fieldValue="${flaggedComment.target}_${flaggedComment.flagId}_${flaggedComment.targetType}"/>
+                <br/>
                 <@s.checkbox name="commentsToDelete" label="${deleteLabel}" fieldValue="${flaggedComment.root}_${flaggedComment.target}_${flaggedComment.targetType}"/>
+                <#if flaggedComment.isAnnotation >
+                  <br/>
+	              Convert to:
+	              <br/>
+	              <#if !flaggedComment.isMinorCorrection() > 
+		            <@s.checkbox name="convertToMinorCorrection" label="Minor Correction" 
+		             fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                    <br/>
+		          </#if>
+		          <#if !flaggedComment.isFormalCorrection() > 
+		            <@s.checkbox name="convertToFormalCorrection" label="Formal Correction" 
+		             fieldValue="${flaggedComment.flagId}_${flaggedComment.target}"/>
+                    <br/>
+                  </#if>
+                  <#if flaggedComment.isCorrection() >
+                    <@s.checkbox name="convertToNote" label="Note" 
+                     fieldValue="${flaggedComment.target}_${flaggedComment.target}"/>
+                    <br/>
+                  </#if>
+                </#if>
               </td>
             </tr>
             <tr><td colspan="6"><hr/></td></tr>

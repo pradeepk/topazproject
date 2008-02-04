@@ -131,25 +131,31 @@ public class FetchArticleService {
     return TextUtils.getAsXMLString(getAnnotatedContentAsDocument(articleURI));
   }
 
-  private Document getAnnotatedContentAsDocument(final String infoUri)
+  /**
+   * 
+   * @param articleDOI - the DOI of the (Article) content
+   * @return
+   * @throws IOException
+   * @throws NoSuchArticleIdException
+   * @throws ParserConfigurationException
+   * @throws SAXException
+   * @throws ApplicationException
+   */
+  private Document getAnnotatedContentAsDocument(final String articleDOI)
       throws IOException, NoSuchArticleIdException, ParserConfigurationException, SAXException,
              ApplicationException {
     final String contentUrl;
     try {
+      // Calculate the URL from which we can retrieve the article context using GET
       contentUrl = articleXmlUtils.getArticleService().
-                                   getObjectURL(infoUri, articleXmlUtils.getArticleRep());
+                                   getObjectURL(articleDOI, articleXmlUtils.getArticleRep());
     } catch (NoSuchObjectIdException ex) {
-      throw new NoSuchArticleIdException(infoUri,
+      throw new NoSuchArticleIdException(articleDOI,
                                          "(representation=" + articleXmlUtils.getArticleRep() + ")",
                                          ex);
     }
 
-    return getAnnotatedContentAsDocument(contentUrl, infoUri);
-  }
-
-  private Document getAnnotatedContentAsDocument(final String contentUrl, final String infoUri)
-          throws IOException, ParserConfigurationException, ApplicationException {
-    final AnnotationInfo[] annotations = annotationWebService.listAnnotations(infoUri);
+    final AnnotationInfo[] annotations = annotationWebService.listAnnotations(articleDOI);
     return applyAnnotationsOnContentAsDocument (contentUrl, annotations);
   }
 

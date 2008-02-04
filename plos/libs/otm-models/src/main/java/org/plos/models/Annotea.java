@@ -10,6 +10,7 @@
 package org.plos.models;
 
 
+import java.net.URI;
 import java.util.Date;
 
 import org.topazproject.otm.Rdf;
@@ -24,12 +25,15 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 @Entity(model = "ri")
-@UriPrefix(Annotea.NS)
+@UriPrefix(Annotea.W3C_NS)
 public abstract class Annotea {
   /**
    * Annotea Namespace URI
    */
-  public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
+  public static final String W3C_NS = "http://www.w3.org/2000/10/annotation-ns#";
+  public static final String TOPAZ_NS =  Rdf.topaz + "2008/01/annotation-ns#";
+  public static final String W3C_TYPE_NS = "http://www.w3.org/2000/10/annotationType#";
+  public static final String TOPAZ_TYPE_NS = Rdf.topaz + "2008/01/annotationType#";
 
   private Date                                              created;
   @Predicate(uri = Rdf.rdf + "type", dataType=Rdf.xsd + "anyURI")
@@ -45,6 +49,8 @@ public abstract class Annotea {
   @Predicate(uri = Rdf.topaz + "state", dataType = Predicate.UNTYPED)
   private int                                               state;
 
+  public abstract URI getId();
+  
   /**
    * Get creator.
    *

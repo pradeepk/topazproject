@@ -16,9 +16,9 @@ import org.plos.annotation.FlagUtil;
  * Used to flag an Annotaion or a Reply.
  */
 public class Flag {
-  private final Annotation annotation;
+  private final WebAnnotation annotation;
 
-  public Flag(final Annotation annotation) {
+  public Flag(final WebAnnotation annotation) {
     this.annotation = annotation;
   }
 

@@ -9,26 +9,36 @@
  */
 package org.plos.annotation.service;
 
-import org.apache.struts2.ServletActionContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
-import org.plos.Constants;
-import static org.plos.annotation.service.Annotation.FLAG_MASK;
-import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
-import org.plos.annotation.Commentary;
-import org.plos.annotation.FlagUtil;
-import org.plos.permission.service.PermissionWebService;
-import org.plos.rating.service.RatingInfo;
-import org.plos.rating.service.RatingsService;
-import org.plos.user.PlosOneUser;
-import org.plos.util.FileUtils;
+import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
+import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+import org.plos.ApplicationException;
+import org.plos.Constants;
+import org.plos.annotation.Commentary;
+import org.plos.annotation.FlagUtil;
+import org.plos.models.Annotation;
+import org.plos.models.Annotea;
+import org.plos.models.ArticleAnnotation;
+import org.plos.models.Comment;
+import org.plos.models.FormalCorrection;
+import org.plos.models.MinorCorrection;
+import org.plos.models.Rating;
+import org.plos.permission.service.PermissionWebService;
+import org.plos.rating.service.RatingInfo;
+import org.plos.rating.service.RatingsService;
+import org.plos.user.PlosOneUser;
+import org.plos.util.FileUtils;
+import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.Session;
 
 /**
  * Used for both annotation and reply services.
@@ -42,6 +52,12 @@ public class AnnotationService {
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
   private PermissionWebService permissionWebService;
+  public static final String WEB_TYPE_RATING = "Rating";
+  public static final String WEB_TYPE_COMMENT = "Comment";
+  public static final String WEB_TYPE_NOTE = "Note";
+  public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
+  public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
+  public static final String WEB_TYPE_REPLY = "Reply";
 
   /**
    * Create an annotation.
@@ -121,7 +137,7 @@ public class AnnotationService {
   public String createFlag(final String target, final String reasonCode, final String body, final String mimeType, final boolean isAnnotation) throws ApplicationException {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-      final String flagId = annotationWebService.createAnnotation(mimeType, target, null, null, null, flagBody);
+      final String flagId = annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
       if (isAnnotation) {
         annotationWebService.setFlagged(target);
       } else {
@@ -146,7 +162,7 @@ public class AnnotationService {
   public String createRatingFlag(final String target, final String reasonCode, final String body, final String mimeType) throws ApplicationException {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-      final String flagId = annotationWebService.createAnnotation(mimeType, target, null, null, null, flagBody);
+      final String flagId = annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
       ratingsService.setFlagged(target);
       return flagId;
     } catch (Exception e) {
@@ -264,14 +280,14 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of annotations
    */
-  public Annotation[] listAnnotations(final String target) throws ApplicationException {
+  public WebAnnotation[] listAnnotations(final String target) throws ApplicationException {
     /** Placing the caching here rather than in AnnotationWebService because this
      *  produces the objects for the Commentary view.  The Article HTML is cached
      *  which calls the AnnotationWebService listAnnotations directly, so that call
      *  won't happen too much.
      */
 
-    Annotation[] allAnnotations;
+    WebAnnotation[] allAnnotations;
     AnnotationInfo[] annotations;
     try {
       annotations = annotationWebService.listAnnotations(target);
@@ -289,9 +305,9 @@ public class AnnotationService {
    * @return a list of undeleted flags
    */
   public Flag[] listFlags(final String target) throws ApplicationException {
-    final Annotation[] annotations = listAnnotations(target);
+    final WebAnnotation[] annotations = listAnnotations(target);
     final Collection<Flag> flagList = new ArrayList<Flag>(annotations.length);
-    for (final Annotation annotation : annotations) {
+    for (final WebAnnotation annotation : annotations) {
       if (!annotation.isDeleted()) {
         flagList.add(new Flag(annotation));
       }
@@ -368,7 +384,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return Annotation
    */
-  public Annotation getAnnotation(final String annotationId) throws ApplicationException {
+  public WebAnnotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
       final AnnotationInfo annotation = annotationWebService.getAnnotation(annotationId);
       return converter.convert(annotation);
@@ -400,7 +416,7 @@ public class AnnotationService {
    */
   public RatingInfo[] listFlaggedRatings() throws ApplicationException {
 
-    return ratingsService.listRatings(null,FLAG_MASK | PUBLIC_MASK);
+    return ratingsService.listRatings(null, FLAG_MASK | PUBLIC_MASK);
   }
 
   public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
@@ -484,5 +500,56 @@ public class AnnotationService {
    */
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionWebService = permissionWebService;
+  }
+
+  /**
+   * Convert the annotation with the given DOI to the annotation class type newAnnotationClassType. 
+   * The existing annotation and the newAnnotationClassType must both implement ArticleAnnotation. 
+   * 
+   * @param targetId
+   * @param newAnnotationClassType
+   * @return
+   * @throws Exception
+   */
+  public String convertArticleAnnotationToType(String targetId, Class newAnnotationClassType) 
+  throws Exception {
+    String newAnnotationId = annotationWebService.
+      convertArticleAnnotationToType(targetId, newAnnotationClassType);
+    setAnnotationPublic(newAnnotationId);
+    return newAnnotationId;
+  }
+
+  /**
+   * Returns the PubApp type name for the given Annotea object. 
+   * @param ann
+   * @return
+   */
+  public static String getWebType(Annotea ann) {
+    if (ann == null || ann.getType() == null){
+      return null;
+    }
+    
+    if (ann.getType().equals(MinorCorrection.RDF_TYPE)) {
+      return AnnotationService.WEB_TYPE_MINOR_CORRECTION;
+    }
+    if (ann.getType().equals(FormalCorrection.RDF_TYPE)) {
+      return AnnotationService.WEB_TYPE_FORMAL_CORRECTION;
+    }
+    if (ann.getType().equals(Rating.RDF_TYPE)) {
+      return AnnotationService.WEB_TYPE_RATING;
+    }
+    if (ann.getType().equals(org.plos.models.Reply.RDF_TYPE)) {
+      return AnnotationService.WEB_TYPE_REPLY;
+    }
+    if (ann.getType().equals(Comment.RDF_TYPE)) {
+      if (((Annotation)ann).getContext() != null) {
+        return AnnotationService.WEB_TYPE_NOTE;
+      } else {
+        return AnnotationService.WEB_TYPE_COMMENT;
+      }
+    }
+    
+    log.error("Unable to determine annotation WEB_TYPE. Annotation ID='"+ann.getId()+"' ann.getType() = '"+ann.getType()+"'");
+    return null;
   }
 }

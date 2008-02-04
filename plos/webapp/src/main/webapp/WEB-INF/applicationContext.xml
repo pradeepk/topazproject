@@ -396,6 +396,9 @@
         <value>org.plos.models.Category</value>
         <value>org.plos.models.Citation</value>
         <value>org.plos.models.Comment</value>
+        <value>org.plos.models.Correction</value>
+        <value>org.plos.models.FormalCorrection</value>
+        <value>org.plos.models.MinorCorrection</value>
         <value>org.plos.models.DublinCore</value>
         <value>org.plos.models.EditorialBoard</value>
         <value>org.plos.models.FoafPerson</value>

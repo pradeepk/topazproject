@@ -30,7 +30,7 @@ public class BaseAdminActionSupport  extends BaseActionSupport {
   private DocumentManagementService documentManagementService;
   private FlagManagementService flagManagementService;
 
-  protected String base() throws RemoteException, ApplicationException {
+  protected String base() {
     // catch all Exceptions to keep Admin console active (vs. Site Error)
     try {
       uploadableFiles = documentManagementService.getUploadableFiles();

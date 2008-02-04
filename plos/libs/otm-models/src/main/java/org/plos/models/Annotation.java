@@ -23,7 +23,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Annotea.NS + "Annotation")
+@Entity(type = Annotea.W3C_NS + "Annotation")
 public abstract class Annotation extends Annotea {
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
@@ -39,13 +39,6 @@ public abstract class Annotation extends Annotea {
    * Creates a new Annotation object.
    */
   public Annotation() {
-  }
-
-  /**
-   * Creates a new Annotation object.
-   */
-  public Annotation(URI id) {
-    this.id = id;
   }
 
   /**

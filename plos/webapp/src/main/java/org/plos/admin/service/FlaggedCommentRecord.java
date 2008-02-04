@@ -10,6 +10,8 @@
 
 package org.plos.admin.service;
 
+import org.plos.annotation.service.AnnotationService;
+
 public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
 
   private String root;
@@ -58,21 +60,37 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    * @return Type of the target.
    */
   public String getTargetType() {
-
     return targetType;
   }
 
+  public boolean isTargetType(String testType) {
+    return targetType.equals(testType);
+  }
+  
+  public boolean isCorrection() {
+    return (AnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(targetType) || 
+        AnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(targetType));
+  }
+  
+  public boolean isFormalCorrection() {
+    return (AnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(getTargetType()));
+  }
+
+  public boolean isMinorCorrection() {
+    return (AnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(getTargetType()));
+  }
+  
   /**
    * Is this a Flag for an Annotation?  (Actually a Comment.)
    *
    * @return true if Flag for an Annotation, else false.
    */
   public boolean getIsAnnotation() {
-
-    if (targetType.equals("Comment")) {
+    if (AnnotationService.WEB_TYPE_COMMENT.equals(targetType) || 
+        AnnotationService.WEB_TYPE_NOTE.equals(targetType) || 
+        isCorrection()) {
       return true;
     }
-
     return false;
   }
 
@@ -83,7 +101,7 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    */
   public boolean getIsRating() {
 
-    if (targetType.equals("Rating")) {
+    if (targetType.equals(AnnotationService.WEB_TYPE_RATING)) {
       return true;
     }
 
@@ -97,7 +115,7 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
    */
   public boolean getIsReply() {
 
-    if (targetType.equals("Reply")) {
+    if (targetType.equals(AnnotationService.WEB_TYPE_REPLY)) {
       return true;
     }
 

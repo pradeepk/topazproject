@@ -25,13 +25,13 @@ import java.util.Date;
  * - A way to escape title/body text when returning the result to the web layer
  * - a separation from any topaz changes
  */
-public abstract class Annotation extends BaseAnnotation {
+public abstract class WebAnnotation extends BaseAnnotation {
   private final AnnotationInfo annotation;
   private UserService userService;
   private String creatorName;
   private Date creationDate;
 
-  private static final Log log = LogFactory.getLog(Annotation.class);
+  private static final Log log = LogFactory.getLog(WebAnnotation.class);
 
   /**
    * Get the target(probably a uri) that it annotates
@@ -176,7 +176,7 @@ public abstract class Annotation extends BaseAnnotation {
   }
 
 
-  public Annotation(final AnnotationInfo annotation) {
+  public WebAnnotation(final AnnotationInfo annotation) {
     this.annotation = annotation;
   }
 
@@ -187,7 +187,7 @@ public abstract class Annotation extends BaseAnnotation {
    * @param annotation
    * @param userSvc
    */
-  public Annotation(final AnnotationInfo annotation, final UserService userSvc) {
+  public WebAnnotation(final AnnotationInfo annotation, final UserService userSvc) {
     this.annotation = annotation;
     this.userService = userSvc;
   }

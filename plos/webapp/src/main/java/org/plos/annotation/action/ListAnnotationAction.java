@@ -13,14 +13,14 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.WebAnnotation;
 
 /**
  * Action class to get a list of annotations.
  */
 public class ListAnnotationAction extends AnnotationActionSupport {
   private String target;
-  private Annotation[] annotations;
+  private WebAnnotation[] annotations;
 
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
 
@@ -43,7 +43,7 @@ public class ListAnnotationAction extends AnnotationActionSupport {
   /**
    * @return a list of annotations
    */
-  public Annotation[] getAnnotations() {
+  public WebAnnotation[] getAnnotations() {
     return annotations;
   }
 

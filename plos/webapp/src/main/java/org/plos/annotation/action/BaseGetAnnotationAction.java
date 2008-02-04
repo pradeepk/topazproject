@@ -13,7 +13,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.WebAnnotation;
 
 /**
  * Used to fetch an annotation given an id.
@@ -21,7 +21,7 @@ import org.plos.annotation.service.Annotation;
  */
 public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
-  private Annotation annotation;
+  private WebAnnotation annotation;
   private String creatorUserName;
 
   private static final Log log = LogFactory.getLog(BaseGetAnnotationAction.class);
@@ -61,7 +61,7 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
     return annotationId;
   }
 
-  public Annotation getAnnotation() {
+  public WebAnnotation getAnnotation() {
     return annotation;
   }
 

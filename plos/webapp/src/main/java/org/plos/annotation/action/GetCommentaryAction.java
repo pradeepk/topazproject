@@ -15,7 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
-import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.Commentary;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.util.NoSuchArticleIdException;
@@ -32,7 +32,7 @@ import java.util.Arrays;
  */
 public class GetCommentaryAction extends AnnotationActionSupport {
   private String target;
-  private Annotation[] annotations;
+  private WebAnnotation[] annotations;
   private Commentary[] allCommentary;
   private Article articleInfo;
   private ArticleOtmService articleOtmService;
@@ -90,7 +90,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   /**
    * @return a list of annotations
    */
-  private Annotation[] getAnnotations() {
+  private WebAnnotation[] getAnnotations() {
     return annotations;
   }
 
