@@ -24,7 +24,7 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Eric Brown
  */
-@Entity(model="metadata", type=Rdf.owl + "Class")
+@Entity(model="metadata", type=OwlHelper.owl + "Class")
 public class OwlClass {
   @Id
   private URI owlClass;

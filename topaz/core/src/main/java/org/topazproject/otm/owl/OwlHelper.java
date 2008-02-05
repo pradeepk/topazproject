@@ -37,6 +37,9 @@ import org.topazproject.otm.OtmException;
 public class OwlHelper {
   private static final Log log = LogFactory.getLog(OwlHelper.class);
 
+  /** help compose owl defined URIs */
+  public static final String owl      = "http://www.w3.org/2002/07/owl#";
+
   public static final URI HAS_ALIAS_PRED     = URI.create(Rdf.topaz + "hasAlias");
 
   /**
@@ -48,6 +51,8 @@ public class OwlHelper {
    */
   public static void addFactory(SessionFactory factory, ModelConfig mc) throws OtmException {
     SessionFactory metaFactory = createMetaSessionFactory(factory, mc);
+    // Add OWL alias
+    metaFactory.addAlias("owl",owl);
 
     Session session = metaFactory.openSession();
     Transaction tx = null;

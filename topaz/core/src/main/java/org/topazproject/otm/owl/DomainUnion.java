@@ -13,7 +13,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Id;
@@ -29,7 +28,7 @@ public class DomainUnion {
   @Id
   public URI id;
   /** The list of possible owl classes for this union */
-  @Predicate(uri=Rdf.owl + "unionOf",storeAs=Predicate.StoreAs.rdfList)
+  @Predicate(uri=OwlHelper.owl + "unionOf",storeAs=Predicate.StoreAs.rdfList)
   public List<OwlClass> domains = new ArrayList<OwlClass>();
 }
 

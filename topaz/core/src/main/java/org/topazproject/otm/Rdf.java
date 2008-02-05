@@ -20,9 +20,6 @@ public interface Rdf {
   /** help compose rdf defined URIs */
   public static final String rdf      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-  /** help compose owl defined URIs */
-  public static final String owl      = "http://www.w3.org/2002/07/owl#";
-
   /** help compose mulgara defined URIs */
   public static final String mulgara  = "http://mulgara.org/mulgara#";
   public static final String tucana   = mulgara;

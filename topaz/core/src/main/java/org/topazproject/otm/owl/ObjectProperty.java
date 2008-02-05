@@ -11,7 +11,6 @@ package org.topazproject.otm.owl;
 
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Rdfs;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -22,7 +21,7 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Eric Brown
  */
-@Entity(model="metadata", type=Rdf.owl + "ObjectProperty")
+@Entity(model="metadata", type=OwlHelper.owl + "ObjectProperty")
 public class ObjectProperty {
   @Id
   private URI property;
