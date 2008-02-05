@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.Rdfs;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Id;
@@ -27,7 +28,7 @@ import org.topazproject.otm.annotations.Id;
 public class OwlClass {
   @Id
   private URI owlClass;
-  @Predicate(uri = Rdf.rdfs + "subClassOf")
+  @Predicate(uri = Rdfs.subClassOf)
   private List<URI> superClasses = new ArrayList<URI>();
   @Predicate(uri = Rdf.topaz + "inModel")
   private URI model;

@@ -12,6 +12,7 @@ package org.topazproject.otm.owl;
 import java.net.URI;
 
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.Rdfs;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Id;
@@ -25,9 +26,9 @@ import org.topazproject.otm.annotations.Id;
 public class ObjectProperty {
   @Id
   private URI property;
-  @Predicate(uri=Rdf.rdfs + "range")
+  @Predicate(uri=Rdfs.range)
   private URI[] ranges;
-  @Predicate(uri=Rdf.rdfs + "domain")
+  @Predicate(uri=Rdfs.domain)
   private DomainUnion domains;
 
   /**

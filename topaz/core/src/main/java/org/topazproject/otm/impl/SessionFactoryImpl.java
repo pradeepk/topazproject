@@ -40,6 +40,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.Rdfs;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
@@ -122,7 +123,7 @@ public class SessionFactoryImpl implements SessionFactory {
     addQueryFunctionFactory(new DefaultQueryFunctionFactory());
 
     addAlias("rdf",      Rdf.rdf);
-    addAlias("rdfs",     Rdf.rdfs);
+    addAlias("rdfs",     Rdfs.base);
     addAlias("owl",      Rdf.owl);
     addAlias("xsd",      Rdf.xsd);
     addAlias("dc",       Rdf.dc);
