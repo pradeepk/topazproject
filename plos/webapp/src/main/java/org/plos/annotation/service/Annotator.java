@@ -12,16 +12,16 @@ package org.plos.annotation.service;
 import it.unibo.cs.xpointer.Location;
 import it.unibo.cs.xpointer.XPointerAPI;
 import it.unibo.cs.xpointer.datatype.LocationList;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.topazproject.dom.ranges.SelectionRange;
-import org.topazproject.dom.ranges.SelectionRangeList;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.ranges.DocumentRange;
-import org.w3c.dom.ranges.Range;
-import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -34,15 +34,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.ArrayList;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.topazproject.dom.ranges.SelectionRange;
+import org.topazproject.dom.ranges.SelectionRangeList;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.ranges.DocumentRange;
+import org.w3c.dom.ranges.Range;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -188,6 +190,7 @@ public class Annotator {
     idTransform.transform(input, output);
 
     return new DataHandler(new FileDataSource(tmp) {
+        @Override
         protected void finalize() throws Throwable {
           super.finalize();
 
@@ -249,7 +252,7 @@ public class Annotator {
   }
 
   private static class Regions extends SelectionRangeList {
-    private Document document;
+    private final Document document;
 
     public Regions(Document document) {
       this.document = document;
@@ -282,11 +285,14 @@ public class Annotator {
                                  String idAttrQName) {
       int     length = size();
       Element root = document.createElementNS(nsUri, elemQName + "s");
-
+      
       for (int i = 0; i < length; i++) {
         Element rNode = document.createElementNS(nsUri, elemQName);
         rNode.setAttributeNS(nsUri, idAttrQName, "" + (i + 1));
-        root.appendChild(rNode);
+
+        int numComments = 0;
+        int numMinorCorrections = 0;
+        int numFormalCorrections = 0;
 
         List annotations = get(i).getUserDataList();
 
@@ -297,7 +303,25 @@ public class Annotator {
           Element        aNode = document.createElementNS(nsUri, annotationsQName);
           aNode.setAttributeNS(nsUri, idAttrQName, a.getId());
           rNode.appendChild(aNode);
+          
+          assert a.getType() != null;
+          String atype = a.getType().toLowerCase();
+          if(atype.indexOf("comment") >= 0) {
+            numComments++;
+          }
+          else if(atype.indexOf("minorcorrection") >= 0) {
+            numMinorCorrections++;
+          }
+          else if(atype.indexOf("formalcorrection") >= 0) {
+            numFormalCorrections++;
+          }
         }
+        
+        rNode.setAttributeNS(nsUri, "aml:numComments", Integer.toString(numComments));
+        rNode.setAttributeNS(nsUri, "aml:numMinorCorrections", Integer.toString(numMinorCorrections));
+        rNode.setAttributeNS(nsUri, "aml:numFormalCorrections", Integer.toString(numFormalCorrections));
+        
+        root.appendChild(rNode);
       }
 
       return root;

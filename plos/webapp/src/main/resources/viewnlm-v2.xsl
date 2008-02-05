@@ -601,6 +601,14 @@
   </xsl:attribute>
 </xsl:template>
 
+<!-- use when we want to constrain the user selection to be at the element level only -->
+<xsl:template name="makeElementXpathLocation">
+  <xsl:call-template name="makeXpathLocation"/>
+  <xsl:attribute name="elmntslctn">
+    <xsl:text>true</xsl:text>
+  </xsl:attribute>
+</xsl:template>
+
 <xsl:template name="makeXpathLocationParam">
   <xsl:param name="node" select="."/>
   <xsl:variable name="xpathLocation">
@@ -3880,14 +3888,11 @@ Make article meta data
     </xsl:otherwise>
   </xsl:choose>
 
-  <ol class="references">
-    <xsl:call-template name="makeXpathLocation" >
-      <xsl:with-param name="node" select="."/>
-    </xsl:call-template>
+  <ol class="references" xpathLocation="noSelect">
     <xsl:for-each select="ref">
     <xsl:sort data-type="number" select="label"/>
       <li>
-        <xsl:call-template name="makeXpathLocation" >
+        <xsl:call-template name="makeElementXpathLocation" >
           <xsl:with-param name="node" select="."/>
         </xsl:call-template>
         <a>
@@ -5389,8 +5394,23 @@ Make article meta data
 
 <xsl:template name="createAnnotationSpan">
   <xsl:variable name="regionId" select="@aml:id"/>
+  <xsl:variable name="regionNumComments" select="number(/article/aml:regions/aml:region[@aml:id=$regionId]/@aml:numComments)"/>
+  <xsl:variable name="regionNumMinorCorrections" select="number(/article/aml:regions/aml:region[@aml:id=$regionId]/@aml:numMinorCorrections)"/>
+  <xsl:variable name="regionNumFormalCorrections" select="number(/article/aml:regions/aml:region[@aml:id=$regionId]/@aml:numFormalCorrections)"/>
   <xsl:element name="span">
-    <xsl:attribute name="class">note public</xsl:attribute>
+
+    <!-- convey the number of comments and minor/formal corrections --> 
+    <xsl:attribute name="num_c"><xsl:value-of select="$regionNumComments"/></xsl:attribute>
+    <xsl:attribute name="num_mc"><xsl:value-of select="$regionNumMinorCorrections"/></xsl:attribute>
+    <xsl:attribute name="num_fc"><xsl:value-of select="$regionNumFormalCorrections"/></xsl:attribute>
+
+    <!-- populate the span tag's class attribute based on the presence of comments vs. corrections --> 
+    <xsl:attribute name="class">
+			<xsl:text>note public</xsl:text> <!-- we're always considered a note -->
+    	<xsl:if test="$regionNumMinorCorrections &gt; 0"><xsl:text> minrcrctn</xsl:text></xsl:if>
+    	<xsl:if test="$regionNumFormalCorrections &gt; 0"><xsl:text> frmlcrctn</xsl:text></xsl:if>
+    </xsl:attribute>
+
     <xsl:attribute name="title">User Annotation</xsl:attribute>
     <xsl:attribute name="annotationId">
       <xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
@@ -5399,21 +5419,22 @@ Make article meta data
           <xsl:text>,</xsl:text>
         </xsl:if>
        </xsl:for-each>
-    </xsl:attribute><xsl:variable name="displayAnn">    <!-- only add an annotation to the display list if this is the beginning of the annotation -->
-      <xsl:variable name="annId" select="@aml:id"/>
-<!--      <xsl:if test=". = (/article//aml:annotated[@aml:id=$annId])[1]">-->
-      <xsl:if test="@aml:first">
-        <xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-          <xsl:variable name="localAnnId" select="@aml:id"/>
-          <xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$localAnnId]) = 0">
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="@aml:id"/>
-          </xsl:if>
-        </xsl:for-each>
-      </xsl:if>
-    </xsl:variable>
+    </xsl:attribute>
+    <xsl:variable name="displayAnn"> <!-- only add an annotation to the display list if this is the beginning of the annotation -->
+    	<xsl:variable name="annId" select="@aml:id"/>
+    	<xsl:if test="@aml:first">
+      	<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+        	<xsl:variable name="localAnnId" select="@aml:id"/>
+        	<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$localAnnId]) = 0">
+          	<xsl:text>,</xsl:text>
+          	<xsl:value-of select="@aml:id"/>
+        	</xsl:if>
+      	</xsl:for-each>
+    	</xsl:if>
+  	</xsl:variable>
     <xsl:if test="not($displayAnn='')">
-      <xsl:element name="a"><xsl:attribute name="href">#</xsl:attribute>
+      <xsl:element name="a">
+        <xsl:attribute name="href">#</xsl:attribute>
         <xsl:attribute name="class">bug public</xsl:attribute>
         <xsl:attribute name="id">
           <xsl:value-of select="concat('annAnchor',@aml:id)"/>
@@ -5424,11 +5445,11 @@ Make article meta data
         <xsl:attribute name="onclick">return(topaz.displayComment.show(this));</xsl:attribute>
         <xsl:attribute name="onmouseover">topaz.displayComment.mouseoverComment(this);</xsl:attribute>
         <xsl:attribute name="onmouseout">topaz.displayComment.mouseoutComment(this);</xsl:attribute>
-        <xsl:attribute name="title">Click to preview this annotation</xsl:attribute></xsl:element>
+        <xsl:attribute name="title">Click to preview this note</xsl:attribute>
+      </xsl:element>
     </xsl:if>
     <xsl:apply-templates/>
   </xsl:element>
-
 </xsl:template>
 
 
