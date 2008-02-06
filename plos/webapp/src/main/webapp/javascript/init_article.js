@@ -111,8 +111,10 @@
 
     topaz.displayComment.init();
     topaz.displayComment.processBugCount();
+    topaz.corrections.init();
+    topaz.corrections.apply();
     //topaz.rating.init();
-    
+
     var anId = document.articleInfo.annotationId.value;
     var anEl = getAnnotationEl(anId);
     jumpToAnnotation(anId);
@@ -120,9 +122,8 @@
     //errView = dojo.widget.byId("ErrorConsole");
     //var errClose = dojo.byId("btn_ok");
     //errView.setCloseControl(errClose);
-    
+
     _ldc.hide();
-    
   }
   
   dojo.addOnLoad(init);

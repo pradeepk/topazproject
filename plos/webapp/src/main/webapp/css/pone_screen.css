@@ -394,6 +394,14 @@ ul#dcCount1 { margin-bottom:5px; } /* increases spacing below note and comment c
 div.correction span#oa { /* open access image */ background: #3D3D3D url(../images/pone_correction_oa.gif) no-repeat 0 0; }
 div.correction h1 { color: #3D3D3D; }
 
+/* formal correction header */
+div.fch {
+	margin: 5px 0 10px 0;
+	padding: 4px;
+	border: 2px solid #ff0000 !important;
+	background-color: #fff4f0;
+}
+
 /* rhc rounded containers : top */
 div.links,
 div.tools				{ background-position: bottom; background-repeat: no-repeat; padding: 0 0 8px 0; margin: 0 0 6px 0; }
@@ -482,6 +490,11 @@ a:visited.bug {
   font-size:.85em; 
 	font-weight:bold;
   background:url(../images/pone_annotation_bug.gif) top right no-repeat;
+}
+
+span.minrcrctn, span.frmlcrctn {
+  background:url(../images/pone_icon_correction_small.gif) left center no-repeat;
+  border: 1px solid red !important; /* debug */
 }
 
 a.bug.self-private,
