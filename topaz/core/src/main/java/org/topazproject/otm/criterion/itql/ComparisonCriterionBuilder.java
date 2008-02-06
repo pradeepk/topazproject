@@ -129,12 +129,8 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
                                " in SessionFactory");
       String resolverModel = "<" + resolverModels.get(0).getUri() + ">";
 
-      if (!m.hasInverseUri())
-        return "(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + model + " and "
+      return "(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + model + " and "
                + varPrefix + " " + operator + " " + val + " in " + resolverModel + ")";
-
-      return "(" + val + " <" + m.getUri() + "> " + varPrefix + model + " and " + varPrefix + " "
-             + operator + " " + subjectVar + " in " + resolverModel + ")";
     }
 
     /*
