@@ -18,6 +18,9 @@ import org.topazproject.otm.annotations.Entity;
  * A criterion for an "equals" operation on a field value.
  *
  * @author Pradeep Krishnan
+ *
+ * @see SubjectCriterion
+ * @see PredicateCriterion
  */
 @Entity(type = Criterion.RDF_TYPE + "/eq")
 public class EQCriterion extends AbstractBinaryCriterion {

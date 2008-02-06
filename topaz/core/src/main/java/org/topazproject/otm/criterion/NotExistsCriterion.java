@@ -17,6 +17,9 @@ import org.topazproject.otm.annotations.Entity;
  * A criterion for a "not exists" operation on a field value.
  *
  * @author Pradeep Krishnan
+ *
+ * @see PredicateCriterion
+ * @see NotCriterion
  */
 @Entity(type = Criterion.RDF_TYPE + "/notExists")
 public class NotExistsCriterion extends AbstractUnaryCriterion {

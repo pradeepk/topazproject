@@ -20,6 +20,9 @@ import org.topazproject.otm.annotations.Entity;
  * A criterion for doing a 'not' operation.
  *
  * @author Pradeep Krishnan
+ *
+ * @see MinusCriterion
+ * @see PredicateCriterion
  */
 @Entity(type = Criterion.RDF_TYPE + "/not")
 public class NotCriterion extends Criterion {

@@ -235,7 +235,7 @@ public abstract class AbstractFieldLoader implements FieldLoader {
    * @param types    the type look ahead for associations
    * @param session  the session under which the load is performed.
    *                 Used for resolving associations etc.
-   * @param assoc    the collection to load association instances to
+   * @param assocs   the collection to load association instances to
    *
    * @throws OtmException on a failure in instantiating associations
    */

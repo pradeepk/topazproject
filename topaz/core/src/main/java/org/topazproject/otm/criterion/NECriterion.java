@@ -17,6 +17,9 @@ import org.topazproject.otm.annotations.Entity;
  * A criterion for a "not equals" operation on a field value.
  *
  * @author Pradeep Krishnan
+ *
+ * @see NotCriterion
+ * @see EQCriterion
  */
 @Entity(type = Criterion.RDF_TYPE + "/ne")
 public class NECriterion extends AbstractBinaryCriterion {

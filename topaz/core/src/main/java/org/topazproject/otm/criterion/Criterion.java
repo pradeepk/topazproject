@@ -39,6 +39,8 @@ import org.topazproject.otm.serializer.Serializer;
  * invoke each other.
  *
  * @author Pradeep Krishnan
+ *
+ * @see Restrictions
  */
 @Entity(type = Criterion.RDF_TYPE, model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)

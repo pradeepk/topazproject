@@ -181,6 +181,15 @@ public class Order {
     }
   }
 
+  /**
+   * A class to hold the predicate-uri and the mapping direction (inverse or not)
+   * for a field name supplied in creating this Order by clause. This information is
+   * persisted when the Criterion is persisted allowing the re-construction of a
+   * field name on retrieval even when the field name has changed in the java class.
+   * <p/>
+   * This also has the additional advantage that what is stored in the persistence
+   * store has some meaning outside of the java class that this Criteria is tied to.
+   */
   @UriPrefix(Criterion.NS)
   public static class DeAliased {
     public URI     predicateUri;

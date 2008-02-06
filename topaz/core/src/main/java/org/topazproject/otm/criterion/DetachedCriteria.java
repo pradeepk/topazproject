@@ -69,6 +69,9 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
   private List<Order>             rootOrderList     = new ArrayList<Order>();
 
+  /** 
+   * Used in persistence; ignored otherwise.
+   */
   @Embedded
   public DeAliased da = new DeAliased();
 
@@ -521,6 +524,15 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     return sb.toString();
   }
 
+  /**
+   * A class to hold the rdf:type URI, the predicate URI and the mapping direction 
+   * (inverse or not) for an entity supplied in creating this Criteria. This information is
+   * persisted when the Criteria is persisted allowing the re-construction of an association
+   * field name on retrieval even when the field name or the association class name has changed.
+   * <p/>
+   * This also has the additional advantage that what is stored in the persistence
+   * store has some meaning outside of the java class that this Criteria is tied to.
+   */
   @UriPrefix(Criterion.NS)
   public static class DeAliased {
     public URI rdfType;

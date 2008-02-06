@@ -17,14 +17,16 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Mapper.MapperType;
 
 /**
- * A criterion for a triple pattern where the predicate and value are known.
+ * A criterion for generating a triple pattern. The field name or value
+ * or both could be optional in which case the predicate and/or object
+ * in the triple pattern will be a 'wild-card'.
  *
  * @author Pradeep Krishnan
  */
 public class PredicateCriterion extends AbstractBinaryCriterion {
 
   /**
-   * Creates a new PredicateCriterion object.
+   * Creates a new PredicateCriterion object where both the predicate and object are known.
    *
    * @param name field/predicate name
    * @param value field/predicate value
@@ -34,7 +36,8 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
   }
 
   /**
-   * Creates a new PredicateCriterion object.
+   * Creates a new PredicateCriterion object where the predicate is known and object is 
+   * a wild-card.
    *
    * @param name field/predicate name
    */
@@ -43,7 +46,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
   }
 
   /**
-   * Creates a new PredicateCriterion object.
+   * Creates a new PredicateCriterion object where the predicate and object are wild-cards.
    */
   public PredicateCriterion() {
     super(null, null);
@@ -53,7 +56,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
   /**
    * Gets the field/predicate name.
    *
-   * @return field/predicate name
+   * @return field/predicate name or null
    */
   public String getName() {
     return getFieldName();

@@ -18,7 +18,15 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
- * A criterion for a triple pattern where the predicate and value is matched transitively.
+ * A criterion for a triple pattern where the predicate and value is matched transitively. eg.
+ *
+ * <pre>
+ *   // Suppose Annotation a1 is superseded by a2 and a2 is superseded by a3, the following
+ *   // query on a3 will return a list containing a1 and a2.
+ *   List&lt;Annotation&gt; l =
+ *               session.createCriteria(Annotation.class)
+ *                       .add(Restrictions.walk("supersededBy", a3.id)).list();
+ * </pre>
  *
  * @author Pradeep Krishnan
  */

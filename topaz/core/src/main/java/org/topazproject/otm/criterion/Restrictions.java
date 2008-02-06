@@ -22,6 +22,8 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see EQCriterion
    */
   public static Criterion eq(String name, Object value) {
     return new EQCriterion(name, value);
@@ -34,6 +36,8 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see NECriterion
    */
   public static Criterion ne(String name, Object value) {
     return new NECriterion(name, value);
@@ -45,6 +49,8 @@ public class Restrictions {
    * @param name the property name
    *
    * @return a newly created Criterion object
+   *
+   * @see ExistsCriterion
    */
   public static Criterion exists(String name) {
     return new ExistsCriterion(name);
@@ -56,6 +62,8 @@ public class Restrictions {
    * @param name the property name
    *
    * @return a newly created Criterion object
+   *
+   * @see NotExistsCriterion
    */
   public static Criterion notExists(String name) {
     return new NotExistsCriterion(name);
@@ -68,6 +76,8 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see GTCriterion
    */
   public static Criterion gt(String name, Object value) {
     return new GTCriterion(name, value);
@@ -80,6 +90,8 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see LTCriterion
    */
   public static Criterion lt(String name, Object value) {
     return new LTCriterion(name, value);
@@ -92,6 +104,8 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see LECriterion
    */
   public static Criterion le(String name, Object value) {
     return new LECriterion(name, value);
@@ -104,6 +118,8 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see GECriterion
    */
   public static Criterion ge(String name, Object value) {
     return new GECriterion(name, value);
@@ -116,6 +132,8 @@ public class Restrictions {
    * @param subtrahend subtract this
    *
    * @return a newly created Criterion object
+   *
+   * @see MinusCriterion
    */
   public static Criterion minus(Criterion minuend, Criterion subtrahend) {
     return new MinusCriterion(minuend, subtrahend);
@@ -127,6 +145,8 @@ public class Restrictions {
    * @param criterion the criterion to negate
    *
    * @return a newly created Criterion object
+   *
+   * @see NotCriterion
    */
   public static Criterion not(Criterion criterion) {
     return new NotCriterion(criterion);
@@ -139,6 +159,8 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see TransCriterion
    */
   public static Criterion trans(String name, Object value) {
     return new TransCriterion(name, value);
@@ -152,18 +174,23 @@ public class Restrictions {
    * @param value its value
    *
    * @return a newly created Criterion object
+   *
+   * @see WalkCriterion
    */
   public static Criterion walk(String name, Object value) {
     return new WalkCriterion(name, value);
   }
 
   /**
-   * Creates a Criterion that walks a property chain and finds the objects matching the
-   * property value.
+   * Creates a Criterion that executes a triple-store specific function.
    *
-   * @param func the property name
+   * @param func the function to execute.
+   * @param args the arguments to the function
    *
    * @return a newly created Criterion object
+   *
+   * @see ProxyCriterion
+   * @see CriterionBuilder
    */
   public static Criterion func(String func, Object... args) {
     return new ProxyCriterion(func, args);
@@ -181,7 +208,7 @@ public class Restrictions {
   /**
    * Group expressions together in a single disjunction (A or B or C...)
    *
-   * @return Conjunction
+   * @return Disjunction
    */
   public static Disjunction disjunction() {
     return new Disjunction();
