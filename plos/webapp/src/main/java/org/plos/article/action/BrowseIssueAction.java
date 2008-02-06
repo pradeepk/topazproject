@@ -12,6 +12,7 @@ package org.plos.article.action;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -132,13 +133,29 @@ public class BrowseIssueAction extends BaseActionSupport{
     // TOCArticleGroup, add it to that group. Articles can appear in
     // multiple TOCArticleGroups.
     for (ArticleInfo ai : issueInfo.getArticlesInIssue()) {
+      boolean articleAddedToAtLeastOneGroup = false;
       for (TOCArticleGroup ag : articleGroups) {
         for (ArticleType articleType : ai.getArticleTypes()) {
           if (ag.getArticleType().equals(articleType)) {
             ag.addArticle(ai);
+            articleAddedToAtLeastOneGroup = true;
             break;
           }
         }
+      }
+      
+      if (log.isErrorEnabled() && !articleAddedToAtLeastOneGroup) {
+        StringBuffer buf = new StringBuffer("| ");
+        Iterator<ArticleType> it = ai.getArticleTypes().iterator();
+        while (it.hasNext()) {
+          ArticleType at = it.next();
+          buf.append(at.getUri());
+          if (it.hasNext()) { buf.append(" | "); }
+        }
+        buf.append(" |");
+        log.error("Failed to add article '"+ ai.getId()
+                + "' to an article group. Check configured articles types (plosone.xml) "
+                + "against the article types found for this Article: " + buf);
       }
     }
     
