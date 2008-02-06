@@ -12,6 +12,7 @@ package org.plos.article.action;
 
 import java.net.URI;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
+import org.plos.model.article.ArticleInfoMostRecentDateComparator;
 import org.plos.model.article.ArticleType;
 import org.plos.model.article.Years;
 import org.plos.models.Issue;
@@ -76,6 +78,8 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private List<ArticleInfo> articleList;
   private int                             totalArticles;
   private String archiveURL = "";
+  private String startDateParam;
+  private String endDateParam;
 
   public String execute() throws Exception {
     if (DATE_FIELD.equals(getField())) {
@@ -96,6 +100,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     if (catName != null) {
       int[] numArt = new int[1];
     	articleList = browseService.getArticlesByCategory(catName, startPage, pageSize, numArt);
+      Collections.sort(articleList, new ArticleInfoMostRecentDateComparator());
       totalArticles = numArt[0];
     } else {
       articleList = Collections.<ArticleInfo>emptyList();
@@ -114,32 +119,50 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
     Calendar endDate;
 
-    if (getYear() > UNSET && getMonth() > UNSET && getDay () > UNSET) {
-      startDate.set(getYear(), getMonth() - 1, getDay());
-      endDate = (Calendar) startDate.clone();
-      endDate.add(Calendar.DATE, 1);
-
-    } else if (getYear() > UNSET && getMonth() > UNSET) {
-      startDate.set(getYear(), getMonth() - 1, 1);
-      endDate = (Calendar) startDate.clone();
-      endDate.add(Calendar.MONTH, 1);
-
-    } else if (getMonth() == PAST_MONTH) {
-      endDate = (Calendar) startDate.clone();
-      startDate.add(Calendar.MONTH, -1);
-      endDate.add(Calendar.DATE, 1);
-
-    } else if (getMonth() == PAST_3MON) {
-      endDate = (Calendar) startDate.clone();
-      startDate.add(Calendar.MONTH, -3);
-      endDate.add(Calendar.DATE, 1);
-
+    if (((startDateParam != null) && startDateParam.length() > 0) || 
+        ((endDateParam != null) && endDateParam.length() > 0) ) {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      try {
+        if (startDateParam != null) {
+          startDate.setTime(sdf.parse(startDateParam));
+        } else {
+          startDate.setTimeInMillis(0);
+        }
+        endDate = Calendar.getInstance();
+        if (endDateParam != null) {
+          endDate.setTime(sdf.parse(endDateParam));
+        }
+      } catch (Exception e) {
+        log.error("Failed to parse start / end Date params");
+        return ERROR;
+      }
     } else {
-      endDate = (Calendar) startDate.clone();
-      startDate.add(Calendar.DATE, -7);
-      endDate.add(Calendar.DATE, 1);
+      if (getYear() > UNSET && getMonth() > UNSET && getDay () > UNSET) {
+        startDate.set(getYear(), getMonth() - 1, getDay());
+        endDate = (Calendar) startDate.clone();
+        endDate.add(Calendar.DATE, 1);
+  
+      } else if (getYear() > UNSET && getMonth() > UNSET) {
+        startDate.set(getYear(), getMonth() - 1, 1);
+        endDate = (Calendar) startDate.clone();
+        endDate.add(Calendar.MONTH, 1);
+  
+      } else if (getMonth() == PAST_MONTH) {
+        endDate = (Calendar) startDate.clone();
+        startDate.add(Calendar.MONTH, -1);
+        endDate.add(Calendar.DATE, 1);
+  
+      } else if (getMonth() == PAST_3MON) {
+        endDate = (Calendar) startDate.clone();
+        startDate.add(Calendar.MONTH, -3);
+        endDate.add(Calendar.DATE, 1);
+  
+      } else {
+        endDate = (Calendar) startDate.clone();
+        startDate.add(Calendar.DATE, -7);
+        endDate.add(Calendar.DATE, 1);
+      }
     }
-
     int[] numArt = new int[1];
     articleList =
         browseService.getArticlesByDate(startDate, endDate, startPage, pageSize, numArt);
@@ -326,6 +349,14 @@ public class BrowseArticlesAction extends BaseActionSupport {
   public String getRssPath() {
     return (catName != null) ? feedBasePath + feedCategoryPrefix + canonicalCategoryPath(catName) :
                                super.getRssPath();
+  }
+
+  public void setStartDateParam(String startDateParam) {
+    this.startDateParam = startDateParam;
+  }
+
+  public void setEndDateParam(String endDateParam) {
+    this.endDateParam = endDateParam;
   }
 
 }

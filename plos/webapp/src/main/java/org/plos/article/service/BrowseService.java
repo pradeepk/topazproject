@@ -544,8 +544,8 @@ public class BrowseService {
                                new TransactionHelper.Action<SortedMap<String, List<URI>>>() {
         public SortedMap<String, List<URI>> run(Transaction tx) {
           Results r = tx.getSession().createQuery(
-              "select cat, a.id, a.dublinCore.date date from Article a " +
-              "where cat := a.categories.mainCategory order by date desc;").execute();
+              "select cat, a.id articleId, a.dublinCore.date date from Article a " +
+              "where cat := a.categories.mainCategory order by date desc, articleId;").execute();
 
           SortedMap<String, List<URI>> artByCat = new TreeMap<String, List<URI>>();
           r.beforeFirst();
@@ -673,8 +673,8 @@ public class BrowseService {
     return TransactionHelper.doInTx(session, new TransactionHelper.Action<List<URI>>() {
       public List<URI> run(Transaction tx) {
         Results r = tx.getSession().createQuery(
-            "select a.id, date from Article a where " +
-            "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc;").
+            "select a.id articleId, date from Article a where " +
+            "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc, articleId;").
             setParameter("sd", sd).setParameter("ed", endDate).execute();
 
         List<URI> dates = new ArrayList<URI>();
@@ -732,11 +732,11 @@ public class BrowseService {
     return TransactionHelper.doInTx(session, new TransactionHelper.Action<List<NewArtInfo>>() {
       public List<NewArtInfo> run(Transaction tx) {
         String query =
-            "select cat, a.id, a.dublinCore.date date from Article a " +
+            "select cat, a.id articleId, a.dublinCore.date date from Article a " +
             "where cat := a.categories.mainCategory and (";
         for (String uri : uris)
           query += "a.id = <" + uri + "> or ";
-        query = query.substring(0, query.length() - 4) + ") order by date desc;";
+        query = query.substring(0, query.length() - 4) + ") order by date desc, articleId;";
 
         Results r = tx.getSession().createQuery(query).execute();
 
