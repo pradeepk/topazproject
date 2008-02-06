@@ -104,11 +104,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       if (m == null)
         throw new OtmException("'" + name + "' does not exist in " + cm);
 
-      if (m.typeIsUri())
-        throw new OtmException("'" + name + "' invalid comparison - cannot compare URIs");
-
-      String val = serializeValue(value, criteria, name);
-
+      String val   = serializeValue(value, criteria, name);
       String model = m.getModel();
 
       if (model == null)
@@ -129,6 +125,9 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
                                " in SessionFactory");
       String resolverModel = "<" + resolverModels.get(0).getUri() + ">";
 
+      if (m.hasInverseUri())
+        return "(" + varPrefix + " < " + m.getUri() + "> " + subjectVar + model + " and "
+               + varPrefix + " " + operator + " " + val + " in " + resolverModel + ")";
       return "(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + model + " and "
                + varPrefix + " " + operator + " " + val + " in " + resolverModel + ")";
     }
