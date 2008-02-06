@@ -12,10 +12,12 @@ package org.topazproject.otm.criterion;
 import java.net.URI;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
@@ -41,6 +43,7 @@ import org.topazproject.otm.serializer.Serializer;
 @Entity(type = Criterion.RDF_TYPE, model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
 public abstract class Criterion {
+  private static final URI PFX_MODEL = URI.create("http://mulgara.org/mulgara#PrefixModel");
 
   /**
    * The graph/model alias for persistence. Unused otherwise.
@@ -198,5 +201,20 @@ public abstract class Criterion {
    * @param cm the class metadata to use to resolve fields
    */
   public abstract void onPostLoad(DetachedCriteria dc, ClassMetadata cm);
+
+  /**
+   * Gets the URI for the mulgara prefix model used in rdf collection queries.
+   *
+   * @return the prefix model URI
+   *
+   * @throws OtmException when the model is not configured in the SessionFactory
+   */
+  protected URI getPrefixModel(Criteria criteria) throws OtmException {
+    List<ModelConfig> l = criteria.getSession().getSessionFactory().getModels(PFX_MODEL);
+    if ((l == null) || (l.size() == 0))
+      throw new OtmException("A model of type " + PFX_MODEL 
+          + " must be configured in SessionFactory to execute queries on rdf collections");
+    return l.get(0).getUri();
+  }
 
 }

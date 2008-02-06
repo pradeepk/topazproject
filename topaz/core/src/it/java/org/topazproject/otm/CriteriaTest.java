@@ -20,14 +20,17 @@ import org.apache.commons.logging.LogFactory;
 import static org.testng.AssertJUnit.*;
 
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.PublicAnnotation;
+import org.topazproject.otm.samples.SpecialMappers;
 
 /**
  * Tests for Criteria.
@@ -36,11 +39,13 @@ import org.topazproject.otm.samples.PublicAnnotation;
  */
 @Test
 public class CriteriaTest extends AbstractOtmTest {
-  private static final Log log = LogFactory.getLog(CriteriaTest.class);
-  private URI              id1 = URI.create("http://localhost/annotation/1");
-  private URI              id2 = URI.create("http://localhost/annotation/2");
-  private URI              id3 = URI.create("http://localhost/annotation/3");
-  private URI              id4 = URI.create("http://localhost/annotation/4");
+  private static final Log log   = LogFactory.getLog(CriteriaTest.class);
+  private URI              id1   = URI.create("http://localhost/annotation/1");
+  private URI              id2   = URI.create("http://localhost/annotation/2");
+  private URI              id3   = URI.create("http://localhost/annotation/3");
+  private URI              id4   = URI.create("http://localhost/annotation/4");
+  private String           sm1Id = "http://localhost/sm/1";
+  private String           sm2Id = "http://localhost/sm/2";
 
   /**
    * DOCUMENT ME!
@@ -96,6 +101,20 @@ public class CriteriaTest extends AbstractOtmTest {
           session.saveOrUpdate(a2);
           session.saveOrUpdate(a3);
           session.saveOrUpdate(a4);
+
+          SpecialMappers sm1 = new SpecialMappers(sm1Id);
+          SpecialMappers sm2 = new SpecialMappers(sm2Id);
+
+          sm1.list.add("a1");
+          sm1.seq.add("a1");
+          sm2.list.add("b1");
+          sm2.list.add("b2");
+          sm2.seq.add("b1");
+          sm2.seq.add("b2");
+
+          session.saveOrUpdate(sm1);
+          session.saveOrUpdate(sm2);
+
         }
       });
   }
@@ -803,6 +822,73 @@ public class CriteriaTest extends AbstractOtmTest {
 
           evaluateDC(dc, session);
           verifyDC(dc);
+        }
+      });
+  }
+
+  @Test(dependsOnMethods =  {"testDCLoad"})
+  public void testCollections() {
+    for (String field : new String[] {"list", "seq"}) {
+      log.info("Testing EQ on an rdf:" + field + " field ...");
+      doCollectionsTest("eq", field, "a1", new String[] {sm1Id});
+      doCollectionsTest("eq", field, "b1", new String[] {sm2Id});
+      doCollectionsTest("eq", field, "b2", new String[] {sm2Id});
+      doCollectionsTest("eq", field, "c1", new String[] {});
+
+      log.info("Testing NE on an rdf:" + field + " field ...");
+      doCollectionsTest("ne", field, "a1", new String[] {sm2Id});
+      doCollectionsTest("ne", field, "b1", new String[] {sm1Id});
+      doCollectionsTest("ne", field, "b2", new String[] {sm1Id});
+      doCollectionsTest("ne", field, "c1", new String[] {sm1Id, sm2Id});
+
+      log.info("Testing GT on an rdf:" + field + " field ...");
+      doCollectionsTest("gt", field, "a1", new String[] {sm2Id});
+      doCollectionsTest("gt", field, "b1", new String[] {sm2Id});
+      doCollectionsTest("gt", field, "b2", new String[] {});
+      doCollectionsTest("gt", field, "c1", new String[] {});
+
+      log.info("Testing LT on an rdf:" + field + " field ...");
+      doCollectionsTest("lt", field, "a1", new String[] {});
+      doCollectionsTest("lt", field, "b1", new String[] {sm1Id});
+      doCollectionsTest("lt", field, "b2", new String[] {sm1Id, sm2Id});
+      doCollectionsTest("lt", field, "c1", new String[] {sm1Id, sm2Id});
+
+      log.info("Testing GE on an rdf:" + field + " field ...");
+      doCollectionsTest("ge", field, "a1", new String[] {sm1Id, sm2Id});
+      doCollectionsTest("ge", field, "b1", new String[] {sm2Id});
+      doCollectionsTest("ge", field, "b2", new String[] {sm2Id});
+      doCollectionsTest("ge", field, "c1", new String[] {});
+
+      log.info("Testing LE on an rdf:" + field + " field ...");
+      doCollectionsTest("le", field, "a1", new String[] {sm1Id});
+      doCollectionsTest("le", field, "b1", new String[] {sm1Id, sm2Id});
+      doCollectionsTest("le", field, "b2", new String[] {sm1Id, sm2Id});
+      doCollectionsTest("le", field, "c1", new String[] {sm1Id, sm2Id});
+    }
+  }
+
+  private void doCollectionsTest(final String op, final String field, final String val, 
+      final String[] results) {
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Criterion crit;
+          try {
+            crit = (Criterion)Restrictions.class
+                             .getDeclaredMethod(op, String.class, Object.class)
+                             .invoke(null, field, val);
+          } catch (Exception e) {
+            throw new OtmException("", e);
+          }
+          List<SpecialMappers> l = session.createCriteria(SpecialMappers.class)
+                                          .add(crit).list();
+          assertEquals(results.length, l.size());
+          for (SpecialMappers sm : l) {
+            boolean found = false;
+            for (String id : results)
+               if (id.equals(sm.id))
+                  found = true;
+            assertTrue(sm.id + " not found in " + results, found);
+          }
         }
       });
   }

@@ -71,6 +71,8 @@ public abstract class AbstractOtmTest {
       new ModelConfig("criteria", URI.create("local:///topazproject#otmtest4"), null),
       new ModelConfig("str", URI.create("local:///topazproject#str"),
                                       URI.create("http://topazproject.org/models#StringCompare")),
+      new ModelConfig("prefix", URI.create("local:///topazproject#prefix"),
+            URI.create("http://mulgara.org/mulgara#PrefixModel")),
     };
     URI storeUri = URI.create("local:///topazproject");
     DefaultItqlClientFactory cf = new DefaultItqlClientFactory();
@@ -83,6 +85,7 @@ public abstract class AbstractOtmTest {
       factory.addModel(model);
 
     tripleStore.createModel(factory.getModel("str"));
+    tripleStore.createModel(factory.getModel("prefix"));
 
     Class classes [] = new Class[] {Article.class, PublicAnnotation.class, PrivateAnnotation.class,
                                     ReplyThread.class, Grants.class, Revokes.class,

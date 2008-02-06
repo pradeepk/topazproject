@@ -14,6 +14,7 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Mapper.MapperType;
 
 /**
  * A criterion for a triple pattern where the predicate and value are known.
@@ -83,13 +84,12 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
     else
       val = serializeValue(getValue(), criteria, getFieldName());
 
-    String query =
-      m.hasInverseUri() ? (val + " <" + m.getUri() + "> " + subjectVar)
-      : (subjectVar + " <" + m.getUri() + "> " + val);
 
     String model = m.getModel();
 
-    if (model != null) {
+    if (model == null)
+      model = "";
+    else {
       ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
 
       if (conf == null)
@@ -98,8 +98,40 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
       model = " in <" + conf.getUri() + ">";
     }
 
-    if (model != null)
-      query += model;
+    if (m.hasInverseUri() && (m.getMapperType() != MapperType.PREDICATE))
+          throw new OtmException("Can't query across a " + m.getMapperType() 
+              + " for an inverse mapped field '" + getFieldName() + "' in " + cm);
+
+    String query;
+    switch(m.getMapperType()) {
+      case PREDICATE:
+         query = m.hasInverseUri() ? (val + " <" + m.getUri() + "> " + subjectVar)
+                                   : (subjectVar + " <" + m.getUri() + "> " + val);
+         query += model;
+         break;
+      case RDFSEQ:
+      case RDFBAG:
+      case RDFALT:
+        String seq = varPrefix + "seqS";
+        String seqPred = varPrefix + "seqP";
+        query = "(" + subjectVar + " <" + m.getUri() + "> " + seq + model
+           + " and " + seq +  " " + seqPred + " " + val + model
+           + " and " + seqPred + " <mulgara:prefix> <rdf:_> in <"
+           + getPrefixModel(criteria) + ">)";
+        break;
+      case RDFLIST:
+        String list = varPrefix + "list";
+        String rest = varPrefix + "rest";
+        query = "(" + subjectVar + " <" + m.getUri() + "> " + list + model
+           + " and (" + list + " <rdf:first> " + val +  model
+           + " or ((trans(" + list + " <rdf:rest> " + rest + ")" + model
+           + " or " + list + " <rdf:rest> " + rest + model
+           + ") and " + rest +  " <rdf:first> " + val + model + ")))";
+        break;
+      default:
+         throw new OtmException(m.getMapperType() + " not supported; field = " 
+             + getFieldName() + " in " + cm);
+    }
 
     return query;
   }
@@ -142,4 +174,5 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
   public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
     throw new UnsupportedOperationException("Not meant to be persisted");
   }
+
 }

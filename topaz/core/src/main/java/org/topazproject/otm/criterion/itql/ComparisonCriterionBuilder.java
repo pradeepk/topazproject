@@ -20,6 +20,7 @@ import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Mapper.MapperType;
 
 /**
  * Criterion Builder for comparison operations.
@@ -125,10 +126,43 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
                                " in SessionFactory");
       String resolverModel = "<" + resolverModels.get(0).getUri() + ">";
 
-      if (m.hasInverseUri())
-        return "(" + varPrefix + " < " + m.getUri() + "> " + subjectVar + model + " and "
-               + varPrefix + " " + operator + " " + val + " in " + resolverModel + ")";
-      return "(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + model + " and "
+      if (m.hasInverseUri() && (m.getMapperType() != MapperType.PREDICATE))
+            throw new OtmException("Can't query across a " + m.getMapperType() 
+                + " for an inverse mapped field '" + name + "' in " + cm);
+
+      String query;
+      switch(m.getMapperType()) {
+        case PREDICATE:
+           if ( m.hasInverseUri())
+             query = varPrefix + " < " + m.getUri() + "> " + subjectVar + model;
+           else
+             query = subjectVar + " <" + m.getUri() + "> " + varPrefix + model;
+         break;
+        case RDFSEQ:
+        case RDFBAG:
+        case RDFALT:
+          String seq = varPrefix + "seqS";
+          String seqPred = varPrefix + "seqP";
+          query = subjectVar + " <" + m.getUri() + "> " + seq + model
+             + " and " + seq +  " " + seqPred + " " + varPrefix + model
+             + " and " + seqPred + " <mulgara:prefix> <rdf:_> in <"
+             + getPrefixModel(criteria) + ">";
+          break;
+        case RDFLIST:
+          String list = varPrefix + "list";
+          String rest = varPrefix + "rest";
+          query = subjectVar + " <" + m.getUri() + "> " + list + model
+             + " and (" + list + " <rdf:first> " + varPrefix +  model
+             + " or ((trans(" + list + " <rdf:rest> " + rest + ")" + model
+             + " or " + list + " <rdf:rest> " + rest + model
+             + ") and " + rest +  " <rdf:first> " + varPrefix + model + "))";
+          break;
+        default:
+          throw new OtmException(m.getMapperType() + " not supported; field = " 
+             + name + " in " + cm);
+      }
+
+      return "(" + query + " and "
                + varPrefix + " " + operator + " " + val + " in " + resolverModel + ")";
     }
 
