@@ -58,8 +58,7 @@ public class ProxyCriterion extends Criterion {
   public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
                 throws OtmException {
     if (criterion == null) {
-      CriterionBuilder cb =
-        criteria.getSession().getSessionFactory().getTripleStore().getCriterionBuilder(func);
+      CriterionBuilder cb = getCriterionBuilder(criteria);
 
       if (cb != null)
         criterion = cb.create(func, args);
@@ -69,6 +68,18 @@ public class ProxyCriterion extends Criterion {
       throw new OtmException("Function '" + func + "' is unsupported by the triple-store");
 
     return criterion.toQuery(criteria, subjectVar, varPrefix, ql);
+  }
+
+  /**
+   * Look up a builder for the 'real' Criteria.
+   *
+   * @param Criteria the criteria context
+   *
+   * @return the Criterion builder that is registerd with the 
+   *         {@link org.topazproject.otm.TripleStore}
+   */
+  protected CriterionBuilder getCriterionBuilder(Criteria criteria) {
+    return criteria.getSession().getSessionFactory().getTripleStore().getCriterionBuilder(func);
   }
 
   public String toString() {
