@@ -341,6 +341,8 @@ function getArticle(refreshType) {
      	
       topaz.displayComment.processBugCount();
       
+      topaz.corrections.apply();
+      
       _ldc.hide();
 
       return false;

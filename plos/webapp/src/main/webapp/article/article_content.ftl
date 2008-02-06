@@ -43,7 +43,7 @@
       <div id="publisher"><p>${publisher}</p></div>
     </#if>
     <div id="fch" class="fch" style="display:none;">
-	  <p><span style="font-weight:bold;color:red;">Formal Correction: </span>This article has been <span style="font-weight:bold;">formally corrected</span> to address the following errors.</p>
+	  <p class="fch"><span style="font-weight:bold;color:red;">Formal Correction: </span>This article has been <span style="font-weight:bold;">formally corrected</span> to address the following errors.</p>
 	  <ol id="fclist" class="fclist"></ol>
     </div>
 	<div id="articleMenu"> 

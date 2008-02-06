@@ -612,6 +612,12 @@
       <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
     </action>
 
+    <action name="getFormalCorrections" class="org.plos.annotation.action.ListAnnotationAction" method="fetchFormalCorrections">
+      <result name="success" type="json">
+      	<param name="excludeProperties">annotations</param>
+      </result>
+    </action>
+
     <action name="getAnnotation" class="org.plos.annotation.action.GetAnnotationAction">
       <result name="success" type="json"/>
     </action>
