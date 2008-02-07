@@ -650,6 +650,13 @@
       </result>
     </action>
 
+    <action name="getCorrectionsCommentary" class="org.plos.annotation.action.GetCorrectionsCommentaryAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/discussion/corrections.ftl</param>
+        <param name="noCache">true</param>
+      </result>
+    </action>
+
     <action name="listThreadRefresh" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
       <result name="success" type="plosOneFreemarker">
         <param name="location">/discussion/threaded_replies.ftl</param>

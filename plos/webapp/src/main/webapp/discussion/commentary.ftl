@@ -7,13 +7,13 @@
 		<span>Original Article</span><a href="${articleURL}" title="Back to original article" class="article icon">${articleInfo.dublinCore.title}</a>
 	</div>
 	<table class="directory" cellpadding="0" cellspacing="0">
-	<#if allCommentary?size == 0>
+	<#if commentary?size == 0>
 	<p>There are currently no annotations or discussions yet on this article. 
 	You can <a href="${startDiscussionUrl}" title="Click to start a discussion on this article" class="discuss icon">start a discussion</a> or return to the original article to add an annotation.<p>
 	<#else>
 
 
-	<#list allCommentary as comment>
+	<#list commentary as comment>
     <#if ((comment.annotation.context)!"")?length == 0>
    		<#assign class="discuss"/>
 	 	<#else>
@@ -37,7 +37,7 @@
 	</#if>
 	</table>
 	
-	<#if allCommentary?size gt 0>
+	<#if commentary?size gt 0>
 	<p>You can also <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">make a new comment</a> on this article.</p>
   </#if>
 </div>
