@@ -24,10 +24,23 @@
 	 	<#else>
 	 		<#assign label = "response">
 	 	</#if>
+	 	
+	 	<#if comment.annotation.type?index_of("FormalCorrection") gte 0>
+	 		<#assign correctionDesc = "Formal Correction">
+	 		<#assign correctionStyle = "frmlcrctn">
+	 	<#elseif comment.annotation.type?index_of("MinorCorrection") gte 0>
+	 		<#assign correctionDesc = "Minor Correction">
+	 		<#assign correctionStyle = "minrcrctn">
+	 	<#else>
+	 		<#assign correctionDesc = "???">
+	 		<#assign correctionStyle = "?">
+	 	</#if>
+	 	<#assign dsc = correctionDesc + ": " + comment.annotation.commentTitle>
+
   	<@s.url namespace="/annotation" includeParams="none" id="listThreadURL" action="listThread" root="${comment.annotation.id}" inReplyTo="${comment.annotation.id}"/>
   	<@s.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${comment.annotation.creator}"/>
 		<td class="replies">${comment.numReplies} ${label}<br /></td>
-		<td class="title"><a href="${listThreadURL}" title="View Full Discussion Thread" class="${class} icon">${comment.annotation.commentTitle}</a></td>
+		<td class="title"><a href="${listThreadURL}" title="View Full Discussion Thread" class="${class} icon">${dsc}</a></td>
 		<td class="info">Posted by <a href="${showUserURL}" title="Discussion Author" class="user icon">${comment.annotation.creatorName}</a> on <strong>${comment.annotation.createdAsDate?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong></td>
 	</tr>
 	<tr><td colspan="4" class="last">Most recent response on <strong>${comment.lastModifiedAsDate?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong></td>
