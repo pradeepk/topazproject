@@ -207,6 +207,8 @@ public abstract class Criterion {
   /**
    * Gets the URI for the mulgara prefix model used in rdf collection queries.
    *
+   * @param criteria the criteria context to use
+   *
    * @return the prefix model URI
    *
    * @throws OtmException when the model is not configured in the SessionFactory
@@ -219,4 +221,22 @@ public abstract class Criterion {
     return l.get(0).getUri();
   }
 
+  /**
+   * Gets the URI for the given model name.
+   *
+   * @param criteria the criteria context to use
+   * @param model the name of the model
+   *
+   * @return the model URI
+   *
+   * @throws OtmException when the model is not configured in the SessionFactory
+   */
+  protected URI getModelUri(Criteria criteria, String model) throws OtmException {
+    ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
+
+    if (conf == null)
+      throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
+
+    return conf.getUri();
+  }
 }

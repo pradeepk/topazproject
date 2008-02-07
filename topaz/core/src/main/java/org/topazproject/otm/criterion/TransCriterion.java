@@ -59,16 +59,10 @@ public class TransCriterion extends AbstractBinaryCriterion {
     String val = serializeValue(getValue(), criteria, getFieldName());
     String model = m.getModel();
 
-    if ((model == null) || model.equals(cm.getModel()))
+    if ((model != null) && !cm.getModel().equals(model))
+      model = " in <" + getModelUri(criteria, model) + ">";
+    else
       model = "";
-    else {
-      ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
-
-      if (conf == null)
-        throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
-
-      model = " in <" + conf.getUri() + ">";
-    }
 
     String subj   = m.hasInverseUri() ? val : subjectVar;
     String obj    = m.hasInverseUri() ? subjectVar : val;

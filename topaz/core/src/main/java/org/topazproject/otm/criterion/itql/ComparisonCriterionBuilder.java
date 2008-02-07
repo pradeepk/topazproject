@@ -107,17 +107,10 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
 
       String val   = serializeValue(value, criteria, name);
       String model = m.getModel();
-
-      if (model == null)
+      if ((model != null) && !cm.getModel().equals(model))
+        model = " in <" + getModelUri(criteria, model) + ">";
+      else
         model = "";
-      else {
-        ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
-
-        if (conf == null)
-          throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
-
-        model = " in <" + conf.getUri() + ">";
-      }
 
       List<ModelConfig> resolverModels =
           criteria.getSession().getSessionFactory().getModels(resolverModelType);
