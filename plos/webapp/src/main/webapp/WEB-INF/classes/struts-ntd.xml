@@ -29,20 +29,6 @@
 
   </package>
 
-  <package name="article-ntd" extends="default-ntd" namespace="/journals/ntd/article">
-    <action name="browseIssue" class="org.plos.article.action.BrowseIssueAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/ntd/article/browseIssue.ftl</param>
-      </result>
-    </action>
-
-    <action name="browseVolume" class="org.plos.article.action.BrowseVolumeAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/ntd/article/browseVolume.ftl</param>
-      </result>
-    </action>
-  </package>
-
   <package name="static-ntd" extends="default-ntd" namespace="/journals/ntd/static">
 
     <action name="about" class="org.plos.action.NoOpAction">
