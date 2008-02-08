@@ -85,7 +85,14 @@
             <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
             <h3><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${articleInfo.title}</@s.a></h3>
             <p class="authors"><#list articleInfo.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list></p>
-            <@related articleInfo=articleInfo/>
+            
+	    <#if articleGrp.heading = "Research Article">
+	    	<p>
+		<@s.a href="%{fetchArticleURL}#abstract1" title="Read Author Summary">Author Summary</@s.a>
+		</p>
+	    </#if>
+	    
+	    <@related articleInfo=articleInfo/>
           </div>
         </#list>
         </#list>
