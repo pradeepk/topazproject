@@ -27,7 +27,11 @@
       <result name="success">/journals/genetics/article/mostCommented.ftl</result>
     </action>
 
-  </package>
+    <action name="mostViewed" class="org.plos.action.HomePageAction">
+      <result name="success">/journals/genetics/article/mostViewed.ftl</result>
+    </action>
+
+    </package>
 
   <package name="article-genetics" extends="default-genetics" namespace="/journals/genetics/article">
     <action name="browseIssue" class="org.plos.article.action.BrowseIssueAction">
