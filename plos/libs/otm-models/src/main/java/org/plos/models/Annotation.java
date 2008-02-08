@@ -23,7 +23,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Annotea.W3C_NS + "Annotation")
+@Entity(type = Annotation.RDF_TYPE)
 public abstract class Annotation extends Annotea {
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
@@ -34,7 +34,8 @@ public abstract class Annotation extends Annotea {
   private Annotation                                                        supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private Annotation                                                        supersededBy;
-
+  public static final String RDF_TYPE = Annotea.W3C_NS + "Annotation";
+  
   /**
    * Creates a new Annotation object.
    */
