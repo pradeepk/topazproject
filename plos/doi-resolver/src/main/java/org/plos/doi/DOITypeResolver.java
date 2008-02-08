@@ -12,13 +12,15 @@ package org.plos.doi;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-
 import java.rmi.RemoteException;
-
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
@@ -27,12 +29,13 @@ import org.topazproject.mulgara.itql.service.ItqlInterpreterException;
 /**
  * Resolver for the rdf:type of a DOI-URI.
  *
- * @author Pradeep Krishnan
+ * @author Pradeep Krishnan, Alex Worden
  */
 public class DOITypeResolver {
+  private static final Log log = LogFactory.getLog(DOITypeResolver.class);
   private static final String MODEL = "<local:///topazproject#filter:model=ri>";
   private static final String QUERY = "select $t from " + MODEL + " where <${doi}> <rdf:type> $t";
-
+  private static final String GET_ANNOTATES_QUERY = "select $x from " + MODEL + " where <${doi}> <http://www.w3.org/2000/10/annotation-ns#annotates> $x";
   
   //
   private ItqlHelper itql;
@@ -62,7 +65,7 @@ public class DOITypeResolver {
    * @throws AnswerException if an exception occurred parsing the query response
    * @throws RemoteException if an exception occurred talking to the service
    */
-  public String[] getRdfTypes(URI doi)
+  public Set<String> getRdfTypes(URI doi)
                        throws ItqlInterpreterException, AnswerException, RemoteException {
     String query = ItqlHelper.bindValues(QUERY, "doi", doi.toString());
 
@@ -73,16 +76,48 @@ public class DOITypeResolver {
     }
 
     StringAnswer answer = new StringAnswer(results);
-    List         rows = ((StringAnswer.StringQueryAnswer) (answer.getAnswers().get(0))).getRows();
+    List<String[]> rows = (List<String[]>)((StringAnswer.StringQueryAnswer) (answer.getAnswers().get(0))).getRows();
 
-    String[]     types = new String[rows.size()];
-
-    for (int i = 0; i < types.length; i++)
-      types[i] = ((String[]) rows.get(i))[0];
-
+    HashSet<String> types = new HashSet<String>();
+    for (String[] row : rows) {
+      types.add(row[0]);
+    }
+    
     return types;
   }
 
+  /**
+   * Recursively attempts to find the annotated root (article?) of the given annotation doi. Retruns the doi
+   * found that does not annotate another doi. 
+   * 
+   * @param annotationDoi
+   * @return
+   * @throws ItqlInterpreterException
+   * @throws RemoteException
+   * @throws AnswerException
+   */
+  public String getAnnotatedRoot(String annotationDoi) throws ItqlInterpreterException, RemoteException, AnswerException {
+    String query = ItqlHelper.bindValues(GET_ANNOTATES_QUERY, "doi", annotationDoi.toString());
+    
+    String results;
+    synchronized (this) {
+      results = itql.doQuery(query, null);
+    }
+    StringAnswer answer = new StringAnswer(results);
+    List<String[]> rows = (List<String[]>)((StringAnswer.StringQueryAnswer) (answer.getAnswers().get(0))).getRows();
+    
+    if ((rows.size() > 0) && (rows.get(0).length > 0)) {
+      String annotatedDoi = rows.get(0)[0];
+      if (annotatedDoi.equals(annotationDoi)) {
+        log.error("Circular dependency found for annotation doi: '"+annotationDoi+"'");
+        return annotatedDoi;
+      }
+      return getAnnotatedRoot(annotatedDoi);
+    }
+    
+    return annotationDoi;
+  }
+  
   /**
    * Close the database handle.
    *
