@@ -109,9 +109,12 @@ function initAnnotationForm() {
 	dojo.event.connect(btnCancel, "onclick", function(e) {
     dojo.dom.removeChildren(submitMsg);
     _dlg.hide();
+    /* don't re-fetch article on cancel
     topaz.formUtil.enableFormFields(_annotationForm);
 	  getArticle();
     topaz.displayComment.processBugCount();
+    */
+    topaz.annotation.undoPendingAnnotation();
     e.preventDefault();
   });
 
@@ -188,8 +191,10 @@ function initAnnotationForm() {
     _ratingDlg.hide();
     topaz.formUtil.enableFormFields(_ratingsForm);
     topaz.rating.resetDialog();
-	  getArticle("rating");
+	  /* don't re-fetch article on cancel
+    getArticle("rating");
     topaz.displayComment.processBugCount();
+    */
     e.preventDefault();
   });
 
@@ -301,6 +306,12 @@ function validateNewComment() {
   }*/
 }  
 
+/**
+ * getArticle
+ * 
+ * Re-fetches the article from the server 
+ * refreshing the article content area(s) of the page.
+ */
 function getArticle(refreshType) {
   var refreshArea = dojo.byId(annotationConfig.articleContainer);
   var targetUri = _annotationForm.target.value;
@@ -341,6 +352,7 @@ function getArticle(refreshType) {
      	
       topaz.displayComment.processBugCount();
       
+      // re-apply corrections
       topaz.corrections.apply();
       
       _ldc.hide();

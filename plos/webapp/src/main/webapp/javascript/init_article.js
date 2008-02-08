@@ -111,7 +111,6 @@
 
     topaz.displayComment.init();
     topaz.displayComment.processBugCount();
-    topaz.corrections.init();
     topaz.corrections.apply();
     //topaz.rating.init();
 

@@ -10,6 +10,7 @@ dojo.provide("topaz.corrections");
 topaz.corrections = new Object();
 
 topaz.corrections = {
+  // config related
   style_minrcrctn: 'minrcrctn', // css class name for minor corrections
   style_frmlcrctn: 'frmlcrctn', // css class name for formal corrections
   style_fch: 'fch', // css class name for the formal correction header
@@ -21,12 +22,6 @@ topaz.corrections = {
 
   arrElmMc:null, // array of the minor correction elements for the article
   arrElmFc:null, // array of the formal correction elements for the article
-  
-  init: function() {
-    this.aroot = dojo.byId('articleContainer');
-    this.fch = dojo.byId('fch');
-    this.fclist = dojo.byId('fclist');
-  },
   
   _num: function(arr) { return arr == null ? 0 : arr.length; },
 
@@ -47,7 +42,11 @@ topaz.corrections = {
    * Applies correction specific decorations to the article
    */
   apply: function() {
-    // [re-]identify article corrections
+    // [re-]identify node refs (as the article container is occassionally refreshed)
+    this.aroot = dojo.byId('articleContainer');
+    this.fch = dojo.byId('fch');
+    this.fclist = dojo.byId('fclist');
+
     this.arrElmMc = dojo.html.getElementsByClass(this.style_minrcrctn, this.aroot);
     this.arrElmFc = dojo.html.getElementsByClass(this.style_frmlcrctn, this.aroot);
 
@@ -94,7 +93,7 @@ topaz.corrections = {
    * _toLi
    *
    * Creates an html li element for the given formal correction 
-   * used in the order list w/in the formal correction header.
+   * used in the ordered list w/in the formal correction header.
    *
    * @param fc formal correction json obj
    * @retun li element
