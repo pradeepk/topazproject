@@ -10,14 +10,8 @@ dojo.provide("topaz.corrections");
 topaz.corrections = new Object();
 
 topaz.corrections = {
-  // config related
-  style_minrcrctn: 'minrcrctn', // css class name for minor corrections
-  style_frmlcrctn: 'frmlcrctn', // css class name for formal corrections
-  style_fch: 'fch', // css class name for the formal correction header
-  annid: 'annid', // dom node attribute name to use to store annotation ids 
-  
   aroot: null, // the top-most element of the article below which corrections are applied
-  fch: null, // the formal corrections header element ref
+  fch: null,
   fclist: null, // the formal corrections ordered list element ref
 
   arrElmMc:null, // array of the minor correction elements for the article
@@ -42,13 +36,13 @@ topaz.corrections = {
    * Applies correction specific decorations to the article
    */
   apply: function() {
-    // [re-]identify node refs (as the article container is occassionally refreshed)
-    this.aroot = dojo.byId('articleContainer');
-    this.fch = dojo.byId('fch');
-    this.fclist = dojo.byId('fclist');
+    // [re-]identify node refs (as the article container is subject to refresh)
+    this.aroot = dojo.byId(annotationConfig.articleContainer);
+    this.fch = dojo.byId(formalCorrectionConfig.fchId);
+    this.fclist = dojo.byId(formalCorrectionConfig.fcListId);
 
-    this.arrElmMc = dojo.html.getElementsByClass(this.style_minrcrctn, this.aroot);
-    this.arrElmFc = dojo.html.getElementsByClass(this.style_frmlcrctn, this.aroot);
+    this.arrElmMc = dojo.html.getElementsByClass(annotationConfig.styleFormalCorrection, this.aroot);
+    this.arrElmFc = dojo.html.getElementsByClass(annotationConfig.styleMinorCorrection, this.aroot);
 
     this._clearFCEntries();
     var show = (this.numFormalCrctns() > 0);
@@ -107,7 +101,7 @@ topaz.corrections = {
     
     var a = document.createElement('a');
     a.setAttribute('href', '#');
-    a.setAttribute(this.annid, fc.id);
+    a.setAttribute(formalCorrectionConfig.annid, fc.id);
     a.innerHTML = 'read formal correction';
     dojo.event.connect(a, "onclick", topaz.corrections.onClickFC);
     p.appendChild(a);

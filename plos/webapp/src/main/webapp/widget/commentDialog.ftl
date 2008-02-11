@@ -5,7 +5,7 @@
 		<div class="btn close" id="btn_close" title="Click to close">
 			<a title="Click to close">Close</a>
 		</div>
-		<div class="comment">
+		<div id="cmtContainer" class="comment">
 			<h6 id="viewCmtTitle"></h6>
 			<div class="detail" id="viewCmtDetail"></div>
 			<div class="contentwrap" id="viewComment"></div>
