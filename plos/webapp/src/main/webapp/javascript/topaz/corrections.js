@@ -41,8 +41,8 @@ topaz.corrections = {
     this.fch = dojo.byId(formalCorrectionConfig.fchId);
     this.fclist = dojo.byId(formalCorrectionConfig.fcListId);
 
-    this.arrElmMc = dojo.html.getElementsByClass(annotationConfig.styleFormalCorrection, this.aroot);
-    this.arrElmFc = dojo.html.getElementsByClass(annotationConfig.styleMinorCorrection, this.aroot);
+    this.arrElmMc = dojo.html.getElementsByClass(annotationConfig.styleMinorCorrection, this.aroot);
+    this.arrElmFc = dojo.html.getElementsByClass(annotationConfig.styleFormalCorrection, this.aroot);
 
     this._clearFCEntries();
     var show = (this.numFormalCrctns() > 0);
