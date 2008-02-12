@@ -628,7 +628,7 @@ public class ItqlStore extends AbstractTripleStore {
 
     for (ClassMetadata<?> c : allSubClasses(cm, sf)) {
       for (Mapper p : c.getFields()) {
-        if (p.isAssociation() && p.getMapperType() == Mapper.MapperType.PREDICATE)
+        if (p.isAssociation())
           mappers.add(p);
       }
     }
