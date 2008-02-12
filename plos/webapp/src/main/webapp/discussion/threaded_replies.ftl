@@ -47,8 +47,12 @@
 			</div>
 	</#macro>
 	
+	<#assign styleCorrections = "" />
+	<#if baseAnnotation.type?index_of("Correction") gte 0>
+		<#assign styleCorrections = " corrections" /> 
+	</#if>
 	<!-- begin : main content -->
-	<div id="content">
+	<div id="content" class="${styleCorrections}">
 		<h1>${baseAnnotation.commentTitle}</h1>
 		<div class="source">
 			<span>Original Article</span>
@@ -70,6 +74,7 @@
 			<!-- begin : response body text -->
 			<blockquote>
 				${baseAnnotation.commentWithUrlLinking}
+				<hr /><b>Citation: </b>${citation}
 			</blockquote>
 			<!-- end : response body text -->
 			<!-- begin : toolbar options -->
