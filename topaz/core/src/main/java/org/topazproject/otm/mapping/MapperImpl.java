@@ -77,8 +77,9 @@ public class MapperImpl implements Mapper {
    * @param var           the projection variable
    * @param loader        the loader for the field
    * @param fetchType     fetch type for associations. Must be null otherwise
+   * @param associatedEntity the entity name for associations
    */
-  public MapperImpl(String var, Loader loader, FetchType fetchType) {
+  public MapperImpl(String var, Loader loader, FetchType fetchType, String associatedEntity) {
     this.uri             = null;
     this.var             = var;
     this.loader          = loader;
@@ -91,7 +92,7 @@ public class MapperImpl implements Mapper {
     this.generator       = null;
     this.cascade         = null;
     this.fetchType       = fetchType;
-    this.associatedEntity = null;
+    this.associatedEntity = associatedEntity;
   }
 
   /**
@@ -187,7 +188,7 @@ public class MapperImpl implements Mapper {
    * inherited javadoc
    */
   public boolean isAssociation() {
-    return fetchType != null;
+    return associatedEntity != null;
   }
 
   /*
@@ -271,7 +272,7 @@ public class MapperImpl implements Mapper {
   public Class getComponentType() {
     return ((org.topazproject.otm.mapping.java.FieldLoader)loader).getComponentType();
   }
-  
+
   public String getAssociatedEntity() {
     return associatedEntity;
   }

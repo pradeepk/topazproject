@@ -307,7 +307,7 @@ public class AnnotationClassMetaFactory {
       if (embedded)
         throw new OtmException("@Embedded and @Blob both cannot be applied to a field: " + toString(f));
       FieldLoader loader = new ArrayFieldLoader(f, getMethod, setMethod, null, Byte.TYPE);
-      Mapper p = new MapperImpl(null, loader, null);
+      Mapper p = new MapperImpl(null, loader, null, null);
 
       return Collections.singletonList(p);
     }
@@ -369,7 +369,7 @@ public class AnnotationClassMetaFactory {
       Mapper     p;
       ScalarFieldLoader loader = new ScalarFieldLoader(f, getMethod, setMethod, serializer);
       if (isView)
-        p = new MapperImpl(null, loader, null);
+        p = new MapperImpl(null, loader, null, null);
       else
         p = new MapperImpl(null, loader, null, null, false, null,
                                  Mapper.MapperType.PREDICATE, true, generator, null, null, null);
@@ -433,7 +433,7 @@ public class AnnotationClassMetaFactory {
         loader = new ScalarFieldLoader(f, getMethod, setMethod, serializer);
       Mapper            p;
       if (isView)
-        p = new MapperImpl(var, loader, ft);
+        p = new MapperImpl(var, loader, ft, assoc);
       else
         p = new MapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft, assoc);
 
