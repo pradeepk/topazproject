@@ -13,7 +13,9 @@ package org.topazproject.otm.metadata;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.java.ArrayFieldLoader;
@@ -24,8 +26,6 @@ import org.topazproject.otm.mapping.java.FieldLoader;
 import org.topazproject.otm.mapping.java.ScalarFieldLoader;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.MapperImpl;
-import org.topazproject.otm.mapping.Mapper.CascadeType;
-import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.serializer.Serializer;
 
 import org.apache.commons.logging.Log;

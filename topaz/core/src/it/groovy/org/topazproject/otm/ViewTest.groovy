@@ -17,7 +17,6 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.View;
-import org.topazproject.otm.mapping.Mapper.FetchType;
 
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.ObjectInfo;

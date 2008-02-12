@@ -29,10 +29,10 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.serializer.Serializer;
 
 /**

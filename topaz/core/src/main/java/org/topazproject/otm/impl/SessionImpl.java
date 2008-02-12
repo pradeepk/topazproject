@@ -32,10 +32,10 @@ import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Loader;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Mapper.CascadeType;
-import org.topazproject.otm.mapping.Mapper.FetchType;
 import org.topazproject.otm.query.Results;
 
+import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Filter;

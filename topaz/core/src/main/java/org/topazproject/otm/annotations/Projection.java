@@ -14,7 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.topazproject.otm.mapping.Mapper.FetchType;
+import org.topazproject.otm.FetchType;
 
 /**
  * Annotation for fields in {@link View @View}'s and {@link SubView @SubView}'s.

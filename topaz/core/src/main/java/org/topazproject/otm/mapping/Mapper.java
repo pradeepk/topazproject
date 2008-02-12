@@ -12,6 +12,8 @@ package org.topazproject.otm.mapping;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
 
@@ -22,29 +24,6 @@ import org.topazproject.otm.id.IdentifierGenerator;
  */
 public interface Mapper {
   public static enum MapperType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT, PREDICATE_MAP};
-  /**
-   * Enum defining how operations should cascade to associations.
-   */
-  public static enum CascadeType {
-    saveOrUpdate, delete, merge, refresh, evict,
-    all {public boolean implies(CascadeType e){
-      for (CascadeType c: EnumSet.range(CascadeType.saveOrUpdate, CascadeType.evict))
-        if (c.implies(e))
-          return true;
-      return e.equals(this);
-    }},
-    deleteOrphan {public boolean implies(CascadeType e){
-      return e.equals(this) || CascadeType.delete.implies(e);
-    }};
-
-    public boolean implies(CascadeType e) {
-      return e.equals(this);
-    }
-  };
-  /**
-   * Enum defining how associations should be fetched.
-   */
-  static enum FetchType {lazy, eager};
 
   /**
    * Get the Loader for this field

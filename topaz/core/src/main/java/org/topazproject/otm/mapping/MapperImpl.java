@@ -11,6 +11,8 @@ package org.topazproject.otm.mapping;
 
 import java.util.List;
 
+import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
 

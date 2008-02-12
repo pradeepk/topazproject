@@ -14,8 +14,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.topazproject.otm.mapping.Mapper.CascadeType;
-import org.topazproject.otm.mapping.Mapper.FetchType;
+import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 
 /**
  * Annotation for fields to specify the necessary config for controlling persistence to an RDF

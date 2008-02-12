@@ -10,11 +10,11 @@
 
 package org.topazproject.otm.metadata;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.java.FieldLoader;
-import org.topazproject.otm.mapping.Mapper.CascadeType;
 
 /**
  * Groovy-builder offline tests.
