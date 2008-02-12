@@ -111,7 +111,7 @@ function initAnnotationForm() {
     _dlg.hide();
     topaz.formUtil.enableFormFields(_annotationForm);
     if(!annotationConfig.rangeInfoObj.isSimpleText) {
-      // we are in an INDETERMINISTIC state for annotation markup as we are overlapping existing annotations!
+      // we are in an INDETERMINISTIC state for annotation markup
       // Article re-fetch is necessary to maintain the integrity of the existing annotation markup
       getArticle();
       topaz.displayComment.processBugCount();
