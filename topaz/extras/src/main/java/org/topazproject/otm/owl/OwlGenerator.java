@@ -93,8 +93,8 @@ public class OwlGenerator {
    *
    * @return superClasses hash map of java super classes for a class
    */
-  private HashMap getSuperClasses(Class sourceClass) {
-    HashMap superClasses = new HashMap();
+  private HashMap<String, Class> getSuperClasses(Class sourceClass) {
+    HashMap<String, Class> superClasses = new HashMap();
     Class clazz = sourceClass;
     while (clazz != Object.class) {
       clazz = clazz.getSuperclass();
@@ -201,7 +201,78 @@ public class OwlGenerator {
   }
 
   /**
-   * Generate class relationships only
+   * Generate the list of properties only. Use this function to dump out the
+   * list of predicates with the 'union of' domain and ranges for the
+   * predicates.
+   */
+  public void generateProperties() throws OtmException, OWLException {
+    // Loop over all classes in factory
+    for (ClassMetadata<?> cm: otmFactory.listClassMetadata()) {
+      log.debug("Parsing OTM Class metadata: " + cm.getName());
+      String type = cm.getType();
+      if (type == null)
+        continue;
+      OWLClass domain = getOWLClass(type,cm.getName());
+      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
+
+      // Now let's iterate over the fields to define 'restrictions' on properties
+      for (Mapper m: cm.getFields()) {
+        log.debug("Processing field: " + m.getName());
+        // Ignore if not annotated
+        if (m.getUri() == null)
+          continue;
+
+        // See if this field really belongs to our class/type
+        Field f = ((FieldLoader)m.getLoader()).getField();
+        log.debug("Field Class extracted: " + f);
+
+        AddAxiom domainAxiom = null;
+        AddAxiom rangeAxiom = null;
+        if (m.isAssociation()) {
+          log.debug("Processing association field: " + m.getName());
+          OWLObjectProperty objectProperty = getOWLObjectProperty(m.getUri(), m.getName());
+          OWLClass range = null;
+          if (m.getRdfType() != null)
+            range = getOWLClass(m.getRdfType(), null);
+          else
+            range = factory.getOWLThing();
+          OWLAxiom domainRestriction = null;
+          OWLAxiom rangeRestriction = null;
+          if (!m.hasInverseUri()) {
+            domainRestriction = factory.getOWLObjectPropertyDomainAxiom(objectProperty, domain);
+            rangeRestriction = factory.getOWLObjectPropertyRangeAxiom(objectProperty, range);
+          } else {
+            // domain and range are inverted
+            domainRestriction = factory.getOWLObjectPropertyDomainAxiom(objectProperty, range);
+            rangeRestriction = factory.getOWLObjectPropertyRangeAxiom(objectProperty, domain);
+          }
+
+          domainAxiom = new AddAxiom(ontology, domainRestriction);
+          rangeAxiom = new AddAxiom(ontology, rangeRestriction);
+        } else {
+          log.debug("Processing literal field: " + m.getName());
+          OWLDataProperty dataProperty = factory.getOWLDataProperty(URI.create(m.getUri()));
+          OWLDataRange range = null;
+          if (m.getDataType() != null)
+            range = factory.getOWLDataType(URI.create(m.getDataType()));
+          else
+            range = factory.getOWLDataType(XSDVocabulary.ANY_TYPE.getURI());
+          OWLAxiom domainRestriction = factory.getOWLDataPropertyDomainAxiom(dataProperty, domain);
+          OWLAxiom rangeRestriction = factory.getOWLDataPropertyRangeAxiom(dataProperty, range);
+
+          domainAxiom = new AddAxiom(ontology, domainRestriction);
+          rangeAxiom = new AddAxiom(ontology, rangeRestriction);
+        }
+
+        ontologyManager.applyChange(domainAxiom);
+        ontologyManager.applyChange(rangeAxiom);
+      }
+    }
+  }
+
+  /**
+   * Generate class relationships only. This function will dump only class
+   * definitions (not Property classes) and sub class relationships.
    */
   public void generateClasses() throws OtmException, OWLException {
     // Loop over all classes in factory
@@ -216,10 +287,10 @@ public class OwlGenerator {
       // Get the corresponding OWL class
       OWLClass owlClass = getOWLClass(type,cm.getName());
       ontologyManager.applyChange(new AddAxiom(ontology, factory.getOWLDeclarationAxiom(owlClass)));
-      HashMap superClasses = getSuperClasses(cm.getSourceClass());
+      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
 
       // Create sub-class relationships
-      for (Class c: (Collection<Class>)superClasses.values()) {
+      for (Class c: superClasses.values()) {
         ClassMetadata<?> scm = otmFactory.getClassMetadata(c);
         if (!isTypedEntity(scm))
           continue;
@@ -238,12 +309,13 @@ public class OwlGenerator {
   }
 
   /**
-   * Generate the property restrictions on each class
+   * Generate the object property restrictions on each class. This function
+   * dumps only the object property restrictions for every class defined.
    */
-  public void generateClassProperties() throws OtmException, OWLException {
+  public void generateClassObjectProperties() throws OtmException, OWLException {
     // Loop over all classes in factory
     for (ClassMetadata<?> cm: otmFactory.listClassMetadata()) {
-      System.out.println("Parsing OTM Class metadata: " + cm.getName());
+      log.debug("Parsing OTM Class metadata: " + cm.getName());
       String type = cm.getType();
       // Ignore anonymous classes
       if (type == null) {
@@ -251,14 +323,14 @@ public class OwlGenerator {
       }
 
       // Get the corresponding OWL class
-      OWLClass owlClass = getOWLClass(type,cm.getName());
-      HashMap superClasses = getSuperClasses(cm.getSourceClass());
+      OWLClass domain = getOWLClass(type,cm.getName());
+      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
 
       // Now let's iterate over the fields to define 'restrictions' on properties
       for (Mapper m: cm.getFields()) {
-        System.out.println("Processing field: " + m.getName());
-        // If not annotated
-        if (m.getUri() == null)
+        log.debug("Processing field: " + m.getName());
+        // If not annotated or not association
+        if ((m.getUri() == null) || (!m.isAssociation()))
           continue;
 
         // See if this field really belongs to our class/type
@@ -271,35 +343,82 @@ public class OwlGenerator {
           if (c != null) {
             ClassMetadata<?> fCm = otmFactory.getClassMetadata(c);
             if (isTypedEntity(fCm))
+              // It will be taken care of in the super class
               continue;
           }
         }
 
         AddAxiom addAxiom = null;
-        if (m.isAssociation() && (m.getRdfType() != null)) {
-          System.out.println("Processing association field: " + m.getName());
-          OWLObjectProperty objectProperty = getOWLObjectProperty(m.getUri(), m.getName());
-          if (!m.hasInverseUri()) {
-            OWLClass range = getOWLClass(m.getRdfType(), null);
-            OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(objectProperty, range);
-            addAxiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(owlClass, rangeRestriction));
-          } else {
-            OWLClass domain = getOWLClass(m.getRdfType(), null);
-            OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(objectProperty, owlClass);
-            addAxiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction));
-          }
-        } else {
-          System.out.println("Processing data field: " + m.getName());
-          OWLDataProperty dataProperty = factory.getOWLDataProperty(URI.create(m.getUri()));
-          OWLDataRange typeRange = null;
-          if (m.getDataType() != null)
-            typeRange = factory.getOWLDataType(URI.create(m.getDataType()));
-          else
-            typeRange = factory.getOWLDataType(XSDVocabulary.ANY_TYPE.getURI());
-          OWLDescription rangeRestriction = factory.getOWLDataAllRestriction(dataProperty, typeRange);
+        log.debug("Processing association field: " + m.getName());
+        OWLObjectProperty objectProperty = getOWLObjectProperty(m.getUri(), m.getName());
+        OWLClass range = null;
+        if (m.getRdfType() != null)
+          range = getOWLClass(m.getRdfType(), null);
+        else
+          range = factory.getOWLThing();
 
-          addAxiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(owlClass, rangeRestriction));
+        if (!m.hasInverseUri()) {
+          OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(objectProperty, range);
+          addAxiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction));
+        } else {
+          // domain and range are inverted
+          OWLDescription rangeRestriction = factory.getOWLObjectAllRestriction(objectProperty, domain);
+          addAxiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(range, rangeRestriction));
         }
+
+        ontologyManager.applyChange(addAxiom);
+      }
+    }
+  }
+
+  /**
+   * Generate the data property restrictions on each class.
+   */
+  public void generateClassDataProperties() throws OtmException, OWLException {
+    // Loop over all classes in factory
+    for (ClassMetadata<?> cm: otmFactory.listClassMetadata()) {
+      log.debug("Parsing OTM Class metadata: " + cm.getName());
+      String type = cm.getType();
+      // Ignore anonymous classes
+      if (type == null) {
+        continue;
+      }
+
+      // Get the corresponding OWL class
+      OWLClass domain = getOWLClass(type,cm.getName());
+      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
+
+      // Now let's iterate over the fields to define 'restrictions' on properties
+      for (Mapper m: cm.getFields()) {
+        log.debug("Processing field: " + m.getName());
+        // If not annotated or an association
+        if ((m.getUri() == null) || (m.isAssociation()))
+          continue;
+
+        // See if this field really belongs to our class/type
+        Field f = ((FieldLoader)m.getLoader()).getField();
+        log.debug("Field Class extracted: " + f);
+        Class clazz = f.getDeclaringClass();
+        if (clazz != cm.getSourceClass()) {
+          // See if it exists in super classes
+          Class c = (Class)superClasses.get(clazz.getName());
+          if (c != null) {
+            ClassMetadata<?> fCm = otmFactory.getClassMetadata(c);
+            // It will be taken care of in the super class
+            if (isTypedEntity(fCm))
+              continue;
+          }
+        }
+
+        log.debug("Processing data field: " + m.getName());
+        OWLDataProperty dataProperty = factory.getOWLDataProperty(URI.create(m.getUri()));
+        OWLDataRange typeRange = null;
+        if (m.getDataType() != null)
+          typeRange = factory.getOWLDataType(URI.create(m.getDataType()));
+        else
+          typeRange = factory.getOWLDataType(XSDVocabulary.ANY_TYPE.getURI());
+        OWLDescription rangeRestriction = factory.getOWLDataAllRestriction(dataProperty, typeRange);
+        AddAxiom addAxiom = new AddAxiom(ontology, factory.getOWLSubClassAxiom(domain, rangeRestriction));
 
         ontologyManager.applyChange(addAxiom);
       }

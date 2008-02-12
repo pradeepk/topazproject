@@ -74,7 +74,8 @@ class Owl {
     OwlGenerator owlGenerator = new OwlGenerator("http://www.plos.org/content_model#",
                (SessionFactory)factory);
     owlGenerator.generateClasses();
-    owlGenerator.generateClassProperties();
+    owlGenerator.generateClassObjectProperties();
+    owlGenerator.generateClassDataProperties();
     owlGenerator.save("file:/tmp/plos.owl");
   }
 
