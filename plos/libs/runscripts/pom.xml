@@ -14,6 +14,11 @@
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
+      <artifactId>otm-extras</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
     </dependency>
 
