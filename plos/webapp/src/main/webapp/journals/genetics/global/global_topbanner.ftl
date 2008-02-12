@@ -1,3 +1,22 @@
+<#-- depending on the current page, set banner zones -->
+
+<#assign topLeft = 14>
+<#assign topRight = 16>
+
+<#if pgURL?contains('browse.action')>
+	<#if pgURL?contains('field=date')>
+		<#assign topRight = 170>
+	</#if>
+<#elseif pgURL?contains('browseIssue.action') || pgURL?contains('browseVolume.action')>
+	<#assign topRight = 169>
+<#elseif pgURL?contains('advancedSearch.action') || pgURL?contains('simpleSearch.action')>
+	<#assign topLeft = 100>
+	<#assign topRight = 101>
+<#elseif pgURL?contains('article')>
+	<#assign topLeft = 100>
+	<#assign topRight = 101>
+</#if>
+
 <!-- begin : left banner slot -->
 <div class="left">
   <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>

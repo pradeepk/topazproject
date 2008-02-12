@@ -7,7 +7,7 @@
 <body>
 
 <#-- this should be pulled out into an ftl file -->
-<#if journalContext != "PLoSNTD" >
+<#if journalContext = "PLoSONE" >
 <!-- begin : biocompare -->
 <script src='http://comparenetworks.com/partnerAds/swfobject.js' type='text/javascript'></script>
 <script language="javascript" type="text/javascript" src="http://comparenetworks.com/partnerAds/adSetup.js"></script>
@@ -21,6 +21,12 @@
   <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
   <#if journalContext = "PLoSClinicalTrials" >
     <#include "/journals/clinicalTrials/global/global_topbanner.ftl">
+  <#elseif journalContext = "PLoSCompBiol" >
+    <#include "/journals/compbiol/global/global_topbanner.ftl">
+  <#elseif journalContext = "PLoSGenetics" >
+    <#include "/journals/genetics/global/global_topbanner.ftl">
+  <#elseif journalContext = "PLoSPathogens" >
+    <#include "/journals/pathogens/global/global_topbanner.ftl">
   <#elseif journalContext = "PLoSNTD" >
     <#include "/journals/ntd/global/global_topbanner.ftl">
   <#else>

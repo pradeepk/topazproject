@@ -28,6 +28,54 @@
 
 <div id="content" class="browse static">
   <!-- begin : banner -->
+  
+  <#-- set banner codes per journal/page -->
+  
+  <#if journalContext = "PLoSClinicalTrials" >
+	<#assign source = 'PHUBCT'>
+  	<#if field == "date">
+	  	<#assign skyscraper = 217>
+	<#else>
+		<#assign skyscraper = 218>
+	</#if>
+  <#elseif journalContext = "PLoSNTD" >
+	<#assign source = 'NTD'>
+  	<#if field == "date">
+	  	<#assign skyscraper = 206>
+	<#else>
+		<#assign skyscraper = 207>
+	</#if>
+  <#elseif journalContext = "PLoSCompBiol" >
+	<#assign source = 'CBI'>
+  	<#if field == "date">
+	  	<#assign skyscraper = 177>
+	<#else>
+		<#assign skyscraper = 209>
+	</#if>
+  <#elseif journalContext = "PLoSGenetics" >
+	<#assign source = 'GEN'>
+  	<#if field == "date">
+	  	<#assign skyscraper = 177>
+	<#else>
+		<#assign skyscraper = 209>
+	</#if>
+  <#elseif journalContext = "PLoSPathogens" >
+	<#assign source = 'PAT'>
+  	<#if field == "date">
+	  	<#assign skyscraper = 177>
+	<#else>
+		<#assign skyscraper = 209>
+	</#if>
+  <#else>
+	<#assign source = 'ONE'>
+  	<#if field == "date">
+	  	<#assign skyscraper = 177>
+	<#else>
+		<#assign skyscraper = 209>
+	</#if>
+  </#if>
+  
+  
   <div id="bannerRight">
     <script language='JavaScript' type='text/javascript'src='http://ads.plos.org/adx.js'></script>
     <script language='JavaScript' type='text/javascript'>
@@ -38,7 +86,7 @@
 
         document.write ("<" + "script language='JavaScript'   type='text/javascript' src='");
         document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-        document.write ("&amp;what=zone:177&amp;source=ONE&amp;withText=1&amp;block=1");
+        document.write ("&amp;what=zone:${skyscraper}&amp;source=${source}&amp;withText=1&amp;block=1");
         document.write ("&amp;exclude=" + document.phpAds_used);
         if (document.referrer)
           document.write ("&amp;referer=" + escape(document.referrer));
@@ -46,7 +94,7 @@
       //-->
     </script>
     <noscript>
-      <a href='http://ads.plos.org/adclick.php?n=a98abd23' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:177&amp;source=ONE&amp;n=a98abd23' border='0' alt='' /></a>
+      <a href='http://ads.plos.org/adclick.php?n=a98abd23' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:${skyscraper}&amp;source=${source}&amp;n=a98abd23' border='0' alt='' /></a>
     </noscript>
   </div>
   <!-- end : banner -->
