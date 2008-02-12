@@ -12,9 +12,6 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.stores.ItqlStore;
-import org.topazproject.otm.owl.OwlClass;
-import org.topazproject.otm.owl.ObjectProperty;
-import org.topazproject.otm.owl.Metadata;
 import org.topazproject.otm.query.Results;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
@@ -63,12 +60,7 @@ if (verbose) {
   println "Mulgara URI: $mulgaraUri"
 }
 
-metamodel = "local:///topazproject#metadata"
-
 factory = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
-factory.addModel(new ModelConfig("metadata", URI.create(metamodel), null))
-factory.preload(OwlClass.class)
-factory.preload(ObjectProperty.class)
 session = factory.openSession()
 
 help = new HashMap()
@@ -80,20 +72,13 @@ These are interpreted as follows:
   % - Remainder of line executed as groovy. See ".help variables"
   . - Runs special commands. See ".help cmds"
 
-Available topcis:
-  variables cmds .alias .meta .quit init'''
-help["cmds"] = '''The following commands are supported: .alias, .meta, .quit
+Available topics:
+  variables cmds .alias .quit init'''
+help["cmds"] = '''The following commands are supported: .alias, .quit
 Run ".help .<cmd>" for help with a specific command'''
-help[".alias"] = """.alias [load|list|save|set alias uri]
-  load - loads any aliases defined in <${metamodel}>
-  save - saves all currently defined aliases into <${metamodel}>
+help[".alias"] = """.alias [list|set alias uri]
   list - lists currently active aliases (but doesn't load them)
   set alias uri - adds an alias to the interpreter (but doesn't save it)"""
-help[".meta"]  = """.meta [classes|show type|showall|load ...]
-  classes   - Shows all the classes defined in <${metamodel}>
-  show type - Shows information about a specific OWL class
-  showall   - Shows information about all loaded classes
-  load jar-files|dirs ... - Load owl metadata for supplied classes"""
 help[".quit"] = """.quit - Exit the interpreter"""
 help["variables"] = '''Variables can be used for a number of things:
   - Controlling features of the interpreter (see list of variables below)
@@ -123,89 +108,16 @@ def showHelp(args) {
   println (desc != null ? desc : "Invalid topic: ${args[0]}")
 }
 
-def meta(args) {
-  switch(args[0]) {
-  case 'classes': showClasses();      break
-  case 'show':    showClass(args[1]); break
-  case 'showall': showAllClasses();   break
-  case 'load':    Metadata.addClasses(args[1..-1]); break
-  }
-}
-
-def showClasses() {
-  def q = '''select $class $model from <''' + metamodel + '''>
-              where $class <rdf:type> <owl:Class> and $class <topaz:inModel> $model;'''
-  showTable(doQuery(q))
-}
-
-def showAllClasses() {
-  def q = '''select $class $model from <''' + metamodel + '''>
-              where $class <rdf:type> <owl:Class> and $class <topaz:inModel> $model;'''
-  def res = doQuery(q)
-  while (res.next())
-    showClass(res.getString('class'))
-}
-
-def showClass(cls) {
-  if (cls.startsWith("<")) cls = cls[1..-1]
-  if (cls.endsWith(">")) cls = cls[0..-2]
-  def desc = ''
-  def tx = session.beginTransaction()
-  try {
-    desc = reduce(session.get(OwlClass.class, expand(cls)).toString())
-  } finally {
-    tx.commit()
-  }
-
-  println "Full URI: <${expand(cls)}>"
-  println "Details: ${desc}"
-  def q = """
-    select \$prop
-           subquery(select \$type from <$metamodel> 
-                     where \$prop <rdfs:range> \$type)
-      from <$metamodel>
-     where (    \$prop <rdfs:domain> \$u
-            and \$u \$x \$c
-            and \$s <rdf:first> \$class
-            and (trans(\$c <rdf:rest> \$s) or \$c <rdf:rest> \$s or \$u \$x \$s))
-       and (    \$class <mulgara:is> <$cls>
-            or  <$cls> <rdfs:subClassOf> \$class
-            or  trans(<$cls> <rdfs:subClassOf> \$class));
-"""
-  if (verbose)
-    println q
-  showTable(doQuery(q))
-}
-
 def alias(args) {
   switch(args[0]) {
-  case 'load': loadAliases(); break
   case 'list': showAliases(); break
   case 'set' :
     factory.addAlias(args[1], URI.create(args[2]).toString())
     session.close()
     session = factory.openSession()
     break
-  case 'save': println "Unimplemented"; break
-  case 'help': println ".alias [load|list|save|set alias uri]"; break
+  case 'help': println ".alias [list|set alias uri]"; break
   }
-}
-
-def loadAliases() {
-  def query = """
-    select \$uri \$alias 
-      from <${metamodel}> 
-     where \$uri <http://rdf.topazproject.org/RDF/hasAlias> \$alias;
-"""
-  def result = doQuery(query)
-
-  for (alias in factory.listAliases().keySet())
-    factory.removeAlias(alias)
-  while (result.next())
-    factory.addAlias(result.getString('alias'), result.getString('uri'))
-
-  session.close()
-  session = factory.openSession()
 }
 
 def showAliases() {
@@ -393,7 +305,6 @@ def handleCmd(s) {
     args = (args.size() > 1 ? args[1..-1] : null)
     // Look for a matching command (allow abbreviations)
     if      ("alias".startsWith(cmd)) { alias(args) }
-    else if ("meta".startsWith(cmd))  { meta(args) }
     else if ("help".startsWith(cmd))  { showHelp(args) }
     else if ("quit".startsWith(cmd))  { running = false }
     else { println "Unknown command: .$s" }

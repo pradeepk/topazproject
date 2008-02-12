@@ -198,7 +198,7 @@
             <artifactId>exec-maven-plugin</artifactId>
             <version>1.0.2</version>
             <configuration>
-              <mainClass>org.topazproject.otm.owl.Metadata</mainClass>
+              <mainClass>org.topazproject.otm.owl.Owl</mainClass>
               <arguments>
                 <argument>${args}</argument>
               </arguments>

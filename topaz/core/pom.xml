@@ -14,6 +14,14 @@
   
   <dependencies>
     <dependency>
+      <groupId>owlapi</groupId>
+      <artifactId>apibinding</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>owlapi</groupId>
+      <artifactId>api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>mulgara-client</artifactId>
     </dependency>

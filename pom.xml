@@ -123,6 +123,18 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>owlapi</groupId>
+        <artifactId>apibinding</artifactId>
+        <version>2.1.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>owlapi</groupId>
+        <artifactId>api</artifactId>
+        <version>2.1.1</version>
+      </dependency>
+
+      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.4</version>

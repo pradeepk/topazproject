@@ -1,5 +1,5 @@
-/* $HeadURL::                                                                            $
- * $Id$
+/* $HeadURL:: http://gandalf.topazproject.org/svn/head/plos/libs/runscripts/src/main/gro#$
+ * $Id: Owl.groovy 4123 2007-12-03 03:40:28Z pradeep $
  *
  * Copyright (c) 2007 by Topaz, Inc.
  * http://topazproject.org
@@ -16,31 +16,27 @@ import org.apache.commons.lang.text.StrTokenizer
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.SessionFactory
+import org.topazproject.otm.ClassMetadata
 import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.ModelConfig
-import org.topazproject.otm.stores.ItqlStore
-import org.topazproject.otm.owl.OwlHelper
 import org.topazproject.otm.OtmException
-import org.topazproject.otm.ClassMetadata
+import org.topazproject.otm.owl.OwlGenerator
+import org.topazproject.otm.SessionFactory
 
 /**
- * Utility class that uses otm-s OwlHelper class to generate owl metadata into
- * <local:///topazproject#metadata> of classes found in supplied classpath.
+ * Groovy script that figures out OTM annotated classes and passed them to
+ * OwlGenerator to generate OWL schema.
  *
  * @author Eric Brown
+ * @author Amit Kapoor
  */
-class Metadata {
-  private static final Log log = LogFactory.getLog(Metadata.class);
+class Owl {
+  private static final Log log = LogFactory.getLog(Owl.class);
+
   static GroovyClassLoader gcl = new GroovyClassLoader()
   static SessionFactory factory = new SessionFactoryImpl()
-  static String MODEL_PREFIX = "local:///topazproject#"
 
-  static {
-    // Setup otm
-    factory.setTripleStore(
-      new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")))
-  }
+  static String MODEL_PREFIX = "local:///topazproject#"
 
   /**
    * Given a list of directories and/or jar files, generate metadata.
@@ -75,7 +71,11 @@ class Metadata {
 
     // Do the deed
     factory.addModel(new ModelConfig("metadata", URI.create(MODEL_PREFIX + "metadata"), null))
-    OwlHelper.addFactory((SessionFactory)factory, factory.getModel("metadata"))
+    OwlGenerator owlGenerator = new OwlGenerator("http://www.plos.org/content_model#",
+               (SessionFactory)factory);
+    owlGenerator.generateClasses();
+    owlGenerator.generateClassProperties();
+    owlGenerator.save("file:/tmp/plos.owl");
   }
 
   static void addJar(File file) {
