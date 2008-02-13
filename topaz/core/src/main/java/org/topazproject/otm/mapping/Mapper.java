@@ -13,6 +13,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
@@ -23,8 +24,6 @@ import org.topazproject.otm.id.IdentifierGenerator;
  * @author Pradeep Krishnan
  */
 public interface Mapper {
-  public static enum ColType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT};
-
   /**
    * Get the Loader for this field
    *

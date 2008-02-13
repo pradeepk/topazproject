@@ -23,7 +23,7 @@ import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
-import org.topazproject.otm.mapping.Mapper.ColType;
+import org.topazproject.otm.ColType;
 
 /** 
  * @author Ronald Tschalär

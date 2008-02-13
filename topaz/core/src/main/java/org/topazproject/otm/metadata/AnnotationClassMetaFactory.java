@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
@@ -413,7 +414,7 @@ public class AnnotationClassMetaFactory {
 
       boolean           notOwned = (rdf != null) && rdf.notOwned();
 
-      Mapper.ColType mt       = getColType(f, rdf, isArray);
+      ColType mt       = getColType(f, rdf, isArray);
       CascadeType ct[] = (rdf != null) ? rdf.cascade()
                                    : new CascadeType[]{CascadeType.all};
       FetchType ft = (rdf != null) ? rdf.fetch() : FetchType.lazy;
@@ -493,34 +494,34 @@ public class AnnotationClassMetaFactory {
     return result;
   }
 
-  private Mapper.ColType getColType(Field f, Predicate rdf, boolean isArray)
+  private ColType getColType(Field f, Predicate rdf, boolean isArray)
                                    throws OtmException {
     Predicate.StoreAs storeAs = (rdf == null) ? Predicate.StoreAs.undefined : rdf.storeAs();
 
     switch (storeAs) {
     case rdfList:
-      return Mapper.ColType.RDFLIST;
+      return ColType.RDFLIST;
 
     case rdfBag:
-      return Mapper.ColType.RDFBAG;
+      return ColType.RDFBAG;
 
     case rdfAlt:
-      return Mapper.ColType.RDFALT;
+      return ColType.RDFALT;
 
     case rdfSeq:
-      return Mapper.ColType.RDFSEQ;
+      return ColType.RDFSEQ;
 
     case predicate:
-      return Mapper.ColType.PREDICATE;
+      return ColType.PREDICATE;
 
     case undefined:
 
       //if (isArray || List.class.isAssignableFrom(field.getType()))
       //  return Mapper.ColType.RDFSEQ;
-      return Mapper.ColType.PREDICATE;
+      return ColType.PREDICATE;
     }
 
-    return Mapper.ColType.PREDICATE;
+    return ColType.PREDICATE;
   }
 
   private Mapper createPredicateMap(Field field, Method getter, Method setter)

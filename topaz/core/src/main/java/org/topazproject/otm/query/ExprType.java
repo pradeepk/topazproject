@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
-import org.topazproject.otm.mapping.Mapper.ColType;
 
 /** 
  * This describes the type of an expression. It can be an untyped literal, a typed literal,

@@ -32,6 +32,7 @@ import org.topazproject.mulgara.itql.ItqlClientFactory;
 import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
@@ -169,7 +170,7 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs, 
-      String dt, boolean objIsUri, Mapper.ColType mt, String prefix, boolean inverse) {
+      String dt, boolean objIsUri, ColType mt, String prefix, boolean inverse) {
     int i = 0;
     switch (mt) {
     case PREDICATE:
@@ -197,8 +198,8 @@ public class ItqlStore extends AbstractTripleStore {
     case RDFBAG:
     case RDFSEQ:
     case RDFALT:
-      String rdfType = (Mapper.ColType.RDFBAG == mt) ? "<rdf:Bag> " :
-                       ((Mapper.ColType.RDFSEQ == mt) ? "<rdf:Seq> " : "<rdf:Alt> ");
+      String rdfType = (ColType.RDFBAG == mt) ? "<rdf:Bag> " :
+                       ((ColType.RDFSEQ == mt) ? "<rdf:Seq> " : "<rdf:Alt> ");
       if (objs.size() > 0) {
         buf.append("<").append(subj).append("> <").append(pred).append("> ")
            .append(prefix).append(" ");
@@ -319,7 +320,7 @@ public class ItqlStore extends AbstractTripleStore {
     // build rdf:List, rdf:Bag, rdf:Seq or rdf:Alt statements
     Collection<Mapper> col = null;
     for (Mapper p : mappers) {
-      if (p.getColType() == Mapper.ColType.RDFLIST) {
+      if (p.getColType() == ColType.RDFLIST) {
         if (col == null)
           col = new ArrayList<Mapper>();
         col.add(p);
@@ -338,9 +339,9 @@ public class ItqlStore extends AbstractTripleStore {
 
     col = null;
     for (Mapper p : mappers) {
-      if ((p.getColType() == Mapper.ColType.RDFBAG) || 
-          (p.getColType() == Mapper.ColType.RDFSEQ) ||
-          (p.getColType() == Mapper.ColType.RDFALT)) {
+      if ((p.getColType() == ColType.RDFBAG) || 
+          (p.getColType() == ColType.RDFSEQ) ||
+          (p.getColType() == ColType.RDFALT)) {
         if (col == null)
           col = new ArrayList<Mapper>();
         col.add(p);
@@ -445,11 +446,11 @@ public class ItqlStore extends AbstractTripleStore {
       if (m == null)
         continue;
       String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : modelUri;
-      if (Mapper.ColType.RDFLIST == m.getColType())
+      if (ColType.RDFLIST == m.getColType())
         fvalues.put(p, getRdfList(id, p, mUri, txn, types, m, sf, filters));
-      else if (Mapper.ColType.RDFBAG == m.getColType() ||
-          Mapper.ColType.RDFSEQ == m.getColType() || 
-          Mapper.ColType.RDFALT == m.getColType())
+      else if (ColType.RDFBAG == m.getColType() ||
+          ColType.RDFSEQ == m.getColType() || 
+          ColType.RDFALT == m.getColType())
         fvalues.put(p, getRdfBag(id, p, mUri, txn, types, m, sf, filters));
     }
 

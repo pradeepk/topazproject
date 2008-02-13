@@ -13,6 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -20,7 +21,6 @@ import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Mapper.ColType;
 
 /**
  * Criterion Builder for comparison operations.

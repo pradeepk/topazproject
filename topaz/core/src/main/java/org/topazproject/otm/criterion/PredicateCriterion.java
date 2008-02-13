@@ -10,11 +10,11 @@
 package org.topazproject.otm.criterion;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Mapper.ColType;
 
 /**
  * A criterion for generating a triple pattern. The field name or value

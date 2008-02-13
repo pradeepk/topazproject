@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
@@ -160,7 +161,7 @@ public class FieldDef {
     Field  f   = cls.getDeclaredField(name)
     Method get = cls.getMethod('get' + RdfBuilder.capitalize(name))
     Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
-    Mapper.ColType mt = getColType(rdf)
+    ColType mt = getColType(rdf)
     CascadeType[] ct = getCascadeType(rdf)
     FetchType ft = getFetchType(rdf)
 
@@ -298,20 +299,20 @@ ct, ft, cm?.getName())]
     }
   }
 
-  private Mapper.ColType getColType(RdfBuilder rdf) {
+  private ColType getColType(RdfBuilder rdf) {
     String cm = colMapping ? colMapping : rdf.defColMapping
     switch (cm?.toLowerCase()) {
       case null:
       case 'predicate':
-        return Mapper.ColType.PREDICATE
+        return ColType.PREDICATE
       case 'rdflist':
-        return Mapper.ColType.RDFLIST
+        return ColType.RDFLIST
       case 'rdfbag':
-        return Mapper.ColType.RDFBAG
+        return ColType.RDFBAG
       case 'rdfseq':
-        return Mapper.ColType.RDFSEQ
+        return ColType.RDFSEQ
       case 'rdfalt':
-        return Mapper.ColType.RDFALT
+        return ColType.RDFALT
       default:
         throw new OtmException("Unknown collection-mapping type '${cm}' - must be one of " +
                                "'Predicate', 'RdfList', 'RdfBag', 'RdfSeq', or 'RdfAlt'");
