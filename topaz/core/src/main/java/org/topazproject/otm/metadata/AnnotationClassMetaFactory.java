@@ -371,8 +371,7 @@ public class AnnotationClassMetaFactory {
       if (isView)
         p = new MapperImpl(null, loader, null, null);
       else
-        p = new MapperImpl(null, loader, null, null, false, null,
-                                 Mapper.MapperType.PREDICATE, true, generator, null, null, null);
+        p = new MapperImpl(loader, generator);
 
       return Collections.singletonList(p);
     }
@@ -414,7 +413,7 @@ public class AnnotationClassMetaFactory {
 
       boolean           notOwned = (rdf != null) && rdf.notOwned();
 
-      Mapper.MapperType mt       = getMapperType(f, rdf, isArray);
+      Mapper.ColType mt       = getColType(f, rdf, isArray);
       CascadeType ct[] = (rdf != null) ? rdf.cascade()
                                    : new CascadeType[]{CascadeType.all};
       FetchType ft = (rdf != null) ? rdf.fetch() : FetchType.lazy;
@@ -494,34 +493,34 @@ public class AnnotationClassMetaFactory {
     return result;
   }
 
-  private Mapper.MapperType getMapperType(Field f, Predicate rdf, boolean isArray)
+  private Mapper.ColType getColType(Field f, Predicate rdf, boolean isArray)
                                    throws OtmException {
     Predicate.StoreAs storeAs = (rdf == null) ? Predicate.StoreAs.undefined : rdf.storeAs();
 
     switch (storeAs) {
     case rdfList:
-      return Mapper.MapperType.RDFLIST;
+      return Mapper.ColType.RDFLIST;
 
     case rdfBag:
-      return Mapper.MapperType.RDFBAG;
+      return Mapper.ColType.RDFBAG;
 
     case rdfAlt:
-      return Mapper.MapperType.RDFALT;
+      return Mapper.ColType.RDFALT;
 
     case rdfSeq:
-      return Mapper.MapperType.RDFSEQ;
+      return Mapper.ColType.RDFSEQ;
 
     case predicate:
-      return Mapper.MapperType.PREDICATE;
+      return Mapper.ColType.PREDICATE;
 
     case undefined:
 
       //if (isArray || List.class.isAssignableFrom(field.getType()))
-      //  return Mapper.MapperType.RDFSEQ;
-      return Mapper.MapperType.PREDICATE;
+      //  return Mapper.ColType.RDFSEQ;
+      return Mapper.ColType.PREDICATE;
     }
 
-    return Mapper.MapperType.PREDICATE;
+    return Mapper.ColType.PREDICATE;
   }
 
   private Mapper createPredicateMap(Field field, Method getter, Method setter)
@@ -544,9 +543,7 @@ public class AnnotationClassMetaFactory {
 
           if ((targs.length == 1) && (targs[0] instanceof Class)
                && String.class.isAssignableFrom((Class) targs[0]))
-            return new MapperImpl(null, new ScalarFieldLoader(field, getter, setter, null), 
-                                  null, null, false, model, Mapper.MapperType.PREDICATE_MAP,
-                                  true, null, null, null, null);
+            return new MapperImpl(new ScalarFieldLoader(field, getter, setter, null), model);
         }
       }
     }

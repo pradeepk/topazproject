@@ -20,7 +20,7 @@ import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Mapper.MapperType;
+import org.topazproject.otm.mapping.Mapper.ColType;
 
 /**
  * Criterion Builder for comparison operations.
@@ -119,12 +119,12 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
                                " in SessionFactory");
       String resolverModel = "<" + resolverModels.get(0).getUri() + ">";
 
-      if (m.hasInverseUri() && (m.getMapperType() != MapperType.PREDICATE))
-            throw new OtmException("Can't query across a " + m.getMapperType() 
+      if (m.hasInverseUri() && (m.getColType() != ColType.PREDICATE))
+            throw new OtmException("Can't query across a " + m.getColType() 
                 + " for an inverse mapped field '" + name + "' in " + cm);
 
       String query;
-      switch(m.getMapperType()) {
+      switch(m.getColType()) {
         case PREDICATE:
            if ( m.hasInverseUri())
              query = varPrefix + " < " + m.getUri() + "> " + subjectVar + model;
@@ -151,7 +151,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
              + ") and " + rest +  " <rdf:first> " + varPrefix + model + "))";
           break;
         default:
-          throw new OtmException(m.getMapperType() + " not supported; field = " 
+          throw new OtmException(m.getColType() + " not supported; field = " 
              + name + " in " + cm);
       }
 

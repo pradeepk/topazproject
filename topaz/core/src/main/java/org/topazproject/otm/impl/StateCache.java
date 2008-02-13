@@ -145,7 +145,7 @@ class StateCache {
       vmap                   = new HashMap<Mapper, List<String>>();
 
       for (Mapper m : cm.getFields()) {
-        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
+        if (m.isPredicateMap())
           pmap = (Map<String, List<String>>) m.getRawValue(instance, true);
         else if (m.getLoader().isLoaded(instance)) {
           List<String> nv =
@@ -165,7 +165,7 @@ class StateCache {
       boolean pmapChanged = false;
 
       for (Mapper m : cm.getFields()) {
-        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+        if (m.isPredicateMap()) {
           Map<String, List<String>> nv = (Map<String, List<String>>) m.getRawValue(instance, true);
           boolean                   eq = (pmap == null) ? (nv == null) : pmap.equals(nv);
 

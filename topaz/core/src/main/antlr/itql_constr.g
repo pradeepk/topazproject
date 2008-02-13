@@ -189,9 +189,6 @@ tokens {
           notifyDeref(curPred, new OqlAST[] { prevVar, curPred, s, n });
           return new OqlAST[] { s, listPred };
 
-        case PREDICATE_MAP:
-          throw new RecognitionException("Predicate-Map not supported (yet)");
-
         default:
           throw new RecognitionException("Unknown mapper-type '" + type.getCollectionType() + "'");
       }

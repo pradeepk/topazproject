@@ -98,7 +98,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
     boolean found = false;
 
     for (Mapper m : cm.getFields()) {
-      if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+      if (m.isPredicateMap()) {
         found = true;
 
         break;
@@ -110,7 +110,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
       map.putAll(fvalues);
 
       for (Mapper m : cm.getFields()) {
-        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
+        if (m.isPredicateMap())
           continue;
 
         if (m.hasInverseUri())
@@ -120,7 +120,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
       }
 
       for (Mapper m : cm.getFields()) {
-        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
+        if (m.isPredicateMap())
           m.setRawValue(instance, map);
       }
     }

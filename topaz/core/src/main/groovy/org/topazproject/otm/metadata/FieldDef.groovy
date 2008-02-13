@@ -160,7 +160,7 @@ public class FieldDef {
     Field  f   = cls.getDeclaredField(name)
     Method get = cls.getMethod('get' + RdfBuilder.capitalize(name))
     Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
-    Mapper.MapperType mt = getMapperType(rdf)
+    Mapper.ColType mt = getColType(rdf)
     CascadeType[] ct = getCascadeType(rdf)
     FetchType ft = getFetchType(rdf)
 
@@ -298,20 +298,20 @@ ct, ft, cm?.getName())]
     }
   }
 
-  private Mapper.MapperType getMapperType(RdfBuilder rdf) {
+  private Mapper.ColType getColType(RdfBuilder rdf) {
     String cm = colMapping ? colMapping : rdf.defColMapping
     switch (cm?.toLowerCase()) {
       case null:
       case 'predicate':
-        return Mapper.MapperType.PREDICATE
+        return Mapper.ColType.PREDICATE
       case 'rdflist':
-        return Mapper.MapperType.RDFLIST
+        return Mapper.ColType.RDFLIST
       case 'rdfbag':
-        return Mapper.MapperType.RDFBAG
+        return Mapper.ColType.RDFBAG
       case 'rdfseq':
-        return Mapper.MapperType.RDFSEQ
+        return Mapper.ColType.RDFSEQ
       case 'rdfalt':
-        return Mapper.MapperType.RDFALT
+        return Mapper.ColType.RDFALT
       default:
         throw new OtmException("Unknown collection-mapping type '${cm}' - must be one of " +
                                "'Predicate', 'RdfList', 'RdfBag', 'RdfSeq', or 'RdfAlt'");

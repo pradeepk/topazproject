@@ -154,22 +154,22 @@ public class ItqlStore extends AbstractTripleStore {
     for (Mapper p : pList) {
       if (!p.isEntityOwned())
         continue;
-      if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+      if (p.isPredicateMap()) {
         Map<String, List<String>> pMap = (Map<String, List<String>>) p.getRawValue(o, true);
         for (String k : pMap.keySet())
           for (String v : pMap.get(k))
             addStmt(buf, id, k, v, null, false); // xxx: uri or literal?
       } else if (!p.isAssociation())
         addStmts(buf, id, p.getUri(), (List<String>) p.get(o) , p.getDataType(), p.typeIsUri(), 
-                 p.getMapperType(), "$s" + i++ + "i", p.hasInverseUri());
+                 p.getColType(), "$s" + i++ + "i", p.hasInverseUri());
       else
-        addStmts(buf, id, p.getUri(), sess.getIds(p.get(o)) , null,true, p.getMapperType(), 
+        addStmts(buf, id, p.getUri(), sess.getIds(p.get(o)) , null,true, p.getColType(), 
                  "$s" + i++ + "i", p.hasInverseUri());
     }
   }
 
   private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs, 
-      String dt, boolean objIsUri, Mapper.MapperType mt, String prefix, boolean inverse) {
+      String dt, boolean objIsUri, Mapper.ColType mt, String prefix, boolean inverse) {
     int i = 0;
     switch (mt) {
     case PREDICATE:
@@ -197,8 +197,8 @@ public class ItqlStore extends AbstractTripleStore {
     case RDFBAG:
     case RDFSEQ:
     case RDFALT:
-      String rdfType = (Mapper.MapperType.RDFBAG == mt) ? "<rdf:Bag> " :
-                       ((Mapper.MapperType.RDFSEQ == mt) ? "<rdf:Seq> " : "<rdf:Alt> ");
+      String rdfType = (Mapper.ColType.RDFBAG == mt) ? "<rdf:Bag> " :
+                       ((Mapper.ColType.RDFSEQ == mt) ? "<rdf:Seq> " : "<rdf:Alt> ");
       if (objs.size() > 0) {
         buf.append("<").append(subj).append("> <").append(pred).append("> ")
            .append(prefix).append(" ");
@@ -270,7 +270,7 @@ public class ItqlStore extends AbstractTripleStore {
     boolean predicateMap = false;
     for (Mapper p : mappers) {
       if (!p.hasInverseUri() && p.isEntityOwned()) {
-        if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+        if (p.isPredicateMap()) {
           predicateMap = true;
           found = false;
           break;
@@ -319,7 +319,7 @@ public class ItqlStore extends AbstractTripleStore {
     // build rdf:List, rdf:Bag, rdf:Seq or rdf:Alt statements
     Collection<Mapper> col = null;
     for (Mapper p : mappers) {
-      if (p.getMapperType() == Mapper.MapperType.RDFLIST) {
+      if (p.getColType() == Mapper.ColType.RDFLIST) {
         if (col == null)
           col = new ArrayList<Mapper>();
         col.add(p);
@@ -338,9 +338,9 @@ public class ItqlStore extends AbstractTripleStore {
 
     col = null;
     for (Mapper p : mappers) {
-      if ((p.getMapperType() == Mapper.MapperType.RDFBAG) || 
-          (p.getMapperType() == Mapper.MapperType.RDFSEQ) ||
-          (p.getMapperType() == Mapper.MapperType.RDFALT)) {
+      if ((p.getColType() == Mapper.ColType.RDFBAG) || 
+          (p.getColType() == Mapper.ColType.RDFSEQ) ||
+          (p.getColType() == Mapper.ColType.RDFALT)) {
         if (col == null)
           col = new ArrayList<Mapper>();
         col.add(p);
@@ -445,11 +445,11 @@ public class ItqlStore extends AbstractTripleStore {
       if (m == null)
         continue;
       String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : modelUri;
-      if (Mapper.MapperType.RDFLIST == m.getMapperType())
+      if (Mapper.ColType.RDFLIST == m.getColType())
         fvalues.put(p, getRdfList(id, p, mUri, txn, types, m, sf, filters));
-      else if (Mapper.MapperType.RDFBAG == m.getMapperType() ||
-          Mapper.MapperType.RDFSEQ == m.getMapperType() || 
-          Mapper.MapperType.RDFALT == m.getMapperType())
+      else if (Mapper.ColType.RDFBAG == m.getColType() ||
+          Mapper.ColType.RDFSEQ == m.getColType() || 
+          Mapper.ColType.RDFALT == m.getColType())
         fvalues.put(p, getRdfBag(id, p, mUri, txn, types, m, sf, filters));
     }
 

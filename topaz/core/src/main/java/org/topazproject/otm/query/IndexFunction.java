@@ -23,7 +23,7 @@ import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
-import org.topazproject.otm.mapping.Mapper.MapperType;
+import org.topazproject.otm.mapping.Mapper.ColType;
 
 /** 
  * @author Ronald Tschalär
@@ -35,7 +35,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
   private final String               projVar;
   private       OqlAST[]             derefNodes;
   private       OqlAST[]             projList;
-  private       MapperType           colType;
+  private       ColType           colType;
   private       int                  projCol = -1;
   private       Map<String, Integer> indexes;
 
@@ -190,9 +190,6 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
         return ASTUtil.makeTree(af, AND, "and", af.dupTree(arg),
                                 ASTUtil.makeTriple(s, "<mulgara:equals>", resVar, af));
 
-      case PREDICATE_MAP:
-        throw new RecognitionException("The argument to index() can't be a predicate-map");
-
       default:
         throw new RecognitionException("Unknown mapper-type '" + colType + "'");
     }
@@ -295,9 +292,6 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
       case RDFLIST:
         idx = indexes.get(qa.getString(col));
         break;
-
-      case PREDICATE_MAP:
-        throw new OtmException("The argument to index() can't be a predicate-map");
 
       default:
         throw new OtmException("Unknown mapper-type '" + colType + "'");

@@ -23,7 +23,7 @@ import org.topazproject.otm.id.IdentifierGenerator;
  * @author Pradeep Krishnan
  */
 public interface Mapper {
-  public static enum MapperType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT, PREDICATE_MAP};
+  public static enum ColType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT};
 
   /**
    * Get the Loader for this field
@@ -105,6 +105,8 @@ public interface Mapper {
    */
   public boolean isAssociation();
 
+  // XXX: for now
+  public boolean isPredicateMap();
 
   /**
    * Gets the rdf:type for an association field.
@@ -144,11 +146,11 @@ public interface Mapper {
   public String getModel();
 
   /**
-   * Gets the mapper type of this mapper.
+   * Gets the Collection type of this mapper.
    *
-   * @return the mapper type
+   * @return the collection type
    */
-  public MapperType getMapperType();
+  public ColType getColType();
 
   /**
    * Tests if the triples for this field are owned by the containing entity.

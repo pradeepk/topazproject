@@ -206,15 +206,15 @@ options {
 
       ClassMetadata<?> md;
       if ((md = sessFactory.getClassMetadata(m.getAssociatedEntity())) != null)
-        return ExprType.classType(md, m.getMapperType());
+        return ExprType.classType(md, m.getColType());
 
       if (m.typeIsUri())
-        return ExprType.uriType(m.getMapperType());
+        return ExprType.uriType(m.getColType());
 
       if (m.getDataType() != null)
-        return ExprType.literalType(m.getDataType(), m.getMapperType());
+        return ExprType.literalType(m.getDataType(), m.getColType());
 
-      return ExprType.literalType(m.getMapperType());
+      return ExprType.literalType(m.getColType());
     }
 
     private void updateAST(AST ast, ExprType prntType, ExprType chldType, Mapper m, boolean isVar)

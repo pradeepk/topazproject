@@ -14,7 +14,7 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Mapper.MapperType;
+import org.topazproject.otm.mapping.Mapper.ColType;
 
 /**
  * A criterion for generating a triple pattern. The field name or value
@@ -93,12 +93,12 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
     else
       model = "";
 
-    if (m.hasInverseUri() && (m.getMapperType() != MapperType.PREDICATE))
-          throw new OtmException("Can't query across a " + m.getMapperType() 
+    if (m.hasInverseUri() && (m.getColType() != ColType.PREDICATE))
+          throw new OtmException("Can't query across a " + m.getColType() 
               + " for an inverse mapped field '" + getFieldName() + "' in " + cm);
 
     String query;
-    switch(m.getMapperType()) {
+    switch(m.getColType()) {
       case PREDICATE:
          query = m.hasInverseUri() ? (val + " <" + m.getUri() + "> " + subjectVar)
                                    : (subjectVar + " <" + m.getUri() + "> " + val);
@@ -124,7 +124,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
            + ") and " + rest +  " <rdf:first> " + val + model + ")))";
         break;
       default:
-         throw new OtmException(m.getMapperType() + " not supported; field = " 
+         throw new OtmException(m.getColType() + " not supported; field = " 
              + getFieldName() + " in " + cm);
     }
 

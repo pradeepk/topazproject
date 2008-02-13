@@ -28,16 +28,18 @@ public class MapperImpl implements Mapper {
   private final String              model;
   private final String              dataType;
   private final String              rdfType;
-  private final MapperType          mapperType;
+  private final ColType             colType;
   private final boolean             entityOwned;
+  private final boolean             predicateMap;
   private final IdentifierGenerator generator;
   private final CascadeType[]       cascade;
   private final FetchType           fetchType;
   private final Loader              loader;
   private final String              associatedEntity;
 
+
   /**
-   * Creates a new MapperImpl object for a regular class.
+   * Creates a new MapperImpl object for a regular class field.
    *
    * @param uri the rdf predicate
    * @param loader the loader for the field
@@ -45,7 +47,7 @@ public class MapperImpl implements Mapper {
    * @param rdfType of associations or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
    * @param model  the model where this field is persisted
-   * @param mapperType the mapper type of this field
+   * @param colType the collection type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
    * @param generator if there is a generator for this field
    * @param cascade cascade options for this field
@@ -53,7 +55,7 @@ public class MapperImpl implements Mapper {
    * @param associatedEntity the entity name for associations
    */
   public MapperImpl(String uri, Loader loader, String dataType,
-                        String rdfType, boolean inverse, String model, MapperType mapperType,
+                        String rdfType, boolean inverse, String model, ColType colType,
                         boolean entityOwned, IdentifierGenerator generator, 
                         CascadeType[] cascade, FetchType fetchType, String associatedEntity) {
     this.uri             = uri;
@@ -63,12 +65,59 @@ public class MapperImpl implements Mapper {
     this.rdfType         = rdfType;
     this.inverse         = inverse;
     this.model           = model;
-    this.mapperType      = mapperType;
+    this.colType         = colType;
     this.entityOwned     = entityOwned;
     this.generator       = generator;
     this.cascade         = cascade;
     this.fetchType       = fetchType;
     this.associatedEntity = associatedEntity;
+    this.predicateMap    = false;
+  }
+
+  /**
+   * Creates a new MapperImpl object for a predicat-map field.
+   *
+   * @param loader the loader for the field
+   * @param model  the model where this field is persisted
+   */
+  public MapperImpl(Loader loader, String model) {
+    this.uri             = null;
+    this.var             = null;
+    this.loader          = loader;
+    this.dataType        = null;
+    this.rdfType         = null;
+    this.inverse         = false;
+    this.model           = model;
+    this.colType         = null;
+    this.entityOwned     = true;
+    this.generator       = null;
+    this.cascade         = null;
+    this.fetchType       = null;
+    this.associatedEntity = null;
+    this.predicateMap    = true;
+  }
+
+  /**
+   * Creates a new MapperImpl object for an id field.
+   *
+   * @param loader the loader for the field
+   * @param generator if there is a generator for this field
+   */
+  public MapperImpl(Loader loader, IdentifierGenerator generator) {
+    this.uri             = null;
+    this.var             = null;
+    this.loader          = loader;
+    this.dataType        = null;
+    this.rdfType         = null;
+    this.inverse         = false;
+    this.model           = null;
+    this.colType         = null;
+    this.entityOwned     = true;
+    this.generator       = generator;
+    this.cascade         = null;
+    this.fetchType       = null;
+    this.associatedEntity = null;
+    this.predicateMap    = false;
   }
 
   /**
@@ -87,12 +136,13 @@ public class MapperImpl implements Mapper {
     this.rdfType         = null;
     this.inverse         = false;
     this.model           = null;
-    this.mapperType      = null;
+    this.colType         = null;
     this.entityOwned     = false;
     this.generator       = null;
     this.cascade         = null;
     this.fetchType       = fetchType;
     this.associatedEntity = associatedEntity;
+    this.predicateMap    = false;
   }
 
   /**
@@ -109,12 +159,13 @@ public class MapperImpl implements Mapper {
     this.rdfType         = other.getRdfType();
     this.inverse         = other.hasInverseUri();
     this.model           = other.getModel();
-    this.mapperType      = other.getMapperType();
+    this.colType         = other.getColType();
     this.entityOwned     = other.isEntityOwned();
     this.generator       = other.getGenerator();
     this.cascade         = other.getCascade();
     this.fetchType       = other.getFetchType();
     this.associatedEntity = other.getAssociatedEntity();
+    this.predicateMap    = other.isPredicateMap();
   }
 
   /*
@@ -194,6 +245,13 @@ public class MapperImpl implements Mapper {
   /*
    * inherited javadoc
    */
+  public boolean isPredicateMap() {
+    return predicateMap;
+  }
+
+  /*
+   * inherited javadoc
+   */
   public String getRdfType() {
     return rdfType;
   }
@@ -215,8 +273,8 @@ public class MapperImpl implements Mapper {
   /*
    * inherited javadoc
    */
-  public MapperType getMapperType() {
-    return mapperType;
+  public ColType getColType() {
+    return colType;
   }
 
   /*
@@ -263,7 +321,7 @@ public class MapperImpl implements Mapper {
   public String toString() {
     return getClass().getName() + "[pred=" + uri + ", var=" + var
            + ", dataType=" + dataType + ", rdfType=" + rdfType
-           + ", mapperType=" + mapperType + ", inverse=" + inverse
+           + ", colType=" + colType + ", inverse=" + inverse
            + ", loader=" + loader + ", fetchType=" + fetchType
            + ", cascade=" + cascade
            + ", generator=" + ((generator != null) ? generator.getClass() : "-null-") + "]";
