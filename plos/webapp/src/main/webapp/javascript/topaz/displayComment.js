@@ -485,7 +485,7 @@ topaz.displayComment = {
       var contentDivs = topaz.domUtil.getChildElementsByTagAndClassName(container2, 'div', 'contentwrap');
       for (var i=0; i<contentDivs.length; i++) {
         if (contentDivs[i].className.match('active')) {
-          contentDivs[i].style.height = (container1Mb - container1Mb/(3.3*contentDivs.length)) + "px";
+          contentDivs[i].style.height = (container1Mb - container1Mb/(3.59*contentDivs.length)) + "px";
           //contentDivs[i].style.backgroundColor = "#fff";
         }
       }
