@@ -31,12 +31,30 @@ div.detail strong{ color: #444; /* strong wraps date and time for added emphasis
 /* dialog box title */
 .dialog h5{ margin: 0 0 10px 0; font-size: 1em; color: #333; padding: 5px;}
 /* annotation post title */
-.dialog h6{ border: 2px solid #ccc; border-width: 2px 2px 1px 2px; font-size: 1em; padding: 5px; margin: 0; background: #fff; clear: right;}
-
+.dialog h6{ border: 1px solid #666; border-bottom:0; font-size: 1em; padding: 5px; margin: 0; background: #fff; clear: right;}
+.dialog h6 a.discuss { background:url(../images/pone_icon_annotation.gif) left 0.2em no-repeat; }
 /* detail styles specific to dialog box representation */
-div.dialog div.detail{ padding: 5px; background-color: #fff; border: 2px solid #ccc; border-width: 1px 2px 2px 2px;}
+div.dialog div.detail{ padding: 5px; background-color: #fff; border: 1px solid #666; border-top-color:#0bf; border-bottom-color:#0bf;}
+div.dialog div#viewLink { border-width:0 1px 1px 1px; }
+div.dialog div.detail a:link { margin:0; }
 /* wraps the text of the annotation only */
-div.contentwrap{ padding: 10px; background-color: #fff; margin: 0; border: 2px solid #ccc; border-width: 0 2px 1px 2px;}
+div.contentwrap{ padding: 10px; background-color: #fff; margin: 0; border: 1px solid #666; border-width: 0 1px;}
+div.contentwrap p { margin:0; }
+
+/*corrections varients*/
+div#cmtContainer.frmlcrctn h6 a:link,
+div#cmtContainer.minrcrctn h6 a:link { background:url(../images/pone_icon_correction.gif) left 0% no-repeat; color:#ff0000; }
+div#cmtContainer.frmlcrctn div.contentwrap,
+div#cmtContainer.frmlcrctn h6#viewCmtTitle,
+div#cmtContainer.minrcrctn div.contentwrap,
+div#cmtContainer.minrcrctn h6#viewCmtTitle,
+div#cmtContainer.frmlcrctn div#viewCmtDetail,
+div#cmtContainer.frmlcrctn div#viewComment,
+div#cmtContainer.minrcrctn div#viewCmtDetail,
+div#cmtContainer.minrcrctn div#viewComment,
+div#cmtContainer.frmlcrctn div#viewLink,
+div#cmtContainer.minrcrctn div#viewLink { background-color:#fff4f0; }
+div#cmtContainer.minrcrctn div#viewCmtDetail { border-top-color:#f00; border-bottom-color:#f00; }
 
 div.dialog .posting.pane{ background: none; }
 /*div.pane a.instructions,
@@ -110,15 +128,21 @@ div.multiple		{ width: 50em; background-color: #666; position: relative;}
 .multiple ol,
 .multiple li	{ list-style-type: none; margin: 0; padding: 0; font-weight: normal;}
 .multiple .detail	{ font-weight: normal; margin: 0 10px 10px 10px;}
-.multiple ol	{ width: 22em; position: absolute; top: 30px; left: 0;margin: 0 10px 0 10px; border: 2px solid #ccc; border-width: 2px 0 0 2px; display: inline;}
-.multiple li	{ padding: 5px; background:#999;border-bottom: 2px solid #ccc; border-right: 2px solid #ccc; cursor: pointer;}
-.multiple .contentwrap div.detail,
-.multiple li div.detail	{ border: 1px solid #ccc; margin: 5px 0 0 0; background-color: #DDD;}
-.multiple li.active	{ background: #FFF; border-right: none; font-weight: bold;}
+.multiple ol	{ width: 22em; position: absolute; top: 30px; left: 0;margin: 0 10px 0 10px; border: 1px solid #666; border-width: 1px 0 0 1px; display: inline;}
+.multiple li	{ list-style-position:outside; padding:5px; text-indent:20px; background:#c8c6c6 url(../images/pone_tooltip_addannotation.gif) 5px 0.4em no-repeat; border-bottom: 1px solid #666; border-right: 1px solid #666; cursor: pointer;}
+.multiple .contentwrap div.detail { border:0; background-color:#fff; margin:10px 0 12px; }
+.multiple li div.detail	{ border: 1px solid #0bf; margin: 5px 0 0 0; text-indent:0; background-color: #DDD;}
+.multiple li.active	{ background-color:#fff; border-right: none; font-weight: bold;}
 .multiple li.active div.detail { background-color: #eee; }
-.multiple .contentwrap { display: none; width: 23em;margin: 0; margin-left: 22.9em; border: 2px solid #ccc; border-left: none; margin-top: 13px;}
+.multiple .contentwrap { display: none; width: 23em;margin: 0; margin-left: 22.9em; border: 1px solid #666; border-left: none; margin-top: 13px;}
 .multiple .contentwrap.active { display: block; }
 .multiple .contentwrap div.detail { position: absolute; bottom: 24px; width: 22.8em;}
+
+/* corrections in multiple annotation blocks */
+div.multiple ol li.minrcrctn { background-image:url(../images/pone_icon_correction.gif); background-position:5px 0.3em; background-repeat:no-repeat; }
+div.multiple li.minrcrctn div.detail { border-color:#f00!important; text-indent:0; }
+div.multiple li.minrcrctn.active div { background-color:#fff4f0; }
+div.multiple li.minrcrctn { color:#f00 }
 
 /* multiple annotation post detail styles */
 .dialog dt div.detail		{ border: none; background-color: transparent; padding: 0;}
