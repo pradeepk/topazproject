@@ -1,4 +1,4 @@
-<div id="content">
+<div id="content" class="corrections">
 	<h1>Corrections</h1>
 	<@s.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.id}"/>
 	<@s.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.id}"/>
