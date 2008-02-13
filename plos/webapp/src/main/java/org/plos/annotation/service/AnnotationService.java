@@ -60,8 +60,10 @@ public class AnnotationService {
   public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
   public static final String WEB_TYPE_REPLY = "Reply";
   private static final Set<Class<? extends Annotation>> CORRECTION_SET = new HashSet<Class<? extends Annotation>>();
+  private static final Set<Class<? extends Annotation>> COMMENT_SET = new HashSet<Class<? extends Annotation>>();
   static {
     CORRECTION_SET.add(Correction.class);
+    COMMENT_SET.add(Comment.class);
   }
 
   /**
@@ -298,6 +300,17 @@ public class AnnotationService {
    */
   public WebAnnotation[] listCorrections(String target) throws ApplicationException {
     return listAnnotations(target, CORRECTION_SET);
+  }
+  
+  /**
+   * Lists all comment annotations for the given target DOI. 
+   * 
+   * @param target
+   * @return
+   * @throws ApplicationException
+   */
+  public WebAnnotation[] listComments(String target) throws ApplicationException {
+    return listAnnotations(target, COMMENT_SET);
   }
   
   /**
