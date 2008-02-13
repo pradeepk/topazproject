@@ -1,5 +1,11 @@
 package org.plos.model.article;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.URI;
+
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -39,5 +45,35 @@ public class ArticleTypeTest extends TestCase {
     String imageSetConfigName = "MyImageSet";
     assertEquals("Default imageSetConfigName not as expected", 
         imageSetConfigName, dat.getImageSetConfigName());
+  }
+  
+  public void testArticleTypeEquality() throws Exception {
+    ArticleType art1 = ArticleType.getArticleTypeForURI(
+        new URI("http://rdf.plos.org/RDF/articleType/Interview"), false);
+    // Ensure that URI doesn't refer to the same internal String object...
+    ArticleType art2 = ArticleType.getArticleTypeForURI(
+        new URI("http://rdf.plos.org/RDF/"+"articleType/Interview"), false);
+    
+    assertTrue("Article 1 == Article 2", art1==art2);
+    assertTrue("Article 1 should .equals() Article 2", art1.equals(art2));
+  }
+  
+  public void testDeserializedArticleTypeEquality() throws Exception {
+    ArticleType art1 = ArticleType.getArticleTypeForURI(
+        new URI("http://rdf.plos.org/RDF/articleType/Interview"), false);
+    
+    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    ObjectOutputStream out = new ObjectOutputStream (bout);
+    
+    out.writeObject(art1);
+    out.flush();
+    
+    ByteArrayInputStream bin = new ByteArrayInputStream (bout.toByteArray ());
+    ObjectInputStream in = new ObjectInputStream (bin);
+    
+    ArticleType art2 = (ArticleType) in.readObject();
+    
+    assertTrue("Article 1 == Article 2", art1==art2);
+    assertTrue("Article 1 should .equals() Article 2", art1.equals(art2));
   }
 }
