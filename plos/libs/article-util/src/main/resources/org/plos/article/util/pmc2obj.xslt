@@ -719,9 +719,8 @@
       else if ($base-zip-name and
                $file-entries[my:basename(@name) = concat($base-zip-name, '.xml')]) then
         $file-entries[my:basename(@name) = concat($base-zip-name, '.xml')][1]
-      else if ($file-entries[ends-with(@name, '.xml')]) then
-        $file-entries[@name =
-                  min(for $n in $file-entries/@name[ends-with(., '.xml')] return xs:string($n))][1]
+      else if ($file-entries[matches(@name, '^[a-z]+\.[0-9]+\.xml$')]) then
+        $file-entries[matches(@name, '^[a-z]+\.[0-9]+\.xml$')][1]
       else
         error((), 'Couldn''t find article entry in zip file')
       "/>
