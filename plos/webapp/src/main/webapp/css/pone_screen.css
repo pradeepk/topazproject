@@ -75,7 +75,9 @@ a.instructions,
 a.instructions.visited	{ color: #006699; }
 
 a.tooltip,
-a.tooltip:visited	{ font-weight: bold; }
+a.tooltip:visited,
+a.corrections,
+a.corrections:visited { font-weight: bold; }
 	
 a.tooltip:hover,
 a.discuss:hover,
@@ -110,6 +112,7 @@ a.yourfeedback	{ background-image: url(../images/pone_icon_feedback.gif);} /* ke
 a.annotation	{ background-image: url(../images/pone_icon_annotation.gif); }
 a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
 a.commentary	{ background-image: url(../images/pone_icon_commentary.gif); }
+a.corrections	{ background-image: url(../images/pone_icon_correction.gif); }
 a.trackback	{ background-image: url(../images/pone_icon_trackback.gif); }
 
 a.xml 		{ background-image: url(../images/pone_sidenav_xml.gif); }
@@ -390,18 +393,24 @@ dl#relatedArticles dd a:hover { color:#008ED5; text-decoration:underline; }
 #rhc ol li a.commentary { background-image: none; display:block; margin-top:5px; padding: 2px 0 2px 0; font-weight: bold; }
 ul#dcCount1 { margin-bottom:5px; } /* increases spacing below note and comment counts to help block view/join discussion section */
 
-/* correction styles */
+/* correction article type styles */
 div.correction span#oa { /* open access image */ background: #3D3D3D url(../images/pone_correction_oa.gif) no-repeat 0 0; }
 div.correction h1 { color: #3D3D3D; }
 
-/* formal correction header */
-div.fch {
-	margin: 5px 0 10px;
-  padding:0;
-	border: 2px solid #ff0000 !important;
-	background-color: #fff4f0;
-}
-div.fch p.fch { margin:8px; text-indent:20px; background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
+/* correction note types, header, and associated page styles */
+div.corrections td.title { background-color: #fff4f0; }/* "correction" name space conflict: see line #393 above and line #594 below. Resolved by using "corrections". */
+div.corrections td.title a,
+div.fch p.fch strong { color:#ff0000; }
+div.fch p.fch em { font-weight:bold; font-style:normal; }
+div.fch { margin: 15px 0; padding:0; border: 1px solid #ff0000; background-color: #fff4f0; }
+div.fch p.fch,
+div.corrections td.title a { background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
+div.fch p.fch { margin:8px 8px 0; text-indent:20px; }
+div.fch ol { margin:0 8px 8px; }
+div.fch ol li { list-style-position:inside; font-weight:bold; }
+div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; }
+div.fch ol li p a:link { font-weight:normal; }
+
 
 /* rhc rounded containers : top */
 div.links,
