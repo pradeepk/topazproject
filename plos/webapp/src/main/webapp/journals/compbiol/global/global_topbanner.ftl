@@ -6,12 +6,14 @@
 <#if pgURL?contains('browse.action')>
 	<#if pgURL?contains('field=date')>
 		<#assign topRight = 168>
+	<#else>
+		<#assign topRight = 223>
 	</#if>
 <#elseif pgURL?contains('browseIssue.action') || pgURL?contains('browseVolume.action')>
 	<#assign topRight = 167>
 <#elseif pgURL?contains('advancedSearch.action') || pgURL?contains('simpleSearch.action')>
-	<#assign topLeft = 84>
-	<#assign topRight = 85>
+	<#assign topLeft = 230>
+	<#assign topRight = 231>
 <#elseif pgURL?contains('article')>
 	<#assign topLeft = 84>
 	<#assign topRight = 85>

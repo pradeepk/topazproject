@@ -48,23 +48,23 @@
   <#elseif journalContext = "PLoSCompBiol" >
 	<#assign source = 'CBI'>
   	<#if field == "date">
-	  	<#assign skyscraper = 177>
+	  	<#assign skyscraper = 221>
 	<#else>
-		<#assign skyscraper = 209>
+		<#assign skyscraper = 222>
 	</#if>
   <#elseif journalContext = "PLoSGenetics" >
 	<#assign source = 'GEN'>
   	<#if field == "date">
-	  	<#assign skyscraper = 177>
+	  	<#assign skyscraper = 227>
 	<#else>
-		<#assign skyscraper = 209>
+		<#assign skyscraper = 228>
 	</#if>
   <#elseif journalContext = "PLoSPathogens" >
 	<#assign source = 'PAT'>
   	<#if field == "date">
-	  	<#assign skyscraper = 177>
+	  	<#assign skyscraper = 224>
 	<#else>
-		<#assign skyscraper = 209>
+		<#assign skyscraper = 225>
 	</#if>
   <#else>
 	<#assign source = 'ONE'>
