@@ -10,7 +10,7 @@
 package org.topazproject.otm.criterion;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -93,7 +93,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
     else
       model = "";
 
-    if (m.hasInverseUri() && (m.getColType() != ColType.PREDICATE))
+    if (m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
           throw new OtmException("Can't query across a " + m.getColType() 
               + " for an inverse mapped field '" + getFieldName() + "' in " + cm);
 

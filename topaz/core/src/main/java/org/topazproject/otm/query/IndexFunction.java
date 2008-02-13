@@ -23,7 +23,7 @@ import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 
 /** 
  * @author Ronald Tschalär
@@ -35,7 +35,7 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
   private final String               projVar;
   private       OqlAST[]             derefNodes;
   private       OqlAST[]             projList;
-  private       ColType           colType;
+  private       CollectionType           colType;
   private       int                  projCol = -1;
   private       Map<String, Integer> indexes;
 

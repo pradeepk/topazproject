@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -119,7 +119,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
                                " in SessionFactory");
       String resolverModel = "<" + resolverModels.get(0).getUri() + ">";
 
-      if (m.hasInverseUri() && (m.getColType() != ColType.PREDICATE))
+      if (m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
             throw new OtmException("Can't query across a " + m.getColType() 
                 + " for an inverse mapped field '" + name + "' in " + cm);
 

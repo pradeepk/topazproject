@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
@@ -74,10 +74,10 @@ public class Citation {
   @Predicate(uri = PLoS.bibtex + "hasNote", dataType = Rdf.xsd + "string")
   private String note;
 
-  @Predicate(uri = PLoS.plos + "hasEditorList", colType = ColType.RDFSEQ)
+  @Predicate(uri = PLoS.plos + "hasEditorList", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile> editors = new ArrayList<UserProfile>();
 
-  @Predicate(uri = PLoS.plos + "hasAuthorList", colType = ColType.RDFSEQ)
+  @Predicate(uri = PLoS.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile> authors = new ArrayList<UserProfile>();
 
   @Predicate(uri = PLoS.bibtex + "hasURL", dataType = Rdf.xsd + "string")

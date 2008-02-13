@@ -44,7 +44,7 @@ import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
 
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
@@ -730,7 +730,7 @@ public class BrowseService {
     @Id
     public URI id;
 
-    @Predicate(uri = PLoS.plos + "hasAuthorList", colType = ColType.RDFSEQ)
+    @Predicate(uri = PLoS.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
     public List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();
   }
 

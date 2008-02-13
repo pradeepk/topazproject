@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
@@ -414,7 +414,7 @@ public class AnnotationClassMetaFactory {
 
       boolean           notOwned = (rdf != null) && rdf.notOwned();
 
-      ColType mt       = getColType(f, rdf, isArray);
+      CollectionType mt       = getColType(f, rdf, isArray);
       CascadeType ct[] = (rdf != null) ? rdf.cascade()
                                    : new CascadeType[]{CascadeType.all};
       FetchType ft = (rdf != null) ? rdf.fetch() : FetchType.lazy;
@@ -494,9 +494,9 @@ public class AnnotationClassMetaFactory {
     return result;
   }
 
-  private ColType getColType(Field f, Predicate rdf, boolean isArray)
+  private CollectionType getColType(Field f, Predicate rdf, boolean isArray)
                                    throws OtmException {
-    return (rdf == null) ? ColType.PREDICATE : rdf.colType();
+    return (rdf == null) ? CollectionType.PREDICATE : rdf.collectionType();
   }
 
   private Mapper createPredicateMap(Field field, Method getter, Method setter)

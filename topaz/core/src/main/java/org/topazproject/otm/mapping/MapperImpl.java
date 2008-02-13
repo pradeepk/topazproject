@@ -12,7 +12,7 @@ package org.topazproject.otm.mapping;
 import java.util.List;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
@@ -29,7 +29,7 @@ public class MapperImpl implements Mapper {
   private final String              model;
   private final String              dataType;
   private final String              rdfType;
-  private final ColType             colType;
+  private final CollectionType             colType;
   private final boolean             entityOwned;
   private final boolean             predicateMap;
   private final IdentifierGenerator generator;
@@ -56,7 +56,7 @@ public class MapperImpl implements Mapper {
    * @param associatedEntity the entity name for associations
    */
   public MapperImpl(String uri, Loader loader, String dataType,
-                        String rdfType, boolean inverse, String model, ColType colType,
+                        String rdfType, boolean inverse, String model, CollectionType colType,
                         boolean entityOwned, IdentifierGenerator generator, 
                         CascadeType[] cascade, FetchType fetchType, String associatedEntity) {
     this.uri             = uri;
@@ -274,7 +274,7 @@ public class MapperImpl implements Mapper {
   /*
    * inherited javadoc
    */
-  public ColType getColType() {
+  public CollectionType getColType() {
     return colType;
   }
 

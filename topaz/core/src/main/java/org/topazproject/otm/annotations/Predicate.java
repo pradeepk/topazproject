@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 
 /**
@@ -65,7 +65,7 @@ public @interface Predicate {
   /**
    * Collection Type of this field. (Applicable only for arrays and java.util.Collection fields)
    */
-  ColType colType() default ColType.PREDICATE;
+  CollectionType collectionType() default CollectionType.PREDICATE;
 
   /**
    * Cascading preferences for this field. 

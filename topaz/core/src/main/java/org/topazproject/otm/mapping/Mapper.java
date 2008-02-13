@@ -13,7 +13,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.ColType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
@@ -149,7 +149,7 @@ public interface Mapper {
    *
    * @return the collection type
    */
-  public ColType getColType();
+  public CollectionType getColType();
 
   /**
    * Tests if the triples for this field are owned by the containing entity.
