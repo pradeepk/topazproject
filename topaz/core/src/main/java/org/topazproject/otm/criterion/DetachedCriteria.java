@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -58,15 +59,15 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   private DetachedCriteria        parent;
   private Integer                 maxResults;
   private Integer                 firstResult;
-  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
+  @Predicate(colType = ColType.RDFSEQ)
   private List<Criterion>         criterionList     = new ArrayList<Criterion>();
-  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
+  @Predicate(colType = ColType.RDFSEQ)
   private List<Order>             orderList         = new ArrayList<Order>();
-  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
+  @Predicate(colType = ColType.RDFSEQ)
   private List<DetachedCriteria>  childCriteriaList = new ArrayList<DetachedCriteria>();
 
   // Only valid in the root criteria
-  @Predicate(storeAs = Predicate.StoreAs.rdfSeq)
+  @Predicate(colType = ColType.RDFSEQ)
   private List<Order>             rootOrderList     = new ArrayList<Order>();
 
   /** 

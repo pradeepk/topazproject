@@ -12,6 +12,7 @@ package org.topazproject.otm.samples;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
@@ -23,19 +24,19 @@ import org.topazproject.otm.annotations.Predicate;
 public class SpecialMappers {
   @Id
   public String id;
-  @Predicate(storeAs=Predicate.StoreAs.rdfList)
+  @Predicate(colType = ColType.RDFLIST)
   public List<String> list = new ArrayList<String>();
-  @Predicate(storeAs=Predicate.StoreAs.rdfBag)
+  @Predicate(colType = ColType.RDFBAG)
   public List<String> bag = new ArrayList<String>();
-  @Predicate(storeAs=Predicate.StoreAs.rdfAlt)
+  @Predicate(colType = ColType.RDFALT)
   public List<String> alt = new ArrayList<String>();
-  @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
+  @Predicate(colType = ColType.RDFSEQ)
   public List<String> seq = new ArrayList<String>();
 
-  @Predicate(storeAs=Predicate.StoreAs.rdfList)
+  @Predicate(colType = ColType.RDFLIST)
   public List<SpecialMappers> assocList = new ArrayList<SpecialMappers>();
 
-  @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
+  @Predicate(colType = ColType.RDFSEQ)
   public List<SpecialMappers> assocSeq = new ArrayList<SpecialMappers>();
 
   public String name;

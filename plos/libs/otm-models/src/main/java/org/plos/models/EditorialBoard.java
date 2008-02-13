@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -34,7 +35,7 @@ public class EditorialBoard {
   private EditorialBoard supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private EditorialBoard supersededBy;
-  @Predicate(uri = PLoS.plos + "editors", storeAs = Predicate.StoreAs.rdfSeq)
+  @Predicate(uri = PLoS.plos + "editors", colType = ColType.RDFSEQ)
   private List<UserProfile>      editors = new ArrayList();
 
   /**

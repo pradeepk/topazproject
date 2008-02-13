@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Predicate;
@@ -25,7 +26,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 public abstract class Junction extends Criterion {
-  @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
+  @Predicate(colType = ColType.RDFSEQ)
   private List<Criterion>  criterions = new ArrayList<Criterion>();
   private transient String op;
   private transient Set<String> paramNames = new HashSet<String>();

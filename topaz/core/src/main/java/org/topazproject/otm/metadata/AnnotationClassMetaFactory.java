@@ -496,32 +496,7 @@ public class AnnotationClassMetaFactory {
 
   private ColType getColType(Field f, Predicate rdf, boolean isArray)
                                    throws OtmException {
-    Predicate.StoreAs storeAs = (rdf == null) ? Predicate.StoreAs.undefined : rdf.storeAs();
-
-    switch (storeAs) {
-    case rdfList:
-      return ColType.RDFLIST;
-
-    case rdfBag:
-      return ColType.RDFBAG;
-
-    case rdfAlt:
-      return ColType.RDFALT;
-
-    case rdfSeq:
-      return ColType.RDFSEQ;
-
-    case predicate:
-      return ColType.PREDICATE;
-
-    case undefined:
-
-      //if (isArray || List.class.isAssignableFrom(field.getType()))
-      //  return Mapper.ColType.RDFSEQ;
-      return ColType.PREDICATE;
-    }
-
-    return ColType.PREDICATE;
+    return (rdf == null) ? ColType.PREDICATE : rdf.colType();
   }
 
   private Mapper createPredicateMap(Field field, Method getter, Method setter)

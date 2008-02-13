@@ -15,6 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.ColType;
 import org.topazproject.otm.FetchType;
 
 /**
@@ -62,14 +63,9 @@ public @interface Predicate {
   boolean notOwned() default false;
 
   /**
-   * Enum defining various storage types.
+   * Collection Type of this field. (Applicable only for arrays and java.util.Collection fields)
    */
-  enum StoreAs {undefined, predicate, rdfList, rdfBag, rdfSeq, rdfAlt};
-
-  /**
-   * Storage preference for this field. Mainly for collections for now.
-   */
-  StoreAs storeAs() default StoreAs.predicate;
+  ColType colType() default ColType.PREDICATE;
 
   /**
    * Cascading preferences for this field. 
