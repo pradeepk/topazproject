@@ -54,6 +54,7 @@ div#cmtContainer.minrcrctn div#viewCmtDetail,
 div#cmtContainer.minrcrctn div#viewComment,
 div#cmtContainer.frmlcrctn div#viewLink,
 div#cmtContainer.minrcrctn div#viewLink { background-color:#fff4f0; }
+div#cmtContainer.frmlcrctn div#viewCmtDetail,
 div#cmtContainer.minrcrctn div#viewCmtDetail { border-top-color:#f00; border-bottom-color:#f00; }
 
 div.dialog .posting.pane{ background: none; }
@@ -139,10 +140,19 @@ div.multiple		{ width: 50em; background-color: #666; position: relative;}
 .multiple .contentwrap div.detail { position: absolute; bottom: 24px; width: 22.8em;}
 
 /* corrections in multiple annotation blocks */
-div.multiple ol li.minrcrctn { background-image:url(../images/pone_icon_correction.gif); background-position:5px 0.3em; background-repeat:no-repeat; }
-div.multiple li.minrcrctn div.detail { border-color:#f00!important; text-indent:0; }
-div.multiple li.minrcrctn.active div { background-color:#fff4f0; }
-div.multiple li.minrcrctn { color:#f00 }
+div.multiple ol li.minrcrctn,
+div.multiple ol li.frmlcrctn { background-image:url(../images/pone_icon_correction.gif); background-position:5px 0.3em; background-repeat:no-repeat; }
+div.multiple li.minrcrctn div.detail,
+div.multiple li.frmlcrctn div.detail { border-color:#f00!important; text-indent:0; }
+div.multiple li.minrcrctn,
+div.multiple li.frmlcrctn { color:#f00 }
+/* Valid use of child selector to hide the follwing from IE6 due to its lack for support for chained classes. All backgrounds should display white in IE6 */
+div.multiple > ol#multilist > li.minrcrctn.active,
+div.multiple > ol#multilist > li.frmlcrctn.active,
+div.multiple > div#multidetail > div.minrcrctn,
+div.multiple > div#multidetail > div.frmlcrctn,
+div.multiple > div#multidetail > div.minrcrctn div.detail,
+div.multiple > div#multidetail > div.frmlcrctn div.detail { background-color:#fff4f0; }
 
 /* multiple annotation post detail styles */
 .dialog dt div.detail		{ border: none; background-color: transparent; padding: 0;}
