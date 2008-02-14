@@ -152,7 +152,7 @@ topaz.corrections = {
    * @param e event
    */
   onClickFC: function(e) {
-    var annId = dojo.html.getAttribute(e.target, topaz.corrections.annid);
+    var annId = dojo.html.getAttribute(e.target, formalCorrectionConfig.annid);
     e.preventDefault();
     var fcn = topaz.corrections._findFrmlCrctnByAnnId(annId);
     var annAnchor = fcn.firstChild;
