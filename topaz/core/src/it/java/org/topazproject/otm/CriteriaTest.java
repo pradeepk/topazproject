@@ -514,9 +514,15 @@ public class CriteriaTest extends AbstractOtmTest {
                         .setFirstResult(1).setMaxResults(1).addOrder(Order.asc("id")).list();
 
           assertEquals(1, l.size());
-
           Annotation a1 = (Annotation) l.get(0);
+          assertEquals(id2, a1.getId());
+          
+          l = session.createCriteria(Annotation.class)
+                        .setFirstResult(1).setMaxResults(1).addOrder(Order.asc("id"))
+                        .addOrder(Order.desc("creator")).list();
 
+          assertEquals(1, l.size());
+          a1 = (Annotation) l.get(0);
           assertEquals(id2, a1.getId());
         }
       });
