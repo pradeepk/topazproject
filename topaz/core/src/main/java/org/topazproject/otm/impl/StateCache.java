@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -87,7 +87,7 @@ class StateCache {
    *
    * @return a value indicating how the blob changed
    */
-  public BlobChange digestUpdate(Object o, Loader bf) throws OtmException {
+  public BlobChange digestUpdate(Object o, Binder bf) throws OtmException {
     // expected to be called after update - so no expunge and no null check
     return states.get(new ObjectReference(o)).digestUpdate(o, bf);
   }
@@ -147,7 +147,7 @@ class StateCache {
       for (Mapper m : cm.getFields()) {
         if (m.isPredicateMap())
           pmap = (Map<String, List<String>>) m.getRawValue(instance, true);
-        else if (m.getLoader().isLoaded(instance)) {
+        else if (m.getBinder().isLoaded(instance)) {
           List<String> nv =
             !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
           vmap.put(m, nv);
@@ -173,7 +173,7 @@ class StateCache {
             pmap      = nv;
             pmapChanged = true;
           }
-        } else if (m.getLoader().isLoaded(instance)) {
+        } else if (m.getBinder().isLoaded(instance)) {
           List<String> ov = vmap.get(m);
           List<String> nv =
             !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
@@ -192,7 +192,7 @@ class StateCache {
       return mappers;
     }
 
-    public BlobChange digestUpdate(Object instance, Loader blobField) throws OtmException {
+    public BlobChange digestUpdate(Object instance, Binder blobField) throws OtmException {
       byte[] blob = (byte[])blobField.getRawValue(instance, false);
       int len = 0;
       byte[] digest = null;

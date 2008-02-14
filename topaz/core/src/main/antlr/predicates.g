@@ -30,9 +30,9 @@ import java.util.Set;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
-import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldLoader;
-import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
+import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldBinder;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 
 import antlr.ASTPair;
@@ -113,7 +113,7 @@ options {
       // for embedded classes get the fully-qualified field-name
       String fname = "";
       if (type.getType() == ExprType.Type.EMB_CLASS) {
-        for (Loader m : type.getEmbeddedFields())
+        for (Binder m : type.getEmbeddedFields())
           fname += m.getName() + ".";
       }
       fname += field.getText();
@@ -144,12 +144,12 @@ options {
       }
 
       // see if this is a partial match on a hierarchy of embedded classes
-      Loader l = findEmbeddedFieldLoader(type.getMeta(), fname);
+      Binder l = findEmbeddedFieldBinder(type.getMeta(), fname);
       if (l != null) {
         if (type.getType() == ExprType.Type.EMB_CLASS)
-          type.getEmbeddedFields().add((EmbeddedClassFieldLoader) l);
+          type.getEmbeddedFields().add((EmbeddedClassFieldBinder) l);
         else {
-          type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedClassFieldLoader) l);
+          type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedClassFieldBinder) l);
           getCurAST(cur).setExprType(type);
         }
 
@@ -168,19 +168,19 @@ options {
       return (OqlAST) last;
     }
 
-    private static EmbeddedClassFieldLoader findEmbeddedFieldLoader(ClassMetadata<?> md, String field) {
+    private static EmbeddedClassFieldBinder findEmbeddedFieldBinder(ClassMetadata<?> md, String field) {
       String[] parts = field.split("\\.");
       mappers: for (Mapper m : md.getFields()) {
-        Loader l = m.getLoader();
+        Binder l = m.getBinder();
         for (int idx = 0; idx < parts.length; idx++) {
-          if (!(l instanceof EmbeddedClassMemberFieldLoader))
+          if (!(l instanceof EmbeddedClassMemberFieldBinder))
             continue mappers;
-          EmbeddedClassMemberFieldLoader ecfm = (EmbeddedClassMemberFieldLoader) l;
+          EmbeddedClassMemberFieldBinder ecfm = (EmbeddedClassMemberFieldBinder) l;
           if (!ecfm.getContainer().getName().equals(parts[idx]))
             continue mappers;
           if (idx == parts.length - 1)
             return ecfm.getContainer();
-          l = ecfm.getFieldLoader();
+          l = ecfm.getFieldBinder();
         }
       }
       return null;
@@ -245,9 +245,9 @@ options {
     }
 
     private String findEmbModel(ExprType type) {
-// XXX: ExprType need to maintain the Mapper also. Loader does not have model info.
+// XXX: ExprType need to maintain the Mapper also. Binder does not have model info.
 /*
-      List<EmbeddedClassFieldLoader> ecm = type.getEmbeddedFields();
+      List<EmbeddedClassFieldBinder> ecm = type.getEmbeddedFields();
       for (int idx = ecm.size() - 1; idx >= 0; idx--) {
         String m = ecm.get(idx).getModel();
         if (m != null)

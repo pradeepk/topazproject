@@ -14,7 +14,7 @@ import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.java.FieldLoader;
+import org.topazproject.otm.mapping.java.FieldBinder;
 
 /**
  * Groovy-builder offline tests.
@@ -70,7 +70,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     def m = cm.fields.iterator().next()
-    def l = m.loader
+    def l = m.binder
     assert m.name     == 'state'
     assert l.type     == String.class
     assert m.dataType == null
@@ -89,7 +89,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
-    l = m.loader
+    l = m.binder
     assert m.name     == 'state'
     assert l.type     == Integer.TYPE
     assert m.dataType == 'http://www.w3.org/2001/XMLSchema#int'
@@ -109,7 +109,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
-    l = m.loader
+    l = m.binder
     assert m.name     == 'state'
     assert l.type     == cls2
     assert m.dataType == null
@@ -133,7 +133,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
-    l = m.loader
+    l = m.binder
     assert m.name     == 'state'
     assert l.type     == rdf.sessFactory.getClassMetadata('State').sourceClass
     assert m.dataType == null
@@ -148,7 +148,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 2
 
     m = cm.fields.asList()[0]
-    l = m.loader
+    l = m.binder
     assert m.name     == 'value'
     assert l.type     == String.class
     assert m.dataType == null
@@ -157,7 +157,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.model    == 'm42'
 
     m = cm.fields.asList()[1]
-    l = m.loader
+    l = m.binder
     assert m.name          == 'history'
     assert l.type          == List.class
     assert m.componentType == rdf.sessFactory.getClassMetadata('History').sourceClass
@@ -173,7 +173,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.asList()[0]
-    l = m.loader
+    l = m.binder
     assert m.name     == 'value'
     assert l.type     == String.class
     assert m.dataType == null
@@ -192,7 +192,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
-    l = m.loader
+    l = m.binder
     assert m.name     == 'state'
     assert l.type     == URI.class
     assert m.dataType == null
@@ -212,7 +212,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
-    l = m.loader
+    l = m.binder
     assert m.name     == 'state'
     assert l.type     == URI.class
     assert m.dataType == null
@@ -261,7 +261,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 1
 
     m = cm.fields.iterator().next()
-    l = m.loader
+    l = m.binder
     assert m.name     == 'state'
     assert l.type     == String.class
     assert m.dataType == null
@@ -282,7 +282,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 2
 
     m = cm.fields.asList()[0]
-    l = m.loader
+    l = m.binder
     assert m.name     == 'blah'
     assert l.type     == String.class
     assert m.dataType == null
@@ -291,7 +291,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.model    == null
 
     m = cm.fields.asList()[1]
-    l = m.loader
+    l = m.binder
     assert m.name     == 'state'
     assert l.type     == String.class
     assert m.dataType == null
@@ -586,7 +586,7 @@ public class BuilderTest extends GroovyTestCase {
     def mappers = rdf.sessFactory.getClassMetadata(cls).fields
     assert mappers.size() == 3
     for (Mapper m : mappers)
-      assert ((FieldLoader)m.loader).serializer != null
+      assert ((FieldBinder)m.binder).serializer != null
     assert mappers.name.sort() == [ 'name.givenName', 'name.surname', 'state' ]
 
     // nested embeddings
@@ -605,7 +605,7 @@ public class BuilderTest extends GroovyTestCase {
     mappers = rdf.sessFactory.getClassMetadata(cls).fields
     assert mappers.size() == 3
     for (Mapper m : mappers)
-      assert ((FieldLoader)m.loader).serializer != null
+      assert ((FieldBinder)m.binder).serializer != null
     assert mappers.name.sort() ==
                       [ 'info.personal.name.givenName', 'info.personal.name.surname', 'state' ]
 
@@ -779,7 +779,7 @@ public class BuilderTest extends GroovyTestCase {
     assert cm.fields.size() == 3
 
     Mapper m = cm.fields.asList()[0]
-    FieldLoader l = (FieldLoader)m.loader
+    FieldBinder l = (FieldBinder)m.binder
     assert m.name     == 'sel'
     assert l.type     == cls
     assert m.dataType == null
@@ -792,7 +792,7 @@ public class BuilderTest extends GroovyTestCase {
     assert !m.isCascadable(CascadeType.refresh)
 
     m = cm.fields.asList()[1]
-    l = (FieldLoader)m.loader
+    l = (FieldBinder)m.binder
     assert m.name     == 'all'
     assert l.type     == cls
     assert m.dataType == null
@@ -805,7 +805,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.isCascadable(CascadeType.refresh)
 
     m = cm.fields.asList()[2]
-    l = (FieldLoader)m.loader
+    l = (FieldBinder)m.binder
     assert m.name     == 'none'
     assert l.type     == cls
     assert m.dataType == null

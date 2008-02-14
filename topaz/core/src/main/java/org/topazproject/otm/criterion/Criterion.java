@@ -26,8 +26,8 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Loader;
-import org.topazproject.otm.mapping.java.FieldLoader;
+import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -153,10 +153,10 @@ public abstract class Criterion {
       val = criteria.resolveParameter(((Parameter)value).getParameterName(), field);
     else {
       try {
-        Loader l = m.getLoader();
+        Binder l = m.getBinder();
         Serializer ser = null;
-        if (l instanceof FieldLoader)
-          ser = ((FieldLoader)l).getSerializer();
+        if (l instanceof FieldBinder)
+          ser = ((FieldBinder)l).getSerializer();
 
         val = (ser != null) ? ser.serialize(value) : value.toString();
       } catch (Exception e) {

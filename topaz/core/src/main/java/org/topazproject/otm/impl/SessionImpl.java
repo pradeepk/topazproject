@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.Results;
 
@@ -392,7 +392,7 @@ public class SessionImpl extends AbstractSession {
     ClassMetadata<T>      cm            = sessionFactory.getClassMetadata((Class<T>) o.getClass());
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
-    Loader                bf            = cm.getBlobField();
+    Binder                bf            = cm.getBlobField();
     boolean               tp            = (cm.getFields().size() + cm.getTypes().size()) > 0;
 
     if (delete) {
@@ -485,7 +485,7 @@ public class SessionImpl extends AbstractSession {
 
     cm = sessionFactory.getClassMetadata((Class<T>) instance.getClass());
 
-    Loader bf = cm.getBlobField();
+    Binder bf = cm.getBlobField();
     if (bf != null)
       bf.setRawValue(instance, sessionFactory.getBlobStore().get(cm, id.getId(), txn));
 
@@ -643,7 +643,7 @@ public class SessionImpl extends AbstractSession {
         if (!p.isAssociation() || (p.getUri() == null))
           continue;
 
-        if (skipProxy && !p.getLoader().isLoaded(o))
+        if (skipProxy && !p.getBinder().isLoaded(o))
           continue;
 
         boolean deep = ((cascade != null) && p.isCascadable(cascade));

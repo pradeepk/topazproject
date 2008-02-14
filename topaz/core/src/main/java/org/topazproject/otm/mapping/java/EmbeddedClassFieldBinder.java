@@ -21,21 +21,21 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
- * FieldLoader for an embedded class field. The {@link #get} and {@link #set} methods are 
+ * FieldBinder for an embedded class field. The {@link #get} and {@link #set} methods are 
  * meaningless and hence this loader is used only by its field loaders to get/set the 
  * parent object's field.
  *
  * @author Pradeep Krishnan
  */
-public class EmbeddedClassFieldLoader extends AbstractFieldLoader {
+public class EmbeddedClassFieldBinder extends AbstractFieldBinder {
   /**
-   * Creates a new EmbeddedClassFieldLoader object.
+   * Creates a new EmbeddedClassFieldBinder object.
    *
    * @param field the field that is embedding this class
    * @param getter the get method or null for this embedded class field
    * @param setter the set method or null for this embedded classs field
    */
-  public EmbeddedClassFieldLoader(Field field, Method getter, Method setter) {
+  public EmbeddedClassFieldBinder(Field field, Method getter, Method setter) {
     super(field, getter, setter, null, null);
   }
 

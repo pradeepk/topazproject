@@ -21,13 +21,13 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
- * FieldLoader for array type fileds.
+ * FieldBinder for array type fileds.
  *
  * @author Pradeep Krishnan
  */
-public class ArrayFieldLoader extends AbstractFieldLoader {
+public class ArrayFieldBinder extends AbstractFieldBinder {
   /**
-   * Creates a new ArrayFieldLoader object.
+   * Creates a new ArrayFieldBinder object.
    *
    * @param field the java class field
    * @param getter the field get method or null
@@ -35,7 +35,7 @@ public class ArrayFieldLoader extends AbstractFieldLoader {
    * @param serializer the serializer or null
    * @param componentType the array component type
    */
-  public ArrayFieldLoader(Field field, Method getter, Method setter, Serializer serializer,
+  public ArrayFieldBinder(Field field, Method getter, Method setter, Serializer serializer,
                      Class componentType) {
     super(field, getter, setter, serializer, componentType);
   }

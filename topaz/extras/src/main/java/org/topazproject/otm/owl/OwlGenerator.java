@@ -18,7 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.mapping.java.FieldLoader;
+import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -223,7 +223,7 @@ public class OwlGenerator {
           continue;
 
         // See if this field really belongs to our class/type
-        Field f = ((FieldLoader)m.getLoader()).getField();
+        Field f = ((FieldBinder)m.getBinder()).getField();
         log.debug("Field Class extracted: " + f);
 
         AddAxiom domainAxiom = null;
@@ -334,7 +334,7 @@ public class OwlGenerator {
           continue;
 
         // See if this field really belongs to our class/type
-        Field f = ((FieldLoader)m.getLoader()).getField();
+        Field f = ((FieldBinder)m.getBinder()).getField();
         log.debug("Field Class extracted: " + f);
         Class clazz = f.getDeclaringClass();
         if (clazz != cm.getSourceClass()) {
@@ -396,7 +396,7 @@ public class OwlGenerator {
           continue;
 
         // See if this field really belongs to our class/type
-        Field f = ((FieldLoader)m.getLoader()).getField();
+        Field f = ((FieldBinder)m.getBinder()).getField();
         log.debug("Field Class extracted: " + f);
         Class clazz = f.getDeclaringClass();
         if (clazz != cm.getSourceClass()) {

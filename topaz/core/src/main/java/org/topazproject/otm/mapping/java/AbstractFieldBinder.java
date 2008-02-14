@@ -34,7 +34,7 @@ import org.topazproject.otm.serializer.Serializer;
  *
  * @author Pradeep krishnan
  */
-public abstract class AbstractFieldLoader implements FieldLoader {
+public abstract class AbstractFieldBinder implements FieldBinder {
   private final Serializer          serializer;
   private final Method              getter;
   private final Method              setter;
@@ -52,7 +52,7 @@ public abstract class AbstractFieldLoader implements FieldLoader {
    * @param serializer the serializer or null
    * @param componentType of arrays and collections or type of functional properties
    */
-  public AbstractFieldLoader(Field field, Method getter, Method setter,
+  public AbstractFieldBinder(Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType) {
     this.field           = field;
     this.getter          = getter;

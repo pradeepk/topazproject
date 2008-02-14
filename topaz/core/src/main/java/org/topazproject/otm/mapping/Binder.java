@@ -21,7 +21,7 @@ import org.topazproject.otm.Session;
  *
  * @author Pradeep Krishnan
  */
-public interface Loader {
+public interface Binder {
   /**
    * Gets the name of the field.
    *

@@ -28,17 +28,17 @@ import org.topazproject.otm.serializer.Serializer;
  *
  * @author Pradeep Krishnan
  */
-public class EmbeddedClassMemberFieldLoader implements FieldLoader {
-  private EmbeddedClassFieldLoader container;
-  private FieldLoader              field;
+public class EmbeddedClassMemberFieldBinder implements FieldBinder {
+  private EmbeddedClassFieldBinder container;
+  private FieldBinder              field;
 
   /**
-   * Creates a new EmbeddedClassMemberFieldLoader object.
+   * Creates a new EmbeddedClassMemberFieldBinder object.
    *
    * @param container the mapper for the embedded class field in the embedding class
    * @param field the mapper for a field in the embedded class
    */
-  public EmbeddedClassMemberFieldLoader(EmbeddedClassFieldLoader container, FieldLoader field) {
+  public EmbeddedClassMemberFieldBinder(EmbeddedClassFieldBinder container, FieldBinder field) {
     this.container   = container;
     this.field       = field;
   }
@@ -48,7 +48,7 @@ public class EmbeddedClassMemberFieldLoader implements FieldLoader {
    * 
    * @return the mapper
    */
-  public EmbeddedClassFieldLoader getContainer() {
+  public EmbeddedClassFieldBinder getContainer() {
     return container;
   }
 
@@ -57,7 +57,7 @@ public class EmbeddedClassMemberFieldLoader implements FieldLoader {
    * 
    * @return the mapper
    */
-  public FieldLoader getFieldLoader() {
+  public FieldBinder getFieldBinder() {
     return field;
   }
 
@@ -178,6 +178,6 @@ public class EmbeddedClassMemberFieldLoader implements FieldLoader {
    * inherited javadoc
    */
   public String toString() {
-    return "EmbeddedClassMemberFieldLoader[container=" + container + ", field=" + field + "]";
+    return "EmbeddedClassMemberFieldBinder[container=" + container + ", field=" + field + "]";
   }
 }

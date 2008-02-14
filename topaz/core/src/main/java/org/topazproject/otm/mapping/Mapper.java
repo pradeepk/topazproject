@@ -25,11 +25,11 @@ import org.topazproject.otm.id.IdentifierGenerator;
  */
 public interface Mapper {
   /**
-   * Get the Loader for this field
+   * Get the Binder for this field
    *
    * @return the loader for this field
    */
-  public Loader getLoader();
+  public Binder getBinder();
 
   /**
    * Gets the name of the field.

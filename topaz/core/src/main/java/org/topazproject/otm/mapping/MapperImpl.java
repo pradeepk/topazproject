@@ -35,7 +35,7 @@ public class MapperImpl implements Mapper {
   private final IdentifierGenerator generator;
   private final CascadeType[]       cascade;
   private final FetchType           fetchType;
-  private final Loader              loader;
+  private final Binder              binder;
   private final String              associatedEntity;
 
 
@@ -43,7 +43,7 @@ public class MapperImpl implements Mapper {
    * Creates a new MapperImpl object for a regular class field.
    *
    * @param uri the rdf predicate
-   * @param loader the loader for the field
+   * @param binder the binder for the field
    * @param dataType of literals or null for un-typed
    * @param rdfType of associations or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
@@ -55,13 +55,13 @@ public class MapperImpl implements Mapper {
    * @param fetchType fetch type for associations. Must be null otherwise
    * @param associatedEntity the entity name for associations
    */
-  public MapperImpl(String uri, Loader loader, String dataType,
+  public MapperImpl(String uri, Binder binder, String dataType,
                         String rdfType, boolean inverse, String model, CollectionType colType,
                         boolean entityOwned, IdentifierGenerator generator, 
                         CascadeType[] cascade, FetchType fetchType, String associatedEntity) {
     this.uri             = uri;
     this.var             = null;
-    this.loader          = loader;
+    this.binder          = binder;
     this.dataType        = dataType;
     this.rdfType         = rdfType;
     this.inverse         = inverse;
@@ -78,13 +78,13 @@ public class MapperImpl implements Mapper {
   /**
    * Creates a new MapperImpl object for a predicat-map field.
    *
-   * @param loader the loader for the field
+   * @param binder the binder for the field
    * @param model  the model where this field is persisted
    */
-  public MapperImpl(Loader loader, String model) {
+  public MapperImpl(Binder binder, String model) {
     this.uri             = null;
     this.var             = null;
-    this.loader          = loader;
+    this.binder          = binder;
     this.dataType        = null;
     this.rdfType         = null;
     this.inverse         = false;
@@ -101,13 +101,13 @@ public class MapperImpl implements Mapper {
   /**
    * Creates a new MapperImpl object for an id field.
    *
-   * @param loader the loader for the field
+   * @param binder the binder for the field
    * @param generator if there is a generator for this field
    */
-  public MapperImpl(Loader loader, IdentifierGenerator generator) {
+  public MapperImpl(Binder binder, IdentifierGenerator generator) {
     this.uri             = null;
     this.var             = null;
-    this.loader          = loader;
+    this.binder          = binder;
     this.dataType        = null;
     this.rdfType         = null;
     this.inverse         = false;
@@ -125,14 +125,14 @@ public class MapperImpl implements Mapper {
    * Creates a new MapperImpl object for a view.
    *
    * @param var           the projection variable
-   * @param loader        the loader for the field
+   * @param binder        the binder for the field
    * @param fetchType     fetch type for associations. Must be null otherwise
    * @param associatedEntity the entity name for associations
    */
-  public MapperImpl(String var, Loader loader, FetchType fetchType, String associatedEntity) {
+  public MapperImpl(String var, Binder binder, FetchType fetchType, String associatedEntity) {
     this.uri             = null;
     this.var             = var;
-    this.loader          = loader;
+    this.binder          = binder;
     this.dataType        = null;
     this.rdfType         = null;
     this.inverse         = false;
@@ -147,15 +147,15 @@ public class MapperImpl implements Mapper {
   }
 
   /**
-   * Creates a new MapperImpl with a different loader.
+   * Creates a new MapperImpl with a different binder.
    *
    * @param other         the MapperImpl to copy from
-   * @param loader        the loader for the field
+   * @param binder        the binder for the field
    */
-  public MapperImpl(Mapper other, Loader loader) {
+  public MapperImpl(Mapper other, Binder binder) {
     this.uri             = other.getUri();
     this.var             = other.getProjectionVar();
-    this.loader          = loader;
+    this.binder          = binder;
     this.dataType        = other.getDataType();
     this.rdfType         = other.getRdfType();
     this.inverse         = other.hasInverseUri();
@@ -172,43 +172,43 @@ public class MapperImpl implements Mapper {
   /*
    * inherited javadoc
    */
-  public Loader getLoader() {
-    return loader;
+  public Binder getBinder() {
+    return binder;
   }
 
   /*
    * inherited javadoc
    */
   public String getName() {
-    return loader.getName();
+    return binder.getName();
   }
 
   /*
    * inherited javadoc
    */
   public List get(Object o) throws OtmException {
-    return loader.get(o);
+    return binder.get(o);
   }
 
   /*
    * inherited javadoc
    */
   public void set(Object o, List vals) throws OtmException {
-    loader.set(o, vals);
+    binder.set(o, vals);
   }
 
   /*
    * inherited javadoc
    */
   public Object getRawValue(Object o, boolean create) throws OtmException {
-    return loader.getRawValue(o, create);
+    return binder.getRawValue(o, create);
   }
 
   /*
    * inherited javadoc
    */
   public void setRawValue(Object o, Object value) throws OtmException {
-    loader.setRawValue(o, value);
+    binder.setRawValue(o, value);
   }
 
   /*
@@ -226,7 +226,7 @@ public class MapperImpl implements Mapper {
    * inherited javadoc
    */
   public boolean typeIsUri() {
-    return loader.typeIsUri(this);
+    return binder.typeIsUri(this);
   }
 
   /*
@@ -323,13 +323,13 @@ public class MapperImpl implements Mapper {
     return getClass().getName() + "[pred=" + uri + ", var=" + var
            + ", dataType=" + dataType + ", rdfType=" + rdfType
            + ", colType=" + colType + ", inverse=" + inverse
-           + ", loader=" + loader + ", fetchType=" + fetchType
+           + ", binder=" + binder + ", fetchType=" + fetchType
            + ", cascade=" + cascade
            + ", generator=" + ((generator != null) ? generator.getClass() : "-null-") + "]";
   }
 
   public Class getComponentType() {
-    return ((org.topazproject.otm.mapping.java.FieldLoader)loader).getComponentType();
+    return ((org.topazproject.otm.mapping.java.FieldBinder)binder).getComponentType();
   }
 
   public String getAssociatedEntity() {

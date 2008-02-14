@@ -16,55 +16,57 @@ import java.util.Collections;
 import java.util.List;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.serializer.Serializer;
 
 /**
- * FieldLoader for a map that allows a dynamic/run-time map of properties to values.
+ * Mapper for a functional property field.
  *
  * @author Pradeep Krishnan
  */
-public class PredicateMapFieldLoader extends AbstractFieldLoader {
+public class ScalarFieldBinder extends AbstractFieldBinder {
   /**
-   * Creates a new PredicateMapFieldLoader object.
+   * Creates a new FunctionalMapper object.
    *
    * @param field the java class field
    * @param getter the field get method or null
    * @param setter the field set method or null
+   * @param serializer the serializer or null
    */
-  public PredicateMapFieldLoader(Field field, Method getter, Method setter) {
-    super(field, getter, setter, null, null);
+  public ScalarFieldBinder(Field field, Method getter, Method setter,
+                          Serializer serializer) {
+    super(field, getter, setter, serializer, field.getType());
   }
 
   /**
-   * Returns the value as 'raw' map.
+   * Get the value of a field of an object.
    *
    * @param o the object
    *
-   * @return the 'raw' value in a list
+   * @return a singelton or empty list (may be serialized)
    *
-   * @throws OtmException if a field's value cannot be retrieved
+   * @throws OtmException if a field's value cannot be retrieved and serialized
    */
   public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
 
-    return (value == null) ? Collections.emptyList() : Collections.singletonList(value);
+    return (value == null) ? Collections.emptyList() : Collections.singletonList(serialize(value));
   }
 
   /**
-   * Sets the value from a 'raw' map.
+   * Set the value of a field of an object.
    *
    * @param o the object
-   * @param vals the values to be set 
+   * @param vals a singelton or empty list (may be deserialized)
    *
-   * @throws OtmException if a field's value cannot be set
+   * @throws OtmException if too many values to set or the value cannot be de-serialized and set
    */
   public void set(Object o, List vals) throws OtmException {
     int size = vals.size();
 
-    if (size > 1)
+    if (size > 1) // xxx: should be optional
       throw new OtmException("Too many values for '" + getField().toGenericString() + "'");
 
-    Object value = (size == 0) ? null : vals.get(0);
+    Object value = (size == 0) ? null : deserialize(vals.get(0));
     setRawValue(o, value);
   }
-
 }

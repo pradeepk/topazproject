@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.serializer.Serializer;
 
@@ -27,7 +27,7 @@ import org.topazproject.otm.serializer.Serializer;
  *
  * @author Pradeep Krishnan
  */
-public interface FieldLoader extends Loader {
+public interface FieldBinder extends Binder {
   /**
    * Gets the get method used.
    *

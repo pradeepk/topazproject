@@ -93,7 +93,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
 
     // now assign values to fields
     for (Mapper m : mvalues.keySet())
-      m.getLoader().load(instance, mvalues.get(m), types, m, session);
+      m.getBinder().load(instance, mvalues.get(m), types, m, session);
 
     boolean found = false;
 

@@ -15,7 +15,7 @@ import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 
 /** 
  * This describes the type of an expression. It can be an untyped literal, a typed literal,
@@ -29,11 +29,11 @@ class ExprType {
 
   private final Type                      type;
   private final ClassMetadata             meta;
-  private final List<EmbeddedClassFieldLoader> embFields;
+  private final List<EmbeddedClassFieldBinder> embFields;
   private final String                    datatype;
   private final CollectionType                colType;
 
-  private ExprType(Type type, ClassMetadata meta, List<EmbeddedClassFieldLoader> embFields,
+  private ExprType(Type type, ClassMetadata meta, List<EmbeddedClassFieldBinder> embFields,
                    String datatype, CollectionType colType) {
     this.type      = type;
     this.meta      = meta;
@@ -64,13 +64,13 @@ class ExprType {
    * @return the new type
    * @throws NullPointerException if <var>meta</var> or <var>field</var> is null
    */
-  public static ExprType embeddedClassType(ClassMetadata meta, EmbeddedClassFieldLoader field) {
+  public static ExprType embeddedClassType(ClassMetadata meta, EmbeddedClassFieldBinder field) {
     if (meta == null)
       throw new NullPointerException("class metadata may not be null");
     if (field == null)
       throw new NullPointerException("class field may not be null");
 
-    List<EmbeddedClassFieldLoader> fields = new ArrayList<EmbeddedClassFieldLoader>();
+    List<EmbeddedClassFieldBinder> fields = new ArrayList<EmbeddedClassFieldBinder>();
     fields.add(field);
     return new ExprType(Type.EMB_CLASS, meta, fields, null, null);
   }
@@ -133,7 +133,7 @@ class ExprType {
    *
    * @return the mappers if this is an embedded class; null otherwise
    */
-  public List<EmbeddedClassFieldLoader> getEmbeddedFields() {
+  public List<EmbeddedClassFieldBinder> getEmbeddedFields() {
     return embFields;
   }
 
@@ -211,7 +211,7 @@ class ExprType {
 
   private String embFieldNames() {
     StringBuilder res = new StringBuilder();
-    for (EmbeddedClassFieldLoader m : embFields)
+    for (EmbeddedClassFieldBinder m : embFields)
       res.append('.').append(m.getName());
     return res.toString();
   }

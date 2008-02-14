@@ -51,15 +51,15 @@ import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.MapperImpl;
-import org.topazproject.otm.mapping.java.ArrayFieldLoader;
-import org.topazproject.otm.mapping.java.CollectionFieldLoader;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
-import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldLoader;
-import org.topazproject.otm.mapping.java.FieldLoader;
-import org.topazproject.otm.mapping.java.ScalarFieldLoader;
+import org.topazproject.otm.mapping.java.ArrayFieldBinder;
+import org.topazproject.otm.mapping.java.CollectionFieldBinder;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
+import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldBinder;
+import org.topazproject.otm.mapping.java.FieldBinder;
+import org.topazproject.otm.mapping.java.ScalarFieldBinder;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -104,7 +104,7 @@ public class AnnotationClassMetaFactory {
     String             model     = null;
     String             uriPrefix = null;
     Mapper             idField   = null;
-    Loader             blobField = null;
+    Binder             blobField = null;
     Collection<Mapper> fields    = new ArrayList<Mapper>();
 
     Class<?>           s         = clazz.getSuperclass();
@@ -164,7 +164,7 @@ public class AnnotationClassMetaFactory {
         continue;
 
       for (Mapper m : mappers) {
-        FieldLoader l = (FieldLoader)m.getLoader();
+        FieldBinder l = (FieldBinder)m.getBinder();
         Field f2 = l.getField();
         Id id = f2.getAnnotation(Id.class);
         Blob blob = f2.getAnnotation(Blob.class);
@@ -307,7 +307,7 @@ public class AnnotationClassMetaFactory {
         throw new OtmException("@Blob may only be applied to a 'byte[]' field: " + toString(f));
       if (embedded)
         throw new OtmException("@Embedded and @Blob both cannot be applied to a field: " + toString(f));
-      FieldLoader loader = new ArrayFieldLoader(f, getMethod, setMethod, null, Byte.TYPE);
+      FieldBinder loader = new ArrayFieldBinder(f, getMethod, setMethod, null, Byte.TYPE);
       Mapper p = new MapperImpl(null, loader, null, null);
 
       return Collections.singletonList(p);
@@ -368,7 +368,7 @@ public class AnnotationClassMetaFactory {
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       Mapper     p;
-      ScalarFieldLoader loader = new ScalarFieldLoader(f, getMethod, setMethod, serializer);
+      ScalarFieldBinder loader = new ScalarFieldBinder(f, getMethod, setMethod, serializer);
       if (isView)
         p = new MapperImpl(null, loader, null, null);
       else
@@ -424,13 +424,13 @@ public class AnnotationClassMetaFactory {
       else if (isView)
         ft = proj.fetch();
 
-      FieldLoader loader;
+      FieldBinder loader;
       if (isArray)
-        loader = new ArrayFieldLoader(f, getMethod, setMethod, serializer, type);
+        loader = new ArrayFieldBinder(f, getMethod, setMethod, serializer, type);
       else if (isCollection)
-        loader = new CollectionFieldLoader(f, getMethod, setMethod, serializer, type);
+        loader = new CollectionFieldBinder(f, getMethod, setMethod, serializer, type);
       else
-        loader = new ScalarFieldLoader(f, getMethod, setMethod, serializer);
+        loader = new ScalarFieldBinder(f, getMethod, setMethod, serializer);
       Mapper            p;
       if (isView)
         p = new MapperImpl(var, loader, ft, assoc);
@@ -457,17 +457,17 @@ public class AnnotationClassMetaFactory {
       throw new OtmException("@Embedded class '" + type + "' embedded at " + toString(f)
                              + " should not declare an rdf:type of its own. (fix me)");
 
-    EmbeddedClassFieldLoader ecp     = new EmbeddedClassFieldLoader(f, getMethod, setMethod);
+    EmbeddedClassFieldBinder ecp     = new EmbeddedClassFieldBinder(f, getMethod, setMethod);
 
     Collection<Mapper>  mappers = new ArrayList<Mapper>();
 
     for (Mapper p : cm.getFields())
-      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldLoader(ecp, (FieldLoader)p.getLoader())));
+      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder())));
 
     Mapper p = cm.getIdField();
 
     if (p != null)
-      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldLoader(ecp, (FieldLoader)p.getLoader())));
+      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder())));
 
     return mappers;
   }
@@ -519,7 +519,7 @@ public class AnnotationClassMetaFactory {
 
           if ((targs.length == 1) && (targs[0] instanceof Class)
                && String.class.isAssignableFrom((Class) targs[0]))
-            return new MapperImpl(new ScalarFieldLoader(field, getter, setter, null), model);
+            return new MapperImpl(new ScalarFieldBinder(field, getter, setter, null), model);
         }
       }
     }

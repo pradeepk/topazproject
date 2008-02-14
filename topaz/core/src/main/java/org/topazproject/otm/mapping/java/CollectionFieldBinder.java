@@ -36,13 +36,13 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
- * FieldLoader for {@link java.util.Collection collection} fields.
+ * FieldBinder for {@link java.util.Collection collection} fields.
  *
  * @author Pradeep Krishnan
  */
-public class CollectionFieldLoader extends AbstractFieldLoader {
+public class CollectionFieldBinder extends AbstractFieldBinder {
   /**
-   * Creates a new CollectionFieldLoader object.
+   * Creates a new CollectionFieldBinder object.
    *
    * @param field the java class field
    * @param getter the field get method or null
@@ -50,7 +50,7 @@ public class CollectionFieldLoader extends AbstractFieldLoader {
    * @param serializer the serializer or null
    * @param componentType the collection component type
    */
-  public CollectionFieldLoader(Field field, Method getter, Method setter,
+  public CollectionFieldBinder(Field field, Method getter, Method setter,
                           Serializer serializer, Class componentType) {
     super(field, getter, setter, serializer, componentType);
   }

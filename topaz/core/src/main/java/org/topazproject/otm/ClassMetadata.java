@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Loader;
+import org.topazproject.otm.mapping.Binder;
 
 /**
  * Meta information for mapping a class to a set of triples.
@@ -38,7 +38,7 @@ public class ClassMetadata<T> {
   private final String                    model;
   private final String                    uriPrefix;
   private final Mapper                    idField;
-  private final Loader                    blobField;
+  private final Binder                    blobField;
   private final Map<String, List<Mapper>> uriMap;
   private final Map<String, Mapper>       nameMap;
   private final Class<T>                  clazz;
@@ -61,7 +61,7 @@ public class ClassMetadata<T> {
    */
   public ClassMetadata(Class<T> clazz, String name, String type, Set<String> types, String model,
                        String uriPrefix, Mapper idField, Collection<Mapper> fields, 
-                       Loader blobField)
+                       Binder blobField)
                 throws OtmException {
     this.clazz                                = clazz;
     this.name                                 = name;
@@ -212,11 +212,11 @@ public class ClassMetadata<T> {
   }
 
   /**
-   * Gets the Loader for the blob field.
+   * Gets the Binder for the blob field.
    *
    * @return the blob field or null
    */
-  public Loader getBlobField() {
+  public Binder getBlobField() {
     return blobField;
   }
 

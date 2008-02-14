@@ -19,12 +19,12 @@ import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.java.ArrayFieldLoader;
-import org.topazproject.otm.mapping.java.CollectionFieldLoader;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldLoader;
-import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldLoader;
-import org.topazproject.otm.mapping.java.FieldLoader;
-import org.topazproject.otm.mapping.java.ScalarFieldLoader;
+import org.topazproject.otm.mapping.java.ArrayFieldBinder;
+import org.topazproject.otm.mapping.java.CollectionFieldBinder;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
+import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldBinder;
+import org.topazproject.otm.mapping.java.FieldBinder;
+import org.topazproject.otm.mapping.java.ScalarFieldBinder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.MapperImpl;
 import org.topazproject.otm.serializer.Serializer;
@@ -170,12 +170,12 @@ public class FieldDef {
     // generate the mapper(s)
     List m;
     if (maxCard == 1 && embedded) {
-      def container = new EmbeddedClassFieldLoader(f, get, set)
-      m = classType.toClass().fields.collect{ new MapperImpl(it, new EmbeddedClassMemberFieldLoader(container, it.getLoader())) }
+      def container = new EmbeddedClassFieldBinder(f, get, set)
+      m = classType.toClass().fields.collect{ new MapperImpl(it, new EmbeddedClassMemberFieldBinder(container, it.getBinder())) }
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
-      FieldLoader l = new ScalarFieldLoader(f, get, set, ser);
+      FieldBinder l = new ScalarFieldBinder(f, get, set, ser);
       if (ser != null)
         ft = null;
       m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned, idGen,
@@ -187,11 +187,11 @@ ct, ft, cm?.getName())]
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
       if (ser != null)
         ft = null;
-      FieldLoader l;
+      FieldBinder l;
       if (collType.toLowerCase() == 'array')
-        l = new ArrayFieldLoader(f, get, set, ser, compType);
+        l = new ArrayFieldBinder(f, get, set, ser, compType);
       else
-        l = new CollectionFieldLoader(f, get, set, ser, compType);
+        l = new CollectionFieldBinder(f, get, set, ser, compType);
 
       m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned,
                              idGen, ct, ft, cm?.getName())]
