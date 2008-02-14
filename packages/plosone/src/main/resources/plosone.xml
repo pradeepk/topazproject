@@ -190,7 +190,7 @@
       <defaultFile>feed</defaultFile>          <!-- Default rss feed if none other specified -->
       <categoryPrefix>feed?category=</categoryPrefix> <!-- File prefix for a specific category -->
       <defaultName>New Articles</defaultName>  <!-- Name of default feed (prefixed by journal) -->
-      <defaultDuration>3</defaultDuration>     <!-- Default duraiton in months -->
+      <defaultDuration>3</defaultDuration>     <!-- Default duration in months -->
     </feed>
 
     <!-- 
@@ -590,10 +590,8 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/config_article.js</file>
           <file>/javascript/dojo/dojo_plosone.js</file>
           <file>/javascript/topaz/topaz.js</file>
-          <file>/javascript/topaz/annotation.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/topaz/floatingMenu.js</file>
@@ -601,11 +599,11 @@
           <file>/javascript/dojoRequire_article.ftl</file>
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_article.js</file>
+          <file>/javascript/init_float.js</file>
         </javascript>
       </page>
       <page>
-        <name>/browseVolume.ftl</name>
+        <name>/article/browseVolume.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
