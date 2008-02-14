@@ -35,15 +35,17 @@
           method="post" enctype="multipart/form-data" class="advSearch" title="Advanced Search">
       <fieldset id="author">
         <legend><span>Search by Author</span></legend>
-        <ol>
+        <ol id="as_ol_an">
           <li>
-            <label for="authorName">Author Name (<a href="#">help</a>): </label>
-            <input type="text" name="creator" size="35" value="" id="authorName"/>
-            <span class="controls"><a href="#">Remove</a></span>
+            <label id="lblAuthorName" for="authorName">Author Name (<a href="#">help</a>): </label>
+            <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value=""/>
+            <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#">Remove</a> | </span><a id="as_a_aa" href="#">Add another author...</a></span></span>
           </li>
           <li class="options">
+            <!--
             <input type="text" name="creator" size="35" value="" id="authorName2"/>
             <span class="controls"><a href="#">Remove</a> | <a href="#">Add another author...</a></span>
+            -->
             <fieldset>
               <legend>Search for: </legend>
               <ol>
