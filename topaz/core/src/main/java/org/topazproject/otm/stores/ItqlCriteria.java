@@ -100,8 +100,11 @@ public class ItqlCriteria {
     int    i      = 0;
     String prefix = " " + subject + "o";
 
+    String id = criteria.getClassMetadata().getIdField().getName();
+
     for (Order o : criteria.getOrderList())
-      qry.append(prefix + i++);
+      if (!id.equals(o.getName()))
+        qry.append(prefix + i++);
 
     i = 0;
 
@@ -123,10 +126,12 @@ public class ItqlCriteria {
     //XXX: it could potentially limit the result set returned by a trans() criteriom
     int    i      = 0;
     String object = pfx + "o";
+    String id = criteria.getClassMetadata().getIdField().getName();
 
     if (!isFilter) {
       for (Order o : criteria.getOrderList())
-        buildPredicateWhere(cm, criteria, o.getName(), subject, object + i++, qry, model);
+        if (!id.equals(o.getName()))
+          buildPredicateWhere(cm, criteria, o.getName(), subject, object + i++, qry, model);
     }
 
     i = 0;
@@ -210,6 +215,7 @@ public class ItqlCriteria {
   private static void buildOrderBy(Criteria criteria, List<String> orders, String subject) {
     int    i      = 0;
     String prefix = subject + "o";
+    String id = criteria.getClassMetadata().getIdField().getName();
 
     for (Order o : criteria.getOrderList()) {
       int pos = criteria.getOrderPosition(o);
@@ -217,7 +223,8 @@ public class ItqlCriteria {
       while (pos >= orders.size())
         orders.add("");
 
-      orders.set(pos, prefix + i++ + (o.isAscending() ? " asc " : " desc "));
+      String var = id.equals(o.getName()) ? subject : (prefix + i++);
+      orders.set(pos, var + (o.isAscending() ? " asc " : " desc "));
     }
 
     i = 0;
