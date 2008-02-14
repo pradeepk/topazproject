@@ -6,58 +6,58 @@
 <p><em>PLoS ONE</em> provides the following <a href="/static/rssInfo.action">RSS feeds</a> which are updated as new articles are published:</p>
 
 <ul>
-        <li><a href="/feed/NewArticles">New Articles (All Subjects)</a></li>
-		<li><a href="/feed/AnesthesiologyandPainManagement">Anesthesiology and Pain Management</a></li>
-		<li><a href="/feed/Biochemistry">Biochemistry</a></li>
-		<li><a href="/feed/Biophysics">Biophysics</a></li>
-		<li><a href="/feed/Biotechnology">Biotechnology</a></li>
-		<li><a href="/feed/CardiovascularDisorders">Cardiovascular Disorders</a></li>
-		<li><a href="/feed/CellBiology">Cell Biology</a></li>
-		<li><a href="/feed/ChemicalBiology">Chemical Biology</a></li>
-		<li><a href="/feed/Chemistry">Chemistry</a></li>
-		<li><a href="/feed/ComputationalBiology">Computational Biology</a></li>
-		<li><a href="/feed/ComputerScience">Computer Science</a></li>
-		<li><a href="/feed/CriticalCareandEmergencyMedicine">Critical Care and Emergency Medicine</a></li>
-		<li><a href="/feed/Dermatology">Dermatology</a></li>
-		<li><a href="/feed/DevelopmentalBiology">Developmental Biology</a></li>
-		<li><a href="/feed/DiabetesandEndocrinology">Diabetes and Endocrinology</a></li>
-		<li><a href="/feed/Ecology">Ecology</a></li>
-		<li><a href="/feed/Evidence-BasedHealthcare">Evidence-Based Healthcare</a></li>
-		<li><a href="/feed/EvolutionaryBiology">Evolutionary Biology</a></li>
-		<li><a href="/feed/GastroenterologyandHepatology">Gastroenterology and Hepatology</a></li>
-		<li><a href="/feed/GeneticsandGenomics">Genetics and Genomics</a></li>
-		<li><a href="/feed/Geriatrics">Geriatrics</a></li>
-		<li><a href="/feed/Hematology">Hematology</a></li>
-		<li><a href="/feed/Immunology">Immunology</a></li>
-		<li><a href="/feed/InfectiousDiseases">Infectious Diseases</a></li>
-		<li><a href="/feed/Mathematics">Mathematics</a></li>
-		<li><a href="/feed/MentalHealth">Mental Health</a></li>
-		<li><a href="/feed/Microbiology">Microbiology</a></li>
-		<li><a href="/feed/MolecularBiology">Molecular Biology</a></li>
-		<li><a href="/feed/Nephrology">Nephrology</a></li>
-		<li><a href="/feed/NeurologicalDisorders">Neurological Disorders</a></li>
-		<li><a href="/feed/Neuroscience">Neuroscience</a></li>
-		<li><a href="/feed/Non-ClinicalMedicine">Non-Clinical Medicine</a></li>
-		<li><a href="/feed/Nutrition">Nutrition</a></li>
-		<li><a href="/feed/Obstetrics">Obstetrics</a></li>
-		<li><a href="/feed/Oncology">Oncology</a></li>
-		<li><a href="/feed/Ophthalmology">Ophthalmology</a></li>
-		<li><a href="/feed/Otolaryngology">Otolaryngology</a></li>
-		<li><a href="/feed/Pathology">Pathology</a></li>
-		<li><a href="/feed/PediatricsandChildHealth">Pediatrics and Child Health</a></li>
-		<li><a href="/feed/Pharmacology">Pharmacology</a></li>
-		<li><a href="/feed/Physics">Physics</a></li>
-		<li><a href="/feed/Physiology">Physiology</a></li>
-		<li><a href="/feed/PlantBiology">Plant Biology</a></li>
-		<li><a href="/feed/PublicHealthandEpidemiology">Public Health and Epidemiology</a></li>
-		<li><a href="/feed/RadiologyandMedicalImaging">Radiology and Medical Imaging</a></li>
-		<li><a href="/feed/RespiratoryMedicine">Respiratory Medicine</a></li>
-		<li><a href="/feed/Rheumatology">Rheumatology</a></li>
-		<li><a href="/feed/SciencePolicy">Science Policy</a></li>
-		<li><a href="/feed/Surgery">Surgery</a></li>
-		<li><a href="/feed/Urology">Urology</a></li>
-		<li><a href="/feed/Virology">Virology</a></li>
-		<li><a href="/feed/WomensHealth">Women's Health</a></li>
+        <li><a href="/article/feed">New Articles (All Subjects)</a></li>
+		<li><a href="/article/feed?category=Anesthesiology%20and%20Pain%20Management">Anesthesiology and Pain Management</a></li>
+		<li><a href="/article/feed?category=Biochemistry">Biochemistry</a></li>
+		<li><a href="/article/feed?category=Biophysics">Biophysics</a></li>
+		<li><a href="/article/feed?category=Biotechnology">Biotechnology</a></li>
+		<li><a href="/article/feed?category=Cardiovascular%20Disorders">Cardiovascular Disorders</a></li>
+		<li><a href="/article/feed?category=Cell%20Biology">Cell Biology</a></li>
+		<li><a href="/article/feed?category=Chemical%20Biology">Chemical Biology</a></li>
+		<li><a href="/article/feed?category=Chemistry">Chemistry</a></li>
+		<li><a href="/article/feed?category=Computational%20Biology">Computational Biology</a></li>
+		<li><a href="/article/feed?category=Computer%20Science">Computer Science</a></li>
+		<li><a href="/article/feed?category=Critical%20Care%20and%20Emergency%20Medicine">Critical Care and Emergency Medicine</a></li>
+		<li><a href="/article/feed?category=Dermatology">Dermatology</a></li>
+		<li><a href="/article/feed?category=Developmental%20Biology">Developmental Biology</a></li>
+		<li><a href="/article/feed?category=Diabetes%20and%20Endocrinology">Diabetes and Endocrinology</a></li>
+		<li><a href="/article/feed?category=Ecology">Ecology</a></li>
+		<li><a href="/article/feed?category=Evidence-Based%20Healthcare">Evidence-Based Healthcare</a></li>
+		<li><a href="/article/feed?category=Evolutionary%20Biology">Evolutionary Biology</a></li>
+		<li><a href="/article/feed?category=Gastroenterology%20and%20Hepatology">Gastroenterology and Hepatology</a></li>
+		<li><a href="/article/feed?category=Genetics%20and%20Genomics">Genetics and Genomics</a></li>
+		<li><a href="/article/feed?category=Geriatrics">Geriatrics</a></li>
+		<li><a href="/article/feed?category=Hematology">Hematology</a></li>
+		<li><a href="/article/feed?category=Immunology">Immunology</a></li>
+		<li><a href="/article/feed?category=Infectious%20Diseases">Infectious Diseases</a></li>
+		<li><a href="/article/feed?category=Mathematics">Mathematics</a></li>
+		<li><a href="/article/feed?category=MentalHealth">Mental Health</a></li>
+		<li><a href="/article/feed?category=Microbiology">Microbiology</a></li>
+		<li><a href="/article/feed?category=Molecular%20Biology">Molecular Biology</a></li>
+		<li><a href="/article/feed?category=Nephrology">Nephrology</a></li>
+		<li><a href="/article/feed?category=Neurological%20Disorders">Neurological Disorders</a></li>
+		<li><a href="/article/feed?category=Neuroscience">Neuroscience</a></li>
+		<li><a href="/article/feed?category=Non-Clinical%20Medicine">Non-Clinical Medicine</a></li>
+		<li><a href="/article/feed?category=Nutrition">Nutrition</a></li>
+		<li><a href="/article/feed?category=Obstetrics">Obstetrics</a></li>
+		<li><a href="/article/feed?category=Oncology">Oncology</a></li>
+		<li><a href="/article/feed?category=Ophthalmology">Ophthalmology</a></li>
+		<li><a href="/article/feed?category=Otolaryngology">Otolaryngology</a></li>
+		<li><a href="/article/feed?category=Pathology">Pathology</a></li>
+		<li><a href="/article/feed?category=Pediatrics%20and%20Child%20Health">Pediatrics and Child Health</a></li>
+		<li><a href="/article/feed?category=Pharmacology">Pharmacology</a></li>
+		<li><a href="/article/feed?category=Physics">Physics</a></li>
+		<li><a href="/article/feed?category=Physiology">Physiology</a></li>
+		<li><a href="/article/feed?category=Plant%20Biology">Plant Biology</a></li>
+		<li><a href="/article/feed?category=Public%20Health%20and%20Epidemiology">Public Health and Epidemiology</a></li>
+		<li><a href="/article/feed?category=Radiology%20and%20Medical%20Imaging">Radiology and Medical Imaging</a></li>
+		<li><a href="/article/feed?category=Respiratory%20Medicine">Respiratory Medicine</a></li>
+		<li><a href="/article/feed?category=Rheumatology">Rheumatology</a></li>
+		<li><a href="/article/feed?category=Science%20Policy">Science Policy</a></li>
+		<li><a href="/article/feed?category=Surgery">Surgery</a></li>
+		<li><a href="/article/feed?category=Urology">Urology</a></li>
+		<li><a href="/article/feed?category=Virology">Virology</a></li>
+		<li><a href="/article/feed?category=Womens%20Health">Women's Health</a></li>
 
 </ul>
 

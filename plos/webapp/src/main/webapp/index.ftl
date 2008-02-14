@@ -82,7 +82,7 @@
                     <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
                     <li>
                       <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
-                      <a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
+                      <a href="${freemarker_config.context}/article/feed?category=${category}"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
                     </li>
 		  </#if>
                 </#list>
