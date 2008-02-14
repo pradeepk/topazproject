@@ -14,8 +14,8 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.WebAnnotation;
 
 /**
- * Action class to get a list of all commentary for an article and the threads associated
- * with each base comment.
+ * Action class to get a list of all corrections for an article and the threads
+ * associated with them.
  * 
  * @author jkirton
  */
