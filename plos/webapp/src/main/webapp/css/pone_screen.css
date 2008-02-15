@@ -17,7 +17,14 @@ a:link		{ color: #069; text-decoration: underline; }
 a:visited 	{ color: #004B70; }
 a:hover		{ color: #008ED5; text-decoration: none;}
 a:active	{ }
+
 blockquote	{ font-style: italic; font-size: .9em; margin: 0 20px;}
+div.quotes { margin:20px 0; }
+blockquote.decorative { background:transparent url(../images/pone_quote_left.gif) no-repeat scroll 0 0;
+margin:0 0 .5em 0; color:#333333; font-family:Georgia,"Times New Roman",Times,serif; }
+blockquote.decorative	p { background:transparent url(../images/pone_quote_right.gif) no-repeat scroll right 0; display:inline; font-size:1.7em; line-height:1.2em; padding:0 17px 0 15px; }
+div.quotes cite { font-style:normal; }
+
 cite		{ font-style: italic; }
 code		{ font-family: "Courier New", Courier, monospace; }
 .monospace      { font-family: "Courier New", Courier, monospace; } /* added 04-02-2007 */
@@ -53,6 +60,8 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 /* Global : Styles
 ----------------------------------------------------------
 */
+.noshow { line-height:0; } /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
+.clearer  { clear:both; line-height:0; }
 
 /* Global : Icons
 ----------------------------------------------------------
@@ -72,7 +81,11 @@ a.annotation:visited,
 a.user,
 a.user:visited,
 a.instructions,
-a.instructions.visited	{ color: #006699; }
+a.instructions:visited,
+a.addannotation,
+a.addannotation:visited,
+a.corrections,
+a.corrections:visited { color: #006699; }
 
 a.tooltip,
 a.tooltip:visited,
@@ -240,7 +253,6 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 /* Search Dashboard */
 #db { padding: 0; text-align: center; font-size: .8em; position: absolute; top: 48px; right: -22px; padding: 0; border-width: 0; color: #888; background: url(../images/pone_db_bg.gif) no-repeat top left; padding: 10px 15px 10px 13px;}
 #db fieldset 	{ padding: 0; margin: 0; background-color: transparent; vertical-align: top; width: 331px; border: none; }
-
 #db fieldset div{ position: relative; }
 #db fieldset legend,
 #db fieldset label
@@ -299,8 +311,7 @@ span.new { color: #fff; float: left; display: block; }
 div#ftr 		{ background: #FFF url(../images/pone_html_bg.gif) repeat-x 0px -128px; font-size: .85em; width: 100%; border-top: 1px solid #003956; margin: 20px 0 0 0; padding: 0; text-align: center; clear: both; }
 div#ftr ul 		{ margin: 0; padding: 0; list-style-type: none; }
 div#ftr ul li 	{ margin: 0 5px; display: inline; }
-div#ftr ul a, div#ftr ul a:visited
-				{ color: #fff;}
+div#ftr ul a, div#ftr ul a:visited { color: #fff;}
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p 		{ margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #003956; white-space: nowrap; }
 div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
@@ -361,8 +372,8 @@ p.affiliations	{ font-size: .85em; margin: 0; }
 div.abstract	{ margin: 15px 0; }
 div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #DBDBDB url(../images/pone_abstract_bg.gif) repeat-x top; }
 div.contributions { font-size: .9em; }
-div.articleinfo p,
-div.abstract p	{ margin: 0 0 1em 0; }
+div.articleinfo p
+/*div.abstract p -this is causing bad spacing between h2 and abstract on article pages. Not sure why this is in here.*/	{ margin: 0 0 1em 0; }
 div.abstract h2 { font-size: 1.6em; font-style: normal; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
 div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; border-bottom: none;}
 span.pullquote	{ font-size: 2em; line-height: 1em; width: 55%; padding: 10px; float: right; letter-spacing: -.05em; font-style: italic; margin: 5px; }
@@ -418,8 +429,8 @@ div.fch p.fch { margin:8px 8px 0; text-indent:20px; }
 div.fch ol { margin:0 8px 8px; }
 div.fch ol li { list-style-position:inside; font-weight:bold; }
 div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; }
-div.fch ol li p a:link { font-weight:normal; }
-
+div.fch ol li p a:link { font-weight:normal; color:#069; }
+div.fch ol li p a:visited { font-weight:normal; color:#004e9c; }
 
 /* rhc rounded containers : top */
 div.links,
