@@ -1206,7 +1206,7 @@
       <articleTitlePrefix>PLoS Computational Biology: </articleTitlePrefix>
       <displayName>PLoS Computational Biology</displayName>
       <default>
-        <title>PLoS Computational Biology</title>
+        <title>PLoS Computational Biology: The official journal of the International Society for Computational Biology</title>
       </default>
       <page>
         <name>/journals/compbiol/index.ftl</name>
@@ -1388,7 +1388,7 @@
       <articleTitlePrefix>PLoS Genetics: </articleTitlePrefix>
       <displayName>PLoS Genetics</displayName>
       <default>
-        <title>PLoS Genetics</title>
+        <title>PLoS Genetics: a peer-reviewed open-access journal published by the Public Library of Science</title>
       </default>
       <page>
         <name>/journals/genetics/index.ftl</name>
@@ -1760,7 +1760,7 @@
       <articleTitlePrefix>PLoS Pathogens: </articleTitlePrefix>
       <displayName>PLoS Pathogens</displayName>
       <default>
-        <title>PLoS Pathogens</title>
+        <title>PLoS Pathogens: a peer-reviewed open-access journal published by the Public Library of Science</title>
       </default>
       <page>
         <name>/journals/pathogens/index.ftl</name>
