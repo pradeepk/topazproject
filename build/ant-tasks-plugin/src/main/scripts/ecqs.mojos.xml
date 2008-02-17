@@ -35,6 +35,7 @@
           <name>SRC_ZIP</name>
           <property>SRC_ZIP</property>
           <required>true</required>
+          <description>esup-cas-quick-start artifact (group-id:artifact-id:version)</description>
         </parameter>
 
         <parameter>
@@ -52,75 +53,18 @@
         </parameter>
 
         <parameter>
-          <name>CAS_MOD</name>
-          <property>CAS_MOD</property>
-          <required>true</required>
+          <name>topaz_repository</name>
+          <property>topaz_repository</property>
+          <required>false</required>
+          <description>the url of the topaz maven repository in which to search for dependencies</description>
         </parameter>
 
         <parameter>
-          <name>CONF_HELPER</name>
-          <property>CONF_HELPER</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>PASSWORD_MOD</name>
-          <property>PASSWORD_MOD</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>DATABASE_DRIVER</name>
-          <property>DATABASE_DRIVER</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>COMMONS_LOGGING</name>
-          <property>COMMONS_LOGGING</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>COMMONS_DBCP</name>
-          <property>COMMONS_DBCP</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>COMMONS_POOL</name>
-          <property>COMMONS_POOL</property>
-          <required>true</required>
-        </parameter>
-
-        <parameter>
-          <name>COMMONS_COLLECTIONS</name>
-          <property>COMMONS_COLLECTIONS</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>COMMONS_CONFIG</name>
-          <property>COMMONS_CONFIG</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>COMMONS_LANG</name>
-          <property>COMMONS_LANG</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>COMMONS_DIGESTER</name>
-          <property>COMMONS_DIGESTER</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>COMMONS_BEANUTILS</name>
-          <property>COMMONS_BEANUTILS</property>
-          <required>true</required>
+          <name>dependencies</name>
+          <property>dependencies</property>
+          <expression>${dependencies}</expression>
+          <required>false</required>
+          <description>comma-separated list of artifacts (group-id:artifact-id:version)</description>
         </parameter>
         
       </parameters>
@@ -154,15 +98,6 @@
           <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
         </parameter>
         
-        <parameter>
-          <name>localRepository</name>
-          <property>localRepository</property>
-          <required>true</required>
-          <defaultValue>${settings.localRepository}</defaultValue>
-          <type>java.lang.String</type>
-          <description>Maven local repository.</description>
-        </parameter>
-
         <parameter>
           <name>ecqs-groupId</name>
           <property>ecqs-groupId</property>

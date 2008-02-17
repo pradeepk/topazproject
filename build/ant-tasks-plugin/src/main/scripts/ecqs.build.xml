@@ -19,6 +19,15 @@
     <dependency groupId="ant" artifactId="ant-launcher" version="1.6.5"/>
   </artifact:dependencies>
   
+  <artifact:dependencies filesetId="antcontrib.fileset" useScope="runtime">
+    <dependency groupId="ant-contrib" artifactId="ant-contrib" version="1.0b2"/>
+  </artifact:dependencies>
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <fileset refid="antcontrib.fileset"/>
+    </classpath>
+  </taskdef>
+
   <target name="exec-ext">
     <condition property="ext" value="">
       <os family="unix"/>
@@ -39,7 +48,19 @@
 
   <target name="ecqs-package" depends="patch-keytool">
     <!-- unzip the package -->
-    <unzip src="${SRC_ZIP}" dest="${DEST_DIR}"/>
+    <propertyregex property="groupId" input="${SRC_ZIP}"
+      regexp="([^:]*)" select="\1" casesensitive="false" override="true"/>
+    <propertyregex property="artifactId" input="${SRC_ZIP}"
+      regexp="[^:]*:([^:]*)" select="\1" casesensitive="false" override="true"/>
+    <propertyregex property="version" input="${SRC_ZIP}"
+      regexp="[^:]*:[^:]*:(.*)" select="\1" casesensitive="false" override="true"/>
+
+    <artifact:dependencies filesetId="src.fileset" useScope="compile">
+      <dependency groupId="${groupId}" artifactId="${artifactId}" version="${version}" type="zip"/>
+      <remoteRepository url="${topaz_repository}" />
+    </artifact:dependencies>
+    <pathconvert property="src-zip" refid="src.fileset"/>
+    <unzip src="${src-zip}" dest="${DEST_DIR}"/>
     
     <!-- needed for cas-mod -->
     <copy file="build-esup-cas-server.xml" 
@@ -47,20 +68,30 @@
           overwrite="true"
     />
 
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${CAS_MOD}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${CONF_HELPER}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${PASSWORD_MOD}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${DATABASE_DRIVER}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_LOGGING}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_DBCP}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_POOL}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_COLLECTIONS}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_CONFIG}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_LANG}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_DIGESTER}"/>
-    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_BEANUTILS}"/>
+    <!-- copy dependencies -->
+    <for list="${dependencies}" param="dependency">
+      <sequential>
+        <propertyregex property="groupId" input="@{dependency}"
+          regexp="([^:]*)" select="\1" casesensitive="false" override="true"/>
+        <propertyregex property="artifactId" input="@{dependency}"
+          regexp="[^:]*:([^:]*)" select="\1" casesensitive="false" override="true"/>
+        <propertyregex property="version" input="@{dependency}"
+          regexp="[^:]*:[^:]*:(.*)" select="\1" casesensitive="false" override="true"/>
+
+        <var name="fileSet" value="${artifactId}:${version}"/>
+        <artifact:dependencies filesetId="${fileSet}" useScope="runtime">
+          <dependency groupId="${groupId}" artifactId="${artifactId}"
+            version="${version}" type="jar"/>
+          <remoteRepository url="${topaz_repository}" />
+        </artifact:dependencies>
+
+        <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" flatten="true">
+          <fileset refid="${fileSet}"/>
+        </copy>
+      </sequential>
+    </for>
     <!-- end cas-mod -->
-    
+
     <!-- configure it -->
     <copy file="properties/build.properties"
       tofile="${DEST_DIR}/${ROOT}/properties/build.properties"
@@ -86,8 +117,12 @@
   </target>
   
   <target name="ecqs-install" depends="exec-ext">
-    <property name="SRC_JAR"
-      value="${localRepository}/${ecqs-groupId}/${ecqs-artifactId}/${ecqs-version}/${ecqs-artifactId}-${ecqs-version}.jar"/>
+    <artifact:dependencies filesetId="ecqs.fileset" useScope="runtime">
+      <dependency groupId="${ecqs-groupId}" artifactId="${ecqs-artifactId}"
+                  version="${ecqs-version}" type="jar"/>
+    </artifact:dependencies>
+    <pathconvert property="SRC_JAR" refid="ecqs.fileset"/>
+
     <unjar src="${SRC_JAR}" dest="${ECQS_INSTALL_DIR}"/>
     
     <exec dir="${ECQS_INSTALL_DIR}/${ROOT}" executable="ant${ext}">
