@@ -358,22 +358,65 @@ public class FilterResolver implements Resolver {
     }
 
     public int prepare(Xid xid) throws XAException {
-      int res = XA_OK;
+      XAException exc = null;
 
-      for (Iterator<XAResource> iter = xaResources.iterator(); iter.hasNext(); )
-        res |= iter.next().prepare(xid);
- 
-      return res;
+      for (Iterator<XAResource> iter = xaResources.iterator(); iter.hasNext(); ) {
+        XAResource xaRes = iter.next();
+        try {
+          if (xaRes.prepare(xid) == XA_RDONLY)
+            iter.remove();
+        } catch (XAException xae) {
+          exc = xae;
+          iter.remove();
+          break;
+        }
+      }
+
+      if (exc != null) {
+        for (XAResource xaRes : xaResources) {
+          try {
+            xaRes.rollback(xid);
+          } catch (XAException xae) {
+            logger.warn("Error rolling back resource", xae);
+          }
+        }
+
+        throw exc;
+      }
+
+      return xaResources.isEmpty() ? XA_RDONLY : XA_OK;
     }
 
     public void commit(Xid xid, boolean onePhase) throws XAException {
-      for (XAResource xaRes : xaResources)
-        xaRes.commit(xid, onePhase);
+      XAException exc = null;
+
+      for (XAResource xaRes : xaResources) {
+        try {
+          xaRes.commit(xid, onePhase);
+        } catch (XAException xae) {
+          exc = xae;
+          logger.warn("Error rolling back resource", xae);
+        }
+      }
+
+      if (exc != null)
+        throw exc;
     }
 
     public void rollback(Xid xid) throws XAException {
-      for (XAResource xaRes : xaResources)
-        xaRes.rollback(xid);
+      XAException exc = null;
+
+      for (XAResource xaRes : xaResources) {
+        try {
+          xaRes.rollback(xid);
+        } catch (XAException xae) {
+          exc = xae;
+          logger.warn("Error rolling back resource", xae);
+        }
+      }
+
+      if (exc != null)
+        throw exc;
     }
 
     public int getTransactionTimeout() throws XAException {
