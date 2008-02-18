@@ -78,8 +78,8 @@ class Row {
             val = new Row(sqr, sqr.variables)
           else
             val = new Empty()
-          break
           sqr.close()
+          break
         default: val = new Value(res.getString(var));
       }
       vals.add(val)
