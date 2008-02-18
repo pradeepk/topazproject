@@ -544,19 +544,26 @@ public class SessionImpl extends AbstractSession {
     if (id != null && cm.getIdField() != null)
       cm.getIdField().set(obj, Collections.singletonList(id));
 
+    // a proj-var may appear multiple times, so have to delay closing of subquery results
+    Set<Results> sqr = new HashSet<Results>();
+
     for (Mapper m : cm.getFields()) {
       int    idx = r.findVariable(m.getProjectionVar());
-      Object val = getValue(r, idx, m.getComponentType(), m.getFetchType() == FetchType.eager);
+      Object val = getValue(r, idx, m.getComponentType(), m.getFetchType() == FetchType.eager, sqr);
       if (val instanceof List)
         m.set(obj, (List) val);
       else
         m.setRawValue(obj, val);
     }
 
+    for (Results sr : sqr)
+      sr.close();
+
     return obj;
   }
 
-  private Object getValue(Results r, int idx, Class<?> type, boolean eager) throws OtmException {
+  private Object getValue(Results r, int idx, Class<?> type, boolean eager, Set<Results> sqr)
+      throws OtmException {
     switch (r.getType(idx)) {
       case CLASS:
         return (type == String.class) ? r.getString(idx) : r.get(idx, eager);
@@ -574,10 +581,16 @@ public class SessionImpl extends AbstractSession {
         List<Object> vals = new ArrayList<Object>();
 
         Results sr = r.getSubQueryResults(idx);
+
         sr.beforeFirst();
         while (sr.next())
-          vals.add(isSubView ? createInstance(scm, null, null, sr) : getValue(sr, 0, type, eager));
-        sr.close();
+          vals.add(isSubView ? createInstance(scm, null, null, sr) :
+                               getValue(sr, 0, type, eager, null));
+
+        if (sqr != null)
+          sqr.add(sr);
+        else
+          sr.close();
 
         return vals;
 
