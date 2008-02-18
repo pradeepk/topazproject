@@ -110,6 +110,42 @@ public class ItqlClientTest extends GroovyTestCase {
     }
     */
     itql.close();
+
+    // test transactions
+    itql = icf.createClient(URI.create("local:///test1"));
+
+    model = "<local:///test1#m1>";
+    doCommands(itql, model) { checker ->
+      itql.doUpdate("insert <foo:one> <bar:one> '45' into ${model};");
+      List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+      checker.verify(ans, variables:['s', 'p', 'o']) {
+        row { uri ('foo:one'); uri('bar:one'); literal ('45') }
+      }
+    }
+
+    List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
+    def checker = new AnswerChecker(test:this)
+    checker.verify(ans, variables:['s', 'p', 'o']) {
+      row { uri ('foo:one'); uri('bar:one'); literal ('45') }
+    }
+
+    itql.doUpdate("insert <foo:two> <bar:two> '46' into ${model};");
+
+    itql.beginTxn("tx-rb")
+    itql.doUpdate("insert <foo:thr> <bar:thr> '47' into ${model};");
+    ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o order by \$o;")
+    checker.verify(ans, variables:['s', 'p', 'o']) {
+      row { uri ('foo:one'); uri('bar:one'); literal ('45') }
+      row { uri ('foo:two'); uri('bar:two'); literal ('46') }
+      row { uri ('foo:thr'); uri('bar:thr'); literal ('47') }
+    }
+    itql.rollbackTxn("tx-rb")
+
+    ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o order by \$o;")
+    checker.verify(ans, variables:['s', 'p', 'o']) {
+      row { uri ('foo:one'); uri('bar:one'); literal ('45') }
+      row { uri ('foo:two'); uri('bar:two'); literal ('46') }
+    }
   }
 
   private void doCommands(ItqlClient itql, String model, Closure c) {
