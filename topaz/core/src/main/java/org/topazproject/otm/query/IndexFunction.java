@@ -329,6 +329,10 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
       return delegate.next();
     }
 
+    public void close() {
+      delegate.close();
+    }
+
     public boolean isLiteral(int idx) throws AnswerException {
       return delegate.isLiteral(mapIndex(idx));
     }

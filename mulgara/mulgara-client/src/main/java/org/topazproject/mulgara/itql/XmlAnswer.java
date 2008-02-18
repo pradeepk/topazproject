@@ -152,6 +152,9 @@ class XmlAnswer extends AbstractAnswer {
     return (rows != null && curPos < rows.size());
   }
 
+  public void close() {
+  }
+
   public boolean isLiteral(int idx) {
     Element v = rows.get(curPos)[idx];
     return (v != null) && !v.hasAttribute(RSRC_ATTR) && !(v.getFirstChild() instanceof Element) &&

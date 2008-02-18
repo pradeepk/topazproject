@@ -12,6 +12,9 @@ package org.topazproject.mulgara.itql;
 
 import java.net.URI;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.BlankNode;
 import org.jrdf.graph.URIReference;
@@ -26,7 +29,11 @@ import org.mulgara.query.Variable;
  * @author Ronald Tschalär
  */
 class AnswerAnswer extends AbstractAnswer {
-  private final Answer ans;
+  private static final Log  log = LogFactory.getLog(AbstractAnswer.class);
+
+  private final Answer    ans;
+  private final Object[]  rowCache;
+  private final boolean[] needsClose;
 
   /** 
    * Create a query answer.
@@ -40,6 +47,9 @@ class AnswerAnswer extends AbstractAnswer {
     variables = new String[vars.length];
     for (int idx = 0; idx < vars.length; idx++)
       variables[idx] = vars[idx].getName();
+
+    this.rowCache   = new Object[vars.length];
+    this.needsClose = new boolean[vars.length];
   }
 
   /** 
@@ -48,8 +58,10 @@ class AnswerAnswer extends AbstractAnswer {
    * @param msg the message
    */
   public AnswerAnswer(String msg) {
-    this.ans = null;
-    message = msg;
+    this.ans        = null;
+    this.rowCache   = null;
+    this.needsClose = null;
+    message         = msg;
   }
 
   /**********************************************************************************/
@@ -59,6 +71,7 @@ class AnswerAnswer extends AbstractAnswer {
       return;
 
     try {
+      clearRowCache();
       ans.beforeFirst();
     } catch (TuplesException te) {
       throw new AnswerException(te);
@@ -70,15 +83,42 @@ class AnswerAnswer extends AbstractAnswer {
       return false;
 
     try {
+      clearRowCache();
       return ans.next();
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
   }
 
+  public void close() {
+    try {
+      clearRowCache();
+      ans.close();
+    } catch (TuplesException te) {
+      log.error("Error closing answer", te);
+    }
+  }
+
+  private Object getObject(int idx, boolean nc) throws TuplesException {
+    if (rowCache[idx] == null)
+      rowCache[idx] = ans.getObject(idx);
+    needsClose[idx] &= nc;
+    return rowCache[idx];
+  }
+
+  private void clearRowCache() throws TuplesException {
+    for (int idx = 0; idx < rowCache.length; idx++) {
+      if (needsClose[idx] && rowCache[idx] instanceof Answer)
+        ((Answer) rowCache[idx]).close();
+
+      rowCache[idx]   = null;
+      needsClose[idx] = true;
+    }
+  }
+
   public boolean isLiteral(int idx) throws AnswerException {
     try {
-      return ans.getObject(idx) instanceof Literal;
+      return getObject(idx, true) instanceof Literal;
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -87,7 +127,7 @@ class AnswerAnswer extends AbstractAnswer {
   public String getLiteralDataType(int idx) throws AnswerException {
     Object o;
     try {
-      o = ans.getObject(idx);
+      o = getObject(idx, true);
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -103,7 +143,7 @@ class AnswerAnswer extends AbstractAnswer {
   public String getLiteralLangTag(int idx) throws AnswerException {
     Object o;
     try {
-      o = ans.getObject(idx);
+      o = getObject(idx, true);
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -119,7 +159,7 @@ class AnswerAnswer extends AbstractAnswer {
   public String getString(int idx) throws AnswerException {
     Object o;
     try {
-      o = ans.getObject(idx);
+      o = getObject(idx, true);
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -141,7 +181,7 @@ class AnswerAnswer extends AbstractAnswer {
 
   public boolean isURI(int idx) throws AnswerException {
     try {
-      return ans.getObject(idx) instanceof URIReference;
+      return getObject(idx, true) instanceof URIReference;
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -150,7 +190,7 @@ class AnswerAnswer extends AbstractAnswer {
   public URI getURI(int idx) throws AnswerException {
     Object o;
     try {
-      o = ans.getObject(idx);
+      o = getObject(idx, true);
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -163,7 +203,7 @@ class AnswerAnswer extends AbstractAnswer {
 
   public boolean isBlankNode(int idx) throws AnswerException {
     try {
-      return ans.getObject(idx) instanceof BlankNode;
+      return getObject(idx, true) instanceof BlankNode;
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -172,7 +212,7 @@ class AnswerAnswer extends AbstractAnswer {
   public String getBlankNode(int idx) throws AnswerException {
     Object o;
     try {
-      o = ans.getObject(idx);
+      o = getObject(idx, true);
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -185,7 +225,7 @@ class AnswerAnswer extends AbstractAnswer {
 
   public boolean isSubQueryResults(int idx) throws AnswerException {
     try {
-      return ans.getObject(idx) instanceof Answer;
+      return getObject(idx, true) instanceof Answer;
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }
@@ -194,7 +234,7 @@ class AnswerAnswer extends AbstractAnswer {
   public AnswerAnswer getSubQueryResults(int idx) throws AnswerException {
     Object o;
     try {
-      o = ans.getObject(idx);
+      o = getObject(idx, false);
     } catch (TuplesException te) {
       throw new AnswerException(te);
     }

@@ -60,6 +60,11 @@ abstract class ItqlResults extends Results {
   }
 
   @Override
+  public void close() {
+    qa.close();
+  }
+
+  @Override
   protected void loadRow() throws OtmException {
     curRow = null;
 

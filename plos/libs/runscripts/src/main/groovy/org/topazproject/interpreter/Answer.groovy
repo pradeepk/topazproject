@@ -73,12 +73,13 @@ class Row {
           break
         case Results.Type.SUBQ_RESULTS:
           // TODO: Handle a subquery that returns multiple subrows per row
-          val = res.getSubQueryResults(var)
-          if (val.next())
-            val = new Row(val, val.variables)
+          Results sqr = res.getSubQueryResults(var)
+          if (sqr.next())
+            val = new Row(sqr, sqr.variables)
           else
             val = new Empty()
           break
+          sqr.close()
         default: val = new Value(res.getString(var));
       }
       vals.add(val)
@@ -132,6 +133,7 @@ class Answer {
     println "variables: ${vars}"
     while (res.next())
       data.add(new Row(res, vars))
+    res.close();
   }
 
   /** flatten any subquery results into main query */

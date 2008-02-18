@@ -57,6 +57,11 @@ public interface Answer {
   public boolean next() throws AnswerException;
 
   /** 
+   * Close this answer.
+   */
+  public void close();
+
+  /** 
    * Tests if the value of the specified column in the current row is a Literal.
    * 
    * @param idx the column index (0-based)

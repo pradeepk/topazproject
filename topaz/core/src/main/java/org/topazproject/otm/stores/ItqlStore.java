@@ -413,6 +413,8 @@ public class ItqlStore extends AbstractTripleStore {
 
           updateTypeMap(qa.getSubQueryResults(3), inverse ? s : o, types);
         }
+
+        qa.close();
       }
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
@@ -756,6 +758,7 @@ public class ItqlStore extends AbstractTripleStore {
       // XXX: Ideally we should clean it up. But it does not affect the
       // XXX: mostSepcificSubclass selection.
 
+      qa.close();
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
     }
@@ -771,6 +774,7 @@ public class ItqlStore extends AbstractTripleStore {
         types.put(assoc, v = new HashSet<String>());
       v.add(qa.getString("t"));
     }
+    qa.close();
   }
 
   public List list(Criteria criteria, Transaction txn) throws OtmException {

@@ -147,6 +147,12 @@ public abstract class Results {
   }
 
   /** 
+   * Close the results. 
+   */
+  public void close() {
+  }
+
+  /** 
    * Return the current row number. The number is zero based. 
    * 
    * @return the current row number, or -1 if not on a valid row

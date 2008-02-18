@@ -241,8 +241,10 @@ class AnswerChecker extends BuilderSupport {
   }
 
   protected void nodeCompleted(Object parent, Object node) {
-    if (parent == null || node == 'subq')
+    if (parent == null || node == 'subq') {
       test.assertFalse(ans.next())
+      ans.close()
+    }
 
     if (node == 'subq') {
       ans = ansHist.pop()

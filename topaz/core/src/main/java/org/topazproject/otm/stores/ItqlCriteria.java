@@ -284,6 +284,8 @@ public class ItqlCriteria {
         if (o != null)
           results.add(o);
       }
+
+      qa.close();
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
     }

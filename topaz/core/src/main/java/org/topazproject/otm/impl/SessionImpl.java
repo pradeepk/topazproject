@@ -526,6 +526,8 @@ public class SessionImpl extends AbstractSession {
     else
       instance = null;
 
+    r.close();
+
     return instance;
   }
 
@@ -575,6 +577,7 @@ public class SessionImpl extends AbstractSession {
         sr.beforeFirst();
         while (sr.next())
           vals.add(isSubView ? createInstance(scm, null, null, sr) : getValue(sr, 0, type, eager));
+        sr.close();
 
         return vals;
 
