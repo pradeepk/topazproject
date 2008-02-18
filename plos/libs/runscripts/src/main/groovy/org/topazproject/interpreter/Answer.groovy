@@ -162,7 +162,8 @@ class Answer {
     data.each() { row ->
       def col = 0
       row.getLengths().each() { length ->
-        lengths[col] = [ lengths[col++], length ].max()
+        lengths[col] = [ lengths[col], length ].max()
+        col++
       }
     }
     return lengths
