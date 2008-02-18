@@ -84,6 +84,14 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
     return xaResource;
   }
 
+  public void abort() {
+    try {
+      xaResource.rollback(currentTxId.get());
+    } catch (Exception e) {
+      logger.error("Error rolling back tx for abort");
+    }
+  }
+
   /**
    * Flush all pending data and shut down.
    */

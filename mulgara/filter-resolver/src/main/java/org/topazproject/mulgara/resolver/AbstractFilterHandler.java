@@ -38,6 +38,9 @@ public abstract class AbstractFilterHandler implements FilterHandler {
     return null;
   }
 
+  public void abort() {
+  }
+
   public void close() {
   }
 

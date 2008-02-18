@@ -171,6 +171,11 @@ public class FilterResolver implements Resolver {
     return systemResolver.resolve(translateModel(constraint));
   }
 
+  public void abort() {
+    for (FilterHandler h : handlers)
+      h.abort();
+  }
+
   /**
    * Translate the model (element 4) of the constraint to the underlying model.
    *

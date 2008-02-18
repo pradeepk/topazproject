@@ -64,6 +64,11 @@ public interface FilterHandler {
   public XAResource getXAResource();
 
   /** 
+   * Indicates the current transaction was abnormally aborted.
+   */
+  public void abort();
+
+  /** 
    * Indicates the handler is being closed. Usually invoked on system exit.
    */
   public void close();

@@ -253,6 +253,14 @@ class FedoraUpdater extends AbstractFilterHandler {
     return xaResource;
   }
 
+  public void abort() {
+    try {
+      xaResource.rollback(currentTxId);
+    } catch (Exception e) {
+      logger.error("Error rolling back tx for abort");
+    }
+  }
+
   /**
    * Flush all pending updates and shut down.
    */
