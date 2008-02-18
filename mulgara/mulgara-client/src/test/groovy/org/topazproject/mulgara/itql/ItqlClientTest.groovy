@@ -87,7 +87,6 @@ public class ItqlClientTest extends GroovyTestCase {
         row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45') }
       }
     }
-    itql.close();
 
     // test literal datatypes
     model = "<local:///test1#m1>";
@@ -98,7 +97,6 @@ public class ItqlClientTest extends GroovyTestCase {
         row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45', dt:'xsd:int') }
       }
     }
-    itql.close();
 
     // test literal language-tags
     /* not supported by mulgara (yet)
@@ -110,8 +108,8 @@ public class ItqlClientTest extends GroovyTestCase {
         row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45', lang:'en') }
       }
     }
-    itql.close();
     */
+    itql.close();
   }
 
   private void doCommands(ItqlClient itql, String model, Closure c) {
