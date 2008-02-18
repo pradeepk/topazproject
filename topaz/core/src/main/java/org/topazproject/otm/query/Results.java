@@ -25,10 +25,10 @@ public abstract class Results {
   private final String[]       warnings;
   private final SessionFactory sf;
 
-  protected int      pos = -1;
-  protected boolean  eor = false;
-  protected Type[]   types;
-  protected Object[] curRow;
+  protected       int      pos = -1;
+  protected       boolean  eor = false;
+  protected       Type[]   types;
+  protected final Object[] curRow;
 
   /** possible result types */
   public enum Type { CLASS, LITERAL, URI, BLANK_NODE, SUBQ_RESULTS, UNKNOWN };
@@ -96,6 +96,7 @@ public abstract class Results {
     this.types     = types;
     this.warnings  = (warnings != null && warnings.length > 0) ? warnings : null;
     this.sf        = sf;
+    this.curRow    = new Object[variables.length];
   }
 
   /** 
@@ -212,6 +213,12 @@ public abstract class Results {
   }
 
   public Object[] getRow() throws OtmException {
+    if (eor)
+      throw new QueryException("at end of results");
+
+    for (int idx = 0; idx < curRow.length; idx++)
+      get(idx, true);
+
     return curRow.clone();
   }
 
@@ -228,6 +235,9 @@ public abstract class Results {
   }
 
   public Object get(int idx, boolean eager) throws OtmException {
+    if (eor)
+      throw new QueryException("at end of results");
+
     return curRow[idx];
   }
 

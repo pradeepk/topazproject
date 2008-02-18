@@ -66,7 +66,8 @@ abstract class ItqlResults extends Results {
 
   @Override
   protected void loadRow() throws OtmException {
-    curRow = null;
+    for (int idx = 0; idx < getVariables().length; idx++)
+      curRow[idx] = null;
 
     try {
       if (!qa.next())
@@ -91,38 +92,19 @@ abstract class ItqlResults extends Results {
   }
 
   @Override
-  public Object[] getRow() throws OtmException {
-    if (eor)
-      throw new QueryException("at end of results");
-
-    if (curRow == null) {
-      curRow = new Object[qa.getVariables().length];
-      for (int idx = 0; idx < curRow.length; idx++) {
-        try {
-          curRow[idx] = getResult(idx, getType(idx), true);
-        } catch (AnswerException ae) {
-          throw new QueryException("Error parsing answer", ae);
-        }
-      }
-    }
-
-    return curRow;
-  }
-
-  @Override
   public Object get(int idx, boolean eager) throws OtmException {
     if (eor)
       throw new QueryException("at end of results");
 
-    if (curRow != null)
-      return curRow[idx];
-    else {
+    if (curRow[idx] == null) {
       try {
-        return getResult(idx, getType(idx), eager);
+        curRow[idx] = getResult(idx, getType(idx), eager);
       } catch (AnswerException ae) {
         throw new QueryException("Error parsing answer", ae);
       }
     }
+
+    return curRow[idx];
   }
 
   /** 

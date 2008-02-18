@@ -31,9 +31,10 @@ import org.mulgara.query.Variable;
 class AnswerAnswer extends AbstractAnswer {
   private static final Log  log = LogFactory.getLog(AbstractAnswer.class);
 
-  private final Answer    ans;
-  private final Object[]  rowCache;
-  private final boolean[] needsClose;
+  private final Answer         ans;
+  private final Object[]       rowCache;
+  private final AnswerAnswer[] ansCache;
+  private final boolean[]      needsClose;
 
   /** 
    * Create a query answer.
@@ -49,6 +50,7 @@ class AnswerAnswer extends AbstractAnswer {
       variables[idx] = vars[idx].getName();
 
     this.rowCache   = new Object[vars.length];
+    this.ansCache   = new AnswerAnswer[vars.length];
     this.needsClose = new boolean[vars.length];
   }
 
@@ -60,6 +62,7 @@ class AnswerAnswer extends AbstractAnswer {
   public AnswerAnswer(String msg) {
     this.ans        = null;
     this.rowCache   = null;
+    this.ansCache   = null;
     this.needsClose = null;
     message         = msg;
   }
@@ -112,6 +115,7 @@ class AnswerAnswer extends AbstractAnswer {
         ((Answer) rowCache[idx]).close();
 
       rowCache[idx]   = null;
+      ansCache[idx]   = null;
       needsClose[idx] = true;
     }
   }
@@ -232,6 +236,9 @@ class AnswerAnswer extends AbstractAnswer {
   }
 
   public AnswerAnswer getSubQueryResults(int idx) throws AnswerException {
+    if (ansCache[idx] != null)
+      return ansCache[idx];
+
     Object o;
     try {
       o = getObject(idx, false);
@@ -239,8 +246,10 @@ class AnswerAnswer extends AbstractAnswer {
       throw new AnswerException(te);
     }
 
-    if (o instanceof Answer)
-      return new AnswerAnswer((Answer) o);
+    if (o instanceof Answer) {
+      ansCache[idx] = new AnswerAnswer((Answer) o);
+      return ansCache[idx];
+    }
 
     throw new AnswerException("is not a sub-query answer");
   }
