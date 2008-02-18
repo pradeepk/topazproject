@@ -84,19 +84,19 @@ class FedoraUpdater extends AbstractFilterHandler {
   private static final URIReference RDF_TYPE;
   private static final URIReference FILT_MOD;
 
-  private final Set             updQueue = new HashSet();
-  private final Map             txQueue  = new HashMap();
-  private final FedoraAPIM      apim;
-  private final Uploader        uploader;
-  private final URI             modelBase;
-  private final SessionFactory  sessFactory;
-  private final Map             dsModelMap = new HashMap();
-  private final UpdateFilter    filter;
-  private final XAResource      xaResource;
-  private final Worker          worker;
-  private       JRDFSession     sess;
-  private       Xid             currentTxId;
-  private volatile boolean      updateMaps;
+  private final Set<ModItem>             updQueue = new HashSet<ModItem>();
+  private final Map<Xid, Set<ModItem>>   txQueue  = new HashMap<Xid, Set<ModItem>>();
+  private final FedoraAPIM               apim;
+  private final Uploader                 uploader;
+  private final URI                      modelBase;
+  private final SessionFactory           sessFactory;
+  private final Map<String, Set<String>> dsModelMap = new HashMap<String, Set<String>>();
+  private final UpdateFilter             filter;
+  private final XAResource               xaResource;
+  private final Worker                   worker;
+  private       JRDFSession              sess;
+  private       Xid                      currentTxId;
+  private volatile boolean               updateMaps;
 
   static {
     try {
@@ -225,9 +225,9 @@ class FedoraUpdater extends AbstractFilterHandler {
                         ResolverSession resolverSession)
       throws ResolverException {
     synchronized (txQueue) {
-      Set queue = (Set) txQueue.get(currentTxId);
+      Set<ModItem> queue = txQueue.get(currentTxId);
       if (queue == null)
-        txQueue.put(currentTxId, queue = new HashSet());
+        txQueue.put(currentTxId, queue = new HashSet<ModItem>());
 
       try {
         statements.beforeFirst();
@@ -287,7 +287,7 @@ class FedoraUpdater extends AbstractFilterHandler {
     }
 
     // make a copy of the queue and clear it
-    final Set mods = new HashSet();
+    final Set<ModItem> mods = new HashSet<ModItem>();
     synchronized (updQueue) {
       mods.addAll(updQueue);
       updQueue.clear();
@@ -310,8 +310,7 @@ class FedoraUpdater extends AbstractFilterHandler {
     }
 
     // process each subject
-    for (Iterator iter = mods.iterator(); iter.hasNext(); ) {
-      ModItem mod = (ModItem) iter.next();
+    for (ModItem mod : mods) {
       try {
         updateSubject(mod.subject, mod.datastream, sess);
       } catch (Exception e) {
@@ -325,7 +324,7 @@ class FedoraUpdater extends AbstractFilterHandler {
   }
 
   private void doUpdateModelMaps() throws GraphException, TuplesException, ResolverException {
-    Map dsMM = new HashMap();
+    Map<String, Set<String>> dsMM = new HashMap<String, Set<String>>();
 
     Answer ans = sess.find(modelBase.resolve("#"), null, RDF_TYPE, FILT_MOD);
     ans.beforeFirst();
@@ -335,9 +334,9 @@ class FedoraUpdater extends AbstractFilterHandler {
       String model = FilterResolver.getModelName(m.getURI());
       String ds    = getDS(m.getURI());
 
-      Set models = (Set) dsMM.get(ds);
+      Set<String> models = dsMM.get(ds);
       if (models == null)
-        dsMM.put(ds, models = new HashSet());
+        dsMM.put(ds, models = new HashSet<String>());
 
       models.add(model);
     }
@@ -350,7 +349,7 @@ class FedoraUpdater extends AbstractFilterHandler {
     if (logger.isDebugEnabled())
       logger.debug("Processing '" + subj + "', '" + ds + "'...");
 
-    String[] models = (String[]) ((Set) dsModelMap.get(ds)).toArray(new String[0]);
+    String[] models = dsModelMap.get(ds).toArray(new String[0]);
 
     // get fedora object-id for subject
     String objId = filter.getFedoraPID(subj.getURI(), models, ds);
@@ -374,8 +373,7 @@ class FedoraUpdater extends AbstractFilterHandler {
     writer.getDelegate().startDocument();
     boolean hasStmts = false;
 
-    for (Iterator iter = ((Set) dsModelMap.get(ds)).iterator(); iter.hasNext(); ) {
-      String model = (String) iter.next();
+    for (String model : dsModelMap.get(ds)) {
       Answer ans = sess.find(modelBase.resolve("#" + model), subj, null, null);
       rtw.write(new MulgaraTripleIterator(ans));
       hasStmts |= ans.getRowCardinality() != Answer.ZERO;
@@ -516,9 +514,9 @@ class FedoraUpdater extends AbstractFilterHandler {
     }
 
     public void commit(Xid xid, boolean onePhase) {
-      Set queue;
+      Set<ModItem> queue;
       synchronized (txQueue) {
-        queue = (Set) txQueue.remove(xid);
+        queue = txQueue.remove(xid);
       }
 
       if (queue != null) {

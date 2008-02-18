@@ -121,7 +121,7 @@ public class FilterResolverFactory implements ResolverFactory {
     config = config.subset(base);
 
     // Set up the filter handlers
-    List hList = new ArrayList();
+    List<FilterHandler> hList = new ArrayList<FilterHandler>();
     for (int idx = 0; ; idx++) {
       String handlerClsName = config.getString("filterHandler.class_" + idx, null);
       if (handlerClsName == null)
@@ -134,14 +134,19 @@ public class FilterResolverFactory implements ResolverFactory {
     if (hList.size() == 0)
       logger.info("No handlers configured");
 
-    handlers = (FilterHandler[]) hList.toArray(new FilterHandler[hList.size()]);
+    handlers = hList.toArray(new FilterHandler[hList.size()]);
   }
 
   private static FilterHandler instantiateHandler(String clsName, Configuration config, String base,
                                                   URI dbURI)
       throws InitializerException {
     try {
-      Class clazz = Class.forName(clsName, true, Thread.currentThread().getContextClassLoader());
+      Class clazz;
+      try {
+        clazz = Class.forName(clsName, true, Thread.currentThread().getContextClassLoader());
+      } catch (Exception e) {
+        clazz = Class.forName(clsName);
+      }
       Constructor c =
           clazz.getConstructor(new Class[] { Configuration.class, String.class, URI.class });
       return (FilterHandler) c.newInstance(new Object[] { config, base, dbURI });
@@ -155,8 +160,8 @@ public class FilterResolverFactory implements ResolverFactory {
    * Close the session factory.
    */
   public void close() throws ResolverFactoryException {
-    for (int idx = 0; idx < handlers.length; idx++)
-      handlers[idx].close();
+    for (FilterHandler h : handlers)
+      h.close();
 
     logger.info("All handlers closed");
   }

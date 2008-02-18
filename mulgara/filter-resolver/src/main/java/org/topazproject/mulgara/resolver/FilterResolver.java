@@ -135,8 +135,8 @@ public class FilterResolver implements Resolver {
       throw new ResolverException("Error localizing model uri '" + realModelURI + "'", le);
     }
 
-    for (int idx = 0; idx < handlers.length; idx++)
-      handlers[idx].modelCreated(filterModelURI, realModelURI);
+    for (FilterHandler h : handlers)
+      h.modelCreated(filterModelURI, realModelURI);
   }
 
   public void modifyModel(long model, Statements statements, boolean occurs)
@@ -152,9 +152,8 @@ public class FilterResolver implements Resolver {
       throw new ResolverException("Failed to look up model", qe);
     }
 
-    for (int idx = 0; idx < handlers.length; idx++)
-      handlers[idx].modelModified(filterModelURI, realModelURI, statements, occurs,
-                                  resolverSession);
+    for (FilterHandler h : handlers)
+      h.modelModified(filterModelURI, realModelURI, statements, occurs, resolverSession);
   }
 
   public void removeModel(long model) throws ResolverException {
@@ -164,8 +163,8 @@ public class FilterResolver implements Resolver {
     if (logger.isDebugEnabled())
       logger.debug("Removing model '" + filterModelURI + "'");
 
-    for (int idx = 0; idx < handlers.length; idx++)
-      handlers[idx].modelRemoved(filterModelURI, realModelURI);
+    for (FilterHandler h : handlers)
+      h.modelRemoved(filterModelURI, realModelURI);
   }
 
   public Resolution resolve(Constraint constraint) throws QueryException {
@@ -338,50 +337,50 @@ public class FilterResolver implements Resolver {
   }
 
   private static class MultiXAResource implements XAResource {
-    private final List xaResources = new ArrayList();
+    private final List<XAResource> xaResources = new ArrayList<XAResource>();
 
     MultiXAResource(FilterHandler[] handlers) {
-      for (int idx = 0; idx < handlers.length; idx++) {
-        XAResource res = handlers[idx].getXAResource();
+      for (FilterHandler h : handlers) {
+        XAResource res = h.getXAResource();
         if (res != null)
           xaResources.add(res);
       }
     }
 
     public void start(Xid xid, int flags) throws XAException {
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        ((XAResource) iter.next()).start(xid, flags);
+      for (XAResource xaRes : xaResources)
+        xaRes.start(xid, flags);
     }
 
     public void end(Xid xid, int flags) throws XAException {
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        ((XAResource) iter.next()).end(xid, flags);
+      for (XAResource xaRes : xaResources)
+        xaRes.end(xid, flags);
     }
 
     public int prepare(Xid xid) throws XAException {
       int res = XA_OK;
 
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        res |= ((XAResource) iter.next()).prepare(xid);
-
+      for (Iterator<XAResource> iter = xaResources.iterator(); iter.hasNext(); )
+        res |= iter.next().prepare(xid);
+ 
       return res;
     }
 
     public void commit(Xid xid, boolean onePhase) throws XAException {
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        ((XAResource) iter.next()).commit(xid, onePhase);
+      for (XAResource xaRes : xaResources)
+        xaRes.commit(xid, onePhase);
     }
 
     public void rollback(Xid xid) throws XAException {
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        ((XAResource) iter.next()).rollback(xid);
+      for (XAResource xaRes : xaResources)
+        xaRes.rollback(xid);
     }
 
     public int getTransactionTimeout() throws XAException {
       int to = Integer.MAX_VALUE;
 
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        to = Math.min(((XAResource) iter.next()).getTransactionTimeout(), to);
+      for (XAResource xaRes : xaResources)
+        to = Math.min(xaRes.getTransactionTimeout(), to);
 
       return to;
     }
@@ -389,27 +388,27 @@ public class FilterResolver implements Resolver {
     public boolean setTransactionTimeout(int transactionTimeout) throws XAException {
       boolean res = true;
 
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        res &= ((XAResource) iter.next()).setTransactionTimeout(transactionTimeout);
+      for (XAResource xaRes : xaResources)
+        res &= xaRes.setTransactionTimeout(transactionTimeout);
 
       return res;
     }
 
     public Xid[] recover(int flag) throws XAException {
-      List xids = new ArrayList();
+      List<Xid> xids = new ArrayList<Xid>();
 
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); ) {
-        Xid[] l = ((XAResource) iter.next()).recover(flag);
-        for (int idx = 0; idx < l.length; idx++)
-          xids.add(l);
+      for (XAResource xaRes : xaResources) {
+        Xid[] l = xaRes.recover(flag);
+        for (Xid xid : l)
+          xids.add(xid);
       }
 
-      return (Xid[]) xids.toArray(new Xid[xids.size()]);
+      return xids.toArray(new Xid[xids.size()]);
     }
 
     public void forget(Xid xid) throws XAException {
-      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
-        ((XAResource) iter.next()).forget(xid);
+      for (XAResource xaRes : xaResources)
+        xaRes.forget(xid);
     }
 
     public boolean isSameRM(XAResource xaResource) throws XAException {
