@@ -94,6 +94,9 @@ public class StringCompareResolver implements Resolver {
     return new DummyXAResource(10);
   }
 
+  public void abort() {
+  }
+
   /**
    * We don't support modifications.
    */
