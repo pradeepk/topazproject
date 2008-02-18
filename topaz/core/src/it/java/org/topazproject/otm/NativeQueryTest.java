@@ -106,6 +106,8 @@ public class NativeQueryTest extends AbstractOtmTest {
               fail("Unknown subject-id");
           }
 
+          r.close();
+
           assertEquals("foo:1", m1.get(URI.create(Annotea.NS + "annotates")));
           assertEquals("foo:1", m2.get(URI.create(Annotea.NS + "annotates")));
           assertEquals("aa", m1.get(URI.create(Rdf.dc + "creator")));
@@ -193,6 +195,8 @@ public class NativeQueryTest extends AbstractOtmTest {
           // done
           assertFalse(r.next());
           assertEquals(4, cnt);
+
+          r.close();
         }
       });
   }

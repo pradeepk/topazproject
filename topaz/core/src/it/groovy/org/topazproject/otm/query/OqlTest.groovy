@@ -1724,8 +1724,10 @@ class ResultChecker extends BuilderSupport {
   }
 
   protected void nodeCompleted(Object parent, Object node) {
-    if (parent == null || node == 'subq')
+    if (parent == null || node == 'subq') {
       test.assertFalse(res.next())
+      res.close()
+    }
 
     if (node == 'subq') {
       res = resHist.pop()

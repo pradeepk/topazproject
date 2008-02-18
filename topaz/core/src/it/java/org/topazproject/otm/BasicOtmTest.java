@@ -625,6 +625,8 @@ public class BasicOtmTest extends AbstractOtmTest {
           while (r.next())
             l.add(r.get(0));
 
+          r.close();
+
           assertEquals(3, l.size());
 
           for (Object o : l) {

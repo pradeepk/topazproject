@@ -202,6 +202,8 @@ public class SessionTest extends AbstractOtmTest {
     while (r.next())
       l.add(r.get(0));
 
+    r.close();
+
     assertEquals(3, l.size());
 
     for (Object o : l) {
@@ -240,6 +242,8 @@ public class SessionTest extends AbstractOtmTest {
     Results r =
       session.createQuery("select a from Annotation a where a.annotates = <foo:1>;").execute();
     assertFalse(r.next());
+
+    r.close();
   }
 
   /**
@@ -267,5 +271,7 @@ public class SessionTest extends AbstractOtmTest {
     Results r =
       session.createQuery("select a from Annotation a where a.annotates = <foo:1>;").execute();
     assertFalse(r.next());
+
+    r.close();
   }
 }
