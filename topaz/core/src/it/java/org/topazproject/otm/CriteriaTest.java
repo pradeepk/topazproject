@@ -483,11 +483,31 @@ public class CriteriaTest extends AbstractOtmTest {
       });
   }
 
+  @Test(dependsOnMethods =  {
+    "testDescOrder"}
+  )
+  public void testIdOrder() {
+    log.info("Testing id order ...");
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          List l =
+                session.createCriteria(Annotation.class)
+                        .setFirstResult(1).setMaxResults(1).addOrder(Order.asc("id")).list();
+
+          assertEquals(1, l.size());
+
+          Annotation a1 = (Annotation) l.get(0);
+
+          assertEquals(id2, a1.getId());
+        }
+      });
+  }
+
   /**
    * DOCUMENT ME!
    */
   @Test(dependsOnMethods =  {
-    "testDescOrder"}
+    "testIdOrder"}
   )
   public void testGT() {
     log.info("Testing GT ...");
