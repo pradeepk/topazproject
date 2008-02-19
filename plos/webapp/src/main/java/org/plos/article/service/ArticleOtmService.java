@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -322,9 +323,9 @@ public class ArticleOtmService {
                                      new TransactionHelper.ActionE<Article[], ParseException>() {
       public Article[] run(Transaction tx) throws ParseException {
         // get a list of Articles that meet the specified Criteria and Restrictions
-        Map<String, Boolean> orderBy = new HashMap<String, Boolean>();
-        orderBy.put("dublinCore.date", ascending);
-
+        Map<String, Boolean> orderBy = new LinkedHashMap<String, Boolean>();
+        orderBy.put("dublinCore.date", ascending); // first order by publication date
+        orderBy.put("id", Boolean.TRUE); // secondary order by article id
         List<Article> articleList =
             findArticles(startDate, endDate, categories, authors, states, orderBy, 0, tx);
         return articleList.toArray(new Article[articleList.size()]);

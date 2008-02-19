@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -283,8 +284,9 @@ public class ArticleFeed extends BaseActionSupport {
     }
 
     // sort by date, descending
-    HashMap<String, Boolean> sort = new HashMap();
+    LinkedHashMap<String, Boolean> sort = new LinkedHashMap();
     sort.put("dublinCore.date", false);
+    sort.put("id", Boolean.TRUE);
 
     List<Article> articles = null;
     try {
