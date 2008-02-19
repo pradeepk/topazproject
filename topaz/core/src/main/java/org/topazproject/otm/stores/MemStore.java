@@ -36,6 +36,7 @@ import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
@@ -65,15 +66,16 @@ public class MemStore extends AbstractTripleStore {
 
     storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getTypes().toArray(new String[0]));
 
-    for (Mapper p : fields) {
-      if (p.hasInverseUri())
+    for (Mapper m : fields) {
+      if (m.hasInverseUri())
         continue;
 
-      if (!p.isAssociation())
-        storage.insert(cm.getModel(), id, p.getUri(), (String[]) p.get(o).toArray(new String[0]));
+      Binder b = m.getBinder(txn.getSession());
+      if (!m.isAssociation())
+        storage.insert(cm.getModel(), id, m.getUri(), (String[]) b.get(o).toArray(new String[0]));
       else
-        storage.insert(cm.getModel(), id, p.getUri(),
-                       txn.getSession().getIds(p.get(o)).toArray(new String[0]));
+        storage.insert(cm.getModel(), id, m.getUri(),
+                       txn.getSession().getIds(b.get(o)).toArray(new String[0]));
     }
   }
 

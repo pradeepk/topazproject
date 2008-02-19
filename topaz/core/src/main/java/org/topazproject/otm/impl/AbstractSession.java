@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.filter.FilterDefinition;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.Results;
 
@@ -219,13 +220,13 @@ abstract class AbstractSession implements Session {
     if (idField == null)
       throw new OtmException("No id-field found for " + clazz);
 
-    List          ids     = idField.get(o);
+    Binder  b = idField.getBinder(getEntityMode());
+    List          ids     = b.get(o);
     if (ids.size() == 0)
       throw new OtmException("No id set for " + clazz + " instance " + o);
 
     return (String) ids.get(0);
   }
-
 
   /*
    * inherited javadoc

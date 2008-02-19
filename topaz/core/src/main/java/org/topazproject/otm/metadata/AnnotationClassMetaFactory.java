@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
@@ -164,7 +165,7 @@ public class AnnotationClassMetaFactory {
         continue;
 
       for (Mapper m : mappers) {
-        FieldBinder l = (FieldBinder)m.getBinder();
+        FieldBinder l = (FieldBinder)m.getBinder(EntityMode.POJO);
         Field f2 = l.getField();
         Id id = f2.getAnnotation(Id.class);
         Blob blob = f2.getAnnotation(Blob.class);
@@ -462,12 +463,12 @@ public class AnnotationClassMetaFactory {
     Collection<Mapper>  mappers = new ArrayList<Mapper>();
 
     for (Mapper p : cm.getFields())
-      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder())));
+      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder(EntityMode.POJO))));
 
     Mapper p = cm.getIdField();
 
     if (p != null)
-      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder())));
+      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder(EntityMode.POJO))));
 
     return mappers;
   }

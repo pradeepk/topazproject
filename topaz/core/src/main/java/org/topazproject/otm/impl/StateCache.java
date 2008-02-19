@@ -145,18 +145,20 @@ class StateCache {
       vmap                   = new HashMap<Mapper, List<String>>();
 
       for (Mapper m : cm.getFields()) {
+        Binder b = m.getBinder(session);
         if (m.isPredicateMap())
-          pmap = (Map<String, List<String>>) m.getRawValue(instance, true);
-        else if (m.getBinder().isLoaded(instance)) {
+          pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
+        else if (b.isLoaded(instance)) {
           List<String> nv =
-            !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
+            !m.isAssociation() ? b.get(instance) : session.getIds(b.get(instance));
           vmap.put(m, nv);
         }
       }
     }
 
     public void delayedLoadComplete(Object o, Mapper m, Session session) throws OtmException {
-      vmap.put(m, !m.isAssociation() ? m.get(o) : session.getIds(m.get(o)));
+      Binder b = m.getBinder(session);
+      vmap.put(m, !m.isAssociation() ? b.get(o) : session.getIds(b.get(o)));
     }
 
     public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session)
@@ -165,18 +167,19 @@ class StateCache {
       boolean pmapChanged = false;
 
       for (Mapper m : cm.getFields()) {
+        Binder b = m.getBinder(session);
         if (m.isPredicateMap()) {
-          Map<String, List<String>> nv = (Map<String, List<String>>) m.getRawValue(instance, true);
+          Map<String, List<String>> nv = (Map<String, List<String>>) b.getRawValue(instance, true);
           boolean                   eq = (pmap == null) ? (nv == null) : pmap.equals(nv);
 
           if (!eq) {
             pmap      = nv;
             pmapChanged = true;
           }
-        } else if (m.getBinder().isLoaded(instance)) {
+        } else if (b.isLoaded(instance)) {
           List<String> ov = vmap.get(m);
           List<String> nv =
-            !m.isAssociation() ? m.get(instance) : session.getIds(m.get(instance));
+            !m.isAssociation() ? b.get(instance) : session.getIds(b.get(instance));
           boolean      eq = (ov == null) ? (nv == null) : ov.equals(nv);
 
           if (!eq) {

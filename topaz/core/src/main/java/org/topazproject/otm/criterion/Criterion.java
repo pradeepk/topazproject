@@ -153,7 +153,7 @@ public abstract class Criterion {
       val = criteria.resolveParameter(((Parameter)value).getParameterName(), field);
     else {
       try {
-        Binder l = m.getBinder();
+        Binder l = m.getBinder(criteria.getSession());
         Serializer ser = null;
         if (l instanceof FieldBinder)
           ser = ((FieldBinder)l).getSerializer();

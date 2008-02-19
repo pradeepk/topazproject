@@ -399,7 +399,7 @@ public class Criteria implements Parameterizable<Criteria> {
     }
 
     try {
-      Binder l = m.getBinder();
+      Binder l = m.getBinder(EntityMode.POJO);
       Serializer ser = null;
       if (l instanceof FieldBinder)
         ser = ((FieldBinder)l).getSerializer();

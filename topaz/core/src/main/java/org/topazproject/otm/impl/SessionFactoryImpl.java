@@ -37,6 +37,7 @@ import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
@@ -470,7 +471,7 @@ public class SessionFactoryImpl implements SessionFactory {
   }
 
   private <T> void createProxy(Class<T> clazz, ClassMetadata<T> cm) {
-    final Method getter = ((FieldBinder)cm.getIdField().getBinder()).getGetter();
+    final Method getter = ((FieldBinder)cm.getIdField().getBinder(EntityMode.POJO)).getGetter();
 
     MethodFilter mf     =
       new MethodFilter() {

@@ -14,8 +14,10 @@ import java.util.List;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
@@ -27,9 +29,16 @@ public interface Mapper {
   /**
    * Get the Binder for this field
    *
-   * @return the loader for this field
+   * @return the binder for this field
    */
-  public Binder getBinder();
+  public Binder getBinder(Session session);
+
+  /**
+   * Get the Binder for this field
+   *
+   * @return the binder for this field
+   */
+  public Binder getBinder(EntityMode mode);
 
   /**
    * Gets the name of the field.
@@ -37,49 +46,6 @@ public interface Mapper {
    * @return the name
    */
   public String getName();
-
-  /**
-   * Get a value from a field of an object.
-   *
-   * @param o the object
-   *
-   * @return the list containing the field's values (may be serialized)
-   *
-   * @throws OtmException if a field's value cannot be retrieved and serialized
-   */
-  public List get(Object o) throws OtmException;
-
-  /**
-   * Set a value for an object field.
-   *
-   * @param o the object
-   * @param vals the list of values to set (may be deserialized)
-   *
-   * @throws OtmException if a field's value cannot be de-serialized and set
-   */
-  public void set(Object o, List vals) throws OtmException;
-
-  /**
-   * Get the raw object field value.
-   *
-   * @param o the object
-   * @param create whether to create an instance
-   *
-   * @return the raw field value
-   *
-   * @throws OtmException if a field's value cannot be retrieved
-   */
-  public Object getRawValue(Object o, boolean create) throws OtmException;
-
-  /**
-   * Set the raw object field value
-   *
-   * @param o the object
-   * @param value the value to set
-   *
-   * @throws OtmException if a field's value cannot be set
-   */
-  public void setRawValue(Object o, Object value) throws OtmException;
 
   /**
    * Checks if the type is an rdf resource and not a literal.

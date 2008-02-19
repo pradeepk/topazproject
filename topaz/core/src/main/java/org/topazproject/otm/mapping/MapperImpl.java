@@ -13,8 +13,10 @@ import java.util.List;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
@@ -172,7 +174,14 @@ public class MapperImpl implements Mapper {
   /*
    * inherited javadoc
    */
-  public Binder getBinder() {
+  public Binder getBinder(Session session) {
+    return binder;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Binder getBinder(EntityMode mode) {
     return binder;
   }
 
@@ -181,34 +190,6 @@ public class MapperImpl implements Mapper {
    */
   public String getName() {
     return binder.getName();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public List get(Object o) throws OtmException {
-    return binder.get(o);
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public void set(Object o, List vals) throws OtmException {
-    binder.set(o, vals);
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public Object getRawValue(Object o, boolean create) throws OtmException {
-    return binder.getRawValue(o, create);
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public void setRawValue(Object o, Object value) throws OtmException {
-    binder.setRawValue(o, value);
   }
 
   /*

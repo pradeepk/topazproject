@@ -38,6 +38,7 @@ import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.BlobStore;
@@ -87,6 +88,13 @@ public class SessionImpl extends AbstractSession {
    */
   SessionImpl(SessionFactoryImpl sessionFactory) {
     super(sessionFactory);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public EntityMode getEntityMode() {
+    return EntityMode.POJO;
   }
 
   /*
@@ -161,15 +169,16 @@ public class SessionImpl extends AbstractSession {
       ClassMetadata<?> cm     = sessionFactory.getClassMetadata(o.getClass());
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
-      for (Mapper p : cm.getFields()) {
-        if (!p.isAssociation())
+      for (Mapper m : cm.getFields()) {
+        if (!m.isAssociation())
           continue;
 
         // ignore this association if delete does not cascade
-        if (!p.isCascadable(CascadeType.delete))
+        if (!m.isCascadable(CascadeType.delete))
           continue;
 
-        for (Object ao : p.get(o))
+        Binder b = m.getBinder(getEntityMode());
+        for (Object ao : b.get(o))
           assocs.add(new Wrapper(checkObject(ao, true, true), ao));
       }
 
@@ -205,15 +214,16 @@ public class SessionImpl extends AbstractSession {
       ClassMetadata<?> cm     = sessionFactory.getClassMetadata(o.getClass());
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
-      for (Mapper p : cm.getFields()) {
-        if (!p.isAssociation())
+      for (Mapper m : cm.getFields()) {
+        if (!m.isAssociation())
           continue;
 
         // ignore this association if evict does not cascade
-        if (!p.isCascadable(CascadeType.evict))
+        if (!m.isCascadable(CascadeType.evict))
           continue;
 
-        for (Object ao : p.get(o))
+        Binder b = m.getBinder(getEntityMode());
+        for (Object ao : b.get(o))
           assocs.add(new Wrapper(checkObject(ao, true, true), ao));
       }
 
@@ -337,7 +347,8 @@ public class SessionImpl extends AbstractSession {
     if (assocs == null)
       orphanTrack.put(id, assocs = new HashSet<Wrapper>());
 
-    for (Object ao : field.get(o)) {
+    Binder b = field.getBinder(getEntityMode());
+    for (Object ao : b.get(o)) {
       Id aid = checkObject(ao, true, false);
       assocs.add(new Wrapper(aid, ao));
     }
@@ -477,7 +488,7 @@ public class SessionImpl extends AbstractSession {
       } catch (Throwable t) {
         throw new OtmException("Failed to instantiate a new object for " + cm, t);
       }
-      cm.getIdField().set(instance, Collections.singletonList(id.getId()));
+      cm.getIdField().getBinder(getEntityMode()).set(instance, Collections.singletonList(id.getId()));
     }
 
     if (instance == null)
@@ -492,7 +503,8 @@ public class SessionImpl extends AbstractSession {
     if (!cm.isView()) {
       for (Mapper m : cm.getFields())
         if (m.getFetchType() == FetchType.eager) {
-          for (Object o : m.get(instance))
+          Binder b = m.getBinder(getEntityMode());
+          for (Object o : b.get(instance))
             if (o != null)
               o.equals(null);
         }
@@ -542,7 +554,7 @@ public class SessionImpl extends AbstractSession {
     }
 
     if (id != null && cm.getIdField() != null)
-      cm.getIdField().set(obj, Collections.singletonList(id));
+      cm.getIdField().getBinder(getEntityMode()).set(obj, Collections.singletonList(id));
 
     // a proj-var may appear multiple times, so have to delay closing of subquery results
     Set<Results> sqr = new HashSet<Results>();
@@ -550,10 +562,11 @@ public class SessionImpl extends AbstractSession {
     for (Mapper m : cm.getFields()) {
       int    idx = r.findVariable(m.getProjectionVar());
       Object val = getValue(r, idx, m.getComponentType(), m.getFetchType() == FetchType.eager, sqr);
+      Binder b = m.getBinder(getEntityMode());
       if (val instanceof List)
-        m.set(obj, (List) val);
+        b.set(obj, (List) val);
       else
-        m.setRawValue(obj, val);
+        b.setRawValue(obj, val);
     }
 
     for (Results sr : sqr)
@@ -655,16 +668,17 @@ public class SessionImpl extends AbstractSession {
       ClassMetadata<?> cm     = checkClass(o.getClass());
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
-      for (Mapper p : cm.getFields()) {
-        if (!p.isAssociation() || (p.getUri() == null))
+      for (Mapper m : cm.getFields()) {
+        Binder b = m.getBinder(getEntityMode());
+        if (!m.isAssociation() || (m.getUri() == null))
           continue;
 
-        if (skipProxy && !p.getBinder().isLoaded(o))
+        if (skipProxy && !b.isLoaded(o))
           continue;
 
-        boolean deep = ((cascade != null) && p.isCascadable(cascade));
-        boolean deepDelete = p.isCascadable(CascadeType.deleteOrphan);
-        for (Object ao : p.get(o)) {
+        boolean deep = ((cascade != null) && m.isCascadable(cascade));
+        boolean deepDelete = m.isCascadable(CascadeType.deleteOrphan);
+        for (Object ao : b.get(o)) {
           // Note: duplicate check is not performed when merging
           Id aid = checkObject(ao, update, !merge);
 
@@ -706,18 +720,20 @@ public class SessionImpl extends AbstractSession {
     if (log.isDebugEnabled())
       log.debug("Copy merging " + checkObject(o, false, false));
 
-    for (Mapper p : cm.getFields()) {
-      Mapper op = ocm.getMapperByUri(p.getUri(), p.hasInverseUri(), p.getRdfType());
+    for (Mapper m : cm.getFields()) {
+      Mapper om = ocm.getMapperByUri(m.getUri(), m.hasInverseUri(), m.getRdfType());
 
-      if (op == null)
+      if (om == null)
         continue;
 
-      if ((loopDetect == null) || !p.isAssociation())
-        p.set(o, op.get(other));
+      Binder b  = m.getBinder(getEntityMode());
+      Binder ob = om.getBinder(getEntityMode());
+      if ((loopDetect == null) || !m.isAssociation())
+        b.set(o, ob.get(other));
       else {
         List cc = new ArrayList();
 
-        for (Object ao : op.get(other)) {
+        for (Object ao : ob.get(other)) {
           Id     id  = checkObject(ao, false, false);
           Object aoc = loopDetect.get(id);
 
@@ -735,7 +751,7 @@ public class SessionImpl extends AbstractSession {
           cc.add(aoc);
         }
 
-        p.set(o, cc);
+        b.set(o, cc);
       }
     }
 
@@ -781,7 +797,7 @@ public class SessionImpl extends AbstractSession {
 
     try {
       T o = sessionFactory.getProxyMapping(clazz).newInstance();
-      cm.getIdField().set(o, Collections.singletonList(id.getId()));
+      cm.getIdField().getBinder(getEntityMode()).set(o, Collections.singletonList(id.getId()));
       ((ProxyObject) o).setHandler(mi);
       proxies.put(id, mi);
 
@@ -807,7 +823,8 @@ public class SessionImpl extends AbstractSession {
     if (idField == null)
       throw new OtmException("Must have an id field for " + o.getClass());
 
-    List          ids     = idField.get(o);
+    Binder        b       = idField.getBinder(getEntityMode());
+    List          ids     = b.get(o);
     String        id      = null;
 
     if (ids.size() == 0) {
@@ -820,7 +837,7 @@ public class SessionImpl extends AbstractSession {
         throw new OtmException("No active transaction");
 
       id = generator.generate(cm, txn);
-      idField.set(o, Collections.singletonList(id)); // So user can get at it after saving
+      b.set(o, Collections.singletonList(id)); // So user can get at it after saving
 
       if (log.isDebugEnabled())
         log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for "

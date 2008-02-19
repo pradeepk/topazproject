@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
@@ -171,7 +172,7 @@ public class FieldDef {
     List m;
     if (maxCard == 1 && embedded) {
       def container = new EmbeddedClassFieldBinder(f, get, set)
-      m = classType.toClass().fields.collect{ new MapperImpl(it, new EmbeddedClassMemberFieldBinder(container, it.getBinder())) }
+      m = classType.toClass().fields.collect{ new MapperImpl(it, new EmbeddedClassMemberFieldBinder(container, it.getBinder(EntityMode.POJO))) }
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;

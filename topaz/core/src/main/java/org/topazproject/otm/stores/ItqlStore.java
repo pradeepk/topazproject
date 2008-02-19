@@ -45,6 +45,7 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.QueryException;
@@ -155,16 +156,17 @@ public class ItqlStore extends AbstractTripleStore {
     for (Mapper p : pList) {
       if (!p.isEntityOwned())
         continue;
+      Binder b = p.getBinder(sess);
       if (p.isPredicateMap()) {
-        Map<String, List<String>> pMap = (Map<String, List<String>>) p.getRawValue(o, true);
+        Map<String, List<String>> pMap = (Map<String, List<String>>) b.getRawValue(o, true);
         for (String k : pMap.keySet())
           for (String v : pMap.get(k))
             addStmt(buf, id, k, v, null, false); // xxx: uri or literal?
       } else if (!p.isAssociation())
-        addStmts(buf, id, p.getUri(), (List<String>) p.get(o) , p.getDataType(), p.typeIsUri(), 
+        addStmts(buf, id, p.getUri(), (List<String>) b.get(o) , p.getDataType(), p.typeIsUri(), 
                  p.getColType(), "$s" + i++ + "i", p.hasInverseUri());
       else
-        addStmts(buf, id, p.getUri(), sess.getIds(p.get(o)) , null,true, p.getColType(), 
+        addStmts(buf, id, p.getUri(), sess.getIds(b.get(o)) , null,true, p.getColType(), 
                  "$s" + i++ + "i", p.hasInverseUri());
     }
   }

@@ -66,7 +66,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
       throw new OtmException("Failed to instantiate " + clazz, e);
     }
 
-    cm.getIdField().set(instance, Collections.singletonList(id));
+    cm.getIdField().getBinder(session).set(instance, Collections.singletonList(id));
 
     // re-map values based on the rdf:type look ahead
     Map<Mapper, List<String>> mvalues = new HashMap();
@@ -93,7 +93,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
 
     // now assign values to fields
     for (Mapper m : mvalues.keySet())
-      m.getBinder().load(instance, mvalues.get(m), types, m, session);
+      m.getBinder(session).load(instance, mvalues.get(m), types, m, session);
 
     boolean found = false;
 
@@ -121,7 +121,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
 
       for (Mapper m : cm.getFields()) {
         if (m.isPredicateMap())
-          m.setRawValue(instance, map);
+          m.getBinder(session).setRawValue(instance, map);
       }
     }
 

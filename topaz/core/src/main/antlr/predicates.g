@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
@@ -171,7 +172,7 @@ options {
     private static EmbeddedClassFieldBinder findEmbeddedFieldBinder(ClassMetadata<?> md, String field) {
       String[] parts = field.split("\\.");
       mappers: for (Mapper m : md.getFields()) {
-        Binder l = m.getBinder();
+        Binder l = m.getBinder(EntityMode.POJO);
         for (int idx = 0; idx < parts.length; idx++) {
           if (!(l instanceof EmbeddedClassMemberFieldBinder))
             continue mappers;

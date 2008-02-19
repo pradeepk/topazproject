@@ -361,6 +361,13 @@ public interface Session {
   public Set<String> listFilters();
 
   /** 
+   * Get the entity mode of this Session. 
+   * 
+   * @return the entity mode
+   */
+  public EntityMode getEntityMode();
+
+  /** 
    * Internal api; do not use. Called by field loaders to notify when a 
    * lazy loaded field is loaded completely. The session can now start
    * doing change-track monitoring and orphan-delete tracking on this field 
