@@ -157,6 +157,7 @@ There are no subjects in the system.
           </li>
         </ol>
       </fieldset>
+      <#-- TODO: Figure out how to 'order by' via FGS
       <div class="btnwrap">
       <label for="results-sort">Sort results by: </label>
         <select id="results-sort">
@@ -166,6 +167,7 @@ There are no subjects in the system.
         </select>
         <input type="submit" id="button-search" value="Search"/>
       </div>
+      -->
     </form>
   </div><!-- end : primary content area -->
 </div><!-- end : advanced search form -->
