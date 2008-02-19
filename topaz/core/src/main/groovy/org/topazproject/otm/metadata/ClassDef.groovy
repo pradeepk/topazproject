@@ -217,7 +217,7 @@ public class ClassDef {
     }
 
     def blobBinder = null
-    metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model, uriPrefix,
+    metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model,
                                  idmapper, mappers, blobBinder)
 
     if (log.debugEnabled)

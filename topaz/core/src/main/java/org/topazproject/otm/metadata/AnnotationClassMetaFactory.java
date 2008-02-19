@@ -116,7 +116,6 @@ public class AnnotationClassMetaFactory {
     if (!Object.class.equals(s) && (s != null)) {
       ClassMetadata<?> superMeta = create(s, top, uriPrefixOfContainingClass);
       model       = superMeta.getModel();
-      uriPrefix   = superMeta.getUriPrefix();
       type        = superMeta.getType();
       types       = superMeta.getTypes();
       idField     = superMeta.getIdField();
@@ -191,8 +190,7 @@ public class AnnotationClassMetaFactory {
       }
     }
 
-    return new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, 
-                             fields, blobField);
+    return new ClassMetadata(clazz, name, type, types, model, idField, fields, blobField);
   }
 
   private <T> ClassMetadata<T> createView(Class<T> clazz) throws OtmException {

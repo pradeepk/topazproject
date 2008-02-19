@@ -96,7 +96,7 @@ public class JournalService {
 
   private void initialize() {
     sf.setClassMetadata(new ClassMetadata(Object.class, "Object", null, Collections.EMPTY_SET,
-                                          RI_MODEL, null, null, Collections.EMPTY_SET, null));
+                                          RI_MODEL, null, Collections.EMPTY_SET, null));
 
     /* spring initializes singletons at startup, so no session is available yet, and hence
      * we create our own and create our own transaction. Alternatively, we could use
