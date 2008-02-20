@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
@@ -51,6 +53,7 @@ import net.sf.ehcache.Ehcache;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,16 +68,20 @@ import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
 import org.plos.article.service.RepresentationInfo;
+import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.IngestException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
+import org.plos.configuration.ConfigurationStore;
 import org.plos.journal.JournalService;
 import org.plos.util.FileUtils;
 
+import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.util.TransactionHelper;
+import org.topazproject.otm.query.Results;
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -310,6 +317,63 @@ public class DocumentManagementService {
       log.info("Ingested and relocated " + file + ":" + uri);
     }
     return uri;
+  }
+  
+  /**
+   * Index all Articles.
+   *
+   * @return Map of doi, index result Strings.
+   */
+  public Map<String, String> indexArticles() throws ApplicationException {
+
+    Map<String, String> results = new HashMap();
+
+    // repository is defined in config
+    final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+    final String FGS_REPO    = CONF.getString("topaz.fedoragsearch.repository");
+
+    // let ArticleUtil use standard methods to get fedoragsearch operations
+    FgsOperations[] fgs;
+    try {
+      fgs = ArticleUtil.getFgsOperations();
+    } catch (ServiceException ex) {
+      log.error(ex);
+      throw new ApplicationException("Exception creating fedoragsearch operations", ex);
+    }
+
+    // query for all Article dois (in a Transaction)
+    final String query = "select a.id doi from Article a order by doi;";
+    Transaction tx = session.beginTransaction();
+    final Results dois = session.createQuery(query).execute();
+    tx.commit();
+
+    // re-index each doi
+    int indexCount = 0;
+    while (dois.next()) {
+      String doi = "doi:" + dois.get("doi").toString().substring(9).replace("/", "%2F");
+      if (log.isDebugEnabled()) {log.debug("re-indexing Article: " + doi); }
+
+      // index
+      try {
+        for (int onFgs = 0; onFgs < fgs.length; onFgs++) {
+          long start = (new Date()).getTime();
+          final String result = fgs[onFgs].updateIndex("fromPid", doi, FGS_REPO, null, null, null);
+          long end = (new Date()).getTime();
+          final String key = doi + "[" + onFgs + "] (" + (end-start) + "ms)";
+          results.put(key, result);
+          if (log.isDebugEnabled()) { log.debug("re-indexed Article: " + key + ", result: " + result); }
+        }
+      } catch (RemoteException re) {
+        final String errorMessage = "Exception indexing Article: " + doi;
+        log.error(errorMessage, re);
+        throw new ApplicationException(errorMessage, re);
+      }
+      indexCount++;
+    }
+
+    if (log.isDebugEnabled()) { log.debug("re-indexed " + indexCount + " Articles"); }
+
+    return results;
   }
 
   /**
