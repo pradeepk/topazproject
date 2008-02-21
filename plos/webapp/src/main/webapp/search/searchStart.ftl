@@ -42,11 +42,7 @@
             <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#" onclick="topaz.advsearch.onClickRmvAuthNameHandler(event); return false;">Remove</a><span id="as_a_spcr">&nbsp;|&nbsp;</span></span><a id="as_a_aa" href="#" onclick="topaz.advsearch.onClickAddAuthNameHandler(event); return false;">Add another author...</a></span></span>
           </li>
           <li class="options">
-            <!--
-            <input type="text" name="creator" size="35" value="" id="authorName2"/>
-            <span class="controls"><a href="#">Remove</a> | <a href="#">Add another author...</a></span>
-            -->
-            <fieldset>
+            <fieldset id="as_an_opts">
               <legend>Search for: </legend>
               <ol>
                 <li><label><input type="radio" name="authorNameOption" value="any" checked="checked" /> <em>Any</em> of these authors</label></li>
@@ -93,10 +89,11 @@
             <label for="dateSelect">Published in the: </label>
             <span class="ie7fix"><!-- This wrapping span fixes wierd issue where IE7 ignores left margin on the select element when cursor enters browser canvas -->
               <select name="dateTypeSelect" id="dateSelect">
+                <option value="" SELECTED="true">Any date</option>
                 <option value="week">Past week</option>
                 <option value="month">Past month</option>
                 <option value="3months">Past 3 months</option>
-                <option value="range" SELECTED="true">Specify a date range...</option>
+                <option value="range">Specify a date range...</option>
               </select>
             </span>
           </li>
@@ -154,15 +151,15 @@ There are no subjects in the system.
         </ol>
       </fieldset>
       <div class="btnwrap">
-      <#-- TODO: Figure out how to 'order by' via FGS
-      <label for="results-sort">Sort results by: </label>
-        <select id="results-sort">
-          <option value="relevance">Relevance</option>
-          <option value="chron-newFirst">Newest first</option>
-          <option value="chron-oldFirst">Oldest first</option>
-        </select>
-      -->
-        <input type="submit" id="button-search" value="Search"/>
+        <#-- TODO: Figure out how to 'order by' via FGS
+        <label for="results-sort">Sort results by: </label>
+          <select id="results-sort">
+            <option value="relevance">Relevance</option>
+            <option value="chron-newFirst">Newest first</option>
+            <option value="chron-oldFirst">Oldest first</option>
+          </select>
+        -->
+        <input type="button" id="button-search" value="Search"/>
       </div>
     </form>
   </div><!-- end : primary content area -->

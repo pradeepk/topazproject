@@ -14,6 +14,7 @@ advsrchConfig = {
   idAuthNmePrototype:'as_anp',
   idOlAuthNmes:'as_ol_an',
   idInptAuthNme:'authorName',
+  idFsAuthNmesOpts:'as_an_opts',
 
   idSpnRmvAuthNme:'as_spn_ra',
   idLnkRmvAuthNme:'as_a_ra',
@@ -35,21 +36,28 @@ advsrchConfig = {
   idSubjCatsSlct:'subjectCatOpt_slct',
   idFsSubjectCatOpt:'fsSubjectCatOpt',
   
-  maxNumAuthNames: 10
+  maxNumAuthNames: 10,
+  
+  pubDateYearRange: $R(1900, 2008),
+  monthRange: $R(1, 12),
+  dayRange: $R(1, 31)
 };
 
 topaz.advsearch = {
   authNmeProto:null,
   olAuthNmes:null,
   liAuthNmeOptions:null,
+  fsAuthNmesOpts:null,
    
   init: function() {
     // search by author section...
     topaz.advsearch.authNmeProto = dojo.byId(advsrchConfig.idAuthNmePrototype);
     topaz.advsearch.olAuthNmes = dojo.byId(advsrchConfig.idOlAuthNmes);
     topaz.advsearch.liAuthNmeOptions = dojo.html.getElementsByClass('options', topaz.advsearch.olAuthNmes)[0];
+    topaz.advsearch.fsAuthNmesOpts = dojo.byId(advsrchConfig.idFsAuthNmesOpts);
 
     // dates section...
+    dojo.byId(advsrchConfig.idPubDateOptions).style.display = 'none';
     dojo.event.connect(dojo.byId(advsrchConfig.idPublishDate), "onchange", topaz.advsearch.onChangePublishDate);
 
     // date part comment cue event bindings...
@@ -68,6 +76,10 @@ topaz.advsearch = {
     dojo.event.connect(month1, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
     dojo.event.connect(day1, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
     
+    dojo.event.connect(year1, "onkeyup", topaz.advsearch.onKeyUpCommentCueInputHandler);
+    dojo.event.connect(month1, "onkeyup", topaz.advsearch.onKeyUpCommentCueInputHandler);
+    dojo.event.connect(day1, "onkeyup", topaz.advsearch.onKeyUpCommentCueInputHandler);
+    
     dojo.event.connect(year2, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
     dojo.event.connect(month2, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
     dojo.event.connect(day2, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
@@ -77,10 +89,81 @@ topaz.advsearch = {
     dojo.event.connect(day2, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
     
     // subject categories section...
-    //dojo.event.connect(dojo.byId(advsrchConfig.idSubjCatsAll), "onchange", topaz.advsearch.onChangeSubjectCategories);
-    //dojo.event.connect(dojo.byId(advsrchConfig.idSubjCatsSlct), "onchange", topaz.advsearch.onChangeSubjectCategories);
+    if(document.selection) {
+      // IE
+      dojo.event.connect(dojo.byId(advsrchConfig.idSubjCatsAll), "onfocus", topaz.advsearch.onChangeSubjectCategories);
+      dojo.event.connect(dojo.byId(advsrchConfig.idSubjCatsSlct), "onfocus", topaz.advsearch.onChangeSubjectCategories);
+    } else {
+      // gecko et al.
+      dojo.event.connect(dojo.byId(advsrchConfig.idSubjCatsAll), "onchange", topaz.advsearch.onChangeSubjectCategories);
+      dojo.event.connect(dojo.byId(advsrchConfig.idSubjCatsSlct), "onchange", topaz.advsearch.onChangeSubjectCategories);
+    }
     
-    //topaz.advsearch.toggleSubjCategories();
+    topaz.advsearch.tglSubCategories();
+    
+    // hijack form submission for validation...
+    dojo.event.connect(dojo.byId('button-search'), "onclick", topaz.advsearch.onSubmitHandler);
+    
+  },
+  
+  onSubmitHandler: function(e) {
+    topaz.advsearch.handleSubmit();
+    dojo.event.browser.stopEvent(e);
+    return false;
+  },
+  
+  handleSubmit: function() {
+    var errs = this.validate();
+    if(errs.length > 0) {
+      var msg = '';
+      for(var i=0; i<errs.length; i++) {
+        msg += errs[i] + '\r\n';
+      }
+      alert(msg);
+      return;
+    }
+    document.advSearchForm.submit();
+  },
+  
+  validateDateNum: function(val, range, nme, errs) {
+    if(val == '' || val == advsrchConfig.yearCue || val == advsrchConfig.monthCue || val == advsrchConfig.dayCue) {
+      errs.push(nme + ' must be specified.');
+    }
+    else if(isNaN(parseInt(val))) {
+      errs.push('Invalid ' + nme);
+    }
+    else {
+      if(!range.include(parseInt(val))) {
+        errs.push(nme + ' must be between ' + range.start + ' and ' + range.end);
+      }
+    }
+  },
+  
+  // validates the adv search form data
+  // returns array of error messages
+  validate: function() {
+    var errs = [];
+    
+    // validate published date range (if applicable)
+    var slct = dojo.byId(advsrchConfig.idPublishDate);
+    if(slct.options[slct.selectedIndex].value == 'range') {
+      var year1 = dojo.byId('range1');
+      var month1 = dojo.byId('range-m1');
+      var day1 = dojo.byId('range-d1');
+      var year2 = dojo.byId('range2');
+      var month2 = dojo.byId('range-m2');
+      var day2 = dojo.byId('range-d2');
+      
+      this.validateDateNum(year1.value, advsrchConfig.pubDateYearRange, 'Publish Date from Year', errs);
+      this.validateDateNum(month1.value, advsrchConfig.monthRange, 'Publish Date from Month', errs);
+      this.validateDateNum(day1.value, advsrchConfig.dayRange, 'Publish Date from Day', errs);
+      
+      this.validateDateNum(year2.value, advsrchConfig.pubDateYearRange, 'Publish Date to Year', errs);
+      this.validateDateNum(month2.value, advsrchConfig.monthRange, 'Publish Date to Month', errs);
+      this.validateDateNum(day2.value, advsrchConfig.dayRange, 'Publish Date to Day', errs);
+    }
+ 
+    return errs;
   },
   
   getCueText: function(inptId) {
@@ -117,22 +200,19 @@ topaz.advsearch = {
   
   onChangePublishDate: function(e) {
     var slct = e.target;
-    var show = (slct.options[slct.selectedIndex].text.indexOf('Specify ') == 0);
+    var show = (slct.options[slct.selectedIndex].value == 'range');
     dojo.byId(advsrchConfig.idPubDateOptions).style.display = (show ? '' : 'none');
     dojo.event.browser.stopEvent(e);
     return false;
   },
 
-  /*
   onChangeSubjectCategories: function(e) {
-    alert('onChangeSubjectCategories');
-    topaz.advsearch.toggleSubjCategories();
-    //dojo.event.browser.stopEvent(e);
+    topaz.advsearch.tglSubCategories();
+    dojo.event.browser.stopEvent(e);
     return true;
   },
-  */
   
-  toggleSubjCategories: function() {
+  tglSubCategories: function() {
     var rbAll = dojo.byId(advsrchConfig.idSubjCatsAll);
     var rbSlct = dojo.byId(advsrchConfig.idSubjCatsSlct);
     var enable = rbSlct.checked;
@@ -231,6 +311,8 @@ topaz.advsearch = {
     spnRmv.style.display = '';
     lnkAdd.style.display = '';
     spnSpcr.style.display = '';
+    
+    this.fsAuthNmesOpts.style.display = '';
   },
   
   rmvAuthName: function(lnkRmvCrnt) {
@@ -240,11 +322,6 @@ topaz.advsearch = {
     // seek the parent li node to remove
     var liToRmv = lnkRmvCrnt;
     while(liToRmv.nodeName != 'LI') liToRmv = liToRmv.parentNode;
-    
-    // un-bind event handlers
-    var lnkRmv = dojo.byId(this._assembleId(advsrchConfig.idLnkRmvAuthNme, num));
-    var lnkAdd = dojo.byId(this._assembleId(advsrchConfig.idLnkAddAuthNme, num));
-
     var isLast = dojo.html.hasClass(liToRmv.nextSibling, 'options');
 
     // restore links above
@@ -255,13 +332,13 @@ topaz.advsearch = {
       }
     }
     else {
-      lnkRmv = dojo.byId(this._assembleId(advsrchConfig.idLnkRmvAuthNme, num));
+      var lnkRmv = dojo.byId(this._assembleId(advsrchConfig.idLnkRmvAuthNme, num));
       lnkRmv.style.display = '';
       var isLast = dojo.html.hasClass(liToRmv.nextSibling, 'options');
       if(isLast) {
-        spnSpcr = dojo.byId(this._assembleId(advsrchConfig.idSpnSpcr, num));
+        var spnSpcr = dojo.byId(this._assembleId(advsrchConfig.idSpnSpcr, num));
         spnSpcr.style.display = '';
-        lnkAdd = dojo.byId(this._assembleId(advsrchConfig.idLnkAddAuthNme, num));
+        var lnkAdd = dojo.byId(this._assembleId(advsrchConfig.idLnkAddAuthNme, num));
         lnkAdd.style.display = '';
       }
     }
@@ -271,11 +348,15 @@ topaz.advsearch = {
     
     // reset the ids
     var cns = this.olAuthNmes.getElementsByTagName('li');
+    var num = 0;
     for(var i=1; i<cns.length; i++) {
       var li = cns[i];
       if(dojo.html.hasClass(li, 'options')) break;
+      num++;
       this._setAuthNmeCopyIds(li, i+1);
     }
+    
+    this.fsAuthNmesOpts.style.display = (num>0 ? '' : 'none');
   }
   
 };
