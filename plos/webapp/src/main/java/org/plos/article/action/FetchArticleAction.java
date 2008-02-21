@@ -26,10 +26,7 @@ import org.plos.journal.JournalService;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
-import org.plos.models.Comment;
-import org.plos.models.FormalCorrection;
 import org.plos.models.Journal;
-import org.plos.models.MinorCorrection;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -40,6 +37,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 /**
  * Fetch article action.
  */
+@SuppressWarnings("serial")
 public class FetchArticleAction extends BaseActionSupport {
   private String articleURI;
   private String annotationId = "";
@@ -76,12 +74,12 @@ public class FetchArticleAction extends BaseActionSupport {
         if (a.getContext() == null) {
           numDiscussions ++;
         } else {
-          if (Comment.RDF_TYPE.equals(a.getType())) {
-            numComments ++;
-          } else if (MinorCorrection.RDF_TYPE.equals(a.getType())) {
-            numMinorCorrections ++;
-          } else if (FormalCorrection.RDF_TYPE.equals(a.getType())) {
-            numFormalCorrections ++;
+          if (a.isMinorCorrection()) {
+            numMinorCorrections++;
+          } else if (a.isFormalCorrection()) {
+            numFormalCorrections++;
+          } else {
+            numComments++;
           }
         }
       }
