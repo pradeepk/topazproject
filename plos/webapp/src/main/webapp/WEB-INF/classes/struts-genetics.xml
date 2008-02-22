@@ -85,6 +85,12 @@
       </result>
     </action>
 
+    <action name="eic" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/journals/eic/static/edboard.ftl</param>
+      </result>
+    </action>
+
     <action name="guidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/genetics/static/guidelines.ftl</param>
@@ -109,21 +115,9 @@
       </result>
     </action>
 
-    <action name="revisedChecklist" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/revised_checklist.ftl</param>
-      </result>
-    </action>
-
     <action name="rssFeeds" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/genetics/static/rssFeeds.ftl</param>
-      </result>
-    </action>
-
-    <action name="scope" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/scope.ftl</param>
       </result>
     </action>
 
@@ -139,11 +133,5 @@
       </result>
     </action>
 
-    <action name="whypublish" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/genetics/static/whypublish.ftl</param>
-      </result>
-    </action>
-   
   </package>
 </struts>

@@ -1284,7 +1284,7 @@
         </css>
       </page>
       <page>
-        <name>/journals/compbiol/static/downloads.ftl</name>
+        <name>/journals/compbiol/static/edboard.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1292,7 +1292,7 @@
         </css>
       </page>
       <page>
-        <name>/journals/compbiol/static/edboard.ftl</name>
+        <name>/journals/compbiol/static/eic.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1348,14 +1348,6 @@
         </css>
       </page>
       <page>
-        <name>/journals/compbiol/static/scope.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/compbiol/static/sitemap.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1365,14 +1357,6 @@
       </page>
       <page>
         <name>/journals/compbiol/static/users.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/compbiol/static/whypublish.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1425,6 +1409,14 @@
         </css>
       </page>
       <page>
+        <name>/journals/genetics/static/ae_checklist.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      <page>
         <name>/journals/genetics/static/authors.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1459,6 +1451,14 @@
       </page>
       <page>
         <name>/journals/genetics/static/edboard.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      <page>
+        <name>/journals/genetics/static/eic.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1514,14 +1514,6 @@
         </css>
       </page>
       <page>
-        <name>/journals/genetics/static/scope.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/genetics/static/sitemap.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1531,14 +1523,6 @@
       </page>
       <page>
         <name>/journals/genetics/static/users.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/genetics/static/whypublish.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1797,6 +1781,14 @@
         </css>
       </page>
       <page>
+        <name>/journals/pathogens/static/ae_checklist.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      <page>
         <name>/journals/pathogens/static/authors.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1831,6 +1823,14 @@
       </page>
       <page>
         <name>/journals/pathogens/static/edboard.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      <page>
+        <name>/journals/pathogens/static/eic.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1886,14 +1886,6 @@
         </css>
       </page>
       <page>
-        <name>/journals/pathogens/static/scope.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/pathogens/static/sitemap.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1903,14 +1895,6 @@
       </page>
       <page>
         <name>/journals/pathogens/static/users.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/pathogens/static/whypublish.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
