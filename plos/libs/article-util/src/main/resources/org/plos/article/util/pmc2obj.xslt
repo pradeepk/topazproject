@@ -713,6 +713,7 @@
     <xsl:variable name="base-zip-name" as="xs:string?"
               select="if ($zip-info/@name) then my:get-root(my:basename($zip-info/@name)) else ()"/>
 
+    <!-- last match is to try the 1st *.xml -->
     <xsl:sequence select="
       if ($file-entries[my:basename(@name) = 'pmc.xml']) then
         $file-entries[my:basename(@name) = 'pmc.xml'][1]
@@ -721,6 +722,8 @@
         $file-entries[my:basename(@name) = concat($base-zip-name, '.xml')][1]
       else if ($file-entries[matches(@name, '^[a-z]+\.[0-9]+\.xml$')]) then
         $file-entries[matches(@name, '^[a-z]+\.[0-9]+\.xml$')][1]
+      else if ($file-entries[matches(@name, '^.+\.xml$')]) then
+        $file-entries[matches(@name, '^.+\.xml$')][1]
       else
         error((), 'Couldn''t find article entry in zip file')
       "/>
