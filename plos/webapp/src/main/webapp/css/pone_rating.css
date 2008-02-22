@@ -25,6 +25,7 @@ span.inline-rating ul.pone_rating { left:0; top:0; } /* This is specifically for
 .pone_rating .pct70 { width: 70%;	}
 .pone_rating .pct80 { width: 80%;	}
 .pone_rating .pct90 { width: 90%;	}
+.pone_rating .pct100 { width: 100%;	}
 span.inlineRatingEnd { position:relative; left:0!important; top:0!important; /* "!important" declarations needed for IE6 */ }
 *:first-child+html span.inlineRatingEnd { left:8em; top:-1.25em; } /* IE7 only hack */
 
