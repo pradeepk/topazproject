@@ -14,7 +14,7 @@ advsrchConfig = {
   idAuthNmePrototype:'as_anp',
   idOlAuthNmes:'as_ol_an',
   idInptAuthNme:'authorName',
-  idFsAuthNmesOpts:'as_an_opts',
+  idLiAuthNmesOpts:'as_an_opts',
 
   idSpnRmvAuthNme:'as_spn_ra',
   idLnkRmvAuthNme:'as_a_ra',
@@ -47,14 +47,14 @@ topaz.advsearch = {
   authNmeProto:null,
   olAuthNmes:null,
   liAuthNmeOptions:null,
-  fsAuthNmesOpts:null,
+  liAuthNmesOpts:null,
    
   init: function() {
     // search by author section...
     topaz.advsearch.authNmeProto = dojo.byId(advsrchConfig.idAuthNmePrototype);
     topaz.advsearch.olAuthNmes = dojo.byId(advsrchConfig.idOlAuthNmes);
     topaz.advsearch.liAuthNmeOptions = dojo.html.getElementsByClass('options', topaz.advsearch.olAuthNmes)[0];
-    topaz.advsearch.fsAuthNmesOpts = dojo.byId(advsrchConfig.idFsAuthNmesOpts);
+    topaz.advsearch.liAuthNmesOpts = dojo.byId(advsrchConfig.idLiAuthNmesOpts);
 
     // dates section...
     dojo.byId(advsrchConfig.idPubDateOptions).style.display = 'none';
@@ -99,11 +99,11 @@ topaz.advsearch = {
       dojo.event.connect(dojo.byId(advsrchConfig.idSubjCatsSlct), "onchange", topaz.advsearch.onChangeSubjectCategories);
     }
     
-    topaz.advsearch.tglSubCategories();
-    
     // hijack form submission for validation...
     dojo.event.connect(dojo.byId('button-search'), "onclick", topaz.advsearch.onSubmitHandler);
-    
+
+    topaz.advsearch.liAuthNmesOpts.style.display = 'none';
+    topaz.advsearch.tglSubCategories();
   },
   
   onSubmitHandler: function(e) {
@@ -312,7 +312,7 @@ topaz.advsearch = {
     lnkAdd.style.display = '';
     spnSpcr.style.display = '';
     
-    this.fsAuthNmesOpts.style.display = '';
+    this.liAuthNmesOpts.style.display = '';
   },
   
   rmvAuthName: function(lnkRmvCrnt) {
@@ -356,7 +356,7 @@ topaz.advsearch = {
       this._setAuthNmeCopyIds(li, i+1);
     }
     
-    this.fsAuthNmesOpts.style.display = (num>0 ? '' : 'none');
+    this.liAuthNmesOpts.style.display = (num>0 ? '' : 'none');
   }
   
 };

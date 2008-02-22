@@ -41,8 +41,8 @@
             <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value=""/>
             <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#" onclick="topaz.advsearch.onClickRmvAuthNameHandler(event); return false;">Remove</a><span id="as_a_spcr">&nbsp;|&nbsp;</span></span><a id="as_a_aa" href="#" onclick="topaz.advsearch.onClickAddAuthNameHandler(event); return false;">Add another author...</a></span></span>
           </li>
-          <li class="options">
-            <fieldset id="as_an_opts">
+          <li id="as_an_opts" class="options">
+            <fieldset>
               <legend>Search for: </legend>
               <ol>
                 <li><label><input type="radio" name="authorNameOption" value="any" checked="checked" /> <em>Any</em> of these authors</label></li>
