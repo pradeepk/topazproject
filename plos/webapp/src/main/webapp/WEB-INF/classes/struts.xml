@@ -778,14 +778,6 @@
       <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
     </action>
 
-    <action name="assignAdminRole" class="org.plos.action.NoOpAction">
-      <result>/WEB-INF/pages/user/assignAdminRole.ftl</result>
-    </action>
-
-    <action name="assignAdminRoleToSubmit" class="org.plos.user.action.AssignAdminRoleAction">
-      <result name="success" type="redirect">/home.action</result>
-    </action>
-
     <action name="editAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success" type="plosJournals">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
@@ -1052,6 +1044,11 @@
     </action>
 
     <action name="findUserByEmailAddress" class="org.plos.user.action.SearchUserAction" method="executeFindUserByEmailAddress">
+      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+    </action>
+
+    <action name="assignAdminRole" class="org.plos.user.action.AssignAdminRoleAction">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
