@@ -769,6 +769,7 @@
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
           <file>/javascript/prototype.js</file>
+          <file>/javascript/init_global.js</file>
           <file>/javascript/topaz/advsearch.js</file>
         </javascript>
       </page>
