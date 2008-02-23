@@ -70,8 +70,6 @@ public class AnnotationWebService extends BaseAnnotationService {
   private PermissionWebService      permissionsWebService;
   private FetchArticleService fetchArticleService;
   private Ehcache articleAnnotationCache;
-  private static final String       PLOSONE_0_6_DEFAULT_TYPE =
-    "http://www.w3.org/2000/10/annotationType#Annotation";
   protected static final Set<Class<? extends Annotation>> ALL_ANNOTATION_CLASSES = new HashSet<Class<? extends Annotation>>();
   static { 
     ALL_ANNOTATION_CLASSES.add(Comment.class);
@@ -120,7 +118,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
   
   /**
-   * Create an annotation.
+   * Create a Comment annotation.
    *
    * @param mimeType mimeType
    * @param target target
@@ -322,14 +320,13 @@ public class AnnotationWebService extends BaseAnnotationService {
       throws RemoteException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
-    ArticleAnnotation a = TransactionHelper.doInTx(session,
-        new TransactionHelper.Action<ArticleAnnotation>() {
-          public ArticleAnnotation run(Transaction tx) {
-            Comment a = tx.getSession().get(Comment.class, annotationId);
+    TransactionHelper.doInTx(session,
+        new TransactionHelper.Action<Void>() {
+          public Void run(Transaction tx) {
+            Annotation a = tx.getSession().get(Annotation.class, annotationId);
             a.setState(a.getState() & ~FLAG_MASK);
             tx.getSession().saveOrUpdate(a);
-
-            return a;
+            return null;
           }
         });
   }
