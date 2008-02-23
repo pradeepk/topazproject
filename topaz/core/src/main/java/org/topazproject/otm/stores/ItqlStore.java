@@ -853,12 +853,14 @@ public class ItqlStore extends AbstractTripleStore {
       ItqlClient res;
 
       List<ItqlClient> list = conCache.get(serverUri);
-      if (list != null && list.size() > 0)
+      if (list != null && list.size() > 0) {
         res = list.remove(list.size() - 1);
-      try {
-        res = itqlFactory.createClient(serverUri);
-      } catch (Exception e) {
-        throw new OtmException("Error talking to '" + serverUri + "'", e);
+      } else {
+        try {
+          res = itqlFactory.createClient(serverUri);
+        } catch (Exception e) {
+          throw new OtmException("Error talking to '" + serverUri + "'", e);
+        }
       }
 
       if (aliases != null)
