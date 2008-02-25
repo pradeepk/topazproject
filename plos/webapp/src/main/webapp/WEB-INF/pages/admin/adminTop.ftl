@@ -49,7 +49,7 @@
       <fieldset>
         <legend><b>Ingestable Archives</b></legend>
         <@s.form name="ingestArchives" action="ingestArchives" method="post" namespace="/admin">
-          <#if uploadableFiles.size() > 1>
+          <#if (uploadableFiles.size() > 1)>
             <input type="button" value="Ingest All"
               onclick="SetAllCheckBoxes('ingestArchives', 'filesToIngest', true);"/>
             <br/>
@@ -77,7 +77,7 @@
               <th>Delete</th>
               <th>&nbsp;</th>
             </tr>
-            <#if publishableFiles.size() > 1>
+            <#if (publishableFiles.size() > 1)>
               <tr>
                 <th>
                   <input type="button" value="Publish All"
