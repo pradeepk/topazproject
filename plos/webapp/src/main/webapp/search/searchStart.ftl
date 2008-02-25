@@ -39,7 +39,8 @@
         <legend><span>Search by Author</span></legend>
         <ol id="as_ol_an">
           <li>
-            <label id="lblAuthorName" for="authorName">Author Name (<a href="#">help</a>): </label>
+	    <@s.url id="searchHelpURL" includeParams="none" namespace="/static" action="searchHelp" />
+            <label id="lblAuthorName" for="authorName">Author Name (<a href="${searchHelpURL}">help</a>): </label>
             <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value=""/>
             <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#" onclick="topaz.advsearch.onClickRmvAuthNameHandler(event); return false;">Remove</a><span id="as_a_spcr">&nbsp;|&nbsp;</span></span><a id="as_a_aa" href="#" onclick="topaz.advsearch.onClickAddAuthNameHandler(event); return false;">Add another author...</a></span></span>
           </li>
