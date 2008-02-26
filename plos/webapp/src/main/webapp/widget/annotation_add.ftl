@@ -15,18 +15,20 @@
 					<input type="hidden" name="endOffset" value="" />
 					<input type="hidden" name="commentTitle" id="commentTitle" value="" />
 					<input type="hidden" name="comment" id="commentArea" value="" />
+                    <input type="hidden" name="noteType" id="noteType" value="" />
 					<fieldset>
 						<legend>Compose Your Note</legend>
 
 						<span id="submitMsg" class="error"></span>
+						
+						<label for="cNoteType">This is a </label><select name="cNoteType" id="cNoteType"><option value="note">note</option><option value="correction">correction</option></select>
+						<span id="cdls" style="visibility:hidden;margin-left:1em">(<a href="#">What are corrections?</a>)</span>
 
 						<label for="cTitle" class="commentPublic"><span class="none">Enter your note title</span><!-- error message text <em>A title is required for all public notes</em>--></label>
 						<input type="text" name="cTitle" id="cTitle" value="Enter your note title..." class="title commentPublic" alt="Enter your note title..." />
 
 						<label for="cArea"><span class="none">Enter your note</span><!-- error message text <em>Please enter your note</em>--></label>
 						<textarea name="cArea" id="cArea" value="Enter your note..." alt="Enter your note...">Enter your note...</textarea>
-
-                        <input type="checkbox" name="cMnrCrctn" id="cMnrCrctn" value="1" class="checkbox"/><label for="cMnrCrctn">Flag this as a Minor Correction?</label>
 
 						<input type="hidden" name="isPublic" value="true" />
 						<!--
