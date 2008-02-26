@@ -7,7 +7,7 @@
   <parent>
     <artifactId>plosone-libs</artifactId>
     <groupId>org.plosone</groupId>
-    <version>0.8.2.1_rc1</version>
+    <version>0.8.2.2-SNAPSHOT</version>
   </parent>
 
   <dependencies>

@@ -4,14 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.plosone</groupId>
   <artifactId>plosone-libs</artifactId>
-  <version>0.8.2.1_rc1</version>
+  <version>0.8.2.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>PLOSOne Libs</name>
   
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
-    <version>0.8.2.1_rc1</version>
+    <version>0.8.2.2-SNAPSHOT</version>
   </parent>
 
   <modules>
