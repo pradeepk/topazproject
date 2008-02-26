@@ -1,7 +1,7 @@
 #!/bin/sh
 
-pt="-t00802-SNAPSHOT"
-rt="-t00802"
+pt="-t0080201-SNAPSHOT"
+rt="-t0080201_rc1"
 rel="1"
 
 for f in \

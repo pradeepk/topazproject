@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
-    <version>0.8.2.1-SNAPSHOT</version>
+    <version>0.8.2.1_rc1</version>
   </parent>
 
   <build>

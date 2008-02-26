@@ -13,14 +13,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>topaz-utils</artifactId>
-  <version>0.8.2.1-SNAPSHOT</version>
+  <version>0.8.2.1_rc1</version>
   <packaging>pom</packaging>
   <name>Topaz Utils</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topaz</artifactId>
-    <version>0.8.2.1-SNAPSHOT</version>
+    <version>0.8.2.1_rc1</version>
   </parent>
 
   <modules>
