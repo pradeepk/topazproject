@@ -74,6 +74,11 @@
       <name>Maven 2 Repository for Topaz</name>
       <url>http://maven.topazproject.org/maven2/</url>
     </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/1</url>
+      <layout>legacy</layout>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
