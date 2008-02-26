@@ -1,5 +1,5 @@
 <div id="content">
-	<h1>Annotations and Discussions</h1>
+	<h1>View and Join Ongoing Discussions</h1>
 	<@s.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.id}"/>
 	<@s.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.id}"/>
 
@@ -38,6 +38,6 @@
 	</table>
 	
 	<#if allCommentary?size gt 0>
-	<p>You can also <a href="${startDiscussionUrl}" title="Click to start a discussion on this article" class="discuss icon">start a new discussion</a> on this article.</p>
+	<p>You can also <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">make a new comment</a> on this article.</p>
   </#if>
 </div>

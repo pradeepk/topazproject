@@ -2,8 +2,8 @@ var _commentTitle;
 var _comments;
 var _ratingTitle;
 var _ratingComments;
-var _titleCue    			 = 'Enter your annotation title...';
-var _commentCue    		 = 'Enter your annotation...';
+var _titleCue    			 = 'Enter your note title...';
+var _commentCue    		 = 'Enter your note...';
 var _ratingTitleCue		 = 'Enter your comment title...';
 var _ratingCommentCue   = 'Enter your comment...';
 

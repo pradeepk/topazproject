@@ -5,7 +5,7 @@
 			<a id="btn_cancel" title="Click to close and cancel">Cancel</a>
 		</div>
 		<div class="comment">
-			<h5><span class="commentPrivate">Add Your Annotation (For Private Viewing)</span><span class="commentPublic">Post Your Annotation (For Public Viewing)</span></h5>
+			<h5><span class="commentPrivate">Add Your Note (For Private Viewing)</span><span class="commentPublic">Post Your Note (For Public Viewing)</span></h5>
 			<div class="posting pane">
 				<form name="createAnnotation" id="createAnnotation" method="post" action="">
 					<input type="hidden" name="target" value="${articleURI}" />	
@@ -16,23 +16,25 @@
 					<input type="hidden" name="commentTitle" id="commentTitle" value="" />
 					<input type="hidden" name="comment" id="commentArea" value="" />
 					<fieldset>
-						<legend>Compose Your Annotation</legend>
+						<legend>Compose Your Note</legend>
 
 						<span id="submitMsg" class="error"></span>
-					
-						<label for="cTitle" class="commentPublic"><span class="none">Enter your annotation title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
-						<input type="text" name="cTitle" id="cTitle" value="Enter your annotation title..." class="title commentPublic" alt="Enter your annotation title..." />
-						
-						<label for="cArea"><span class="none">Enter your annotation</span><!-- error message text <em>Please enter your annotation</em>--></label>
-						<textarea name="cArea" id="cArea" value="Enter your annotation..." alt="Enter your annotation...">Enter your annotation...</textarea>
-						
+
+						<label for="cTitle" class="commentPublic"><span class="none">Enter your note title</span><!-- error message text <em>A title is required for all public notes</em>--></label>
+						<input type="text" name="cTitle" id="cTitle" value="Enter your note title..." class="title commentPublic" alt="Enter your note title..." />
+
+						<label for="cArea"><span class="none">Enter your note</span><!-- error message text <em>Please enter your note</em>--></label>
+						<textarea name="cArea" id="cArea" value="Enter your note..." alt="Enter your note...">Enter your note...</textarea>
+
+                        <input type="checkbox" name="cMnrCrctn" id="cMnrCrctn" value="1" class="checkbox"/><label for="cMnrCrctn">Flag this as a Minor Correction?</label>
+
 						<input type="hidden" name="isPublic" value="true" />
 						<!--
 						<div><input type="radio" id="privateFlag" class="radio" title="Choose from one of the options" name="public" value="false" disabled="true" /><label for="Private">Private</label></div>
 						<div><input type="radio" id="publicFlag" class="radio" title="Choose from one of the options" name="public" value="true" checked="true" /><label for="Public">Public</label></div>
 						-->
-						<div class="btnwrap commentPrivate"><input type="button" value="Save" class="commentPrivate" title="Click to save your annotation privately" id="btn_save"/></div>
-						<div class="btnwrap commentPublic"><input type="button" value="Post" class="commentPublic" title="Click to post your annotation publicly" id="btn_post"/></div>
+						<div class="btnwrap commentPrivate"><input type="button" value="Save" class="commentPrivate" title="Click to save your note privately" id="btn_save"/></div>
+						<div class="btnwrap commentPublic"><input type="button" value="Post" class="commentPublic" title="Click to post your note publicly" id="btn_post"/></div>
 					</fieldset>
 				</form>
 			</div>

@@ -1,10 +1,10 @@
 					  <#if numAnnotations == 1>
-						<li>${numAnnotations} annotation</li>
+						<li>${numAnnotations} note</li>
 					  <#else>
-						<li>${numAnnotations} annotations</li>
+						<li>${numAnnotations} notes</li>
 					  </#if>
 					  <#if numDiscussions == 1>
-						<li>${numDiscussions} discussion</li>
+						<li>${numDiscussions} comment</li>
 					  <#else>
-					  	<li>${numDiscussions} discussions</li>
+					  	<li>${numDiscussions} comments</li>
 	  			  	  </#if>
