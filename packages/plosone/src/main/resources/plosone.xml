@@ -242,6 +242,11 @@
 
     <articleTypeList>
 	<articleType>
+		<typeUri>http://rdf.plos.org/RDF/articleType/1</typeUri>
+		<typeHeading>Bad Article Type in XML</typeHeading>
+                <default>true</default>
+	</articleType>
+	<articleType>
 		<typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20the%20Founders</typeUri>
 		<typeHeading>Message from the Founders</typeHeading>
 	</articleType>
@@ -314,8 +319,8 @@
 		<typeHeading>Special Report</typeHeading>
 	</articleType>
 	<articleType>
-		<typeUri>http://rdf.plos.org/RDF/articleType/Opinions</typeUri>
-		<typeHeading>Opinions</typeHeading>
+		<typeUri>http://rdf.plos.org/RDF/articleType/Opinion</typeUri>
+		<typeHeading>Opinion</typeHeading>
 	</articleType>
 	<articleType>
 		<typeUri>http://rdf.plos.org/RDF/articleType/Perspective</typeUri>
@@ -400,7 +405,6 @@
 	<articleType>
 		<typeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</typeUri>
 		<typeHeading>Research Article</typeHeading>
-		<default>true</default>
 	</articleType>
 	<articleType>
 		<typeUri>http://rdf.plos.org/RDF/articleType/Correspondence</typeUri>
