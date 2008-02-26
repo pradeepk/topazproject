@@ -201,27 +201,27 @@
      -->
     <doi-journals>
       <journal>
-        <url>http://plosone.../</url>
+        <url>http://plosone...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.pone\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://clinicaltrials.../</url>
+        <url>http://clinicaltrials...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.pctr\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://plosntds.../</url>
+        <url>http://plosntds...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.pntd\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://plospathogens.../</url>
+        <url>http://plospathogens...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.ppat\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://plosgenetics.../</url>
+        <url>http://plosgenetics...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.pgen\.\d{7}</regex>
       </journal>
       <journal>
-        <url>http://ploscompbiol.../</url>
+        <url>http://ploscompbiol...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
       </journal>
     </doi-journals>
@@ -243,7 +243,7 @@
     <articleTypeList>
 	<articleType>
 		<typeUri>http://rdf.plos.org/RDF/articleType/1</typeUri>
-		<typeHeading>Bad Article Type in XML</typeHeading>
+		<typeHeading>Unclassified</typeHeading>
                 <default>true</default>
 	</articleType>
 	<articleType>
@@ -1141,12 +1141,12 @@
     <!--PLoSCompBiol-->
     <journal>
       <name>PLoSCompBiol</name>
-      <metaKeywords>plos neglected tropical diseases\, plos ntds\, plos ntd\, plos\, public library of science\, open access\, open-access\, online science journal\, plos journal\, neglected tropical diseases\, infectious diseases\, tropical diseases\, scientific\, medical\, public health\, pathology\, epidemiology\, treatment\, control\, prevention\, public policy</metaKeywords>
-      <metaDescription>PLoS Computational Biology is an open-access journal publishing peer-reviewed research on the world\'s most neglected tropical diseases\, such as elephantiasis\, river blindness\, leprosy\, hookworm\, schistosomiasis\, and African sleeping sickness</metaDescription>
-      <articleTitlePrefix>PLoS Computational Biology:  </articleTitlePrefix>
+      <metaKeywords></metaKeywords>
+      <metaDescription></metaDescription>
+      <articleTitlePrefix>PLoS Computational Biology: </articleTitlePrefix>
       <displayName>PLoS Computational Biology</displayName>
       <default>
-        <title>PLoS Computational Biology: Connecting communities with open-access research</title>
+        <title>PLoS Computational Biology</title>
       </default>
       <page>
         <name>/journals/compbiol/index.ftl</name>
@@ -1268,14 +1268,6 @@
         </css>
       </page>
       <page>
-        <name>/journals/compbiol/static/developing.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/compbiol/static/downloads.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1292,23 +1284,7 @@
         </css>
       </page>
       <page>
-        <name>/journals/compbiol/static/eic.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/compbiol/static/guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/compbiol/static/hotez_who.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1392,12 +1368,12 @@
     <!--PLoSGenetics-->
     <journal>
       <name>PLoSGenetics</name>
-      <metaKeywords>plos neglected tropical diseases\, plos ntds\, plos ntd\, plos\, public library of science\, open access\, open-access\, online science journal\, plos journal\, neglected tropical diseases\, infectious diseases\, tropical diseases\, scientific\, medical\, public health\, pathology\, epidemiology\, treatment\, control\, prevention\, public policy</metaKeywords>
-      <metaDescription>PLoS Genetics is an open-access journal publishing peer-reviewed research on the world\'s most neglected tropical diseases\, such as elephantiasis\, river blindness\, leprosy\, hookworm\, schistosomiasis\, and African sleeping sickness</metaDescription>
-      <articleTitlePrefix>PLoS Genetics:  </articleTitlePrefix>
+      <metaKeywords></metaKeywords>
+      <metaDescription></metaDescription>
+      <articleTitlePrefix>PLoS Genetics: </articleTitlePrefix>
       <displayName>PLoS Genetics</displayName>
       <default>
-        <title>PLoS Genetics: Connecting communities with open-access research</title>
+        <title>PLoS Genetics</title>
       </default>
       <page>
         <name>/journals/genetics/index.ftl</name>
@@ -1426,14 +1402,6 @@
       </page>
       <page>
         <name>/journals/genetics/static/about.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/genetics/static/ae_checklist.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1474,22 +1442,6 @@
         </css>
       </page>
       <page>
-        <name>/journals/genetics/static/developing.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/genetics/static/downloads.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/genetics/static/edboard.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1498,23 +1450,7 @@
         </css>
       </page>
       <page>
-        <name>/journals/genetics/static/eic.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/genetics/static/guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/genetics/static/hotez_who.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1603,7 +1539,7 @@
       <articleTitlePrefix>PLoS Neglected Tropical Diseases:  </articleTitlePrefix>
       <displayName>PLoS Neglected Tropical Diseases</displayName>
       <default>
-        <title>PLoS Neglected Tropical Diseases: Connecting communities with open-access research</title>
+        <title>PLoS Neglected Tropical Diseases: A Peer-Reviewed Open-Access Journal</title>
       </default>
       <page>
         <name>/journals/ntd/index.ftl</name>
@@ -1843,12 +1779,12 @@
     <!--PLoSPathogens-->
     <journal>
       <name>PLoSPathogens</name>
-      <metaKeywords>plos neglected tropical diseases\, plos ntds\, plos ntd\, plos\, public library of science\, open access\, open-access\, online science journal\, plos journal\, neglected tropical diseases\, infectious diseases\, tropical diseases\, scientific\, medical\, public health\, pathology\, epidemiology\, treatment\, control\, prevention\, public policy</metaKeywords>
-      <metaDescription>PLoS Pathogens is an open-access journal publishing peer-reviewed research on the world\'s most neglected tropical diseases\, such as elephantiasis\, river blindness\, leprosy\, hookworm\, schistosomiasis\, and African sleeping sickness</metaDescription>
-      <articleTitlePrefix>PLoS Pathogens:  </articleTitlePrefix>
+      <metaKeywords></metaKeywords>
+      <metaDescription></metaDescription>
+      <articleTitlePrefix>PLoS Pathogens: </articleTitlePrefix>
       <displayName>PLoS Pathogens</displayName>
       <default>
-        <title>PLoS Pathogens: Connecting communities with open-access research</title>
+        <title>PLoS Pathogens</title>
       </default>
       <page>
         <name>/journals/pathogens/index.ftl</name>
@@ -1877,14 +1813,6 @@
       </page>
       <page>
         <name>/journals/pathogens/static/about.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/pathogens/static/ae_checklist.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
@@ -1925,22 +1853,6 @@
         </css>
       </page>
       <page>
-        <name>/journals/pathogens/static/developing.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/pathogens/static/downloads.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/pathogens/static/edboard.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1949,23 +1861,7 @@
         </css>
       </page>
       <page>
-        <name>/journals/pathogens/static/eic.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
         <name>/journals/pathogens/static/guidelines.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/pathogens/static/hotez_who.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
