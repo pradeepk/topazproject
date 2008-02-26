@@ -185,7 +185,7 @@
           <name>ecqs-version</name>
           <property>ecqs-version</property>
           <required>true</required>
-          <defaultValue>2.0.6-1-t0080201_rc1</defaultValue>
+          <defaultValue>2.0.6-1-t0080202-SNAPSHOT</defaultValue>
           <expression>${ecqs-version}</expression>
         </parameter>
 
