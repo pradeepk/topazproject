@@ -85,6 +85,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       return null;
     }
 
+
     // get Volumes for this Journal
     volumes.clear();
     for (final URI volumeDoi : journal.getVolumes()) {
@@ -104,7 +105,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     // get Issues for this Journal
     issues.clear();
     for (final Volume volume : volumes) {
-      for (final URI issueDoi : volume.getSimpleCollection()) {
+      for (final URI issueDoi : volume.getIssueList()) {
         final Issue issue = session.get(Issue.class, issueDoi.toString());
           if (issue != null) {
               issues.add(issue);
@@ -151,7 +152,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
         if (issueToAdd.length() == 0) { continue; }
         issues.add(URI.create(issueToAdd.trim()));
       }
-      newVolume.setSimpleCollection(issues);
+      newVolume.setIssueList(issues);
     }
 
     session.saveOrUpdate(newVolume);
@@ -164,7 +165,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     session.saveOrUpdate(currentJournal);
     journalService.journalWasModified(currentJournal);
     addActionMessage("Volume was added to current Journal: " + currentJournal);
-
+    
     return SUCCESS;
   }
 
@@ -207,7 +208,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     } else {
       volumeIssues = null;
     }
-    volume.setSimpleCollection(volumeIssues);
+    volume.setIssueList(volumeIssues);
 
     session.saveOrUpdate(volume);
 
@@ -254,7 +255,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     final Journal currentJournal = journalService.getJournal();
     Volume latestVolume = session.get(Volume.class, currentJournal.getVolumes()
             .get(currentJournal.getVolumes().size() - 1).toString());
-    latestVolume.getSimpleCollection().add(doi);
+    latestVolume.getIssueList().add(doi);
     session.saveOrUpdate(latestVolume);
     addActionMessage("Added Issue to Volume: " + latestVolume);
     journalService.journalWasModified(currentJournal);
@@ -279,10 +280,10 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
       // update Volume?
       List<Volume> containingVolumes = session.createCriteria(Volume.class)
-              .add(Restrictions.eq("simpleCollection", doi)).list();
+              .add(Restrictions.eq("issueList", doi)).list();
       if (containingVolumes.size() > 0) {
         for (Volume containingVolume : containingVolumes) {
-          containingVolume.getSimpleCollection().remove(doi);
+          containingVolume.getIssueList().remove(doi);
           session.saveOrUpdate(containingVolume);
           addActionMessage("Deleted Issue from Volume: " + containingVolume);
         }
