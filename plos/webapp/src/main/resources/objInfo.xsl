@@ -26,7 +26,7 @@
 
 <xsl:template name="make-href">
   <xsl:if test="@xlink:href">
-    <xsl:attribute name="src">
+    <xsl:attribute name="href">
       <xsl:value-of select="@xlink:href"/>
     </xsl:attribute>
   </xsl:if>
