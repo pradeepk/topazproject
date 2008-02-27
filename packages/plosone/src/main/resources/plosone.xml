@@ -712,6 +712,15 @@
         </css>
       </page>
       <page>
+        <name>/search/searchStart.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_forms.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      <page>
         <name>/user/alerts.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1918,14 +1927,6 @@
       </page>
       <page>
         <name>/journals/pathogens/static/sitemap.ftl</name>
-        <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
-        </css>
-      </page>
-      <page>
-        <name>/journals/pathogens/static/toc.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
           <file>/css/pone_iepc.css</file>
