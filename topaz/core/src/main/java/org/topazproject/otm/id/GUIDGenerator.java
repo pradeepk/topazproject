@@ -11,7 +11,7 @@ package org.topazproject.otm.id;
 
 import java.util.UUID;
 
-import org.topazproject.otm.Transaction;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.ClassMetadata;
 
 /**
@@ -28,7 +28,7 @@ import org.topazproject.otm.ClassMetadata;
 public class GUIDGenerator implements IdentifierGenerator {
   private String uriPrefix;
 
-  public String generate(ClassMetadata cm, Transaction txn) {
+  public String generate(ClassMetadata cm, Session sess) {
     return uriPrefix + UUID.randomUUID().toString();
   }
 

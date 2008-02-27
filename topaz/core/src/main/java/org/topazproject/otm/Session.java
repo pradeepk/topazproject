@@ -96,13 +96,24 @@ public interface Session {
   public SessionFactory getSessionFactory();
 
   /**
-   * Begins a new transaction. All session usage is within transaction scope.
+   * Begins a new read-write transaction. All session usage is within transaction scope.
    *
    * @return the transaction
    *
    * @throws OtmException on an error
    */
   public Transaction beginTransaction() throws OtmException;
+
+  /**
+   * Begins a new transaction. All session usage is within transaction scope.
+   *
+   * @param readOnly true if this should be a read-only transaction, false if a read-write
+   *                 transaction
+   * @return the transaction
+   *
+   * @throws OtmException on an error
+   */
+  public Transaction beginTransaction(boolean readOnly) throws OtmException;
 
   /**
    * Gets the current transaction.

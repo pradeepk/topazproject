@@ -22,11 +22,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.NamingException;
+import javax.transaction.TransactionManager;
+
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.objectweb.jotm.Jotm;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
@@ -117,6 +122,8 @@ public class SessionFactoryImpl implements SessionFactory {
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
   private TripleStore                tripleStore;
   private BlobStore                  blobStore;
+  private Jotm                       jotm;
+  private TransactionManager         txMgr;
   private CurrentSessionContext      currentSessionContext;
 
   {
@@ -341,13 +348,7 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public void setTripleStore(TripleStore store) {
-    if (store == tripleStore)
-      return;
-    if ((tripleStore != null) && (blobStore != null))
-      tripleStore.getChildStores().remove(blobStore);
     this.tripleStore = store;
-    if ((tripleStore != null) && (blobStore != null))
-      tripleStore.getChildStores().add(blobStore);
   }
 
   /*
@@ -361,15 +362,29 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public void setBlobStore(BlobStore store) {
-    if (store == blobStore)
-      return;
-
-    if ((tripleStore != null) && (blobStore != null))
-      tripleStore.getChildStores().remove(blobStore);
-
     this.blobStore = store;
-    if ((tripleStore != null) && (blobStore != null))
-      tripleStore.getChildStores().add(blobStore);
+  }
+
+  public void setTransactionManager(TransactionManager tm) {
+    if (jotm != null) {
+      jotm.stop();
+      jotm = null;
+    }
+
+    this.txMgr = tm;
+  }
+
+  public TransactionManager getTransactionManager() throws OtmException {
+    if (txMgr == null) {
+      try {
+        jotm  = new Jotm(true, false);
+        txMgr = jotm.getTransactionManager();
+      } catch (NamingException ne) {
+        throw new OtmException("Failed to create default transaction-manager", ne);
+      }
+    }
+
+    return txMgr;
   }
 
   /*
@@ -488,5 +503,16 @@ public class SessionFactoryImpl implements SessionFactory {
 
     proxyClasses.put(clazz, c);
     proxyClasses.put(c, clazz);
+  }
+
+  protected void finalize() throws Throwable {
+    try {
+      if (jotm != null) {
+        jotm.stop();
+        jotm = null;
+      }
+    } finally {
+      super.finalize();
+    }
   }
 }

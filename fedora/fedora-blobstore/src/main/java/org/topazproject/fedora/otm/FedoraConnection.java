@@ -11,8 +11,15 @@ package org.topazproject.fedora.otm;
 
 import java.net.URL;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +31,7 @@ import org.topazproject.fedora.client.Uploader;
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 
 /**
  * Acts as the client to Fedora and manages the transactional aspects of user operations.
@@ -32,6 +40,9 @@ import org.topazproject.otm.OtmException;
  */
 public class FedoraConnection extends AbstractConnection {
   private static final Log        log        = LogFactory.getLog(FedoraConnection.class);
+  private static final Map<Session, FedoraConnection> conMap =
+                    Collections.synchronizedMap(new WeakHashMap<Session, FedoraConnection>());
+
   private FedoraBlobStore         bs;
   private Map<String, FedoraBlob> undoI;
   private Map<String, FedoraBlob> undoD;
@@ -42,13 +53,36 @@ public class FedoraConnection extends AbstractConnection {
   private FedoraAPIA              apia;
   private Uploader                upld;
 
-/**
+  /** 
+   * Get the fedora-connection for the given session. 
+   * 
+   * @param sess the session for which to look up the connection
+   * @return the fedora-connection, or null if none is active
+   */
+  static FedoraConnection getCon(Session sess) {
+    return conMap.get(sess);
+  }
+
+  /**
    * Creates a new FedoraConnection object.
    *
-   * @param bs the FedoraBlobStore that this connects to
+   * @param bs   the FedoraBlobStore that this connects to
+   * @param sess the session this connection is attached to
    */
-  public FedoraConnection(FedoraBlobStore bs) {
-    this.bs                                  = bs;
+  public FedoraConnection(FedoraBlobStore bs, Session sess) throws OtmException {
+    super(sess);
+    this.bs = bs;
+    conMap.put(sess, this);
+    enlistResource(new FedoraXAResource());
+  }
+
+  /** 
+   * Get the underlying fedora blob-store. 
+   * 
+   * @return the blob-store, or null if this connection has been closed
+   */
+  FedoraBlobStore getBlobStore() {
+    return bs;
   }
 
   /*
@@ -152,37 +186,80 @@ public class FedoraConnection extends AbstractConnection {
     }
   }
 
-  /*
-   * inherited javadoc
+  /**
+   * A smple xa-resource wrapper around this connection's transaction operations. There's no
+   * recovery support, and this assumes only a single tx per instance.
    */
-  protected void doPrepare() throws OtmException {
-    undoI = new HashMap<String, FedoraBlob>();
-    ingest(insertMap, undoI);
-    insertMap = null;
+  private class FedoraXAResource implements XAResource {
+    public void start(Xid xid, int flags) { }
+    public void end(Xid xid, int flags)   { }
+
+    public int prepare(Xid xid) throws XAException {
+      // assumption: doPrepare only throws RMERR, which means this resource stays in S2
+      if (FedoraConnection.this.doPrepare()) {
+        return XA_OK;
+      } else {
+        FedoraConnection.this.close();
+        return XA_RDONLY;
+      }
+    }
+
+    public void commit(Xid xid, boolean onePhase) throws XAException {
+      if (onePhase) {
+        try {
+          FedoraConnection.this.doPrepare();
+        } catch (XAException xae) {
+          FedoraConnection.this.doRollback();
+          throw xae;
+        }
+      }
+
+      FedoraConnection.this.doCommit();
+    }
+
+    public void rollback(Xid xid) {
+      FedoraConnection.this.doRollback();
+    }
+
+    public Xid[]   recover(int flag)                 { return new Xid[0]; }
+    public void    forget(Xid xid)                   { }
+    public boolean isSameRM(XAResource xares)        { return xares == this; }
+    public int     getTransactionTimeout()           { return 0; }
+    public boolean setTransactionTimeout(int secs)   { return false; }
   }
 
-  /*
-   * inherited javadoc
-   */
-  protected void doCommit() throws OtmException {
+  private boolean doPrepare() throws XAException {
+    boolean haveMods = !insertMap.isEmpty() || !deleteMap.isEmpty();
+    undoI = new HashMap<String, FedoraBlob>();
+    try {
+      ingest(insertMap, undoI);
+    } catch (OtmException oe) {
+      log.error("Error preparing", oe);
+      throw new XAException(XAException.XAER_RMERR);
+    }
+    insertMap = null;
+    return haveMods;
+  }
+
+  private void doCommit() throws XAException {
     try {
       undoD = new HashMap<String, FedoraBlob>();
       purge(deleteMap, undoD);
       undoD   = null;
       undoI   = null;
+    } catch (OtmException oe) {
+      log.error("Error committing", oe);
+      throw new XAException(XAException.XAER_RMERR);
     } finally {
       close();
     }
   }
 
-  /*
-   * inherited javadoc
-   */
-  protected void doRollback() throws OtmException {
+  private void doRollback() {
     close();
   }
 
-  private void close() {
+  public void close() {
     // undo deletes
     if (undoD != null) {
       if (undoD.size() > 0)
@@ -205,6 +282,7 @@ public class FedoraConnection extends AbstractConnection {
     contentMap   = null;
     deleteMap    = null;
     bs           = null;
+    conMap.values().remove(this);
   }
 
   private Map<String, FedoraBlob> ingest(Map<String, FedoraBlob> map, Map<String, FedoraBlob> undo)
@@ -281,6 +359,7 @@ public class FedoraConnection extends AbstractConnection {
     try {
       ingest(map, null);
     } catch (Throwable t) {
+      log.error("Error undoing deletes - fedora-store will be in an inconsistent state", t);
     }
   }
 
@@ -288,6 +367,7 @@ public class FedoraConnection extends AbstractConnection {
     try {
       purge(map, null);
     } catch (Throwable t) {
+      log.error("Error undoing inserts - fedora-store will be in an inconsistent state", t);
     }
   }
 }

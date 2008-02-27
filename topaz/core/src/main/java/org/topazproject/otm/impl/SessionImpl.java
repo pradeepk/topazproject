@@ -40,7 +40,6 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.Session;
@@ -101,9 +100,6 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public void flush() throws OtmException {
-    if (txn == null)
-      throw new OtmException("No active transaction");
-
     // auto-save objects that aren't explicitly saved
     for (Id id : new HashSet<Id>(cleanMap.keySet())) {
       Object o = cleanMap.get(id);
@@ -412,9 +408,9 @@ public class SessionImpl extends AbstractSession {
 
      states.remove(o);
      if (bf != null)
-       bs.delete(cm, id.getId(), txn);
+       bs.delete(cm, id.getId(), getBlobStoreCon());
      if (tp)
-       store.delete(cm, cm.getFields(), id.getId(), o, txn);
+       store.delete(cm, cm.getFields(), id.getId(), o, getTripleStoreCon());
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
@@ -446,19 +442,19 @@ public class SessionImpl extends AbstractSession {
 
       if (tp) {
         if (firstTime || (nFields > 0)) {
-          store.delete(cm, fields, id.getId(), o, txn);
-          store.insert(cm, fields, id.getId(), o, txn);
+          store.delete(cm, fields, id.getId(), o, getTripleStoreCon());
+          store.insert(cm, fields, id.getId(), o, getTripleStoreCon());
         }
       }
       if (bf != null) {
         switch(states.digestUpdate(o, bf)) {
         case delete:
-          bs.delete(cm, id.getId(), txn);
+          bs.delete(cm, id.getId(), getBlobStoreCon());
           break;
         case update:
-          bs.delete(cm, id.getId(), txn);
+          bs.delete(cm, id.getId(), getBlobStoreCon());
         case insert:
-          bs.insert(cm, id.getId(), (byte[]) bf.getRawValue(o, false), txn);
+          bs.insert(cm, id.getId(), (byte[]) bf.getRawValue(o, false), getBlobStoreCon());
           break;
         case noChange:
         default:
@@ -471,16 +467,13 @@ public class SessionImpl extends AbstractSession {
 
   private <T> T getFromStore(Id id, ClassMetadata<T> cm, T instance, boolean filterObj)
                        throws OtmException {
-    if (txn == null)
-      throw new OtmException("No transaction active");
-
     TripleStore store = sessionFactory.getTripleStore();
 
     if (cm.isView())
-      instance = loadView(cm, id.getId(), instance, txn,
+      instance = loadView(cm, id.getId(), instance,
                                   new ArrayList<Filter>(filters.values()), filterObj);
     else if ((cm.getTypes().size() + cm.getFields().size()) > 0)
-      instance = store.get(cm, id.getId(), instance, txn, 
+      instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj);
     else if ((cm.getBlobField() != null) && (instance == null)) {
       try {
@@ -498,7 +491,8 @@ public class SessionImpl extends AbstractSession {
 
     Binder bf = cm.getBlobField();
     if (bf != null)
-      bf.setRawValue(instance, sessionFactory.getBlobStore().get(cm, id.getId(), txn));
+      bf.setRawValue(instance,
+                     sessionFactory.getBlobStore().get(cm, id.getId(), getBlobStoreCon()));
 
     if (!cm.isView()) {
       for (Mapper m : cm.getFields())
@@ -522,8 +516,8 @@ public class SessionImpl extends AbstractSession {
     return instance;
   }
 
-  private <T> T loadView(ClassMetadata<T> cm, String id, T instance, Transaction txn,
-                         List<Filter> filters, boolean filterObj) throws OtmException {
+  private <T> T loadView(ClassMetadata<T> cm, String id, T instance, List<Filter> filters,
+                         boolean filterObj) throws OtmException {
     Query q = createQuery(cm.getQuery());
     Set<String> paramNames = q.getParameterNames();
     if (paramNames.size() != 1 || !"id".equals(paramNames.iterator().next()))
@@ -833,10 +827,7 @@ public class SessionImpl extends AbstractSession {
       if (generator == null)
         throw new OtmException("No id generation for " + o.getClass() + " on " + idField);
 
-      if (txn == null)
-        throw new OtmException("No active transaction");
-
-      id = generator.generate(cm, txn);
+      id = generator.generate(cm, this);
       b.set(o, Collections.singletonList(id)); // So user can get at it after saving
 
       if (log.isDebugEnabled())

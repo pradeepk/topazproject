@@ -29,14 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.AbstractStore;
 import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.Transaction;
+import org.topazproject.otm.Session;
 
 /**
  * A simple File backed BlobStore that supports transactions and
@@ -97,19 +100,19 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public Connection openConnection(SessionFactory sf) throws OtmException {
+  public Connection openConnection(Session sess, boolean readOnly) throws OtmException {
     int txnId;
 
     synchronized (txns) {
       if (txns.size() > 0)
-        return new SimpleBlobStoreConnection(this, store, txns.remove(0));
+        return new SimpleBlobStoreConnection(this, store, txns.remove(0), sess);
 
       txnId = nextId++;
     }
 
     File txn = new File(root, "txn" + txnId);
 
-    return new SimpleBlobStoreConnection(this, store, txn);
+    return new SimpleBlobStoreConnection(this, store, txn, sess);
   }
 
   /**
@@ -146,27 +149,27 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public void insert(ClassMetadata cm, String id, byte[] blob, Transaction txn)
+  public void insert(ClassMetadata cm, String id, byte[] blob, Connection con)
               throws OtmException {
-    SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) txn.getConnection(this);
+    SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) con;
     ebsc.insert(id, blob);
   }
 
   /*
    * inherited javadoc
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn)
+  public void delete(ClassMetadata cm, String id, Connection con)
               throws OtmException {
-    SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) txn.getConnection(this);
+    SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) con;
     ebsc.delete(id);
   }
 
   /*
    * inherited javadoc
    */
-  public byte[] get(ClassMetadata cm, String id, Transaction txn)
+  public byte[] get(ClassMetadata cm, String id, Connection con)
              throws OtmException {
-    SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) txn.getConnection(this);
+    SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) con;
 
     return ebsc.get(id);
   }
@@ -186,10 +189,14 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
     private Map<String, File>         readMap       = new HashMap<String, File>();
     private Set<Lock>                 locks         = new HashSet<Lock>();
 
-    public SimpleBlobStoreConnection(SimpleBlobStore bs, File store, File txn) {
+    public SimpleBlobStoreConnection(SimpleBlobStore bs, File store, File txn, Session sess)
+           throws OtmException {
+      super(sess);
       this.bs      = bs;
       this.store   = store;
       this.txn     = txn;
+
+      enlistResource(newXAResource());
     }
 
     private String normalize(String id) throws OtmException {
@@ -364,28 +371,50 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
       }
     }
 
-    protected void doPrepare() throws OtmException {
+    private XAResource newXAResource() {
+      return new XAResource() {
+        public void    commit(Xid xid, boolean onePhase) throws XAException { doCommit(); }
+        public void    rollback(Xid xid)                 throws XAException { doRollback(); }
+        public int     prepare(Xid xid)                  throws XAException { doPrepare(); return XA_OK; }
+
+        public void    start(Xid xid, int flags)         { }
+        public void    end(Xid xid, int flags)           { }
+        public Xid[]   recover(int flag)                 { return new Xid[0]; }
+        public void    forget(Xid xid)                   { }
+        public boolean isSameRM(XAResource xares)        { return xares == this; }
+        public int     getTransactionTimeout()           { return 0; }
+        public boolean setTransactionTimeout(int secs)   { return false; }
+      };
+    }
+
+    private void doPrepare() throws XAException {
       undoI = new HashMap<String, File>();
-      rename(insertMap, store, undoI);
+      try {
+        rename(insertMap, store, undoI);
+      } catch (OtmException oe) {
+        throw (XAException) new XAException(XAException.XAER_RMERR).initCause(oe);
+      }
       insertMap = null;
     }
 
-    protected void doCommit() throws OtmException {
+    private void doCommit() throws XAException {
       try {
         undoD = new HashMap<String, File>();
         rename(deleteMap, txn, undoD);
         undoD   = null;
         undoI   = null;
+      } catch (OtmException oe) {
+        throw (XAException) new XAException(XAException.XAER_RMERR).initCause(oe);
       } finally {
         close();
       }
     }
 
-    protected void doRollback() throws OtmException {
+    private void doRollback() {
       close();
     }
 
-    private void close() {
+    public void close() {
       // undo deletes
       if (undoD != null) {
         rename(undoD, store);

@@ -31,7 +31,6 @@ package org.topazproject.otm;
  * @author Pradeep Krishnan
  */
 public interface Transaction {
-
   /**
    * Gets the session to which this transaction belongs.
    *
@@ -39,17 +38,17 @@ public interface Transaction {
    */
   public Session getSession();
 
-  /**
-   * Gets a connection to the given store. If a connection is
-   * not open to the given Store, the implementations may
-   * call {@link Store#openConnection openConnection} on the
-   * Store.
-   *
-   * @return the connection
-   *
-   * @throws OtmException on an error in opening a connection
+  /** 
+   * Mark the transaction for rollback. 
    */
-  public Connection getConnection(Store store) throws OtmException;
+  public void setRollbackOnly() throws OtmException;
+
+  /** 
+   * Test whether this transaction has been marked for rollback only. 
+   * 
+   * @return true if this transaction will be rolled back
+   */
+  public boolean isRollbackOnly() throws OtmException;
 
   /**
    * Flush the session, commit and close the connection.
@@ -64,5 +63,4 @@ public interface Transaction {
    * @throws OtmException on an error in roll-back
    */
   public void rollback() throws OtmException;
-
 }

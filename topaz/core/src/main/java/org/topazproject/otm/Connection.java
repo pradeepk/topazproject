@@ -9,35 +9,15 @@
  */
 package org.topazproject.otm;
 
-import java.util.List;
-
 /**
- * A connection handle to a triple store or blob store.
+ * A connection handle to a triple store or blob store. Connections last for a single transaction
+ * only; it is up the implementation to do pooling, if desired.
  *
  * @author Pradeep Krishnan
   */
 public interface Connection {
-  /**
-   * Prepare to commit the writes.
+  /** 
+   * Signals that we're done with the connection.
    */
-  public void prepare() throws OtmException;
-
-  /**
-   * Commit the writes made via this connection.
-   */
-  public void commit() throws OtmException;
-
-  /**
-   * Rollback/undo writes made via this connection.
-   */
-  public void rollback() throws OtmException;
-
-  /**
-   * Get the list of child connections participating in a Tree 2-Phase commit.
-   *
-   * @return a modifiable list of connections that a transaction cordinator
-   *         can manipulate to set up the list of Connections this Connection 
-   *         must coordinate.
-   */
-  public List<Connection> getChildConnections();
+  void close();
 }

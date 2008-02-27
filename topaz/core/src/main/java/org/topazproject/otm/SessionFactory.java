@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.TransactionManager;
+
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.query.QueryFunctionFactory;
@@ -187,6 +189,21 @@ public interface SessionFactory {
    * @param store the store
    */
   public void setBlobStore(BlobStore store);
+
+  /** 
+   * Set the JTA transaction-manager to use. If not set, a default (internal) tm will be used. 
+   * 
+   * @param tm  the transaction-manager to use
+   */
+  public void setTransactionManager(TransactionManager tm);
+
+  /** 
+   * Get the current JTA transaction-manager.
+   * 
+   * @return the transaction manager
+   * @throws OtmException if an error occurred initializing the default transaction manager
+   */
+  public TransactionManager getTransactionManager() throws OtmException;
 
   /**
    * Get currentSessionContext.

@@ -42,9 +42,9 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
+import org.topazproject.otm.impl.TransactionImpl;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.GenericQueryImpl;
@@ -59,7 +59,7 @@ import org.topazproject.otm.query.Results;
  */
 public class ItqlStore extends AbstractTripleStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
-  private        final Map<Object, List<ItqlClient>> conCache = new HashMap();
+  private        final List<ItqlClient>  conCache = new ArrayList<ItqlClient>();
   private        final ItqlClientFactory itqlFactory;
   private        final URI               serverUri;
 
@@ -82,6 +82,15 @@ public class ItqlStore extends AbstractTripleStore {
     serverUri   = server;
     itqlFactory = icf;
 
+    /* hack to initialize db in case of an embedded instance: new Database() starts a tx
+     * in order to boostrap the system model, and that will conflict with an existing tx
+     * of ours because we both use JOTM and JOTM stores the transaction-for-thread info
+     * in a static variable, leading to a "Nested transactions not supported" exception.
+     * So we make sure initialization is done before we start any tx's.
+     */
+    if (server.getScheme().equals("local") || server.getScheme().equals("mem"))
+      returnItqlClient(getItqlClient(null, false));
+
     //XXX: configure these
     ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder();
     critBuilders.put("gt", cc);
@@ -90,12 +99,14 @@ public class ItqlStore extends AbstractTripleStore {
     critBuilders.put("le", cc);
   }
 
-  public Connection openConnection(SessionFactory sf) throws OtmException {
-    return new ItqlStoreConnection(sf);
+  public Connection openConnection(Session sess, boolean readOnly) throws OtmException {
+    return new ItqlStoreConnection(sess, readOnly);
   }
 
   public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
-                         Transaction txn) throws OtmException {
+                         Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
+
     Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder insert = new StringBuilder(500);
 
@@ -109,10 +120,10 @@ public class ItqlStore extends AbstractTripleStore {
           addStmt(insert, id, Rdf.rdf + "type", type, null, true);
       }
 
-      buildInsert(insert, mappersByModel.get(m), id, o, txn.getSession());
+      buildInsert(insert, mappersByModel.get(m), id, o, isc.getSession());
 
       if (insert.length() > startLen)
-        insert.append("into <").append(getModelUri(m, txn)).append(">;");
+        insert.append("into <").append(getModelUri(m, isc)).append(">;");
       else
         insert.setLength(insert.length() - 7);
     }
@@ -124,7 +135,6 @@ public class ItqlStore extends AbstractTripleStore {
       return;
 
     try {
-      ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
       isc.getItqlClient().doUpdate(insert.toString());
     } catch (IOException ioe) {
       throw new OtmException("error performing update", ioe);
@@ -152,7 +162,7 @@ public class ItqlStore extends AbstractTripleStore {
 
   private void buildInsert(StringBuilder buf, List<Mapper> pList, String id, Object o, Session sess)
       throws OtmException {
-    int i = 0;
+    int i = ((TransactionImpl) sess.getTransaction()).ctr++;
     for (Mapper p : pList) {
       if (!p.isEntityOwned())
         continue;
@@ -169,6 +179,7 @@ public class ItqlStore extends AbstractTripleStore {
         addStmts(buf, id, p.getUri(), sess.getIds(b.get(o)) , null,true, p.getColType(), 
                  "$s" + i++ + "i", p.hasInverseUri());
     }
+    ((TransactionImpl) sess.getTransaction()).ctr = i;
   }
 
   private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs, 
@@ -232,7 +243,9 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
-                         Transaction txn) throws OtmException {
+                         Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
+
     final boolean partialDelete = (cm.getFields().size() != fields.size());
     Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder delete = new StringBuilder(500);
@@ -241,9 +254,9 @@ public class ItqlStore extends AbstractTripleStore {
     for (String m : mappersByModel.keySet()) {
       int len = delete.length();
       delete.append("delete ");
-      if (buildDeleteSelect(delete, getModelUri(m, txn), mappersByModel.get(m),
+      if (buildDeleteSelect(delete, getModelUri(m, isc), mappersByModel.get(m),
                         !partialDelete && m.equals(cm.getModel()) && cm.getTypes().size() > 0, id))
-        delete.append("from <").append(getModelUri(m, txn)).append(">;");
+        delete.append("from <").append(getModelUri(m, isc)).append(">;");
       else
         delete.setLength(len);
     }
@@ -255,7 +268,6 @@ public class ItqlStore extends AbstractTripleStore {
       return;
 
     try {
-      ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
       isc.getItqlClient().doUpdate(delete.toString());
     } catch (IOException ioe) {
       throw new OtmException("error performing update: " + delete.toString(), ioe);
@@ -363,15 +375,15 @@ public class ItqlStore extends AbstractTripleStore {
     return (qry.length() > len);
   }
 
-  public <T> T get(ClassMetadata<T> cm, String id, T instance, Transaction txn,
+  public <T> T get(ClassMetadata<T> cm, String id, T instance, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException {
-    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
-    SessionFactory      sf  = txn.getSession().getSessionFactory();
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
+    SessionFactory      sf  = isc.getSession().getSessionFactory();
 
     // TODO: eager fetching
 
     // do query
-    String get = buildGetSelect(cm, id, txn, filters, filterObj);
+    String get = buildGetSelect(cm, id, isc, filters, filterObj);
     if (log.isDebugEnabled())
       log.debug("get: " + get);
 
@@ -444,29 +456,29 @@ public class ItqlStore extends AbstractTripleStore {
         + "' and therefore cannot be instantiated.");
 
     // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
-    String modelUri = getModelUri(cm.getModel(), txn);
+    String modelUri = getModelUri(cm.getModel(), isc);
     for (String p : fvalues.keySet()) {
       Mapper m = cm.getMapperByUri(p, false, null);
       if (m == null)
         continue;
-      String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : modelUri;
+      String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), isc) : modelUri;
       if (CollectionType.RDFLIST == m.getColType())
-        fvalues.put(p, getRdfList(id, p, mUri, txn, types, m, sf, filters));
+        fvalues.put(p, getRdfList(id, p, mUri, isc, types, m, sf, filters));
       else if (CollectionType.RDFBAG == m.getColType() ||
           CollectionType.RDFSEQ == m.getColType() || 
           CollectionType.RDFALT == m.getColType())
-        fvalues.put(p, getRdfBag(id, p, mUri, txn, types, m, sf, filters));
+        fvalues.put(p, getRdfBag(id, p, mUri, isc, types, m, sf, filters));
     }
 
-    return instantiate(txn.getSession(), instance, cm, id, fvalues, rvalues, types);
+    return instantiate(isc.getSession(), instance, cm, id, fvalues, rvalues, types);
   }
 
-  private String buildGetSelect(ClassMetadata<?> cm, String id, Transaction txn,
+  private String buildGetSelect(ClassMetadata<?> cm, String id, ItqlStoreConnection isc,
                                 List<Filter> filters, boolean filterObj) throws OtmException {
-    SessionFactory        sf     = txn.getSession().getSessionFactory();
+    SessionFactory        sf     = isc.getSession().getSessionFactory();
     Set<ClassMetadata<?>> fCls   = listFieldClasses(cm, sf);
-    String                models = getModelsExpr(Collections.singleton(cm), txn);
-    String                tmdls  = fCls.size() > 0 ? getModelsExpr(fCls, txn) : models;
+    String                models = getModelsExpr(Collections.singleton(cm), isc);
+    String                tmdls  = fCls.size() > 0 ? getModelsExpr(fCls, isc) : models;
     List<Mapper>          assoc  = listAssociations(cm, sf);
 
     StringBuilder qry = new StringBuilder(500);
@@ -597,14 +609,15 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append(predList).append(")))");
   }
 
-  private static String getModelsExpr(Set<? extends ClassMetadata<?>> cmList, Transaction txn)
+  private static String getModelsExpr(Set<? extends ClassMetadata<?>> cmList,
+                                      ItqlStoreConnection isc)
       throws OtmException {
     Set<String> mList = new HashSet<String>();
     for (ClassMetadata<?> cm : cmList) {
-      mList.add(getModelUri(cm.getModel(), txn));
+      mList.add(getModelUri(cm.getModel(), isc));
       for (Mapper p : cm.getFields()) {
         if (p.getModel() != null)
-          mList.add(getModelUri(p.getModel(), txn));
+          mList.add(getModelUri(p.getModel(), isc));
       }
     }
 
@@ -653,13 +666,13 @@ public class ItqlStore extends AbstractTripleStore {
     return classes;
   }
 
-  private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn, 
+  private List<String> getRdfList(String sub, String pred, String modelUri, ItqlStoreConnection isc,
                                   Map<String, Set<String>> types, Mapper m, SessionFactory sf,
                                   List<Filter> filters)
         throws OtmException {
     String tmodel = modelUri;
     if (m.isAssociation())
-      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), txn);
+      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), isc);
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $s $n subquery (select $t from <").append(tmodel)
        .append("> where $o <rdf:type> $t) from <").append(modelUri).append("> where ")
@@ -671,16 +684,16 @@ public class ItqlStore extends AbstractTripleStore {
       applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
     qry.append(";");
 
-    return execCollectionsQry(qry.toString(), txn, types);
+    return execCollectionsQry(qry.toString(), isc, types);
   }
 
-  private List<String> getRdfBag(String sub, String pred, String modelUri, Transaction txn,
+  private List<String> getRdfBag(String sub, String pred, String modelUri, ItqlStoreConnection isc,
                                  Map<String, Set<String>> types, Mapper m, SessionFactory sf,
                                  List<Filter> filters)
         throws OtmException {
     String tmodel = modelUri;
     if (m.isAssociation())
-      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), txn);
+      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), isc);
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $p subquery (select $t from <").append(tmodel)
        .append("> where $o <rdf:type> $t) from <")
@@ -691,13 +704,12 @@ public class ItqlStore extends AbstractTripleStore {
       applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
     qry.append(";");
 
-    return execCollectionsQry(qry.toString(), txn, types);
+    return execCollectionsQry(qry.toString(), isc, types);
   }
 
-  private List<String> execCollectionsQry(String qry, Transaction txn,
+  private List<String> execCollectionsQry(String qry, ItqlStoreConnection isc,
       Map<String, Set<String>> types) throws OtmException {
-    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
-    SessionFactory      sf  = txn.getSession().getSessionFactory();
+    SessionFactory sf = isc.getSession().getSessionFactory();
 
     log.debug("rdf:List/rdf:Bag query : " + qry);
     List<Answer> ans;
@@ -779,13 +791,13 @@ public class ItqlStore extends AbstractTripleStore {
     qa.close();
   }
 
-  public List list(Criteria criteria, Transaction txn) throws OtmException {
+  public List list(Criteria criteria, Connection con) throws OtmException {
     ItqlCriteria ic = new ItqlCriteria(criteria);
     String qry = ic.buildUserQuery();
     log.debug("list: " + qry);
     List<Answer> ans;
     try {
-      ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
+      ItqlStoreConnection isc = (ItqlStoreConnection) con;
       ans = isc.getItqlClient().doQuery(qry);
     } catch (IOException ioe) {
       throw new OtmException("error performing query: " + qry, ioe);
@@ -795,12 +807,13 @@ public class ItqlStore extends AbstractTripleStore {
     return ic.createResults(ans);
   }
 
-  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Transaction txn)
+  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Connection con)
       throws OtmException {
-    ItqlQuery iq = new ItqlQuery(query, filters, txn.getSession());
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
+
+    ItqlQuery iq = new ItqlQuery(query, filters, isc.getSession());
     QueryInfo qi = iq.parseItqlQuery();
 
-    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
     List<Answer> ans;
     try {
       ans = isc.getItqlClient().doQuery(qi.getQuery());
@@ -811,11 +824,11 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     return new ItqlOQLResults(ans.get(0), qi, iq.getWarnings().toArray(new String[0]),
-                              txn.getSession());
+                              isc.getSession());
   }
 
-  public Results doNativeQuery(String query, Transaction txn) throws OtmException {
-    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
+  public Results doNativeQuery(String query, Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
     List<Answer> ans;
     try {
       ans = isc.getItqlClient().doQuery(query);
@@ -829,11 +842,11 @@ public class ItqlStore extends AbstractTripleStore {
       throw new QueryException("error performing query '" + query + "' - message was: " +
                                ans.get(0).getMessage());
 
-    return new ItqlNativeResults(ans.get(0), txn.getSession());
+    return new ItqlNativeResults(ans.get(0), isc.getSession());
   }
 
-  public void doNativeUpdate(String command, Transaction txn) throws OtmException {
-    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection(this);
+  public void doNativeUpdate(String command, Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
     try {
       isc.getItqlClient().doUpdate(command);
     } catch (IOException ioe) {
@@ -841,20 +854,20 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static String getModelUri(String modelId, Transaction txn) throws OtmException {
-    ModelConfig mc = txn.getSession().getSessionFactory().getModel(modelId);
+  private static String getModelUri(String modelId, ItqlStoreConnection isc) throws OtmException {
+    ModelConfig mc = isc.getSession().getSessionFactory().getModel(modelId);
     if (mc == null) // Happens if using a Class but the model was not added
       throw new OtmException("Unable to find model '" + modelId + "'");
     return mc.getUri().toString();
   }
 
-  private ItqlClient getItqlClient(URI serverUri, Map<String, String> aliases) throws OtmException {
+  private ItqlClient getItqlClient(Map<String, String> aliases, boolean useCache)
+      throws OtmException {
     synchronized (conCache) {
       ItqlClient res;
 
-      List<ItqlClient> list = conCache.get(serverUri);
-      if (list != null && list.size() > 0) {
-        res = list.remove(list.size() - 1);
+      if (useCache && !conCache.isEmpty()) {
+        res = conCache.remove(conCache.size() - 1);
       } else {
         try {
           res = itqlFactory.createClient(serverUri);
@@ -870,97 +883,60 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private void returnItqlClient(URI serverUri, ItqlClient itql) {
+  private void returnItqlClient(ItqlClient itql) {
     synchronized (conCache) {
-      List<ItqlClient> list = conCache.get(serverUri);
-      if (list == null)
-        conCache.put(serverUri, list = new ArrayList<ItqlClient>());
-      list.add(itql);
+      conCache.add(itql);
     }
   }
 
+  // TODO: move this method into session so it can be part of a tx
   public void createModel(ModelConfig conf) throws OtmException {
-    ItqlClient itql = getItqlClient(serverUri, null);
-    try {
-      String type = (conf.getType() == null) ? "mulgara:Model" : conf.getType().toString();
-      itql.doUpdate("create <" + conf.getUri() + "> <" + type + ">;");
-      returnItqlClient(serverUri, itql);
-    } catch (Exception e) {
-      throw new OtmException("Failed to create model <" + conf.getUri() + ">", e);
-    }
+    String type = (conf.getType() == null) ? "mulgara:Model" : conf.getType().toString();
+    runSingleCmd("create <" + conf.getUri() + "> <" + type + ">;",
+                 "Failed to create model <" + conf.getUri() + ">");
   }
 
+  // TODO: move this method into session so it can be part of a tx
   public void dropModel(ModelConfig conf) throws OtmException {
-    ItqlClient itql = getItqlClient(serverUri, null);
+    runSingleCmd("drop <" + conf.getUri() + ">;", "Failed to drop model <" + conf.getUri() + ">");
+  }
+
+  private void runSingleCmd(String itql, String errMsg) throws OtmException {
+    /* can't use cached clients because mulgara disallows using a session with both internal
+     * (begin/commit) and external (getXAResource) transactions. When we move the model operations
+     * into session and hence make them part of transaction then we won't have this problem.
+     */
+    ItqlClient con = getItqlClient(null, false);
     try {
-      itql.doUpdate("drop <" + conf.getUri() + ">;");
-      returnItqlClient(serverUri, itql);
+      con.doUpdate(itql);
     } catch (Exception e) {
-      throw new OtmException("Failed to drop model <" + conf.getUri() + ">", e);
+      throw new OtmException(errMsg, e);
+    } finally {
+      con.close();
     }
   }
 
   private class ItqlStoreConnection extends AbstractConnection {
-    private final SessionFactory sf;
-    private       ItqlClient     itql;
+    private ItqlClient   itql;
 
-    public ItqlStoreConnection(SessionFactory sf) throws OtmException {
-      this.sf = sf;
-      itql = ItqlStore.this.getItqlClient(ItqlStore.this.serverUri, sf.listAliases());
+    public ItqlStoreConnection(Session sess, boolean readOnly) throws OtmException {
+      super(sess);
+      itql = ItqlStore.this.getItqlClient(sess.getSessionFactory().listAliases(), true);
+
       try {
-        itql.beginTxn("");
+        enlistResource(readOnly ? itql.getReadOnlyXAResource() : itql.getXAResource());
       } catch (IOException ioe) {
-        throw new OtmException("error starting transaction", ioe);
+        throw new OtmException("Error getting xa-resource", ioe);
       }
     }
 
-    public ItqlClient getItqlClient() {
+    public ItqlClient getItqlClient() throws OtmException {
       return itql;
     }
 
-    protected void doPrepare() throws OtmException {
-      if (itql == null) {
-        log.warn("Called commit but no transaction is active", new Throwable());
-        return;
-      }
-
-      try {
-        itql.commitTxn("");
-      } catch (IOException ioe) {
-        throw new OtmException("error committing transaction", ioe);
-      }
-      ItqlStore.this.returnItqlClient(ItqlStore.this.serverUri, itql);
+    public void close() {
+      returnItqlClient(itql);
       itql = null;
     }
-
-    protected void doRollback() throws OtmException {
-      if (itql == null) {
-        log.warn("Called rollback but no transaction is active", new Throwable());
-        return;
-      }
-      abort(true);
-    }
-
-    private void abort(boolean throwEx) throws OtmException {
-      try {
-        itql.rollbackTxn("");
-        ItqlStore.this.returnItqlClient(ItqlStore.this.serverUri, itql);
-        itql = null;
-      } catch (IOException ioe) {
-        if (throwEx)
-          throw new OtmException("error rolling back transaction", ioe);
-        else
-          log.warn("Error during rollback", ioe);
-      } finally {
-        if (itql != null) {
-          try {
-            itql.close();
-          } finally {
-            itql = null;
-          }
-        }
-      }
-    }
-
   }
 }

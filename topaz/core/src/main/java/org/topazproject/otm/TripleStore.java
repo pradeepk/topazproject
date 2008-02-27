@@ -29,11 +29,11 @@ public interface TripleStore extends Store {
    * @param cm the class metadata for the object
    * @param id the id/subject-uri for the object
    * @param o the object
-   * @param txn the transaction context
+   * @param con the connection to use
    *
    * @throws OtmException on an error
    */
-  public <T> void insert(ClassMetadata<T> cm, String id, T o, Transaction txn) throws OtmException;
+  public <T> void insert(ClassMetadata<T> cm, String id, T o, Connection con) throws OtmException;
 
   /**
    * Persists parts of an object in the triple store.
@@ -42,12 +42,12 @@ public interface TripleStore extends Store {
    * @param fields the fields that are to be selectively persisted
    * @param id the id/subject-uri for the object
    * @param o the object
-   * @param txn the transaction context
+   * @param con the connection to use
    *
    * @throws OtmException on an error
    */
   public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o,
-                         Transaction txn) throws OtmException;
+                         Connection con) throws OtmException;
 
   /**
    * Removes an object from the triple store.
@@ -55,11 +55,11 @@ public interface TripleStore extends Store {
    * @param cm the class metadata for the object
    * @param id the id/subject-uri for the object
    * @param o the object
-   * @param txn the transaction context
+   * @param con the connection to use
    *
    * @throws OtmException on an error
    */
-  public <T> void delete(ClassMetadata<T> cm, String id, T o, Transaction txn) throws OtmException;
+  public <T> void delete(ClassMetadata<T> cm, String id, T o, Connection con) throws OtmException;
 
   /**
    * Removes parts of an object from the triple store.
@@ -68,12 +68,12 @@ public interface TripleStore extends Store {
    * @param fields the fields that are to be selectively deleted
    * @param id the id/subject-uri for the object
    * @param o the object
-   * @param txn the transaction context
+   * @param con the connection to use
    *
    * @throws OtmException on an error
    */
   public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
-                         Transaction txn) throws OtmException;
+                         Connection con) throws OtmException;
 
   /**
    * Gets an object from the triple store.
@@ -81,7 +81,7 @@ public interface TripleStore extends Store {
    * @param cm the class metadata for the object
    * @param id the id/subject-uri for the object
    * @param instance the instance to be refreshed or null 
-   * @param txn the transaction context
+   * @param con the connection to use
    * @param filters the filters to use, or null if there are none
    * @param filterObj whether the object itself needs filtering (if false only the fields are
    *                  filtered)
@@ -90,20 +90,20 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> T get(ClassMetadata<T> cm, String id, T instance, Transaction txn,
+  public <T> T get(ClassMetadata<T> cm, String id, T instance, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException;
 
   /**
    * Lists objects matching the given Criteria.
    *
    * @param criteria the criteria
-   * @param txn the transaction context
+   * @param con the connection to use
    *
    * @return list of result objects
    *
    * @throws OtmException on an error
    */
-  public List list(Criteria criteria, Transaction txn)
+  public List list(Criteria criteria, Connection con)
                           throws OtmException;
 
   /**
@@ -111,31 +111,31 @@ public interface TripleStore extends Store {
    *
    * @param query   the preparsed query
    * @param filters the list of filters to apply
-   * @param txn     the transaction context
+   * @param con the connection to use
    * @return the query results
    * @throws OtmException on an error
    */
-  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Transaction txn)
+  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Connection con)
       throws OtmException;
 
   /**
    * Execute a native query.
    *
    * @param query the native query string
-   * @param txn   the transaction context
+   * @param con the connection to use
    * @return the query results
    * @throws OtmException on an error
    */
-  public Results doNativeQuery(String query, Transaction txn) throws OtmException;
+  public Results doNativeQuery(String query, Connection con) throws OtmException;
 
   /**
    * Execute a native update.
    *
    * @param command the native command(s) to execute
-   * @param txn     the transaction context
+   * @param con the connection to use
    * @throws OtmException on an error
    */
-  public void doNativeUpdate(String command, Transaction txn) throws OtmException;
+  public void doNativeUpdate(String command, Connection con) throws OtmException;
 
   /**
    * Creates a new model/graph in the persistence store.

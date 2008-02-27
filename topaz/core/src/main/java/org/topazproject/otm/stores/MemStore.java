@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
+
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
@@ -27,8 +30,7 @@ import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
-import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.Transaction;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
@@ -52,16 +54,16 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public Connection openConnection(SessionFactory sf) {
-    return new MemStoreConnection(storage);
+  public Connection openConnection(Session sess, boolean readOnly) throws OtmException {
+    return new MemStoreConnection(storage, sess);
   }
 
   /*
    * inherited javadoc
    */
   public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
-                         Transaction txn) throws OtmException {
-    MemStoreConnection msc     = (MemStoreConnection) txn.getConnection(this);
+                         Connection con) throws OtmException {
+    MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
 
     storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getTypes().toArray(new String[0]));
@@ -70,12 +72,12 @@ public class MemStore extends AbstractTripleStore {
       if (m.hasInverseUri())
         continue;
 
-      Binder b = m.getBinder(txn.getSession());
+      Binder b = m.getBinder(msc.getSession());
       if (!m.isAssociation())
         storage.insert(cm.getModel(), id, m.getUri(), (String[]) b.get(o).toArray(new String[0]));
       else
         storage.insert(cm.getModel(), id, m.getUri(),
-                       txn.getSession().getIds(b.get(o)).toArray(new String[0]));
+                       msc.getSession().getIds(b.get(o)).toArray(new String[0]));
     }
   }
 
@@ -83,8 +85,8 @@ public class MemStore extends AbstractTripleStore {
    * inherited javadoc
    */
   public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o,
-                         Transaction txn) throws OtmException {
-    MemStoreConnection msc     = (MemStoreConnection) txn.getConnection(this);
+                         Connection con) throws OtmException {
+    MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
     String             model   = cm.getModel();
 
@@ -95,12 +97,12 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public <T> T get(ClassMetadata<T> cm, String id, T instance, Transaction txn,
+  public <T> T get(ClassMetadata<T> cm, String id, T instance, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException {
     if (filters != null && filters.size() > 0)
       throw new OtmException("Filters are not supported");
 
-    MemStoreConnection        msc     = (MemStoreConnection) txn.getConnection(this);
+    MemStoreConnection        msc     = (MemStoreConnection) con;
     Storage                   storage = msc.getStorage();
     String                    model   = cm.getModel();
 
@@ -126,23 +128,23 @@ public class MemStore extends AbstractTripleStore {
       }
     }
 
-    return instantiate(txn.getSession(), instance, cm, id, value, rvalue, 
+    return instantiate(msc.getSession(), instance, cm, id, value, rvalue, 
         new HashMap<String, Set<String>>());
   }
 
   /*
    * inherited javadoc
    */
-  public List list(Criteria criteria, Transaction txn)
+  public List list(Criteria criteria, Connection con)
             throws OtmException {
-    MemStoreConnection msc      = (MemStoreConnection) txn.getConnection(this);
+    MemStoreConnection msc      = (MemStoreConnection) con;
     Storage            storage  = msc.getStorage();
     ClassMetadata<?>   cm       = criteria.getClassMetadata();
     Set<String>        subjects = conjunction(criteria.getCriterionList(), criteria, storage);
     List               results  = new ArrayList();
 
     for (String id : subjects) {
-      Object o = txn.getSession().get(cm.getSourceClass(), id);
+      Object o = msc.getSession().get(cm.getSourceClass(), id);
 
       if (o != null)
         results.add(o);
@@ -154,7 +156,7 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Transaction txn)
+  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Connection con)
                   throws OtmException {
     throw new OtmException("OQL queries not supported");
   }
@@ -162,14 +164,14 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public Results doNativeQuery(String query, Transaction txn) throws OtmException {
+  public Results doNativeQuery(String query, Connection con) throws OtmException {
     throw new OtmException("Native queries not supported");
   }
 
   /*
    * inherited javadoc
    */
-  public void doNativeUpdate(String query, Transaction txn) throws OtmException {
+  public void doNativeUpdate(String query, Connection con) throws OtmException {
     throw new OtmException("Native updates not supported");
   }
 
@@ -498,16 +500,28 @@ public class MemStore extends AbstractTripleStore {
   private static class MemStoreConnection extends AbstractConnection {
     private Storage storage;
 
-    public MemStoreConnection(Storage backingStore) {
+    public MemStoreConnection(Storage backingStore, Session sess) throws OtmException {
+      super(sess);
       this.storage = new Storage(backingStore);
+
+      XAResource xaRes = new XAResource() {
+        public void    commit(Xid xid, boolean onePhase) { storage.commit(); }
+        public void    rollback(Xid xid)                 { storage.rollback(); }
+        public int     prepare(Xid xid)                  { return XA_OK; }
+
+        public void    start(Xid xid, int flags)         { }
+        public void    end(Xid xid, int flags)           { }
+        public Xid[]   recover(int flag)                 { return new Xid[0]; }
+        public void    forget(Xid xid)                   { }
+        public boolean isSameRM(XAResource xares)        { return xares == this; }
+        public int     getTransactionTimeout()           { return 0; }
+        public boolean setTransactionTimeout(int secs)   { return false; }
+      };
+
+      enlistResource(xaRes);
     }
 
-    public void doCommit() {
-      storage.commit();
-    }
-
-    public void doRollback() {
-      storage.rollback();
+    public void close() {
     }
 
     public Storage getStorage() {

@@ -9,136 +9,67 @@
  */
 package org.topazproject.otm.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import javax.transaction.Status;
+import javax.transaction.Transaction;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.Store;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
 
 /**
- * Transaction object.
+ * Implement local Transaction as a wrapper around a jta transaction.
  *
  * @author Pradeep Krishnan
  */
-class TransactionImpl implements Transaction {
-  private static final Log log     = LogFactory.getLog(TransactionImpl.class);
-  private AbstractSession          session;
-  private Map<Store, Connection>   connections = new LinkedHashMap<Store, Connection>();
-  private List<Connection>        managedConnections = null;
+public class TransactionImpl implements org.topazproject.otm.Transaction {
+  private final Session     session;
+  private final Transaction jtaTxn;
+
+  public int ctr = 0;           // temporary hack for problems with mulgara's blank-nodes
 
   /**
    * Creates a new Transaction object.
    *
    * @param session the owning session
+   * @param jtaTxn  the underlying jta transaction
    */
-  public TransactionImpl(AbstractSession session) {
+  public TransactionImpl(Session session, Transaction jtaTxn) {
     this.session = session;
+    this.jtaTxn  = jtaTxn;
   }
 
-  /*
-   * inherited javadoc
-   */
   public Session getSession() {
     return session;
   }
 
-  /*
-   * inherited javadoc
-   */
-  public Connection getConnection(Store store) throws OtmException {
-    if (session == null)
-      throw new OtmException("Attempt to use a closed transaction");
-
-    Connection conn = connections.get(store);
-    if (conn != null)
-      return conn;
-
-    if (managedConnections != null)
-      throw new OtmException("commit/rollback in progress. Too late to participate.");
-
-    conn = store.openConnection(session.getSessionFactory());
-    connections.put(store, conn);
-
-    return conn;
+  public void setRollbackOnly() throws OtmException {
+    try {
+      jtaTxn.setRollbackOnly();
+    } catch (Exception e) {
+      throw new OtmException("Error setting rollback-only", e);
+    }
   }
 
-  /*
-   * inherited javadoc
-   */
+  public boolean isRollbackOnly() throws OtmException {
+    try {
+      return (jtaTxn.getStatus() == Status.STATUS_MARKED_ROLLBACK);
+    } catch (Exception e) {
+      throw new OtmException("Error getting rollback-only status", e);
+    }
+  }
+
   public void commit() throws OtmException {
-    if (session == null)
-      throw new OtmException("Attempt to use a closed transaction");
-
-    Session.FlushMode fm = session.getFlushMode();
-    if (fm.implies(Session.FlushMode.commit))
-      session.flush();
-
-    createManagedList();
-
-    boolean ok = false;
     try {
-      for (Connection conn : managedConnections)
-        conn.prepare();
-      for (Connection conn : managedConnections)
-        conn.commit();
-
-      ok = true;
-    } finally {
-      try { if (!ok) rollback(); } catch (Throwable e) {}
-      close();
+      jtaTxn.commit();
+    } catch (Exception e) {
+      throw new OtmException("Error committing transaction", e);
     }
-
   }
 
-  /*
-   * inherited javadoc
-   */
   public void rollback() throws OtmException {
-    int idx = 0;
     try {
-      if (managedConnections == null)
-       createManagedList();
-
-      while (idx < managedConnections.size())
-        managedConnections.get(idx++).rollback();
-
-    } finally {
-      while (idx < managedConnections.size()) {
-        try {
-          managedConnections.get(idx++).rollback();
-        } catch (Throwable t) {
-        }
-      }
-      close();
+      jtaTxn.rollback();
+    } catch (Exception e) {
+      throw new OtmException("Error rolling back transaction", e);
     }
-  }
-
-  private void createManagedList() {
-    managedConnections = new ArrayList<Connection>(connections.values());
-    for (Store store : connections.keySet()) {
-      List<Connection> childList = connections.get(store).getChildConnections();
-      for (Store child : store.getChildStores()) {
-        Connection conn = connections.get(child);
-        if (conn != null) {
-          managedConnections.remove(conn);
-          childList.add(conn);
-        }
-      }
-    }
-  }
-
-  private void close() {
-    AbstractSession closed = session;
-    session = null;
-    if (closed != null)
-      closed.endTransaction();
   }
 }

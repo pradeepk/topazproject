@@ -9,8 +9,6 @@
  */
 package org.topazproject.otm;
 
-import java.util.List;
-
 /**
  * An abstraction to represent triple or blob stores.
  *
@@ -20,20 +18,12 @@ public interface Store {
   /**
    * Opens a connection to the store.
    *
-   * @param sf  the session factory
+   * @param session  the current session
+   * @param readOnly true if the connection should be read-only
    *
    * @return the connection
    *
    * @throws OtmException on an error
    */
-  public Connection openConnection(SessionFactory sf) throws OtmException;
-
-  /**
-   * Gets the child stores in a hierarchy set up by the Session Factory.
-   *
-   * @return a modifiable list maintained by Session Factory
-   * 
-   */
-  public List<Store> getChildStores();
-
+  public Connection openConnection(Session session, boolean readOnly) throws OtmException;
 }

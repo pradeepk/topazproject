@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.Synchronization;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +30,7 @@ import org.topazproject.otm.query.Results;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Connection;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.SessionFactory;
@@ -43,11 +46,16 @@ import org.topazproject.otm.Criteria;
  * @author Pradeep Krishnan
  */
 abstract class AbstractSession implements Session {
-  private static final Log                    log            = LogFactory.getLog(AbstractSession.class);
-  protected final SessionFactoryImpl           sessionFactory;
-  protected       Transaction                  txn            = null;
-  protected FlushMode flushMode = FlushMode.always;
-  protected final Map<String, Filter>            filters        = new HashMap<String, Filter>();
+  private static final Log                      log = LogFactory.getLog(AbstractSession.class);
+
+  protected final SessionFactoryImpl            sessionFactory;
+  protected       TransactionImpl               locTxn         = null;
+  protected       javax.transaction.Transaction jtaTxn         = null;
+  protected       boolean                       txnIsRO        = false;
+  protected       Connection                    tsCon          = null;
+  protected       Connection                    bsCon          = null;
+  protected       FlushMode                     flushMode      = FlushMode.always;
+  protected final Map<String, Filter>           filters        = new HashMap<String, Filter>();
 
   /**
    * Creates a new Session object.
@@ -69,26 +77,48 @@ abstract class AbstractSession implements Session {
    * inherited javadoc
    */
   public Transaction beginTransaction() throws OtmException {
-    if (txn == null)
-      txn = new TransactionImpl(this);
-    else
+    return beginTransaction(false);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Transaction beginTransaction(boolean readOnly) throws OtmException {
+    if (jtaTxn != null)
       throw new OtmException("A transaction is already active on this session");
 
-    return txn;
+    ensureTxActive(true);
+    locTxn = new TransactionImpl(this, jtaTxn);
+
+    txnIsRO = readOnly;
+
+    return locTxn;
   }
 
   /**
-   * Clears the txn when committed or rolled back.
+   * Clears the transaction flags when committed or rolled back.
    */
-  void endTransaction() {
-    txn = null;
+  private void endTransaction() {
+    locTxn = null;
+    jtaTxn = null;
+
+    if (tsCon != null)
+      tsCon.close();
+    tsCon  = null;
+
+    if (bsCon != null)
+      bsCon.close();
+    bsCon  = null;
   }
 
   /*
    * inherited javadoc
    */
   public Transaction getTransaction() {
-    return txn;
+    if (jtaTxn != null && locTxn == null)
+      locTxn = new TransactionImpl(this, jtaTxn);
+
+    return locTxn;
   }
 
   /*
@@ -97,10 +127,13 @@ abstract class AbstractSession implements Session {
   public void close() throws OtmException {
     clear();
 
-    if (txn != null)
-      txn.rollback();
-
-    txn = null;
+    if (jtaTxn != null) {
+      try {
+        jtaTxn.rollback();
+      } catch (Exception e) {
+        throw new OtmException("Error setting rollback-only", e);
+      }
+    }
   }
 
   /*
@@ -144,15 +177,12 @@ abstract class AbstractSession implements Session {
    * inherited javadoc
    */
   public List list(Criteria criteria) throws OtmException {
-    if (txn == null)
-      throw new OtmException("No transaction active");
-
     if (flushMode.implies(FlushMode.always))
       flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
 
-    return store.list(criteria, txn);
+    return store.list(criteria, getTripleStoreCon());
   }
 
   /*
@@ -166,29 +196,23 @@ abstract class AbstractSession implements Session {
    * inherited javadoc
    */
   public Results doNativeQuery(String query) throws OtmException {
-    if (txn == null)
-      throw new OtmException("No transaction active");
-
     if (flushMode.implies(FlushMode.always))
       flush(); // so that mods are visible to queries
 
     TripleStore store = sessionFactory.getTripleStore();
 
-    return store.doNativeQuery(query, txn);
+    return store.doNativeQuery(query, getTripleStoreCon());
   }
 
   /*
    * inherited javadoc
    */
   public void doNativeUpdate(String command) throws OtmException {
-    if (txn == null)
-      throw new OtmException("No transaction active");
-
     if (flushMode.implies(FlushMode.always))
       flush(); // so that ordering is preserved
 
     TripleStore store = sessionFactory.getTripleStore();
-    store.doNativeUpdate(command, txn);
+    store.doNativeUpdate(command, getTripleStoreCon());
   }
 
   /*
@@ -226,6 +250,69 @@ abstract class AbstractSession implements Session {
       throw new OtmException("No id set for " + clazz + " instance " + o);
 
     return (String) ids.get(0);
+  }
+
+  /** 
+   * Get the connection to the triple-store. If the connection does not exist yet it is created;
+   * otherwise the existing one is returned. 
+   * 
+   * @return the triple-store connection
+   */
+  protected Connection getTripleStoreCon() throws OtmException {
+    if (tsCon == null) {
+      ensureTxActive(false);
+      tsCon = sessionFactory.getTripleStore().openConnection(this, txnIsRO);
+    }
+
+    return tsCon;
+  }
+
+  /** 
+   * Get the connection to the blob-store. If the connection does not exist yet it is created;
+   * otherwise the existing one is returned. 
+   * 
+   * @return the blob-store connection
+   */
+  protected Connection getBlobStoreCon() throws OtmException {
+    if (bsCon == null) {
+      ensureTxActive(false);
+      bsCon = sessionFactory.getBlobStore().openConnection(this, txnIsRO);
+    }
+
+    return bsCon;
+  }
+
+  private void ensureTxActive(boolean start) throws OtmException {
+    if (jtaTxn != null)
+      return;
+
+    try {
+      TransactionManager tm = getSessionFactory().getTransactionManager();
+
+      jtaTxn = tm.getTransaction();
+      if (jtaTxn == null) {
+        if (!start)
+          throw new OtmException("No active transaction");
+
+        tm.begin();
+        jtaTxn = tm.getTransaction();
+      }
+
+      jtaTxn.registerSynchronization(new Synchronization() {
+        public void beforeCompletion() {
+          if (getFlushMode().implies(FlushMode.commit))
+            flush();
+        }
+
+        public void afterCompletion(int status) {
+          endTransaction();
+        }
+      });
+    } catch (OtmException oe) {
+      throw oe;
+    } catch (Exception e) {
+      throw new OtmException("Error setting up transaction", e);
+    }
   }
 
   /*

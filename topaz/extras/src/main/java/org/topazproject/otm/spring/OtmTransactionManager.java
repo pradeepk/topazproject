@@ -10,11 +10,6 @@
 
 package org.topazproject.otm.spring;
 
-import java.lang.ref.WeakReference;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -27,9 +22,6 @@ import org.springframework.transaction.TransactionUsageException;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.SmartTransactionObject;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A Spring transaction-manager that uses OTM transactions. Due to the current limitations on
@@ -53,66 +45,26 @@ import org.apache.commons.logging.LogFactory;
  * @author Ronald Tschalär
  */
 public class OtmTransactionManager extends AbstractPlatformTransactionManager {
-  private static final Log log = LogFactory.getLog(OtmTransactionManager.class);
-
-  private final Map<Transaction, WeakReference<TransactionObject>> txnList =
-                                      new HashMap<Transaction, WeakReference<TransactionObject>>();
   private Session session;
 
   /** 
    * Create a new otm-transaction-manager instance. 
    */
   public OtmTransactionManager() {
-    setRollbackOnCommitFailure(true);
+    setRollbackOnCommitFailure(false);
   }
 
   @Override
   public Object doGetTransaction() {
-    Transaction tx = session.getTransaction();
-    if (tx == null)
-      return new TransactionObject(session);
-
-    /* share the transaction-object so that setRollbackOnly() sets rollback globally */
-    synchronized (txnList) {
-      WeakReference<TransactionObject> ref = txnList.get(tx);
-      if (ref != null) {
-        TransactionObject txObj = ref.get();
-        if (txObj != null)
-          return txObj;
-
-        txnList.remove(tx);
-      }
-      return new TransactionObject(session);
-    }
-  }
-
-  private void purgeStaleTx() {
-    for (Iterator<Map.Entry<Transaction, WeakReference<TransactionObject>>> iter =
-             txnList.entrySet().iterator(); iter.hasNext(); ) {
-      Map.Entry<Transaction, WeakReference<TransactionObject>> e = iter.next();
-      if (e.getValue().get() == null) {
-        log.info("Cleaning up abandonded transaction " + e.getKey());
-        iter.remove();
-
-        try {
-          e.getKey().rollback();
-        } catch (OtmException oe) {
-          log.warn("Error rolling back abandonded transaction", oe);
-        }
-      }
-    }
+    return new TransactionObject(session);
   }
 
   @Override
   public void doBegin(Object transaction, TransactionDefinition definition)
       throws TransactionException {
     try {
-      Transaction tx = ((TransactionObject) transaction).getSession().beginTransaction();
-
-      synchronized (txnList) {
-        purgeStaleTx();
-        txnList.put(tx, new WeakReference((TransactionObject) transaction));
-      }
+      Transaction tx =
+          ((TransactionObject) transaction).getSession().beginTransaction(definition.isReadOnly());
     } catch (OtmException oe) {
       throw new TransactionSystemException("error beginning transaction", oe);
     }
@@ -130,10 +82,6 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
       tx.commit();
     } catch (OtmException oe) {
       throw new TransactionSystemException("error committing transaction", oe);
-    } finally {
-      synchronized (txnList) {
-        txnList.remove(tx);
-      }
     }
   }
 
@@ -149,10 +97,6 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
       tx.rollback();
     } catch (OtmException oe) {
       throw new TransactionSystemException("error rolling back transaction", oe);
-    } finally {
-      synchronized (txnList) {
-        txnList.remove(tx);
-      }
     }
   }
 
@@ -164,7 +108,11 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
   @Override
   protected void doSetRollbackOnly(DefaultTransactionStatus status) throws TransactionException {
     TransactionObject txObj = (TransactionObject) status.getTransaction();
-    txObj.setRollbackOnly(true);
+    try {
+      txObj.setRollbackOnly();
+    } catch (OtmException oe) {
+      throw new TransactionSystemException("error setting rollback-only", oe);
+    }
   }
 
   /**
@@ -177,9 +125,11 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
     this.session = session;
   }
 
+  /**
+   * Implement SmartTransactionObject so spring can do proper rollback-only handling.
+   */
   private class TransactionObject implements SmartTransactionObject {
     private final Session session;
-    private       boolean rollbackOnly = false;
 
     public TransactionObject(Session session) {
       this.session = session;
@@ -189,12 +139,12 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
       return session;
     }
 
-    void setRollbackOnly(boolean flag) {
-      rollbackOnly = flag;
+    void setRollbackOnly() {
+      session.getTransaction().setRollbackOnly();
     }
 
     public boolean isRollbackOnly() {
-      return rollbackOnly;
+      return session.getTransaction().isRollbackOnly();
     }
   }
 }

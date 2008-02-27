@@ -74,7 +74,7 @@ class QueryImpl extends Query {
     TripleStore store = sess.getSessionFactory().getTripleStore();
 
     query.applyParameterValues(paramValues, sess.getSessionFactory());
-    return store.doQuery(query, filters, sess.getTransaction());
+    return store.doQuery(query, filters, ((SessionImpl) sess).getTripleStoreCon());
   }
 
   public Set<String> getParameterNames() {

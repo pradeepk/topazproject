@@ -9,74 +9,45 @@
  */
 package org.topazproject.otm;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.transaction.xa.XAResource;
 
 /**
- * A connection impl that coordinates the operations on its child
- * connections. The paradigm that is followed here is the Tree 2-Phase commit.
+ * A connection impl that stores the current session.
  *
  * @author Pradeep Krishnan
   */
 public abstract class AbstractConnection implements Connection {
-  private final List<Connection> childConnections = new ArrayList<Connection>();
+  private final Session sess;
 
-  /*
-   * inherited javadoc
+  /** 
+   * Create a new connection. 
+   * 
+   * @param sess the session this connection belongs to
    */
-  public void prepare() throws OtmException {
-    for (Connection con : getChildConnections())
-      con.prepare();
-    doPrepare();
+  protected AbstractConnection(Session sess) {
+    this.sess = sess;
   }
 
-  /*
-   * inherited javadoc
+  /** 
+   * Get the owning session. 
+   * 
+   * @return the session
    */
-  public void commit() throws OtmException {
-    for (Connection con : getChildConnections())
-      con.commit();
-    doCommit();
+  public Session getSession() {
+    return sess;
   }
 
-  /*
-   * inherited javadoc
+  /** 
+   * Enlist the given xa-resource with the session's transaction-manager.
+   * 
+   * @param xaRes the xa-resource to enlist
+   * @throws OtmException if an error occurred enlisting <var>xaRes</var>
    */
-  public void rollback() throws OtmException {
-    int idx = 0;
-    List<Connection> cons = getChildConnections();
+  protected void enlistResource(XAResource xaRes) throws OtmException {
     try {
-      doRollback();
-      while (idx < cons.size())
-       cons.get(idx++).rollback();
-    } finally {
-      while (idx < cons.size())
-       try { cons.get(idx++).rollback(); } catch (Throwable t) {}
+      sess.getSessionFactory().getTransactionManager().getTransaction().enlistResource(xaRes);
+    } catch (Exception e) {
+      throw new OtmException("Error enlisting resource", e);
     }
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public List<Connection> getChildConnections() {
-    return childConnections;
-  }
-
-  /**
-   * Override in sub-classes to do the actual prepare on this Connection.
-   */
-  protected void doPrepare() throws OtmException {
-  }
-
-  /**
-   * Override in sub-classes to do the actual commit on this Connection.
-   */
-  protected void doCommit() throws OtmException {
-  }
-
-  /**
-   * Override in sub-classes to do the actual rollback on this Connection.
-   */
-  protected void doRollback() throws OtmException {
   }
 }

@@ -27,8 +27,7 @@ import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.Transaction;
+import org.topazproject.otm.Session;
 
 /**
  * Uses Fedora as a BlobStore. The current version of fedora is not
@@ -92,34 +91,34 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public Connection openConnection(SessionFactory sf) throws OtmException {
-    return new FedoraConnection(this);
+  public Connection openConnection(Session sess, boolean readOnly) throws OtmException {
+    return new FedoraConnection(this, sess);
   }
 
   /*
    * inherited javadoc
    */
-  public void insert(ClassMetadata cm, String id, byte[] blob, Transaction txn)
+  public void insert(ClassMetadata cm, String id, byte[] blob, Connection con)
               throws OtmException {
-    FedoraConnection fc = (FedoraConnection) txn.getConnection(this);
+    FedoraConnection fc = (FedoraConnection) con;
     fc.insert(cm, id, blob);
   }
 
   /*
    * inherited javadoc
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn)
+  public void delete(ClassMetadata cm, String id, Connection con)
               throws OtmException {
-    FedoraConnection fc = (FedoraConnection) txn.getConnection(this);
+    FedoraConnection fc = (FedoraConnection) con;
     fc.delete(cm, id);
   }
 
   /*
    * inherited javadoc
    */
-  public byte[] get(ClassMetadata cm, String id, Transaction txn)
+  public byte[] get(ClassMetadata cm, String id, Connection con)
              throws OtmException {
-    FedoraConnection fc = (FedoraConnection) txn.getConnection(this);
+    FedoraConnection fc = (FedoraConnection) con;
 
     return fc.get(cm, id);
   }
@@ -195,20 +194,20 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
    *
    * @param cm the ClassMetadata of the blob
    * @param prefix the prefix for the id
-   * @param txn the current transaction
+   * @param con the connection to use
    *
    * @return new blob-od gemerated by the most specific factory
    *
    * @throws OtmException on an error
    */
-  public String generateId(ClassMetadata cm, String prefix, Transaction txn)
+  public String generateId(ClassMetadata cm, String prefix, Connection con)
                     throws OtmException {
     FedoraBlobFactory bf   = mostSpecificBlobFactory(prefix);
 
     if (bf == null)
       throw new OtmException("Can't find a blob factory for " + prefix);
 
-    return prefix + bf.generateId(cm, (FedoraConnection) txn.getConnection(this));
+    return prefix + bf.generateId(cm, (FedoraConnection) con);
   }
 
   /**

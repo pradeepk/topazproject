@@ -9,10 +9,11 @@
  */
 package org.topazproject.fedora.otm;
 
-import org.topazproject.otm.BlobStore;
+import javax.transaction.xa.XAException;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Transaction;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
@@ -26,16 +27,16 @@ public class FedoraIdGenerator implements IdentifierGenerator {
   /*
    * inherited javadoc
    */
-  public String generate(ClassMetadata cm, Transaction txn) throws OtmException {
-    BlobStore bs = txn.getSession().getSessionFactory().getBlobStore();
+  public String generate(ClassMetadata cm, Session sess) throws OtmException {
+    FedoraConnection con = FedoraConnection.getCon(sess);
+    if (con == null) {
+      /* FIXME: using sf.getBlobStore() is a hack and will fail when a multi-blob store is used
+       * instead!
+       */
+      con = (FedoraConnection) sess.getSessionFactory().getBlobStore().openConnection(sess, false);
+    }
 
-    if (!(bs instanceof FedoraBlobStore))
-      throw new OtmException(getClass().getName() + " requires a "
-                             + FedoraBlobStore.class.getName() + " to be setup as the BlobStore");
-
-    FedoraBlobStore store = (FedoraBlobStore) bs;
-
-    return store.generateId(cm, prefix, txn);
+    return con.getBlobStore().generateId(cm, prefix, con);
   }
 
   /*
