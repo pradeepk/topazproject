@@ -266,14 +266,21 @@ def doQuery(query) {
     if (!query.trim().endsWith(';'))
       query <<= ';'
     return session.doNativeQuery(query.toString())
-  } catch (Exception e) {
+  } catch (Throwable e) {
     // really hacky...
     def m = e.getMessage() =~ /error performing query .* message was: (.*)/
     if (m.count)
       return m[0][1]
+
+    tx.setRollbackOnly()
     throw e
   } finally {
-    tx.commit()
+    if (tx.isRollbackOnly()) {
+      println "Rolling back transaction..."
+      tx.rollback()
+    } else {
+      tx.commit()
+    }
   }
 }
 
