@@ -21,7 +21,7 @@ var annotationConfig = {
   isPublic: true,
   dfltAnnSelErrMsg: 'This area of text cannot be annotated.',
   annSelErrMsg: null,
-  rangeInfoObj: new Object(),
+  rangeInfoObj: new Object()
 };
 
 var formConfig = {
