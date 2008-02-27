@@ -788,6 +788,13 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>packages</id>
+      <modules>
+        <module>packages</module> 
+      </modules>
+    </profile>
   </profiles>
 
   <build>
@@ -886,6 +893,7 @@
           <useReleaseProfile>false</useReleaseProfile>    <!-- no javadoc and source jars -->
           <tagBase>http://svn.topazproject.org/svn/tags</tagBase>
           <preparationGoals>clean install</preparationGoals>
+          <arguments>-Ppackages,rpm,release</arguments>
         </configuration>
       </plugin>
       <plugin>

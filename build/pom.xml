@@ -95,6 +95,7 @@
   <modules>
     <module>ant-tasks-plugin</module>
     <module>integration-tests-plugin</module>
+    <module>properties-plugin</module>
     <module>reports-plugin</module>
     <module>topaz-skin</module>
   </modules>

@@ -60,9 +60,10 @@
       <build>
         <plugins>
 
-          <plugin> <!-- Copy rpm into local repository and ~/.m2/rpms -->
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions><execution><id>copy-rpm</id></execution></executions>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <executions><execution><id>attach-rpm</id></execution></executions>
           </plugin>
 
           <plugin>
@@ -79,11 +80,6 @@
             </executions>
 
             <configuration>
-              <release>SNAPSHOT</release>
-              <copyright>Educational Community License version 1.0</copyright>
-              <distribution>Topaz Repository Framework</distribution>
-              <group>Applications/Internet</group>
-
               <mappings>
                 <mapping>
                   <directory>/usr/local/topaz</directory>

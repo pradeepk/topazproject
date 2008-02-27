@@ -2,7 +2,6 @@
 
 pt="-t00802"
 rt="-t00802_rc2-SNAPSHOT"
-rel=SNAPSHOT
 
 for f in \
     pom.xml \
@@ -17,8 +16,4 @@ for f in \
     packages/fedora/pom.xml \
   ; do
   perl -p -i -e "s/$pt/$rt/g" "$f"
-done
-
-for f in packages/*/pom.xml ; do
-  perl -p -i -e "s/<release>.*?<\/release>/<release>$rel<\/release>/g" "$f"
 done
