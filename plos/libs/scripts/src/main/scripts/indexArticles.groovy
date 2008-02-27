@@ -35,9 +35,11 @@ import org.topazproject.otm.stores.ItqlStore
 log = LogFactory.getLog(this.getClass());
 
 // parse args
-def cli = new CliBuilder(usage: 'indexArticles [-c config-overrides.xml]')
+def cli = new CliBuilder(usage: 'indexArticles [-c config-overrides.xml] [-s startDoi] [-o onlyDoi]')
 cli.h(longOpt:'help', 'help (this message)')
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz.xml')
+cli.s(args:1, 'startDoi - indexing will start with this Doi (alphabetical sort)')
+cli.o(args:1, 'onlyDoi - only index this Doi')
 args = ToolHelper.fixArgs(args)
 def opt = cli.parse(args);
 
@@ -81,6 +83,11 @@ tx.commit()
 def indexCount = 0
 while (results.next()) {
   def doi = "doi:${results.get('doi').toString().substring(9).replace('/', '%2F')}"
+
+  // parms allow skipping of Doi's
+  if (opt.o && doi.compareTo(opt.o) != 0) { continue }
+  if (opt.s && doi.compareTo(opt.s) < 0) { continue }
+
   print "re-indexing Article: $doi..."
 
   // re-index in each index
