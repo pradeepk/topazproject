@@ -174,7 +174,7 @@
              phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
              document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
              document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-             document.write ("&amp;what=zone:195&amp;source=NTD&amp;target=_top&amp;block=1");
+             document.write ("&amp;what=zone:160&amp;source=ONE&amp;target=_top&amp;block=1");
              document.write ("&amp;exclude=" + document.phpAds_used);
              if (document.referrer)
                 document.write ("&amp;referer=" + escape(document.referrer));
@@ -188,7 +188,7 @@
              phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
              document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
              document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-             document.write ("&amp;what=zone:196&amp;source=NTD&amp;target=_top&amp;block=1");
+             document.write ("&amp;what=zone:161&amp;source=ONE&amp;target=_top&amp;block=1");
              document.write ("&amp;exclude=" + document.phpAds_used);
              if (document.referrer)
                 document.write ("&amp;referer=" + escape(document.referrer));
@@ -202,7 +202,7 @@
              phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
              document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
              document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-             document.write ("&amp;what=zone:197&amp;source=NTD&amp;target=_top&amp;block=1");
+             document.write ("&amp;what=zone:162&amp;source=ONE&amp;target=_top&amp;block=1");
              document.write ("&amp;exclude=" + document.phpAds_used);
              if (document.referrer)
                 document.write ("&amp;referer=" + escape(document.referrer));
@@ -244,7 +244,7 @@
               phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
               document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
               document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-              document.write ("&amp;what=zone:192&amp;source=NTD&amp;target=_top&amp;block=1&amp;blockcampaign=1");
+              document.write ("&amp;what=zone:36&amp;source=ONE&amp;target=_top&amp;block=1&amp;blockcampaign=1");
               document.write ("&amp;exclude=" + document.phpAds_used);
               if (document.referrer)
                 document.write ("&amp;referer=" + escape(document.referrer));
