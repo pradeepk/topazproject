@@ -248,7 +248,7 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 /* Search Dashboard */
 
 	#db 			{ padding: 0; text-align: center; font-size: .8em; position: absolute; top: 50px; right: -20px; padding: 0; border-width: 0; color: #888; background: url(../images/pone_db_bg.gif) no-repeat top left; padding: 8px 15px 10px 11px;}
-#db fieldset 	{ padding: 0; margin: 0; background-color: transparent; vertical-align: top; width: 246px; border: none; }
+#db fieldset 	{ padding: 0; margin: 0; background-color: transparent; vertical-align: top; width: 327px; border: none; }
 #db fieldset div{ position: relative; }
 #db fieldset legend,
 #db fieldset label
@@ -267,6 +267,10 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 	border-width: 0;
 }
 #db fieldset input.button { float: left; position: relative; top:-1px; }
+#db a#advSearch { display:block; width:65px; position:absolute; text-align:left; top:7px; left:263px; color:#fff; }
+#db a#advSearch:link,
+#db a#advSearch:visited { text-decoration:none; }
+#db a#advSearch:hover { text-decoration:underline; }
 
 /* new layout */
 #db fieldset input.button { padding: 0 5px; }
