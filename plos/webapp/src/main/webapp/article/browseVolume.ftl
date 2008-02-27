@@ -25,7 +25,7 @@
 <!-- Example Dynamic Drive Tabs -->
 
 <#if volumeInfos?exists>
-    <h2>Past Issues</h2>
+    <h2>All Issues</h2>
     <div class="plosTabsContainer">
     <ul id="volumeTabs" class="plostabs">
       <#assign volNum = 1/>
