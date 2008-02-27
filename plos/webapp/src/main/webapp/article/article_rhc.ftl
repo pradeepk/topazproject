@@ -82,6 +82,7 @@
 
     <div class="commentview" id="ratingRhc1">
       <#include "/article/article_rhc_rating.ftl">
+      <div class="clearer">&nbsp;</div>
     </div>
 
 
