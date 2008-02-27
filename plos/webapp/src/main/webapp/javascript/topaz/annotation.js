@@ -96,7 +96,14 @@ topaz.annotation = {
 
     return false;
   },
-  
+
+  handleUserSelectionError: function() {
+    var msg = annotationConfig.annSelErrMsg ? 
+      annotationConfig.annSelErrMsg : annotationConfig.dfltAnnSelErrMsg;
+    alert(msg);
+    annotationConfig.annSelErrMsg = null; // reset
+  },
+
   /** 
    * topaz.annotation.createNewAnnotation()
    * 
@@ -119,7 +126,7 @@ topaz.annotation = {
     annotationConfig.rangeInfoObj = this.getRangeOfSelection();
     
     if (annotationConfig.rangeInfoObj == annotationConfig.excludeSelection) {
-      alert("This area of text cannot be annotated.");
+      this.handleUserSelectionError();
       getArticle();
       return false;
     }
@@ -168,6 +175,7 @@ topaz.annotation = {
 	 * @return ""													  	No html fragment available.
 	 * @return html		Document fragment 			Success.
    */
+  /*
   getHTMLOfSelection: function () {
     var range;
     
@@ -191,7 +199,8 @@ topaz.annotation = {
       return '';
     }
   },
-  
+  */
+
   /** 
    * topaz.annotation.getHTMLOfRange()
    * 
@@ -200,6 +209,7 @@ topaz.annotation = {
 	 * @return ""													  	No html fragment available.
 	 * @return html		Document fragment 			Success.
    */
+  /*
   getHTMLOfRange: function (range) {
   	// IE
     if (document.selection && document.selection.createRange) {
@@ -216,7 +226,8 @@ topaz.annotation = {
       return '';
     }
   },
-  
+  */
+
   /**
    * topaz.annotation.getRangeOfSelection()
    * 
@@ -272,7 +283,7 @@ topaz.annotation = {
 
   	var marker = dojo.byId(annotationConfig.regionalDialogMarker);
   	_dlg.setMarker(marker);
-	showAnnotationDialog();
+    showAnnotationDialog();
   },
 
 	/**
@@ -379,6 +390,41 @@ topaz.annotation = {
       return false;
     }
   },
+  
+  /**
+   * validateAndTextualizeRange(range)
+   *
+   * Verifies then textualizes a range.
+   *
+   * @param range A DOM range object.
+   * @return null When successful.
+   * @return "noSelect" upon error.
+   */
+  validateAndTextualizeRange: function(range) {
+    if(range.startContainer.nodeType == 1) {
+      // element-based user selection...
+      if(range.endContainer.nodeType != 1 || range.startContainer != range.endContainer) {
+        return annotationConfig.excludeSelection;
+      }
+      // enforce that only one element is selectable when we have an element-based user selection
+      // (this is usually an li tag)
+      if(Math.abs(range.startOffset - range.endOffset) != 1) {
+        annotationConfig.annSelErrMsg = 'Only one item may be selected for notation.';
+        return annotationConfig.excludeSelection;
+      }
+      // it is presumed all contained text w/in the following container (node) is selected
+      var ftn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.startOffset], true);
+      var ltn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.endOffset - 1], false);
+      range.setStart(ftn, 0);
+      range.setEnd(ltn, ltn.length);
+    }
+    else {
+      // text-based user selection...
+      // ensure we are not spanning multiple li tags
+      // NOTE: verified w/ Susanne DeRisi
+      // TODO finish
+    }
+  },
 
 	/**
 	 * topaz.annotation.findMozillaRange()
@@ -443,6 +489,12 @@ topaz.annotation = {
           startRange.setStart(rangeSelection.extentNode, rangeSelection.extentOffset);
           startRange.setEnd(rangeSelection.baseNode, rangeSelection.baseOffset);
         }
+      }
+
+      // textualize selection range if not already 
+      // and do element-based selection range validation if applicable 
+      if(this.validateAndTextualizeRange(startRange) == annotationConfig.excludeSelection) {
+        return annotationConfig.excludeSelection;
       }
 
       var endRange   = startRange.cloneRange();
@@ -741,6 +793,7 @@ topaz.annotation = {
    * @return	childList				Array						Collection of childnodes and their start and end
    * 																					 end offsets from the parent.
    */
+  /*
   getChildList: function (parentNode, element) {
     var childSearch = parentNode.getElementsByTagName(element);
     
@@ -760,7 +813,8 @@ topaz.annotation = {
     return childList;
     
   },
-
+  */
+ 
 	/**
 	 * topaz.annotation.insertHighlightWrapper(Object rangeObj)
 	 * 
@@ -934,9 +988,10 @@ topaz.annotation = {
         dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>=========== Inside modifySelelection ============================";
     }
         
-    var modContents = document.createDocumentFragment();
+    var modContents;
 
     if (rangeObj.startXpath == rangeObj.endXpath) {
+      modContents = document.createDocumentFragment();
       modContents.appendChild(this.insertWrapper(rangeObj, contents, newSpan, link, markerId, null));
     }
     else {
@@ -1332,10 +1387,3 @@ topaz.annotation = {
     return tempStr;
   }
 }
-
-
-
-
-
-
-

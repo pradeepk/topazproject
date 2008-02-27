@@ -624,5 +624,68 @@ topaz.domUtil = {
     }
     
     return fSibling;
-  }
+  },
+  
+  /**
+   * firstDescendantTextNode
+   *
+   * Recursively drills into the given node's children searching for the "nearest" text node.
+   * Used to "textualize" element based user selections.
+   *
+   * @param node A dom node
+   * @return first encountered text node or null if no text node found
+   */
+  firstDescendantTextNode: function(node) {
+    if(!node) return null;
+    var dtn, c, cn = node.childNodes;
+    for(var i = 0; i < cn.length; i++) {
+      c = cn[i];
+      if(c.nodeType == 3) return c;
+      else if(c.nodeType == 1) {
+        if(dtn = this.firstDescendantTextNode(c)) return dtn;
+      }
+    }
+    return null;
+  },
+  
+  /**
+   * lastDescendantTextNode
+   *
+   * Recursively drills into the given node's children searching for the "furthest" text node.
+   * Used to "textualize" element based user selections.
+   *
+   * @param node A dom node
+   * @return first encountered text node that is furthest away or null if no text node found
+   */
+  lastDescendantTextNode: function(node) {
+    if(!node) return null;
+    var dtn, c, cn = node.childNodes;
+    for(var i = cn.length-1; i >=0; i--) {
+      c = cn[i];
+      if(c.nodeType == 3) return c;
+      else if(c.nodeType == 1) {
+        if(dtn = this.lastDescendantTextNode(c)) return dtn;
+      }
+    }
+    return null;
+  },
+  
+  /**
+   * findTextNode
+   *
+   * Recursively searches the given node and contained nodes returning either the nearest or furthest text node.  
+   * If the given node itself is a text node, this node is returned.
+   * Used to "textualize" element based user selections.
+   *
+   * @param node A dom node
+   * @param first (boolean) When true, the nearest text node is sought
+   * @return The first encountered text node or null if no text node found
+   * @see firstDescendantTextNode
+   * @see lastDescendantTextNode
+   */
+  findTextNode: function(n, first) {
+    if(n.nodeType == 3) return n;
+    var t = first ? this.firstDescendantTextNode(n) : this.lastDescendantTextNode(n);
+    return t ? t : n;
+  }  
 }
