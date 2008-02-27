@@ -40,6 +40,7 @@ import org.mulgara.query.SingleTransitiveConstraint;
 import org.mulgara.query.TransitiveConstraint;
 import org.mulgara.query.WalkConstraint;
 import org.mulgara.query.rdf.URIReferenceImpl;
+import org.mulgara.resolver.spi.AbstractXAResource;
 import org.mulgara.resolver.spi.GlobalizeException;
 import org.mulgara.resolver.spi.LocalizeException;
 import org.mulgara.resolver.spi.Resolution;
@@ -78,6 +79,7 @@ public class FilterResolver implements Resolver {
   private final ResolverSession resolverSession;
   private final Resolver        systemResolver;
   private final FilterHandler[] handlers;
+  private final XAResource      xaRes;
 
   /** 
    * Create a new FilterResolver instance. 
@@ -87,22 +89,25 @@ public class FilterResolver implements Resolver {
    * @param sysModelType    the system-model type; used when creating a new model
    * @param systemResolver  the system-resolver; used for creating and modifying models
    * @param resolverSession our environment; used for globalizing and localizing nodes
+   * @param factory         the filter-resolver-factory we belong to
    * @param handlers        the filter handlers to use
    */
   FilterResolver(URI dbURI, long sysModelType, Resolver systemResolver,
-                 ResolverSession resolverSession, FilterHandler[] handlers) {
+                 ResolverSession resolverSession, FilterResolverFactory factory,
+                 FilterHandler[] handlers) {
     this.dbURI           = dbURI;
     this.sysModelType    = sysModelType;
     this.systemResolver  = systemResolver;
     this.resolverSession = resolverSession;
     this.handlers        = handlers;
+    this.xaRes           = new MultiXAResource(factory, handlers);
   }
 
   /**
    * @return the updater's XAResource
    */
   public XAResource getXAResource() {
-    return new MultiXAResource(handlers);
+    return xaRes;
   }
 
   public void createModel(long model, URI modelType) throws ResolverException, LocalizeException {
@@ -341,34 +346,58 @@ public class FilterResolver implements Resolver {
     return URI.create(u);
   }
 
-  private static class MultiXAResource implements XAResource {
-    private final List<XAResource> xaResources = new ArrayList<XAResource>();
+  /**
+   * A simple XAResource that delegates to a list of underlying XAResources. This is <em>not</em> a
+   * full implementation; in particular, many aspects of error handling have been left out in the
+   * assumption the the underlying XAResources will behave.
+   */
+  private static class MultiXAResource
+      extends AbstractXAResource<AbstractXAResource.RMInfo<MultiXAResource.MultiTxInfo>, MultiXAResource.MultiTxInfo> {
+    private static class MultiTxInfo extends AbstractXAResource.TxInfo {
+      final List<XAResource> xaResources = new ArrayList<XAResource>();
+    }
 
-    MultiXAResource(FilterHandler[] handlers) {
+    MultiXAResource(FilterResolverFactory factory, FilterHandler[] handlers) {
+      super(10, factory, newTxInfo(handlers));
+    }
+
+    @Override
+    protected RMInfo<MultiTxInfo> newResourceManager() {
+      return new RMInfo<MultiTxInfo>();
+    }
+
+    private static MultiTxInfo newTxInfo(FilterHandler[] handlers) {
+      MultiTxInfo ti = new MultiTxInfo();
+
       for (FilterHandler h : handlers) {
         XAResource res = h.getXAResource();
         if (res != null)
-          xaResources.add(res);
+          ti.xaResources.add(res);
       }
+
+      return ti;
     }
 
-    public void start(Xid xid, int flags) throws XAException {
-      for (XAResource xaRes : xaResources)
-        xaRes.start(xid, flags);
+    @Override
+    protected void doStart(MultiTxInfo tx, int flags, boolean isNew) throws XAException {
+      for (XAResource xaRes : tx.xaResources)
+        xaRes.start(tx.xid, flags);
     }
 
-    public void end(Xid xid, int flags) throws XAException {
-      for (XAResource xaRes : xaResources)
-        xaRes.end(xid, flags);
+    @Override
+    protected void doEnd(MultiTxInfo tx, int flags) throws XAException {
+      for (XAResource xaRes : tx.xaResources)
+        xaRes.end(tx.xid, flags);
     }
 
-    public int prepare(Xid xid) throws XAException {
+    @Override
+    protected int doPrepare(MultiTxInfo tx) throws XAException {
       XAException exc = null;
 
-      for (Iterator<XAResource> iter = xaResources.iterator(); iter.hasNext(); ) {
+      for (Iterator<XAResource> iter = tx.xaResources.iterator(); iter.hasNext(); ) {
         XAResource xaRes = iter.next();
         try {
-          if (xaRes.prepare(xid) == XA_RDONLY)
+          if (xaRes.prepare(tx.xid) == XA_RDONLY)
             iter.remove();
         } catch (XAException xae) {
           exc = xae;
@@ -378,9 +407,9 @@ public class FilterResolver implements Resolver {
       }
 
       if (exc != null) {
-        for (XAResource xaRes : xaResources) {
+        for (XAResource xaRes : tx.xaResources) {
           try {
-            xaRes.rollback(xid);
+            xaRes.rollback(tx.xid);
           } catch (XAException xae) {
             logger.warn("Error rolling back resource", xae);
           }
@@ -389,15 +418,16 @@ public class FilterResolver implements Resolver {
         throw exc;
       }
 
-      return xaResources.isEmpty() ? XA_RDONLY : XA_OK;
+      return tx.xaResources.isEmpty() ? XA_RDONLY : XA_OK;
     }
 
-    public void commit(Xid xid, boolean onePhase) throws XAException {
+    @Override
+    protected void doCommit(MultiTxInfo tx) throws XAException {
       XAException exc = null;
 
-      for (XAResource xaRes : xaResources) {
+      for (XAResource xaRes : tx.xaResources) {
         try {
-          xaRes.commit(xid, onePhase);
+          xaRes.commit(tx.xid, false);
         } catch (XAException xae) {
           exc = xae;
           logger.warn("Error rolling back resource", xae);
@@ -408,12 +438,13 @@ public class FilterResolver implements Resolver {
         throw exc;
     }
 
-    public void rollback(Xid xid) throws XAException {
+    @Override
+    protected void doRollback(MultiTxInfo tx) throws XAException {
       XAException exc = null;
 
-      for (XAResource xaRes : xaResources) {
+      for (XAResource xaRes : tx.xaResources) {
         try {
-          xaRes.rollback(xid);
+          xaRes.rollback(tx.xid);
         } catch (XAException xae) {
           exc = xae;
           logger.warn("Error rolling back resource", xae);
@@ -424,28 +455,31 @@ public class FilterResolver implements Resolver {
         throw exc;
     }
 
+    @Override
     public int getTransactionTimeout() throws XAException {
       int to = Integer.MAX_VALUE;
 
-      for (XAResource xaRes : xaResources)
+      for (XAResource xaRes : tmpTxInfo.xaResources)
         to = Math.min(xaRes.getTransactionTimeout(), to);
 
       return to;
     }
 
+    @Override
     public boolean setTransactionTimeout(int transactionTimeout) throws XAException {
       boolean res = true;
 
-      for (XAResource xaRes : xaResources)
+      for (XAResource xaRes : tmpTxInfo.xaResources)
         res &= xaRes.setTransactionTimeout(transactionTimeout);
 
       return res;
     }
 
+    @Override
     public Xid[] recover(int flag) throws XAException {
       List<Xid> xids = new ArrayList<Xid>();
 
-      for (XAResource xaRes : xaResources) {
+      for (XAResource xaRes : tmpTxInfo.xaResources) {
         Xid[] l = xaRes.recover(flag);
         for (Xid xid : l)
           xids.add(xid);
@@ -454,13 +488,10 @@ public class FilterResolver implements Resolver {
       return xids.toArray(new Xid[xids.size()]);
     }
 
-    public void forget(Xid xid) throws XAException {
-      for (XAResource xaRes : xaResources)
-        xaRes.forget(xid);
-    }
-
-    public boolean isSameRM(XAResource xaResource) throws XAException {
-      return xaResource == this;
+    @Override
+    protected void doForget(MultiTxInfo tx) throws XAException {
+      for (XAResource xaRes : tx.xaResources)
+        xaRes.forget(tx.xid);
     }
   }
 }

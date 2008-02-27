@@ -17,29 +17,9 @@
       <groupId>org.topazproject</groupId>
       <artifactId>mulgara-service</artifactId>
       <version>${pom.version}</version>
-      <type>war</type>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.packages</groupId>
-      <artifactId>packages</artifactId>
-      <version>${pom.version}</version>
-      <type>tar.gz</type>
-      <classifier>tomcat-common</classifier>
+      <type>jar</type>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <profiles>
     <profile>
@@ -74,6 +54,18 @@
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
+                  <directory>/usr/local/topaz/${project.build.finalName}</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                  <dependency/>
+                  <sources>
+                    <source>
+                      <location>src/main/resources/log4j.xml</location>
+                    </source>
+                  </sources>
+                </mapping>
+                <mapping>
                   <directory>/var/lib/topaz</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
@@ -86,16 +78,10 @@
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
-                  <directory>/usr/local/topaz/${project.build.finalName}-tomcat</directory>
+                  <directory>/var/log/topaz</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
-                  <sources>
-                    <source>
-                      <!-- The following is tied to <id> and <format> in assembly.xml -->
-                      <location>${project.build.directory}/${project.build.finalName}-tomcat.dir</location>
-                    </source>
-                  </sources>
                 </mapping>
                 <mapping>
                   <directory>/usr/share/doc/topaz</directory>
@@ -124,12 +110,6 @@
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
-                  <directory>/var/log/topaz</directory>
-                  <filemode>755</filemode>
-                  <username>topaz</username>
-                  <groupname>topaz</groupname>
-                </mapping>
-                <mapping>
                   <directory>/etc/rc.d/init.d/</directory>
                   <filemode>755</filemode>
                   <username>root</username>
@@ -137,6 +117,18 @@
                   <sources>
                     <source>
                       <location>src/main/scripts/mulgara</location>
+                    </source>
+                  </sources>
+                </mapping>
+                <mapping>
+                  <directory>/etc/sysconfig/</directory>
+                  <configuration>true</configuration>
+                  <filemode>644</filemode>
+                  <username>root</username>
+                  <groupname>root</groupname>
+                  <sources>
+                    <source>
+                      <location>src/main/resources/mulgara</location>
                     </source>
                   </sources>
                 </mapping>

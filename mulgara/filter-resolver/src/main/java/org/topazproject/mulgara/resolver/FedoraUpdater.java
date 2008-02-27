@@ -36,6 +36,7 @@ import org.jrdf.graph.mem.GraphImpl;
 import org.mulgara.query.Answer;
 import org.mulgara.query.QueryException;
 import org.mulgara.query.TuplesException;
+import org.mulgara.resolver.spi.DummyXAResource;
 import org.mulgara.resolver.spi.GlobalizeException;
 import org.mulgara.resolver.spi.ResolverException;
 import org.mulgara.resolver.spi.ResolverSession;
@@ -95,7 +96,7 @@ class FedoraUpdater extends AbstractFilterHandler {
   private final XAResource               xaResource;
   private final Worker                   worker;
   private       JRDFSession              sess;
-  private       Xid                      currentTxId;
+  private final ThreadLocal<Xid>         currentTxId = new ThreadLocal<Xid>();
   private volatile boolean               updateMaps;
 
   static {
@@ -225,9 +226,9 @@ class FedoraUpdater extends AbstractFilterHandler {
                         ResolverSession resolverSession)
       throws ResolverException {
     synchronized (txQueue) {
-      Set<ModItem> queue = txQueue.get(currentTxId);
+      Set<ModItem> queue = txQueue.get(currentTxId.get());
       if (queue == null)
-        txQueue.put(currentTxId, queue = new HashSet<ModItem>());
+        txQueue.put(currentTxId.get(), queue = new HashSet<ModItem>());
 
       try {
         statements.beforeFirst();
@@ -255,7 +256,7 @@ class FedoraUpdater extends AbstractFilterHandler {
 
   public void abort() {
     try {
-      xaResource.rollback(currentTxId);
+      xaResource.rollback(currentTxId.get());
     } catch (Exception e) {
       logger.error("Error rolling back tx for abort");
     }
@@ -514,11 +515,11 @@ class FedoraUpdater extends AbstractFilterHandler {
    */
   private class UpdaterXAResource extends DummyXAResource {
     public void start(Xid xid, int flags) {
-      currentTxId = xid;
+      currentTxId.set(xid);
     }
 
     public void end(Xid xid, int flags) {
-      currentTxId = null;
+      currentTxId.set(null);
     }
 
     public void commit(Xid xid, boolean onePhase) {

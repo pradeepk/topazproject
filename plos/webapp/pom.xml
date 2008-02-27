@@ -85,6 +85,10 @@
       <groupId>org.topazproject</groupId>
       <artifactId>otm-extras</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.mulgara</groupId>
+      <artifactId>driver</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>aopalliance</groupId>

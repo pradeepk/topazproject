@@ -21,6 +21,7 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.apache.log4j.Logger;
+import org.mulgara.resolver.spi.DummyXAResource;
 
 /** 
  * This implements some common functionality for filter-handlers that queue updates which are

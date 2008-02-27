@@ -30,7 +30,7 @@ import org.topazproject.otm.query.Results;
  * @author Pradeep Krishnan
  */
 public class DOITypeResolver {
-  private static final String MODEL = "<local:///topazproject#filter:model=ri>";
+  private static final String MODEL = "<rmi://localhost/topazproject#filter:model=ri>";
   private static final String QUERY = "select $t from " + MODEL + " where <${doi}> <rdf:type> $t";
 
 

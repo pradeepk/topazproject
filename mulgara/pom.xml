@@ -27,7 +27,6 @@
   <modules>
     <module>filter-resolver</module>
     <module>string-compare-resolver</module>
-    <module>conf-helper</module>
     <module>mulgara-client</module>
     <module>mulgara-service</module>
   </modules>

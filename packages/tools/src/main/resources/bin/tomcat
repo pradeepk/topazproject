@@ -75,7 +75,7 @@ plosone_CATALINA_HOME="$TOPAZ_LOCAL/plosone"
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
 cas_PORT=7443
-mulgara_PORT=9091
+mulgara_PORT=1099
 plosone_PORT=8080
 fedora_PORT=9090
 

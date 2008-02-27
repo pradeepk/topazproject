@@ -2,9 +2,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>mulgara-service</artifactId>
-  <packaging>war</packaging>
-  <name>Mulgara Webservice Webapp</name>
-  <description>A re-packaging of Mulgara as a webapp (war), accessible using SOAP.</description>
+  <packaging>jar</packaging>
+  <name>Mulgara Application</name>
+  <description>A re-packaging of the mulgara jar to include our resolvers and config.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>
@@ -15,125 +15,49 @@
   <dependencies>
     <dependency>
       <groupId>org.mulgara</groupId>
-      <artifactId>mulgara-lite</artifactId>
-      <!-- WARNING: When changing this, change version in mulgara & antrun task below too! -->
-      <version>1.0.1-t5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mulgara</groupId>
       <artifactId>mulgara</artifactId>
-      <!-- WARNING: When changing this, change mulgara version in antrun task below too! -->
-      <version>1.0.1-t5</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>runtime</scope>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>filter-resolver</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xerces</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>string-compare-resolver</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>conf-helper</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <!--
-          Extract relevant jars and classes from mulgara jars and put into our war.
-          Note that mulgara consists of many jars representing its various modules.
-          None have the format "*mulgara*.jar" in them - many have the form
-          "*resolver*.jar". See also MulgaraMavenPackage wiki page.
-        -->
-
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>mulgara-build-plugin</artifactId>
+        <version>${pom.version}</version>
         <executions>
           <execution>
-            <id>unpack</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <taskdef resource="org/apache/maven/artifact/ant/antlib.xml" classpathref="maven.plugin.classpath" />
-
-                <dependencies filesetId="mulgara-libs" useScope="runtime">
-                  <dependency groupId="org.mulgara" artifactId="mulgara-lite" version="1.0.1-t5" />
-                </dependencies>
-
-                <property name="webinf" location="${project.build.directory}/${project.build.finalName}/WEB-INF" />
-
-                <unjar dest="${webinf}" overwrite="false">
-                  <fileset refid="mulgara-libs" />
-                  <patternset>
-                    <include name="lib/*.jar" />
-                    <exclude name="lib/*rmi*" />
-                    <exclude name="lib/*beep*" />
-                    <exclude name="lib/*axis*" />
-                    <exclude name="lib/dtd-base*" />
-                    <exclude name="lib/log4j*" />
-                    <exclude name="lib/commons-logging*" />
-                    <exclude name="lib/javax.servlet*" />
-                    <exclude name="lib/*jetty*" />
-                  </patternset>
-                </unjar>
-                <unjar dest="${webinf}/classes" overwrite="false">
-                  <fileset refid="mulgara-libs" />
-                  <patternset>
-                    <include name="org/**" />
-                    <include name="com/**" />
-                    <include name="javax/**" />
-                  </patternset>
-                </unjar>
-              </tasks>
-            </configuration>
+            <goals><goal>build</goal></goals>
           </execution>
         </executions>
-
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact-ant</artifactId>
-            <version>2.0.4</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -145,47 +69,46 @@
         <plugins>
           
           <plugin>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <version>0.3.1</version>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.1-beta-1</version>
             <configuration>
-              <container>
-                <containerId>jetty6x</containerId>
-                <type>embedded</type>
-                <output>${project.build.directory}/jetty.log</output>
-                <log>${project.build.directory}/cargo.log</log>
-                <dependencies>
-                  <dependency>
-                    <location>${user.home}/.m2/topaz/container-classes</location>
-                  </dependency>
-                </dependencies>
-              </container>
-              <configuration>
-                <home>${project.build.directory}/jetty</home>
-                <properties>
-                  <cargo.servlet.port>9091</cargo.servlet.port>
-                  <cargo.logging>high</cargo.logging>
-                </properties>
-              </configuration>
+              <executable>java</executable>
             </configuration>
           
             <executions>
               <execution>
-                <id>jetty-start</id>
+                <id>mulgara-start</id>
                 <phase>pre-integration-test</phase>
-                <goals><goal>start</goal></goals>
+                <goals><goal>exec</goal></goals>
+                <configuration>
+                  <arguments>
+                    <argument>-jar</argument>
+                    <argument>${project.build.directory}/${project.build.finalName}.${project.packaging}</argument>
+                    <argument>-s</argument>
+                    <argument>topazproject</argument>
+                    <argument>-a</argument>
+                    <argument>temp</argument>
+                  </arguments>
+                </configuration>
               </execution>
+
               <execution>
-                <id>jetty-stop</id>
+                <id>mulgara-stop</id>
                 <phase>post-integration-test</phase>
-                <goals><goal>stop</goal></goals>
+                <goals><goal>exec</goal></goals>
+                <configuration>
+                  <arguments>
+                    <argument>-jar</argument>
+                    <argument>${project.build.directory}/${project.build.finalName}.${project.packaging}</argument>
+                    <argument>-x</argument>
+                  </arguments>
+                </configuration>
               </execution>
-          
             </executions>
           </plugin>
 
         </plugins>
-
       </build>
     </profile>
   </profiles>

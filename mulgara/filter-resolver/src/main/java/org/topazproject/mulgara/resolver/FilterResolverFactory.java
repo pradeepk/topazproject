@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.log4j.Logger;
 
 import org.mulgara.resolver.spi.InitializerException;
@@ -27,20 +28,16 @@ import org.mulgara.resolver.spi.ResolverFactoryException;
 import org.mulgara.resolver.spi.ResolverFactoryInitializer;
 import org.mulgara.resolver.spi.ResolverSession;
 
-import org.topazproject.configuration.ConfigurationStore;
-
 /** 
  * The factory for {@link FilterResolver}s.
  *
- * <p>The configuration for this and for the {@link FilterHandler}s is retrieved from the
- * the {@link ConfigurationStore}; if that has not been initialized then it is first initialized
- * a config from one of the following locations:
+ * <p>The configuration for this and for the {@link FilterHandler}s is retrieved as follows:
  * <ol>
- *   <li>If {@link #CONFIG_FACTORY_CONFIG_PROPERTY CONFIG_FACTORY_CONFIG_PROPERTY} system property
- *       has been set, use it's value; other use {@link #DEFAULT_FACTORY_CONFIG
- *       DEFAULT_FACTORY_CONFIG}.</li>
+ *   <li>If {@link #CONFIG_FACTORY_CONFIG_PROPERTY} system property has been set, use it as the
+ *       location of the config; otherwise use {@link #DEFAULT_FACTORY_CONFIG}.</li>
  *   <li>If the resulting location string starts with a '/' assume it's a resource and try to
- *       load it as such; otherwise assume it's a URL.</li>
+ *       load it from the classpath; otherwise assume it's a URL.</li>
+ *   <li>The resulting config is passed to {@link DefaultConfigurationBuilder}.
  * </ol>
  * 
  * @author Ronald Tschalär
@@ -50,7 +47,8 @@ public class FilterResolverFactory implements ResolverFactory {
    * the system property that can be used to defined a non-default configuration-factory config:
    * {@value}
    */
-  public static final String CONFIG_FACTORY_CONFIG_PROPERTY = "org.topazproject.configuration";
+  public static final String CONFIG_FACTORY_CONFIG_PROPERTY =
+                                            "org.topazproject.mulgara.resolver.configuration";
 
   /** the location of the default factory config: {@value} */
   public static final String DEFAULT_FACTORY_CONFIG         = "/conf/topaz-factory-config.xml";
@@ -92,29 +90,25 @@ public class FilterResolverFactory implements ResolverFactory {
     sysModelType = resolverFactoryInitializer.getSystemModelType();
 
     // load the configuration
-    ConfigurationStore store = ConfigurationStore.getInstance();
     Configuration config = null;
+
+    String fConf = System.getProperty(CONFIG_FACTORY_CONFIG_PROPERTY, DEFAULT_FACTORY_CONFIG);
+    URL fConfUrl = null;
     try {
-      config = store.getConfiguration();
-    } catch (RuntimeException e) {
-      String fConf = System.getProperty(CONFIG_FACTORY_CONFIG_PROPERTY, DEFAULT_FACTORY_CONFIG);
-      URL fConfUrl = null;
-      try {
-        fConfUrl = fConf.startsWith("/") ? getClass().getResource(fConf) : new URL(fConf);
-        if (fConfUrl == null)
-          throw new InitializerException("'" + fConf + "' not found in classpath");
+      fConfUrl = fConf.startsWith("/") ? getClass().getResource(fConf) : new URL(fConf);
+      if (fConfUrl == null)
+        throw new InitializerException("'" + fConf + "' not found in classpath");
 
-        logger.info("Using filter-resolver config '" + fConfUrl + "'");
+      logger.info("Using filter-resolver config '" + fConfUrl + "'");
 
-        store.loadConfiguration(fConfUrl);
-        config = store.getConfiguration();
-      } catch (MalformedURLException mue) {
-        throw new InitializerException("Error parsing '" + fConf + "'", mue);
-      } catch (ConfigurationException ce) {
-        throw new InitializerException("Error reading '" + fConfUrl + "'", ce);
-      } catch (RuntimeException re) {
-        throw new InitializerException("Configuration error '" + fConfUrl + "'", re);
-      }
+      DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(fConfUrl);
+      config = builder.getConfiguration();
+    } catch (MalformedURLException mue) {
+      throw new InitializerException("Error parsing '" + fConf + "'", mue);
+    } catch (ConfigurationException ce) {
+      throw new InitializerException("Error reading '" + fConfUrl + "'", ce);
+    } catch (RuntimeException re) {
+      throw new InitializerException("Configuration error '" + fConfUrl + "'", re);
     }
 
     String base = "topaz.fr";
@@ -178,7 +172,7 @@ public class FilterResolverFactory implements ResolverFactory {
   public Resolver newResolver(boolean canWrite, ResolverSession resolverSession,
                               Resolver systemResolver)
                               throws ResolverFactoryException {
-    return new FilterResolver(dbURI, sysModelType, systemResolver, resolverSession, handlers);
+    return new FilterResolver(dbURI, sysModelType, systemResolver, resolverSession, this, handlers);
   }
 }
 

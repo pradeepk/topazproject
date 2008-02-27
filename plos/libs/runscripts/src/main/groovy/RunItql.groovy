@@ -19,8 +19,8 @@ import jline.ConsoleReader;
 import jline.History;
 
 // Constants
-MULGARA_BASE = "localhost:9091"
-MULGARA_LOC = "/mulgara-service/services/ItqlBeanService"
+MULGARA_BASE = "localhost"
+MULGARA_LOC = "/topazproject"
 csv = "csv" // In case somebody runs %mode = csv instead of %mode = "csv"
 table = "table reduce quote" // Allows %mode = table
 
@@ -54,7 +54,7 @@ trunc = opt.t
 running = true
 def writer = echo ? new OutputStreamWriter(System.out) : new StringWriter()
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
-def mulgaraUri  = "http://${mulgaraBase}${MULGARA_LOC}"
+def mulgaraUri  = "rmi://${mulgaraBase}${MULGARA_LOC}"
 verbose = opt.v
 if (verbose) {
   println "Mulgara URI: $mulgaraUri"
@@ -83,8 +83,8 @@ help[".quit"] = """.quit - Exit the interpreter"""
 help["variables"] = '''Variables can be used for a number of things:
   - Controlling features of the interpreter (see list of variables below)
   - As place holders in itql. 
-    e.g. itql> %meta = "<''' + metamodel + '''>"
-         itql> select $s $p $o from ${meta} where $s $p $o;
+    e.g. itql> %modelX = "<rmi://localhost/topazproject#foo>"
+         itql> select $s $p $o from ${modelX} where $s $p $o;
 
 If a %-character is the first character of the line, the rest of the line is 
 sent to the groovy interpreter. Thus, %x=3 sets x to 3. %foo=bar is an error 
@@ -376,3 +376,4 @@ while (running && (line = cr.readLine()) != null) { // Loop over lines with jlin
 }
 
 println()
+System.exit(0)

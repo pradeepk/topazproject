@@ -26,7 +26,8 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 
 import org.mulgara.config.MulgaraConfig;
-import org.mulgara.itql.ItqlInterpreterBean;
+import org.mulgara.connection.Connection;
+import org.mulgara.connection.SessionConnection;
 import org.mulgara.query.QueryException;
 import org.mulgara.resolver.Database;
 import org.mulgara.server.Session;
@@ -39,7 +40,7 @@ import org.mulgara.server.SessionFactory;
  *
  * @author Ronald Tschalär
  */
-class EmbeddedClient extends IIBClient {
+public class EmbeddedClient extends TIClient {
   private static final Map<ItqlClientFactory, Map<URI, SessionFactory>> allFactories =
                                     new WeakHashMap<ItqlClientFactory, Map<URI, SessionFactory>>();
   private static final Set<File> tempFiles = new HashSet<File>();
@@ -82,24 +83,22 @@ class EmbeddedClient extends IIBClient {
    *              be used if the database is in-memory only
    * @param conf  the mulgara configuration to use (must point to a MulgaraConfig xml doc)
    * @param icf   the client-factory instance creating this
+   * @throws QueryException if an error occurred setting up the connector
    */
-  public EmbeddedClient(URI uri, String dbDir, URL conf, ItqlClientFactory icf) {
-    super(getIIB(uri, dbDir, conf, icf));
+  public EmbeddedClient(URI uri, String dbDir, URL conf, ItqlClientFactory icf)
+      throws QueryException {
+    super(getCon(uri, dbDir, conf, icf));
   }
 
-  private static synchronized ItqlInterpreterBean getIIB(URI uri, String dbDir, URL conf,
-                                                         ItqlClientFactory icf) {
-    try {
-      SessionFactory sf = findSessionFactory(uri, icf);
-      if (sf == null) {
-        sf = newSessionFactory(uri, dbDir, conf);
-        getFactories(icf).put(uri, sf);
-      }
-
-      return new ItqlInterpreterBean(sf.newSession(), sf.getSecurityDomain());
-    } catch (QueryException qe) {
-      throw new RuntimeException(qe);
+  private static synchronized Connection getCon(URI uri, String dbDir, URL conf,
+                                                ItqlClientFactory icf) throws QueryException {
+    SessionFactory sf = findSessionFactory(uri, icf);
+    if (sf == null) {
+      sf = newSessionFactory(uri, dbDir, conf);
+      getFactories(icf).put(uri, sf);
     }
+
+    return new SessionConnection(sf.newSession(), sf.getSecurityDomain());
   }
 
   private static SessionFactory findSessionFactory(URI uri, ItqlClientFactory icf) {
@@ -128,7 +127,8 @@ class EmbeddedClient extends IIBClient {
     return f;
   }
 
-  private static SessionFactory newSessionFactory(URI uri, String dbDir, URL conf) {
+  private static SessionFactory newSessionFactory(URI uri, String dbDir, URL conf)
+      throws QueryException {
     /* We don't use SessionFactoryFinder and LocalSessionFactory here for a couple reasons.
      * First, SessionFactoryFinder doesn't give us a way to properly specify our own config.
      * Second, LocalSessionFactory uses a static variable to hold the underlying session factory,
@@ -174,15 +174,17 @@ class EmbeddedClient extends IIBClient {
   }
 
   private static class EmbeddedSessionFactory implements SessionFactory {
-    private final URI      uri;
-    private final URL      conf;
-    private final File     dir;
-    private SessionFactory sessionFactory = null;
+    private final URI            uri;
+    private final URL            conf;
+    private final File           dir;
+    private final SessionFactory sessionFactory;
 
-    public EmbeddedSessionFactory(URI uri, File dir, URL conf) {
+    public EmbeddedSessionFactory(URI uri, File dir, URL conf) throws QueryException {
       this.uri  = uri;
       this.conf = conf;
       this.dir  = dir;
+
+      sessionFactory = newSessionFactory();
     }
 
     public URI getSecurityDomain() {
@@ -190,22 +192,17 @@ class EmbeddedClient extends IIBClient {
     }
 
     public Session newSession() throws QueryException {
-      setupSessionFactory();
       return sessionFactory.newSession();
     }
 
     public Session newJRDFSession() throws QueryException {
-      setupSessionFactory();
       return sessionFactory.newJRDFSession();
     }
 
-    private void setupSessionFactory() throws QueryException {
-      if (sessionFactory != null)
-        return;
-
+    private SessionFactory newSessionFactory() throws QueryException {
       try {
         MulgaraConfig mc = MulgaraConfig.unmarshal(new InputStreamReader(conf.openStream()));
-        sessionFactory = new Database(uri, dir, mc);
+        return new Database(uri, dir, mc);
       } catch (QueryException qe) {
         throw qe;
       } catch (Exception e) {
@@ -214,10 +211,7 @@ class EmbeddedClient extends IIBClient {
     }
 
     public void close() throws QueryException {
-      if (sessionFactory != null) {
-        sessionFactory.close();
-        sessionFactory = null;
-      }
+      sessionFactory.close();
     }
 
     public void delete() {

@@ -156,7 +156,7 @@
         <plosone>${network.hosts.plosone}:${network.ports.plosone}</plosone>
         <cas>${network.hosts.cas}:${network.ports.cas-ssl}</cas>
         <search>${network.hosts.plosone}:${network.ports.plosone}</search>
-        <mulgara>${network.hosts.mulgara}:${network.ports.mulgara}</mulgara>
+        <mulgara>${network.hosts.mulgara}</mulgara>
       </server>
       <homesite>${network.hosts.default}</homesite>
       <service>
@@ -167,7 +167,7 @@
         <source>/var/spool/plosone/ingestion-queue</source>
         <destination>/var/spool/plosone/ingested</destination>
       </ingest>
-      <itql><uri>http://${pub.spring.server.mulgara}/mulgara-service/services/ItqlBeanService</uri></itql>
+      <itql><uri>rmi://${pub.spring.server.mulgara}/topazproject</uri></itql>
       <email><feedback>webmaster@plos.org</feedback></email>
       <!-- Temporary default for /etc/topaz/plosone.xml -->
       <hosts><mailhost>${network.hosts.default}</mailhost></hosts>

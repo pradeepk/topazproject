@@ -45,7 +45,7 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
   public ItqlClient createClient(URI uri) throws Exception {
     String scheme = uri.getScheme();
     if (scheme.equals("rmi"))
-      return new RmiClient(uri.toString());
+      return new RmiClient(uri, this);
     if (scheme.equals("http"))
       return new SoapClient(uri);
     if (scheme.equals("soap"))

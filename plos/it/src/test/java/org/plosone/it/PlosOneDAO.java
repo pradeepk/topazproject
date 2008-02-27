@@ -122,10 +122,10 @@ public class PlosOneDAO {
 
     for (String model : models)
       factory.addModel(new ModelConfig(model,
-                                       URI.create("local:///topazproject#filter:model=" + model),
+                                       URI.create("rmi://localhost/topazproject#filter:model=" + model),
                                        URI.create("http://topazproject.org/models#filter")));
 
-    URI storeUri = URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService");
+    URI storeUri = URI.create("rmi://localhost/topazproject");
     factory.setTripleStore(new ItqlStore(storeUri));
 
     Class[] classes =

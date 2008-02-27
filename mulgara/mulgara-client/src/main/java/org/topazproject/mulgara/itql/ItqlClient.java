@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.xa.XAResource;
+
 /** 
  * The interface for a minimal mulgara client. This is basically a subset of ItqlInterpreterBean.
  * Use {@link ItqlClientFactory ItqlClientFactory} to create instances.
@@ -63,6 +65,22 @@ public interface ItqlClient {
    * @throws IOException if an exception occurred rolling back the transaction
    */
   public void rollbackTxn(String txnName) throws IOException;
+
+  /** 
+   * Get the xa-resource for this connection. 
+   * 
+   * @return the xa-resource
+   * @throws IOException if an exception occurred getting the xa-resource
+   */
+  public XAResource getXAResource() throws IOException;
+
+  /** 
+   * Get the read-only xa-resource for this connection. 
+   * 
+   * @return the xa-resource
+   * @throws IOException if an exception occurred getting the xa-resource
+   */
+  public XAResource getReadOnlyXAResource() throws IOException;
 
   /** 
    * Set the aliases to use. 

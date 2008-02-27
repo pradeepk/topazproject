@@ -14,17 +14,17 @@ import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 
 // Constants
-MULGARA_BASE = "localhost:9091"
-MULGARA_LOC = "/mulgara-service/services/ItqlBeanService"
+MULGARA_BASE = "localhost"
+MULGARA_LOC = "/topazproject"
 LIMIT       = 1000
 MAX         = 10000000
 JOURNALS    = 'alertsJournals'
 CATEGORIES  = 'alertsCategories'
-RI_MODEL    = '<local:///topazproject#ri>'
-STR_MODEL   = '<local:///topazproject#str>'
-USERS_MODEL = '<local:///topazproject#users>'
-PREFS_MODEL = '<local:///topazproject#preferences>'
-PROFILES_MODEL = '<local:///topazproject#profiles>'
+RI_MODEL    = '<rmi://localhost/topazproject#ri>'
+STR_MODEL   = '<rmi://localhost/topazproject#str>'
+USERS_MODEL = '<rmi://localhost/topazproject#users>'
+PREFS_MODEL = '<rmi://localhost/topazproject#preferences>'
+PROFILES_MODEL = '<rmi://localhost/topazproject#profiles>'
 
 def cli = new CliBuilder(usage: 'annotated --start <date> --end <date>')
 cli.h(longOpt:'help', 'usage information')
@@ -40,7 +40,7 @@ def opt = cli.parse(args)
 if (!opt) return
 if (opt.h) { cli.usage(); return }
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
-def mulgaraUri  = "http://${mulgaraBase}${MULGARA_LOC}"
+def mulgaraUri  = "rmi://${mulgaraBase}${MULGARA_LOC}"
 def itemType    = (opt.c) ? CATEGORIES : JOURNALS
 def verbose = opt.v
 if (verbose) {

@@ -21,20 +21,16 @@
       <artifactId>axis</artifactId>
       <optional>true</optional>
     </dependency>
-    <!--
     <dependency>
-      <!- only needed if you use rmi-client but mulgara is not included ->
+      <!-- only needed if you use rmi-client but mulgara is not included -->
       <groupId>org.mulgara</groupId>
       <artifactId>driver</artifactId>
-      <version>1.0.1-t5</version>
       <optional>true</optional>
     </dependency>
-    -->
     <dependency>
       <!-- only needed if you use embedded-client -->
       <groupId>org.mulgara</groupId>
       <artifactId>mulgara</artifactId>
-      <version>1.0.1-t5</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -82,7 +78,7 @@
           <dependency>
             <groupId>org.mulgara</groupId>
             <artifactId>mulgara</artifactId>
-            <version>1.0.1-t5</version>
+            <version>1.2-SNAPSHOT</version>
             <scope>provided</scope>
           </dependency>
           <dependency>

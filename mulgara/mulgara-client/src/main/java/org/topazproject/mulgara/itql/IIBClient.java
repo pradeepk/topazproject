@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.xa.XAResource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -128,6 +130,14 @@ abstract class IIBClient implements ItqlClient {
         }
       }
     }
+  }
+
+  public XAResource getXAResource() {
+    throw new UnsupportedOperationException();
+  }
+
+  public XAResource getReadOnlyXAResource() {
+    throw new UnsupportedOperationException();
   }
 
   public void setAliases(Map<String, String> aliases) {

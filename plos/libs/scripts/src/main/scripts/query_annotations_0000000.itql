@@ -6,5 +6,5 @@
 #@mode = csv
 
 # Get a list of email, alias values
-select $s from <local:///topazproject#ri>
+select $s from <rmi://localhost/topazproject#ri>
 where $s <http://www.w3.org/2000/10/annotation-ns#annotates> <info:doi/10.1371/journal.pone.0000000>;

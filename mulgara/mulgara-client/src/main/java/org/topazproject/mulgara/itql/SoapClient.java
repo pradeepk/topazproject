@@ -11,20 +11,17 @@
 package org.topazproject.mulgara.itql;
 
 import java.io.IOException;
-
 import java.lang.ref.WeakReference;
-
 import java.net.MalformedURLException;
 import java.net.URI;
-
 import java.rmi.RemoteException;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.xa.XAResource;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.logging.Log;
@@ -242,6 +239,14 @@ public class SoapClient implements ItqlClient {
         }
       }
     }
+  }
+
+  public XAResource getXAResource() {
+    throw new UnsupportedOperationException();
+  }
+
+  public XAResource getReadOnlyXAResource() {
+    throw new UnsupportedOperationException();
   }
 
   /**

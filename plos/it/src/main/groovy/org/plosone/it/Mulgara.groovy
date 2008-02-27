@@ -15,9 +15,11 @@ package org.plosone.it
  *
  * @author Pradeep Krishnan
  */
-public class Mulgara extends Tomcat5x {
+public class Mulgara extends Service {
 
-  private String mulgaraWar
+  private String mulgaraJar
+  private int    httpPort
+  private String jvmargs
 
   /**
    * Create a Mulgara service instance.
@@ -26,58 +28,74 @@ public class Mulgara extends Tomcat5x {
    */
   public Mulgara(String installDir) {
     this(installDir, 
-      Env.dependencyPath('org.topazproject', 'mulgara-service', Env.pomVersion(), "war"))
+         Env.dependencyPath('org.topazproject', 'mulgara-service', Env.pomVersion(), "jar"))
   }
 
   /**
    * Create a Mulgara service instance.
    *
    * @param installDir root directory for this service
-   * @param mulgaraWar path to mulgara war file
+   * @param mulgaraJar path to mulgara jar file
    */
-  public Mulgara(String installDir, String mulgaraWar) {
-    this(Tomcat5x.TOMCAT_URL, installDir, mulgaraWar)
+  public Mulgara(String installDir, String mulgaraJar) {
+    this(installDir, mulgaraJar, -1, null);
   }
 
   /**
    * Create a Mulgara service instance.
    *
-   * @param tomcatUrl the url to download the tomcat service zip file from
    * @param installDir root directory for this service
-   * @param mulgaraWar path to mulgara war file
-   */
-  public Mulgara(String tomcatUrl, String installDir, String mulgaraWar) {
-    this(tomcatUrl, installDir, mulgaraWar, '9091', '9291', '-server -Xmx200m')
-  }
-
-  /**
-   * Create a Mulgara service instance.
-   *
-   * @param tomcatUrl the url to download the tomcat service zip file from
-   * @param installDir root directory for this service
-   * @param mulgaraWar path to mulgara war file
-   * @param port the http port 
-   * @param shutdownPort the port to send shutdown command to
+   * @param mulgaraJar path to mulgara jar file
+   * @param httpPort   the http-port for mulgara
    * @param jvmargs jvm args for tomcat
    */
-  public Mulgara(String tomcatUrl, String installDir, String mulgaraWar, String port, 
-                 String shutdownPort, String jvmargs) {
-    super(tomcatUrl, installDir, port, shutdownPort, jvmargs)
-    this.mulgaraWar = mulgaraWar
+  public Mulgara(String installDir, String mulgaraJar, int httpPort, String jvmargs) {
+    super(installDir);
+    this.mulgaraJar = mulgaraJar
+    this.httpPort   = httpPort > 0 ? httpPort : 34679
+    this.jvmargs    = jvmargs ?: ""
   }
 
-  /*
-   * inherited javadoc
-   */
+  public void install() {
+    // nothing to do
+  }
+
+  private void runMulgara(boolean start, boolean wait) {
+    def logConf = sysProperties.'log4j.configuration'
+    def dbDir   = sysProperties.'topaz.mulgara.databaseDir'
+    String cmd =
+      "java ${jvmargs} -jar ${mulgaraJar} -s topazproject -a ${dbDir} -l ${logConf} -p ${httpPort}"
+    if (!start)
+      cmd += " -x"
+
+    try {
+      def proc = cmd.execute()
+      new Thread({ proc.in.eachLine()  { line -> echo line } } as Runnable).start()
+      new Thread({ proc.err.eachLine() { line -> echo line } } as Runnable).start()
+
+      if (wait)
+        proc.waitFor()
+    } catch (Exception e) {
+      echo e
+    }
+  }
+
   public void start() {
-    super.start(['/mulgara-service':mulgaraWar])
+    echo 'Starting Mulgara ...'
+    runMulgara(true, false)
+  }
+
+  public void stop() {
+    echo 'Stopping Mulgara ...'
+    runMulgara(false, true)
   }
 
   /*
    * inherited javadoc
    */
   public void waitFor() {
-    waitFor('http://localhost:9091/mulgara-service/services/ItqlBeanService')
+    waitFor("http://localhost:${httpPort}/")
+    echo 'mulgara is up'
   }
 
   /*
@@ -86,5 +104,4 @@ public class Mulgara extends Tomcat5x {
   public void rebuild() {
    // nothing to do
   }
-
 }

@@ -100,7 +100,7 @@
   <topaz>
     <mulgara>
       <!-- The base uri of all the models that we create in mulgara.-->
-      <baseuri>local:///topazproject</baseuri>
+      <baseuri>rmi://${network.hosts.mulgara}/topazproject</baseuri>
     </mulgara>
     <objects>
       <!-- The base uri for all objects that we create in fedora. -->
@@ -141,7 +141,7 @@
 
       <!-- Configuration to talk to Mulgara -->
       <itql>
-        <uri>http://${network.hosts.mulgara}:${network.ports.mulgara}/mulgara-service/services/ItqlBeanService</uri>
+        <uri>rmi://${network.hosts.mulgara}/topazproject</uri>
         <auth-method>NONE</auth-method>
       </itql>
       <itql-admin>

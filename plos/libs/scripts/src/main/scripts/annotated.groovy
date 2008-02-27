@@ -15,10 +15,10 @@ import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 
 // Constants
-MULGARA_BASE = "localhost:9091"
-MULGARA_LOC = "/mulgara-service/services/ItqlBeanService"
+MULGARA_BASE = "localhost"
+MULGARA_LOC = "/topazproject"
 FEDORA_BASE = "localhost:9090"
-PREFS       = "<local:///topazproject#filter:model=preferences>"
+PREFS       = "<rmi://localhost/topazproject#filter:model=preferences>"
 LIMIT       = 50000
 MAX         = 10000000
 EMAIL       = 'alertsEmailAddress'
@@ -41,7 +41,7 @@ if (!opt) return
 if (opt.h) { cli.usage(); return }
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
 def fedoraBase  = (opt.F) ? opt.F : FEDORA_BASE
-def mulgaraUri  = "http://${mulgaraBase}${MULGARA_LOC}"
+def mulgaraUri  = "rmi://${mulgaraBase}${MULGARA_LOC}"
 def fedoraUri   = "http://${fedoraBase}/fedora/get"
 def verbose = opt.v
 if (verbose) {
@@ -50,8 +50,8 @@ if (verbose) {
 }
 
 // Globals
-RI_MODEL='<local:///topazproject#ri>'
-STR_MODEL='<local:///topazproject#str>'
+RI_MODEL='<rmi://localhost/topazproject#ri>'
+STR_MODEL='<rmi://localhost/topazproject#str>'
 DATETIME='<http://www.w3.org/2001/XMLSchema#dateTime>'
 
 sf = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))

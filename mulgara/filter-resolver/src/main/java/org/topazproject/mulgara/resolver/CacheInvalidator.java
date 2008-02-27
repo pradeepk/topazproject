@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
-import org.mulgara.itql.ItqlInterpreter;
+import org.mulgara.itql.TqlInterpreter;
 import org.mulgara.query.Answer;
 import org.mulgara.query.TuplesException;
 import org.mulgara.query.rdf.BlankNodeImpl;
@@ -39,12 +39,14 @@ import org.mulgara.resolver.spi.GlobalizeException;
 import org.mulgara.resolver.spi.ResolverException;
 import org.mulgara.resolver.spi.ResolverSession;
 import org.mulgara.resolver.spi.Statements;
+import org.mulgara.server.Session;
 import org.mulgara.server.SessionFactory;
 import org.mulgara.server.driver.SessionFactoryFinder;
 
 import org.xml.sax.InputSource;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -154,7 +156,8 @@ class CacheInvalidator extends QueueingFilterHandler {
   private final Map<String,String> aliases;
   private final Ehcache            queryCache;
   private final URI                dbURI;
-  private       ItqlInterpreter    interpreter;
+  private       Session            session;
+  private       TqlInterpreter     parser;
 
   /** 
    * Create a new cache-invalidator instance. 
@@ -231,7 +234,7 @@ class CacheInvalidator extends QueueingFilterHandler {
         Element a = (Element) e.getElementsByTagName("alias").item(0);
         Element v = (Element) e.getElementsByTagName("value").item(0);
 
-        res.put(a.getTextContent(), v.getTextContent().replaceAll("\\Q${dbUri}", dbURI.toString()));
+        res.put(getText(a), getText(v).replaceAll("\\Q${dbUri}", dbURI.toString()));
       }
     }
 
@@ -329,6 +332,19 @@ class CacheInvalidator extends QueueingFilterHandler {
     return null;
   }
 
+  private static String getText(Element e) {
+    /* should be just this, but mulgara is using an old version of xerces
+    return e.getTextContent();
+    */
+    org.w3c.dom.Node text = e.getFirstChild();
+    if (text == null)
+      return "";
+    if (!(text instanceof Text))
+      throw new IllegalArgumentException("Expected text, but found node '" +
+                                         text.getNodeName() + "'");
+    return ((Text) text).getData();
+  }
+
   private static class Rule {
     public final int NONE = -1;
     public final int CNST = 0;
@@ -399,10 +415,6 @@ class CacheInvalidator extends QueueingFilterHandler {
 
     private static Element getChild(Element p, String name) {
       return (Element) p.getElementsByTagName(name).item(0);
-    }
-
-    private static String getText(Element e) {
-      return e.getTextContent();
     }
 
     private static String getChildText(Element p, String name) {
@@ -547,8 +559,8 @@ class CacheInvalidator extends QueueingFilterHandler {
   }
 
   private void runQuery(ModItem mi, Set<String> keys) {
-    if (interpreter == null) {
-      /* Delayed session and interpreter creation.
+    if (session == null) {
+      /* Delayed session and parser creation.
        *
        * This makes a whole bunch of assumptions regarding how LocalSessionFactory works and
        * under what environment we're being used. Basically we assume that A) all
@@ -557,10 +569,11 @@ class CacheInvalidator extends QueueingFilterHandler {
        */
       try {
         SessionFactory sf = SessionFactoryFinder.newSessionFactory(dbURI);
-        interpreter = new ItqlInterpreter(sf.newSession(), Collections.EMPTY_MAP);
-        logger.info("Created session and itql-interpreter");
+        session = sf.newSession();
+        parser  = new TqlInterpreter();
+        logger.info("Created session and itql-parser");
       } catch (Exception e) {
-        logger.error("Error creating session and itql-interpreter", e);
+        logger.error("Error creating session and itql-parser", e);
         return;
       }
     }
@@ -570,19 +583,7 @@ class CacheInvalidator extends QueueingFilterHandler {
 
     try {
       // run the query and check for errors
-      interpreter.executeCommand(mi.query);
-      Answer answer = interpreter.getLastAnswer();
-      if (answer == null) {
-        if (interpreter.getLastError() != null) {
-          logger.error("Error executing query '" + mi.query + "'", interpreter.getLastError());
-          return;
-        }
-        if (interpreter.getLastMessage() != null) {
-          logger.error("Unexpected message instead of result from query '" + mi.query + "': '" +
-              interpreter.getLastMessage() + "'");
-          return;
-        }
-      }
+      Answer answer = session.query(parser.parseQuery(mi.query));
 
       // gather up the results, grouping them by key
       Map<String,Set<String>> res = new HashMap<String,Set<String>>();
