@@ -15,12 +15,17 @@ import javax.transaction.Transaction;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Implement local Transaction as a wrapper around a jta transaction.
  *
  * @author Pradeep Krishnan
  */
 public class TransactionImpl implements org.topazproject.otm.Transaction {
+  private static final Log  log = LogFactory.getLog(TransactionImpl.class);
+
   private final Session     session;
   private final Transaction jtaTxn;
 
@@ -35,6 +40,9 @@ public class TransactionImpl implements org.topazproject.otm.Transaction {
   public TransactionImpl(Session session, Transaction jtaTxn) {
     this.session = session;
     this.jtaTxn  = jtaTxn;
+
+    if (log.isDebugEnabled())
+      log.debug("Started local transaction " + this + " for session " + session);
   }
 
   public Session getSession() {
@@ -42,6 +50,9 @@ public class TransactionImpl implements org.topazproject.otm.Transaction {
   }
 
   public void setRollbackOnly() throws OtmException {
+    if (log.isDebugEnabled())
+      log.debug("Setting rollback-only on transaction " + this);
+
     try {
       jtaTxn.setRollbackOnly();
     } catch (Exception e) {
@@ -58,6 +69,9 @@ public class TransactionImpl implements org.topazproject.otm.Transaction {
   }
 
   public void commit() throws OtmException {
+    if (log.isDebugEnabled())
+      log.debug("Committing transaction " + this);
+
     try {
       jtaTxn.commit();
     } catch (Exception e) {
@@ -66,6 +80,9 @@ public class TransactionImpl implements org.topazproject.otm.Transaction {
   }
 
   public void rollback() throws OtmException {
+    if (log.isDebugEnabled())
+      log.debug("Rolling back transaction " + this);
+
     try {
       jtaTxn.rollback();
     } catch (Exception e) {
