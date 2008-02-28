@@ -8,8 +8,8 @@
 	</div>
 	<table class="directory" cellpadding="0" cellspacing="0">
 	<#if commentary?size == 0>
-	<p>There are currently no annotations or discussions yet on this article. 
-	You can <a href="${startDiscussionUrl}" title="Click to start a discussion on this article" class="discuss icon">start a discussion</a> or return to the original article to add an annotation.<p>
+	<p>There are currently no notes or comments yet on this article. 
+	You can <a href="${startDiscussionUrl}" title="Click to make a new comment on this article" class="discuss icon">add a comment</a> or return to the original article to add a note.<p>
 	<#else>
 
 
