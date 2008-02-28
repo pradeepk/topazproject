@@ -209,6 +209,14 @@
         <regex>10\.1371/journal\.pctr\.\d{7}</regex>
       </journal>
       <journal>
+        <url>http://ploscompbiol...:${network.ports.default}${pub.app-context}/</url>
+        <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
+      </journal>
+      <journal>
+        <url>http://plosgenetics...:${network.ports.default}${pub.app-context}/</url>
+        <regex>10\.1371/journal\.pgen\.\d{7}</regex>
+      </journal>
+      <journal>
         <url>http://plosntds...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.pntd\.\d{7}</regex>
       </journal>
@@ -216,21 +224,13 @@
         <url>http://plospathogens...:${network.ports.default}${pub.app-context}/</url>
         <regex>10\.1371/journal\.ppat\.\d{7}</regex>
       </journal>
-      <journal>
-        <url>http://plosgenetics...:${network.ports.default}${pub.app-context}/</url>
-        <regex>10\.1371/journal\.pgen\.\d{7}</regex>
-      </journal>
-      <journal>
-        <url>http://ploscompbiol...:${network.ports.default}${pub.app-context}/</url>
-        <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
-      </journal>
     </doi-journals>
      
     <spring>
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
         <plos>
-          <doiurl>http://...</doiurl>        <!-- URL where your URIs can be found -->
+          <doiurl>http://.../</doiurl>        <!-- URL where your URIs can be found -->
           <email>your@email.address</email>  <!-- email address to send info to -->
         </plos>
         <login>crossref-username</login>     <!-- crossref login -->
@@ -965,6 +965,14 @@
         </css>
       </page>
       <page>
+        <name>/static/latexGuidelines.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      <page>
         <name>/static/license.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>
@@ -1212,8 +1220,8 @@
     <!--PLoSCompBiol-->
     <journal>
       <name>PLoSCompBiol</name>
-      <metaKeywords></metaKeywords>
-      <metaDescription></metaDescription>
+      <metaKeywords>>plos computational biology, plos comp biol, plos comput biol, plos comp bio, plos bioinformatics, plos, computational biology journal, public library of science, open access, open-access, online science journal, plos journal, computational biology, biology, computational, bioinformatics, informatics, prediction, gene, genome, model, factor, sequence, motif, function, analysis</metaKeywords>
+      <metaDescription>PLoS Computational Biology is an open-access, peer-reviewed journal featuring works of exceptional significance that further our understanding of living systems at all scales through the application of computational methods.</metaDescription>
       <articleTitlePrefix>PLoS Computational Biology: </articleTitlePrefix>
       <displayName>PLoS Computational Biology</displayName>
       <default>
@@ -1378,8 +1386,8 @@
     <!--PLoSGenetics-->
     <journal>
       <name>PLoSGenetics</name>
-      <metaKeywords></metaKeywords>
-      <metaDescription></metaDescription>
+      <metaKeywords>plos genetics, plosgenetics, plos genetic, public library of science genetics, plos genet, plos, public library of science, open access, open-access, online science journal, plos journal, genetics, genetic, genomics, genomic, gene, genes, human, analysis, expression, association mapping, mouse, mice, genome, arabidopsis, dna, drosophila, cell, mapping, population, disease, chromosome, yeast, heritability</metaKeywords>
+      <metaDescription>>PLoS Genetics is an open-access, peer-reviewed journal that reflects the full breadth and interdisciplinary nature of genetics and genomics research by publishing outstanding original contributions in all areas of biology.</metaDescription>
       <articleTitlePrefix>PLoS Genetics: </articleTitlePrefix>
       <displayName>PLoS Genetics</displayName>
       <default>
@@ -1750,8 +1758,8 @@
     <!--PLoSPathogens-->
     <journal>
       <name>PLoSPathogens</name>
-      <metaKeywords></metaKeywords>
-      <metaDescription></metaDescription>
+      <metaKeywords>plos pathogens, plos pathogen, plospathogens, plos pathog, public library of science pathogens, plos pathology, plos, public library of science, open access, open-access, online science journal, plos journal, pathogens, pathogen, plasmodium, cell, human, infection, hiv, virus, salmonella, protein, staphylococcus, parasite, bacteria, host</metaKeywords>
+      <metaDescription>From molecules to physiology, PLoS Pathogens publishes important new ideas on bacteria, fungi, parasites, prions, and viruses that contribute to our understanding of the biology of pathogens and pathogen-host interactions. An open-access journal.</metaDescription>
       <articleTitlePrefix>PLoS Pathogens: </articleTitlePrefix>
       <displayName>PLoS Pathogens</displayName>
       <default>

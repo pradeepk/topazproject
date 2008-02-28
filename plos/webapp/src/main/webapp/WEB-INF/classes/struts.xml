@@ -323,6 +323,12 @@
       </result>
     </action>
 
+    <action name="latexGuidelines" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/latexGuidelines.ftl</param>
+      </result>
+    </action>
+
     <action name="license" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/license.ftl</param>
