@@ -11,6 +11,7 @@ package org.plos.configuration;
 
 import java.util.List;
 
+import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -23,6 +24,12 @@ public class ConfigurationTest extends TestCase {
     ConfigurationStore store = ConfigurationStore.getInstance();
     store.loadConfiguration(null);
     conf = store.getConfiguration();
+    /* We want to use a test version of global-defaults.
+     * However there is no way to override it. So we add this
+     * at the end (last place looked).
+     */
+    ConfigurationStore.addResources((CombinedConfiguration)conf, 
+        "/org/plos/configuration/global-defaults-test.xml");
   }
 
   protected void tearDown() {

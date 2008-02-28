@@ -129,7 +129,7 @@ public class ConfigurationStore {
   public void setConfiguration(CombinedConfiguration newConfig) {
     root = newConfig;
   }
-  
+
   /**
    * Load/Reload the configuration from the factory config url.
    *
