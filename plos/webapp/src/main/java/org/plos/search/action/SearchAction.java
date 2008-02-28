@@ -243,11 +243,9 @@ public class SearchAction extends BaseActionSupport {
         Calendar cal = new GregorianCalendar();
         if ("week".equals(dateTypeSelect)) {
           cal.add(Calendar.DATE, -7);
-        }
-        if ("month".equals(dateTypeSelect)) {
+        } else if ("month".equals(dateTypeSelect)) {
           cal.add(Calendar.MONTH, -1);
-        }
-        if ("month".equals(dateTypeSelect)) {
+        } else if ("3months".equals(dateTypeSelect)) {
           cal.add(Calendar.MONTH, -3);
         }
         String startDateStr = sdf.format(cal.getTime());
