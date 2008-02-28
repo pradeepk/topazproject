@@ -30,6 +30,7 @@ import org.topazproject.otm.filter.CriteriaFilterDefinition;
 import org.topazproject.otm.filter.DisjunctiveFilterDefinition;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.filter.OqlFilterDefinition;
+import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.PublicAnnotation;
@@ -238,8 +239,8 @@ public class OqlTest extends AbstractTest {
 
       // unconstrained variables
       rdf.sessFactory.setClassMetadata(
-          new ClassMetadata(Object.class, "Object", null, Collections.EMPTY_SET, "ri", null,
-                            Collections.EMPTY_SET, null));
+          new ClassMetadata(new ClassBinder(Object.class), "Object", null, Collections.EMPTY_SET, 
+                            "ri", null, Collections.EMPTY_SET, null, null));
 
       r = s.createQuery("select o from Object o order by o;").execute()
       checker.verify(r) {

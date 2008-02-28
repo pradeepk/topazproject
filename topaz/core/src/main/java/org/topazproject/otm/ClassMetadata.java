@@ -23,24 +23,28 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.EntityBinder;
+import org.topazproject.otm.mapping.java.ClassBinder;
 
 /**
  * Meta information for mapping a class to a set of triples.
  *
  * @author Pradeep Krishnan
  */
-public class ClassMetadata<T> {
+public class ClassMetadata {
   private static final Log                log = LogFactory.getLog(ClassMetadata.class);
 
   private final Set<String>               types;
   private final String                    type;
+  private final Set<String>               names;
   private final String                    name;
+  private final String                    superEntity;
   private final String                    model;
   private final Mapper                    idField;
   private final Binder                    blobField;
   private final Map<String, List<Mapper>> uriMap;
   private final Map<String, Mapper>       nameMap;
-  private final Class<T>                  clazz;
+  private final EntityBinder              binder;
   private final Collection<Mapper>        fields;
   private final String                    query;
   private final Map<String, List<Mapper>> varMap;
@@ -48,7 +52,7 @@ public class ClassMetadata<T> {
   /**
    * Creates a new ClassMetadata object for an Entity.
    *
-   * @param clazz the class 
+   * @param binder the entity binder (XXX: temporary)
    * @param name the entity name for use in queries
    * @param type the most specific rdf:type that identify this class
    * @param types set of rdf:type values that identify this class
@@ -56,20 +60,23 @@ public class ClassMetadata<T> {
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
    * @param blobField loader for the blob
+   * @param superEntity a super class entity for which this is a sub-class of
    */
-  public ClassMetadata(Class<T> clazz, String name, String type, Set<String> types, String model,
-                       Mapper idField, Collection<Mapper> fields, Binder blobField)
+  public ClassMetadata(EntityBinder binder, String name, String type, Set<String> types, String model,
+                       Mapper idField, Collection<Mapper> fields, Binder blobField, String superEntity)
                 throws OtmException {
-    this.clazz                                = clazz;
+    this.binder                               = binder;
     this.name                                 = name;
     this.query                                = null;
     this.type                                 = type;
     this.model                                = model;
     this.idField                              = idField;
     this.blobField                            = blobField;
+    this.superEntity                          = superEntity;
 
     this.types                                = Collections.unmodifiableSet(new HashSet<String>(types));
     this.fields                               = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
+    this.names                                = buildNames(name, binder);
 
     Map<String, List<Mapper>> uriMap          = new HashMap<String, List<Mapper>>();
     Map<String, Mapper>       nameMap         = new HashMap<String, Mapper>();
@@ -96,25 +103,27 @@ public class ClassMetadata<T> {
   /**
    * Creates a new ClassMetadata object for a View.
    *
-   * @param clazz   the class 
+   * @param binder  the entity binder (XXX: temporary) 
    * @param name    the view name (used to look up class-metadata)
    * @param query   the query, or null for SubView's
    * @param idField the mapper for the id field
    * @param fields  mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(Class<T> clazz, String name, String query, Mapper idField,
+  public ClassMetadata(EntityBinder binder, String name, String query, Mapper idField,
                        Collection<Mapper> fields)
                 throws OtmException {
-    this.clazz     = clazz;
-    this.name      = name;
-    this.query     = query;
-    this.type      = null;
-    this.model     = null;
-    this.idField   = idField;
-    this.blobField = null;
+    this.binder      = binder;
+    this.name        = name;
+    this.query       = query;
+    this.type        = null;
+    this.model       = null;
+    this.idField     = idField;
+    this.blobField   = null;
+    this.superEntity = null;
 
-    this.types     = Collections.emptySet();
-    this.fields    = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
+    this.types       = Collections.emptySet();
+    this.fields      = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
+    this.names       = buildNames(name, binder);
 
     Map<String, List<Mapper>> varMap  = new HashMap<String, List<Mapper>>();
     Map<String, Mapper>       nameMap = new HashMap<String, Mapper>();
@@ -133,13 +142,34 @@ public class ClassMetadata<T> {
     this.varMap  = Collections.unmodifiableMap(varMap);
   }
 
+  private static Set<String> buildNames(String name, EntityBinder binder) {
+    Set<String>               names           = new HashSet<String>();
+
+    names.add(name);
+    Collections.addAll(names, binder.getNames());
+    return Collections.unmodifiableSet(names);
+  }
+
   /**
-   * Gets the class that this meta info pertains to.
+   * Gets the binder corresponding to the entity mode.
    *
-   * @return the class
+   * @param mode the entity mode
+   *
+   * @return the entity binder
    */
-  public Class<T> getSourceClass() {
-    return clazz;
+  public EntityBinder getEntityBinder(EntityMode mode) {
+    return binder;
+  }
+
+  /**
+   * Gets the binder corresponding to the entity mode.
+   *
+   * @param session the otm session implementation
+   *
+   * @return the entity binder
+   */
+  public EntityBinder getEntityBinder(Session session) {
+    return binder;
   }
 
   /**
@@ -161,6 +191,15 @@ public class ClassMetadata<T> {
   }
 
   /**
+   * Gets the set of all unique names by which this entity is known.
+   *
+   * @return set of unique names for this entity
+   */
+  public Set<String> getNames() {
+    return names;
+  }
+
+  /**
    * Gets the most specific rdf:type that describes this class.
    *
    * @return the rdf:type uri or null
@@ -176,6 +215,15 @@ public class ClassMetadata<T> {
    */
   public Set<String> getTypes() {
     return types;
+  }
+
+  /**
+   * Gets the entity for which this is a subclass-of.
+   *
+   * @return the super entity or null
+   */
+  public String getSuperEntity() {
+    return superEntity;
   }
 
   /**
@@ -317,7 +365,7 @@ public class ClassMetadata<T> {
    * inherited javadoc
    */
   public String toString() {
-    return clazz.toString();
+    return "ClassMetadata[name=" + getName() + ", type=" + getType() + "]";
   }
 
   /**
@@ -357,5 +405,25 @@ public class ClassMetadata<T> {
     }
 
     return false;
+  }
+
+  public boolean isAssignableFrom(ClassMetadata other) {
+    // XXX: temporary
+    return ((ClassBinder)binder).getSourceClass().isAssignableFrom(((ClassBinder)other.binder).getSourceClass());
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof ClassMetadata))
+      return false;
+
+    ClassMetadata o = (ClassMetadata) other;
+
+    return name.equals(name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
   }
 }

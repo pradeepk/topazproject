@@ -224,7 +224,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
     }
 
     List           assocs = new ArrayList();
-    loadAssocs(values, types, session, assocs);
+    loadAssocs(values, types, session, assocs, mapper);
     this.set(instance, assocs);
   }
 
@@ -236,30 +236,19 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * @param session  the session under which the load is performed.
    *                 Used for resolving associations etc.
    * @param assocs   the collection to load association instances to
+   * @param mapper   the mapper associated with this binder
    *
    * @throws OtmException on a failure in instantiating associations
    */
   protected void loadAssocs(List<String> ids, Map<String, Set<String>> types,
-      Session session, Collection assocs) throws OtmException {
+      Session session, Collection assocs, Mapper mapper) throws OtmException {
     SessionFactory sf     = session.getSessionFactory();
+    ClassMetadata cm      = sf.getClassMetadata(mapper.getAssociatedEntity());
 
     for (String id : ids) {
-      // lazy load
-      Class       cls = getComponentType();
-
-      Set<String> t   = types.get(id);
-
-      if ((t != null) && (t.size() > 0))
-        cls = sf.mostSpecificSubClass(cls, t);
-      else {
-        ClassMetadata c = sf.getClassMetadata(cls);
-
-        if ((c != null) && (c.getType() != null))
-          cls = null;
-      }
-
-      if (cls != null) {
-        Object a = session.load(cls, id);
+      ClassMetadata c = sf.getSubClassMetadata(cm, session.getEntityMode(), types.get(id));
+      if (c != null) {
+        Object a = session.load(c, id);
 
         if (a != null)
           assocs.add(a);

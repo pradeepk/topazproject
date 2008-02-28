@@ -247,8 +247,7 @@ public class ItqlCriteria {
         current.getSession().getSessionFactory()
                .getClassMetadata(f.getFilterDefinition().getFilteredClass());
 
-    return (cm != null &&
-            cm.getSourceClass().isAssignableFrom(current.getClassMetadata().getSourceClass()));
+    return (cm != null && cm.isAssignableFrom(current.getClassMetadata()));
   }
 
   /**
@@ -279,7 +278,7 @@ public class ItqlCriteria {
 
       while (qa.next()) {
         String s = qa.getString("s");
-        Object o = criteria.getSession().get(cm.getSourceClass(), s, false);
+        Object o = criteria.getSession().get(cm, s, false);
 
         if (o != null)
           results.add(o);

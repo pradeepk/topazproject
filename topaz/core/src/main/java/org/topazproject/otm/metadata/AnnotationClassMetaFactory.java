@@ -56,6 +56,7 @@ import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.MapperImpl;
 import org.topazproject.otm.mapping.java.ArrayFieldBinder;
+import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.CollectionFieldBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldBinder;
@@ -90,14 +91,14 @@ public class AnnotationClassMetaFactory {
    *
    * @throws OtmException on an error
    */
-  public <T> ClassMetadata<T> create(Class<T> clazz) throws OtmException {
+  public ClassMetadata create(Class clazz) throws OtmException {
     if (clazz.getAnnotation(View.class) != null || clazz.getAnnotation(SubView.class) != null)
       return createView(clazz);
     else
       return create(clazz, clazz, null);
   }
 
-  private <T> ClassMetadata<T> create(Class<T> clazz, Class<?> top,
+  private ClassMetadata create(Class<?> clazz, Class<?> top,
                                       String uriPrefixOfContainingClass)
                         throws OtmException {
     Set<String>        types     = Collections.emptySet();
@@ -106,6 +107,7 @@ public class AnnotationClassMetaFactory {
     String             uriPrefix = null;
     Mapper             idField   = null;
     Binder             blobField = null;
+    String             superEntity = null;
     Collection<Mapper> fields    = new ArrayList<Mapper>();
 
     Class<?>           s         = clazz.getSuperclass();
@@ -114,13 +116,14 @@ public class AnnotationClassMetaFactory {
       log.debug("Creating class-meta for " + clazz);
 
     if (!Object.class.equals(s) && (s != null)) {
-      ClassMetadata<?> superMeta = create(s, top, uriPrefixOfContainingClass);
+      ClassMetadata superMeta = create(s, top, uriPrefixOfContainingClass);
       model       = superMeta.getModel();
       type        = superMeta.getType();
       types       = superMeta.getTypes();
       idField     = superMeta.getIdField();
       blobField   = superMeta.getBlobField();
       fields.addAll(superMeta.getFields());
+      superEntity = superMeta.getName();
     }
 
     Aliases aliases = clazz.getAnnotation(Aliases.class);
@@ -190,10 +193,22 @@ public class AnnotationClassMetaFactory {
       }
     }
 
-    return new ClassMetadata(clazz, name, type, types, model, idField, fields, blobField);
+    ClassBinder binder = createBinder(clazz, idField);
+    return new ClassMetadata(binder, name, type, types, model, idField, fields, blobField, superEntity);
   }
 
-  private <T> ClassMetadata<T> createView(Class<T> clazz) throws OtmException {
+ private ClassBinder createBinder(Class<?> clazz, Mapper idField) {
+   Method getter;
+
+   if (idField == null)
+     getter = null;
+   else
+     getter = ((FieldBinder)idField.getBinder(EntityMode.POJO)).getGetter();
+
+   return new ClassBinder(clazz, (getter == null) ? new Method[0] : new Method[]{getter});
+ }
+
+  private  ClassMetadata createView(Class<?> clazz) throws OtmException {
     String name;
     String query = null;
 
@@ -229,7 +244,8 @@ public class AnnotationClassMetaFactory {
     if (view != null && idField == null)
       throw new OtmException("Missing @Id field in " + clazz.getName());
 
-    return new ClassMetadata(clazz, name, query, idField, fields);
+    ClassBinder binder = createBinder(clazz, idField);
+    return new ClassMetadata(binder, name, query, idField, fields);
   }
 
   /**
@@ -443,7 +459,7 @@ public class AnnotationClassMetaFactory {
       throw new OtmException("@Embedded class field " + toString(f)
                              + " can't be an array, collection or a simple field");
 
-    ClassMetadata<?> cm;
+    ClassMetadata cm;
     try {
       cm = create(type, type, ns);
     } catch (OtmException e) {

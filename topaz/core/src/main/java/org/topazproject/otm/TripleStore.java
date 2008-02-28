@@ -33,7 +33,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> void insert(ClassMetadata<T> cm, String id, T o, Connection con) throws OtmException;
+  public <T> void insert(ClassMetadata cm, String id, T o, Connection con) throws OtmException;
 
   /**
    * Persists parts of an object in the triple store.
@@ -46,7 +46,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o,
+  public <T> void insert(ClassMetadata cm, Collection<Mapper> fields, String id, T o,
                          Connection con) throws OtmException;
 
   /**
@@ -59,7 +59,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> void delete(ClassMetadata<T> cm, String id, T o, Connection con) throws OtmException;
+  public <T> void delete(ClassMetadata cm, String id, T o, Connection con) throws OtmException;
 
   /**
    * Removes parts of an object from the triple store.
@@ -72,7 +72,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void delete(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
                          Connection con) throws OtmException;
 
   /**
@@ -90,7 +90,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> T get(ClassMetadata<T> cm, String id, T instance, Connection con,
+  public Object get(ClassMetadata cm, String id, Object  instance, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException;
 
   /**

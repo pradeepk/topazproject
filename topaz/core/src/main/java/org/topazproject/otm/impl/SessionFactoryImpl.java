@@ -9,9 +9,6 @@
  */
 package org.topazproject.otm.impl;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -25,9 +22,6 @@ import java.util.Set;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 
-import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.ProxyFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,7 +29,7 @@ import org.objectweb.jotm.Jotm;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
-import org.topazproject.otm.mapping.java.FieldBinder;
+import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 import org.topazproject.otm.query.DefaultQueryFunctionFactory;
 import org.topazproject.otm.query.QueryFunctionFactory;
@@ -68,29 +62,25 @@ public class SessionFactoryImpl implements SessionFactory {
   private static final Log log = LogFactory.getLog(SessionFactory.class);
 
   /**
-   * rdf:type to Class mapping.
+   * rdf:type to entity mapping
    */
-  private final Map<String, Set<Class>> classmap = new HashMap<String, Set<Class>>();
+  private final Map<String, Set<ClassMetadata>> typemap = new HashMap<String, Set<ClassMetadata>>();
 
   /**
-   * Class to metadata mapping.
+   * Name to metadata mapping.
    */
-  private final Map<Class<?>, ClassMetadata<?>> metadata = new HashMap<Class<?>, ClassMetadata<?>>();
+  private final Map<String, ClassMetadata> entitymap = new HashMap<String, ClassMetadata>();
 
   /**
-   * Class name to metadata mapping.
+   * Entity name to sub-class entity name mapping. Note that 'null' key is used to indicate
+   * root classes.
    */
-  private final Map<String, ClassMetadata<?>> cnamemap = new HashMap<String, ClassMetadata<?>>();
+  private final Map<String, Set<ClassMetadata>> subClasses = new HashMap<String, Set<ClassMetadata>>();
 
   /**
-   * Entity name to metadata mapping.
+   * POJO mapping specific: Class to ClassMetadata mapping
    */
-  private final Map<String, ClassMetadata<?>> entitymap = new HashMap<String, ClassMetadata<?>>();
-
-  /**
-   * Class to proxy class mapping.
-   */
-  private final Map<Class, Class> proxyClasses = new HashMap<Class, Class>();
+  private final Map<Class, ClassMetadata> classmap = new HashMap<Class, ClassMetadata>();
 
   /**
    * Model to config mapping (uris, types etc.)
@@ -171,130 +161,143 @@ public class SessionFactoryImpl implements SessionFactory {
     if ((c == null) || Object.class.equals(c))
       return;
 
-    try {
-      preload(c.getSuperclass());
-    } catch (Exception e) {
-      if (log.isDebugEnabled())
-        log.debug("Preload: skipped for " + c.getSuperclass(), e);
-    }
+    preload(c.getSuperclass());
 
-    ClassMetadata<?> cm = cmf.create(c);
-
-    setClassMetadata(cm);
+    if (getClassMetadata(c) == null)
+      setClassMetadata(cmf.create(c));
   }
 
   /*
    * inherited javadoc
    */
-  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris) {
-    return mostSpecificSubClass(clazz, typeUris, false);
+  public ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
+                                Collection<String> typeUris) {
+    return getSubClassMetadata(clazz, mode, typeUris, true);
   }
 
-  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris, boolean any) {
-    if (typeUris.size() == 0)
-      return clazz;
+  /*
+   * inherited javadoc
+   */
+  public ClassMetadata getAnySubClassMetadata(ClassMetadata clazz, Collection<String> typeUris) {
+    return getSubClassMetadata(clazz, null, typeUris, false);
+  }
 
-    ClassMetadata<?> solution  = null;
+  private ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
+                                Collection<String> typeUris, boolean instantiable) {
+    if ((typeUris == null) || (typeUris.size() == 0))
+      return (clazz == null) ? null : ((clazz.getType() != null) ? null : clazz);
+
+    ClassMetadata solution  = null;
 
     for (String uri : typeUris) {
-      Set<Class> classes = classmap.get(uri);
+      Set<ClassMetadata> classes = typemap.get(uri);
 
       if (classes == null)
         continue;
 
-      Class candidate = clazz;
+      ClassMetadata candidate = clazz;
 
       //find the most specific class with the same rdf:type
-      for (Class cl : classes) {
-        if (candidate.isAssignableFrom(cl) && (any || isInstantiable(cl)))
+      for (ClassMetadata cl : classes) {
+        if (instantiable && !cl.getEntityBinder(mode).isInstantiable())
+          continue;
+
+        if ((candidate == null) || candidate.isAssignableFrom(cl))
           candidate = cl;
       }
 
-      if (classes.contains(candidate)) {
-        ClassMetadata<?> cm = metadata.get(candidate);
-        if (solution == null)
-          solution = cm;
-        else if ((cm != null) && (solution.getTypes().size() < cm.getTypes().size()))
-          solution = cm;
-      }
+      // accept this candidate only if it corresponds to the type-uris
+      if (classes.contains(candidate) 
+          && ((solution == null) || solution.isAssignableFrom(candidate)))
+            solution = candidate;
     }
 
-    return (solution != null) ? solution.getSourceClass() : null;
+    return solution;
   }
 
   /*
    * inherited javadoc
    */
-  public <T> void setClassMetadata(ClassMetadata<T> cm) throws OtmException {
-    if (entitymap.containsKey(cm.getName())
-         && !entitymap.get(cm.getName()).getSourceClass().equals(cm.getSourceClass()))
-      throw new OtmException("An entity with name '" + cm.getName() + "' already exists.");
+  public ClassMetadata getInstanceMetadata(ClassMetadata clazz, EntityMode mode, Object instance) {
+    if ((clazz != null) && !clazz.getEntityBinder(mode).isInstance(instance))
+      return null;
 
-    entitymap.put(cm.getName(), cm);
+    ClassMetadata candidate = clazz;
+    Collection<ClassMetadata> sub = subClasses.get((clazz == null) ? null : clazz.getName());
 
-    Class<T> c = cm.getSourceClass();
-    metadata.put(c, cm);
-    cnamemap.put(c.getName(), cm);
-    if (cm.isPersistable() || cm.isView())
-      createProxy(c, cm);
+    if (sub != null) {
+      for (ClassMetadata s : sub) {
+        ClassMetadata cm = getInstanceMetadata(s, mode, instance);
+        if ((cm != null) && ((candidate == null) || candidate.isAssignableFrom(cm)))
+          candidate = cm;
+      }
+    }
+    return candidate;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void setClassMetadata(ClassMetadata cm) throws OtmException {
+    for (String name : cm.getNames()) {
+      ClassMetadata other = entitymap.get(name);
+      if (other != null)
+        throw new OtmException("An entity with name or alias of '" + name + "' already exists.");
+    }
+
+    // XXX: temporary
+    Class c = ((ClassBinder)cm.getEntityBinder(EntityMode.POJO)).getSourceClass();
+    if (classmap.containsKey(c))
+      throw new OtmException("An entity for class " + c + " already exists.");
+    classmap.put(c, cm);
+
+    for (String name : cm.getNames())
+      entitymap.put(name, cm);
 
     String type = cm.getType();
 
     if (type != null) {
-      Set<Class> set = classmap.get(type);
+      Set<ClassMetadata> set = typemap.get(type);
 
       if (set == null) {
-        set = new HashSet<Class>();
-        classmap.put(type, set);
+        set = new HashSet<ClassMetadata>();
+        typemap.put(type, set);
       }
 
-      set.add(c);
+      set.add(cm);
     }
 
+    String             sup = cm.getSuperEntity();
+    Set<ClassMetadata> set = subClasses.get(sup);
+
+    if (set == null)
+      subClasses.put(sup, set = new HashSet<ClassMetadata>());
+
+    set.add(cm);
+
     if (log.isDebugEnabled())
-      log.debug("setClassMetadata: type(" + cm.getType() + ") ==> " + cm);
+      log.debug("Registered " + cm);
   }
 
   /*
    * inherited javadoc
    */
-  public <T> ClassMetadata<T> getClassMetadata(Class<? extends T> clazz) {
-    ClassMetadata<T> cm = (ClassMetadata<T>) metadata.get(clazz);
-
-    if (cm != null)
-      return cm;
-
-    clazz = getProxyMapping(clazz);
-
-    if (clazz != null)
-      cm = (ClassMetadata<T>) metadata.get(clazz);
-
-    return cm;
+  public ClassMetadata getClassMetadata(Class<?> clazz) {
+    return classmap.get(clazz);
   }
 
   /*
    * inherited javadoc
    */
-  public ClassMetadata<?> getClassMetadata(String entity) {
-    ClassMetadata<?> res = entitymap.get(entity);
-    if (res == null)
-      res = cnamemap.get(entity);
-
-    return res;
+  public ClassMetadata getClassMetadata(String entity) {
+    return entitymap.get(entity);
   }
 
   /*
    * inherited javadoc
    */
-  public Collection<ClassMetadata<?>> listClassMetadata() {
-    return new ArrayList<ClassMetadata<?>>(metadata.values());
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public <T> Class<? extends T> getProxyMapping(Class<? extends T> clazz) {
-    return proxyClasses.get(clazz);
+  public Collection<ClassMetadata> listClassMetadata() {
+    return new HashSet<ClassMetadata>(entitymap.values());
   }
 
   /*
@@ -479,31 +482,6 @@ public class SessionFactoryImpl implements SessionFactory {
     return uri;
   }
 
-  private boolean isInstantiable(Class clazz) {
-    int mod = clazz.getModifiers();
-
-    return !Modifier.isAbstract(mod) && !Modifier.isInterface(mod) && Modifier.isPublic(mod);
-  }
-
-  private <T> void createProxy(Class<T> clazz, ClassMetadata<T> cm) {
-    final Method getter = ((FieldBinder)cm.getIdField().getBinder(EntityMode.POJO)).getGetter();
-
-    MethodFilter mf     =
-      new MethodFilter() {
-        public boolean isHandled(Method m) {
-          return !m.getName().equals("finalize") && !m.equals(getter);
-        }
-      };
-
-    ProxyFactory f      = new ProxyFactory();
-    f.setSuperclass(clazz);
-    f.setFilter(mf);
-
-    Class<? extends T> c = f.createClass();
-
-    proxyClasses.put(clazz, c);
-    proxyClasses.put(c, clazz);
-  }
 
   protected void finalize() throws Throwable {
     try {

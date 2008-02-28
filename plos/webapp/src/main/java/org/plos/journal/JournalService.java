@@ -10,6 +10,7 @@
 
 package org.plos.journal;
 
+import java.lang.reflect.Method;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
@@ -39,6 +41,7 @@ import org.topazproject.otm.filter.DisjunctiveFilterDefinition;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.util.TransactionHelper;
+import org.topazproject.otm.mapping.java.ClassBinder;
 
 import org.plos.models.Aggregation;
 import org.plos.models.Journal;
@@ -95,8 +98,8 @@ public class JournalService {
   }
 
   private void initialize() {
-    sf.setClassMetadata(new ClassMetadata(Object.class, "Object", null, Collections.EMPTY_SET,
-                                          RI_MODEL, null, Collections.EMPTY_SET, null));
+    sf.setClassMetadata(new ClassMetadata(new ClassBinder(Object.class, new Method[0]), "Object",
+          null, Collections.EMPTY_SET, RI_MODEL, null, Collections.EMPTY_SET, null, null));
 
     /* spring initializes singletons at startup, so no session is available yet, and hence
      * we create our own and create our own transaction. Alternatively, we could use
@@ -482,14 +485,14 @@ public class JournalService {
         continue;
       }
 
-      Class c = sf.mostSpecificSubClass(Object.class, types);
+      ClassMetadata c = sf.getSubClassMetadata(null, EntityMode.POJO, types);
       if (c == null) {
         log.error("no class registered for static collection object '" + id + "'; types were '" +
                   types + "'");
         continue;
       }
 
-      put(idsByClass, c, id);
+      put(idsByClass, ((ClassBinder)c.getEntityBinder(EntityMode.POJO)).getSourceClass(), id);
     }
 
     // create a filter-definition for each class

@@ -19,8 +19,10 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
+import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -208,13 +210,13 @@ public class OwlGenerator {
    */
   public void generateProperties() throws OtmException, OWLException {
     // Loop over all classes in factory
-    for (ClassMetadata<?> cm: otmFactory.listClassMetadata()) {
+    for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
       String type = cm.getType();
       if (type == null)
         continue;
       OWLClass domain = getOWLClass(type,cm.getName());
-      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
+      HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
       for (Mapper m: cm.getFields()) {
@@ -277,7 +279,7 @@ public class OwlGenerator {
    */
   public void generateClasses() throws OtmException, OWLException {
     // Loop over all classes in factory
-    for (ClassMetadata<?> cm: otmFactory.listClassMetadata()) {
+    for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
       String type = cm.getType();
       // Ignore anonymous classes
@@ -288,11 +290,11 @@ public class OwlGenerator {
       // Get the corresponding OWL class
       OWLClass owlClass = getOWLClass(type,cm.getName());
       ontologyManager.applyChange(new AddAxiom(ontology, factory.getOWLDeclarationAxiom(owlClass)));
-      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
+      HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Create sub-class relationships
       for (Class c: superClasses.values()) {
-        ClassMetadata<?> scm = otmFactory.getClassMetadata(c);
+        ClassMetadata scm = otmFactory.getClassMetadata(c);
         if (!isTypedEntity(scm))
           continue;
         log.debug("Processing super-class: " + scm.getName());
@@ -315,7 +317,7 @@ public class OwlGenerator {
    */
   public void generateClassObjectProperties() throws OtmException, OWLException {
     // Loop over all classes in factory
-    for (ClassMetadata<?> cm: otmFactory.listClassMetadata()) {
+    for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
       String type = cm.getType();
       // Ignore anonymous classes
@@ -325,7 +327,7 @@ public class OwlGenerator {
 
       // Get the corresponding OWL class
       OWLClass domain = getOWLClass(type,cm.getName());
-      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
+      HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
       for (Mapper m: cm.getFields()) {
@@ -338,11 +340,11 @@ public class OwlGenerator {
         Field f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getField();
         log.debug("Field Class extracted: " + f);
         Class clazz = f.getDeclaringClass();
-        if (clazz != cm.getSourceClass()) {
+        if (clazz != getSourceClass(cm)) {
           // See if it exists in super classes
           Class c = (Class)superClasses.get(clazz.getName());
           if (c != null) {
-            ClassMetadata<?> fCm = otmFactory.getClassMetadata(c);
+            ClassMetadata fCm = otmFactory.getClassMetadata(c);
             if (isTypedEntity(fCm))
               // It will be taken care of in the super class
               continue;
@@ -377,7 +379,7 @@ public class OwlGenerator {
    */
   public void generateClassDataProperties() throws OtmException, OWLException {
     // Loop over all classes in factory
-    for (ClassMetadata<?> cm: otmFactory.listClassMetadata()) {
+    for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
       String type = cm.getType();
       // Ignore anonymous classes
@@ -387,7 +389,7 @@ public class OwlGenerator {
 
       // Get the corresponding OWL class
       OWLClass domain = getOWLClass(type,cm.getName());
-      HashMap<String, Class> superClasses = getSuperClasses(cm.getSourceClass());
+      HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
       for (Mapper m: cm.getFields()) {
@@ -400,11 +402,11 @@ public class OwlGenerator {
         Field f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getField();
         log.debug("Field Class extracted: " + f);
         Class clazz = f.getDeclaringClass();
-        if (clazz != cm.getSourceClass()) {
+        if (clazz != getSourceClass(cm)) {
           // See if it exists in super classes
           Class c = (Class)superClasses.get(clazz.getName());
           if (c != null) {
-            ClassMetadata<?> fCm = otmFactory.getClassMetadata(c);
+            ClassMetadata fCm = otmFactory.getClassMetadata(c);
             // It will be taken care of in the super class
             if (isTypedEntity(fCm))
               continue;
@@ -424,5 +426,10 @@ public class OwlGenerator {
         ontologyManager.applyChange(addAxiom);
       }
     }
+  }
+
+  private static Class getSourceClass(ClassMetadata cm) {
+    // XXX: temporary
+    return ((ClassBinder)cm.getEntityBinder(EntityMode.POJO)).getSourceClass();
   }
 }

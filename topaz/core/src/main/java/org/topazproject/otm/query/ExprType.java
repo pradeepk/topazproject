@@ -15,6 +15,8 @@ import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
+import org.topazproject.otm.EntityMode;
+import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 
 /** 
@@ -159,13 +161,15 @@ class ExprType {
 
   /** 
    * Get the class of this type. For non class or embedded-class types this returns null.
-   * 
+   *<p>
+   * XXX: This need to be re-adjusted to support other entity modes
+   *</p>
    * @return the class, or null if not a class type
    */
   public Class getExprClass() {
     switch (type) {
       case CLASS:
-        return meta.getSourceClass();
+        return ((ClassBinder)meta.getEntityBinder(EntityMode.POJO)).getSourceClass();
 
       case EMB_CLASS:
         return embFields.get(embFields.size() - 1).getType();
@@ -202,8 +206,8 @@ class ExprType {
 
   @Override
   public String toString() {
-    return type + (type == Type.CLASS ? "[" + meta.getSourceClass().getName() + colType() + "]" :
-                   type == Type.EMB_CLASS ? "[" + meta.getSourceClass().getName() + 
+    return type + (type == Type.CLASS ? "[" + meta.getName() + colType() + "]" :
+                   type == Type.EMB_CLASS ? "[" + meta.getName() + 
                                                   embFieldNames() + colType() + "]" :
                    type == Type.TYPED_LIT ? "[" + datatype + colType() + "]" :
                    (colType != CollectionType.PREDICATE) ? "[" + colType + "]" : "");

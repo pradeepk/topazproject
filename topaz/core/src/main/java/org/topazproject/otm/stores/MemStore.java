@@ -61,7 +61,7 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void insert(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
                          Connection con) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
@@ -84,7 +84,7 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o,
+  public <T> void delete(ClassMetadata cm, Collection<Mapper> fields, String id, T o,
                          Connection con) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
@@ -97,7 +97,7 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public <T> T get(ClassMetadata<T> cm, String id, T instance, Connection con,
+  public Object get(ClassMetadata cm, String id, Object instance, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException {
     if (filters != null && filters.size() > 0)
       throw new OtmException("Filters are not supported");
@@ -139,12 +139,12 @@ public class MemStore extends AbstractTripleStore {
             throws OtmException {
     MemStoreConnection msc      = (MemStoreConnection) con;
     Storage            storage  = msc.getStorage();
-    ClassMetadata<?>   cm       = criteria.getClassMetadata();
+    ClassMetadata   cm       = criteria.getClassMetadata();
     Set<String>        subjects = conjunction(criteria.getCriterionList(), criteria, storage);
     List               results  = new ArrayList();
 
     for (String id : subjects) {
-      Object o = msc.getSession().get(cm.getSourceClass(), id);
+      Object o = msc.getSession().get(cm, id, true);
 
       if (o != null)
         results.add(o);
@@ -233,7 +233,7 @@ public class MemStore extends AbstractTripleStore {
 
   private Set<String> evaluate(Criterion c, Criteria criteria, Storage storage)
                         throws OtmException {
-    ClassMetadata<?> cm    = criteria.getClassMetadata();
+    ClassMetadata cm    = criteria.getClassMetadata();
     String           model = cm.getModel();
     Set<String>      ids;
 

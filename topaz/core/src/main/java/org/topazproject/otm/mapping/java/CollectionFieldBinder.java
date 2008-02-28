@@ -196,7 +196,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
           // Also session.load() may return null because of deletes etc. Hence
           // no assumption can be made regarding values.size() the same as
           // the collection size.
-          loadAssocs(values, types, session, real);
+          loadAssocs(values, types, session, real, mapper);
           loaded = true;
           session.delayedLoadComplete(instance, mapper);
         }

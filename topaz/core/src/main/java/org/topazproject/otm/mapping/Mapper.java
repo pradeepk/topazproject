@@ -9,14 +9,10 @@
  */
 package org.topazproject.otm.mapping;
 
-import java.util.EnumSet;
-import java.util.List;
-
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
-import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.id.IdentifierGenerator;
 
@@ -149,9 +145,6 @@ public interface Mapper {
    * @return the FetchType option
    */
   public FetchType getFetchType();
-
-  // XXX: temporary hack
-  public Class getComponentType();
 
   /**
    * For associations, the name of the associated entity.

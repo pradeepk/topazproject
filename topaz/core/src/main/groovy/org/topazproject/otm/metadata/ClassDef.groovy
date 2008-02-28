@@ -12,6 +12,7 @@ package org.topazproject.otm.metadata;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.mapping.java.ClassBinder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -217,8 +218,9 @@ public class ClassDef {
     }
 
     def blobBinder = null
-    metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model,
-                                 idmapper, mappers, blobBinder)
+    ClassBinder binder = new ClassBinder(clazz);
+    metadata = new ClassMetadata(binder, getShortName(clazz), type, allTypes, model,
+                                 idmapper, mappers, blobBinder, extendsClass)
 
     if (log.debugEnabled)
       log.debug "created metadata for class '${clazz.name}': ${metadata}"

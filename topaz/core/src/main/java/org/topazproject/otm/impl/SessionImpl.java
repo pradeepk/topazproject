@@ -32,6 +32,7 @@ import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.query.Results;
 
 import org.topazproject.otm.CascadeType;
@@ -104,7 +105,8 @@ public class SessionImpl extends AbstractSession {
     for (Id id : new HashSet<Id>(cleanMap.keySet())) {
       Object o = cleanMap.get(id);
       if (o != null) {
-        ClassMetadata cm = checkClass(o.getClass());
+        ClassMetadata cm = id.getClassMetadata();
+        cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), o);
         if (!cm.isView())
           sync(o, id, false, true, CascadeType.saveOrUpdate, true);
       }
@@ -140,7 +142,7 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public String saveOrUpdate(Object o) throws OtmException {
-    Id id = checkObject(o, true, true);
+    Id id = checkObject(null, o, true, true);
     sync(o, id, false, true, CascadeType.saveOrUpdate, true);
 
     return id.getId();
@@ -150,7 +152,7 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public String delete(Object o) throws OtmException {
-    Id id = checkObject(o, true, true);
+    Id id = checkObject(null, o, true, true);
 
     if (currentIds.contains(id))
       return id.getId(); // loop
@@ -162,7 +164,7 @@ public class SessionImpl extends AbstractSession {
       dirtyMap.remove(id);
       deleteMap.put(id, o);
 
-      ClassMetadata<?> cm     = sessionFactory.getClassMetadata(o.getClass());
+      ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
       for (Mapper m : cm.getFields()) {
@@ -175,7 +177,7 @@ public class SessionImpl extends AbstractSession {
 
         Binder b = m.getBinder(getEntityMode());
         for (Object ao : b.get(o))
-          assocs.add(new Wrapper(checkObject(ao, true, true), ao));
+          assocs.add(new Wrapper(checkObject(m, ao, true, true), ao));
       }
 
       Set<Wrapper> old = orphanTrack.remove(id);
@@ -196,7 +198,7 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public String evict(Object o) throws OtmException {
-    final Id id = checkObject(o, true, true);
+    final Id id = checkObject(null, o, true, true);
 
     if (currentIds.contains(id))
       return id.getId(); // loop
@@ -207,7 +209,7 @@ public class SessionImpl extends AbstractSession {
       cleanMap.remove(id);
       dirtyMap.remove(id);
 
-      ClassMetadata<?> cm     = sessionFactory.getClassMetadata(o.getClass());
+      ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
       for (Mapper m : cm.getFields()) {
@@ -220,7 +222,7 @@ public class SessionImpl extends AbstractSession {
 
         Binder b = m.getBinder(getEntityMode());
         for (Object ao : b.get(o))
-          assocs.add(new Wrapper(checkObject(ao, true, true), ao));
+          assocs.add(new Wrapper(checkObject(m, ao, true, true), ao));
       }
 
       for (Wrapper ao : assocs)
@@ -236,7 +238,7 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public boolean contains(Object o) throws OtmException {
-    final Id id = checkObject(o, true, false);
+    final Id id = checkObject(null, o, true, false);
 
     return (cleanMap.get(id) == o) || (dirtyMap.get(id) == o);
   }
@@ -245,25 +247,7 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public <T> T load(Class<T> clazz, String oid) throws OtmException {
-    if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
-      return null;
-
-    Id     id = new Id(clazz, oid);
-    Object o  = deleteMap.get(id);
-
-    if (o != null)
-      return null;
-
-    o = cleanMap.get(id);
-
-    if (o == null)
-      o = dirtyMap.get(id);
-
-    if (o == null) {
-      o = newDynamicProxy(clazz, id, checkClass(clazz));
-      cleanMap.put(id, o);
-    }
-
+    Object o = load(checkClass(clazz), oid);
     if ((o == null) || clazz.isInstance(o))
       return clazz.cast(o);
 
@@ -275,18 +259,18 @@ public class SessionImpl extends AbstractSession {
   /*
    * inherited javadoc
    */
-  public <T> T get(Class<T> clazz, String oid) throws OtmException {
-    return get(clazz, oid, true);
+  public Object load(String entity, String oid) throws OtmException {
+    return load(checkClass(entity), oid);
   }
 
   /*
    * inherited javadoc
    */
-  public <T> T get(Class<T> clazz, String oid, boolean filterObj) throws OtmException {
+  public Object load(ClassMetadata cm, String oid) throws OtmException {
     if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
       return null;
 
-    Id     id = new Id(clazz, oid);
+    Id     id = new Id(cm, oid);
     Object o  = deleteMap.get(id);
 
     if (o != null)
@@ -298,7 +282,55 @@ public class SessionImpl extends AbstractSession {
       o = dirtyMap.get(id);
 
     if (o == null) {
-      o = getFromStore(id, checkClass(clazz), null, filterObj);
+      o = newDynamicProxy(id);
+      cleanMap.put(id, o);
+    }
+    return o;
+
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public <T> T get(Class<T> clazz, String oid) throws OtmException {
+    Object o = get(checkClass(clazz), oid, true);
+
+    if ((o == null) || clazz.isInstance(o))
+      return clazz.cast(o);
+
+    throw new OtmException("something wrong: asked to get() <" + oid + "> and map to class '"
+                           + clazz + "' but what we ended up with is an instance of '"
+                           + o.getClass());
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Object get(String entity, String oid) throws OtmException {
+    return get(checkClass(entity), oid, true);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Object get(ClassMetadata cm, String oid, boolean filterObj) throws OtmException {
+    if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
+      return null;
+
+    checkClass(cm, oid);
+    Id     id = new Id(cm, oid);
+    Object o  = deleteMap.get(id);
+
+    if (o != null)
+      return null;
+
+    o = cleanMap.get(id);
+
+    if (o == null)
+      o = dirtyMap.get(id);
+
+    if (o == null) {
+      o = getFromStore(id, null, filterObj);
 
       if (o != null) {
         // Must merge here. Associations may have a back-pointer to this Id.
@@ -312,19 +344,14 @@ public class SessionImpl extends AbstractSession {
     if (o instanceof ProxyObject)
         o.equals(null); // ensure it is loaded
 
-    if ((o == null) || clazz.isInstance(o))
-      return clazz.cast(o);
-
-    throw new OtmException("something wrong: asked to get() <" + oid + "> and map to class '"
-                           + clazz + "' but what we ended up with is an instance of '"
-                           + o.getClass());
+    return o;
   }
 
   /*
    * inherited javadoc
    */
   public void delayedLoadComplete(Object o, Mapper field) throws OtmException {
-    Id id = checkObject(o, true, false);
+    Id id = checkObject(null, o, true, false);
 
     if (log.isDebugEnabled())
       log.debug("loaded lazy loaded field '" + field.getName() + "' on " + id, 
@@ -333,7 +360,7 @@ public class SessionImpl extends AbstractSession {
     if (deleteMap.get(id) != null)
       return;
 
-    ClassMetadata cm = sessionFactory.getClassMetadata(o.getClass());
+    ClassMetadata cm = id.getClassMetadata();
     states.delayedLoadComplete(o, field, this);
 
     if (!field.isCascadable(CascadeType.deleteOrphan))
@@ -345,7 +372,7 @@ public class SessionImpl extends AbstractSession {
 
     Binder b = field.getBinder(getEntityMode());
     for (Object ao : b.get(o)) {
-      Id aid = checkObject(ao, true, false);
+      Id aid = checkObject(field, ao, true, false);
       assocs.add(new Wrapper(aid, ao));
     }
   }
@@ -354,22 +381,19 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public <T> T merge(T o) throws OtmException {
-    Id id = checkObject(o, true, false);
+    Id id = checkObject(null, o, true, false);
 
     // make sure it is loaded
-    T ao = (T) get(o.getClass(), id.getId());
+    ClassMetadata cm = id.getClassMetadata();
+    T ao = (T) get(cm, id.getId(), true);
 
     if (ao == null) {
       // does not exist; so make a copy first
-      try {
-        ao = (T) o.getClass().newInstance();
-      } catch (Exception e) {
-        throw new OtmException("instantiation failed", e);
-      }
+      ao = (T) cm.getEntityBinder(getEntityMode()).newInstance();
 
       Map<Id, Object> loopDetect = new HashMap<Id, Object>();
       loopDetect.put(id, ao);
-      copy(ao, o, loopDetect); // deep copy
+      copy(id, ao, o, loopDetect); // deep copy
       o = ao;
     }
 
@@ -382,10 +406,10 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public void refresh(Object o) throws OtmException {
-    Id id = checkObject(o, false, true);
+    Id id = checkObject(null, o, false, true);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
-      o = getFromStore(id, checkClass(o.getClass()), o, true);
+      o = getFromStore(id, o, true);
       sync(o, id, true, false, CascadeType.refresh, true);
     }
   }
@@ -396,7 +420,8 @@ public class SessionImpl extends AbstractSession {
   }
 
   private <T> void write(Id id, T o, boolean delete) throws OtmException {
-    ClassMetadata<T>      cm            = sessionFactory.getClassMetadata((Class<T>) o.getClass());
+    ClassMetadata         cm            = sessionFactory.getInstanceMetadata(id.getClassMetadata(), 
+                                                                               getEntityMode(), o);
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
     Binder                bf            = cm.getBlobField();
@@ -465,9 +490,10 @@ public class SessionImpl extends AbstractSession {
   }
 
 
-  private <T> T getFromStore(Id id, ClassMetadata<T> cm, T instance, boolean filterObj)
+  private Object getFromStore(Id id, Object instance, boolean filterObj)
                        throws OtmException {
     TripleStore store = sessionFactory.getTripleStore();
+    ClassMetadata cm = id.getClassMetadata();
 
     if (cm.isView())
       instance = loadView(cm, id.getId(), instance,
@@ -476,18 +502,17 @@ public class SessionImpl extends AbstractSession {
       instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj);
     else if ((cm.getBlobField() != null) && (instance == null)) {
-      try {
-        instance = cm.getSourceClass().newInstance();
-      } catch (Throwable t) {
-        throw new OtmException("Failed to instantiate a new object for " + cm, t);
-      }
+      instance = cm.getEntityBinder(getEntityMode()).newInstance();
       cm.getIdField().getBinder(getEntityMode()).set(instance, Collections.singletonList(id.getId()));
     }
 
-    if (instance == null)
-      return instance;
+    if (instance == null) {
+      if (log.isDebugEnabled())
+        log.debug("Object not found in store: " + id.getId());
+      return null;
+    }
 
-    cm = sessionFactory.getClassMetadata((Class<T>) instance.getClass());
+    cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
 
     Binder bf = cm.getBlobField();
     if (bf != null)
@@ -513,16 +538,18 @@ public class SessionImpl extends AbstractSession {
         states.digestUpdate(instance, bf);
     }
 
+    if (log.isDebugEnabled())
+      log.debug("Object loaded from store: " + id.getId());
     return instance;
   }
 
-  private <T> T loadView(ClassMetadata<T> cm, String id, T instance, List<Filter> filters,
+  private Object loadView(ClassMetadata cm, String id, Object instance, List<Filter> filters,
                          boolean filterObj) throws OtmException {
     Query q = createQuery(cm.getQuery());
     Set<String> paramNames = q.getParameterNames();
     if (paramNames.size() != 1 || !"id".equals(paramNames.iterator().next()))
       throw new OtmException("View queries must have exactly one parameter, and the parameter " +
-                             "name must be 'id'; class='" + cm.getSourceClass().getName() +
+                             "name must be 'id'; entity='" + cm.getName() +
                              "', query='" + cm.getQuery() + "'");
 
     Results r = q.setParameter("id", id).execute();
@@ -537,15 +564,10 @@ public class SessionImpl extends AbstractSession {
     return instance;
   }
 
-  private <S> S createInstance(ClassMetadata<S> cm, S obj, String id, Results r)
+  private Object createInstance(ClassMetadata cm, Object obj, String id, Results r)
       throws OtmException {
-    try {
-      if (obj == null)
-        obj = cm.getSourceClass().newInstance();
-    } catch (Exception e) {
-      throw new OtmException("Failed to create instance of '" + cm.getSourceClass().getName() + "'",
-                             e);
-    }
+    if (obj == null)
+      obj = cm.getEntityBinder(getEntityMode()).newInstance();
 
     if (id != null && cm.getIdField() != null)
       cm.getIdField().getBinder(getEntityMode()).set(obj, Collections.singletonList(id));
@@ -555,7 +577,9 @@ public class SessionImpl extends AbstractSession {
 
     for (Mapper m : cm.getFields()) {
       int    idx = r.findVariable(m.getProjectionVar());
-      Object val = getValue(r, idx, m.getComponentType(), m.getFetchType() == FetchType.eager, sqr);
+      // XXX: Other EntityModes
+      Object val = getValue(r, idx, ((FieldBinder)m.getBinder(getEntityMode())).getComponentType(),
+                               m.getFetchType() == FetchType.eager, sqr);
       Binder b = m.getBinder(getEntityMode());
       if (val instanceof List)
         b.set(obj, (List) val);
@@ -582,7 +606,7 @@ public class SessionImpl extends AbstractSession {
         return (type == String.class) ? r.getString(idx) : r.getURIAs(idx, type);
 
       case SUBQ_RESULTS:
-        ClassMetadata<?> scm = sessionFactory.getClassMetadata(type);
+        ClassMetadata scm = sessionFactory.getClassMetadata(type);
         boolean isSubView = scm != null && !scm.isView() && !scm.isPersistable();
 
         List<Object> vals = new ArrayList<Object>();
@@ -644,7 +668,7 @@ public class SessionImpl extends AbstractSession {
         o = cleanMap.get(id);
 
       if (merge && (o != null) && (other != o))
-        copy(o, other, null); // shallow copy
+        copy(id, o, other, null); // shallow copy
       else
         o = other;
 
@@ -659,8 +683,9 @@ public class SessionImpl extends AbstractSession {
       if (skipProxy && isPristineProxy(id, o))
         return o;
 
-      ClassMetadata<?> cm     = checkClass(o.getClass());
-      Set<Wrapper>     assocs = new HashSet<Wrapper>();
+      ClassMetadata cm    = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
+                                              getEntityMode(), o);
+      Set<Wrapper> assocs = new HashSet<Wrapper>();
 
       for (Mapper m : cm.getFields()) {
         Binder b = m.getBinder(getEntityMode());
@@ -674,7 +699,7 @@ public class SessionImpl extends AbstractSession {
         boolean deepDelete = m.isCascadable(CascadeType.deleteOrphan);
         for (Object ao : b.get(o)) {
           // Note: duplicate check is not performed when merging
-          Id aid = checkObject(ao, update, !merge);
+          Id aid = checkObject(m, ao, update, !merge);
 
           // Note: sync() here will not return a merged object. see copy()
           if (deep)
@@ -703,16 +728,17 @@ public class SessionImpl extends AbstractSession {
     return o;
   }
 
-  private Object copy(Object o, Object other, Map<Id, Object> loopDetect)
+  private Object copy(Id id, Object o, Object other, Map<Id, Object> loopDetect)
                throws OtmException {
-    ClassMetadata<?> ocm = checkClass(other.getClass());
-    ClassMetadata<?> cm  = checkClass(o.getClass());
+    ClassMetadata ocm = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
+                            getEntityMode(), other);
+    ClassMetadata cm  = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
+                            getEntityMode(), other);
 
-    if (!cm.getSourceClass().isAssignableFrom(ocm.getSourceClass()))
+    if (!cm.isAssignableFrom(ocm))
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
-    if (log.isDebugEnabled())
-      log.debug("Copy merging " + checkObject(o, false, false));
+    log.warn ("Copy(" + ((loopDetect==null) ? "shallow" : "deep") + ") merging " + id);
 
     for (Mapper m : cm.getFields()) {
       Mapper om = ocm.getMapperByUri(m.getUri(), m.hasInverseUri(), m.getRdfType());
@@ -728,18 +754,14 @@ public class SessionImpl extends AbstractSession {
         List cc = new ArrayList();
 
         for (Object ao : ob.get(other)) {
-          Id     id  = checkObject(ao, false, false);
-          Object aoc = loopDetect.get(id);
+          Id     aid  = checkObject(om, ao, false, false);
+          Object aoc  = loopDetect.get(aid);
 
           if (aoc == null) {
-            try {
-              aoc = ao.getClass().newInstance();
-            } catch (Exception e) {
-              throw new OtmException("instantiation failed", e);
-            }
+            aoc = aid.getClassMetadata().getEntityBinder(getEntityMode()).newInstance();
 
-            loopDetect.put(id, aoc);
-            copy(aoc, ao, loopDetect);
+            loopDetect.put(aid, aoc);
+            copy(aid, aoc, ao, loopDetect);
           }
 
           cc.add(aoc);
@@ -752,7 +774,7 @@ public class SessionImpl extends AbstractSession {
     return o;
   }
 
-  private <T> T newDynamicProxy(final Class<T> clazz, final Id id, final ClassMetadata<T> cm)
+  private Object newDynamicProxy(final Id id)
                           throws OtmException {
     LazyLoadMethodHandler mi =
       new LazyLoadMethodHandler() {
@@ -767,7 +789,7 @@ public class SessionImpl extends AbstractSession {
 
             loading = true;
             try {
-              getFromStore(id, cm, (T) self, false);
+              getFromStore(id, self, false);
             } finally {
               loading = false;
             }
@@ -790,9 +812,10 @@ public class SessionImpl extends AbstractSession {
       };
 
     try {
-      T o = sessionFactory.getProxyMapping(clazz).newInstance();
+      ClassMetadata cm = id.getClassMetadata();
+      ProxyObject o = cm.getEntityBinder(getEntityMode()).newProxyInstance();
       cm.getIdField().getBinder(getEntityMode()).set(o, Collections.singletonList(id.getId()));
-      ((ProxyObject) o).setHandler(mi);
+      o.setHandler(mi);
       proxies.put(id, mi);
 
       if (log.isDebugEnabled())
@@ -804,18 +827,22 @@ public class SessionImpl extends AbstractSession {
     }
   }
 
-  private Id checkObject(Object o, boolean isUpdate, boolean dupCheck) throws OtmException {
+  private Id checkObject(Mapper assoc, Object o, boolean isUpdate, boolean dupCheck) throws OtmException {
     if (o == null)
       throw new NullPointerException("Null object");
 
-    ClassMetadata<?> cm      = checkClass(o.getClass());
+    ClassMetadata cm = null;
+    if (assoc != null)
+      cm = sessionFactory.getClassMetadata(assoc.getAssociatedEntity());
+
+    cm = checkClass(sessionFactory.getInstanceMetadata(cm, getEntityMode(), o), o.getClass().getName());
     if (cm.isView() && isUpdate)
       throw new OtmException("View's may not be updated: " + o.getClass());
 
     Mapper           idField = cm.getIdField();
 
     if (idField == null)
-      throw new OtmException("Must have an id field for " + o.getClass());
+      throw new OtmException("Must have an id field for " + cm);
 
     Binder        b       = idField.getBinder(getEntityMode());
     List          ids     = b.get(o);
@@ -825,19 +852,19 @@ public class SessionImpl extends AbstractSession {
       IdentifierGenerator generator = idField.getGenerator();
 
       if (generator == null)
-        throw new OtmException("No id generation for " + o.getClass() + " on " + idField);
+        throw new OtmException("No id generation for " + cm + " on " + idField);
 
       id = generator.generate(cm, this);
       b.set(o, Collections.singletonList(id)); // So user can get at it after saving
 
       if (log.isDebugEnabled())
         log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for "
-                  + o.getClass().getSimpleName());
+                  + cm);
     } else {
       id = (String) ids.get(0);
     }
 
-    Id oid = new Id(o.getClass(), id);
+    Id oid = new Id(cm, id);
     if (dupCheck) {
       for (Object ex : new Object[] {deleteMap.get(oid), cleanMap.get(oid), dirtyMap.get(oid)})
         if ((ex != null) && (ex != o))
@@ -891,5 +918,4 @@ public class SessionImpl extends AbstractSession {
   private interface LazyLoadMethodHandler extends MethodHandler {
     public boolean isLoaded();
   }
-
 }

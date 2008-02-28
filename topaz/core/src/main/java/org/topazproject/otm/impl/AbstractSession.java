@@ -31,6 +31,7 @@ import org.topazproject.otm.query.Results;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.SessionFactory;
@@ -161,9 +162,17 @@ abstract class AbstractSession implements Session {
   /*
    * inherited javadoc
    */
+  public Criteria createCriteria(String entity) throws OtmException {
+    return new Criteria(this, null, null, checkClass(entity),
+                        new ArrayList<Filter>(filters.values()));
+  }
+
+  /*
+   * inherited javadoc
+   */
   public Criteria createCriteria(Criteria criteria, String path)
                           throws OtmException {
-    ClassMetadata<?> cm = criteria.getClassMetadata();
+    ClassMetadata cm = criteria.getClassMetadata();
     Mapper           m  = cm.getMapperByName(path);
 
     if (m == null)
@@ -234,20 +243,19 @@ abstract class AbstractSession implements Session {
     if (o == null)
       throw new NullPointerException("Null object");
 
-    Class<?> clazz = o.getClass();
-    ClassMetadata<?> cm = sessionFactory.getClassMetadata(clazz);
+    ClassMetadata cm = sessionFactory.getInstanceMetadata(null, getEntityMode(), o);
 
     if (cm == null)
-      throw new OtmException("No class metadata found for " + clazz);
+      throw new OtmException("No class metadata found for " + o);
 
     Mapper           idField = cm.getIdField();
     if (idField == null)
-      throw new OtmException("No id-field found for " + clazz);
+      throw new OtmException("No id-field found for " + cm);
 
     Binder  b = idField.getBinder(getEntityMode());
     List          ids     = b.get(o);
     if (ids.size() == 0)
-      throw new OtmException("No id set for " + clazz + " instance " + o);
+      throw new OtmException("No id set for " + cm + " instance " + o);
 
     return (String) ids.get(0);
   }
@@ -361,26 +369,23 @@ abstract class AbstractSession implements Session {
     return new HashSet<String>(filters.keySet());
   }
 
-  protected <T> ClassMetadata<T> checkClass(Class<? extends T> clazz) throws OtmException {
-    ClassMetadata<T> cm = sessionFactory.getClassMetadata(clazz);
-
-    if (cm == null)
-      throw new OtmException("No class metadata found for " + clazz);
-
-    if ((cm.getModel() == null) && !cm.isView() && (cm.getBlobField() == null))
-      throw new OtmException("No graph/model found for " + clazz);
-
-    return cm;
+  protected ClassMetadata checkClass(Class<?> clazz) throws OtmException {
+    if (getEntityMode() != EntityMode.POJO)
+      throw new UnsupportedOperationException("Only supported when EntityMode is " 
+          + EntityMode.POJO);
+    return checkClass(sessionFactory.getClassMetadata(clazz), clazz.getName());
   }
 
-  protected ClassMetadata checkClass(String entityName) throws OtmException {
-    ClassMetadata cm = sessionFactory.getClassMetadata(entityName);
+  protected ClassMetadata checkClass(String entity) throws OtmException {
+    return checkClass(sessionFactory.getClassMetadata(entity), entity);
+  }
 
+  protected ClassMetadata checkClass(ClassMetadata cm, String whatever) throws OtmException {
     if (cm == null)
-      throw new OtmException("No class metadata found for " + entityName);
+      throw new OtmException("No class metadata found for " + whatever);
 
     if ((cm.getModel() == null) && !cm.isView() && (cm.getBlobField() == null))
-      throw new OtmException("No graph/model found for " + entityName);
+      throw new OtmException("No graph/model found for " + cm);
 
     return cm;
   }

@@ -96,7 +96,7 @@ options {
     }
 
     private ExprType getTypeForClass(AST clazz, String loc) throws RecognitionException {
-      ClassMetadata<?> md = sessFactory.getClassMetadata(clazz.getText());
+      ClassMetadata md = sessFactory.getClassMetadata(clazz.getText());
       if (md == null && loc != null)
         throw new RecognitionException("unknown class '" + clazz.getText() + "' in " + loc);
       return ExprType.classType(md, null);
@@ -169,7 +169,7 @@ options {
       return (OqlAST) last;
     }
 
-    private static EmbeddedClassFieldBinder findEmbeddedFieldBinder(ClassMetadata<?> md, String field) {
+    private static EmbeddedClassFieldBinder findEmbeddedFieldBinder(ClassMetadata md, String field) {
       String[] parts = field.split("\\.");
       mappers: for (Mapper m : md.getFields()) {
         Binder l = m.getBinder(EntityMode.POJO);
@@ -205,7 +205,7 @@ options {
       if (m == null)
         return null;
 
-      ClassMetadata<?> md;
+      ClassMetadata md;
       if ((md = sessFactory.getClassMetadata(m.getAssociatedEntity())) != null)
         return ExprType.classType(md, m.getColType());
 

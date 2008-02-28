@@ -9,14 +9,16 @@
  */
 package org.topazproject.otm.impl;
 
+import org.topazproject.otm.ClassMetadata;
+
 /**
  * A unique identifier for an Entity.
  *
  * @author Pradeep Krishnan
   */
 class Id {
-  private final String id;
-  private final Class  clazz;
+  private final String         id;
+  private final ClassMetadata  cm;
 
   /**
    * Creates a new Id object.
@@ -24,13 +26,13 @@ class Id {
    * @param clazz entity class
    * @param id entity id
    */
-  public Id(Class clazz, String id) throws NullPointerException {
+  public Id(ClassMetadata cm, String id) throws NullPointerException {
     this.id      = id;
-    this.clazz   = clazz;
+    this.cm   = cm;
     if (id == null)
       throw new NullPointerException("id cannot be null");
-    if (clazz == null)
-      throw new NullPointerException("clazz cannot be null");
+    if (cm == null)
+      throw new NullPointerException("cm cannot be null");
   }
 
   /**
@@ -43,12 +45,15 @@ class Id {
   }
 
   /**
-   * Gets the entity class
+   * Gets the ClassMetadata of the entity. Note that this
+   * only gives the ClassMetadata known at the time of
+   * the Id creation. The actual object instance may be
+   * an instance of a sub-class of this.
    *
    * @return the entity Class
    */
-  public Class getClazz() {
-    return clazz;
+  public ClassMetadata getClassMetadata() {
+    return cm;
   }
 
   /*
@@ -67,7 +72,7 @@ class Id {
 
     Id o = (Id) other;
 
-    return id.equals(o.id) && (clazz.isAssignableFrom(o.clazz) || o.clazz.isAssignableFrom(clazz));
+    return id.equals(o.id) && (cm.isAssignableFrom(o.cm) || o.cm.isAssignableFrom(cm));
   }
 
   /*

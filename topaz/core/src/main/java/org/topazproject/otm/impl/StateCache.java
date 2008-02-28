@@ -141,7 +141,7 @@ class StateCache {
     private int blobLen = 0;
     private byte[] blobDigest;
 
-    public <T>InstanceState(T instance, ClassMetadata<T> cm, Session session) throws OtmException {
+    public <T>InstanceState(T instance, ClassMetadata cm, Session session) throws OtmException {
       vmap                   = new HashMap<Mapper, List<String>>();
 
       for (Mapper m : cm.getFields()) {
@@ -161,7 +161,7 @@ class StateCache {
       vmap.put(m, !m.isAssociation() ? b.get(o) : session.getIds(b.get(o)));
     }
 
-    public <T> Collection<Mapper> update(T instance, ClassMetadata<T> cm, Session session)
+    public <T> Collection<Mapper> update(T instance, ClassMetadata cm, Session session)
         throws OtmException {
       Collection<Mapper> mappers = new ArrayList<Mapper>();
       boolean pmapChanged = false;

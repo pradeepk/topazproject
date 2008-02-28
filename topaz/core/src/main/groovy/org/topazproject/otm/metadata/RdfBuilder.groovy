@@ -11,9 +11,11 @@
 package org.topazproject.otm.metadata;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.mapping.java.ClassBinder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -178,7 +180,7 @@ public class RdfBuilder extends BuilderSupport {
       ClassMetadata md = node.toClass(this)
       if (md.isPersistable())
         sessFactory.setClassMetadata(md)
-      return md.getSourceClass()
+      return ((ClassBinder)md.getEntityBinder(EntityMode.POJO)).getSourceClass()
     } else if (node instanceof FieldDef && node.classType) {
       ClassMetadata md = node.classType.toClass(this)
       if (md.isPersistable())

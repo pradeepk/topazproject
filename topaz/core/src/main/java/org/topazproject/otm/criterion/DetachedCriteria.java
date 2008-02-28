@@ -127,7 +127,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     if (cm == null)
       throw new OtmException("Entity name '" + alias + "' is not found in session factory");
 
-    Criteria c = session.createCriteria(cm.getSourceClass());
+    Criteria c = session.createCriteria(cm.getName());
     copyTo(c);
     c.getOrderPositions().clear();
     c.getOrderPositions().addAll(rootOrderList);
@@ -286,13 +286,17 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     SessionFactory sf = session.getSessionFactory();
 
     if (parent == null) {
-      Class cl = sf.mostSpecificSubClass(Object.class, Collections.singleton(ser(da.rdfType)), true);
+      ClassMetadata cm = sf.getAnySubClassMetadata(null, Collections.singleton(ser(da.rdfType)));
+      if (cm == null) {
+        cm = sf.getClassMetadata(alias);
+        if ((cm != null) && !cm.getTypes().contains(da.rdfType))
+          cm = null;
+      }
 
-      if (cl == null) {
-        log.warn("onPostLoad: A class matching the rdf:type <" + da.rdfType 
+      if (cm == null) {
+        log.warn("onPostLoad: A class metadata matching the rdf:type <" + da.rdfType 
           + "> is not found in session factory. Entity name will remain as '" + alias + "'");
       } else {
-        ClassMetadata cm = sf.getClassMetadata(cl);
         alias = cm.getName();
 
         if (log.isDebugEnabled())

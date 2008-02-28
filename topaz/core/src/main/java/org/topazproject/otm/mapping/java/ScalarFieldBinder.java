@@ -64,7 +64,8 @@ public class ScalarFieldBinder extends AbstractFieldBinder {
     int size = vals.size();
 
     if (size > 1) // xxx: should be optional
-      throw new OtmException("Too many values for '" + getField().toGenericString() + "'");
+      throw new OtmException("Too many values for '" + getField().toGenericString() 
+          + "' : " + vals);
 
     Object value = (size == 0) ? null : deserialize(vals.get(0));
     setRawValue(o, value);

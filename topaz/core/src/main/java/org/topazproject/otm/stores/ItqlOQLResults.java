@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.ProjectionFunction;
@@ -122,8 +123,11 @@ class ItqlOQLResults extends ItqlResults {
                                   null, sess);
 
       case CLASS:
-        return eager ? sess.get((Class<?>) qi.getTypes().get(idx), qa.getString(idx), false) :
-                       sess.load((Class<?>) qi.getTypes().get(idx), qa.getString(idx));
+        // XXX: Other EntityModes
+        ClassMetadata cm = sess.getSessionFactory()
+                                  .getClassMetadata((Class<?>)qi.getTypes().get(idx));
+        return eager ? sess.get(cm, qa.getString(idx), false) :
+                       sess.load(cm, qa.getString(idx));
 
       default:
         return super.getResult(idx, type, eager);

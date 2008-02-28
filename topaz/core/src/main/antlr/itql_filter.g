@@ -194,11 +194,13 @@ options {
       Class cls = type.getExprClass();
       if (cls == null)
         return null;
+      // XXX: Other EntityModes
+      ClassMetadata cm = sess.getSessionFactory().getClassMetadata(cls);
 
       Collection<ItqlFilter> list = new ArrayList<ItqlFilter>();
       for (ItqlFilter f : filters) {
         ClassMetadata fcm = sess.getSessionFactory().getClassMetadata(f.getFilteredClass());
-        if (fcm != null && fcm.getSourceClass().isAssignableFrom(cls))
+        if (fcm != null && fcm.isAssignableFrom(cm))
           list.add(f);
       }
 

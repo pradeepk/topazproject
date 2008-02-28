@@ -52,19 +52,14 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
    *
    * @throws OtmException on an error
    */
-  protected <T> T instantiate(Session session, T instance, ClassMetadata<T> cm, String id,
+  protected Object instantiate(Session session, Object instance, ClassMetadata cm, String id,
                               Map<String, List<String>> fvalues,
                               Map<String, List<String>> rvalues, Map<String, Set<String>> types)
                         throws OtmException {
     SessionFactory sf    = session.getSessionFactory();
-    Class<T>       clazz = cm.getSourceClass();
 
-    try {
-      if (instance == null)
-        instance = clazz.newInstance();
-    } catch (Exception e) {
-      throw new OtmException("Failed to instantiate " + clazz, e);
-    }
+    if (instance == null)
+      instance = cm.getEntityBinder(session).newInstance();
 
     cm.getIdField().getBinder(session).set(instance, Collections.singletonList(id));
 
@@ -131,14 +126,14 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
   /*
    * inherited javadoc
    */
-  public <T> void insert(ClassMetadata<T> cm, String id, T o, Connection con) throws OtmException {
+  public <T> void insert(ClassMetadata cm, String id, T o, Connection con) throws OtmException {
     insert(cm, cm.getFields(), id, o, con);
   }
 
   /*
    * inherited javadoc
    */
-  public <T> void delete(ClassMetadata<T> cm, String id, T o, Connection con) throws OtmException {
+  public <T> void delete(ClassMetadata cm, String id, T o, Connection con) throws OtmException {
     delete(cm, cm.getFields(), id, o, con);
   }
 

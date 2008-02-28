@@ -652,7 +652,7 @@ public class BasicOtmTest extends AbstractOtmTest {
   public void testAliases() throws OtmException {
     log.info("Testing aliases ...");
 
-    ClassMetadata<Article> cm = factory.getClassMetadata(Article.class);
+    ClassMetadata cm = factory.getClassMetadata(Article.class);
     assertEquals(Rdf.topaz + "Article", cm.getType());
 
     Mapper m = cm.getMapperByName("date");

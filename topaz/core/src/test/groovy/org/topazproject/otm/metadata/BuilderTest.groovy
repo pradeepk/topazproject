@@ -12,6 +12,7 @@ package org.topazproject.otm.metadata;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.java.FieldBinder;
@@ -135,7 +136,8 @@ public class BuilderTest extends GroovyTestCase {
     m = cm.fields.iterator().next()
     l = m.binder
     assert m.name     == 'state'
-    assert l.type     == rdf.sessFactory.getClassMetadata('State').sourceClass
+    assert l.type     == rdf.sessFactory.getClassMetadata('State')
+                                 .getEntityBinder(EntityMode.POJO).sourceClass
     assert m.dataType == null
     assert m.uri      == 'foo:p4'
     assert !m.hasInverseUri()
@@ -160,7 +162,8 @@ public class BuilderTest extends GroovyTestCase {
     l = m.binder
     assert m.name          == 'history'
     assert l.type          == List.class
-    assert m.componentType == rdf.sessFactory.getClassMetadata('History').sourceClass
+    assert l.componentType == rdf.sessFactory.getClassMetadata('History')
+                                      .getEntityBinder(EntityMode.POJO).sourceClass
     assert m.dataType      == null
     assert m.uri           == 'bar4:history'
     assert !m.hasInverseUri()
@@ -729,41 +732,45 @@ public class BuilderTest extends GroovyTestCase {
   }
 
 
-  void testMostSpecificSubClass() {
-    Class base = rdf.class("BaseClass", type:'base:type') {
+  void testSubClassMetadata() {
+    Class basec = rdf.class("BaseClass", type:'base:type') {
       uri   (isId:true)
     }
 
-    Class wrong = rdf.class("WrongOne", extendsClass:"BaseClass") {
+    Class wrongc = rdf.class("WrongOne", extendsClass:"BaseClass") {
       name 'Test2'
     }
 
-    Class right = rdf.class("RightOne", type:'sub:type', extendsClass:"BaseClass") {
+    Class rightc = rdf.class("RightOne", type:'sub:type', extendsClass:"BaseClass") {
     }
 
-    Class p = rdf.sessFactory.mostSpecificSubClass(base, ['base:type', 'sub:type'])
+    ClassMetadata base = rdf.sessFactory.getClassMetadata(basec);
+    ClassMetadata wrong = rdf.sessFactory.getClassMetadata(wrongc);
+    ClassMetadata right = rdf.sessFactory.getClassMetadata(rightc);
+
+    ClassMetadata p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, ['base:type', 'sub:type'])
     assert right == p
 
-    p = rdf.sessFactory.mostSpecificSubClass(wrong, ['base:type', 'sub:type'])
+    p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['base:type', 'sub:type'])
     assert wrong == p;
 
-    p = rdf.sessFactory.mostSpecificSubClass(right, ['base:type', 'sub:type'])
+    p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['base:type', 'sub:type'])
     assert right == p;
 
-    p = rdf.sessFactory.mostSpecificSubClass(wrong, ['base:type'])
+    p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['base:type'])
     assert wrong == p;
 
-    p = rdf.sessFactory.mostSpecificSubClass(right, ['base:type'])
+    p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['base:type'])
     assert null == p;
 
-    p = rdf.sessFactory.mostSpecificSubClass(base, ['base:type'])
+    p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, ['base:type'])
     assert wrong == p;
 
-    p = rdf.sessFactory.mostSpecificSubClass(base, ['junk:type'])
+    p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, ['junk:type'])
     assert null == p;
 
-    p = rdf.sessFactory.mostSpecificSubClass(base, [])
-    assert base == p;
+    p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, [])
+    assert null == p;
   }
 
   void testCascadeType() {

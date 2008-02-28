@@ -69,19 +69,41 @@ public interface SessionFactory {
   public void preload(Class<?> c) throws OtmException;
 
   /**
-   * Return the most specific subclass of clazz that is mapped to one of the given rdf types.
-   * We assume that we don't have two subclasses of <code>clazz</code> that are associated with
-   * the same rdf type. If this is not the case then the returned class will be randomly selected
-   * from one of the available ones.
+   * Return the most specific instantiable subclass metadata for the given class metadata that 
+   * is mapped to one of the given rdf types. We assume that we don't have two subclasses that 
+   * are associated with the same rdf type. If this is not the case then the returned class will 
+   * be randomly selected from one of the available ones.
    *
-   * @param clazz the super class
+   * @param clazz    the super class to start the search from or null
+   * @param mode     the EntityMode in which the sub-class must be instantiable
    * @param typeUris collection of type uris
    *
    * @return the most specific sub class
    */
-  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris);
+  public ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
+                                         Collection<String> typeUris);
 
-  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris, boolean any);
+  /**
+   * Returns the most specific subclass metadata. Similar to {@link #getSubClassMetadata}, 
+   * except the class returned may not be instantiable in a given EntityMode.
+   *
+   * @param clazz    the super class to start the search from or null
+   * @param typeUris collection of type uris
+   *
+   * @return the most specific sub class
+   */
+  public ClassMetadata getAnySubClassMetadata(ClassMetadata clazz, Collection<String> typeUris);
+
+  /**
+   * Returns the class metadata for the given object instance and {@link EntityMode}.
+   *
+   * @param clazz    the super class to start search from or null
+   * @param mode     the EntityMode of the object instance
+   * @param instance the object instance
+   *
+   * @return the metadata for the given instane or null
+   */
+  public ClassMetadata getInstanceMetadata(ClassMetadata clazz, EntityMode mode, Object instance);
 
   /**
    * Sets/registers a ClassMetadata.
@@ -90,16 +112,17 @@ public interface SessionFactory {
    *
    * @throws OtmException on an error
    */
-  public <T> void setClassMetadata(ClassMetadata<T> cm) throws OtmException;
+  public void setClassMetadata(ClassMetadata cm) throws OtmException;
 
   /**
-   * Gets the class metadata of a pre-registered class.
+   * Gets the class metadata of a pre-registered class. <b>WARN: This should
+   * be used only when EntityMode is POJO.</b>
    *
    * @param clazz the class.
    *
    * @return metadata for the class, or null if not found
    */
-  public <T> ClassMetadata<T> getClassMetadata(Class<? extends T> clazz);
+  public ClassMetadata getClassMetadata(Class<?> clazz);
 
   /**
    * Gets the class metadata of a pre-registered entity. This first attempts to find a registered
@@ -110,7 +133,7 @@ public interface SessionFactory {
    *
    * @return metadata for the class, or null if not found
    */
-  public ClassMetadata<?> getClassMetadata(String entity);
+  public ClassMetadata getClassMetadata(String entity);
 
   /**
    * Lists all registered ClassMetadata objects. The returned collection is a snapshot at the
@@ -119,16 +142,7 @@ public interface SessionFactory {
    *
    * @return the collection of ClassMetadata
    */
-  public Collection<ClassMetadata<?>> listClassMetadata();
-
-  /**
-   * Gets the proxy mapping. class to proxy or proxy to class.
-   *
-   * @param clazz the class or proxy
-   *
-   * @return proxy or class
-   */
-  public <T> Class<? extends T> getProxyMapping(Class<? extends T> clazz);
+  public Collection<ClassMetadata> listClassMetadata();
 
   /**
    * Gets the model configuration.

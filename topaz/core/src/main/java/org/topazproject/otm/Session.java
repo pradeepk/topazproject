@@ -202,7 +202,7 @@ public interface Session {
    */
   public boolean contains(Object o) throws OtmException;
 
-    /**
+  /**
    * Loads an object from the session or a newly created dynamic proxy for it. Does not hit
    * the triplestore.
    *
@@ -215,6 +215,32 @@ public interface Session {
    * @throws OtmException on an error
    */
   public <T> T load(Class<T> clazz, String oid) throws OtmException;
+
+  /**
+   * Loads an object from the session or a newly created dynamic proxy for it. Does not hit
+   * the triplestore.
+   *
+   * @param entity the entity name of the object
+   * @param oid the id of the object
+   *
+   * @return the object or null if deleted from session
+   *
+   * @throws OtmException on an error
+   */
+  public Object load(String entity, String oid) throws OtmException;
+
+  /**
+   * Loads an object from the session or a newly created dynamic proxy for it. Does not hit
+   * the triplestore.
+   *
+   * @param cm the entity metdata for the object
+   * @param oid the id of the object
+   *
+   * @return the object or null if deleted from session
+   *
+   * @throws OtmException on an error
+   */
+  public Object load(ClassMetadata cm, String oid) throws OtmException;
 
   /**
    * Gets an object from the session or from the triple store.
@@ -230,11 +256,23 @@ public interface Session {
   public <T> T get(Class<T> clazz, String oid) throws OtmException;
 
   /**
+   * Gets an object from the session or from the triple store.
+   *
+   * @param entity the entity type of the object
+   * @param oid the id of the object
+   *
+   * @return the object or null if deleted or does not exist in store
+   *
+   * @throws OtmException on an error
+   */
+  public Object get(String entity, String oid) throws OtmException;
+
+  /**
    * Internal method. DO NOT USE.
    *
    * @see #get(java.lang.Class, java.lang.String)
    */
-  public <T> T get(Class<T> clazz, String oid, boolean filterObj) throws OtmException;
+  public Object get(ClassMetadata cm, String oid, boolean filterObj) throws OtmException;
 
   /**
    * Merges the given object. The returned object in all cases is an attached object with the
@@ -269,6 +307,17 @@ public interface Session {
    * @throws OtmException on an error
    */
   public Criteria createCriteria(Class clazz) throws OtmException;
+
+  /**
+   * Creates the 'criteria' for retrieving a set of objects for an entity.
+   *
+   * @param clazz the class
+   *
+   * @return a newly created Criteria object
+   *
+   * @throws OtmException on an error
+   */
+  public Criteria createCriteria(String entity) throws OtmException;
 
   /**
    * Creates a 'sub-criteria' for retrieving a set of objects for an association in a parent

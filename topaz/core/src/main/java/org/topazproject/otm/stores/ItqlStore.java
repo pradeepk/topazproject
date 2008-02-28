@@ -103,7 +103,7 @@ public class ItqlStore extends AbstractTripleStore {
     return new ItqlStoreConnection(sess, readOnly);
   }
 
-  public <T> void insert(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void insert(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
@@ -141,7 +141,7 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata<?> cm, 
+  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata cm, 
                                                                Collection<Mapper> fields) {
     Map<String, List<Mapper>> mappersByModel = new HashMap<String, List<Mapper>>();
 
@@ -242,7 +242,7 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  public <T> void delete(ClassMetadata<T> cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void delete(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
@@ -375,12 +375,10 @@ public class ItqlStore extends AbstractTripleStore {
     return (qry.length() > len);
   }
 
-  public <T> T get(ClassMetadata<T> cm, String id, T instance, Connection con,
+  public Object get(ClassMetadata cm, String id, Object instance, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
     SessionFactory      sf  = isc.getSession().getSessionFactory();
-
-    // TODO: eager fetching
 
     // do query
     String get = buildGetSelect(cm, id, isc, filters, filterObj);
@@ -434,26 +432,25 @@ public class ItqlStore extends AbstractTripleStore {
       throw new OtmException("Error parsing answer", ae);
     }
 
-    if (fvalues.size() == 0 && rvalues.size() == 0)
+    if (fvalues.size() == 0 && rvalues.size() == 0) {
+      if (log.isDebugEnabled())
+        log.debug("No statements found about '" + id + "' for " + cm);
       return null;
-
-    // figure out class to instantiate
-    Class clazz = cm.getSourceClass();
-    if (fvalues.get(Rdf.rdf + "type") == null) {
-      if (cm.getType() != null)
-        return null;
-    } else {
-      clazz = sf.mostSpecificSubClass(clazz, fvalues.get(Rdf.rdf + "type"));
-      if (clazz == null)
-        return null;
-      cm    = sf.getClassMetadata(clazz);
-
-      fvalues.get(Rdf.rdf + "type").removeAll(cm.getTypes());
     }
 
-    if (cm.getIdField() == null)
-      throw new OtmException("No id field in class '" + clazz 
-        + "' and therefore cannot be instantiated.");
+    // figure out sub-class to instantiate
+    // XXX: should this be narrowed down based on other restrictions?
+    List<String> t = fvalues.get(Rdf.rdf + "type");
+    ClassMetadata sup = cm;
+    cm = sf.getSubClassMetadata(cm, isc.getSession().getEntityMode(), t);
+    if (cm == null) {
+      log.warn("Statements found about '" + id 
+          + "' does not satisfy the restrictions imposed by " + sup
+          + ". No object will be instantiated.");
+      return null;
+    }
+    if (t != null)
+      t.removeAll(cm.getTypes());
 
     // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
     String modelUri = getModelUri(cm.getModel(), isc);
@@ -470,13 +467,16 @@ public class ItqlStore extends AbstractTripleStore {
         fvalues.put(p, getRdfBag(id, p, mUri, isc, types, m, sf, filters));
     }
 
+    if (log.isDebugEnabled())
+      log.debug("Instantiating object with '" + id + "' for " + cm);
+
     return instantiate(isc.getSession(), instance, cm, id, fvalues, rvalues, types);
   }
 
-  private String buildGetSelect(ClassMetadata<?> cm, String id, ItqlStoreConnection isc,
+  private String buildGetSelect(ClassMetadata cm, String id, ItqlStoreConnection isc,
                                 List<Filter> filters, boolean filterObj) throws OtmException {
     SessionFactory        sf     = isc.getSession().getSessionFactory();
-    Set<ClassMetadata<?>> fCls   = listFieldClasses(cm, sf);
+    Set<ClassMetadata> fCls   = listFieldClasses(cm, sf);
     String                models = getModelsExpr(Collections.singleton(cm), isc);
     String                tmdls  = fCls.size() > 0 ? getModelsExpr(fCls, isc) : models;
     List<Mapper>          assoc  = listAssociations(cm, sf);
@@ -488,7 +488,7 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append("from ").append(models).append(" where ");
     qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">");
     if (filterObj)
-      applyObjectFilters(qry, cm.getSourceClass(), "$s", filters, sf);
+      applyObjectFilters(qry, cm, "$s", filters, sf);
     applyFieldFilters(qry, assoc, true, id, filters, sf);
 
     qry.append("; select $s $p $o subquery (select $t from ").append(models).append(" where ");
@@ -496,14 +496,14 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append("from ").append(models).append(" where ");
     qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
     if (filterObj)
-      applyObjectFilters(qry, cm.getSourceClass(), "$o", filters, sf);
+      applyObjectFilters(qry, cm, "$o", filters, sf);
     applyFieldFilters(qry, assoc, false, id, filters, sf);
     qry.append(";");
 
     return qry.toString();
   }
 
-  private void applyObjectFilters(StringBuilder qry, Class cls, String var, List<Filter> filters,
+  private void applyObjectFilters(StringBuilder qry, ClassMetadata cm, String var, List<Filter> filters,
                                   SessionFactory sf) throws OtmException {
     // avoid work if possible
     if (filters == null || filters.size() == 0)
@@ -513,8 +513,8 @@ public class ItqlStore extends AbstractTripleStore {
     filters = new ArrayList<Filter>(filters);
     for (Iterator<Filter> iter = filters.iterator(); iter.hasNext(); ) {
       Filter f = iter.next();
-      ClassMetadata<?> fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
-      if (!fcm.getSourceClass().isAssignableFrom(cls))
+      ClassMetadata fcm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
+      if (!fcm.isAssignableFrom(cm))
         iter.remove();
     }
 
@@ -545,14 +545,13 @@ public class ItqlStore extends AbstractTripleStore {
     // build predicate->filter map
     Map<String, Set<Filter>> applicFilters = new HashMap<String, Set<Filter>>();
     for (Mapper m : assoc) {
-      Class mc = m.getComponentType();
+      ClassMetadata mc = sf.getClassMetadata(m.getAssociatedEntity());
 
       for (Filter f : filters) {
-        ClassMetadata cm = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
-        if (cm == null)
+        ClassMetadata fc = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
+        if (fc == null)
           continue;       // bug???
 
-        Class fc = cm.getSourceClass();
         if (fc.isAssignableFrom(mc)) {
           Set<Filter> fset = applicFilters.get(m.getUri());
           if (fset == null)
@@ -609,11 +608,11 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append(predList).append(")))");
   }
 
-  private static String getModelsExpr(Set<? extends ClassMetadata<?>> cmList,
+  private static String getModelsExpr(Set<? extends ClassMetadata> cmList,
                                       ItqlStoreConnection isc)
       throws OtmException {
     Set<String> mList = new HashSet<String>();
-    for (ClassMetadata<?> cm : cmList) {
+    for (ClassMetadata cm : cmList) {
       mList.add(getModelUri(cm.getModel(), isc));
       for (Mapper p : cm.getFields()) {
         if (p.getModel() != null)
@@ -629,11 +628,11 @@ public class ItqlStore extends AbstractTripleStore {
     return mexpr.toString();
   }
 
-  private static Set<ClassMetadata<?>> listFieldClasses(ClassMetadata<?> cm, SessionFactory sf) {
-    Set<ClassMetadata<?>> clss = new HashSet<ClassMetadata<?>>();
+  private static Set<ClassMetadata> listFieldClasses(ClassMetadata cm, SessionFactory sf) {
+    Set<ClassMetadata> clss = new HashSet<ClassMetadata>();
 
     for (Mapper p : cm.getFields()) {
-      ClassMetadata<?> c = sf.getClassMetadata(p.getAssociatedEntity());
+      ClassMetadata c = sf.getClassMetadata(p.getAssociatedEntity());
       if ((c != null) && ((c.getTypes().size() + c.getFields().size()) > 0))
         clss.add(c);
     }
@@ -641,10 +640,10 @@ public class ItqlStore extends AbstractTripleStore {
     return clss;
   }
 
-  private static List<Mapper> listAssociations(ClassMetadata<?> cm, SessionFactory sf) {
+  private static List<Mapper> listAssociations(ClassMetadata cm, SessionFactory sf) {
     List<Mapper> mappers = new ArrayList<Mapper>();
 
-    for (ClassMetadata<?> c : allSubClasses(cm, sf)) {
+    for (ClassMetadata c : allSubClasses(cm, sf)) {
       for (Mapper p : c.getFields()) {
         if (p.isAssociation())
           mappers.add(p);
@@ -654,12 +653,12 @@ public class ItqlStore extends AbstractTripleStore {
     return mappers;
   }
 
-  private static Set<ClassMetadata<?>> allSubClasses(ClassMetadata<?> top, SessionFactory sf) {
-    Set<ClassMetadata<?>> classes = new HashSet<ClassMetadata<?>>();
+  private static Set<ClassMetadata> allSubClasses(ClassMetadata top, SessionFactory sf) {
+    Set<ClassMetadata> classes = new HashSet<ClassMetadata>();
     classes.add(top);
 
-    for (ClassMetadata<?> cm : sf.listClassMetadata()) {
-      if (cm.getSourceClass().isAssignableFrom(top.getSourceClass()))
+    for (ClassMetadata cm : sf.listClassMetadata()) {
+      if (cm.isAssignableFrom(top))
         classes.add(cm);
     }
 
@@ -681,7 +680,7 @@ public class ItqlStore extends AbstractTripleStore {
        .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o")
        .append(" and $s <rdf:rest> $n");
     if (m.isAssociation())
-      applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
+      applyObjectFilters(qry, sf.getClassMetadata(m.getAssociatedEntity()), "$o", filters, sf);
     qry.append(";");
 
     return execCollectionsQry(qry.toString(), isc, types);
@@ -701,7 +700,7 @@ public class ItqlStore extends AbstractTripleStore {
        .append("($s $p $o minus $s <rdf:type> $o) and <")
        .append(sub).append("> <").append(pred).append("> $s");
     if (m.isAssociation())
-      applyObjectFilters(qry, m.getComponentType(), "$o", filters, sf);
+      applyObjectFilters(qry, sf.getClassMetadata(m.getAssociatedEntity()), "$o", filters, sf);
     qry.append(";");
 
     return execCollectionsQry(qry.toString(), isc, types);
