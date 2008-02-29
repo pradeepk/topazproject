@@ -9,144 +9,77 @@
   Licensed under the Educational Community License version 1.0
   http://opensource.org/licenses/ecl1.php
 
-  Note that mulgara-install only installs the tomcat container, not the mulgara war file.
-  mulgara-start expands the mulgara war file into the container.
-  The mulgara war file is actually built by topazproject/libs/mulgara-service.
+  Note that mulgara-install does nothing and is only present for symmetry.
+  The mulgara jar file is actually built by mulgara/mulgara-service.
 -->
 <project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-  <artifact:dependencies filesetId="cargo.fileset" useScope="runtime">
-    <dependency groupId="org.codehaus.cargo" artifactId="cargo-ant" version="0.8"/>
-    <dependency groupId="org.codehaus.cargo" artifactId="cargo-core-uberjar" version="0.8"/>
-  </artifact:dependencies>
-
-  <artifact:dependencies filesetId="antcontrib.fileset" useScope="runtime">
-    <dependency groupId="ant-contrib" artifactId="ant-contrib" version="1.0b2"/>
-  </artifact:dependencies>
-
-  <taskdef resource="cargo.tasks">
-    <classpath>
-      <fileset refid="cargo.fileset"/>
-    </classpath>
-  </taskdef>
-  <taskdef resource="net/sf/antcontrib/antlib.xml">
-    <classpath>
-      <fileset refid="antcontrib.fileset"/>
-    </classpath>
-  </taskdef>
-
   <target name="init">
-    <property name="home"               location="${DEST_DIR}/${ROOT}"/>
-    <property name="tomcatinstall.dir"  location="${home}/tomcat/install"/>
-    <property name="tomcatconfig.dir"   location="${home}/tomcat/config"/>
-    <property name="tomcatlog.dir"      location="${home}/tomcat/log"/>
-    <property name="port"               value="${PORT}"/>
-
-    <condition property="tomcathome" value="${TOMCAT_HOME}"
-        else="${tomcatinstall.dir}/apache-tomcat-${TOMCAT_VERSION}/apache-tomcat-${TOMCAT_VERSION}">
-      <isset property="TOMCAT_HOME"/>
-    </condition>
+    <property name="home" location="${DEST_DIR}/${ROOT}"/>
+    <property name="port" value="${PORT}"/>
   </target>
 
-  <!-- Download and install tomcat -->
-  <target name="mulgara-install" depends="init">
-    <echo message="Installing Tomcat into ${tomcatinstall.dir} ..."/>
-
-    <artifact:dependencies filesetId="tomcat.fileset" useScope="runtime">
-      <dependency groupId="tomcat" artifactId="apache-tomcat"
-                  version="${TOMCAT_VERSION}" type="zip"/>
+  <target name="jar">
+    <artifact:dependencies filesetId="mulgara.fileset" useScope="runtime">
+      <dependency groupId="org.topazproject" artifactId="mulgara-service"
+                  version="${jarVersion}" type="jar"/>
     </artifact:dependencies>
-    <pathconvert property="tomcat-zip" refid="tomcat.fileset"/>
-
-    <cargo containerId="tomcat5x" action="stop">
-      <zipUrlInstaller installUrl="file:${tomcat-zip}" installDir="${tomcatinstall.dir}"/>
-      <configuration home="${tomcatconfig.dir}"/>
-    </cargo>
+    <pathconvert property="mulgara-jar" refid="mulgara.fileset"/>
   </target>
 
-  <!-- Clean out the whole mulgara/tomcat directory -->
+  <!-- A no-op -->
+  <target name="mulgara-install" depends="init">
+  </target>
+
+  <!-- Clean out the whole mulgara directory -->
   <target name="mulgara-uninstall" depends="init">
     <delete dir="${home}"/>
   </target>
 
   <!-- Start mulgara -->
-  <target name="mulgara-start" depends="init">
+  <target name="mulgara-start" depends="init,jar">
     <echo>Starting Mulgara (spawn=${SPAWN})</echo>
 
-    <artifact:dependencies filesetId="mulgara.fileset" useScope="runtime">
-      <dependency groupId="org.topazproject" artifactId="mulgara-service"
-                  version="${webappVersion}" type="war"/>
-    </artifact:dependencies>
-    <pathconvert property="mulgara-war" refid="mulgara.fileset"/>
+    <property name="topaz.mulgara.databaseDir" location="${home}/database"/>
 
-    <condition property="wait" value="true" else="false">
+    <condition property="failonerr" value="true" else="false">
       <isfalse value="${SPAWN}"/>
     </condition>
 
-    <delete dir="${tomcatconfig.dir}" />
-    <mkdir dir="${tomcatlog.dir}"/>
-    <mkdir dir="${tomcatconfig.dir}"/>
-
     <echo message="Starting Mulgara..."/>
-    <echo message="Using tomcat  = ${tomcathome}"/>
     <echo message="Using home    = ${home}"/>
-    <echo message="Using log-dir = ${tomcatlog.dir}"/>
-    <echo message="Using war     = ${mulgara-war}"/>
+    <echo message="Using jar     = ${mulgara-jar}"/>
     <echo message="Using port    = ${port}"/>
-    <echo message="Shutdown port = ${SHUTDOWN_PORT}"/>
+    <echo message="Using dbdir   = ${topaz.mulgara.databaseDir}"/>
     <echo message="Use -Dtopaz.mulgara.databaseDir to specify specific DB"/>
     <echo message="Use -Dlog4j.configuration=file:///..location.. to specify log4j config"/>
 
-    <delete>
-      <fileset dir="${home}" includes="mulgara*.properties"/>
-    </delete>
+    <mkdir dir="${home}"/>
 
-    <tempfile property="temp.file" prefix="mulgara" suffix=".properties" destDir="${home}"/>
-    <echo file="${temp.file}" message=""/>
-    <propertyselector property="prop.list" delimiter="," match="(topaz|log4j|com)\..*"
-        casesensitive="false" />
-    <if>
-      <isset property="prop.list"/>
-      <then>
-        <for list="${prop.list}" param="property">
-          <sequential>
-            <propertycopy name="prop.value" from="@{property}" override="true"/>
-            <echo file="${temp.file}" append="true">@{property}=${prop.value}${line.separator}</echo>
-          </sequential>
-        </for>
-      </then>
-    </if>
-
-    <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
-        log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
-      <!-- not supported yet by cargo...
+    <java jar="${mulgara-jar}" fork="true" spawn="${SPAWN}" failonerror="${failonerr}"
+          dir="${home}">
+      <jvmarg line="${jvmargs}"/>
+      <arg value="-s"/>
+      <arg value="topazproject"/>
+      <arg value="-a"/>
+      <arg file="${topaz.mulgara.databaseDir}"/>
       <syspropertyset>
         <propertyref prefix="topaz."/>
+        <propertyref prefix="log4j."/>
+        <propertyref prefix="com."/>
       </syspropertyset>
-      -->
-      <syspropertyset file="${temp.file}"/>
-      <configuration home="${tomcatconfig.dir}">
-        <property name="cargo.servlet.port" value="${port}"/>
-        <property name="cargo.logging" value="high"/>
-        <property name="cargo.jvmargs" value="${jvmargs}"/>
-        <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>
-        <deployable type="war" file="${mulgara-war}">
-          <property name="context" value="mulgara-service"/>
-        </deployable>
-      </configuration>
-    </cargo>
-
-    <delete file="${temp.file}"/>
-
+    </java>
   </target>
 
   <!-- Stop mulgara -->
-  <target name="mulgara-stop" depends="init">
-    <cargo containerId="tomcat5x" home="${tomcathome}" action="stop">
-      <configuration home="${tomcatconfig.dir}">
-        <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>
-      </configuration>
-    </cargo>
+  <target name="mulgara-stop" depends="init,jar">
+    <echo>Stopping Mulgara</echo>
+
+    <java jar="${mulgara-jar}" fork="true" failonerror="true" dir="${home}">
+      <arg value="-s"/>
+      <arg value="topazproject"/>
+      <arg value="-x"/>
+    </java>
   </target>
     
 </project>

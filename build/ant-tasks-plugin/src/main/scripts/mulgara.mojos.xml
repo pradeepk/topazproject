@@ -41,14 +41,6 @@
           <defaultValue>mulgara-service</defaultValue>
         </parameter>
 
-        <parameter>
-          <name>TOMCAT_VERSION</name>
-          <property>TOMCAT_VERSION</property>
-          <expression>${TOMCAT_VERSION}</expression>
-          <defaultValue>5.5.23</defaultValue>
-          <description>The tomcat version to use.</description>
-        </parameter>
-
       </parameters>
     </mojo>
 
@@ -60,7 +52,7 @@
       <requiresProject>false</requiresProject>
 
       <description>
-        Start the mulgara tomcat server
+        Start the mulgara server
       </description>
 
       <parameters>
@@ -86,15 +78,7 @@
           <property>PORT</property>
           <required>true</required>
           <expression>${PORT}</expression>
-          <defaultValue>9091</defaultValue>
-        </parameter>
-
-        <parameter>
-          <name>SHUTDOWN_PORT</name>
-          <property>SHUTDOWN_PORT</property>
-          <required>true</required>
-          <expression>${SHUTDOWN_PORT}</expression>
-          <defaultValue>9291</defaultValue>
+          <defaultValue>1099</defaultValue>
         </parameter>
 
         <parameter>
@@ -107,27 +91,12 @@
         </parameter>
 
         <parameter>
-          <name>TOMCAT_HOME</name>
-          <property>TOMCAT_HOME</property>
-          <expression>${TOMCAT_HOME}</expression>
-          <description>The location of the tomcat 5.x installation</description>
-        </parameter>
-
-        <parameter>
-          <name>TOMCAT_VERSION</name>
-          <property>TOMCAT_VERSION</property>
-          <expression>${TOMCAT_VERSION}</expression>
-          <defaultValue>5.5.23</defaultValue>
-          <description>The tomcat version to use.</description>
-        </parameter>
-
-        <parameter>
-          <name>webappVersion</name>
-          <property>webappVersion</property>
+          <name>jarVersion</name>
+          <property>jarVersion</property>
           <required>true</required>
           <expression>${mulgara-version}</expression>
           <defaultValue>${project.version}</defaultValue>
-          <description>The version of the mulgara webapp to run.</description>
+          <description>The version of the mulgara jar to run.</description>
         </parameter>
 
         <parameter>
@@ -136,7 +105,7 @@
           <required>false</required>
           <expression>${jvmargs}</expression>
           <defaultValue>-server -Xmx200m</defaultValue>
-          <description>The jvm arguments to pass to the tomcat container.</description>
+          <description>The jvm arguments to pass to java.</description>
         </parameter>
 
       </parameters>
@@ -150,7 +119,7 @@
       <requiresProject>false</requiresProject>
 
       <description>
-        Stop the mulgara tomcat server
+        Stop the mulgara server
       </description>
 
       <parameters>
@@ -172,28 +141,12 @@
         </parameter>
 
         <parameter>
-          <name>TOMCAT_HOME</name>
-          <property>TOMCAT_HOME</property>
-          <expression>${TOMCAT_HOME}</expression>
-          <description>The location of the tomcat 5.x installation. Must be the same as what
-              was given in the mulgara-start command.</description>
-        </parameter>
-
-        <parameter>
-          <name>TOMCAT_VERSION</name>
-          <property>TOMCAT_VERSION</property>
-          <expression>${TOMCAT_VERSION}</expression>
-          <defaultValue>5.5.23</defaultValue>
-          <description>The tomcat version to use. Must be the same as what
-              was given in the mulgara-start command.</description>
-        </parameter>
-
-        <parameter>
-          <name>SHUTDOWN_PORT</name>
-          <property>SHUTDOWN_PORT</property>
+          <name>jarVersion</name>
+          <property>jarVersion</property>
           <required>true</required>
-          <expression>${SHUTDOWN_PORT}</expression>
-          <defaultValue>9291</defaultValue>
+          <expression>${mulgara-version}</expression>
+          <defaultValue>${project.version}</defaultValue>
+          <description>The version of the mulgara jar to run.</description>
         </parameter>
 
       </parameters>
