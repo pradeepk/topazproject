@@ -170,8 +170,9 @@ public class EmbeddedClassMemberFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public boolean isLoaded(Object instance) {
-    return field.isLoaded(instance);
+  public boolean isLoaded(Object o) {
+    Object co = container.getRawValue(o, false);
+    return (co == null) ? false : field.isLoaded(co);
   }
 
   /*

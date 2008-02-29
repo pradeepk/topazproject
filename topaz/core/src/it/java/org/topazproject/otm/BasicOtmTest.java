@@ -104,6 +104,7 @@ public class BasicOtmTest extends AbstractOtmTest {
 
           a.foobar.foo   = "FOO";
           a.foobar.bar = "BAR";
+          a.foobar.set.add("FOO-BAR");
         }
       });
     doInSession(new Action() {
@@ -122,6 +123,8 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals(blob, a.getBody().getBlob());
           assertEquals("FOO", a.foobar.foo);
           assertEquals("BAR", a.foobar.bar);
+          assertEquals(1, a.foobar.set.size());
+          assertEquals("FOO-BAR", a.foobar.set.iterator().next());
 
           session.delete(a);
 
