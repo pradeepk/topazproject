@@ -569,7 +569,9 @@ function getComment(obj) {
            return false;
          }
          else {
-           if (uriArray.length > 1) {             
+         	 var isMulti = (uriArray.length > 1);
+         	 var dlg;
+           if(isMulti) {             
              topaz.displayComment.buildDisplayViewMultiple(jsonObj, targetContainer.childNodes.length, targetContainer, targetContainerSecondary);
              
              if (targetContainer.childNodes.length == stopPt) {
@@ -578,25 +580,24 @@ function getComment(obj) {
                _commentMultiDlg.show();
 
                topaz.displayComment.adjustDialogHeight(targetContainer, targetContainerSecondary, 50);
-
-               _ldc.hide();
-            
-               return false;
              }
+             dlg = _commentMultiDlg;
            }
            else {
              topaz.displayComment.buildDisplayView(jsonObj);
              topaz.displayComment.mouseoverComment(topaz.displayComment.target);
  
              _commentDlg.show();
-             _ldc.hide();
-          
-             return false;
+             
+             dlg = _commentDlg;
            }
-           
-           //alert("targetContainer.childNodes.length = " + targetContainer.childNodes.length + "\n" + "stopPt = " + stopPt);
-           
+	         // ensure the dialog is scrolled into view
+			     if(dojo.html.scrollIntoView && dlg && dlg.domNode) {
+			    	 dojo.html.scrollIntoView(dlg.domNode);
+			     }
          }
+         _ldc.hide();
+         return false;
         },
         mimetype: "text/html"
        };

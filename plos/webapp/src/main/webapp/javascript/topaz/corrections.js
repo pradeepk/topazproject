@@ -131,14 +131,25 @@ topaz.corrections = {
    * @return The found formal correction node or null if not found
    */
   _findFrmlCrctnByAnnId: function(annId) {
-    if(this.arrElmFc == null) return null;
+    if(this.arrElmFc == null || annId == null) return null;
     var n, naid;
     for(var i=0; i<this.arrElmFc.length; i++){
       n = this.arrElmFc[i];
       naid = dojo.html.getAttribute(n, 'annotationid');
-      if(naid == annId) return n
+      if(naid != null && naid.indexOf(annId)>=0) return n;
     }
     return null;
+  },
+  
+  _getAnnAnchor: function(ancestor) {
+  	var cns = ancestor.childNodes;
+  	if(!cns || cns.length < 1) return null;
+  	var cn;
+  	for(var i=0; i<cns.length; i++) {
+  		cn = cns[i];
+  		if(cn.nodeName == 'A') return cn;
+  	}
+  	return null;
   },
 
   /**
@@ -155,7 +166,10 @@ topaz.corrections = {
     var annId = dojo.html.getAttribute(e.target, formalCorrectionConfig.annid);
     e.preventDefault();
     var fcn = topaz.corrections._findFrmlCrctnByAnnId(annId);
-    var annAnchor = fcn.firstChild;
-    topaz.displayComment.show(annAnchor); 
+    if(fcn) {
+	    var annAnchor = topaz.corrections._getAnnAnchor(fcn);
+	    if(!annAnchor) throw 'Unable to resolve annotation anchor!';
+	    topaz.displayComment.show(annAnchor);
+	  }
   }
 }
