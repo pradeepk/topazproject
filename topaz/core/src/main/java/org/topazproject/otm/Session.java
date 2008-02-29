@@ -96,7 +96,8 @@ public interface Session {
   public SessionFactory getSessionFactory();
 
   /**
-   * Begins a new read-write transaction. All session usage is within transaction scope.
+   * Begins a new read-write transaction with a default timeout. All session usage is within
+   * transaction scope.
    *
    * @return the transaction
    *
@@ -107,13 +108,14 @@ public interface Session {
   /**
    * Begins a new transaction. All session usage is within transaction scope.
    *
-   * @param readOnly true if this should be a read-only transaction, false if a read-write
-   *                 transaction
+   * @param readOnly  true if this should be a read-only transaction, false if a read-write
+   *                  transaction
+   * @param txTimeout the transaction timeout, in seconds; if &lt;= 0 then use the default timeout
    * @return the transaction
    *
    * @throws OtmException on an error
    */
-  public Transaction beginTransaction(boolean readOnly) throws OtmException;
+  public Transaction beginTransaction(boolean readOnly, int txTimeout) throws OtmException;
 
   /**
    * Gets the current transaction.

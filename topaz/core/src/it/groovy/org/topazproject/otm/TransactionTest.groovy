@@ -148,20 +148,54 @@ public class TransactionTest extends AbstractTest {
     assertNull(s.transaction)
   }
 
+  void testTimeout() {
+    def o1 = new Article(uri: "http://foo.com/bar/baz".toURI(), title: "The sum of things")
+
+    // explicit timeout, commit within the timeout
+    Session s = rdf.sessFactory.openSession()
+    s.beginTransaction(false, 10)
+    s.saveOrUpdate(o1)
+    s.transaction.commit()
+
+    // explicit timeout, wait for timeout to trigger, verify rollback
+    s.clear()
+    s.beginTransaction(false, 2)
+    def res = s.get(Article.class, o1.uri.toString())
+    assertEquals(o1.uri, res.uri)
+    res.title = "The end of things"
+
+    Thread.sleep(2000);
+
+    assertTrue(s.transaction.isRollbackOnly())
+    shouldFail(OtmException.class) { s.transaction.commit() }
+
+    // no timeout, make sure it goes back to default
+    s.clear()
+    s.beginTransaction(false, -1)
+    res = s.get(Article.class, o1.uri.toString())
+    assertEquals(o1.uri, res.uri)
+    res.title = "The end of things"
+
+    Thread.sleep(2000);
+
+    assertFalse(s.transaction.isRollbackOnly())
+    s.transaction.commit()
+  }
+
   /* This assumes the underlying store (e.g. Mulgara) supports/implements read-only txn's */
   void testReadOnly() {
     def o1 = new Article(uri: "http://foo.com/bar/baz".toURI(), title: "The sum of things")
 
     // write object
     Session s = rdf.sessFactory.openSession()
-    s.beginTransaction(false)
+    s.beginTransaction(false, -1)
     assertNull(s.get(Article.class, o1.uri.toString()))
     s.saveOrUpdate(o1)
     s.transaction.commit()
 
     // read, set-ro, modify, commit-fail
     s = rdf.sessFactory.openSession()
-    s.beginTransaction(true)
+    s.beginTransaction(true, -1)
     def res = s.get(Article.class, o1.uri.toString())
     assertEquals(o1.uri, res.uri)
     assertEquals(o1.title, res.title)
@@ -171,7 +205,7 @@ public class TransactionTest extends AbstractTest {
 
     // read, set-ro, modify, flush-fail, rollback
     s = rdf.sessFactory.openSession()
-    s.beginTransaction(true)
+    s.beginTransaction(true, -1)
     res = s.get(Article.class, o1.uri.toString())
     assertEquals(o1.uri, res.uri)
     assertEquals(o1.title, res.title)
@@ -192,7 +226,7 @@ public class TransactionTest extends AbstractTest {
 
     // read null
     Session sr = rdf.sessFactory.openSession()
-    sr.beginTransaction(true)
+    sr.beginTransaction(true, -1)
     assertNull(sr.get(Article.class, o1.uri.toString()))
     sr.transaction.commit()
 
@@ -202,7 +236,7 @@ public class TransactionTest extends AbstractTest {
 
     def tw = doInThread {
       Session sw = rdf.sessFactory.openSession()
-      sw.beginTransaction(false)
+      sw.beginTransaction(false, -1)
       assertNull(sw.get(Article.class, o1.uri.toString()))
       sw.saveOrUpdate(o1)
       sw.flush()
@@ -224,12 +258,12 @@ public class TransactionTest extends AbstractTest {
     }
 
     // read null
-    sr.beginTransaction(true)
+    sr.beginTransaction(true, -1)
     assertNull(sr.get(Article.class, o1.uri.toString()))
     sr.transaction.commit()
 
     // read null, keep tx open
-    sr.beginTransaction(true)
+    sr.beginTransaction(true, -1)
     def x = sr.get(Article.class, o1.uri.toString())
     assertNull(sr.get(Article.class, o1.uri.toString()))
 
@@ -242,7 +276,7 @@ public class TransactionTest extends AbstractTest {
     sr.transaction.commit()
 
     // read non-null
-    sr.beginTransaction(true)
+    sr.beginTransaction(true, -1)
     def res = sr.get(Article.class, o1.uri.toString())
     assertEquals(o1.uri, res.uri)
     assertEquals(o1.title, res.title)
@@ -261,14 +295,14 @@ public class TransactionTest extends AbstractTest {
 
     // write object
     Session sw = rdf.sessFactory.openSession()
-    sw.beginTransaction(false)
+    sw.beginTransaction(false, -1)
     assertNull(sw.get(Article.class, o1.uri.toString()))
     sw.saveOrUpdate(o1)
     sw.transaction.commit()
 
     // read object, keep tx open
     Session sr = rdf.sessFactory.openSession()
-    sr.beginTransaction(true)
+    sr.beginTransaction(true, -1)
     def res = sr.get(Article.class, o1.uri.toString())
     assertEquals(o1.uri, res.uri)
     assertEquals(o1.title, res.title)
@@ -277,7 +311,7 @@ public class TransactionTest extends AbstractTest {
     // do second read
     def tr = doInThread {
       Session r2 = rdf.sessFactory.openSession()
-      r2.beginTransaction(true)
+      r2.beginTransaction(true, -1)
       def res2 = sr.get(Article.class, o1.uri.toString())
       assertEquals(o1.uri, res2.uri)
       assertEquals(o1.title, res2.title)
@@ -292,7 +326,7 @@ public class TransactionTest extends AbstractTest {
 
     tr = doInThread {
       Session r2 = rdf.sessFactory.openSession()
-      r2.beginTransaction(true)
+      r2.beginTransaction(true, -1)
       def res2 = sr.get(Article.class, o1.uri.toString())
       assertEquals(o1.uri, res2.uri)
       assertEquals(o1.title, res2.title)
@@ -344,7 +378,7 @@ public class TransactionTest extends AbstractTest {
       Session s = rdf.sessFactory.openSession()
       for (int idx in 1 ..iter) {
         s.clear()
-        s.beginTransaction(false)
+        s.beginTransaction(false, -1)
 
         def obj = s.get(cls, o1.id.toString())
 
@@ -371,7 +405,7 @@ public class TransactionTest extends AbstractTest {
       Session s = rdf.sessFactory.openSession()
       while (!end) {
         s.clear()
-        s.beginTransaction(true)
+        s.beginTransaction(true, -1)
 
         def obj = s.get(cls, o1.id.toString())
 

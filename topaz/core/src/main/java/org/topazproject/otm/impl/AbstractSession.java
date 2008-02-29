@@ -78,17 +78,17 @@ abstract class AbstractSession implements Session {
    * inherited javadoc
    */
   public Transaction beginTransaction() throws OtmException {
-    return beginTransaction(false);
+    return beginTransaction(false, -1);
   }
 
   /*
    * inherited javadoc
    */
-  public Transaction beginTransaction(boolean readOnly) throws OtmException {
+  public Transaction beginTransaction(boolean readOnly, int txTimeout) throws OtmException {
     if (jtaTxn != null)
       throw new OtmException("A transaction is already active on this session");
 
-    ensureTxActive(true);
+    ensureTxActive(true, txTimeout);
     locTxn = new TransactionImpl(this, jtaTxn);
 
     txnIsRO = readOnly;
@@ -268,7 +268,7 @@ abstract class AbstractSession implements Session {
    */
   protected Connection getTripleStoreCon() throws OtmException {
     if (tsCon == null) {
-      ensureTxActive(false);
+      ensureTxActive(false, -1);
       tsCon = sessionFactory.getTripleStore().openConnection(this, txnIsRO);
     }
 
@@ -283,14 +283,14 @@ abstract class AbstractSession implements Session {
    */
   protected Connection getBlobStoreCon() throws OtmException {
     if (bsCon == null) {
-      ensureTxActive(false);
+      ensureTxActive(false, -1);
       bsCon = sessionFactory.getBlobStore().openConnection(this, txnIsRO);
     }
 
     return bsCon;
   }
 
-  private void ensureTxActive(boolean start) throws OtmException {
+  private void ensureTxActive(boolean start, int txTimeout) throws OtmException {
     if (jtaTxn != null)
       return;
 
@@ -302,6 +302,7 @@ abstract class AbstractSession implements Session {
         if (!start)
           throw new OtmException("No active transaction");
 
+        tm.setTransactionTimeout(txTimeout > 0 ? txTimeout : 0);
         tm.begin();
         jtaTxn = tm.getTransaction();
       }
