@@ -344,9 +344,18 @@ div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 
 
 div.static h3,	
 div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold;}
+div.static > h3,	
+div.content > h4 { margin-bottom:1em; }
 
 div.static h4,
+div.static h5,
 div.content h5	{ font-size: 1em; color: #333; margin-bottom:0; }
+div.static > h4,
+div.static > h5,
+div.content > h5	{ display:inline; padding-right:1em; }
+div.static h4+p,
+div.static h5+p,
+div.content h5+p	{ display:inline; }
 
 div.content ul,
 div.content ol	{ margin: 10px 0 10px 60px; padding: 0; }
@@ -553,7 +562,8 @@ span.public-active a:visited.bug { background-color: #069;}
 span.public-active			{ background-color:#D2F7FF; border:1px solid #fff; border-bottom: 1px solid #0bf; }
 span.public-active a.bug.public-active,
 span.public-active a:hover.bug.public-active		{ background-color: #0BF;}
-span.public { border:1px solid transparent; }
+span.public { border:1px solid #fff; }
+* > span.public { border-color:transparent; } /*Fix for white border color showing on notated text on non-white backgrounds, but hides for IE6 where transparent border color doesn't work.*/
 
 a.bug.author,
 a:visited.bug.author,
