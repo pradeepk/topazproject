@@ -188,7 +188,7 @@
     <xsl:if test="$jnl-meta/issn[@pub-type = 'epub']">
       <prism:eIssn><xsl:value-of select="$jnl-meta/issn[@pub-type = 'epub']"/></prism:eIssn>
     </xsl:if>
-    <dc:title rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/title-group/article-title"/></xsl:call-template></dc:title>
+    <dc:title rdf:parseType="Literal"><xsl:copy-of select="$meta/title-group/article-title/node()"/></dc:title>
     <dc:type rdf:resource="&dctype;Text"/>
     <dc:format>text/xml</dc:format>
     <dc:language>en</dc:language>
@@ -211,16 +211,16 @@
     </xsl:for-each>
     <xsl:for-each
         select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
-        <dc:subject rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="."/></xsl:call-template></dc:subject>
+        <dc:subject rdf:parseType="Literal"><xsl:copy-of select="./node()"/></dc:subject>
     </xsl:for-each>
     <xsl:if test="$meta/abstract">
-      <dc:description rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="my:select-abstract($meta/abstract)"/></xsl:call-template></dc:description>
+      <dc:description rdf:parseType="Literal"><xsl:copy-of select="my:select-abstract($meta/abstract)/node()"/></dc:description>
     </xsl:if>
     <xsl:if test="$jnl-meta/publisher/publisher-name">
-      <dc:publisher rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$jnl-meta/publisher/publisher-name"/></xsl:call-template></dc:publisher>
+      <dc:publisher rdf:parseType="Literal"><xsl:copy-of select="$jnl-meta/publisher/publisher-name/node()"/></dc:publisher>
     </xsl:if>
     <xsl:if test="$meta/copyright-statement">
-      <dc:rights rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/copyright-statement"/></xsl:call-template></dc:rights>
+      <dc:rights rdf:parseType="Literal"><xsl:copy-of select="$meta/copyright-statement/node()"/></dc:rights>
     </xsl:if>
 
     <xsl:for-each select="$sec-dois">
@@ -406,7 +406,7 @@
       </xsl:if>
 
       <xsl:if test="$title">
-        <dc:title rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$title"/></xsl:call-template></dc:title>
+        <dc:title rdf:parseType="Literal"><xsl:copy-of select="$title/node()"/></dc:title>
       </xsl:if>
 
       <xsl:if test="$pub-loc">
@@ -424,7 +424,7 @@
       <xsl:if test="$note">
         <bibtex:hasNote rdf:datatype="&xsd;string"><xsl:value-of select="$note"/></bibtex:hasNote>
       </xsl:if>
-      <xsl:if test="$summary">
+      <xsl:if test="$summary/node()">
         <bibtex:hasAbstract rdf:datatype="&xsd;string"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$summary"/></xsl:call-template></bibtex:hasAbstract>
       </xsl:if>
       <xsl:if test="$url">
@@ -600,7 +600,7 @@
       <dc:contributor><xsl:value-of select="my:format-contrib-name(.)"/></dc:contributor>
     </xsl:for-each>
     <xsl:if test="$meta/copyright-statement">
-      <dc:rights rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/copyright-statement"/></xsl:call-template></dc:rights>
+      <dc:rights rdf:parseType="Literal"><xsl:copy-of select="$meta/copyright-statement/node()"/></dc:rights>
     </xsl:if>
 
     <xsl:variable name="dc-types" as="xs:anyURI*"
@@ -625,10 +625,10 @@
     <xsl:if test="$ctxt-obj">
       <topaz:contextElement><xsl:value-of select="local-name($ctxt-obj)"/></topaz:contextElement>
       <xsl:if test="$ctxt-obj/label">
-        <dc:title rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$ctxt-obj/label"/></xsl:call-template></dc:title>
+        <dc:title rdf:parseType="Literal"><xsl:copy-of select="$ctxt-obj/label/node()"/></dc:title>
       </xsl:if>
       <xsl:if test="$ctxt-obj/caption">
-        <dc:description rdf:datatype="&rdf;XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$ctxt-obj/caption"/></xsl:call-template></dc:description>
+        <dc:description rdf:parseType="Literal"><xsl:copy-of select="$ctxt-obj/caption/node()"/></dc:description>
       </xsl:if>
     </xsl:if>
 

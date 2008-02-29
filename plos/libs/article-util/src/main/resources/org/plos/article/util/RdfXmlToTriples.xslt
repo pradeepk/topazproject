@@ -42,7 +42,6 @@ http://www.semanticplanet.com/library/Main/RdfToTriplesStylesheet
 -->
 
 <output method="text" indent="no" encoding="utf-8"/>
-<strip-space elements="*"/>
 <!-- if there's a parameter $base use it as the base URI in preference to the xml:base attribute -->
 <param name="base">baseUriOfDocument</param>
 
@@ -133,7 +132,7 @@ http://www.semanticplanet.com/library/Main/RdfToTriplesStylesheet
 	Process objects
 ####################################################################### -->
 <!-- For child XML nodes with no children, continue processing node as a subject -->
-<template match="*[not(node())]" mode="object">
+<template match="*[not(node())]" mode="object" priority="1.0">
 	<param name="objectString"/>
 	<apply-templates select="." mode="subject">
 		<with-param name="subjectString" select="$objectString"/>
@@ -197,7 +196,14 @@ is not used to identify the subject.  slightly above normal priority-->
 <!-- For child nodes select the child node, as long as the child node is not just a processing instruction or comment.
 there should be an attribute to use as the object instead -->
 <template match="node()" mode="object-string">
-	<apply-templates select="node()" mode="resource-string"/>
+	<choose>
+        <when test="*">
+            <apply-templates select="*" mode="resource-string"/>
+        </when>
+        <otherwise>
+            <apply-templates select="node()" mode="resource-string"/>
+        </otherwise>
+    </choose>
 </template>
 
 <!-- For collections, generate an ID for the first element of the collection -->
