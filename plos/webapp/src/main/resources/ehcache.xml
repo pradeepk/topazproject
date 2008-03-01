@@ -538,12 +538,13 @@
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
+
     <!--
       ArticleAnnotationCache.
       This cache stores Article(transformed)/ArticleInfo/Annotation/Citation.
-      Non-Serializable Article Objects limit distributed behavior:
-        no replicating puts
-        on update, send a remove
+      All Objects are Serializable:
+        - bootstrap on creation
+        - replicate puts & updates
     -->
     <cache name="ArticleAnnotationCache"
            maxElementsInMemory="10000"
@@ -551,9 +552,11 @@
            timeToIdleSeconds="86400"
            timeToLiveSeconds="0"
            overflowToDisk="false">
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicatePuts=false, replicateUpdatesViaCopy=false"/>
+                properties="replicatePuts=true, replicateUpdatesViaCopy=true"/>
     </cache>
     <!--
       User cache.
