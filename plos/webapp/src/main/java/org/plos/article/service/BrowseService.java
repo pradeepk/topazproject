@@ -214,9 +214,10 @@ public class BrowseService {
    * Get Issue information.
    *
    * @param issue DOI of Issue.
+   * @param eagerFetchArticles causes the ArticleInfos to be fetched
    * @return the Issue information.
    */
-  public IssueInfo getIssueInfo(final URI doi) {
+  public IssueInfo getIssueInfo(final URI doi, final boolean eagerFetchArticles) {
 
     // XXX look up IssueInfo in Cache
 
@@ -228,7 +229,7 @@ public class BrowseService {
 
         public IssueInfo run(Transaction tx) {
 
-          return getIssueInfoInTx(session, doi);
+          return getIssueInfoInTx(session, doi, eagerFetchArticles);
         }
       });
   }
@@ -239,7 +240,7 @@ public class BrowseService {
    * @param issue DOI of Issue.
    * @return the Issue information.
    */
-  private IssueInfo getIssueInfoInTx(Session session, final URI issueDOI) {
+  private IssueInfo getIssueInfoInTx(Session session, final URI issueDOI, boolean eagerFetchArticles) {
 
     // XXX look up IssueInfo in Cache
 
@@ -288,20 +289,22 @@ public class BrowseService {
 
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI, nextIssueURI,
                                         imageArticle, description, parentVolume.getId());
-        
-    for (URI articleDoi : issue.getSimpleCollection()) {
-      ArticleInfo articleInIssue = getArticleInfo(articleDoi, session.getTransaction());
-      if (articleInIssue == null) {
-        log.warn("Article " + articleDoi + " missing; member of Issue " + issueDOI);
-        continue;
+    if (eagerFetchArticles) {
+      for (URI articleDoi : issue.getSimpleCollection()) {
+        ArticleInfo articleInIssue = getArticleInfo(articleDoi, session.getTransaction());
+        if (articleInIssue == null) {
+          log.warn("Article " + articleDoi + " missing; member of Issue " + issueDOI);
+          continue;
+        }
+        issueInfo.addArticleToIssue(articleInIssue);
       }
-      issueInfo.addArticleToIssue(articleInIssue);
     }
     return issueInfo;
   }
 
   /**
-   * Get VolumeInfos.
+   * Get VolumeInfos. Note that the IssueInfos contained in the volumes have not been instantiated
+   * with the ArticleInfos. 
    *
    * @param volumeDois to look up.
    * @return volumeInfos.
@@ -339,7 +342,7 @@ public class BrowseService {
 
             List<IssueInfo> issueInfos = new ArrayList();
             for (final URI issueDoi : volume.getIssueList()) {
-              issueInfos.add(getIssueInfoInTx(session, issueDoi));
+              issueInfos.add(getIssueInfoInTx(session, issueDoi, false));
             }
 
             // calculate prev/next

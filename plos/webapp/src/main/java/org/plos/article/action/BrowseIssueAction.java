@@ -97,7 +97,7 @@ public class BrowseIssueAction extends BaseActionSupport{
     }
 
     // look up Issue
-    issueInfo = browseService.getIssueInfo(URI.create(issue));
+    issueInfo = browseService.getIssueInfo(URI.create(issue), true);
     if (issueInfo == null) {
       log.error("Failed to retrieve IssueInfo for issue id='"+issue+"'");
       return ERROR; 
