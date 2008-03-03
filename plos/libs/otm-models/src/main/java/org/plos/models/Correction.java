@@ -1,5 +1,5 @@
 /* $HeadURL::$
- * $Id:$
+ * $Id$
  *
  * Copyright (c) 2007 by Topaz, Inc.
  * http://topazproject.org
@@ -22,7 +22,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = Annotea.W3C_TYPE_NS + "Change")
 public class Correction extends Annotation implements ArticleAnnotation {
-
+  private static final long serialVersionUID = -8174779804923945692L;
+  
   @Predicate(uri = Annotea.W3C_NS + "body")
   private URI body;
 

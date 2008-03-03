@@ -11,10 +11,10 @@ package org.plos.models;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Set;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
@@ -28,6 +28,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = Rdf.topaz + "Article", model = "ri")
 public class Article extends ObjectInfo implements Serializable {
+  private static final long serialVersionUID = 7195650215022649188L;
+  
   /** Article state of "Active" */
   public static final int STATE_ACTIVE   = 0;
   /** Article state of "Disabled" */
