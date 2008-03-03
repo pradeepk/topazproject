@@ -669,6 +669,7 @@ div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:hi
 div.toc h1,
 div.archive h1  { width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #67a96d; }
 div#issueImage { margin:30px 0 15px 0; }
+div#issueImage h4 { display:inline; font-size:0.9em; font-style:italic; font-family:Verdana, Arial, Helvetica, sans-serif; margin:0; padding:0; }
 div#issueImage p,
 .horizontalTabs .contentwrap div#thumbnail p  { margin:0 0 10px 0; font-size:.9em; line-height:1.5em; display:inline; padding:0 .5em 0 0; }
 div#issueImage span#title { font-weight:bold; font-style:italic; }
