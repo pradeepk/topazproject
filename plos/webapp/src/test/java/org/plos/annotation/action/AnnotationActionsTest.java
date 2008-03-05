@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
 import org.plos.annotation.Context;
+import org.plos.annotation.ContextFormatter;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationsPEP;
@@ -149,8 +150,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   }
   
   private String getContext(CreateAnnotationAction caa) throws Exception {
-    Context c = new Context(caa.getStartPath(), caa.getStartOffset(), caa.getEndPath(), caa.getEndOffset(), caa.getTarget());
-    return c.getXPointer();
+    return ContextFormatter.asXPointer(
+        new Context(caa.getStartPath(), caa.getStartOffset(), caa.getEndPath(), caa.getEndOffset(), caa.getTarget()));
   }
 
   public String createAnnotation(final String target, final boolean publicVisibility) throws Exception {
