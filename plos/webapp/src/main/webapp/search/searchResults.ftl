@@ -72,6 +72,12 @@
 
       for <strong>${query?html}</strong>.
       </p>
+      <div id="searchMore">
+        <a href="${advancedSearch}">Go to Advanced Search</a> to revise <em>or</em> 
+        <form name="reviseSearch" action="${searchURL}" method="get">
+          <label for="searchEdit" style="display:inline;">edit your query here (<a href="#">help</a>): </label><input type="text" size="50" value="${query?html}" id="searchEdit"/> <input type="submit"  value="Go" class="button"/>
+        </form>
+      </div>
     </#if>
 
     <div class="resultsTab"><@renderSearchPaginationLinks totalPages, hasMore/></div>
