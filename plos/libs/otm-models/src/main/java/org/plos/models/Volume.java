@@ -106,8 +106,8 @@ public class Volume extends Aggregation {
      * This code can probably be removed after 0.8.2.1 release but it 
      * shouldn't do any harm to leave it in here. 
      */
-    if ((this.issueList.size() == 0) && 
-        (super.getSimpleCollection().size() > 0)) {
+    if (((this.issueList == null) || (this.issueList.size() == 0)) && 
+        ((super.getSimpleCollection() != null) && (super.getSimpleCollection().size() > 0))) {
       this.issueList = super.getSimpleCollection();
     }
     return issueList;

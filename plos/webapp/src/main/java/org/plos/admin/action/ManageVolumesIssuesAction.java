@@ -105,15 +105,17 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     // get Issues for this Journal
     issues.clear();
     for (final Volume volume : volumes) {
-      for (final URI issueDoi : volume.getIssueList()) {
-        final Issue issue = session.get(Issue.class, issueDoi.toString());
-          if (issue != null) {
-              issues.add(issue);
-          } else {
-            final String errorMessage = "Error getting issue: " + issueDoi;
-            addActionError(errorMessage);
-            log.error(errorMessage);
-          }
+      if (volume.getIssueList() != null) {
+        for (final URI issueDoi : volume.getIssueList()) {
+          final Issue issue = session.get(Issue.class, issueDoi.toString());
+            if (issue != null) {
+                issues.add(issue);
+            } else {
+              final String errorMessage = "Error getting issue: " + issueDoi;
+              addActionError(errorMessage);
+              log.error(errorMessage);
+            }
+        }
       }
     }
     if (log.isDebugEnabled()) {
