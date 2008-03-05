@@ -1,5 +1,11 @@
-/**
- * 
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2008 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
  */
 package org.plos.annotation;
 
@@ -13,12 +19,12 @@ import org.plos.util.XPointerUtils;
 
 /**
  * ContextFormatter - Responsible for String-izing a {@link Context}.
+ * 
  * @author jkirton
- *
  */
 public abstract class ContextFormatter {
   private static final Log log = LogFactory.getLog(ContextFormatter.class);
-  
+
   /**
    * Returning an xpointer of the following forms:
    * <p>
@@ -35,7 +41,7 @@ public abstract class ContextFormatter {
     final int startOffset = c.getStartOffset();
     final String endPath = c.getEndPath();
     final int endOffset = c.getEndOffset();
-    
+
     if (StringUtils.isBlank(startPath)) {
       return null;
     }
@@ -50,14 +56,13 @@ public abstract class ContextFormatter {
         context = XPointerUtils.createStringRangeFragment(startPath, "", startOffset, length);
       }
       else {
-        context = XPointerUtils.createRangeToFragment(
-            XPointerUtils.createStringRangeFragment(startPath, "", startOffset),
-            XPointerUtils.createStringRangeFragment(endPath, "", endOffset));
+        context = XPointerUtils.createRangeToFragment(XPointerUtils.createStringRangeFragment(
+            startPath, "", startOffset), XPointerUtils.createStringRangeFragment(endPath, "",
+            endOffset));
       }
       if (log.isDebugEnabled()) log.debug("xpointer target context: " + context);
       return XPointerUtils.createXPointer(c.getTarget(), context, "UTF-8");
-    }
-    catch (final UnsupportedEncodingException e) {
+    } catch (final UnsupportedEncodingException e) {
       log.error(e);
       throw new ApplicationException(e);
     }
