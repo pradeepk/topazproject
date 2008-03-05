@@ -42,7 +42,7 @@ th			{ padding: 6px; background-color: #ACF1FF; border: 4px solid #FFF; border-w
 td			{ padding: 6px; background-color: #D2F7FF; border: 4px solid #FFF; border-width: 0 3px 3px 0; }
 /* Default Headings */
 h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; color: #333; /*position: relative; Note: this was causing links in floated articleMenu to be covered up and unclickable in Firefox2 */ }
-h1			{ font-size: 2.2em; font-weight: normal; color: #004B70;}
+h1			{ font-size: 2.2em; font-weight: normal; color: #333;}
 h2			{ font-size: 1.6em; font-weight: normal; border-bottom: 1px solid #ccc; padding: 2px 0;}
 h3			{ font-size: 1.4em; font-weight: normal; margin: .8em 0; }
 h4			{ font-size: 1.2em; }
@@ -312,10 +312,12 @@ div#rhc			{ float: right; width: 240px; position: relative; padding-top: 20px;}
 div.content 	{ margin-right: 255px; }
 
 div.static h1,
-div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; color: #004263; }
+div.content h1,
+div.search h1 { /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; }
 
 
-div.static h1		{ padding-top: 10px; border-top: 6px solid #004263; }
+div.static h1,
+div.search h1		{ padding-top: 10px; border-top: 6px solid #004263; }
 div.pageerror h1	{ background-color: #004263; color:#fff; padding: 8px;}
 div.pageerror p		{ margin-left: 8px; }
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
@@ -407,11 +409,14 @@ div.tools ul			{ background-image: url(../images/pone_tools_bg.gif); padding-bot
 div.links li
 div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
 
+/* rhc square box */
+div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; margin:0; padding:0; }
 
 div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/pone_toolbar_bg.gif) repeat-x top;}
 div.commentview	fieldset{ border: 1px solid #ccc; border-width: 1px 0; margin: 0 -5px 5px -5px; padding: 10px; background-color: #eee; position: relative;}
 div.commentview	 li 	{ font-size: .9em; }
-div.commentview h6		{ margin: 0; }
+div.commentview h6,
+div.rhcBox h6 { margin: 0; }
 div.commentview ol,
 div.commentview li		{ margin: 0; padding: 0; list-style-type: none; }
 div.commentview fieldset li	{ font-weight: bold; width: 100%; position: relative; }
