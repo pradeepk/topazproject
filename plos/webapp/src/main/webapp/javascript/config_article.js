@@ -19,7 +19,7 @@ var annotationConfig = {
   tipUpDiv: "dTipu",
   isAuthor: false,  //TODO: *** Default to false when the hidden input is hooked up.
   isPublic: true,
-  dfltAnnSelErrMsg: 'This area of text cannot be annotated.',
+  dfltAnnSelErrMsg: 'This area of text cannot be notated.',
   annSelErrMsg: null,
   rangeInfoObj: new Object()
 };
