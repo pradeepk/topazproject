@@ -9,20 +9,21 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringUtils;
 import org.plos.ApplicationException;
+import org.plos.annotation.Context;
 import org.plos.util.ProfanityCheckingService;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Action to create an annotation. It also does profanity validation on the user content.
  */
+@SuppressWarnings("serial")
 public class CreateAnnotationAction extends AnnotationActionSupport {
   private String target;
   private String commentTitle;
@@ -30,6 +31,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   private String mimeType = "text/plain";
   private String annotationId;
   private boolean isPublic = false;
+  private String noteType;
   private String startPath;
   private int startOffset;
   private String endPath;
@@ -38,11 +40,12 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
 
   private ProfanityCheckingService profanityCheckingService;
   private static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
-
+  
   /**
    * {@inheritDoc}
    * Also does some profanity check for commentTitle and comment before creating the annotation.
    */
+  @Override
   public String execute() throws Exception {
     return createAnnotation();
   }
@@ -64,7 +67,8 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
       final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
       if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
-        annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), supercedes, commentTitle, mimeType, comment, isPublic);
+        final Context context = new Context(startPath, startOffset, endPath, endOffset, target);
+        annotationId = getAnnotationService().createAnnotation(target, context.getXPointer(), supercedes, commentTitle, mimeType, comment, isPublic);
         if (log.isDebugEnabled()) {
           log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
         }
@@ -95,7 +99,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     }
     return invalid;
   }
-
+  
   /**
    * Set the target that it annotates.
    * @param target target
@@ -145,48 +149,6 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /**
-   * Returning an xpointer of the following form:
-   * 1) string-range(/doc/chapter/title,'')[5]/range-to(string-range(/doc/chapter/para/em,'')[3])
-   * 2) string-range(/article[1]/body[1]/sec[1]/p[2],"",194,344)
-   * @return the context for the annotation
-   * @throws org.plos.ApplicationException ApplicationException
-   */
-  public String getTargetContext() throws ApplicationException {
-    if (StringUtils.isBlank(startPath)) {
-      return null;
-    }
-
-    try {
-      String context;
-      if (startPath.equals(endPath)) {
-        final int length = endOffset - startOffset;
-        if (length < 0) {
-          final String errorMessage = "Invalid length: " + length + " of the annotated content";
-          addFieldError("endOffset", errorMessage);
-          throw new ApplicationException(errorMessage);
-        }
-        context = createStringRangeFragment(startPath, startOffset, length);
-      } else {
-        context = createStringRangeFragment(startPath, startOffset) +
-                "/range-to(" + createStringRangeFragment(endPath, endOffset) + ")";
-      }
-      log.debug("xpointer fragment =" + context);
-      return target + "#xpointer(" + URLEncoder.encode(context, "UTF-8") + ")";
-    } catch (final UnsupportedEncodingException e) {
-      log.error(e);
-      throw new ApplicationException(e);
-    }
-  }
-
-  private static String createStringRangeFragment(final String path, final int offset, final int length) {
-    return "string-range(" + path + ", '', " + offset + ", " + length + ")[1]";
-  }
-
-  private static String createStringRangeFragment(final String path, final int offset) {
-    return "string-range(" + path + ", '')[" + offset + "]";
-  }
-
-  /**
    * @return the commentTitle
    */
   public String getCommentTitle() {
@@ -223,6 +185,16 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   /** @return whether the annotation is public */
   public boolean getIsPublic() {
     return isPublic;
+  }
+
+  /** @param isCorrection <code>true</code> if the annotation is a correction */
+  public void setNoteType(final String noteType) {
+    this.noteType = noteType;
+  }
+
+  /** @return <code>true</code> if the annotation is a correction */
+  public String getNoteType() {
+    return noteType;
   }
 
   /** @return the end point offset */

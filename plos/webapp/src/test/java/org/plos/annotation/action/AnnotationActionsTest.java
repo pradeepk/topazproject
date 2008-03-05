@@ -9,20 +9,7 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork2.Action;
 import static com.opensymphony.xwork2.Action.SUCCESS;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.plos.BasePlosoneTestCase;
-import org.plos.Constants;
-import org.plos.annotation.service.Annotation;
-import org.plos.annotation.service.AnnotationService;
-import org.plos.annotation.service.AnnotationsPEP;
-import org.plos.annotation.service.Flag;
-import org.plos.annotation.service.Reply;
-import org.plos.article.action.FetchArticleAction;
-import org.plos.permission.service.PermissionWebService;
-import org.plos.article.util.DuplicateArticleIdException;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -31,6 +18,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.plos.BasePlosoneTestCase;
+import org.plos.Constants;
+import org.plos.annotation.Context;
+import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.AnnotationService;
+import org.plos.annotation.service.AnnotationsPEP;
+import org.plos.annotation.service.Flag;
+import org.plos.annotation.service.Reply;
+import org.plos.article.action.FetchArticleAction;
+import org.plos.article.util.DuplicateArticleIdException;
+import org.plos.permission.service.PermissionWebService;
+
+import com.opensymphony.xwork2.Action;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
@@ -45,6 +48,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   private String testXmlTarget = "info:doi/10.1371/journal.pone.0000008";
 
 
+  @Override
   protected void onSetUp() throws Exception {
     super.onSetUp();
 
@@ -143,11 +147,16 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(SUCCESS, listAnnotationAction.execute());
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
+  
+  private String getContext(CreateAnnotationAction caa) throws Exception {
+    Context c = new Context(caa.getStartPath(), caa.getStartOffset(), caa.getEndPath(), caa.getEndOffset(), caa.getTarget());
+    return c.getXPointer();
+  }
 
   public String createAnnotation(final String target, final boolean publicVisibility) throws Exception {
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
-    final String context = createAnnotationAction.getTargetContext();
+    final String context = getContext(createAnnotationAction);
     createAnnotationAction.setIsPublic(publicVisibility);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
@@ -167,7 +176,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testCreatePrivateAnnotation() throws Exception {
     final String title = "AnnotationPrivate";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
-    final String context = createAnnotationAction.getTargetContext();
+    final String context = getContext(createAnnotationAction);
     final boolean visibility = false;
     createAnnotationAction.setIsPublic(visibility);
     assertEquals(SUCCESS, createAnnotationAction.execute());
@@ -438,7 +447,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testPublicAnnotationShouldHaveTheRightGrantsAndRevokations() throws Exception {
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
-    final String context = createAnnotationAction.getTargetContext();
+    final String context = getContext(createAnnotationAction);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
@@ -516,7 +525,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
         createAnnotationAction.setStartOffset(3);
         createAnnotationAction.setEndPath(endPath);
         createAnnotationAction.setEndOffset(9);
-        log.debug("context = " + createAnnotationAction.getTargetContext());
+        final String context = getContext(createAnnotationAction);
+        log.debug("context = " + context);
         assertEquals(SUCCESS, createAnnotationAction.execute());
         return createAnnotationAction.getAnnotationId();
       }
@@ -581,7 +591,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
         createAnnotationAction.setEndPath(endPath);
         createAnnotationAction.setEndOffset(endOffset);
 
-        log.debug("context = " + createAnnotationAction.getTargetContext());
+        final String context = getContext(createAnnotationAction);
+        log.debug("context = " + context);
         assertEquals(SUCCESS, createAnnotationAction.execute());
         return createAnnotationAction.getAnnotationId();
       }
@@ -748,7 +759,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     createAnnotationAction.setIsPublic(true);
-    final String context = createAnnotationAction.getTargetContext();
+    final String context = getContext(createAnnotationAction);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
