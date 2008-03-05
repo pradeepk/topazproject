@@ -9,6 +9,9 @@
  */
 package org.plos.rating.service;
 
+import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
+import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
@@ -18,10 +21,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
-import static org.plos.annotation.service.Annotation.FLAG_MASK;
-import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
@@ -29,10 +29,10 @@ import org.plos.models.RatingSummaryContent;
 import org.plos.user.PlosOneUser;
 
 import org.springframework.beans.factory.annotation.Required;
-
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * This service allows client code to operate on ratings objects.
@@ -159,6 +159,7 @@ public class RatingsService {
       final int oldInsight = values.getBody().getInsightValue();
       final int oldReliability = values.getBody().getReliabilityValue();
       final int oldStyle = values.getBody().getStyleValue();
+      final int oldSingle = values.getBody().getSingleRatingValue();
 
       if (oldInsight > 0) {
         articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE,oldInsight);
@@ -169,23 +170,30 @@ public class RatingsService {
       if (oldStyle > 0) {
         articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE,oldStyle);
       }
+      if (oldSingle > 0) {
+        articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE,oldSingle);
+      }
     }
+          final int oldSingle = values.getBody().getSingleRatingValue();
 
     // update the Rating object with those values provided by the caller
     final int insight = values.getBody().getInsightValue();
     final int reliability = values.getBody().getReliabilityValue();
     final int style = values.getBody().getStyleValue();
+    final int single = values.getBody().getSingleRatingValue();
     final String commentTitle = values.getBody().getCommentTitle();
     final String commentValue = values.getBody().getCommentValue();
     articleRating.getBody().setInsightValue(insight);
     articleRating.getBody().setReliabilityValue(reliability);
     articleRating.getBody().setStyleValue(style);
+    articleRating.getBody().setSingleRatingValue(single);
     articleRating.getBody().setCommentTitle(commentTitle);
     articleRating.getBody().setCommentValue(commentValue);
 
     articleRatingSummary.getBody().addRating(Rating.INSIGHT_TYPE,insight);
     articleRatingSummary.getBody().addRating(Rating.RELIABILITY_TYPE,reliability);
     articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE,style);
+    articleRatingSummary.getBody().addRating(Rating.SINGLE_RATING_TYPE,single);
 
     session.saveOrUpdate(articleRating);
     session.saveOrUpdate(articleRatingSummary);
@@ -242,6 +250,7 @@ public class RatingsService {
     final int insight = articleRating.getBody().getInsightValue();
     final int reliability = articleRating.getBody().getReliabilityValue();
     final int style = articleRating.getBody().getStyleValue();
+    final int single = articleRating.getBody().getSingleRatingValue();
 
     articleRatingSummary.getBody().setNumUsersThatRated(newNumberOfRatings);
     if (insight > 0) {
@@ -252,6 +261,9 @@ public class RatingsService {
     }
     if (style > 0) {
       articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE,style);
+    }
+    if (single > 0) {
+      articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE,single);
     }
 
     session.saveOrUpdate(articleRatingSummary);
