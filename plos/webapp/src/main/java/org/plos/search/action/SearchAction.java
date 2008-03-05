@@ -9,6 +9,15 @@
  */
 package org.plos.search.action;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,44 +25,36 @@ import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
 import org.plos.search.SearchResultPage;
-import org.plos.search.SearchUtil;
 import org.plos.search.service.SearchHit;
 import org.plos.search.service.SearchService;
-import org.plos.util.FileUtils;
-import org.topazproject.otm.query.QueryParser;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Search Action class to search for simple or advanced search.
  *
  * @author Viru
  */
+@SuppressWarnings("serial")
 public class SearchAction extends BaseActionSupport {
+  private static final Log log = LogFactory.getLog(SearchAction.class);
+  
   private String query;
   private int startPage = 0;
   private int pageSize = 10;
   private SearchService searchService;
   private BrowseService browseService;
 
-  private static final Log log = LogFactory.getLog(SearchAction.class);
   private Collection<SearchHit> searchResults;
-  Map<String, Integer> categoryInfos = new HashMap<String, Integer>(); // empty map for non-null safety
-  private String title;
-  private String text;
   private int totalNoOfResults;
-  private String description;
+  Map<String, Integer> categoryInfos = new HashMap<String, Integer>(); // empty map for non-null safety
+  
+  /**
+   * Flag telling this action whether or not the search should be executed. 
+   */
+  private String noSearchFlag;
+  
+  //private String title;
+  //private String text;
+  //private String description;
   private String[] creator = null;
   private String authorNameOp;
   private String textSearchAll;
@@ -82,10 +83,14 @@ public class SearchAction extends BaseActionSupport {
    * @return return simple search result
    */
   public String executeAdvancedSearch() {
-    query = buildAdvancedQuery();
-    return executeSearch(query);
+    if(doSearch()) {
+      query = buildAdvancedQuery();
+      return executeSearch(query);
+    }
+    categoryInfos = browseService.getCategoryInfos();
+    return INPUT;
   }
-
+  
   private String executeSearch(final String queryString) {
     try {
       if (StringUtils.isBlank(queryString)) {
@@ -105,8 +110,9 @@ public class SearchAction extends BaseActionSupport {
     return SUCCESS;
   }
 
+  /*
   private SearchResultPage getMockSearchResults(final int startPage, final int pageSize) throws ApplicationException {
-    final Collection<SearchHit> hits = new ArrayList<SearchHit>();
+    //final Collection<SearchHit> hits = new ArrayList<SearchHit>();
     final String searchResultXml = "searchResult.xml";
 
     final String text;
@@ -117,7 +123,8 @@ public class SearchAction extends BaseActionSupport {
       throw new ApplicationException("error");
     }
   }
-
+  */
+  
   private String buildAdvancedQuery() {
     final Collection<String> fields = new ArrayList<String>();
 
@@ -265,6 +272,7 @@ public class SearchAction extends BaseActionSupport {
           buf.append("\"").append(escape(limitToCategory[i])).append("\" ");
         }
         buf.append(")");
+        fields.add(buf.toString());
       }
     }
     
@@ -373,59 +381,11 @@ public class SearchAction extends BaseActionSupport {
   }
 
   /**
-   * Getter for property 'text'.
-   * @return Value for property 'text'.
-   */
-  public String getText() {
-    return text;
-  }
-
-  /**
-   * Setter for property 'text'.
-   * @param text Value to set for property 'text'.
-   */
-  public void setText(final String text) {
-    this.text = text;
-  }
-
-  /**
-   * Getter for property 'title'.
-   * @return Value for property 'title'.
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Setter for property 'title'.
-   * @param title Value to set for property 'title'.
-   */
-  public void setTitle(final String title) {
-    this.title = title;
-  }
-
-  /**
    * Getter for property 'totalNoOfResults'.
    * @return Value for property 'totalNoOfResults'.
    */
   public int getTotalNoOfResults() {
     return totalNoOfResults;
-  }
-
-  /**
-   * Getter for property 'description'.
-   * @return Value for property 'description'.
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Setter for property 'description'.
-   * @param description Value to set for property 'description'.
-   */
-  public void setDescription(final String description) {
-    this.description = description;
   }
 
   public String getTextSearchAll() {
@@ -543,9 +503,39 @@ public class SearchAction extends BaseActionSupport {
   public String[] getCreator() {
     return creator;
   }
+  
+  /**
+   * @return The {@link #creator} array as a single comma delimited String.
+   */
+  public String getCreatorStr() {
+    if(creator == null) return "";
+    StringBuffer sb = new StringBuffer();
+    for(String auth : creator) {
+      sb.append(',');
+      sb.append(auth.trim());
+    }
+    return sb.toString().substring(1);
+  }
+  
+  /**
+   * Converts a String array whose first element may be a comma delimited String 
+   * into a new String array whose elements are the split comma delimited elements.
+   * @param arr String array that may contain one or more elements having a comma delimited String.
+   * @return Rectified String[] array or 
+   *         <code>null</code> when the given String array is <code>null</code>.
+   */
+  private String[] rectify(String[] arr) {
+    if(arr != null && arr.length == 1 && arr[0].length() > 0) {
+      arr = arr[0].split(",");
+      for(int i = 0; i < arr.length; i++) {
+        arr[i] = arr[i] == null ? null : arr[i].trim();
+      }
+    }
+    return arr;
+  }
 
   public void setCreator(String[] creator) {
-    this.creator = creator;
+    this.creator = rectify(creator);
   }
 
   public String[] getLimitToCategory() {
@@ -553,6 +543,38 @@ public class SearchAction extends BaseActionSupport {
   }
 
   public void setLimitToCategory(String[] limitToCategory) {
-    this.limitToCategory = limitToCategory;
+    this.limitToCategory = rectify(limitToCategory);
+  }
+
+  /**
+   * @return the authorNameOp
+   */
+  public String getAuthorNameOp() {
+    return authorNameOp;
+  }
+
+  /**
+   * @param authorNameOp the authorNameOp to set
+   */
+  public void setAuthorNameOp(String authorNameOp) {
+    this.authorNameOp = authorNameOp;
+  }
+
+  /**
+   * @return the noSearchFlag
+   */
+  public String getNoSearchFlag() {
+    return noSearchFlag;
+  }
+
+  /**
+   * @param noSearchFlag the noSearchFlag to set
+   */
+  public void setNoSearchFlag(String noSearchFlag) {
+    this.noSearchFlag = noSearchFlag;
+  }
+
+  private boolean doSearch() {
+    return noSearchFlag == null;
   }
 }
