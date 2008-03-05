@@ -131,6 +131,7 @@ a:active	{ }
 }
 .figure-window-nav-item img {
 	border: 2px solid #069;
+  width:70px;
 }
 #figure-window-close {
 	width: 125px;
