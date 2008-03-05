@@ -18,6 +18,6 @@
       document.write ("&amp;referer=" + escape(document.referrer));
    document.write ("'><" + "/script>");
 //-->
-</script><noscript><a href='http://ads.plos.org/adclick.php?n=acfd0f5a' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:35&amp;n=acfd0f5a' border='0' alt=''></a></noscript>	
+</script><noscript><a href='http://ads.plos.org/adclick.php?n=acfd0f5a' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:35&amp;n=acfd0f5a' border='0' alt='' /></a></noscript>	
 </div>
 <!-- end : right banner slot -->
