@@ -13,8 +13,8 @@ tabsListMap[tabsListMap.length] = {tabKey:    "recentResearch",
                                    urlLoad:   "/article/recentArticles.action",
                                    urlSave:   ""};
 
-tabsListMap[tabsListMap.length] = {tabKey:    "featuredComments",
-                                   title:     "Featured Comments",
+tabsListMap[tabsListMap.length] = {tabKey:    "featuredDiscussions",
+                                   title:     "Featured Discussions",
                                    className: "annotated",
                                    urlLoad:   "/article/mostCommented.action",
                                    urlSave:   ""};
