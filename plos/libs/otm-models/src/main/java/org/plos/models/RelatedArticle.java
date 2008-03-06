@@ -10,6 +10,7 @@
 
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import org.topazproject.otm.Rdf;
@@ -30,7 +31,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
  * @author Ronald Tschalär
  */
 @Entity(type = PLoS.plos + "RelatedArticle", model = "ri")
-public class RelatedArticle {
+public class RelatedArticle  implements Serializable {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/relatedArticle/")
   private URI id;
 
@@ -39,6 +40,8 @@ public class RelatedArticle {
 
   @Predicate(uri = PLoS.plos + "articleRelationType")
   private String relationType;
+
+  private static final long serialVersionUID = -4229157024423830497L;
 
   /**
    * Return the identifier of the object
