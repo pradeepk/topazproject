@@ -22,7 +22,6 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.Reply;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.action.CreateCitation;
-import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
@@ -42,7 +41,7 @@ import com.thoughtworks.xstream.XStream;
 @SuppressWarnings("serial")
 public class ListReplyAction extends AnnotationActionSupport {
 
-  private ArticleOtmService articleOtmService;
+  private FetchArticleService fetchArticleService;
 
   private String root;
   private String inReplyTo;
@@ -88,7 +87,7 @@ public class ListReplyAction extends AnnotationActionSupport {
       baseAnnotation = getAnnotationService().getAnnotation(root);
       replies = getAnnotationService().listAllReplies(root, inReplyTo);
       final URI articleURI = new URI(baseAnnotation.getAnnotates());
-      articleInfo = getArticleOtmService().getArticle(articleURI);
+      articleInfo = fetchArticleService.getArticleInfo(baseAnnotation.getAnnotates());
 
       // construct citation string
       // we're only showing annotation citations for formal corrections
@@ -180,17 +179,11 @@ public class ListReplyAction extends AnnotationActionSupport {
   }
 
   /**
-   * @return Returns the articleOtmService.
+   * @param fetchArticleService The fetchArticleService to set.
    */
-  public ArticleOtmService getArticleOtmService() {
-    return articleOtmService;
-  }
-
-  /**
-   * @param articleOtmService The articleOtmService to set.
-   */
-  public void setArticleOtmService(ArticleOtmService articleOtmService) {
-    this.articleOtmService = articleOtmService;
+  @Required
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 
   /**
