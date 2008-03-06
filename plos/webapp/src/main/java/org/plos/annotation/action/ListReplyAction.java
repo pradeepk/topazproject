@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.service.Reply;
 import org.plos.annotation.service.WebAnnotation;
-import org.plos.article.service.ArticleOtmService;
+import org.plos.article.service.FetchArticleService;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Journal;
@@ -45,7 +45,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   private static final DateFormat annotationCitationDateFormat = new SimpleDateFormat("yyyy");
 
   private Session session;
-  private ArticleOtmService articleOtmService;
+  private FetchArticleService fetchArticleService;
   private JournalService journalService;
   private UserService userService;
 
@@ -92,7 +92,7 @@ public class ListReplyAction extends AnnotationActionSupport {
       baseAnnotation = getAnnotationService().getAnnotation(root);
       replies = getAnnotationService().listAllReplies(root, inReplyTo);
       final URI articleURI = new URI(baseAnnotation.getAnnotates());
-      articleInfo = getArticleOtmService().getArticle(articleURI);
+      articleInfo = fetchArticleService.getArticleInfo(baseAnnotation.getAnnotates());
 
       TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
         public Void run(Transaction tx) {
@@ -226,17 +226,11 @@ public class ListReplyAction extends AnnotationActionSupport {
   }
 
   /**
-   * @return Returns the articleOtmService.
+   * @param fetchArticleService The fetchArticleService to set.
    */
-  public ArticleOtmService getArticleOtmService() {
-    return articleOtmService;
-  }
-
-  /**
-   * @param articleOtmService The articleOtmService to set.
-   */
-  public void setArticleOtmService(ArticleOtmService articleOtmService) {
-    this.articleOtmService = articleOtmService;
+  @Required
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 
   /**
