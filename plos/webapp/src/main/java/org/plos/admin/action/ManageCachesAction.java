@@ -40,6 +40,7 @@ public class ManageCachesAction extends BaseActionSupport {
   private String cacheAction;
   private String cacheName;
   private List   cacheKeys = new ArrayList();
+  private String cacheKey;
 
   private static final Log log = LogFactory.getLog(ManageCachesAction.class);
 
@@ -51,19 +52,29 @@ public class ManageCachesAction extends BaseActionSupport {
       Ehcache cache = cacheManager.getEhcache(cacheName);
       cache.removeAll();
       addActionMessage(cacheName + ".removeAll() executed.");
-    }
-    if ("clearStatistics".equals(cacheAction) && cacheName != null) {
+    } else if ("remove".equals(cacheAction) && cacheName != null && cacheKey != null) {
+      Ehcache cache = cacheManager.getEhcache(cacheName);
+      final boolean removed = cache.remove(cacheKey);
+      final String message = cacheName + ".remove(" + cacheKey + ") = " + removed;
+      if (removed) {
+        addActionMessage(message);
+      } else {
+        addActionError(message);
+      }
+    } else if ("clearStatistics".equals(cacheAction) && cacheName != null) {
       Ehcache cache = cacheManager.getEhcache(cacheName);
       cache.clearStatistics();
       addActionMessage(cacheName + ".clearStatistics() executed.");
-    }
-    if ("getKeys".equals(cacheAction) && cacheName != null) {
+    } else if ("get".equals(cacheAction) && cacheName != null && cacheKey != null) {
+      Ehcache cache = cacheManager.getEhcache(cacheName);
+      final Object objectValue = cache.get(cacheKey).getObjectValue();
+      addActionMessage(cacheName + ".get(" + cacheKey + ") = " + objectValue);
+    } else if ("getKeys".equals(cacheAction) && cacheName != null) {
       Ehcache cache = cacheManager.getEhcache(cacheName);
       cacheKeys = cache.getKeysNoDuplicateCheck();
       Collections.sort(cacheKeys);
       addActionMessage(cacheName + ".getKeysNoDuplicateCheck() executed.");
     }
-
 
     // populate stats for display
     cacheStats.put("", new String[] {
@@ -143,5 +154,12 @@ public class ManageCachesAction extends BaseActionSupport {
    */
   public void setCacheName(String cacheName) {
     this.cacheName = cacheName;
+  }
+  
+  /**
+   * @param cacheKey The cachekey to use.
+   */
+  public void setCacheKey(String cacheKey) {
+    this.cacheKey = cacheKey;
   }
 }
