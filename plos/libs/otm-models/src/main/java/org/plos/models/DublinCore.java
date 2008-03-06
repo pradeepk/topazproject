@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Amit Kapoor
  */
-public class DublinCore {
+public class DublinCore implements Serializable {
   @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
   private String title;
 
@@ -103,6 +104,8 @@ public class DublinCore {
 
   @Predicate(uri = Rdf.dc_terms + "conformsTo")
   private URI conformsTo;
+
+  private static final long serialVersionUID = -3010297971167417038L;
 
   /**
    * Empty contructor

@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import org.topazproject.otm.Rdf;
@@ -26,7 +27,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Eric Brown
  */
 @Entity(model = "ri")
-public class Category {
+public class Category implements Serializable {
   @Id
   private URI id;
   @Predicate(uri = Rdf.topaz + "isPID")
@@ -37,6 +38,8 @@ public class Category {
   private String mainCategory;
   @Predicate(uri = Rdf.topaz + "subCategory")
   private String subCategory;
+
+  private static final long serialVersionUID = -1910044609722349497L;
 
   /**
    * @return the id
