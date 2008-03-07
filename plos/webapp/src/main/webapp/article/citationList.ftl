@@ -2,30 +2,7 @@
 <div id="content" class="static">
   <h1>Download Citation</h1>
   <h2>Article:</h2>
-  <p class="intro">
-    <#assign gt5 = false />
-    <#list citation.authors as author>
-      <#if author_index gt 4>
-        <#assign gt5 = true>
-        <#break>
-      </#if>
-      <#assign gn = author.givenNames?word_list />
-      <#assign allNames = []>
-      <#list gn as n>
-        <#if n?matches(".*\\p{Pd}\\p{Lu}.*")>
-          <#assign names = n?split("\\p{Pd}",'r') />
-          <#assign allNames = allNames + names />
-        <#else>
-          <#assign temp = [n]>
-          <#assign allNames = allNames + temp>
-        </#if>
-      </#list>
-      ${author.surname} <#if author.suffix?exists>${author.suffix}</#if> <#list allNames as n>${n[0]}</#list><#if author_has_next>,</#if>
-    </#list>
-    <#if gt5>et al.</#if>
-    (${citation.publicationDate?string("yyyy")}) ${citation.articleTitle}. ${citation.journalTitle} 
-    ${citation.volume}(${citation.issue}): ${citation.startPage} doi:${citation.DOI}
-  </p>
+  <p class="intro">${citationString}</p>
 
   <h2>Download the article citation in the following formats:</h2>
   <ul>
