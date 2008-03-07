@@ -58,44 +58,30 @@ public class CreateCitation extends BaseActionSupport {
    * will create a CitationInfo object.
    */
   @Override
-  public String execute () {
+  public String execute () throws Exception {
 
     // lock @ Article level
     final Object lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
 
-    Object result = CacheAdminHelper.getFromCache(articleAnnotationCache, CITATION_KEY + articleURI,
-                                         -1, lock,
-                                         "citation",
-                                         new CacheAdminHelper.EhcacheUpdater<Object>() {
-        public Object lookup() {
-          try {
-            XStream xstream = new XStream();
-            CitationInfo citationInfo = (CitationInfo) xstream.fromXML(
-                                          citationService.getTransformedArticle(articleURI));
-            return citationInfo;
-          } catch (ApplicationException ae) {
-            return ae;
-          } catch (IOException ioe) {
-            return ioe;
-          } catch (NoSuchArticleIdException nsaie) {
-            return nsaie;
-          } catch (ParserConfigurationException pce) {
-            return pce;
-          } catch (SAXException se) {
-            return se;
-          }
-        }
+    citation = CacheAdminHelper.getFromCacheE(articleAnnotationCache, CITATION_KEY + articleURI, -1,
+            lock, "citation",
+            new CacheAdminHelper.EhcacheUpdaterE<CitationInfo, ApplicationException>() {
+              public CitationInfo lookup() throws ApplicationException {
+                XStream xstream = new XStream();
+                try {
+                  return (CitationInfo) xstream.fromXML(citationService.getTransformedArticle(articleURI));
+                } catch (IOException ioe) {
+                  throw new ApplicationException(ioe);
+                } catch (NoSuchArticleIdException nsaie) {
+                  throw new ApplicationException(nsaie);
+                } catch (ParserConfigurationException pce) {
+                  throw new ApplicationException(pce);
+                } catch (SAXException se) {
+                  throw new ApplicationException(se);
+                }
+              }
     });
 
-    if (result instanceof Exception) {
-      citation = null;
-      if (log.isErrorEnabled()) { log.error(result); }
-      addActionError(result.toString());
-      return ERROR;
-    }
-
-    citation = (CitationInfo) result;
-    
     citationString = CitationUtils.generateArticleCitationString(citation);
     
     return SUCCESS;

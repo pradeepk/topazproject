@@ -24,18 +24,14 @@ import org.apache.commons.logging.LogFactory;
  *    Foo f =
  *      CacheAdminHelper.getFromCache(cache, fooId, null, "some foo",
  *                                    new CacheAdminHelper.CacheUpdater<Foo>() {
- *        public Foo lookup(boolean[] updated) {
- *          Foo res;
- *          try {
- *            res = getFoo();
- *            updated[0] = true;
- *          } catch (BlahException be) {
- *            res = null;
- *          }
- *          return res;
+ *        public Foo lookup() {
+ *          return getFoo();
  *        }
  *      });
  * </pre>
+ * 
+ * @see #getFromCacheE(Ehcache cache, String key, int refresh, Object lock, String desc,
+ *   EhcacheUpdaterE<T, E> updater) when lookup() throws Throwable.
  *
  * @author Ronald Tschalär
  */
@@ -69,8 +65,10 @@ public class CacheAdminHelper {
         if (updater == null)
           return null;
 
-        if (log.isDebugEnabled())
-          log.debug("retrieving " + desc + " from db");
+        if (log.isDebugEnabled()) {
+          log.debug("cache miss: " + cache.getName() + "/" + key + "(" + desc +
+                  "), updating cache with lookup()");
+        }
 
         e = new Element(key, updater.lookup());
         if (refresh > 0)
@@ -78,7 +76,48 @@ public class CacheAdminHelper {
 
         cache.put(e);
       } else if (log.isDebugEnabled()) {
-        log.debug("retrieved " + desc + " from cache");
+          log.debug("cache hit: " + cache.getName() + "/" + key + "(" + desc + ")");
+      }
+
+      // as Objects are in the Cache, get by Object value (PLoS models are not Serializable)
+      return (T) e.getObjectValue();
+    }
+  }
+
+  /** 
+   * Look up a value in the cache, updating the cache with a new value if not found or if the old
+   * value expired.  Look up <strong>is</strong> allowed to throw a Throwable.
+   * 
+   * @param cache   the cache to look up the value in
+   * @param key     the key to use for the lookup
+   * @param refresh the max-age of entries in the cache (in seconds), or -1 for indefinite
+   * @param lock    the object to synchronized on
+   * @param desc    a short description of the object being retrieved (for logging only)
+   * @param updater the updater to call to get the value if not found in the cache; may be null
+   * @return the value in the cache, or returned by the <var>updater</var> if not in the cache
+   * @throws Throwable from look up.
+   */
+  public static <T, E extends Throwable> T getFromCacheE(Ehcache cache, String key, int refresh,
+          Object lock, String desc, EhcacheUpdaterE<T, E> updater) throws E {
+    synchronized (lock) {
+      Element e = cache.get(key);
+
+      if (e == null) {
+        if (updater == null)
+          return null;
+
+        if (log.isDebugEnabled()) {
+          log.debug("cache miss: " + cache.getName() + "/" + key + "(" + desc +
+                  "), updating cache with lookup()");
+        }
+
+        e = new Element(key, updater.lookup());
+        if (refresh > 0)
+          e.setTimeToLive(refresh);
+
+        cache.put(e);
+      } else if (log.isDebugEnabled()) {
+          log.debug("cache hit: " + cache.getName() + "/" + key + "(" + desc + ")");
       }
 
       // as Objects are in the Cache, get by Object value (PLoS models are not Serializable)
@@ -94,5 +133,16 @@ public class CacheAdminHelper {
      * @return the value to return; this value will be put into the cache
      */
     T lookup();
+  }
+
+  /**
+   * The interface Ehcache updaters must implement.
+   */
+  public static interface EhcacheUpdaterE<T, E extends Throwable> {
+    /** 
+     * @return the value to return; this value will be put into the cache
+     * @throws Throwable from look up.
+     */
+    T lookup() throws E;
   }
 }
