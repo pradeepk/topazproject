@@ -260,7 +260,8 @@ public class FetchArticleService {
    * CreateCitation.CITATION_KEY) + objectUri will be removed.
    * Removal is syncronized on ARTICLE_LOCK + objectUri.
    * Removal of Articles invalidates the SimplePageCachingFilter (action page results) cache.
-   * 
+   * TODO: for now, do not invalidate results cache, revist when actual action caching and
+   * invalidation by DOI are implemented
    *
    * @param objectUris Object Uris to flush.
    */
@@ -277,6 +278,6 @@ public class FetchArticleService {
     }
 
     // TODO: would be ideal to invalidate cache after every Article removal, performance issues?
-    simplePageCachingFilter.removeAll();
+    // simplePageCachingFilter.removeAll();
   }
 }
