@@ -272,7 +272,7 @@ public class FetchArticleService {
       synchronized (lock) {
         articleAnnotationCache.remove(ARTICLE_KEY     + objectUri);
         articleAnnotationCache.remove(ARTICLEINFO_KEY + objectUri);
-        articleAnnotationCache.remove(AnnotationWebService.ANNOTATION_KEY + objectUri);
+        articleAnnotationCache.remove(AnnotationWebService.ANNOTATED_KEY + objectUri);
         articleAnnotationCache.remove(CreateCitation.CITATION_KEY + objectUri);
       }
     }

@@ -18,7 +18,9 @@ import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.service.FetchArticleService;
+import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.model.article.ArticleInfo;
 import org.plos.models.Article;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -33,6 +35,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * 
  * @author Stephen Cheng
  * @author jkirton
+ * @author Alex Worden
  */
 public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
   
@@ -40,9 +43,8 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
 
   private String target;
   private Commentary[] commentary;
-  private Article articleInfo;
-  //private ArticleOtmService articleOtmService;
-  FetchArticleService fetchArticleService;
+  private Article article;
+  private FetchArticleService fetchArticleService;
   
   /**
    * @return Simple presentation worthy description 
@@ -71,7 +73,7 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
       if (log.isDebugEnabled()){
         log.debug("retrieving " + useCaseDsc + " for article id: " + target);
       }
-      articleInfo = fetchArticleService.getArticleInfo(target);
+      article = fetchArticleService.getArticleInfo(target);
       WebAnnotation[] annotations = getAnnotations();
       commentary = new Commentary[annotations.length];
       Commentary com = null;
@@ -104,7 +106,7 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
   }
 
   public final String getArticleMetaInfo () throws Exception {
-    articleInfo = fetchArticleService.getArticleInfo(target);
+    article = fetchArticleService.getArticleInfo(target);
     return SUCCESS;
   }
 
@@ -125,25 +127,24 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
   }
 
   /**
-   * @param fetchArticleService the fetchArticleService to set
+   * @param articleOtmService The articleOtmService to set.
    */
-  @Required
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  public final void setFetchArticleService(FetchArticleService service) {
+    this.fetchArticleService = service;
   }
 
   /**
    * @return Returns the articleInfo.
    */
   public final Article getArticleInfo() {
-    return articleInfo;
+    return article;
   }
 
   /**
    * @param articleInfo The articleInfo to set.
    */
   public final void setArticleInfo(Article articleInfo) {
-    this.articleInfo = articleInfo;
+    this.article = articleInfo;
   }
 
   /**

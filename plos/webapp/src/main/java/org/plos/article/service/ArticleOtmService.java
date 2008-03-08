@@ -490,6 +490,9 @@ public class ArticleOtmService {
   /**
    * Get an Article by URI.
    *
+   * NOTE: Use FetchArticleService.getArticleInfo() instead of method since it caches
+   * the Article. Also - ensure that the cache is cleared if the data you want to access is updated. 
+   *
    * @param uri URI of Article to get.
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIDException NoSuchArticleIdException

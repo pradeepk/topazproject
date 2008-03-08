@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
+import org.plos.article.service.FetchArticleService;
 import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Rating;
@@ -265,8 +266,8 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    * @param FetchArticleService to set.
    */
   @Required
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  public void setFetchArticleService(FetchArticleService s) {
+    this.fetchArticleService = s;
   }
 
   /**
