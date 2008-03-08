@@ -102,7 +102,7 @@ public class IdGenTest {
     factory.getTripleStore().createModel(ri);
   }
 
-  @BeforeClass(groups = { "tx" })
+  @BeforeClass(groups = { "tx" }, dependsOnMethods = { "setUpFactory" })
   public void setUpTx() throws OtmException {
     session = factory.openSession();
     tx = session.beginTransaction();
