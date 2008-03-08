@@ -3,20 +3,31 @@
  */
 package org.plos.cas.client.filter;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
-import java.net.*;
-
-import java.util.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import edu.yale.its.tp.cas.client.*;
-import edu.yale.its.tp.cas.client.filter.*;
+import edu.yale.its.tp.cas.client.CASAuthenticationException;
+import edu.yale.its.tp.cas.client.CASReceipt;
+import edu.yale.its.tp.cas.client.ProxyTicketValidator;
+import edu.yale.its.tp.cas.client.Util;
+import edu.yale.its.tp.cas.client.filter.CASFilterRequestWrapper;
 
 /**
  * <p>Protects web-accessible resources with CAS.</p>
@@ -202,16 +213,8 @@ public class CASFilter implements Filter {
    * List of ProxyTicketReceptor URLs of services authorized to proxy to the path behind this
    * filter.
    */
-  private List authorizedProxies = new ArrayList();
+  private final List<String> authorizedProxies = new ArrayList<String>();
 
-  //*********************************************************************
-  /**
-   * DOCUMENT ME!
-   *
-   * @param config DOCUMENT ME!
-   *
-   * @throws ServletException DOCUMENT ME!
-   */
   public void init(FilterConfig config) throws ServletException {
     casLogin             = config.getInitParameter(LOGIN_INIT_PARAM);
     casValidate          = config.getInitParameter(VALIDATE_INIT_PARAM);
@@ -277,17 +280,6 @@ public class CASFilter implements Filter {
     }
   }
 
-  //*********************************************************************
-  /**
-   * DOCUMENT ME!
-   *
-   * @param request DOCUMENT ME!
-   * @param response DOCUMENT ME!
-   * @param fc DOCUMENT ME!
-   *
-   * @throws ServletException DOCUMENT ME!
-   * @throws IOException DOCUMENT ME!
-   */
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain fc)
                 throws ServletException, IOException {
     if (log.isTraceEnabled()) {
@@ -355,25 +347,19 @@ public class CASFilter implements Filter {
 
         // abort chain
         return;
-      } else {
-        log.trace("Previously gatewayed.");
-
-        // if we should be logged in, make sure validation succeeded
-        if (casGateway || (session.getAttribute(CAS_FILTER_USER) != null)) {
-          log.trace("casGateway was true and CAS_FILTER_USER set: passing request along filter chain.");
-          // continue processing the request
-          fc.doFilter(request, response);
-
-          return;
-        } else {
-          // unknown state... redirect to CAS
-          session.setAttribute(CAS_FILTER_GATEWAYED, "true");
-          redirectToCAS((HttpServletRequest) request, (HttpServletResponse) response);
-
-          // abort chain
-          return;
-        }
       }
+      log.trace("Previously gatewayed.");
+
+      // if we should be logged in, make sure validation succeeded
+      if (casGateway || (session.getAttribute(CAS_FILTER_USER) != null)) {
+        log.trace("casGateway was true and CAS_FILTER_USER set: passing request along filter chain.");
+        // continue processing the request
+        fc.doFilter(request, response);
+        return;
+      }
+      // unknown state... redirect to CAS
+      session.setAttribute(CAS_FILTER_GATEWAYED, "true");
+      redirectToCAS((HttpServletRequest) request, (HttpServletResponse) response);
     }
 
     try {
@@ -389,12 +375,10 @@ public class CASFilter implements Filter {
     }
 
     // Store the authenticated user in the session
-    if (session != null) { // probably unnecessary
-      session.setAttribute(CAS_FILTER_USER, receipt.getUserName());
-      session.setAttribute(CASFilter.CAS_FILTER_RECEIPT, receipt);
-      // don't store extra unnecessary session state
-      session.removeAttribute(CAS_FILTER_GATEWAYED);
-    }
+    session.setAttribute(CAS_FILTER_USER, receipt.getUserName());
+    session.setAttribute(CASFilter.CAS_FILTER_RECEIPT, receipt);
+    // don't store extra unnecessary session state
+    session.removeAttribute(CAS_FILTER_GATEWAYED);
 
     if (log.isTraceEnabled()) {
       log.trace("validated ticket to get authenticated receipt [" + receipt
@@ -410,12 +394,9 @@ public class CASFilter implements Filter {
    * Is this receipt acceptable as evidence of authentication by credentials that would have
    * been acceptable to this path? Current implementation checks whether from renew and whether
    * proxy was authorized.
-   *
    * @param receipt
-   *
    * @return true if acceptable, false otherwise
-   *
-   * @throws IllegalArgumentException DOCUMENT ME!
+   * @throws IllegalArgumentException When the receipt is <code>null</code>.
    */
   private boolean isReceiptAcceptable(CASReceipt receipt) {
     if (receipt == null)
@@ -434,16 +415,11 @@ public class CASFilter implements Filter {
     return true;
   }
 
-  //*********************************************************************
-  // Utility methods
   /**
    * Converts a ticket parameter to a CASReceipt, taking into account an optionally
    * configured trusted proxy in the tier immediately in front of us.
-   *
-   * @param request DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   *
+   * @param request The HTTP request
+   * @return {@link CASReceipt} or 
    * @throws ServletException - when unable to get service for request
    * @throws CASAuthenticationException - on authentication failure
    */
@@ -473,12 +449,9 @@ public class CASFilter implements Filter {
   /**
    * Returns either the configured service or figures it out for the current request.  The
    * returned service is URL-encoded.
-   *
-   * @param request DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   *
-   * @throws ServletException DOCUMENT ME!
+   * @param request The HTTP request
+   * @return URL-encoded service String
+   * @throws ServletException When an encoding error occurrs or otherwise.
    */
   private String getService(HttpServletRequest request)
                      throws ServletException {
@@ -493,9 +466,13 @@ public class CASFilter implements Filter {
                                  + "edu.yale.its.tp.cas.client.filter.serverName");
 
     // use the given string if it's provided
-    if (casServiceUrl != null)
-      serviceString = URLEncoder.encode(casServiceUrl);
-    else
+    if (casServiceUrl != null) {
+      try {
+        serviceString = URLEncoder.encode(casServiceUrl, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        throw new ServletException(e.getMessage(), e);
+      }
+    } else
       // otherwise, return our best guess at the service
       serviceString = Util.getService(request, getRequestHost(request));
 
@@ -520,12 +497,6 @@ public class CASFilter implements Filter {
 
   /**
    * Redirects the user to CAS, determining the service from the request.
-   *
-   * @param request DOCUMENT ME!
-   * @param response DOCUMENT ME!
-   *
-   * @throws IOException DOCUMENT ME!
-   * @throws ServletException DOCUMENT ME!
    */
   private void redirectToCAS(HttpServletRequest request, HttpServletResponse response)
                       throws IOException, ServletException {
@@ -534,25 +505,21 @@ public class CASFilter implements Filter {
     }
 
     String casLoginString =
-      casLogin + "?service=" + getService((HttpServletRequest) request)
+      casLogin + "?service=" + getService(request)
       + ((casRenew) ? "&renew=true" : "") + (casGateway ? "&gateway=true" : "");
 
     if (log.isDebugEnabled()) {
       log.debug("Redirecting browser to [" + casLoginString + ")");
     }
 
-    ((HttpServletResponse) response).sendRedirect(casLoginString);
+    response.sendRedirect(casLoginString);
 
     if (log.isTraceEnabled()) {
       log.trace("returning from redirectToCAS()");
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   */
+  @Override
   public String toString() {
     StringBuffer sb = new StringBuffer();
     sb.append("[CASFilter:");
@@ -606,11 +573,8 @@ public class CASFilter implements Filter {
     return sb.toString();
   }
 
-  /* (non-Javadoc)
-   * @see javax.servlet.Filter#destroy()
-   */
   public void destroy() {
-    // TODO Auto-generated method stub
+    // no-op (currently)
   }
 }
 /*
