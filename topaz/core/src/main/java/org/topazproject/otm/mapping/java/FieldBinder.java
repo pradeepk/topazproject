@@ -20,7 +20,6 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.serializer.Serializer;
 
 /**
  * Mapper for a java class field to rdf triples having a specific predicate.
@@ -63,14 +62,6 @@ public interface FieldBinder extends Binder {
    *         fields
    */
   public Class getComponentType();
-
-  /**
-   * Gets the serializer used. Note that there won't be any serializer set up for
-   * associations.
-   *
-   * @return the serializer or null
-   */
-  public Serializer getSerializer();
 
   /**
    * Load the values into this field of the given object instance.

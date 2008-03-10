@@ -27,7 +27,6 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -154,9 +153,7 @@ public abstract class Criterion {
     else {
       try {
         Binder l = m.getBinder(criteria.getSession());
-        Serializer ser = null;
-        if (l instanceof FieldBinder)
-          ser = ((FieldBinder)l).getSerializer();
+        Serializer ser = l.getSerializer();
 
         val = (ser != null) ? ser.serialize(value) : value.toString();
       } catch (Exception e) {

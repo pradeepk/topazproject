@@ -23,7 +23,6 @@ import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.serializer.Serializer;
 import org.topazproject.otm.query.Results;
 
@@ -399,10 +398,8 @@ public class Criteria implements Parameterizable<Criteria> {
     }
 
     try {
-      Binder l = m.getBinder(EntityMode.POJO);
-      Serializer ser = null;
-      if (l instanceof FieldBinder)
-        ser = ((FieldBinder)l).getSerializer();
+      Binder l = m.getBinder(session);
+      Serializer ser = l.getSerializer();
       return (ser != null) ? ser.serialize(val) : val.toString();
     } catch (Exception e) {
       throw new OtmException("Error serializing the value for parameter '" + name + ": field '" + 
