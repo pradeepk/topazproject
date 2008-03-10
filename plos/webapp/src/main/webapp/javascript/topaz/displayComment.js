@@ -593,7 +593,8 @@ function getComment(obj) {
            }
 	         // ensure the dialog is scrolled into view
 			     if(dojo.html.scrollIntoView && dlg && dlg.domNode) {
-			    	 dojo.html.scrollIntoView(dlg.domNode);
+             //dojo.html.scrollIntoView(dlg.domNode);
+             window.scrollTo(0, topaz.domUtil.getCurrentOffset(dlg.domNode).top);
 			     }
          }
          _ldc.hide();
