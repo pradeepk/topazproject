@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.otm.AbstractStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
@@ -24,6 +27,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.CriterionBuilder;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -32,6 +36,7 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public abstract class AbstractTripleStore extends AbstractStore implements TripleStore {
+  private static final Log log = LogFactory.getLog(AbstractTripleStore.class);
   /**
    * Map of Criterion Builders for store specific functions. 
    */
@@ -87,8 +92,14 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
     }
 
     // now assign values to fields
-    for (Mapper m : mvalues.keySet())
-      m.getBinder(session).load(instance, mvalues.get(m), types, m, session);
+    for (Mapper m : mvalues.keySet()) {
+      Binder b = m.getBinder(session);
+      b.load(instance, mvalues.get(m), types, m, session);
+      if (log.isDebugEnabled()) {
+        if (!b.isLoaded(instance))
+          log.debug("Lazy collection '" + m.getName() + "' created for " + id);
+      }
+    }
 
     boolean found = false;
 
