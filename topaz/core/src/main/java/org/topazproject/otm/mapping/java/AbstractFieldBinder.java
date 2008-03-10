@@ -142,18 +142,6 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public boolean typeIsUri(Mapper mapper) {
-    Class clazz = getComponentType();
-
-    return URI.class.isAssignableFrom(clazz) || URL.class.isAssignableFrom(clazz)
-            || mapper.isAssociation()
-            || (String.class.isAssignableFrom(clazz) && mapper.hasInverseUri())
-            || (Rdf.xsd + "anyURI").equals(mapper.getDataType());
-  }
-
-  /*
-   * inherited javadoc
-   */
   public Class getComponentType() {
     return componentType;
   }

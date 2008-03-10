@@ -85,6 +85,10 @@ public class FieldDef {
    * were part of this instance instead of as a separate instance. Only valid for class types.
    */
   boolean  embedded    = false
+  /**
+   * Specify "OBJECT" for object-property and "DATA" for data-property.
+   */
+  String    propType = "";
 
   protected ClassDef classType          // the class-def if this has a class type
   protected Map      classAttrs = [:]   // save class attributes for later
@@ -166,7 +170,7 @@ public class FieldDef {
     CascadeType[] ct = getCascadeType(rdf)
     FetchType ft = getFetchType(rdf)
 
-    String dtype = (type?.startsWith(xsdURI) && type != xsdURI + 'anyURI') ? type : null
+    String dtype = type?.startsWith(xsdURI) ? type : null
 
     // generate the mapper(s)
     List m;
@@ -180,7 +184,7 @@ public class FieldDef {
       if (ser != null)
         ft = null;
       m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned, idGen,
-ct, ft, cm?.getName())]
+ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType))]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
@@ -195,7 +199,8 @@ ct, ft, cm?.getName())]
         l = new CollectionFieldBinder(f, get, set, ser, compType);
 
       m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned,
-                             idGen, ct, ft, cm?.getName())]
+                             idGen, ct, ft, cm?.getName(),
+                  (ser == null) || inverse || "OBJECT".equals(propType)) ]
     }
 
     // done

@@ -86,7 +86,7 @@ public class Citation {
   @Predicate(uri = PLoS.bibtex + "hasAbstract", dataType = Rdf.xsd + "string")
   private String summary;
 
-  @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")
+  @Predicate(uri = Rdf.rdf + "type", type = Predicate.OBJECT)
   private String citationType;
 
   /**

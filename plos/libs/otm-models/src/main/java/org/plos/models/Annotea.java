@@ -32,7 +32,7 @@ public abstract class Annotea {
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
 
   private Date                                              created;
-  @Predicate(uri = Rdf.rdf + "type", dataType=Rdf.xsd + "anyURI")
+  @Predicate(uri = Rdf.rdf + "type", type = Predicate.OBJECT)
   private String                                            type;
   @Predicate(uri = Rdf.dc + "creator")
   private String                                            creator;

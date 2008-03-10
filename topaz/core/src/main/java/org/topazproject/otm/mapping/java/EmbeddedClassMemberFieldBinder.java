@@ -149,13 +149,6 @@ public class EmbeddedClassMemberFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public boolean typeIsUri(Mapper mapper) {
-    return field.typeIsUri(mapper);
-  }
-
-  /*
-   * inherited javadoc
-   */
   public Class getComponentType() {
     return field.getComponentType();
   }

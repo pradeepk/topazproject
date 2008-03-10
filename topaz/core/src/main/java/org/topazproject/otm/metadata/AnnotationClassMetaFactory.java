@@ -376,6 +376,9 @@ public class AnnotationClassMetaFactory {
     }
 
     if (id != null) {
+      if (rdf != null)
+        throw new OtmException("@Predicate and @Id both cannot be applied to a field: " + toString(f));
+
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
         throw new OtmException("@Id field '" + toString(f)
                                + "' must be a String, URI or URL.");
@@ -434,6 +437,28 @@ public class AnnotationClassMetaFactory {
                                    : new CascadeType[]{CascadeType.all};
       FetchType ft = (rdf != null) ? rdf.fetch() : FetchType.lazy;
 
+      boolean objectProperty = false;
+
+      if (rdf == null || "".equals(rdf.type())) {
+        boolean declaredAsUri = URI.class.isAssignableFrom(type) || URL.class.isAssignableFrom(type);
+        boolean noDatatype = (rdf == null) || "".equals(rdf.type());
+        objectProperty = (serializer == null) || inverse || (declaredAsUri && noDatatype);
+      } else if (Predicate.OBJECT.equals(rdf.type())) {
+        if (!"".equals(rdf.dataType()))
+          throw new OtmException("Datatype cannot be specified for an object-Property field " 
+                                  + toString(f));
+        objectProperty = true;
+      } else if (Predicate.DATA.equals(rdf.type())) {
+        if (serializer == null)
+          throw new OtmException("No serializer found for '" + type + "' with dataType '" 
+          + dt + "' for a data-property field " + toString(f));
+        if (inverse)
+          throw new OtmException("Inverse mapping cannot be specified for a data-property field "
+                                 + toString(f));
+      } else
+         throw new OtmException("Invalid type() value '" + rdf.type() + "' found on "
+                                 + toString(f));
+
       if (serializer != null)
         ft = null;
       else if (isView)
@@ -450,7 +475,8 @@ public class AnnotationClassMetaFactory {
       if (isView)
         p = new MapperImpl(var, loader, ft, assoc);
       else
-        p = new MapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft, assoc);
+        p = new MapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft, 
+                           assoc, objectProperty);
 
       return Collections.singletonList(p);
     }

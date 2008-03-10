@@ -30,13 +30,6 @@ public interface Binder {
   public String getName();
 
   /**
-   * Checks if the type is an rdf resource and not a literal.
-   *
-   * @return true if this field is persisted as a uri
-   */
-  public boolean typeIsUri(Mapper mapper);
-
-  /**
    * Get a value from a field of an object.
    *
    * @param o the object

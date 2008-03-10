@@ -13,6 +13,7 @@ package org.topazproject.otm.metadata;
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.java.FieldBinder;
@@ -198,7 +199,7 @@ public class BuilderTest extends GroovyTestCase {
     l = m.binder
     assert m.name     == 'state'
     assert l.type     == URI.class
-    assert m.dataType == null
+    assert m.typeIsUri ()
     assert m.uri      == 'foo:p5'
     assert m.hasInverseUri()
     assert m.model    == null
@@ -218,7 +219,7 @@ public class BuilderTest extends GroovyTestCase {
     l = m.binder
     assert m.name     == 'state'
     assert l.type     == URI.class
-    assert m.dataType == null
+    assert m.dataType == Rdf.xsd + 'anyURI'
     assert m.uri      == 'p6:state'
     assert !m.hasInverseUri()
     assert m.model    == null

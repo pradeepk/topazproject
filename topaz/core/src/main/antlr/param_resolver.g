@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.otm.Parameterizable.UriParam;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.query.Results;
@@ -81,7 +82,7 @@ options {
       ExprType type = ((OqlAST) node).getExprType();
       Object   val = paramValues.get(name);
 
-      if (val instanceof URI) {
+      if (val instanceof UriParam) {
         if (type != null && type.getType() != ExprType.Type.URI)
           reportWarning("type mismatch in parameter '" + name + "': parsed type is '" +
                         type + "' but parameter value is a URI");
@@ -89,7 +90,7 @@ options {
         if (log.isDebugEnabled())
           log.debug("resolved parameter '" + name + "', type '" + type + "', to <" + val + ">");
 
-        makeUriref(node, name, (URI) val);
+        makeUriref(node, name, ((UriParam) val).getUri());
       } else if (val instanceof Results.Literal) {
         Results.Literal lit = (Results.Literal) val;
         if (type != null) {

@@ -310,7 +310,7 @@ public class Criteria implements Parameterizable<Criteria> {
    */
   public Criteria setUri(String name, URI val) throws OtmException {
     checkParameterName(name);
-    getRoot().paramValues.put(name, val);
+    getRoot().paramValues.put(name, new UriParam(val));
     return this;
   }
 
@@ -363,7 +363,7 @@ public class Criteria implements Parameterizable<Criteria> {
       throw new OtmException("No value specified for parameter '" + name + "': field '" 
           + field + "'");
 
-    if (val instanceof URI) {
+    if (val instanceof UriParam) {
       if (!m.typeIsUri())
         throw new OtmException("type mismatch in parameter '" + name + "': field '" +
                         field + "' is not a URI, but parameter value is a URI");

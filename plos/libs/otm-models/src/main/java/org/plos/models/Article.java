@@ -39,7 +39,7 @@ public class Article extends ObjectInfo {
   private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
 
   // This will be used to indicate the different types the article conforms to
-  @Predicate(uri = Rdf.rdf + "type", dataType = Rdf.xsd + "anyURI")
+  @Predicate(uri = Rdf.rdf + "type")
   private Set<URI> articleType;
 
   @Predicate(uri = PLoS.plos + "relatedArticle")

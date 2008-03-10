@@ -47,7 +47,7 @@ public abstract class AbstractParameterizable<T extends Parameterizable<T>>
   @SuppressWarnings("unchecked")
   public T setUri(String name, URI val) throws OtmException {
     checkParameterName(name);
-    paramValues.put(name, val);
+    paramValues.put(name, new UriParam(val));
     return (T) this;
   }
 

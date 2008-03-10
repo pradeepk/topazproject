@@ -25,6 +25,7 @@ public class MapperImpl implements Mapper {
   private final String              uri;
   private final String              var;
   private final boolean             inverse;
+  private final boolean             objectProperty;
   private final String              model;
   private final String              dataType;
   private final String              rdfType;
@@ -53,11 +54,13 @@ public class MapperImpl implements Mapper {
    * @param cascade cascade options for this field
    * @param fetchType fetch type for associations. Must be null otherwise
    * @param associatedEntity the entity name for associations
+   * @param objectProperty if this is an object property 
    */
   public MapperImpl(String uri, Binder binder, String dataType,
                         String rdfType, boolean inverse, String model, CollectionType colType,
                         boolean entityOwned, IdentifierGenerator generator, 
-                        CascadeType[] cascade, FetchType fetchType, String associatedEntity) {
+                        CascadeType[] cascade, FetchType fetchType, String associatedEntity,
+                        boolean objectProperty) {
     this.uri             = uri;
     this.var             = null;
     this.binder          = binder;
@@ -72,6 +75,7 @@ public class MapperImpl implements Mapper {
     this.fetchType       = fetchType;
     this.associatedEntity = associatedEntity;
     this.predicateMap    = false;
+    this.objectProperty   = objectProperty;
   }
 
   /**
@@ -95,6 +99,7 @@ public class MapperImpl implements Mapper {
     this.fetchType       = null;
     this.associatedEntity = null;
     this.predicateMap    = true;
+    this.objectProperty  = false;
   }
 
   /**
@@ -118,6 +123,7 @@ public class MapperImpl implements Mapper {
     this.fetchType       = null;
     this.associatedEntity = null;
     this.predicateMap    = false;
+    this.objectProperty  = true;
   }
 
   /**
@@ -143,6 +149,7 @@ public class MapperImpl implements Mapper {
     this.fetchType       = fetchType;
     this.associatedEntity = associatedEntity;
     this.predicateMap    = false;
+    this.objectProperty  = associatedEntity != null;
   }
 
   /**
@@ -166,6 +173,7 @@ public class MapperImpl implements Mapper {
     this.fetchType       = other.getFetchType();
     this.associatedEntity = other.getAssociatedEntity();
     this.predicateMap    = other.isPredicateMap();
+    this.objectProperty  = other.typeIsUri();
   }
 
   /*
@@ -204,7 +212,7 @@ public class MapperImpl implements Mapper {
    * inherited javadoc
    */
   public boolean typeIsUri() {
-    return binder.typeIsUri(this);
+    return objectProperty;
   }
 
   /*

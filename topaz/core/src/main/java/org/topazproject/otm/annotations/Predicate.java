@@ -33,6 +33,27 @@ public @interface Predicate {
   String uri() default "";
 
   /**
+   * The predicate type. Defaults to {@link #OBJECT} for associations and {@link java.net.URI}
+   * or {@link java.net.URL} fields when the {@link #dataType} value is unspecified. Otherwise
+   * it defaults to {@link #DATA}. Normally there is no need to configure this. The only place
+   * this is needed is to specify an OBJECT type for a field that is serializable.
+   * <p>
+   * This is similar to the owl:DataProperty and owl:ObjectProperty, but however
+   * it may not necessarily mean an rdfs:range on this predicate.
+   */
+  String type() default "";
+
+  /**
+   * A constant to use to indicate {@link #type} value of DATA.
+   */
+  String DATA = "DATA";
+
+  /**
+   * A constant to use to indicate {@link #type} value of OBJECT.
+   */
+  String OBJECT = "OBJECT";
+
+  /**
    * Data type for literals. Defaults based on the field data type. Use UNTYPED for untyped literals. 
    */
   String dataType() default "";

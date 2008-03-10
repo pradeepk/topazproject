@@ -1070,7 +1070,7 @@ public class OqlTest extends AbstractTest {
           surname   ()
         }
       }
-      blog (type:'xsd:anyURI')
+      blog (type:'xsd:anyURI', propType:'OBJECT')
     }
 
     def o1 = cls.newInstance(state:1, info:[name:[givenName:'Bob', surname:'Cutter']],
@@ -1198,10 +1198,9 @@ public class OqlTest extends AbstractTest {
         r = q.setParameter("info", o2.info.id.toString()).execute()
       })
 
-      r = q.setParameter("info", o2.info.id).execute()
-      checker.verify(r) {
-        row { object (class:cls, id:o2.id) }
-      }
+      assert shouldFail(QueryException, {
+        r = q.setParameter("info", o2.info.id).execute()
+      })
 
       r = q.setUri("info", o2.info.id).execute()
       checker.verify(r) {

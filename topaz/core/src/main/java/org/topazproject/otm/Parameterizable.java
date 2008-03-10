@@ -69,4 +69,25 @@ public interface Parameterizable<T extends Parameterizable<T>> {
    * @throws OtmException if <var>name</var> is not a valid parameter name
    */
   T setTypedLiteral(String name, String val, URI dataType) throws OtmException;
+
+  /**
+   * A Wrapper to store params set using the setUri() call.
+   */
+  public static class UriParam {
+     private URI uri;
+
+     public UriParam(URI uri) {
+       if (uri == null)
+         throw new NullPointerException("URI param value can't be null");
+       this.uri = uri;
+     }
+
+     public URI getUri() {
+       return uri;
+     }
+
+     public String toString() {
+       return uri.toString();
+     }
+  }
 }
