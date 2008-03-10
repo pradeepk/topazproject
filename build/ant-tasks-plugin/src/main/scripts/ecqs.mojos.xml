@@ -102,7 +102,7 @@
           <name>ecqs-groupId</name>
           <property>ecqs-groupId</property>
           <required>true</required>
-          <defaultValue>org/topazproject</defaultValue>
+          <defaultValue>org.topazproject</defaultValue>
           <type>java.lang.String</type>
           <description>groupId for ecqs.</description>
         </parameter>
