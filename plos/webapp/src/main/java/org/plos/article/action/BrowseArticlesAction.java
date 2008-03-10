@@ -10,42 +10,30 @@
 
 package org.plos.article.action;
 
-import java.net.URI;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.configuration.Configuration;
-
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
 import org.plos.configuration.ConfigurationStore;
-import org.plos.journal.JournalService;
-import org.plos.model.IssueInfo;
-import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleInfoMostRecentDateComparator;
-import org.plos.model.article.ArticleType;
 import org.plos.model.article.Years;
-import org.plos.models.Issue;
-import org.plos.models.Journal;
-
 import org.springframework.beans.factory.annotation.Required;
-
-import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * @author stevec
  */
+@SuppressWarnings("serial")
 public class BrowseArticlesAction extends BaseActionSupport {
 
   private static final Log log  = LogFactory.getLog(BrowseArticlesAction.class);
@@ -56,7 +44,6 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
   private static final int    PAGE_SIZE    = 10;
   private static final String DATE_FIELD   = "date";
-  private static final String ISSUE_FIELD  = "issue";
 
   private static final int UNSET      = -1;
   private static final int PAST_MONTH = -2;
@@ -70,23 +57,20 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private int    month    = UNSET;
   private int    day      = UNSET;
 
-  private Session                         session;
-  private JournalService                  journalService;
   private BrowseService                   browseService;
   private SortedMap<String, Integer>      categoryInfos;
   private Years             articleDates;
   private List<ArticleInfo> articleList;
   private int                             totalArticles;
-  private String archiveURL = "";
   private String startDateParam;
   private String endDateParam;
 
+  @Override
   public String execute() throws Exception {
     if (DATE_FIELD.equals(getField())) {
       return browseDate();
-    } else {
-      return browseCategory();
     }
+    return browseCategory();
   }
 
   private String browseCategory () {
@@ -309,31 +293,11 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
 
   /**
-   * Set the OTM Session.
-   *
-   * @param session The OTM Session to set.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-
-  /**
    * @param browseService The browseService to set.
    */
   @Required
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
-  }
-
-  /**
-   * Sets the JournalService.
-   *
-   * @param journalService The JournalService to set.
-   */
-  @Required
-  public void setJournalService(JournalService journalService) {
-    this.journalService = journalService;
   }
 
   @Override
@@ -342,7 +306,11 @@ public class BrowseArticlesAction extends BaseActionSupport {
   }
 
   private static String canonicalCategoryPath(String categoryName) {
-    return URLEncoder.encode(categoryName);
+    try {
+      return URLEncoder.encode(categoryName, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new Error(e);
+    }
   }
 
   @Override
