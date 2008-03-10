@@ -19,19 +19,17 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.struts2.ServletActionContext;
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.plos.models.UserAccount;
 import org.springframework.beans.factory.annotation.Required;
-
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
-
-import org.plos.models.UserAccount;
 import org.topazproject.otm.util.TransactionHelper;
+
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 /**
  * A webwork interceptor that maps the authenticated user id to an internal plos-user-id. The plos
@@ -42,6 +40,7 @@ import org.topazproject.otm.util.TransactionHelper;
  *
  * @author Pradeep Krishnan
  */
+@SuppressWarnings("serial")
 public class UserAccountsInterceptor extends AbstractInterceptor {
   private static Log log = LogFactory.getLog(UserAccountsInterceptor.class);
 
@@ -60,15 +59,10 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
    */
   public static String AUTH_KEY = "org.topazproject.auth-id";
 
-  /**
-   * The session attribute key used to store the state of mapping (mainly to prevent look-ups on
-   * every request for <code>null</code> user-ids)
-   */
-  public static String MAP_STATUS = UserAccountsInterceptor.class.getName() + ".map-status";
-
   private Session session;
   private boolean wrap = false;
 
+  @Override
   public String intercept(ActionInvocation invocation) throws Exception {
     String user = lookupUser(ServletActionContext.getRequest());
     if (wrap)
@@ -94,10 +88,12 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
       };
 
     return new HttpServletRequestWrapper(request) {
+        @Override
         public String getRemoteUser() {
           return user;
         }
 
+        @Override
         public Principal getUserPrincipal() {
           return principal;
         }
@@ -112,9 +108,13 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
    */
   protected String lookupUser(HttpServletRequest request) throws Exception {
     HttpSession session = request.getSession(true);
-    String      user = (String) session.getAttribute(USER_KEY);
+    String      user    = (String) session.getAttribute(USER_KEY);
+    String      authId  = getAuthenticatedUser(request);
+    String      current = (String) session.getAttribute(AUTH_KEY);
+    boolean     same    = (current == null) ? (authId == null) : current.equals(authId);
 
-    if ((user != null) || (session.getAttribute(MAP_STATUS) != null)) {
+
+    if ((user != null) && same) {
       if (log.isDebugEnabled())
         log.debug("Changed user to '" + user + "' using value found in session-id: "
                   + session.getId());
@@ -122,22 +122,17 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
       return user;
     }
 
-    String authId = getAuthenticatedUser(request);
-
     UserAccount ua = lookupUser(authId);
 
-    // XXX: move to lookup
     if (ua != null)
       user = ua.getId().toString();
     else
-      user = "anonymous:user/" + ((authId == null) ? "" : URLEncoder.encode(authId));
+      //user = "anonymous:user/" + ((authId == null) ? "" : URLEncoder.encode(authId));
+      user = "anonymous:user/" + ((authId == null) ? "" : URLEncoder.encode(authId, "UTF-8"));
 
     session.setAttribute(USER_KEY, user);
     session.setAttribute(STATE_KEY, ua != null ? ua.getState() : 0);
     session.setAttribute(AUTH_KEY, authId);
-
-    // prevent further lookups in this session
-    session.setAttribute(MAP_STATUS, "mapped");
 
     if (log.isDebugEnabled())
       log.debug("Changed user to '" + user + "' from '" + authId + "' with state '" +
