@@ -1,410 +1,512 @@
+<#include "journal_include.ftl">
+<#include "/static/cj_shared_blocks.ftl">
+
 <!-- LAST UPDATE: 10/12/2007 -->
 <!-- begin : main content -->
 <div id="content" class="edboard static">
 
-<h1><em>PLoS Neglected Tropical Diseases</em> Editorial Board</h1> 
+	<h1><em>${journal_name}</em> Editorial Board</h1>
 
-<h2><a href="eic.action">Editor-in-Chief</a></h2>
+	<p class="intro">For editorial inquiries, please e-mail ${email}.</p>
+
+	<div class="edboard">
+	
+		<h2>Editor-in-Chief</h2>
+		<dl>
+			<dt><a href="eic.action" title="Biography of Editor-in-Chief">Kasturi Haldar</a></dt>
+			<dd>
+				Northwestern University<br />
+				Chicago, IL, USA<br />
+				E-mail: <strong>khaldar [at] plos.org</strong>
+			</dd>
+		</dl>
+		<h2>Deputy Editor</h2>
+		<dl>
+			<dt>Grant McFadden</dt>
+			<dd>University of Florida<br />
+			Gainesville, FL, USA<br />
+			</dd>
+		</dl>
+<h2>Section Editors</h2>		
+<!-- start section editors -->
 
 <dl>
-<dt>Peter Hotez</dt>
-<dd>The George Washington University<br />
-Washington DC, USA</dd>
+
+	<dt>Mark Achtman</dt>
+	<dd>University College Cork<br />
+	 Cork, Ireland<br />
+	 <em>Evolutionary Biology of Pathogens</em>
+	</dd>
+
+	<dt>Frederick M. Ausubel</dt>
+	<dd>Harvard Medical School<br />
+	Boston, MA, USA<br />
+	<em>Bacterial Pathogenesis</em>
+	</dd>
+
+	
+	<dt>Ralph S. Baric</dt>
+	<dd>University of North Carolina<br />
+	 Chapel Hill, NC, USA<br />
+	 <em>Viral pathogenesis</em>
+	 </dd>
+
+	<dt>John Boothroyd</dt>
+	<dd>Stanford University School of Medicine<br />
+	Palo Alto, CA, USA<br />
+	<em>Parasite Pathogenesis</em>
+	</dd>
+
+
+
+	<dt>Brendan Cormack</dt>
+	<dd>Johns Hopkins School of Medicine<br />
+	Baltimore, MD, USA<br />
+	<em>Fungal Pathogenesis</em>
+	</dd>
+    
+	
+	<dt>Klaus Frueh</dt>
+	<dd>Oregon Health and Sciences University<br />
+	 Beaverton, OR, USA<br />
+	 <em>Viral Pathogenesis</em>
+	</dd>
+	 
+	<dt>Adolfo Garcia-Sastre</dt>
+	<dd>Mount Sinai School of Medicine<br />
+	 New York, NY, USA<br />
+	 <em>Viral Pathogenesis</em>
+	</dd>
+
+ 
+	<dt>Daniel E. Goldberg</dt>
+	<dd>Washington University School of Medicine<br />
+	 St. Louis, MO, USA<br />
+	 <em>Parasite Pathogenesis</em>
+	</dd> 
+	
+	
+		<dt>Joseph Heitman</dt>
+	<dd>Duke University Medical Center<br />
+	 Durham, NC, USA<br />
+	 <em>Fungal Pathogenesis</em>
+	</dd> 
+	
+
+	<dt>Ralph Isberg</dt>
+	<dd>Tufts University School of Medicine<br />
+	Boston, MA, USA<br />
+	<em>Bacterial Pathogenesis</em>
+	</dd>
+
+
+	<dt>James Kazura</dt>
+	<dd>Case Western Reserve University School of Medicine<br />
+	Cleveland, OH, USA<br />
+	<em>Parasite Pathogenesis</em>
+	</dd>
+
+	<dt>Hiten Madhani</dt>
+	<dd>University of California, San Francisco<br />
+	San Francisco, CA, USA<br />
+	<em>Fungal pathogenesis</em>
+	</dd>
+
+
+
+	<dt>Michael Wessels</dt>
+	<dd>Harvard Medical School<br />
+	 Cambridge, MA, USA<br />
+	 <em>Bacterial Pathogenesis</em>
+	 </dd>
+
+	<dt>David Westaway</dt>
+	<dd>University of Alberta<br />
+	 Edmonton, Alberta, Canada<br />
+	<em>Prion Pathogenesis</em>
+	</dd>
+	
 </dl>
+<!-- end section editors -->
 
-<h2>Deputy Editors</h2>
 
+
+		<h2>Reviews Editor</h2>
+		<dl>
+			<dt>Brett Finlay</dt>
+			<dd>
+			University of British Columbia<br />
+			Vancouver, British Columbia, Canada<br />
+			</dd>
+		</dl>
+		
+
+
+
+		<h2>Opinions Editors</h2>
+		
+		<dl>
+			<dt>Marianne Manchester</dt>
+			<dd>
+			The Scripps Research Institute<br />
+			La Jolla, CA, USA<br />
+			</dd>
+	
+			<dt>Glenn Rall</dt>
+			<dd>
+			Fox Chase Cancer Center<br />
+			Philadelphia, PA, USA<br />
+			</dd>
+		</dl>
+
+
+
+<h2>Community Editors</h2>
 <dl>
-<dt>Serap Aksoy</dt>
-<dd>Yale School of Public<br />
-New Haven, Connecticut, USA</dd>
+<dt>Michael J. Buchmeier</dt>
+<dd>University of California, Irvine<br />
+Irvine, CA, USA</dd>
 
-<dt>Yasmine Belkaid</dt>
-<dd>National Institutes of Health<br />
-Bethesda, Maryland, USA</dd>
+<dt>Joseph L. DeRisi</dt> 
+<dd>University of California, San Francisco<br />
+San Francisco, CA, USA</dd>
 
-<dt>Jeff Bethony</dt>
-<dd>George Washington University Medical Center<br />
-Washington DC, USA</dd>
+<dt>Craig R. Roy</dt>
+<dd>Yale University<br />
+New Haven, CT, USA</dd>
 
-<dt>Simon Brooker</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
+<dt>Boris Striepen</dt> 
+<dd>University of Georgia<br />
+Athens, GA, USA</dd>
 
-<dt>Charles King</dt>
-<dd>Case Western Reserve University<br />
-Cleveland, Ohio, USA</dd>
 
-<dt>Albert Ko</dt>
-<dd>Oswaldo Cruz Foundation, Brazil<br />
-Weill Medical College of Cornell University, New York</dd>
+<dt>Michael J. Blackman</dt>
+<dd> National Institute for Medical Research<br />
+ London, UK</dd>
 
-<dt>Alex Loukas</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
-
-<dt>Sara Lustigman</dt>
-<dd>Lindsley F. Kimball Research Institute,<br />New York Blood Center<br />
-New York, New York, USA</dd>
-
-<dt>Juerg Utzinger</dt>
-<dd>Swiss Tropical Institute<br />
-Basel, Switzerland</dd>
 </dl>
+
+
 
 <h2>Associate Editors</h2>
+
+
+<!-- start editorial board -->
 <dl>
-<dt>Judith Allen</dt>
-<dd>University of Edinburgh<br />
-Edinburgh, UK</dd>
 
-<dt>Maria-Gloria Basáñez</dt>
-<dd>Imperial College London<br />
-London, UK</dd>
 
-<dt>Zvi Bentwich</dt>
-<dd>Center for Infectious Diseases and AIDS, Ben Gurion University<br />
-Beer Sheba, Israel</dd>
+    
+   
+    <dt>Alex Andrianopoulos</dt>
+	<dd>University of Melbourne<br />
+	 Melbourne, Victoria, Australia</dd>
 
-<dt>Alok Bhattacharya</dt>
-<dd>Jawaharlal Nehru University<br />
-New Delhi, India</dd>
 
-<dt>David Blair</dt>
-<dd>James Cook University<br />
-Townsville, Australia</dd>
 
-<dt>Marleen Boelaert</dt>
-<dd>Institute of Tropical Medicine<br />
-Antwerp, Belgium</dd>
 
-<dt>Maria Elena Bottazzi</dt>
-<dd>The George Washington University<br />
-Washington DC, USA</dd>
+	<dt>Stephen M. Beverley</dt>
+	<dd>Washington University School of Medicine<br />
+	 St. Louis, MO, USA</dd>
 
-<dt>Pierre Buffet</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
 
-<dt>Michael Cappello</dt>
-<dd>Yale University<br />
-New Haven, Connecticut, USA</dd>
+     <dt>Paul Bieniasz</dt>
+	<dd>Rockefeller University<br />
+	 New York, NY, USA</dd>
 
-<dt>H&eacute;l&egrave;ne Carabin</dt>
-<dd>University of Oklahoma Health Sciences Center<br />
-Oklahoma City, Oklahoma, USA</dd>
 
-<dt>Jane Carlton</dt>
-<dd>New York University School of Medicine<br />
-New York, New York, USA</dd>
+    <dt>William Bishai</dt>
+	<dd>Johns Hopkins School of Medicine<br />
+	 Baltimore, MD, USA</dd>
+	
+	
 
-<dt>Edgar Carvalho</dt>
-<dd>Universidade Federal da Bahia Salvador<br />
-Bahia, Brazil</dd>
 
-<dt>John Dalton</dt>
-<dd>Institute for the Biotechnology of Infectious Diseases,<br  />University of Technology<br />
-Sydney, Australia</dd>
+	<dt>Mark L. Buller</dt>
+	<dd>Saint Louis University<br />
+	 Saint Louis, MO, USA</dd>
 
-<dt>Clive Davies</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
+	<dt>Barbara Burleigh</dt>
+	<dd>Harvard School of Public Health<br />
+	 Boston, MA, USA</dd>
 
-<dt>David Diemert</dt>
-<dd>Human Hookworm Vaccine Initiative,<br />Sabin Vaccine Institute<br />
-Washington DC, USA</dd>
+	<dt>Ambrose Cheung</dt>
+	<dd>Dartmouth University School of Medicine<br />
+	 Hanover, NH, USA</dd>
+	 
+	 <dt>Jenifer Coburn</dt>
+	  <dd>Tufts University – New England Medical Center<br />
+	    Boston, MA, USA</dd>
+	
+	<dt>Pascale Cossart</dt>
+	<dd>Institut Pasteur<br />
+	 Paris, France</dd>
+	
 
-<dt>Dirk Engels</dt>
-<dd>The World Health Organization<br />
-Geneva, Switzerland</dd>
+	<dt>Jeff Dangl</dt>
+	<dd>The University of North Carolina At Chapel Hill<br />
+	 Chapel Hill, NC, USA</dd>
+	
+	
+	<dt>Karen P. Day</dt>
+	<dd>NYU School of Medicine<br />
+	 New York, NY, USA</dd>
+	 
+	 <dt>Tamara Doering</dt>
+	  <dd>Washington University School of Medicine<br />
+	   Saint Louis, MO, USA</dd>
+	
+	<dt>Daniel Dykhuizen</dt>
+	 <dd>State University of New York, Stony Brook<br />
+	 Stony Brook, NY, USA<br />
+	 </dd>
 
-<dt>Christian Engwerda</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
+    <dt>Mary K. Estes</dt>
+	<dd>Baylor College of Medicine<br />
+	 Houston, TX, USA</dd>
 
-<dt>Carlos Franco-Paredes</dt>
-<dd>Emory School of Medicine, Atlanta<br />
-Hospital Infantil de Mexico Federico Gomez, Mexico City</dd>
 
-<dt>Amadou Garba</dt>
-<dd>Ministere de la Sante Publique<br />
-Niamey, Niger</dd>
+	<dt>Scott G. Filler</dt>
+	<dd>Harbor-UCLA Medical Center<br />
+	 Torrance, CA, USA</dd>
+	
+	<dt>JoAnne Flynn</dt>
+	<dd>University of Pittsburgh School of Medicine<br />
+	Pittsburgh, PA, USA</dd>
 
-<dt>Hector H. Garcia</dt>
-<dd>Universidad Peruana Cayetano Heredia<br />
-Lima, Peru</dd>
+	<dt>Michael Farzan</dt>
+	<dd>Harvard University School of Medicine<br />
+	 Southborough, MA, USA</dd>
 
-<dt>Ricardo E. Gurtler</dt>
-<dd>Universidad de Buenos Aires<br />
-Buenos Aires, Argentina</dd>
+	<dt>Ron A.M. Fouchier</dt>
+	<dd>Erasmus Medical Center<br />
+	Rotterdam, The Netherlands</dd>
 
-<dt>John Gyapong</dt>
-<dd>Health Research Unit,<br />Ghana Health Service<br />
-Accra, Ghana</dd>
+	<dt>Jorge Galan</dt>
+	<dd>Yale University School of Medicine<br />
+	 New Haven, CT, USA</dd>
 
-<dt>Eva Harris</dt>
-<dd>University of California, Berkeley<br />
-Berkeley, California, USA</dd>
 
-<dt>Charles Jaffe</dt>
-<dd>Hadassah Medical School,<br />Hebrew University<br />
-Jerusalem, Israel</dd>
+	<dt>Donald Ganem</dt>
+	<dd>University of California, San Francisco<br />
+	 San Francisco, CA, USA</dd>
 
-<dt>Malcolm K. Jones</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
 
-<dt>Jennifer Keiser</dt>
-<dd>Swiss Tropical Institute<br />
-Basel, Switzerland</dd>
 
-<dt>Matty Knight</dt>
-<dd>Biomedical Research Institute<br />
-Rockville, Maryland, USA</dd>
 
-<dt>Dominique Kyelem</dt>
-<dd>Ministry of Health<br />
-Ouagadogou, Burkina Faso</dd>
 
-<dt>A. Desiree La Beaud</dt>
-<dd>Case Western Reserve University<br />
-Cleveland, Ohio, USA</dd>
+	<dt>Partho Ghosh</dt>
+	<dd>University of California, San Diego<br />
+	 La Jolla, CA, USA</dd>
 
-<dt>Diane Lockwood</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
 
-<dt>Anuradha Lohia</dt>
-<dd>Bose Institute<br />
-Kolkata, India</dd>
+	<dt>Michael S. Gilmore</dt>
+	 <dd>Harvard University School of Medicine<br />
+	 Southborough, MA, USA</dd>
 
-<dt>Hechmi Louzir</dt>
-<dd>Institute Pasteur de Tunis<br />
-Tunis, Tunisia</dd>
 
-<dt>Sheila Lukehart</dt>
-<dd>University of Washington<br />
-Seattle, Washington, USA</dd>
+    <dt>Keith Gull</dt>
+	<dd>University of Manchester<br />
+	 Manchester, United Kingdom</dd>
 
-<dt>Kirsten E. Lyke</dt>
-<dd>Center for Vaccine Development,<br />University of Maryland<br />
-Baltimore, Maryland, USA</dd>
+	<dt>David S. Guttman</dt>
+	<dd>University of Toronto<br />
+	Toronto, Ontario, Canada</dd>
 
-<dt>Andrew MacDonald</dt>
-<dd>University of Edinburgh<br />
-Edinburgh, Scotland</dd>
+	<dt>Eddie C. Holmes</dt>
+	<dd>Pennsylvania State University<br />
+	 University Park, PA, USA</dd>
 
-<dt>Elizabeth A. L. Martins</dt>
-<dd>Instituto Butantan<br />
-Sao Paulo, Brazil</dd>
 
-<dt>Greg Matlashewski</dt>
-<dd>McGill University<br />
-Montreal, Canada</dd>
 
-<dt>James McCarthy</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
+	<dt>Thomas J. Hope</dt>
+	<dd>Northwestern University<br />
+	 Chicago, IL, USA</dd>
 
-<dt>Genevieve Milon</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
+	<dt>Christina Hull</dt>
+	<dd>University of Wisconsin<br />
+	 Madison, WI, USA</dd>
 
-<dt>Jorge Motta</dt>
-<dd>Instituto Conmemorativo Gorgas de Estudios de la Salud<br />
-Panama City, Panama</dd>
+	<dt>Scott J. Hultgren</dt>
+	<dd>Washington University School of Medicine<br />
+	 St. Louis, MO, USA</dd>
 
-<dt>Dunstan Mukoko</dt>
-<dd>Ministry of Health<br />
-Nairobi, Kenya</dd>
 
-<dt>Kosta Y. Mumcuoglu</dt>
-<dd>Hadassah Medical School,<br />Hebrew University<br />
-Jerusalem, Israel</dd>
+	<dt>Alexander Johnson</dt>
+	<dd>University of California, San Francisco<br />
+	San Francisco, CA, USA</dd>
 
-<dt>Mariam Mwanje</dt>
-<dd>Ministry of Health<br />
-Nairobi, Kenya</dd>
+	<dt>Patricia Johnson</dt>
+	<dd>University of California, Los Angeles<br />
+	Los Angeles, CA, USA</dd>
+	
+	<dt>Jae Jung</dt>
+	<dd>University of Southern California School of Medicine<br />
+	Los Angeles, CA, USA</dd>
+	
+ 	<dt>Yoshihiro Kawaoka</dt>
+	<dd>University of Wisconsin-Madison and University of Tokyo<br />
+	 Madison, Wisconsin, USA; Tokyo, Japan</dd>
+	
+	<dt>Kami Kim</dt>
+	<dd>Albert Einstein College of Medicine<br />
+	New York, NY, USA</dd>
 
-<dt>Richard Ndyomugyenyi</dt>
-<dd>Vector Control Division,<br />Ministry of Health<br />
-Kampala, Uganda</dd>
+	<dt>Theresa Koehler</dt>
+	 <dd>University of Texas-Houston Medical School<br />
+	  Houston, TX, USA</dd>
+	
 
-<dt>Rodrigo Correa Oliveira</dt>
-<dd>FIOCRUZ<br />Rio de Janeiro, Brazil<br />
-Belo Horizonte, Brazil</dd>
+	<dt>Richard Koup</dt>
+	<dd>National Institutes of Health, National Institute of Allergy and Infectious Diseases<br />
+	 Bethesda, MD, USA</dd>
+	
 
-<dt>Sergio Costa Oliveira</dt>
-<dd>Federal University of Minas Gerais<br />
-Minas Gerais, Brazil</dd>
 
-<dt>Mathieu Picardeau</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
+	<dt>Bruce Levin</dt>
+	<dd>Emory University<br />
+	 Atlanta, GA, USA</dd>
 
-<dt>Giovanna Raso</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
 
-<dt>Helton da Costa Santiago</dt>
-<dd>George Washington School of Medicine<br />
-Washington DC, USA</dd>
+	<dt>Beth Levine</dt>
+	<dd>University of Texas-Southwestern Medical Center At Dallas<br />
+	 Dallas, TX, USA</dd>
 
-<dt>Julius Schachter</dt>
-<dd>University of California San Francisco<br />
-San Francisco, California, USA</dd>
+    
+	<dt>Jeremy Luban</dt>
+	<dd>University of Geneva<br />
+	Geneva, Switzerland</dd>
 
-<dt>Nilanthi de Silva</dt>
-<dd>University of Kelaniya<br />
-Dalugama, Sri Lanka</dd>
 
-<dt>Gary Simon</dt>
-<dd>The George Washington University<br />
-Washington DC, USA</dd>
+	<dt>Neil A. Mabbott</dt>
+	<dd>Roslin Institute and Royal (Dick) School of Veterinary Studies
+University of Edinburgh
+<br />
+	Edinburgh, United Kingdom</dd>
 
-<dt>Photini Sinnis</dt>
-<dd>New York University School of Medicine<br />
-New York, New York, USA</dd>
 
-<dt>Pamela Small</dt>
-<dd>University of Tennessee<br />
-Knoxville, Tennessee, USA</dd>
 
-<dt>Banchob Sripa</dt>
-<dd>Khon Kaen University<br />
-Khon Kaen, Thailand</dd>
 
-<dt>Louis-Albert Tchuem Tchuent&eacute;</dt>
-<dd>Centre for Schistosomiasis and Parasitology,<br />University of Yaound&eacute; I<br />
-Yaound&eacute;, Cameroon</dd>
+	<dt>Rick Maizels</dt>
+	<dd>University of Edinburgh<br />
+	 Edinburgh, United Kingdom</dd>
 
-<dt>Melissa K. Van Dyke</dt>
-<dd>Centers for Disease Control and Prevention<br />
-Atlanta, Georgia, USA</dd>
 
-<dt>Joanne Webster</dt>
-<dd>Imperial College London<br />
-London, UK</dd>
 
-<dt>Maria Yazdanbakhsh</dt>
-<dd>Leiden University Medical Center<br />
-Leiden, Netherlands</dd>
 
-<dt>Xiao-Nong Zhou</dt>
-<dd>National Institute of Parasitic Diseases,<br />Chinese Center for Disease Control and Prevention<br />
-Shanghai, China</dd>
+	<dt>Michael H. Malim</dt>
+	<dd>King's College London, Guy's King's And St. Thomas' School of Medicine<br />
+	 London, United Kingdom</dd>
+	 
+	 
+	 <dt>Aaron Mitchell</dt>
+	  <dd>Columbia University<br />
+	   New York, NY, USA</dd>
+
+	<dt>Howard Ochman</dt>
+	<dd>University of Arizona<br />
+	Tucson, AZ, USA</dd>
+
+
+
+
+
+	<dt>Lalita Ramakrishnan</dt>
+	<dd>University of Washington<br />
+	 Seattle, WA, USA</dd>
+
+
+
+
+	<dt>Charles M. Rice</dt>
+	<dd>The Rockefeller University<br />
+	 New York, NY, USA</dd>
+
+
+	<dt>Eleanor M. Riley</dt>
+	<dd>London School of Hygiene & Tropical Medicine<br />
+	 London, United Kingdom</dd>
+
+
+
+	<dt>Susan R. Ross</dt>
+	<dd>University of Pennsylvania School of Medicine<br />
+	 Philadelphia, PA, USA</dd>
+
+
+	<dt>Artur Scherf</dt>
+	<dd>Institut Pasteur<br />
+	 Paris, France</dd>
+
+
+
+	<dt>David S. Schneider</dt>
+	<dd>Stanford University<br />
+	 Palo Alto, CA, USA</dd>
+
+
+	<dt>H. Steven Seifert</dt>
+	<dd>Northwestern University Feinberg School of Medicine<br />
+	  Chicago, IL, USA</dd>
+
+	<dt>L. David Sibley</dt>
+	<dd>Washington University School of Medicine<br />
+	 St. Louis, MO, USA</dd>
+
+	<dt>Joseph Smith</dt>
+	<dd>Seattle Biomedical Research Institute<br />
+	 Seattle, WA, USA</dd>
+
+
+	<dt>Dominique Soldati</dt>
+	<dd>Imperial College<br />
+	 London, United Kingdom</dd>
+
+
+	<dt>C. Erec Stebbins</dt>
+	<dd>Rockefeller University<br />
+	 New York, NY, USA</dd>
+
+	<dt>Kanta Subbarao</dt>
+	<dd>National Institutes of Health<br />
+	 Bethesda, MD, USA</dd>
+
+
+	<dt>Bill Sugden</dt>
+	<dd>University of Wisconsin-Madison<br />
+	 Madison, WI, USA</dd>
+	
+	
+	<dt>Guy Tran Van Nhieu</dt>
+	<dd>Institut Pasteur<br />
+	 Paris, France</dd>
+	
+
+	<dt>Kenneth Vernick</dt>
+	<dd>University of Minnesota and Institut Pasteur<br />
+	 Twin Cities, MN, USA; Paris, France</dd>
+
+
+	<dt>Herbert "Skip" Virgin</dt>
+	<dd>Washington University School of Medicine<br />
+	 St. Louis, MO, USA</dd>
+
+	<dt>Jeffrey Weiser</dt>
+	<dd>University of Pennsylvania<br />
+	 Philadelphia, PA, USA</dd>
+
+
+	 
+	 <dt>Thomas A. Wynn</dt>
+	  <dd>National Institute of Allergy and Infectious Diseases<br />
+	   Bethesda, MD, USA</dd>
+	
+		<dt>John A. T. Young, <em>Founding Editor</em></dt>
+	<dd>The Salk Institute for Biological Studies<br />
+	 San Diego, CA, USA</dd>
+
 
 </dl>
 
-<h2>Editorial Advisors</h2>
-
-<dl>
-
-<dt>Uche Amazigo</dt>
-<dd>African Programme for Onchocerciasis Control,<br />The World Health Organization<br />
-Ouagadougou, Burkina Faso</dd>
-
-<dt>Daniel G. Colley</dt>
-<dd>University of Georgia<br />
-Athens, Georgia, USA</dd>
-
-<dt>Simon Croft</dt>
-<dd>Drugs for Neglected Diseases Initiative<br />
-Geneva, Switzerland</dd>
-
-<dt>Pierre Druilhe</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
-
-<dt>Richard Feachem</dt>
-<dd>The Global Fund to Fight AIDS, Tuberculosis, and Malaria<br />
-Geneva, Switzerland</dd>
-
-<dt>Alan Fenwick</dt>
-<dd>Imperial College London<br />
-London, UK</dd>
-
-<dt>Paul Fine</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
-
-<dt>Victoria Hale</dt>
-<dd>Institute for OneWorld Health<br />
-San Francisco, California, USA</dd>
-
-<dt>Paul Hunt</dt>
-<dd>The Human Rights Centre, University of Essex<br />
-Essex, UK</dd>
-
-<dt>Santiago Mas-Coma</dt>
-<dd>Departamento de Parasitologia, Universidad de Valencia<br />
-Valencia, Spain</dd>
-
-<dt>Don McManus</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
-
-<dt>David Molyneux</dt>
-<dd>Liverpool School of Tropical Medicine<br />
-Liverpool, UK</dd>
-
-<dt>Carlos Morel</dt>
-<dd>FIOCRUZ<br />
-Rio de Janeiro, Brazil</dd>
-
-<dt>James Mwanzia</dt>
-<dd>Prevention and Control of Communicable Diseases, World Health Organization<br />
-Brazzaville, Republic of Congo</dd>
-
-<dt>G. Richard Olds</dt>
-<dd>Medical College of Wisconsin<br />
-Milwaukee, Wisconsin, USA</dd>
-
-<dt>Eric A. Ottesen</dt>
-<dd>Task Force for Child Survival and Development, &<br />Rollins School of Public Health, Emory University<br />
-Atlanta, Georgia, USA</dd>
-
-<dt>Frank Richards, Jr.</dt>
-<dd>The Carter Center<br />
-Atlanta, Georgia, USA</dd>
-
-<dt>Laura C. Rodrigues</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
-
-<dt>Jeffrey D. Sachs</dt>
-<dd>The Earth Institute at Columbia University<br />
-New York, New York, USA</dd>
-
-<dt>Nancy Gore Saravia</dt>
-<dd>Centro Internacional de Entrenamiento e Investigaciones Medicas<br />
-Cali, Colombia</dd>
-
-<dt>Lorenzo Savioli</dt>
-<dd>The World Health Organization<br />
-Geneva, Switzerland</dd>
-
-<dt>Terrence Spithill</dt>
-<dd>Institute of Parasitology, McGill University<br />
-Montreal, Canada</dd>
-
-<dt>Ken Stuart</dt>
-<dd>Seattle Biomedical Research Institute<br />
-Seattle, Washington, USA</dd>
-
-<dt>Marcel Tanner</dt>
-<dd>Swiss Tropical Institute<br />
-Basel, Switzerland</dd>
-
-<dt>Thomas R. Unnasch</dt>
-<dd>The University of Alabama at Birmingham<br />
-Birmingham, Alabama, USA</dd>
-
-<dt>Gary Weil</dt>
-<dd>Washington University<br />
-St. Louis, Missouri, USA</dd>
-
-</dl>
 
 </div>
 <!-- end : main contents -->

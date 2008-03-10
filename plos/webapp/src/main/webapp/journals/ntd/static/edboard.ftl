@@ -58,7 +58,7 @@ Basel, Switzerland</dd>
 <dd>University of Edinburgh<br />
 Edinburgh, UK</dd>
 
-<dt>Maria-Gloria Basáñez</dt>
+<dt>Maria-Gloria Bas&aacute;&ntilde;ez</dt>
 <dd>Imperial College London<br />
 London, UK</dd>
 
@@ -134,6 +134,14 @@ Niamey, Niger</dd>
 <dd>Universidad Peruana Cayetano Heredia<br />
 Lima, Peru</dd>
 
+<dt>Ricardo T. Gazzinelli</dt>
+<dd>University of Massachusetts Medical School<br />
+Worcester, Massachusetts, USA</dd>
+
+<dt>Elodie Ghedin</dt>
+<dd>University of Pittsburgh<br />
+Pittsburgh, Pennsylvania, USA</dd>
+
 <dt>Ricardo E. Gurtler</dt>
 <dd>Universidad de Buenos Aires<br />
 Buenos Aires, Argentina</dd>
@@ -149,6 +157,10 @@ Berkeley, California, USA</dd>
 <dt>Charles Jaffe</dt>
 <dd>Hadassah Medical School,<br />Hebrew University<br />
 Jerusalem, Israel</dd>
+
+<dt>Anthony James</dt>
+<dd>University of California, Irvine<br />
+Irvine, California, USA</dd>
 
 <dt>Malcolm K. Jones</dt>
 <dd>The Queensland Institute of Medical Research<br />
@@ -169,6 +181,14 @@ Ouagadogou, Burkina Faso</dd>
 <dt>A. Desiree La Beaud</dt>
 <dd>Case Western Reserve University<br />
 Cleveland, Ohio, USA</dd>
+
+<dt>Patrick Lammie</dt>
+<dd>Centers for Disease Control and Prevention<br />
+Atlanta, Georgia, USA</dd>
+
+<dt>Mike Lehane</dt>
+<dd>Liverpool School of Tropical Medicine<br />
+Liverpool, UK</dd>
 
 <dt>Diane Lockwood</dt>
 <dd>London School of Hygiene and Tropical Medicine<br />
@@ -206,6 +226,14 @@ Montreal, Canada</dd>
 <dd>The Queensland Institute of Medical Research<br />
 Brisbane, Australia</dd>
 
+<dt>James H. McKerrow</dt>
+<dd>University of California, San Francisco<br />
+San Francisco, California, USA</dd>
+
+<dt>Diane McMahon-Pratt</dt>
+<dd>Yale University<br />
+New Haven, Connecticut, USA</dd>
+
 <dt>Genevieve Milon</dt>
 <dd>Institut Pasteur<br />
 Paris, France</dd>
@@ -242,6 +270,10 @@ Minas Gerais, Brazil</dd>
 <dd>Institut Pasteur<br />
 Paris, France</dd>
 
+<dt>Roger Prichard</dt>
+<dd>McGill University<br />
+Montreal, Canada</dd>
+
 <dt>Giovanna Raso</dt>
 <dd>The Queensland Institute of Medical Research<br />
 Brisbane, Australia</dd>
@@ -277,6 +309,10 @@ Khon Kaen, Thailand</dd>
 <dt>Louis-Albert Tchuem Tchuent&eacute;</dt>
 <dd>Centre for Schistosomiasis and Parasitology,<br />University of Yaound&eacute; I<br />
 Yaound&eacute;, Cameroon</dd>
+
+<dt>Jesus Valenzuela</dt>
+<dd>National Institutes of Health<br />
+Bethesda, Maryland, USA</dd>
 
 <dt>Melissa K. Van Dyke</dt>
 <dd>Centers for Disease Control and Prevention<br />

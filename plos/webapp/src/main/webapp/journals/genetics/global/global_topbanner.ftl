@@ -1,3 +1,4 @@
+
 <#-- depending on the current page, set banner zones -->
 
 <#assign topLeft = 14>
@@ -57,3 +58,4 @@
   </script><noscript><a href='http://ads.plos.org/adclick.php?n=acdf9a4b' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:16&#38;source=GEN&#38;n=acdf9a4b' border='0' alt=''/></a></noscript>
 </div>
 <!-- end : right banner slot -->
+

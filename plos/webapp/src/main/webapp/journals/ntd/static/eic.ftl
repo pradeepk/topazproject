@@ -29,7 +29,7 @@
 <p><a href="http://www.gwumc.edu/globalmd/hotez.htm" title="The George Washington University Medical Center: Hotez Named Chair of Microbiology and Tropical Medicine">Peter Hotez</a><br />
 Walter G. Ross Professor and Chair, <a href="http://www.gwumc.edu/microbiology">Department of Microbiology, Immunology, and Tropical Medicine</a>, The George Washington University<br />
 President, <a href="http://www.sabin.org/">Sabin Vaccine Institute</a><br />
-Principal Scientist, <a href="http://www.sabin.org/hookworm.htm">Human Hookworm Vaccine Initiative</a></p>
+Principal Scientist, <a href="http://www.sabin.org/Human_Hookworm_Vaccine_Initiative.php">Human Hookworm Vaccine Initiative</a></p>
 
 <p><em>To read about the work of Peter Hotez and other researchers working on neglected tropical diseases, see <a href="http://foreignpolicy.com/story/cms.php?story_id=3494&amp;page=0">Quest for the Cure</a>, by Erica Check</em>.  Also read <a href="hotezWho.action" title="PLoS NTDs: Remarks by Peter Hotez">Peter Hotez's remarks</a> to the First WHO Global Partners' Meeting on Neglected Tropical Diseases.</p>
 

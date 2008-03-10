@@ -30,8 +30,8 @@
         <@s.url action="help" namespace="/static" includeParams="none" id="help"/>
         <@s.url action="journalClub" namespace="/static" includeParams="none" id="journalClub"/>
        <@s.url action="sitemap" namespace="/static" includeParams="none" id="site"/>
-          <li><a href="${comment}">Commenting Guidelines</a></li>
-          <li><a href="${rating}">Rating Guidelines</a></li>
+          <li><a href="${comment}">Guidelines for Notes, Comments, and Corrections</a></li>
+          <li><a href="${rating}">Guidelines for Rating</a></li>
           <li><a href="${help}">Help Using this Site</a></li>
 		  <li><a href="${journalClub}">Journal Club Archives</a></li>
           <li><a href="${site}">Site Map</a></li>

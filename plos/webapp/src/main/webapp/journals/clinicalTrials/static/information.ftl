@@ -31,7 +31,7 @@
     Clinical Trials</em> with <em>PLoS ONE</em></a>. Authors publishing clinical trials research
     in PLoS ONE will benefit from very rapid publication (acceptance to publication in less than
     three weeks) and a more modest publication fee (US$1250). The entire community will benefit
-    from new interactive features: commentary, annotation, and article ratings.
+    from new interactive features: Notes, Comments, and Ratings.
   </p>
 
   <h2>What do authors need to know?</h2>
@@ -57,12 +57,7 @@
   <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="commentGuideURL"/>
   <p>
     That the PLoS Hub is a convenient meeting place for those interested in this field to
-    engage "hands on" with the content. Use the tools that are available to
-    <@s.a href="${rateGuideURL}" title="PLoS Hub | Rating Guidelines">rate</@s.a>,
-    <@s.a href="${commentGuideURL}" title="PLoS Hub | Comment Guidelines">annotate,
-    and discuss</@s.a> the articles. Share your views, see what other people think, and
-    <a href="http://www.plos.org/cms/node/241" title="PLoS Blog  | Rate Early, Rate Often">never
-    read an article without rating it</a>!
+    engage "hands on" with the content. Use the tools that are available to add <@s.a href="${commentGuideURL}" title="PLoS Hub | Comment Guidelines">Notes, Comments</@s.a>, and <@s.a href="${rateGuideURL}" title="PLoS Hub | Rating Guidelines">Ratings</@s.a> to the articles. Share your views, see what other people think, and <a href="http://www.plos.org/cms/node/241" title="PLoS Blog  | Rate Early, Rate Often">never read an article without rating it</a>!
   </p>
 
   <h2>What do we all need to know?</h2>

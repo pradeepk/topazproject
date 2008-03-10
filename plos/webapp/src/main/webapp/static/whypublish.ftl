@@ -6,7 +6,7 @@
 <p><a href="http://www.plos.org/oa/index.html" title="PLoS.org | Open Access">Open access</a> means that your work will always be freely available to the world from our Web site and from PubMed Central. And open access translates into <a href="http://biology.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pbio.0040157" title="PLoS Biology | Citation Advantage of Open Access Articles by Gunther Eysenbach">greater usage and more citations</a>.</p>
 
 <h2>Results published FAST</h2>
-<p><em>PLoS ONE</em> will couple efficient and objective peer review with a streamlined electronic production workflow. We will strive to publish papers within weeks of submission.</p>
+<p><em>PLoS ONE</em> couples efficient and objective peer review with a streamlined electronic production workflow.</p>
 
 <h2>Technically based publication decisions</h2>
 <p>Too often a journal's decision to publish a paper is dominated by subjective criteria, which can be frustrating and delay the publication of your work. <em>PLoS ONE</em> will publish all papers that are judged to be rigorous and technically sound. Judgments about the importance of any particular paper are then made after publication.</p>

@@ -35,7 +35,6 @@
     <li><a href="http://journals.plos.org/plosgenetics/rss_feeds.php"><em>PLoS Genetics</em></a></li>
     <li><a href="http://journals.plos.org/plospathogens/rss_feeds.php"><em>PLoS Pathogens</em></a></li>
     <li><a href="http://www.plosone.org/static/rssFeeds.action"><em>PLoS ONE</em></a></li>
-	<li><a href="http://www.plosntds.org/static/rssFeeds.action"><em>PLoS Neglected Tropical Diseases</em></a></li>
 	<li><a href="http://clinicaltrials.ploshubs.org/static/rssFeeds.action">PLoS Hub for Clinical Trials</a></li>
    </ul>
 

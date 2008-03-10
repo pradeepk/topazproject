@@ -3,12 +3,12 @@
     <@s.url action="browse" namespace="/static" includeParams="none" id="browseURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubjectURL"/>
     <@s.url action="browse" namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
-    <@s.url action="browseIssue" namespace="/article" field="issue"  includeParams="none" id="browseIssueURL"/>
-    <@s.url action="browseVolume" namespace="/article" field="volume" includeParams="none" id="archiveURL"/>
+    <@s.url action="browseIssue" namespace="/article" includeParams="none" id="browseIssueURL"/>
+    <@s.url action="browseVolume" namespace="/article" includeParams="none" id="browseVolumeURL"/>
     <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
-          <li><a href="${browseIssueURL}">Current Issue</a></li> <!-- Remember to also change links on index.ftl and browse.ftl -->
-          <li><a href="${archiveURL}">Journal Archive</a></li> <!-- Commented out until we have the Archive page in place. Remember to uncomment link in TOC rhc too! -->
+          <li><a href="${browseIssueURL}">Current Issue</a></li>
+          <li><a href="${browseVolumeURL}">Journal Archive</a></li> 
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
           <li><a href="http://collections.plos.org/plosntds/">Collections</a></li>
@@ -39,9 +39,9 @@
         <@s.url action="help" namespace="/static" includeParams="none" id="help"/>
         <@s.url action="downloads" namespace="/static" includeParams="none" id="downloads"/>
         <@s.url action="sitemap" namespace="/static" includeParams="none" id="site"/>
-          <li><a href="${comment}">Commenting Guidelines</a></li>
-          <li><a href="${rating}">Rating Guidelines</a></li>
-          <li><a href="${help}">Help Using This Site</a></li>
+          <li><a href="${comment}">Guidelines for Notes, Comments, and Corrections</a></li>
+          <li><a href="${rating}">Guidelines for Rating</a></li>
+         <li><a href="${help}">Help Using This Site</a></li>
           <li><a href="${downloads}">Media Downloads</a></li>
           <li><a href="${site}">Site Map</a></li>
         </ul>
@@ -60,7 +60,7 @@
           <li><a href="${developing}">Developing Countries</a></li>
           <li><a href="${policies}">Editorial and Publishing Policies</a></li>
           <li><a href="${guidelines}">Author Guidelines</a></li>
-          <li><a href="${figure}">Table and Figure Guidelines</a></li>
+          <li><a href="${figure}">Figure and Table Guidelines</a></li>
           <li><a href="${checklist}">Submit Your Paper</a></li>
           <li><a href="${reviewer}">Reviewer Guidelines</a></li>
         </ul>

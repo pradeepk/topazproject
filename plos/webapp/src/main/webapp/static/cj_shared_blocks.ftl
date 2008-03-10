@@ -1,7 +1,6 @@
-
 <#--Journal Information Blocks - from global_common-->
 
-<#assign open_access = '<p>The Public Library of Science (PLoS) applies the <a href="license.php" title="Creative Commons Attribution License">Creative Commons Attribution License</a> (CCAL) to all works we publish. Under the CCAL, authors retain ownership of the copyright for their article, but authors allow anyone to download, reuse, reprint, modify, distribute, and/or copy articles in PLoS journals, so long as the original authors and source are cited. No permission is required from the authors or the publishers.</p>'>
+<#assign open_access = '<p>The Public Library of Science (PLoS) applies the <a href="license.action" title="Creative Commons Attribution License">Creative Commons Attribution License</a> (CCAL) to all works we publish. Under the CCAL, authors retain ownership of the copyright for their article, but authors allow anyone to download, reuse, reprint, modify, distribute, and/or copy articles in PLoS journals, so long as the original authors and source are cited. No permission is required from the authors or the publishers.</p>'>
 
 <#assign publication_charges = '<p>To provide open access, PLoS journals use a business model in which our expenses&#8212;including those of peer review, journal production, and online hosting and archiving&#8212;are recovered in part by charging a publication fee to the authors or research sponsors for each article they publish. For <em>${journal_name}</em> the publication fee is ${publication_fee}.  Authors who are affiliated with one of our <a href="http://www.plos.org/support/instmembers.html" title="PLoS.org | Institutional Members">Institutional Members</a> are eligible for a discount on this fee.</p>
 
@@ -14,7 +13,7 @@
 
 <#--Author Guidelines Blocks - global_common-->
 
-<#assign authors_and_affiliations = '<p>Provide the first names or initials (if used), middle names or initials (if used), surnames, and affiliations&#8212;department, university or organization, city, state/province (if applicable), and country&#8212;for all authors. One of the authors should be designated as the corresponding author. It is the corresponding author’s responsibility to ensure that the author list, and the summary of the author contributions to the study are accurate and complete. If the article has been submitted on behalf of a consortium, all consortium members and affiliations should be listed after the Acknowledgments.</p>'>
+<#assign authors_and_affiliations = '<p>Provide the first names or initials (if used), middle names or initials (if used), surnames, and affiliations&#8212;department, university or organization, city, state/province (if applicable), and country&#8212;for all authors. One of the authors should be designated as the corresponding author. It is the corresponding author\'s responsibility to ensure that the author list, and the summary of the author contributions to the study, is accurate and complete. If the article has been submitted on behalf of a consortium, all consortium members and affiliations should be listed after the Acknowledgments.</p>'>
 
 
 <#assign references = '<p>Only published or accepted manuscripts should be included in the reference list. Meetings abstracts, conference talks, or papers that have been submitted but not yet accepted should not be cited. Limited citation of unpublished work should be included in the body of the text only. All personal communications should be supported by a letter from the relevant authors.</p>
@@ -52,7 +51,7 @@ Same as above, but "In press" appears instead of the page numbers. Example: Adv 
 
 <#assign nomenclature = '<p>The use of standardized nomenclature in all fields of science and medicine is an essential step toward the integration and linking of scientific information reported in published literature. We will enforce the use of correct and established nomenclature wherever possible:</p>
 <ul>
-<li>We strongly encourage the use of <a href="http://www.bipm.org/en/si/" title="SI units">SI units</a>. If you do not use these exclusively, please provide the SI value in parentheses after each value.</li>
+<li>We strongly encourage the use of <a href="http://www.bipm.org/en/si/" title="SI units">SI units</a>. If you do not use these exclusively, please also provide the SI value in parentheses after each value.</li>
 <li>Species names should be italicized (e.g., <em>Homo sapiens</em>).</li>
 <li>Genes, mutations, genotypes, and alleles should be indicated in italics. Use the recommended name by consulting the appropriate genetic nomenclature database, e.g., <a href="http://www.genenames.org/index.html" title="HUGO">HUGO</a> for human genes. It is sometimes advisable to indicate the synonyms for the gene the first time it appears in the text. Gene prefixes such as those used for oncogenes or cellular localization should be shown in roman: v-fes, c-MYC, etc.</li>
 <li>The Recommended International Non-Proprietary Name (rINN) of drugs should be provided.</li>
@@ -60,11 +59,15 @@ Same as above, but "In press" appears instead of the page numbers. Example: Adv 
 
 <#--Author Guidelines Blocks - cj_common-->
 
-<#assign cj_acknowledgements = '<p>People who contributed to the work, but do not fit the criteria for authors should be listed in the Acknowledgments, along with their contributions. You must also ensure that anyone named in the acknowledgments agrees to being so named.</p>
+<#assign cj_presubmission = '<p>When authors are unsure whether their work satisfies the basic requirements for publication in <em>${journal_name}</em>, we are happy to consider presubmission inquiries. If you would like to submit an informal presubmission inquiry to see if a manuscript is appropriate in principle, please login or register for a new account within our <a href="${jms_link}">online submission system</a>, choosing \'Submit Presubmission Inquiry\' from the list of Author Tasks. Required for all Presubmission Inquiries are contact information, a cover letter, and an abstract.</p>
+ 
+<p>Responses to these inquiries are normally provided within one week. Responses may take longer if consultation between members of the editorial board is required. If you are invited to <a href="${jms_link}">submit your manuscript</a>, we will do our best to provide an expeditious initial assessment of the complete manuscript for suitability and then, if warranted, external peer review.</p>'>
+
+<#assign cj_acknowledgements = '<p>People who contributed to the work but do not fit the criteria for authors should be listed in the Acknowledgments, along with their contributions. You must also ensure that anyone named in the Acknowledgments agrees to being so named.</p>
 
 <p>Details of the funding sources that have supported the work should be confined to the funding statement provided in the online submission system. Do not include them in the Acknowledgments.</p>'>
 
-<#assign cj_tables = '<p>Tables should be included at the end of the manuscript file and cited sequentially in the text.  All tables should have a concise title.  Footnotes can be used to explain abbreviations. Citations should be indicated using the same style as outlined above. Tables occupying more than one printed page should be avoided, if possible. Larger tables can be published as online supporting information. Tables must be cell-based; do not use picture elements, text boxes, tabs, or returns in tables. Please ensure that all tables conform to our <a href="figure_guidelines.php">Guidelines for Figure and Table Preparation</a> when preparing them.</p>'>
+<#assign cj_tables = '<p>Tables should be included at the end of the manuscript file and cited sequentially in the text.  All tables should have a concise title.  Footnotes can be used to explain abbreviations. Citations should be indicated using the same style as outlined above. Tables occupying more than one printed page should be avoided, if possible. Larger tables can be published as online supporting information. Tables must be cell-based; do not use picture elements, text boxes, tabs, or returns in tables. Please ensure that all tables conform to our <a href="figureGuidelines.action">Guidelines for Figure and Table Preparation</a> when preparing them.</p>'>
 
 <#assign cj_accession_numbers = '<p>All appropriate datasets, images, and information should be deposited in public resources. Please provide the relevant accession numbers (and version numbers, if appropriate). Accession numbers should be provided in parentheses after the entity on first use. Suggested databases include, but are not limited to:</p>
 
@@ -103,7 +106,7 @@ Same as above, but "In press" appears instead of the page numbers. Example: Adv 
 
 <a name="authorstatus"></a>
 <h3>Author Status</h3>
-<p>It is the responsibility of the Corresponding Author to ensure that all authors are aware of and approve the submission of the manuscript, its content, authorship, and order of authorship. Confirmation of this action is required at submission of all manuscripts. </p>
+<p>It is the responsibility of the corresponding author to ensure that all authors are aware of and approve the submission of the manuscript, its content, authorship, and order of authorship. Confirmation of this action is required at submission of all manuscripts. </p>
 <p>The involvement of any professional medical writer in publication must be declared. We encourage authors to consult the <a href="http://www.emwa.org/Mum/EMWAguidelines.pdf" title="View Guidelines">European Medical Writers\' Association Guidelines</a> on the role of medical writers.</p>
 <p><em>${journal_name}</em> bases its criteria for authorship on those outlined in the <a href="http://www.icmje.org/icmje.pdf">Uniform Requirements for Manuscripts Submitted to Biomedical Journals</a>, which are summarized below. However, if you believe that a particular individual should be an author, you may include them, provided they are able to take responsibility for a given part of the study. The contributions of all authors must be described. Contributions that fall short of authorship should be mentioned in the acknowledgments.</p>
 <p>"Authorship credit should be based on
@@ -123,7 +126,7 @@ Authors should meet conditions 1, 2, and 3.</p>
 
 <a name="competing"></a>
 <h3>Competing Interests</h3>
-The submitting author is asked at submission to declare, on behalf of all authors, whether there are any financial, personal, or professional interests that could be construed to have influenced the paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. Read more about the <a href="competing.php">policy of PLoS regarding competing interests</a>.
+<p>The submitting author is asked at submission to declare, on behalf of all authors, whether there are any financial, personal, or professional interests that could be construed to have influenced the paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. Read more about the <a href="competing.action">policy of PLoS regarding competing interests</a>.</p>
 
 
 <a name="electronicformats"></a> 
@@ -131,19 +134,19 @@ The submitting author is asked at submission to declare, on behalf of all author
 <p>Our submission system supports a limited range of formats for text and graphics. The following file formats/types and manuscript information are required before submission. If you are concerned about the suitability of your files, please contact us at ${email}.</p>
 
 <a name="textfiles"></a>
-<h4>Manuscript File</h4>
+<h4>Manuscript and Tables File</h4>
 <p>Text files should be submitted in DOC or RTF format. Tables should be placed at the end of the manuscript file. </p>
 <a name="latex"></a>
-<p>Manuscripts prepared in LaTeX may be submitted in PDF format for use during the review process. Post acceptance, however, all text files must be converted to DOC or RTF to meet the requirements of our typesetting and e-publishing systems. PLoS provides basic <a href="latex.php" title="Go to converting LaTeX page">instructions and recommends conversion software</a>, but we strongly encourage authors to use simple formatting and a minimum of special features in LaTeX to ensure they achieve an optimal result at the time of conversion.</p>
+<p>Manuscripts prepared in LaTeX may be submitted in PDF format for use during the review process. Post acceptance, however, these authors will be asked to submit their .tex files and formatting information as a zipped file. Please consult our <a href="latexGuidelines.action" title="Go to LaTeX guidelines">LaTeX Guidelines</a> for a list of what will be required.</p>
 
 <p>Please note: At this time we cannot accept for review or revision any documents created in Microsoft Office 2007, even if &quot;saved down&quot; to the 2003 version. Major changes made in Word 2007, relative to earlier versions of Word, are incompatible with the established workflow processes of many publishers (e.g. the handling of mathematical equations). PLoS is actively seeking solutions to this problem.</p>
  <a name="figurefiles"></a>
 <h4>Figure Files</h4>
-<p>For the article to be accepted for publication, the author will need to supply high-resolution versions of the figures in TIF or EPS format only. When preparing your figures, please ensure that the files conform to our <a href="figure_guidelines.php">Guidelines for Figure and Table Preparation</a>. Please do <strong>not</strong> upload panels for a single figure separately (for example, Figure 1A, Figure 1B-1D, Figure 1E); each figure file should be a single montage of all panels. Queries can be sent to <strong>figures [at] plos.org.</strong></p>
+<p>For the article to be accepted for publication, the author will need to supply high-resolution versions of the figures in TIF or EPS format only. When preparing your figures, please ensure that the files conform to our <a href="figureGuidelines.action">Guidelines for Figure and Table Preparation</a>. Please do <strong>not</strong> upload panels for a single figure separately (for example, Figure 1A, Figure 1B-1D, Figure 1E); each figure file should be a single montage of all panels. Queries can be sent to <strong>figures [at] plos.org.</strong></p>
 
 <p>If you are uploading your files in EPS format, please use the &quot;create outlines&quot; option under the type menu in Illustrator so that all text and fonts appear as intended in print. If you need additional help with figure preparation, please contact <strong>figures [at] plos.org</strong>.</p>
 
-<p>All figures will be published under a <a href="license.php" title="View license">Creative Commons Attribution License</a>, which allows them to be freely used, distributed, and built upon as long as proper attribution is given.  Please do not submit any figures that have been previously copyrighted unless you have express written permission from the copyright holder to publish under the CCAL license. </p>
+<p>All figures will be published under a <a href="license.action" title="View license">Creative Commons Attribution License</a>, which allows them to be freely used, distributed, and built upon as long as proper attribution is given.  Please do not submit any figures that have been previously copyrighted unless you have express written permission from the copyright holder to publish under the CCAL license. </p>
 
 <a name="supportinginfo"></a>
 <h4>Multimedia Files and Supporting Information</h4>
@@ -157,15 +160,15 @@ The submitting author is asked at submission to declare, on behalf of all author
 
 <p>Some preferred formats for <em>${journal_name}</em> are: </p>
 <ul>
-	<li>Audio: MP3</li>
-	<li>Video: MOV, progressive download, 320x240px frame size</li>
-	<li>Flash: SWF</li>
+        <li>Audio: MP3</li>
+        <li>Video: MOV, progressive download, 320x240px frame size</li>
+        <li>Flash: SWF</li>
 </ul>
-	
+        
 <a name="readytosubmit"></a>
 <h3> Ready to Submit Your Manuscript?</h3>
 
-<p>We have provided a <a href="checklist.php" title="View submission checklist">Submission Checklist</a> to help you prepare your materials for submission and to make the online submission process as straightforward as possible. Please take the time to look through the list before submitting your article.  </p>
+<p>We have provided a <a href="checklist.action" title="View submission checklist">Submission Checklist</a> to help you prepare your materials for submission and to make the online submission process as straightforward as possible. Please take the time to look through the list before submitting your article.  </p>
 
 <p>Please login or register at our <a href="${jms_link}" title="Go to Submission site">online submission system</a> to begin the submission process. Files should be uploaded individually, and are automatically combined into a single PDF file, which must be approved by the author at the end of the submission process.  This merged PDF is for internal and external peer review only. Original source files will be used to prepare accepted articles for publication.</p>'>
 
@@ -233,13 +236,13 @@ Squirrel Scribe
 Stallard Scientific Editing
 </a></li>
 
-<li><a href="http://www.writescienceright.com" title="Visit Write Science Righ">
+<li><a href="http://www.writescienceright.com" title="Visit Write Science Right">
 Write Science Right
 </a></li>
 </ul>
 
 <p>PLoS neither endorses nor takes responsibility for contracting with any of these individuals/companies, but we do recognize the value of the services they provide. </p>
-<p>When an article has been accepted for publication, the manuscript files are transferred into our production system and will be published in PDF and HTML formats, with an XML download option. Articles are published online weekly and archived in PubMed Central/PubMed within 5 to10 days of publication.</p>'>
+<p>When an article has been accepted for publication, the manuscript files are transferred into our production system and will be published in PDF and HTML formats, with an XML download option. Articles are published online weekly and archived in PubMed Central/PubMed within 5 to 10 days of publication.</p>'>
 
 <#--Reviewer Guidelines - global_common-->
 
@@ -247,18 +250,18 @@ Write Science Right
 
 <#assign reviewers_competing_interests = '<p>As far as possible we respect requests by authors to exclude reviewers whom they consider to be unsuitable. We also, as much as possible, try to rule out those reviewers who may have an obvious competing interest, such as those who may have been collaborators on other projects with the authors of the manuscript under review, those who may be direct competitors, those who may have a known history of antipathy with the author(s), or those who might profit financially from the work. Because it is not possible for all such competing interests to be known by a particular editor, we request that reviewers who recognize a potential competing interest inform the editors or journal staff and recuse themselves if they feel that are unable to offer an impartial review.</p>
  
-<p><a href="competing.php" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science’s policy regarding competing interests.</a> When submitting your review you must indicate whether or not you have any competing interests.</p>
+<p><a href="competing.action" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science\'s policy regarding competing interests.</a> When submitting your review you must indicate whether or not you have any competing interests.</p>
  
 <p>On occasion, reviewers may be asked to offer their opinion on a manuscript that they may have reviewed for some other journal. This is not in itself a competing interest. That two journals have identified the same person as especially well qualified to judge the manuscript under consideration does not in any way decrease the validity of that opinion and may perhaps even enhance it.</p>'>
 
 <#assign feedback_reviewers = '<p>We send reviewers’ comments along with the decision letter to all reviewers of that manuscript. If reviewers have identified themselves, this information will be passed on to other reviewers. Reviewers who may have offered an opinion not in accordance with the final decision should not feel that their recommendation was not duly considered or their service not properly appreciated. Experts often disagree, and it is the job of the editorial team to make a final publication decision.</p>'>
 
 
-<#assign sharing_reviews = '<p>PLoS publishes several journals. Occasionally, editors recommend after peer review that a particular article is more suitable for another PLoS journal. If the authors choose to pursue that option, we transfer the manuscript and the reviews to the other journal. We expect that reviewers for any PLoS journal are willing to have their reviews considered by the editors of another PLoS journal.</p>'>
+<#assign sharing_reviews = '<p>PLoS publishes <a href="http://www.plos.org/journals/index.php" title="Publish with PLoS">several journals</a>. Occasionally, editors recommend after peer review that a particular article is more suitable for another PLoS journal. If the authors choose to pursue that option, we transfer the manuscript and the reviews to the other journal. We expect that reviewers for any PLoS journal are willing to have their reviews considered by the editors of another PLoS journal.</p>'>
 
 <#--Reviewer Guidlines - cj_common-->
 
-<#assign cj_review_process = '<p>Submitted manuscripts are first reviewed by the <a href="editors.php">Editor-in-Chief</a> (EIC), Deputy Editor,  or one of the Section Editors, who may decide to reject the paper or send it on to an Associate Editor (AE) for further review. The AE is most often a member of the <em>${journal_name}</em> <a href="edboard.php">Editorial Board</a>, but occasionally a guest of the Board is invited to serve in this capacity. The AE evaluates the paper and decides whether it describes a sufficient body of work to support a major advance in a particular field.  If the AE does not judge the manuscript to be suitable for the journal, alone or in consultation with other editors, the manuscript may be rejected outright, without external peer review, with the reasons outlined in the decision letter. If the AE does judge the manuscript to be suitable for the journal, it will then be subject to external peer review.</p>
+<#assign cj_review_process = '<p>Submitted manuscripts are first reviewed by the <a href="eic.action">Editor-in-Chief</a> (EIC), Deputy Editor,  or one of the Section Editors, who may decide to reject the paper or send it on to an Associate Editor (AE) for further review. The AE is most often a member of the <em>${journal_name}</em> <a href="edboard.action">Editorial Board</a>, but occasionally a guest of the Board is invited to serve in this capacity. The AE evaluates the paper and decides whether it describes a sufficient body of work to support a major advance in a particular field.  If the AE does not judge the manuscript to be suitable for the journal, alone or in consultation with other editors, the manuscript may be rejected outright, without external peer review, with the reasons outlined in the decision letter. If the AE does judge the manuscript to be suitable for the journal, it will then be subject to external peer review.</p>
 <p>The opinions of up to 5 experts are sought to evaluate the manuscript fully with respect to its significance, relevance, quality, and clarity.  On receipt of all reviewer comments, AEs, in consultation with other members of the Board and with the Editor-in-Chief or Deputy Editor, weigh all comments before rendering a decision.  </p>
 
 <p>Based on the review comments and potentially further consultation amongst other editors, a decision is rendered by the AE and co-signed by the EIC, Deputy, or one of the Section Editors, who will send the decision to the corresponding author.</p>
@@ -273,14 +276,14 @@ Write Science Right
 
 <p>If reviewers appear to disagree fundamentally, the editors may choose to share all the reviews with each of the reviewers and by this means elicit additional comments that may help to make a decision. The editor may also choose to consult with other editors on the Board. That said, although the reviewers\' comments and opinions on the manuscript are very important, decisions are not necessarily made according to majority rule. Instead, the editors evaluate the recommendations and comments of the reviewers alongside comments by the authors and material that may not have been made available to those reviewers. The decision, along with the full set of review comments, is shared with the reviewers after a decision has been made.</p>
  
-<p>When a paper has been revised in response to the review, or when authors appeal against a decision, we often ask thereviewers to offer additional comments. We request that reviewers make themselves available to provide such follow-up advice. We are nevertheless aware that reviewers do not wish to be involved in extended discussions over papers, and our goal is to keep such consultations to a minimum while still allowing authors a fair hearing.</p>'>
+<p>When a paper has been revised in response to the review, or when authors appeal against a decision, we often ask the reviewers to offer additional comments. We request that reviewers make themselves available to provide such follow-up advice. We are nevertheless aware that reviewers do not wish to be involved in extended discussions over papers, and our goal is to keep such consultations to a minimum while still allowing authors a fair hearing.</p>'>
 
 <#assign cj_reviewer_selection = '<p>The selection of appropriate and responsive reviewers is paramount for the success of the review process. We decide on reviewers for a particular manuscript based on many factors, including expertise, reputation, specific recommendations of authors and academic editors, and the AE\'s own knowledge of a reviewer\'s past performance.</p>
 
 <p>As part of our editorial procedure, we confer with potential reviewers before sending them manuscripts to review. Reviewers should bear in mind that even these initial messages or conversations contain confidential information, which should be regarded as such.</p>'>
 
 
-<#assign cj_writing_the_review = '<p>The purpose of the review is to provide the editors with an expert opinion regarding the significance, quality, relevance, and clarity of the manuscript under consideration, based on the Criteria for Publication. The review should also supply authors with explicit feedback on how to improve their papers so that they are acceptable for publication in <em>${journal_name}</em>.</p>
+<#assign cj_writing_the_review = '<p>The purpose of the review is to provide the editors with an expert opinion regarding the significance, quality, relevance, and clarity of the manuscript under consideration, based on the <a href="reviewerGuidelines.action#criteria">Criteria for Publication</a>. The review should also supply authors with explicit feedback on how to improve their papers so that they are acceptable for publication in <em>${journal_name}</em>.</p>
 
 <p>Although reviewers are welcome to make a particular recommendation for its suitability for publication, they should do so with the understanding that other reviewers may offer other opinions. To assist the AEs and Editor-in-Chief or Deputy Editor who often must weigh disparate comments to arrive at a balanced decision, the reviewer should provide the editors with as much information as possible. A review that clearly outlines reasons both for and against publication is often of as much or even more value as one that makes a direct recommendation.</p>
 
@@ -289,22 +292,22 @@ Write Science Right
 <p>The best possible review would answer the following questions:</p>
 
 <ul>
- 	<li>What are the main claims of the paper and how significant are they? Is this paper important in its discipline? </li>
-	<li>Have the authors provided adequate proof for their claims?</li>
- 	<li>Are these claims novel? If not, please specify papers that weaken the claims of originality of this one. </li>
- 	<li>Would additional work improve the paper? How much better would the paper be if this work were performed, and how difficult would it be to do this work? </li>
- 	<li>Are the claims properly placed in the context of the previous literature? Have the authors treated the literature fairly?</li>
-	<li>Do the data and analyses support the claims? If not, what other evidence is required?</li>
-	<li>Are original data deposited in appropriate repositories and accession/version numbers provided for genes, proteins, mutants, diseases, etc.?</li>
-	<li>Does the study conform to any <a href="http://journals.plos.org/ploscompbiol/policies.php#reporting">relevant guidelines</a> such as CONSORT, MIAME, QUORUM, STROBE and the <a href="http://www.wellcome.ac.uk/assets/wtd003207.pdf">Fort Lauderdale agreement</a>?</li>
-	<li>Are details of the methodology sufficient to allow the experiments to be reproduced? </li>
-	<li>Is any software created by the authors freely available? </li>
-	<li><em>${journal_name}</em> encourages authors to publish detailed protocols and algorithms as supporting information online. Do any particular methods used in the manuscript warrant such treatment?</li>
-	<li>Is the manuscript well organized and written clearly enough to be accessible to non-specialists? Would you recommend the author seek the services of a professional science writer?<sup>*</sup></li>
-	<li>Have any parts of the paper been published elsewhere? Are there any copyright issues associated with this that conflict with the PLoS license?<sup>*</sup></li>
-	<li>Does the paper use standardized scientific nomenclature and abbreviations? If not, are these explained at the first usage?</li>
-	</ul> 
-<p><sup>*</sup>Please alert the journal office.</p>'>
+        <li>What are the main claims of the paper and how significant are they? Is this paper important in its discipline? </li>
+        <li>Have the authors provided adequate proof for their claims?</li>
+        <li>Are these claims novel? If not, please specify papers that weaken the claims of originality of this one. </li>
+        <li>Would additional work improve the paper? How much better would the paper be if this work were performed and how difficult would it be to do this work? </li>
+        <li>Are the claims properly placed in the context of the previous literature? Have the authors treated the literature fairly?</li>
+        <li>Do the data and analyses support the claims? If not, what other evidence is required?</li>
+        <li>Are original data deposited in appropriate repositories and accession/version numbers provided for genes, proteins, mutants, diseases, etc.?</li>
+        <li>Does the study conform to any <a href="policies.action#reporting">relevant guidelines</a> such as CONSORT, MIAME, QUORUM, STROBE and the <a href="http://www.wellcome.ac.uk/assets/wtd003207.pdf">Fort Lauderdale agreement</a>?</li>
+        <li>Are details of the methodology sufficient to allow the experiments to be reproduced? </li>
+        <li>Is any software created by the authors freely available? </li>
+        <li><em>${journal_name}</em> encourages authors to publish detailed protocols and algorithms as supporting information online. Do any particular methods used in the manuscript warrant such treatment?</li>
+        <li>Is the manuscript well organized and written clearly enough to be accessible to non-specialists? Would you recommend the author seek the services of a professional science writer?<sup>*</sup></li>
+        <li>Have any parts of the paper been published elsewhere? Are there any copyright issues associated with this that conflict with the PLoS license?<sup>*</sup></li>
+        <li>Does the paper use standardized scientific nomenclature and abbreviations? If not, are these explained at the first usage?</li>
+        </ul> 
+<p><sup>*</sup>Please alert the journal office: ${email}</p>'>
 
 <#assign cj_anonymity = '<p>We offer authors the possibility of having their manuscripts reviewed anonymously (i.e., "double blinded"). If authors choose this option, we do not provide to reviewers the authors\' names and affiliations. <em>${journal_name}</em> does not otherwise delete any self-referential text. Authors are responsible for removing this information themselves from the manuscript.</p>
 
@@ -312,7 +315,9 @@ Write Science Right
 
 <#--Current CJ policies.php pages are actually identical. Unlike checklist, they do not have a template yet. policies.php content appear below-->
 
-<#assign cj_editorial_policies = '<h2>Contents:</h2>
+<#assign cj_editorial_policies = '
+<h1><em>${journal_name}</em> Editorial and Publishing Policies</h1>
+<h2>Contents:</h2>
 <ol>
 <li><a href="#copyright">Copyright and License Policies</a></li>
 <li><a href="#publication">Publication Charges</a></li> 
@@ -338,7 +343,7 @@ Write Science Right
 
 <p>Upon publication, PLoS also deposits all articles in <a href="http://www.pubmedcentral.nih.gov/" title="PubMed Central">PubMed Central</a>.  This complies with the policies of funding agencies, such as the <a href="http://publicaccess.nih.gov/" title="NIH">NIH</a> in the USA, the <a href="http://www.wellcome.ac.uk/node3302.html" title="Wellcome Trust">Wellcome Trust</a> and the <a href="http://www.rcuk.ac.uk/access/" title="Research Councils in the UK">Research Councils</a> in the UK, and the <a href="http://www.dfg.de/en/news/information_science_research/other_news/info_wissenschaft_04_06.html" title="Deutsche Forschungsgemeinschaft">Deutsche Forschungsgemeinschaft</a> in Germany, which request or require deposition of the published articles that they fund into publicly available databases.</p>
 
-<p>Please read about the <a href="license.php" title="Creative Commons Attribution License">Creative Commons Attribution License</a> before submitting your paper.</p>
+<p>Please read about the <a href="license.action" title="Creative Commons Attribution License">Creative Commons Attribution License</a> before submitting your paper.</p>
 
 <a name="publication"></a>
 <h2>2. Publication Charges</h2>
@@ -351,7 +356,7 @@ Write Science Right
 
 <a name="reviewer"></a>
 <h2>3.  Reviewer and Editor Exclusions</h2>
-<p>Upon submission of a manuscript, authors are asked if they wish to exclude any specific academic editors or reviewers from the peer review of their article. The editorial team will respect these requests so long as this does not interfere with the objective and thorough assessment of the article. See the relevant guidelines for reviewers and <a href="competing.php" title="PLoS policy regarding competing interests">more general information on PLoS’ policy regarding competing interests.</a></p>
+<p>Upon submission of a manuscript, authors are asked if they wish to exclude any specific academic editors or reviewers from the peer review of their article. The editorial team will respect these requests so long as this does not interfere with the objective and thorough assessment of the article. See the relevant guidelines for reviewers and <a href="competing.action" title="PLoS policy regarding competing interests">more general information on PLoS’ policy regarding competing interests.</a></p>
 
 <a name="sharing"></a>
 
@@ -463,7 +468,7 @@ Write Science Right
 
 <a name="competing"></a>
 <h2>9.  Competing Interests</h2>
-<p>Authors are asked at submission to declare whether they have any financial, personal, or professional interests that could be construed to have influenced their paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. <a href="competing.php" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science’s policy regarding competing interests.</a></p> 
+<p>Authors are asked at submission to declare whether they have any financial, personal, or professional interests that could be construed to have influenced their paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. <a href="competing.action" title="PLoS policy regarding competing interests">Click here for more general information on the Public Library of Science’s policy regarding competing interests.</a></p> 
 
 <a name="scientific"></a>
 
@@ -488,56 +493,56 @@ Write Science Right
 
 <p>Authors are of course at liberty to present and discuss their findings ahead of publication: at medical or scientific conferences, on preprint servers, and in blogs, wikis and other informal communication channels. We recommend, however, that authors not contact the media or respond to such contact unless an article has been accepted for publication and an embargo date has been established. Respect for press embargoes will help to ensure that your work is reported accurately in the popular media, and that the full peer-reviewed paper is freely available to any interested reader when the news item is published. If a journalist has covered a piece of work ahead of publication, this will not affect consideration of the work for publication. See also our <a href="http://www.plos.org/journals/embargopolicy.html" title="embargo guidelines for journalists">embargo guidelines for journalists</a>.</p>'>
 
-<#--checklist.php has it's own template cj_checklist_common.tpl.php
+<#--checklist.php has it\'s own template cj_checklist_common.tpl.php
 All three CJs share all the content
 For good measure, here is the main content (minus div wrapper and breadcrumbs)-->
 
-<#assign cj_checklist_content = '<h1>Submitting Your Manuscruipt to <em>${journal_name}</em></h1>
+<#assign cj_checklist_content = '<h1>Submitting Your Manuscript to <em>${journal_name}</em></h1>
 
-<p class="intro">Are you ready to submit your manuscript? Please refer to our checklists below and then use our <a href="${jms_link}" title="Submit your manuscript">manuscript submission system</a>.</p>
-
-<p class="intro">When you submit your article to <em>${journal_name}</em> you will be asked to provide information in addition to the manuscript and related files. Please review the <a href="guidelines.php">Author Guidelines</a>, <a href="policies.php">Editorial and Publishing Policies</a>, and <a href="figure_guidelines.php">Figure Guidelines</a>; and then refer to this checklist to ensure that you have gathered all the relevant information, and that the manuscript is formatted appropriately. </a>
+<p class="intro">Are you ready to submit your manuscript? Please refer to our checklists below and then use our <a href="${jms_link}" title="Submit your manuscript">manuscript submission system</a>.<br />
+<br />
+When you submit your article to <em>${journal_name}</em> you will be asked to provide information in addition to the manuscript and related files. Please review the <a href="guidelines.action">Author Guidelines</a>, <a href="policies.action">Editorial and Publishing Policies</a>, and <a href="figureGuidelines.action">Figure and Table Guidelines</a>; and then refer to this checklist to ensure that you have gathered all the relevant information, and that the manuscript is formatted appropriately. </a></p>
 
 <a id="new" name="new"></a>
 <h2>Information needed prior to submission</h2>
 
 <ul>
-	<li>Have you read the <a href="license.php">license agreement</a> and are you able to sign it on behalf of all of the authors?</li>
-	<li>Have you discussed the publication fees with your co-authors? Publication fees are ${publication_fee} per manuscript and will be billed upon acceptance (read the <a href="http://www.plos.org/about/faq.html#pubfees" title="FAQ on Publication Fees">FAQ on publication fees</a>). Editors and reviewers have no access to payment information, and hence inability to pay will not influence the decision to publish a paper.</li> 
-	<li>Are all authors aware of and approve the submission of the manuscript, its content, <a href="guidelines.php#authorstatus">authorship</a>, and order of authorship?</li>
-	<li>Do all authors agree to abide by established <a href="policies.php#reporting">study guidelines</a> (MIAME, CONSORT, STROBE, etc.)?</li>
-	<li>Have you prepared a <a href="guidelines.php#coverletter">cover letter</a> explaining why you consider this manuscript suitable for publication?</li>
-	<li>Are related manuscripts by any of the authors submitted or in press elsewhere? If so, are you prepared to provide a copy of each to accompany your submission?</li>
-	<li>Have you identified potential reviewers whose email addresses you can provide? Have you considered colleagues who may have a conflict of interest?</li>
-	<li>Do you have the following information for all authors: </li>
-		<ul>
-		<li>First Name, Middle Names/Initials, Last Name</li>
-		<li>Affiliations</li>
-		<li>Work Telephone Numbers</li>
-		<li>E-mail Addresses</li>
-		<li>Competing Interests</li>
-		<li>Funding Information</li>
-		<li>Author Contributions</li>
-	</ul>
+        <li>Have you read the <a href="license.action">license agreement</a> and are you able to sign it on behalf of all of the authors?</li>
+        <li>Have you discussed the publication fees with your co-authors? Publication fees are ${publication_fee} per manuscript and will be billed upon acceptance (read the <a href="http://www.plos.org/about/faq.html#pubfees" title="FAQ on Publication Fees">FAQ on publication fees</a>). Editors and reviewers have no access to payment information, and hence inability to pay will not influence the decision to publish a paper.</li> 
+        <li>Are all authors aware of and approve the submission of the manuscript, its content, <a href="guidelines.action#authorstatus">authorship</a>, and order of authorship?</li>
+        <li>Do all authors agree to abide by established <a href="policies.action#reporting">study guidelines</a> (MIAME, CONSORT, STROBE, etc.)?</li>
+        <li>Have you prepared a <a href="guidelines.action#coverletter">cover letter</a> explaining why you consider this manuscript suitable for publication?</li>
+        <li>Are related manuscripts by any of the authors submitted or in press elsewhere? If so, are you prepared to provide a copy of each to accompany your submission?</li>
+        <li>Have you identified potential reviewers whose email addresses you can provide? Have you considered colleagues who may have a conflict of interest?</li>
+        <li>Do you have the following information for all authors: </li>
+                <ul>
+                <li>First Name, Middle Names/Initials, Last Name</li>
+                <li>Affiliations</li>
+                <li>Work Telephone Numbers</li>
+                <li>E-mail Addresses</li>
+                <li>Competing Interests</li>
+                <li>Funding Information</li>
+                <li>Author Contributions</li>
+        </ul>
 </ul>
 
 <h2>Requirements for manuscripts and supporting files</h2>
 
 <ul>
-	<li>Manuscript file in DOC or RTF format, prepared per the <a href="guidelines.php">Author Guidelines</a>. If you prepared your article using LaTeX, you may upload the file in PDF format for use during the review process only.  If the article is accepted for publication, a DOC or RTF file will be required. </li>
+        <li>Manuscript file in DOC or RTF format, prepared per the <a href="guidelines.action#textfiles">Author Guidelines</a>. If you prepared your article using LaTeX, you may upload the file in PDF format for use during the review process only.  If the article is accepted for publication, your .tex files and formatting information will be required as a zipped file. Please consult our <a href="latexGuidelines.action" title="Go to LaTeX guidelines">LaTeX Guidelines</a> for a list of what will be required.  </li>
 
 
-	<li><a href="guidelines.php#title">Title</a> (no more than 150 characters) and Running Title (no more than 40 characters)</li>
-	<li><a href="guidelines.php#authorsummary">Author Summary</a> (no more than 200 words)</li>
-	<li>Deposition of all appropriate <a href="guidelines#accessionnumbers">datasets, images, and information</a> in the relevant repositories or submission of undeposited data as supporting files</li>
-	<li><a href="guidelines.php#accessionnumbers">Accession numbers</a> for genes, proteins, mutants, diseases, etc. in parentheses after first use throughout the manuscript file </li>
-	<li>Standard <a href="guidelines.php#nomenclature">nomenclature</a> used throughout the manuscript file
-	<li>Non-standard <a href="guidelines.php#abbreviations">abbreviations</a> defined in the text
-	<li>All figures and tables called out in the manuscript in proper order</li>
-	<li>Use of PLoS style for <a href="guidelines#references">references</a></li>
-	<li><a href="guidelines.php#tables">Tables</a> at the end of the manuscript files in DOC or RTF format</li> 
-	<li>Original, high resolution figure files (> 300 dpi) uploaded as separate files in EPS or TIFF format. If any of your figures are under copyright, please notify the journal office.  (Please read the <a href="figure_guidelines.php" title="View the Figures Submissions Guidelines">Guidelines for Figure Preparation</a> before submitting figures.) </li>
-	<li>Any <a href="guidelines.php#supportinginfo">Supporting Information</a> files should fall into one of the following categories: Dataset, Figure, Table, Text, Protocol, Audio, or Video. The numbered title and caption for each supporting information file should be entered into the appropriate fields in the online submission system. 
+        <li><a href="guidelines.action#title">Title</a> (no more than 150 characters) and Running Title (no more than 30 characters)</li>
+        <li><a href="guidelines.action#authorsummary">Author Summary</a> (no more than 200 words)</li>
+        <li>Deposition of all appropriate <a href="guidelines.action#accessionnumbers">datasets, images, and information</a> in the relevant repositories or submission of undeposited data as supporting files</li>
+        <li><a href="guidelines.action#accessionnumbers">Accession numbers</a> for genes, proteins, mutants, diseases, etc. in parentheses after first use throughout the manuscript file </li>
+        <li>Standard <a href="guidelines.action#nomenclature">nomenclature</a> used throughout the manuscript file
+        <li>Non-standard <a href="guidelines.action#abbreviations">abbreviations</a> defined in the text
+        <li>All figures and tables called out in the manuscript in proper order</li>
+        <li>Use of PLoS style for <a href="guidelines.action#references">references</a></li>
+        <li><a href="guidelines.action#tables">Tables</a> at the end of the manuscript files in DOC or RTF format</li> 
+        <li>Original, high resolution figure files (> 300 dpi) uploaded as separate files in EPS or TIFF format. If any of your figures are under copyright, please notify the journal office.  (Please read the <a href="figureGuidelines.action" title="View the Figures Submissions Guidelines">Guidelines for Figure Preparation</a> before submitting figures.) </li>
+        <li>Any <a href="guidelines.action#supportinginfo">Supporting Information</a> files should fall into one of the following categories: Dataset, Figure, Table, Text, Protocol, Audio, or Video. The numbered title and caption for each supporting information file should be entered into the appropriate fields in the online submission system. 
 </ul>
 
-<p>Please use our <a href="${jms_link}" title="Submit your manuscript online">manuscript submission system</a> and contact ${email} if you have any questions..</p>'>
+<p>Please use our <a href="${jms_link}" title="Submit your manuscript online">manuscript submission system</a> and contact ${email} if you have any questions.</p>'>

@@ -50,12 +50,14 @@
 <p>After appropriate consideration by the AE, a decision letter to the author is drafted. This letter may also be circulated to other members of the editorial board, who are given a short time to comment on the editorial decision. </p>
  <p>There are several types of decisions possible: </p>
 <ul>
-
  <li>Accept in principle</li>
  <li>Minor revision</li>
  <li>Major revision</li>
  <li>Reject </li>
 </ul>
+
+<p>If authors are unsatisfied by the decision they receive they can submit an appeal, in the first instance to the paper's original Academic Editor. However if the author is still unsatisfied they can request a second opinion. In such cases the appeal will be considered by at least one further member of the Editorial Board. If this second opinion supports the original decision that decision is final. Appeal requests should be addressed to <strong>plosone [at] plos.org</strong>.</p>
+
 <p>Upon acceptance, the manuscript is checked by <em>PLoS ONE</em> staff to ensure that it is in a form that will allow it to be efficiently handled by our production system. The authors will be queried and allowed to make any final minor revisions that are needed.</p>
 
 <p>This is the final stage at which an author will see their manuscript before publication. The authors' files will be carefully tagged to generate XML and PDF files, but will not be subject to detailed copyediting (see <a href="#production">Overview of the Production Process</a>). It is therefore essential that authors provide a thoroughly proofread and checked manuscript, following the manuscript checklist and any comments from PLoS staff.</p>
@@ -250,6 +252,7 @@ Nomenclature Committee">HUGO</a>. It is sometimes advisable to indicate the syno
 
 <h3>Ethical Treatment of Research Subjects and Patient Consent</h3>
 <p>All research involving humans and animals must have been approved by the authors' institutional review board or equivalent committee and that board must be named by the authors in their manuscript. In the case of human participants, informed consent must have been obtained and all clinical investigation must have been conducted according to the principles expressed in the <a href="http://www.wma.net/e/policy/b3.htm" title="World Medical Association Declaration of Helsinki | Ethical Principles for Medical Research Involving Human Subjects">Declaration of Helsinki</a>. Authors must describe the process used for obtaining informed consent in their manuscript. Authors should submit a statement from the ethics committee or institutional review board indicating their approval of the research. We also encourage authors to submit a sample of a patient consent form and may require submission of completed forms on particular occasions.</p>
+
  
 <h3>Patient Privacy and Informed Consent for Publication</h3>
 <p>Our policy conforms to the <a href="http://www.icmje.org" title="ICMJE | Uniform Requirements for Manuscripts Submitted to Biomedical Journals: Writing and Editing for Biomedical Publication">Uniform Requirements</a>, which states: </p>
@@ -270,9 +273,10 @@ Nomenclature Committee">HUGO</a>. It is sometimes advisable to indicate the syno
 
 <p>We follow the <a href="http://www.who.int/ictrp/en/">WHO definition of a clinical trial</a>. "A clinical trial is any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes. Interventions include but are not restricted to drugs, cells and other biological products, surgical procedures, radiologic procedures, devices, behavioural treatments, process-of-care changes, preventive care, etc"</p>
 
-<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq on trial registration</a> for further details. The WHO's list of approved registries is listed here <a href="http://www.who.int/ictrp/network/list_registers/en/index.html">http://www.who.int/ictrp/network/list_registers/en/index.html</a>.</p>
+<p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq on trial registration</a> on trial registration for further details. The WHO's list of approved registries is listed here <a href="http://www.who.int/ictrp/network/list_registers/en/index.html">http://www.who.int/ictrp/network/list_registers/en/index.html</a>.</p>
 
-<p>Authors of randomized controlled trials must adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types.   Before the paper can enter peer review authors must: 1) name in the paper trial registry, trial registration number, and IRB and 2) provide a copy of the trial protocol and a completed CONSORT checklist as supporting files. The CONSORT flow diagram must be included as Figure 1. Any deviation from the trial protocol must be explained in the paper. Authors must explicitly discuss informed consent in their paper, and PLoS reserves the right to ask for a copy of the patient consent form. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported in the Methods section.</p>
+<p>Authors of randomized controlled trials must adhere to the CONSORT reporting guidelines appropriate to their trial design. Please check the <a href="http://www.consort-statement.org/" title="CONSORT statement Web site">CONSORT statement Web site</a> for information on the appropriate guidelines for specific trial types. Before the paper can enter peer review authors must: 1) name in the paper trial registry, trial registration number, and IRB and 2) provide a copy of the trial protocol and a completed CONSORT checklist as supporting files. The CONSORT flow diagram must be included as Figure 1. Any deviation from the trial protocol must be explained in the paper. Authors must explicitly discuss informed consent in their paper, and PLoS reserves the right to ask for a copy of the patient consent form. Information on statistical methods or participants beyond what is indicated in the CONSORT statement should be reported in the Methods section.</p>
+
 
 <h3>Reporting Systematic Reviews and Meta-Analyses</h3>
 <!-- Similar to section in Global Common Template, Editorial Policies, Reporting Guidelines for Specific Study Designs, Systematic Reviews and Meta-Analyses of Randomized Controlled Trials -->

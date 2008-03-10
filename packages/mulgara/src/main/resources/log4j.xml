@@ -37,16 +37,19 @@
     <level value="warn" />
   </logger>
 
+  <!-- change to 'debug' for troubleshooting -->
   <logger name="org.topazproject.mulgara.ws">
-    <level value="info" /> <!-- change to 'debug' for bug reports -->
+    <level value="info" /> 
   </logger>
 
-  <category name="org.mulgara.resolver.DatabaseSession"> <!-- andreas suggests -->
+  <!-- andrae suggests this to log mulgara queries -->
+  <!--category name="org.mulgara.resolver.DatabaseSession"> 
     <priority value="info"/>
-  </category>
+  </category-->
 
+  <!-- change to 'info' for troubleshooting -->
   <logger name="org.mulgara">
-    <level value="warn" /> <!-- change to 'info' for bug reports -->
+    <level value="warn" /> 
   </logger>
 
   <root>
