@@ -28,6 +28,7 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.util.TransactionHelper;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
@@ -61,13 +62,34 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
 
   private Session session;
   private boolean wrap = false;
+  
+  /**
+   * Internal key used for detecting whether or not this interceptor 
+   * has already been applied for the targeted action.  
+   * This check is necessary when considering action chaining. 
+   */
+  private static final String REENTRANT_KEY = "__uaia";
+  
+  /**
+   * Checks for and sets the {@link #REENTRANT_KEY} value for the current {@link ActionContext}
+   * and reports on whether or not it was previously set.
+   * @param invocation The {@link ActionInvocation}
+   * @return <code>true</code> if this interceptor has already been applied for the current {@link ActionContext}.
+   */
+  private boolean reentrantCheck(ActionInvocation invocation) {
+    Object obj = invocation.getInvocationContext().get(REENTRANT_KEY);
+    if(obj == null) {
+      invocation.getInvocationContext().put(REENTRANT_KEY, true);
+    }
+    return obj != null;
+  }
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    String user = lookupUser(ServletActionContext.getRequest());
-    if (wrap)
-      ServletActionContext.setRequest(wrapRequest(ServletActionContext.getRequest(), user));
-
+    if(!reentrantCheck(invocation)) {
+      String user = lookupUser(ServletActionContext.getRequest());
+      if(wrap) ServletActionContext.setRequest(wrapRequest(ServletActionContext.getRequest(), user));
+    }
     return invocation.invoke();
   }
 
@@ -127,7 +149,6 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
     if (ua != null)
       user = ua.getId().toString();
     else
-      //user = "anonymous:user/" + ((authId == null) ? "" : URLEncoder.encode(authId));
       user = "anonymous:user/" + ((authId == null) ? "" : URLEncoder.encode(authId, "UTF-8"));
 
     session.setAttribute(USER_KEY, user);
