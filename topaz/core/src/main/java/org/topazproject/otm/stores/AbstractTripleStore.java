@@ -103,7 +103,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
 
     boolean found = false;
 
-    for (Mapper m : cm.getFields()) {
+    for (Mapper m : cm.getMappers()) {
       if (m.isPredicateMap()) {
         found = true;
 
@@ -115,7 +115,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
       Map<String, List<String>> map = new HashMap<String, List<String>>();
       map.putAll(fvalues);
 
-      for (Mapper m : cm.getFields()) {
+      for (Mapper m : cm.getMappers()) {
         if (m.isPredicateMap())
           continue;
 
@@ -125,7 +125,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
         map.remove(m.getUri());
       }
 
-      for (Mapper m : cm.getFields()) {
+      for (Mapper m : cm.getMappers()) {
         if (m.isPredicateMap())
           m.getBinder(session).setRawValue(instance, map);
       }
@@ -138,14 +138,14 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
    * inherited javadoc
    */
   public <T> void insert(ClassMetadata cm, String id, T o, Connection con) throws OtmException {
-    insert(cm, cm.getFields(), id, o, con);
+    insert(cm, cm.getMappers(), id, o, con);
   }
 
   /*
    * inherited javadoc
    */
   public <T> void delete(ClassMetadata cm, String id, T o, Connection con) throws OtmException {
-    delete(cm, cm.getFields(), id, o, con);
+    delete(cm, cm.getMappers(), id, o, con);
   }
 
   /*

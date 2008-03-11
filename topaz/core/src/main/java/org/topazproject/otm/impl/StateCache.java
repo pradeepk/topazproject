@@ -144,7 +144,7 @@ class StateCache {
     public <T>InstanceState(T instance, ClassMetadata cm, Session session) throws OtmException {
       vmap                   = new HashMap<Mapper, List<String>>();
 
-      for (Mapper m : cm.getFields()) {
+      for (Mapper m : cm.getMappers()) {
         Binder b = m.getBinder(session);
         if (m.isPredicateMap())
           pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
@@ -166,7 +166,7 @@ class StateCache {
       Collection<Mapper> mappers = new ArrayList<Mapper>();
       boolean pmapChanged = false;
 
-      for (Mapper m : cm.getFields()) {
+      for (Mapper m : cm.getMappers()) {
         Binder b = m.getBinder(session);
         if (m.isPredicateMap()) {
           Map<String, List<String>> nv = (Map<String, List<String>>) b.getRawValue(instance, true);
@@ -190,7 +190,7 @@ class StateCache {
       }
 
       if (pmapChanged)
-        mappers = cm.getFields(); // all fields since predicate-map is a wild-card
+        mappers = cm.getMappers(); // all fields since predicate-map is a wild-card
 
       return mappers;
     }

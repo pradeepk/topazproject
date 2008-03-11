@@ -227,11 +227,13 @@ public class ClassMetadata {
   }
 
   /**
-   * Gets the persistable fields of this class. Includes embedded class fields.
+   * Gets the mappers for all predicates that this ClassMetadata maps. All
+   * embedded class fields are flattened and made available as part of this
+   * list for convinience.
    *
    * @return collection of field mappers.
    */
-  public Collection<Mapper> getFields() {
+  public Collection<Mapper> getMappers() {
     return fields;
   }
 

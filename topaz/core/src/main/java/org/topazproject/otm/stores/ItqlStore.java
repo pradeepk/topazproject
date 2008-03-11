@@ -246,7 +246,7 @@ public class ItqlStore extends AbstractTripleStore {
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
-    final boolean partialDelete = (cm.getFields().size() != fields.size());
+    final boolean partialDelete = (cm.getMappers().size() != fields.size());
     Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder delete = new StringBuilder(500);
 
@@ -614,7 +614,7 @@ public class ItqlStore extends AbstractTripleStore {
     Set<String> mList = new HashSet<String>();
     for (ClassMetadata cm : cmList) {
       mList.add(getModelUri(cm.getModel(), isc));
-      for (Mapper p : cm.getFields()) {
+      for (Mapper p : cm.getMappers()) {
         if (p.getModel() != null)
           mList.add(getModelUri(p.getModel(), isc));
       }
@@ -631,9 +631,9 @@ public class ItqlStore extends AbstractTripleStore {
   private static Set<ClassMetadata> listFieldClasses(ClassMetadata cm, SessionFactory sf) {
     Set<ClassMetadata> clss = new HashSet<ClassMetadata>();
 
-    for (Mapper p : cm.getFields()) {
+    for (Mapper p : cm.getMappers()) {
       ClassMetadata c = sf.getClassMetadata(p.getAssociatedEntity());
-      if ((c != null) && ((c.getTypes().size() + c.getFields().size()) > 0))
+      if ((c != null) && ((c.getTypes().size() + c.getMappers().size()) > 0))
         clss.add(c);
     }
 
@@ -644,7 +644,7 @@ public class ItqlStore extends AbstractTripleStore {
     List<Mapper> mappers = new ArrayList<Mapper>();
 
     for (ClassMetadata c : allSubClasses(cm, sf)) {
-      for (Mapper p : c.getFields()) {
+      for (Mapper p : c.getMappers()) {
         if (p.isAssociation())
           mappers.add(p);
       }

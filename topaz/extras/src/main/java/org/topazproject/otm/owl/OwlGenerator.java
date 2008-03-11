@@ -219,7 +219,7 @@ public class OwlGenerator {
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
-      for (Mapper m: cm.getFields()) {
+      for (Mapper m: cm.getMappers()) {
         log.debug("Processing field: " + m.getName());
         // Ignore if not annotated
         if (m.getUri() == null)
@@ -330,7 +330,7 @@ public class OwlGenerator {
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
-      for (Mapper m: cm.getFields()) {
+      for (Mapper m: cm.getMappers()) {
         log.debug("Processing field: " + m.getName());
         // If not annotated or not association
         if ((m.getUri() == null) || (!m.isAssociation()))
@@ -392,7 +392,7 @@ public class OwlGenerator {
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
-      for (Mapper m: cm.getFields()) {
+      for (Mapper m: cm.getMappers()) {
         log.debug("Processing field: " + m.getName());
         // If not annotated or an association
         if ((m.getUri() == null) || (m.isAssociation()))

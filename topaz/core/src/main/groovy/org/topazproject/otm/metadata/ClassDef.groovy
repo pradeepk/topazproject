@@ -211,7 +211,7 @@ public class ClassDef {
 
     clsDef = rdf.classDefsByName[extendsClass]
     while (clsDef) {
-      mappers.addAll(clsDef.toClass().getFields())
+      mappers.addAll(clsDef.toClass().getMappers())
       if (!idmapper)
         idmapper = clsDef.toClass().getIdField()
       clsDef = rdf.classDefsByName[clsDef.extendsClass]

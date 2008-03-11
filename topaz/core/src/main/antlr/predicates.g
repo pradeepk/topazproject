@@ -171,7 +171,7 @@ options {
 
     private static EmbeddedClassFieldBinder findEmbeddedFieldBinder(ClassMetadata md, String field) {
       String[] parts = field.split("\\.");
-      mappers: for (Mapper m : md.getFields()) {
+      mappers: for (Mapper m : md.getMappers()) {
         Binder l = m.getBinder(EntityMode.POJO);
         for (int idx = 0; idx < parts.length; idx++) {
           if (!(l instanceof EmbeddedClassMemberFieldBinder))

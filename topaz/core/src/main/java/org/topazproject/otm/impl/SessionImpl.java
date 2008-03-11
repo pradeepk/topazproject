@@ -167,7 +167,7 @@ public class SessionImpl extends AbstractSession {
       ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
-      for (Mapper m : cm.getFields()) {
+      for (Mapper m : cm.getMappers()) {
         if (!m.isAssociation())
           continue;
 
@@ -212,7 +212,7 @@ public class SessionImpl extends AbstractSession {
       ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
-      for (Mapper m : cm.getFields()) {
+      for (Mapper m : cm.getMappers()) {
         if (!m.isAssociation())
           continue;
 
@@ -425,7 +425,7 @@ public class SessionImpl extends AbstractSession {
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
     Binder                bf            = cm.getBlobField();
-    boolean               tp            = (cm.getFields().size() + cm.getTypes().size()) > 0;
+    boolean               tp            = (cm.getMappers().size() + cm.getTypes().size()) > 0;
 
     if (delete) {
       if (log.isDebugEnabled())
@@ -435,7 +435,7 @@ public class SessionImpl extends AbstractSession {
      if (bf != null)
        bs.delete(cm, id.getId(), getBlobStoreCon());
      if (tp)
-       store.delete(cm, cm.getFields(), id.getId(), o, getTripleStoreCon());
+       store.delete(cm, cm.getMappers(), id.getId(), o, getTripleStoreCon());
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
@@ -443,17 +443,17 @@ public class SessionImpl extends AbstractSession {
       Collection<Mapper> fields = states.update(o, cm, this);
       boolean firstTime = (fields == null);
       if (firstTime)
-        fields = cm.getFields();
+        fields = cm.getMappers();
       int nFields = fields.size();
       if (log.isDebugEnabled()) {
         if (firstTime)
           log.debug("Saving " + id + " to store.");
-        else if (nFields == cm.getFields().size())
+        else if (nFields == cm.getMappers().size())
             log.debug("Full update for " + id + ".");
         else if (nFields == 0)
           log.debug("Update skipped for " + id + ". No changes to the object state.");
         else {
-          Collection<Mapper> skips = new ArrayList(cm.getFields());
+          Collection<Mapper> skips = new ArrayList(cm.getMappers());
           skips.removeAll(fields);
           StringBuilder buf = new StringBuilder(100);
           char sep = ' ';
@@ -498,7 +498,7 @@ public class SessionImpl extends AbstractSession {
     if (cm.isView())
       instance = loadView(cm, id.getId(), instance,
                                   new ArrayList<Filter>(filters.values()), filterObj);
-    else if ((cm.getTypes().size() + cm.getFields().size()) > 0)
+    else if ((cm.getTypes().size() + cm.getMappers().size()) > 0)
       instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj);
     else if ((cm.getBlobField() != null) && (instance == null)) {
@@ -520,7 +520,7 @@ public class SessionImpl extends AbstractSession {
                      sessionFactory.getBlobStore().get(cm, id.getId(), getBlobStoreCon()));
 
     if (!cm.isView()) {
-      for (Mapper m : cm.getFields())
+      for (Mapper m : cm.getMappers())
         if (m.getFetchType() == FetchType.eager) {
           Binder b = m.getBinder(getEntityMode());
           for (Object o : b.get(instance))
@@ -575,7 +575,7 @@ public class SessionImpl extends AbstractSession {
     // a proj-var may appear multiple times, so have to delay closing of subquery results
     Set<Results> sqr = new HashSet<Results>();
 
-    for (Mapper m : cm.getFields()) {
+    for (Mapper m : cm.getMappers()) {
       int    idx = r.findVariable(m.getProjectionVar());
       // XXX: Other EntityModes
       Object val = getValue(r, idx, ((FieldBinder)m.getBinder(getEntityMode())).getComponentType(),
@@ -687,7 +687,7 @@ public class SessionImpl extends AbstractSession {
                                               getEntityMode(), o);
       Set<Wrapper> assocs = new HashSet<Wrapper>();
 
-      for (Mapper m : cm.getFields()) {
+      for (Mapper m : cm.getMappers()) {
         Binder b = m.getBinder(getEntityMode());
         if (!m.isAssociation() || (m.getUri() == null))
           continue;
@@ -740,7 +740,7 @@ public class SessionImpl extends AbstractSession {
 
     log.warn ("Copy(" + ((loopDetect==null) ? "shallow" : "deep") + ") merging " + id);
 
-    for (Mapper m : cm.getFields()) {
+    for (Mapper m : cm.getMappers()) {
       Mapper om = ocm.getMapperByUri(m.getUri(), m.hasInverseUri(), m.getRdfType());
 
       if (om == null)

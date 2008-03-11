@@ -122,7 +122,7 @@ public class AnnotationClassMetaFactory {
       types       = superMeta.getTypes();
       idField     = superMeta.getIdField();
       blobField   = superMeta.getBlobField();
-      fields.addAll(superMeta.getFields());
+      fields.addAll(superMeta.getMappers());
       superEntity = superMeta.getName();
     }
 
@@ -502,7 +502,7 @@ public class AnnotationClassMetaFactory {
 
     Collection<Mapper>  mappers = new ArrayList<Mapper>();
 
-    for (Mapper p : cm.getFields())
+    for (Mapper p : cm.getMappers())
       mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder(EntityMode.POJO))));
 
     Mapper p = cm.getIdField();

@@ -112,7 +112,7 @@ public class MemStore extends AbstractTripleStore {
     value.put(Rdf.rdf + "type",
               new ArrayList<String>(storage.getProperty(model, id, Rdf.rdf + "type")));
 
-    for (Mapper p : cm.getFields()) {
+    for (Mapper p : cm.getMappers()) {
       String uri = p.getUri();
 
       if (!p.hasInverseUri())
