@@ -21,7 +21,7 @@
 
     <p>
     The purpose of the {@link org.topazproject.mulgara.resolver.FilterResolver FilterResolver}
-    is to be get notifications whenever updates to a model are made. The FilterResolver is
+    is to get notifications whenever updates to a model are made. The FilterResolver is
     configured with a list of {@link org.topazproject.mulgara.resolver.FilterHandler
     FilterHandler}'s which get notified on updates. The two main handlers currently are the 
     {@link org.topazproject.mulgara.resolver.TransactionLogger TransactionLogger} and the
@@ -29,14 +29,6 @@
     TransactionLogger will log all inserts, deletes, model creates, and model drops to a log
     file which can be replayed to re-generate the db in case of a catastrophic failure. The
     CacheInvalidator is used to send out cache-invalidations when certain data are modified.
-    </p>
-    <p>
-    Lastly there is the {@link org.topazproject.mulgara.resolver.FedoraUpdater FedoraUpdater}
-    and its associated {@link org.topazproject.mulgara.resolver.UpdateFilter UpdateFilter}'s.
-    This is legacy code and was used to attempt to store triples back into Fedora, providing
-    effectively the reverse of Fedora's resource-indexer. However, there are tricky
-    race-conditions when both the resource-indexer and the FedoraUpdater are used, making this
-    approach unusable.
     </p>
   </body>
 </html>
