@@ -349,7 +349,11 @@ html>body div.content h4	{ margin-bottom:1em; } /* correct margin for all browse
 
 div.static h4,
 div.static h5,
-div.content h5	{ float:left; margin:0 0.5em 0 0; font-size: 1em; color: #333; }
+div.content h5	{ margin:0 0.5em 0 0; font-size: 1em; color: #333; }
+html>body div.static h4,
+html>body div.static h5,
+html>body div.content h5	{ float:left; } /* float allow headers to display inline with following paragraph except for IE6 */
+div.content h5+div { clear:left; }
 div.static h4+p,
 div.static h5+p,
 div.content h5+p	{ margin-top:0; }
@@ -462,6 +466,7 @@ div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; 
 
 div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/pone_toolbar_bg.gif) repeat-x top;}
 div.commentview	fieldset{ border: 1px solid #ccc; border-width: 1px 0; margin: 0 -5px 5px -5px; padding: 10px; background-color: #eee; position: relative;}
+html>body div.commentview	fieldset { width:214px; } /* for all browsers except IE6*/
 div.commentview	 li 	{ font-size: .9em; }
 div.commentview h6,
 div.rhcBox h6 { margin: 0; }
