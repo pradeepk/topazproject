@@ -41,10 +41,10 @@ log = LogFactory.getLog(this.getClass())
 
 
 def cli = new CliBuilder(
-  usage: 'validateArticleZip [-c config-overrides.xml] [-t file:/tmp] -f file:/tmp/article.zip')
+  usage: 'validateArticleZip [-c config-overrides.xml] [-t file:/tmp/] -f file:/tmp/article.zip')
 cli.h(longOpt:'help', "help (this message)")
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz.xml')
-cli.t(args:1, 'file:/tmp - location of tmp dir')
+cli.t(args:1, 'file:/tmp/ - location of tmp dir. please add trailing slash.')
 cli.f(args:1, 'file:/tmp/article.zip - article.zip')
 
 args = ToolHelper.fixArgs(args)
@@ -57,7 +57,7 @@ if (opt.h) { cli.usage(); return }
 // file required
 if (!opt.f) { cli.usage(); return }
 
-def URI tmpDir = (opt.t) ? URI.create(opt.t) : URI.create('file:/tmp')
+def URI tmpDir = (opt.t) ? URI.create(opt.t) : URI.create('file:/tmp/')
  
 // Load configuration
 CONF = ToolHelper.loadConfiguration(opt.c)
