@@ -68,7 +68,7 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
    * has already been applied for the targeted action.  
    * This check is necessary when considering action chaining. 
    */
-  private static final String REENTRANT_KEY = "__uaia";
+  private static final String REENTRANT_KEY = UserAccountsInterceptor.class.getName() + ".reentrant";
   
   /**
    * Checks for and sets the {@link #REENTRANT_KEY} value for the current {@link ActionContext}
