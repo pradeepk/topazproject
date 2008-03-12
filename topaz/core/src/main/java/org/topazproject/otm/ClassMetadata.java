@@ -84,10 +84,19 @@ public class ClassMetadata {
     for (Mapper m : fields) {
       List<Mapper> mappers = uriMap.get(m.getUri());
 
+      // See ticket #840. The following enforces the current restrictions.
       if (mappers == null)
         uriMap.put(m.getUri(), mappers = new ArrayList<Mapper>());
       else if (isDuplicateMapping(mappers, m))
         throw new OtmException("Duplicate predicate uri for " + m.getName() + " in " + name);
+      else if (mappers.get(0).getColType() != m.getColType())
+        throw new OtmException("The colType for " + m.getName() + " in " + name + 
+            ", must be " + mappers.get(0).getColType() + " as defined by " 
+            + mappers.get(0).getName() + " since they both share the same predicate uri");
+      else if (!sameModel(mappers.get(0), m, model))
+        throw new OtmException("The model for " + m.getName() + " in " + name + 
+            ", must be " + mappers.get(0).getModel() + " as defined by " 
+            + mappers.get(0).getName() + " since they both share the same predicate uri");
 
       mappers.add(m);
 
@@ -407,6 +416,19 @@ public class ClassMetadata {
     }
 
     return false;
+  }
+
+  private static boolean sameModel(Mapper m1, Mapper m2, String model) {
+    String g1 = m1.getModel();
+    String g2 = m2.getModel();
+
+    if ((g1 == null) || "".equals(g1))
+      g1 = model;
+
+    if ((g2 == null) || "".equals(g2))
+      g2 = model;
+
+    return (g1 != null) ? g1.equals(g2) : (g2 == null);
   }
 
   public boolean isAssignableFrom(ClassMetadata other) {
