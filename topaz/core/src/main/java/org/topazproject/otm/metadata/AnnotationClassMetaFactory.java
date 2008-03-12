@@ -46,6 +46,7 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Predicate.PropType;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.SubView;
@@ -439,25 +440,22 @@ public class AnnotationClassMetaFactory {
 
       boolean objectProperty = false;
 
-      if (rdf == null || "".equals(rdf.type())) {
+      if (rdf == null || PropType.UNDEFINED.equals(rdf.type())) {
         boolean declaredAsUri = URI.class.isAssignableFrom(type) || URL.class.isAssignableFrom(type);
-        boolean noDatatype = (rdf == null) || "".equals(rdf.type());
-        objectProperty = (serializer == null) || inverse || (declaredAsUri && noDatatype);
-      } else if (Predicate.OBJECT.equals(rdf.type())) {
+        objectProperty = (serializer == null) || inverse || declaredAsUri;
+      } else if (PropType.OBJECT.equals(rdf.type())) {
         if (!"".equals(rdf.dataType()))
           throw new OtmException("Datatype cannot be specified for an object-Property field " 
                                   + toString(f));
         objectProperty = true;
-      } else if (Predicate.DATA.equals(rdf.type())) {
+      } else if (PropType.DATA.equals(rdf.type())) {
         if (serializer == null)
           throw new OtmException("No serializer found for '" + type + "' with dataType '" 
           + dt + "' for a data-property field " + toString(f));
         if (inverse)
           throw new OtmException("Inverse mapping cannot be specified for a data-property field "
                                  + toString(f));
-      } else
-         throw new OtmException("Invalid type() value '" + rdf.type() + "' found on "
-                                 + toString(f));
+      }
 
       if (serializer != null)
         ft = null;

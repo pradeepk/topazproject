@@ -16,6 +16,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Predicate.PropType;
 
 /**
  * This is the base class to capture common predicates between Annotations and
@@ -32,7 +33,7 @@ public abstract class Annotea {
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
 
   private Date                                              created;
-  @Predicate(uri = Rdf.rdf + "type", type = Predicate.OBJECT)
+  @Predicate(uri = Rdf.rdf + "type", type = PropType.OBJECT)
   private String                                            type;
   @Predicate(uri = Rdf.dc + "creator")
   private String                                            creator;

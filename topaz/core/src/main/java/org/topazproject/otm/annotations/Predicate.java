@@ -33,25 +33,32 @@ public @interface Predicate {
   String uri() default "";
 
   /**
-   * The predicate type. Defaults to {@link #OBJECT} for associations and {@link java.net.URI}
-   * or {@link java.net.URL} fields when the {@link #dataType} value is unspecified. Otherwise
-   * it defaults to {@link #DATA}. Normally there is no need to configure this. The only place
-   * this is needed is to specify an OBJECT type for a field that is serializable.
-   * <p>
-   * This is similar to the owl:DataProperty and owl:ObjectProperty, but however
-   * it may not necessarily mean an rdfs:range on this predicate.
+   * An enum to configure the property type of this predicate URI. This is similar to the
+   * owl:DataProperty and owl:ObjectProperty.
    */
-  String type() default "";
+  enum PropType {
+      /**
+       * To specify that this field should be persisted as a literal value.
+       */
+      DATA,
+      /**
+       * To specify that this field should be persisted as a URI value.
+       */
+      OBJECT,
+      /**
+       * To derive the PropType of this value based on other attributes.
+       */
+      UNDEFINED
+  };
 
   /**
-   * A constant to use to indicate {@link #type} value of DATA.
+   * The property type of this predicate uri. Defaults to <value>OBJECT</value> for associations
+   * and {@link java.net.URI} or {@link java.net.URL} fields when the {@link #dataType} value is 
+   * unspecified. Otherwise it defaults to <value>DATA</value>. Normally there is no need to 
+   * configure this. The only place this is needed is to specify an <value>OBJECT</value> type for a field
+   * that is serializable.
    */
-  String DATA = "DATA";
-
-  /**
-   * A constant to use to indicate {@link #type} value of OBJECT.
-   */
-  String OBJECT = "OBJECT";
+  PropType type() default PropType.UNDEFINED;
 
   /**
    * Data type for literals. Defaults based on the field data type. Use UNTYPED for untyped literals. 

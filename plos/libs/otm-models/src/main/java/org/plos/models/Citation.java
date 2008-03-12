@@ -19,6 +19,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Predicate.PropType;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -86,7 +87,7 @@ public class Citation {
   @Predicate(uri = PLoS.bibtex + "hasAbstract", dataType = Rdf.xsd + "string")
   private String summary;
 
-  @Predicate(uri = Rdf.rdf + "type", type = Predicate.OBJECT)
+  @Predicate(uri = Rdf.rdf + "type", type = PropType.OBJECT)
   private String citationType;
 
   /**
