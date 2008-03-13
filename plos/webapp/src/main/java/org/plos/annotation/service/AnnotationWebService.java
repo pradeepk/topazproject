@@ -18,7 +18,6 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -38,12 +37,12 @@ import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
 import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 
 import org.plos.models.Annotation;
+import org.plos.models.Annotea;
 import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;
 import org.plos.models.Correction;
-import org.plos.models.FormalCorrection;
-import org.plos.models.MinorCorrection;
-
+import org.plos.models.Trackback;
+import org.plos.models.TrackbackContent;
 import org.plos.permission.service.PermissionWebService;
 
 import org.plos.util.CacheAdminHelper;
@@ -62,6 +61,8 @@ import org.topazproject.otm.criterion.Restrictions;
  */
 public class AnnotationWebService extends BaseAnnotationService {
   public static final String ANNOTATION_KEY = "ArticleAnnotationCache-Annotation-";
+  public static final String ANNOTATION_LOCK = "ArticleAnnotationCache-lock-";
+
   private static final Log          log                      =
     LogFactory.getLog(AnnotationWebService.class);
   private AnnotationsPEP            pep;
@@ -70,8 +71,9 @@ public class AnnotationWebService extends BaseAnnotationService {
   private PermissionWebService      permissionsWebService;
   private FetchArticleService fetchArticleService;
   private Ehcache articleAnnotationCache;
+
   protected static final Set<Class<? extends Annotation>> ALL_ANNOTATION_CLASSES = new HashSet<Class<? extends Annotation>>();
-  static { 
+  static {
     ALL_ANNOTATION_CLASSES.add(Comment.class);
     ALL_ANNOTATION_CLASSES.add(Correction.class);
     // ALL_ANNOTATION_CLASSES.add(FormalCorrection.class);
@@ -99,7 +101,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (fedora == null)
       fedora = new FedoraHelper();
   }
-  
+
   /**
    * Create a Flag Annotation
    * @param mimeType
@@ -116,7 +118,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     // TODO - eventually this should create a different type of annotation class and not call this method...
     return createAnnotation(mimeType, target, null, null, null, body);
   }
-  
+
   /**
    * Create a Comment annotation.
    *
@@ -147,7 +149,7 @@ public class AnnotationWebService extends BaseAnnotationService {
       throw new UnsupportedOperationException("supersedes is not supported");
 
     String user      = PlosOneUser.getCurrentUser().getUserId();
-    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()), 
+    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
         "Annotation", "Annotation Body");
 
     if (log.isDebugEnabled())
@@ -210,7 +212,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     return newId;
   }
 
-  
+
 
   /**
    * Create an annotation.
@@ -226,8 +228,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws RemoteException RemoteException
    * @throws UnsupportedEncodingException UnsupportedEncodingException
-   * @throws IllegalAccessException 
-   * @throws InstantiationException 
+   * @throws IllegalAccessException
+   * @throws InstantiationException
    * @throws UnsupportedOperationException DOCUMENT ME!
    */
   public String createArticleAnnotation(Class<ArticleAnnotation> annotationClass, final String mimeType, final String target, final String context,
@@ -244,14 +246,14 @@ public class AnnotationWebService extends BaseAnnotationService {
       throw new UnsupportedOperationException("supersedes is not supported");
 
     String user      = PlosOneUser.getCurrentUser().getUserId();
-    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()), 
+    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
         "Annotation", "Annotation Body");
 
     if (log.isDebugEnabled())
       log.debug("created fedora object " + bodyUri + " for correction annotation ");
 
     final ArticleAnnotation annotation = (ArticleAnnotation) annotationClass.newInstance();
-    
+
     annotation.setMediator(getApplicationId());
     // a.setType(getDefaultType());
     annotation.setAnnotates(URI.create(target));
@@ -306,9 +308,9 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     return newId;
   }
-  
-  
-  
+
+
+
   /**
    * Unflag an annotation.
    *
@@ -333,12 +335,12 @@ public class AnnotationWebService extends BaseAnnotationService {
 
   /**
    * Delete an annotation subtree and not just mark it.
-   * 
+   *
    * @param annotationId
    *          annotationId
    * @param deletePreceding
    *          deletePreceding
-   * 
+   *
    * @throws RemoteException
    *           RemoteException
    */
@@ -400,12 +402,12 @@ public class AnnotationWebService extends BaseAnnotationService {
   public List<Annotation> listAnnotationsForTarget(String target) {
     return listAnnotationsForTarget(target, null);
   }
-  
+
   /**
-   * Retrieve all Annotation instances that annotate the given target DOI. If annotationClassTypes is null, then all 
-   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the 
-   * annotationClassTypes Set are returned. 
-   * 
+   * Retrieve all Annotation instances that annotate the given target DOI. If annotationClassTypes is null, then all
+   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the
+   * annotationClassTypes Set are returned.
+   *
    * @param target
    * @param annotationClassTypes
    * @return
@@ -420,7 +422,7 @@ public class AnnotationWebService extends BaseAnnotationService {
                 return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
               }
             });
-    
+
     // TODO: Since we cache the set of all annotations, we can't query and cache a limited set of annotations
     // at this time, so we have to filter out the types here and query for all types above when populating the cache
     if (annotationClassTypes != null) {
@@ -435,11 +437,11 @@ public class AnnotationWebService extends BaseAnnotationService {
       }
       return filteredAnnotations;
     }
-    
+
     return allAnnotations;
   }
-  
-  private List<Annotation> listAnnotations(final String target, 
+
+  private List<Annotation> listAnnotations(final String target,
       final String mediator, final int state, final Set<Class<? extends Annotation>> classTypes) {
     if (target != null) {
       pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
@@ -451,13 +453,19 @@ public class AnnotationWebService extends BaseAnnotationService {
         session,
         new TransactionHelper.Action<List<Annotation>>() {
           public List<Annotation> run(Transaction tx) {
-            
+
             List<Annotation> combinedAnnotations = new ArrayList<Annotation>();
-            
+
             for (Class anClass : classTypes) {
               Criteria c = tx.getSession().createCriteria(anClass);
               setRestrictions(c, target, mediator, state);
               combinedAnnotations.addAll((List<Annotation>)c.list());
+            }
+
+            // TODO: touch all of the Annotation to force OTM to resolve references,
+            // needed for cache Serialization, avoid lazy loading issues in webapp usage.
+            for (Annotation annotation : combinedAnnotations) {
+              getAllAnnotationTypes(annotation);
             }
 
             return combinedAnnotations;
@@ -470,7 +478,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     return allAnnotations;
   }
-  
+
   /**
    * Helper method to set restrictions on the criteria used in listAnnotations()
    */
@@ -490,11 +498,11 @@ public class AnnotationWebService extends BaseAnnotationService {
       c.add(Restrictions.eq("annotates", target));
     }
   }
-  
+
   /**
-   * See listAnnotations(target, annotationClassTypes). This method returns the result of that 
-   * method that with annoationClassTypes set to null. 
-   * 
+   * See listAnnotations(target, annotationClassTypes). This method returns the result of that
+   * method that with annoationClassTypes set to null.
+   *
    * @param target
    * @return
    * @throws RemoteException
@@ -502,12 +510,12 @@ public class AnnotationWebService extends BaseAnnotationService {
   public AnnotationInfo[] listAnnotations(final String target) throws RemoteException {
     return listAnnotations(target, null);
   }
-  
+
   /**
-   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If annotationClassTypes is null, then all 
-   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the 
-   * annotationClassTypes Set are returned. 
-   * 
+   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If annotationClassTypes is null, then all
+   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the
+   * annotationClassTypes Set are returned.
+   *
    * Each Class in annotationClassTypes should extend Annotation. E.G. Comment.class or FormalCorrection.class
    *
    * @param target target doi that the listed annotations annotate
@@ -518,13 +526,13 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws RemoteException RemoteException
    */
   public AnnotationInfo[] listAnnotations(final String target, Set<Class<? extends Annotation>> annotationClassTypes) throws RemoteException {
-    
+
     List<Annotation> allAnnotations = listAnnotationsForTarget(target, annotationClassTypes);
 
 // List<Annotation> pepFilteredComments   = allArticleAnnotations;
 // // Note that the PubApp does not currently support private annotations so this logic is not necessary
 // // It is also not going to be possible to cache annotated article XML ones we do support it since the article
-// // XML could appear differently to each user. 
+// // XML could appear differently to each user.
 //    if (false) { // xxx: no point here because of the cache logic above
 //      pepFilteredComments = new ArrayList(allArticleAnnotations);
 //
@@ -540,21 +548,21 @@ public class AnnotationWebService extends BaseAnnotationService {
 //        }
 //      }
 //    }
-    
+
     AnnotationInfo[] annotations = new AnnotationInfo[allAnnotations.size()];
     int i = 0;
 
-    // TODO: Flags should not extend Comment (or Annotation). When this is fixed, they should not be stored in this cache! 
+    // TODO: Flags should not extend Comment (or Annotation). When this is fixed, they should not be stored in this cache!
     for (Annotation a : allAnnotations) {
       if (a instanceof ArticleAnnotation) {
         annotations[i++] = new AnnotationInfo((ArticleAnnotation)a, fedora);
       } else {
         log.error("Code error! Annotation found in annotation cache that does not " +
-        		"implement ArticleAnnotation. (id=" + a.getId() + 
+        		"implement ArticleAnnotation. (id=" + a.getId() +
             "). This type of annotation should be stored in a different cache." );
       }
     }
-    
+
     return annotations;
   }
 
@@ -571,12 +579,21 @@ public class AnnotationWebService extends BaseAnnotationService {
   public AnnotationInfo getAnnotation(final String annotationId)
                                throws RemoteException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
-
-    Annotation a =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Annotation>() {
-          public Annotation run(Transaction tx) {
-            return tx.getSession().get(Annotation.class, annotationId);
+    final Object lock = (ANNOTATION_LOCK + annotationId).intern();
+    Annotation a = CacheAdminHelper.getFromCache(articleAnnotationCache, ANNOTATION_KEY + annotationId,
+        -1, lock, "individual annotation",
+        new CacheAdminHelper.EhcacheUpdater<Annotation>() {
+          public Annotation lookup() {
+            return TransactionHelper.doInTx(session,
+                new TransactionHelper.Action<Annotation>() {
+              public Annotation run(Transaction tx) {
+                Annotation annotation = tx.getSession().get(Annotation.class, annotationId);
+                // TODO: touch all of the Annotation to force OTM to resolve references,
+                // needed for cache Serialization, avoid lazy loading issues in webapp usage.
+                getAllAnnotationTypes(annotation);
+                return annotation;
+              }
+            });
           }
         });
 
@@ -586,7 +603,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (!(a instanceof ArticleAnnotation)) {
       throw new IllegalArgumentException("Annotation (id="+annotationId+") not instanceof ArticleAnnotation.");
     }
-    
+
     return new AnnotationInfo((ArticleAnnotation)a, fedora);
   }
 
@@ -667,17 +684,17 @@ public class AnnotationWebService extends BaseAnnotationService {
   /**
    * Replaces the Annotation with DOI targetId with a new Annotation of type newAnnotationClassType. Converting requires
    * that a new class type be used, so the old annotation properties are copied over to the new type. All annotations that
-   * referenced the old annotation are updated to reference the new annotation. The old annotation is deleted. 
-   * 
-   * The given newAnnotationClassType should implement the interface ArticleAnnotation. Known annotation classes that implement 
-   * this interface are Comment, FormalCorrection, MinorCorrection 
-   * 
+   * referenced the old annotation are updated to reference the new annotation. The old annotation is deleted.
+   *
+   * The given newAnnotationClassType should implement the interface ArticleAnnotation. Known annotation classes that implement
+   * this interface are Comment, FormalCorrection, MinorCorrection
+   *
    * @param srcAnnotationId - the DOI of the annotation to convert
    * @param newAnnotationClassType - the Class of the new annotation type. Should implement ArticleAnnotation
    * @return
    * @throws Exception
    */
-  public String convertArticleAnnotationToType(final String srcAnnotationId, final Class newAnnotationClassType) 
+  public String convertArticleAnnotationToType(final String srcAnnotationId, final Class newAnnotationClassType)
   throws Exception {
     ArticleAnnotation newAnnotation = TransactionHelper.doInTxE(session,
         new TransactionHelper.ActionE<ArticleAnnotation, Exception>() {
@@ -687,54 +704,54 @@ public class AnnotationWebService extends BaseAnnotationService {
               log.error("Annotation was null for id: " + srcAnnotationId);
               return null;
             }
-            
+
             if (!(srcAnnotation instanceof ArticleAnnotation)) {
               log.error("Cannot convert Annotation to correction for id: " + srcAnnotationId);
               return null;
             }
-            
+
             ArticleAnnotation oldAn = (ArticleAnnotation) srcAnnotation;
             ArticleAnnotation newAn = (ArticleAnnotation)newAnnotationClassType.newInstance();
-            
+
             BeanUtils.copyProperties(newAn, oldAn);
-            newAn.setId(null); // this should not have been copied (original ArticleAnnotation interface did not have a setId() method...but somehow it is! Reset to null. 
+            newAn.setId(null); // this should not have been copied (original ArticleAnnotation interface did not have a setId() method...but somehow it is! Reset to null.
 
             pep.checkAccess(pep.CREATE_ANNOTATION, oldAn.getAnnotates());
-            
+
             String newId = tx.getSession().saveOrUpdate(newAn);
             URI newIdUri = new URI(newId);
             tx.getSession().flush();
             permissionsWebService.propagatePermissions(newId, new String[] { newAn.getBody().toString() });
-            
-            // Find all Annotations that refer to the old Annotation and update their target 'annotates' 
-            // property to point to the new Annotation. 
+
+            // Find all Annotations that refer to the old Annotation and update their target 'annotates'
+            // property to point to the new Annotation.
             List<Annotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
             for (Annotation refAn : refAns) {
               refAn.setAnnotates(newIdUri);
               tx.getSession().saveOrUpdate(refAn);
             }
             tx.getSession().flush();
-            
+
             // Delete the original annotation from mulgara. Note, we don't call deleteAnnotation() here
-            // since that also removes the body of the article from fedora and we are referencing that from 
-            // the new annotation. 
+            // since that also removes the body of the article from fedora and we are referencing that from
+            // the new annotation.
             tx.getSession().delete(oldAn);
-            
+
             return newAn;
           }
         });
 
-    // We must clear the annotated article from the article cache 
+    // We must clear the annotated article from the article cache
     String target = newAnnotation.getAnnotates().toString();
     fetchArticleService.removeFromArticleCache(new String[] {target});
     if (log.isDebugEnabled()) {
       log.debug("removed " + target + " from articleAnnotationCache");
     }
-    
+
     return newAnnotation.getId().toString();
   }
-  
-  
+
+
   /**
    * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
    *   to use.
@@ -756,7 +773,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
   /**
    * Set the fetchArticleService.
-   * 
+   *
    * @param fetchArticleService To use.
    */
   @Required
@@ -772,5 +789,90 @@ public class AnnotationWebService extends BaseAnnotationService {
   @Required
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionsWebService = permissionWebService;
+  }
+
+  private static void getAllAnnotationTypes(Annotation annotation) {
+
+    if (annotation == null) { return; }
+
+    if (annotation instanceof Comment) {
+      getAllComment((Comment) annotation);
+    } else if (annotation instanceof Correction) {
+      getAllCorrection((Correction) annotation);
+    } else if (annotation instanceof Trackback) {
+      getAllTrackback((Trackback) annotation);
+    } else {
+      getAllAnnotation(annotation);
+    }
+  }
+
+  private static void getAllComment(Comment comment) {
+
+    if (comment == null) { return; }
+
+    comment.getBody();
+    comment.getType();
+
+    getAllAnnotation((Annotation) comment);
+  }
+
+  private static void getAllCorrection(Correction correction) {
+
+    if (correction == null) { return; }
+
+    correction.getBody();
+
+    getAllAnnotation((Annotation) correction);
+  }
+
+  private static void getAllTrackback(Trackback trackback) {
+
+    if (trackback == null) { return; }
+
+    trackback.getBlog_name();
+    getAllTrackbackContent(trackback.getBody());
+    trackback.getExcerpt();
+    trackback.getTitle();
+    trackback.getUrl();
+
+    getAllAnnotation((Annotation) trackback);
+  }
+
+  private static void getAllTrackbackContent(TrackbackContent trackbackContent) {
+
+    if (trackbackContent == null) { return; }
+
+    trackbackContent.getBlog_name();
+    trackbackContent.getExcerpt();
+    trackbackContent.getId();
+    trackbackContent.getTitle();
+    trackbackContent.getUrl();
+  }
+
+  private static void getAllAnnotation(Annotation annotation) {
+
+    if (annotation == null) { return; }
+
+    annotation.getAnnotates();
+    annotation.getContext();
+    annotation.getId();
+    getAllAnnotation(annotation.getSupersededBy());
+    getAllAnnotation(annotation.getSupersedes());
+
+    getAllAnnotea((Annotea) annotation);
+  }
+
+  private static void getAllAnnotea(Annotea annotea) {
+
+    if (annotea == null) { return; }
+
+    annotea.getAnonymousCreator();
+    annotea.getCreated();
+    annotea.getCreator();
+    annotea.getId();
+    annotea.getMediator();
+    annotea.getState();
+    annotea.getTitle();
+    annotea.getType();
   }
 }
