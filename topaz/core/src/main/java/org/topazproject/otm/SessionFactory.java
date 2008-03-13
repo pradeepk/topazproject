@@ -12,6 +12,9 @@ package org.topazproject.otm;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -406,11 +409,17 @@ public class SessionFactory {
 
     ProxyFactory f      = new ProxyFactory();
     f.setSuperclass(clazz);
+    if (Serializable.class.isAssignableFrom(clazz))
+      f.setInterfaces(new Class[]{WriteReplace.class});
     f.setFilter(mf);
 
     Class c = f.createClass();
 
     proxyClasses.put(clazz, c);
     proxyClasses.put(c, clazz);
+  }
+
+  public static interface WriteReplace {
+    public Object writeReplace() throws ObjectStreamException;
   }
 }

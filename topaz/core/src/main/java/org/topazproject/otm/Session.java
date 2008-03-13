@@ -762,6 +762,10 @@ public class Session {
            id.setRawValue(rep, id.getRawValue(o, false));
            for (Mapper m : cm.getFields())
              m.setRawValue(rep, m.getRawValue(o, false));
+
+           if (log.isDebugEnabled())
+             log.debug("Serializable replacement created for " + o);
+
            return rep;
         }
 
