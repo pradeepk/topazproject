@@ -17,7 +17,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
-import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.article.service.BrowseService;
 import org.plos.article.service.FetchArticleService;
@@ -26,7 +26,10 @@ import org.plos.journal.JournalService;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
+import org.plos.models.Comment;
+import org.plos.models.FormalCorrection;
 import org.plos.models.Journal;
+import org.plos.models.MinorCorrection;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 
@@ -54,18 +57,23 @@ public class FetchArticleAction extends BaseActionSupport {
   private AnnotationService annotationService;
   private int numDiscussions = 0;
   private int numAnnotations = 0;
+  private int numCorrections;
 
 
   public String execute() throws Exception {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
 
-      Annotation[] articleAnnotations = annotationService.listAnnotations(articleURI);
-      for (Annotation a : articleAnnotations) {
+      WebAnnotation[] articleAnnotations = annotationService.listAnnotations(articleURI);
+      for (WebAnnotation a : articleAnnotations) {
         if (a.getContext() == null) {
           numDiscussions ++;
         } else {
-          numAnnotations ++;
+          if (Comment.RDF_TYPE.equals(a.getType())) {
+            numAnnotations ++;
+          } else if (MinorCorrection.RDF_TYPE.equals(a.getType()) || FormalCorrection.RDF_TYPE.equals(a.getType())) {
+            numCorrections ++;
+          }
         }
       }
 
@@ -99,11 +107,12 @@ public class FetchArticleAction extends BaseActionSupport {
 
 
   /**
-   * A struts action that populates the transformedArticle field of this class.
-   *
+   * A struts Action method used to display the annotated article. 
+   * The transformedArticle field is populated with the annotated articleURI content. 
+   * 
    * @return Annotated Article XML String
    */
-  public String getAnnotatedArticle() {
+  public String displayAnnotatedArticle() {
     try {
       setTransformedArticle(fetchArticleService.getAnnotatedContent(articleURI));
     } catch (Exception e) {
@@ -266,5 +275,15 @@ public class FetchArticleAction extends BaseActionSupport {
 
   public ArticleType getArticleType() {
     return articleType;
+  }
+
+
+  public int getNumCorrections() {
+    return numCorrections;
+  }
+
+
+  public void setNumCorrections(int numCorrections) {
+    this.numCorrections = numCorrections;
   }
 }

@@ -20,9 +20,9 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Stephen Cheng
  */
-@Entity(type = Rdf.topaz + "RatingsAnnotation")
+@Entity(type = Rating.RDF_TYPE)
 public class Rating extends Annotation {
-
+  public static final String RDF_TYPE = Rdf.topaz + "RatingsAnnotation";
   /** Style */
   public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";
   /** Insight */
@@ -34,22 +34,13 @@ public class Rating extends Annotation {
   /** Single Rating */
   public static final String SINGLE_RATING_TYPE = Rdf.topaz + "SingleRating";
 
-  @Predicate(uri = Annotea.NS + "body")
+  @Predicate(uri = Annotea.W3C_NS + "body")
   private RatingContent body;
 
   /**
    * Creates a new Rating object.
    */
   public Rating() {
-  }
-
-  /**
-   * Creates a new Rating object.
-   *
-   * @param id the rating annotation id
-   */
-  public Rating(URI id) {
-    super(id);
   }
 
   /**
@@ -64,5 +55,9 @@ public class Rating extends Annotation {
    */
   public void setBody(RatingContent rating) {
     this.body = rating;
+  }
+  
+  public String getType() {
+    return RDF_TYPE;
   }
 }

@@ -24,21 +24,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = Rdf.topaz + "TrackbackAnnotation")
 public class Trackback extends Annotation {
-  @Predicate(uri = Annotea.NS + "body")
+  @Predicate(uri = Annotea.W3C_NS + "body")
   private TrackbackContent body;
-
-  public Trackback() {
-
-  }
-
-  /**
-   * Creates a new Trackback object.
-   *
-   * @param id the trackback annotation id
-   */
-  public Trackback(URI id) {
-    super(id);
-  }
 
   /**
    * @return Returns the body.

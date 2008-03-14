@@ -10,9 +10,9 @@
 package org.plos.annotation.action;
 
 import junit.framework.TestCase;
-import static org.plos.annotation.service.Annotation.FLAG_MASK;
-import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
-import static org.plos.annotation.service.Annotation.DELETE_MASK;
+import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
+import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
+import static org.plos.annotation.service.WebAnnotation.DELETE_MASK;
 
 public class AnnotationPublicMaskingTest extends TestCase {
   public void testMasksAreDifferent() {

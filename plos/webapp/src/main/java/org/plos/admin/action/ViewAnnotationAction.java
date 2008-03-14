@@ -13,14 +13,14 @@ package org.plos.admin.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
-import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.service.AnnotationService;
 
 public class ViewAnnotationAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(ViewAnnotationAction.class);
 
   private String annotationId;
-  private Annotation annotation;
+  private WebAnnotation annotation;
   private AnnotationService annotationService;
 
 
@@ -37,7 +37,7 @@ public class ViewAnnotationAction extends BaseActionSupport {
     this.annotationService = annotationService;
   }
 
-  public Annotation getAnnotation() {
+  public WebAnnotation getAnnotation() {
     return annotation;
   }
 

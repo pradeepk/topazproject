@@ -19,14 +19,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
-import static org.plos.annotation.service.Annotation.FLAG_MASK;
-import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
+import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
+import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 import org.plos.annotation.service.AnnotationInfo;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyInfo;
 import org.plos.annotation.service.ReplyWebService;
+import org.plos.models.FormalCorrection;
+import org.plos.models.MinorCorrection;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
 
@@ -49,7 +51,7 @@ public class FlagManagementService {
   private ReplyWebService replyWebService;
   private UserService userService;
 
-  public Collection getFlaggedComments() throws RemoteException, ApplicationException {
+  public Collection<FlaggedCommentRecord> getFlaggedComments() throws RemoteException, ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
     AnnotationInfo[] annotationinfos;
     ReplyInfo[] replyinfos;
@@ -57,8 +59,8 @@ public class FlagManagementService {
     String creatorUserName;
 
     final RatingInfo[] ratingInfos = annotationService.listFlaggedRatings();
-    annotationinfos = annotationWebService.listAnnotations(null, FLAG_MASK| PUBLIC_MASK);
-    replyinfos = replyWebService.listReplies(null, FLAG_MASK| PUBLIC_MASK ); // Bug - not marked with public flag for now
+    annotationinfos = annotationWebService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
+    replyinfos = replyWebService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratingInfos.length + " ratings with flags");
       log.debug("There are " + annotationinfos.length + " annotations with flags");
@@ -90,7 +92,7 @@ public class FlagManagementService {
               "",
               null,
               "",
-              "Rating");
+              AnnotationService.WEB_TYPE_RATING);
         commentrecords.add(fcr);
 
         // continue w/next RatingInfo
@@ -120,15 +122,18 @@ public class FlagManagementService {
               flag.getCreator(),
               null,
               flag.getReasonCode(),
-              "Rating");
+              AnnotationService.WEB_TYPE_RATING);
         commentrecords.add(fcr);
       }
     }
 
-    for (final AnnotationInfo annotationinfo : annotationinfos) {
-      flags = annotationService.listFlags((String) annotationinfo.getId());
+    /*
+     * Add a FlaggedCommentRecord for each flag reported against each flagged annotation
+     */
+    for (final AnnotationInfo flaggedAnnotation : annotationinfos) {
+      flags = annotationService.listFlags((String) flaggedAnnotation.getId());
       if (log.isDebugEnabled())
-        log.debug("There are " + flags.length + " flags on annotation: " + annotationinfo.getId());
+        log.debug("There are " + flags.length + " flags on annotation: " + flaggedAnnotation.getId());
       for (Flag flag : flags) {
         if (flag.isDeleted()) {
           if (log.isDebugEnabled())
@@ -140,18 +145,19 @@ public class FlagManagementService {
         } catch (ApplicationException ae) { // Bug ?
           creatorUserName = "anonymous";
         }
+        
         FlaggedCommentRecord fcr =
           new FlaggedCommentRecord(
               flag.getId(),
               flag.getAnnotates(),
-              annotationinfo.getTitle(),
+              flaggedAnnotation.getTitle(),
               flag.getComment(),
               flag.getCreated(),
               creatorUserName,
               flag.getCreator(),
               null,
               flag.getReasonCode(),
-              "Comment");
+              flaggedAnnotation.getWebType());
         commentrecords.add(fcr);
       }
     }
@@ -183,7 +189,7 @@ public class FlagManagementService {
               flag.getCreator(),
               replyinfo.getRoot(),
               flag.getReasonCode(),
-              "Reply");
+              AnnotationService.WEB_TYPE_REPLY);
         commentrecords.add(fcr);
       }
     }

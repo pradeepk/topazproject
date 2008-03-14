@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.Context;
 import org.plos.annotation.ContextFormatter;
+import org.plos.annotation.service.AnnotationService;
 import org.plos.util.ProfanityCheckingService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -72,6 +73,10 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
         annotationId = getAnnotationService().createAnnotation(target, scontext, supercedes, commentTitle, mimeType, comment, isPublic);
         if (log.isDebugEnabled()) {
           log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
+        }
+        if ("correction".equals(noteType)) {
+          getAnnotationService().createFlag(annotationId, "Create Correction", 
+              "Note created and flagged as a correction", mimeType, true);
         }
       } else {
         addProfaneMessages(profaneWordsInBody, "comment", "comment");

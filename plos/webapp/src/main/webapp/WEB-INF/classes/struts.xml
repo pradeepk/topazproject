@@ -553,7 +553,7 @@
       </result>
     </action>
 
-    <action name="fetchAnnotatedArticle" class="org.plos.article.action.FetchArticleAction" method="getAnnotatedArticle">
+    <action name="fetchAnnotatedArticle" class="org.plos.article.action.FetchArticleAction" method="displayAnnotatedArticle">
        <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
 

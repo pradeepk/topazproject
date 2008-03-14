@@ -16,7 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.action.BaseActionSupport;
-import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationsPEP;
 import org.plos.article.util.NoSuchObjectIdException;
@@ -30,7 +30,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(EditAnnotationAction.class);
 
   private String loadAnnotationId;
-  private Annotation annotation;
+  private WebAnnotation annotation;
   private String saveAnnotationId;
   private String saveAnnotationContext;
   private AnnotationService annotationService;

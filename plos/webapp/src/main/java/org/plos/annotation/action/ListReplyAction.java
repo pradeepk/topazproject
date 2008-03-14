@@ -16,7 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
-import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.service.Reply;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.models.Article;
@@ -28,7 +28,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   private String root;
   private String inReplyTo;
   private Reply[] replies;
-  private Annotation baseAnnotation;
+  private WebAnnotation baseAnnotation;
   private ArticleOtmService articleOtmService;
   private Article articleInfo;
 
@@ -91,14 +91,14 @@ public class ListReplyAction extends AnnotationActionSupport {
   /**
    * @return Returns the baseAnnotation.
    */
-  public Annotation getBaseAnnotation() {
+  public WebAnnotation getBaseAnnotation() {
     return baseAnnotation;
   }
 
   /**
    * @param baseAnnotation The baseAnnotation to set.
    */
-  public void setBaseAnnotation(Annotation baseAnnotation) {
+  public void setBaseAnnotation(WebAnnotation baseAnnotation) {
     this.baseAnnotation = baseAnnotation;
   }
 

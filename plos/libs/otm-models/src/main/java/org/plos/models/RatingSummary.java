@@ -22,22 +22,13 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = Rdf.topaz + "RatingSummaryAnnotation")
 public class RatingSummary extends Annotation {
-  @Predicate(uri = Annotea.NS + "body")
+  @Predicate(uri = Annotea.W3C_NS + "body")
   private RatingSummaryContent body;
 
   /**
    * Creates a new RatingSummary object.
    */
   public RatingSummary() {
-  }
-
-  /**
-   * Creates a new RatingSummary object.
-   *
-   * @param id id for the rating summary annotation
-   */
-  public RatingSummary(URI id) {
-    super(id);
   }
 
   /**

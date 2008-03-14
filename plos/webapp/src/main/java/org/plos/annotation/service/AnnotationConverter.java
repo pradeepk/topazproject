@@ -31,12 +31,12 @@ public class AnnotationConverter {
    * @return an array of Annotation objects as required by the web layer
    * @throws org.plos.ApplicationException
    */
-  public Annotation[] convert(final AnnotationInfo[] annotations) throws ApplicationException {
-    final List<Annotation> plosoneAnnotations = new ArrayList<Annotation>();
+  public WebAnnotation[] convert(final AnnotationInfo[] annotations) throws ApplicationException {
+    final List<WebAnnotation> plosoneAnnotations = new ArrayList<WebAnnotation>();
     for (final AnnotationInfo annotation : annotations) {
       plosoneAnnotations.add(convert(annotation));
     }
-    return plosoneAnnotations.toArray(new Annotation[plosoneAnnotations.size()]);
+    return plosoneAnnotations.toArray(new WebAnnotation[plosoneAnnotations.size()]);
   }
 
   /**
@@ -44,10 +44,10 @@ public class AnnotationConverter {
    * @return the Annotation
    * @throws ApplicationException
    */
-  public Annotation convert(final AnnotationInfo annotation) throws ApplicationException {
+  public WebAnnotation convert(final AnnotationInfo annotation) throws ApplicationException {
     final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(annotation);
 
-    return new Annotation(annotation, userService) {
+    return new WebAnnotation(annotation, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
         return lazyLoader.getBody();
       }
