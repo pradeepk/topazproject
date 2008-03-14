@@ -9,16 +9,15 @@
  */
 package org.plos.search.service;
 
-import org.plos.ApplicationException;
-import org.plos.search.SearchResultPage;
-import org.plos.user.PlosOneUser;
-import org.topazproject.otm.Session;
-
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.ApplicationException;
+import org.plos.article.service.FetchArticleService;
 import org.plos.configuration.ConfigurationStore;
-import org.apache.commons.configuration.Configuration;
+import org.plos.search.SearchResultPage;
+import org.plos.user.PlosOneUser;
 
 /**
  * Service to provide search capabilities for the application
@@ -33,7 +32,7 @@ public class SearchService {
                                               CONF.getLong("pub.search.cacheDuration", 600000L));
 
   private SearchWebService           searchWebService;
-  private Session                    otmSession;
+  private FetchArticleService        fetchArticleService;
 
   /**
    * Find the results for a given query.
@@ -52,14 +51,14 @@ public class SearchService {
 
       Results results  = (Results) cache.get(cacheKey);
       if (results == null) {
-        results = new Results(query, searchWebService);
+        results = new Results(query, searchWebService, fetchArticleService);
         cache.put(cacheKey, results);
         if (log.isDebugEnabled())
           log.debug("Created search cache for '" + cacheKey + "' of " +
-                    results.getTotalHits(otmSession));
+                    results.getTotalHits());
       }
 
-      return results.getPage(startPage, pageSize, otmSession);
+      return results.getPage(startPage, pageSize);
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
@@ -73,7 +72,12 @@ public class SearchService {
     this.searchWebService = searchWebService;
   }
 
-  public void setOtmSession(Session otmSession) {
-    this.otmSession = otmSession;
+  /**
+   * Set FetchArticleService.  Enable Spring autowiring.
+   *
+   * @param fetchArticleService to use.
+   */
+  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 }
