@@ -824,8 +824,8 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (comment == null) { return; }
 
-    comment.getBody();
-    comment.getType();
+    // comment.getBody();
+    // comment.getType();
 
     getAllAnnotation((Annotation) comment);
   }
@@ -834,7 +834,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (correction == null) { return; }
 
-    correction.getBody();
+    // correction.getBody();
 
     getAllAnnotation((Annotation) correction);
   }
@@ -843,11 +843,11 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (trackback == null) { return; }
 
-    trackback.getBlog_name();
+    // trackback.getBlog_name();
     getAllTrackbackContent(trackback.getBody());
-    trackback.getExcerpt();
-    trackback.getTitle();
-    trackback.getUrl();
+    // trackback.getExcerpt();
+    // trackback.getTitle();
+    // trackback.getUrl();
 
     getAllAnnotation((Annotation) trackback);
   }
@@ -856,20 +856,20 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (trackbackContent == null) { return; }
 
-    trackbackContent.getBlog_name();
-    trackbackContent.getExcerpt();
-    trackbackContent.getId();
-    trackbackContent.getTitle();
-    trackbackContent.getUrl();
+    // trackbackContent.getBlog_name();
+    // trackbackContent.getExcerpt();
+    // trackbackContent.getId();
+    // trackbackContent.getTitle();
+    // trackbackContent.getUrl();
   }
 
   private static void getAllAnnotation(Annotation annotation) {
 
     if (annotation == null) { return; }
 
-    annotation.getAnnotates();
-    annotation.getContext();
-    annotation.getId();
+    // annotation.getAnnotates();
+    // annotation.getContext();
+    // annotation.getId();
     getAllAnnotation(annotation.getSupersededBy());
     getAllAnnotation(annotation.getSupersedes());
 
@@ -880,13 +880,13 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (annotea == null) { return; }
 
-    annotea.getAnonymousCreator();
-    annotea.getCreated();
-    annotea.getCreator();
-    annotea.getId();
-    annotea.getMediator();
-    annotea.getState();
-    annotea.getTitle();
-    annotea.getType();
+    // annotea.getAnonymousCreator();
+    // annotea.getCreated();
+    // annotea.getCreator();
+    // annotea.getId();
+    // annotea.getMediator();
+    // annotea.getState();
+    // annotea.getTitle();
+    // annotea.getType();
   }
 }
