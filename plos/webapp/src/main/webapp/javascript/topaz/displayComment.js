@@ -422,7 +422,8 @@ topaz.displayComment = {
     
     for (var i=0; i<bugList.length; i++) {
       var bugCount = topaz.domUtil.getDisplayId(bugList[i]);
-      
+      var spn = document.createElement('span');
+
       if (bugCount != null) {
         var displayBugs = bugCount.split(',');
         var count = displayBugs.length;
@@ -431,9 +432,9 @@ topaz.displayComment = {
       else {
         var ctText = document.createTextNode('0');
       }
-
+      spn.appendChild(ctText);
       dojo.dom.removeChildren(bugList[i]);
-      bugList[i].appendChild(ctText);
+      bugList[i].appendChild(spn);
     }
   },
   

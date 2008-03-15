@@ -17,8 +17,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
-import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.service.AnnotationService;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.service.BrowseService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
@@ -42,7 +42,7 @@ public class FetchArticleAction extends BaseActionSupport {
   private String articleURI;
   private String annotationId = "";
 
-  private ArrayList<String> messages = new ArrayList<String>();
+  private final ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
   private BrowseService browseService;
   private FetchArticleService fetchArticleService;
@@ -53,13 +53,18 @@ public class FetchArticleAction extends BaseActionSupport {
   private ArticleType articleType;
   private ArticleInfo articleInfoX;
   private String transformedArticle;
-  private String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
+  private final String articleTypeHeading = "Research Article"; // displayed article type (assigned default)
   private AnnotationService annotationService;
   private int numDiscussions = 0;
-  private int numAnnotations = 0;
-  private int numCorrections;
+  private int numMinorCorrections = 0;
+  private int numFormalCorrections = 0;
+  /**
+   * Represents the number of notes that are not corrections from  a UI stand point
+   */
+  private int numComments = 0;
 
 
+  @Override
   public String execute() throws Exception {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
@@ -70,9 +75,11 @@ public class FetchArticleAction extends BaseActionSupport {
           numDiscussions ++;
         } else {
           if (Comment.RDF_TYPE.equals(a.getType())) {
-            numAnnotations ++;
-          } else if (MinorCorrection.RDF_TYPE.equals(a.getType()) || FormalCorrection.RDF_TYPE.equals(a.getType())) {
-            numCorrections ++;
+            numComments ++;
+          } else if (MinorCorrection.RDF_TYPE.equals(a.getType())) {
+            numMinorCorrections ++;
+          } else if (FormalCorrection.RDF_TYPE.equals(a.getType())) {
+            numFormalCorrections ++;
           }
         }
       }
@@ -197,10 +204,31 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the numAnnotations.
+   * @return Returns the calculated number of notes.
    */
-  public int getNumAnnotations() {
-    return numAnnotations;
+  public int getNumNotes() {
+    return numComments + numMinorCorrections + numFormalCorrections;
+  }
+
+  /**
+   * @return Returns the numComments.
+   */
+  public int getNumComments() {
+    return numComments;
+  }
+
+  /**
+   * @return Returns the numMinorCorrections.
+   */
+  public int getNumMinorCorrections() {
+    return numMinorCorrections;
+  }
+
+  /**
+   * @return Returns the numMinorCorrections.
+   */
+  public int getNumFormalCorrections() {
+    return numFormalCorrections;
   }
 
   /**
@@ -275,15 +303,5 @@ public class FetchArticleAction extends BaseActionSupport {
 
   public ArticleType getArticleType() {
     return articleType;
-  }
-
-
-  public int getNumCorrections() {
-    return numCorrections;
-  }
-
-
-  public void setNumCorrections(int numCorrections) {
-    this.numCorrections = numCorrections;
   }
 }
