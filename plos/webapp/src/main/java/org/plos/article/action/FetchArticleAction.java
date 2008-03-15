@@ -204,13 +204,6 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the calculated number of notes.
-   */
-  public int getNumNotes() {
-    return numComments + numMinorCorrections + numFormalCorrections;
-  }
-
-  /**
    * @return Returns the numComments.
    */
   public int getNumComments() {
@@ -229,6 +222,20 @@ public class FetchArticleAction extends BaseActionSupport {
    */
   public int getNumFormalCorrections() {
     return numFormalCorrections;
+  }
+
+  /**
+   * @return Returns the calculated number of notes.
+   */
+  public int getNumNotes() {
+    return numComments + numMinorCorrections + numFormalCorrections;
+  }
+
+  /**
+   * @return Returns the total number of corrections.
+   */
+  public int getNumCorrections() {
+    return numMinorCorrections + numFormalCorrections;
   }
 
   /**

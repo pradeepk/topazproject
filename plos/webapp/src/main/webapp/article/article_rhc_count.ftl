@@ -1,7 +1,7 @@
 					  <#if numNotes == 1>
-						<li>${numNotes} note</li>
+						<li>${numComments} note</li>
 					  <#else>
-						<li>${numNotes} notes</li>
+						<li>${numComments} notes</li>
 					  </#if>
 					  <#if numDiscussions == 1>
 						<li>${numDiscussions} comment</li>
