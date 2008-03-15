@@ -26,15 +26,21 @@ public abstract class ContextFormatter {
   private static final Log log = LogFactory.getLog(ContextFormatter.class);
 
   /**
-   * Returning an xpointer of the following forms:
+   * Converts a {@link Context} to a valid xpath string.
+   * <p>
+   * Example xpath strings:
+   * ---------------------
    * <p>
    * 1)
    * string-range(/doc/chapter/title,'')[5]/range-to(string-range(/doc/chapter/para/em,'')[3])
    * <p>
    * 2) string-range(/article[1]/body[1]/sec[1]/p[2],"",194,344)
+   * <p>
+   * ---------------------
    * 
-   * @return String-ized context in xpointer format
-   * @throws org.plos.ApplicationException ApplicationException
+   * @param c The context
+   * @return xpath string
+   * @throws ApplicationException When an encoding related problem arises
    */
   public static String asXPointer(Context c) throws ApplicationException {
     final String startPath = c.getStartPath();
@@ -63,7 +69,6 @@ public abstract class ContextFormatter {
       if (log.isDebugEnabled()) log.debug("xpointer target context: " + context);
       return XPointerUtils.createXPointer(c.getTarget(), context, "UTF-8");
     } catch (final UnsupportedEncodingException e) {
-      log.error(e);
       throw new ApplicationException(e);
     }
   }
