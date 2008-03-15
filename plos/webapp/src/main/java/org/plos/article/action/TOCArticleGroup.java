@@ -1,8 +1,11 @@
 package org.plos.article.action;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.plos.model.article.ArticleInfo;
+import org.plos.model.article.ArticleInfoMostRecentDateComparator;
 import org.plos.model.article.ArticleType;
 /**
  * Represents a group of articles for display in the presentation layer. 
@@ -65,5 +68,10 @@ public class TOCArticleGroup {
   
   public ArrayList<ArticleInfo> getArticles() {
     return articles;
+  }
+
+  public void sortArticles() {
+    ArticleInfoMostRecentDateComparator comparator = new ArticleInfoMostRecentDateComparator();
+    Collections.sort(articles, comparator);
   }
 }

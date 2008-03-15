@@ -150,6 +150,7 @@ public class BrowseIssueAction extends BaseActionSupport{
       if (grp.articles.size() != 0) {
         newArticleGroups.add(grp);
         grp.setId("tocGrp_"+i);
+        grp.sortArticles();
         i++;
       }
     }

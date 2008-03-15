@@ -507,8 +507,8 @@ public class BrowseService {
   private void loadCategoryInfos(String jnlName) {
     // get all article-ids in all categories
     Results r = session.createQuery(
-        "select cat, a.id, a.dublinCore.date date from Article a " +
-        "where cat := a.categories.mainCategory order by date desc;").execute();
+              "select cat, a.id articleId, a.dublinCore.date date from Article a " +
+              "where cat := a.categories.mainCategory order by date desc, articleId;").execute();
 
     SortedMap<String, List<URI>> artByCat = new TreeMap<String, List<URI>>();
     r.beforeFirst();
@@ -625,9 +625,9 @@ public class BrowseService {
     sd.add(Calendar.MILLISECOND, -1);
 
     Results r = session.createQuery(
-        "select a.id, date from Article a where " +
-        "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc;").
-        setParameter("sd", sd).setParameter("ed", endDate).execute();
+            "select a.id articleId, date from Article a where " +
+            "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc, articleId;").
+            setParameter("sd", sd).setParameter("ed", endDate).execute();
 
     List<URI> dates = new ArrayList<URI>();
 
@@ -676,11 +676,11 @@ public class BrowseService {
 
   private List<NewArtInfo> getNewArticleInfos(final Set<String> uris) {
     String query =
-        "select cat, a.id, a.dublinCore.date date from Article a " +
-        "where cat := a.categories.mainCategory and (";
-    for (String uri : uris)
-      query += "a.id = <" + uri + "> or ";
-    query = query.substring(0, query.length() - 4) + ") order by date desc;";
+            "select cat, a.id articleId, a.dublinCore.date date from Article a " +
+            "where cat := a.categories.mainCategory and (";
+        for (String uri : uris)
+          query += "a.id = <" + uri + "> or ";
+        query = query.substring(0, query.length() - 4) + ") order by date desc, articleId;";
 
     Results r = session.createQuery(query).execute();
 
