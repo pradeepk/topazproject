@@ -401,7 +401,7 @@ div.fch {
 	border: 2px solid #ff0000 !important;
 	background-color: #fff4f0;
 }
-div.fch p { margin:8px; text-indent:20px; background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
+div.fch p.fch { margin:8px; text-indent:20px; background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
 
 /* rhc rounded containers : top */
 div.links,
