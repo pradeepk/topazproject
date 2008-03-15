@@ -63,8 +63,8 @@
         </li>
 
         <#if numCorrections ?size gt 0>
-        <@s.url id="correctionsURL" namespace="/annotation" action="getCorrections" includeParams="none" target="${articleURI}"/>
-        <li><a href="${commentsURL}" class="commentary icon">View all corrections</a></li>
+        <@s.url id="correctionsURL" namespace="/annotation" action="getCorrectionsCommentary" includeParams="none" target="${articleURI}"/>
+        <li><a href="${correctionsURL}" class="commentary icon">View all corrections</a></li>
         </#if>
         
         <li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn notes on/off">Hide notes</a>
