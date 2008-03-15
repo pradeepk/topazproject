@@ -396,11 +396,12 @@ div.correction h1 { color: #3D3D3D; }
 
 /* formal correction header */
 div.fch {
-	margin: 5px 0 10px 0;
-	padding: 4px;
+	margin: 5px 0 10px;
+  padding:0;
 	border: 2px solid #ff0000 !important;
 	background-color: #fff4f0;
 }
+div.fch p { margin:8px; text-indent:20px; background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
 
 /* rhc rounded containers : top */
 div.links,
@@ -492,9 +493,10 @@ a:visited.bug {
   background:url(../images/pone_annotation_bug.gif) top right no-repeat;
 }
 
-span.minrcrctn, span.frmlcrctn {
+/* adds correction icon to bugs containing correction notes */
+span.minrcrctn a.bug span, span.frmlcrctn a.bug span {
   background:url(../images/pone_icon_correction_small.gif) left center no-repeat;
-  border: 1px solid red !important; /* debug */
+  padding-left:10px;
 }
 
 a.bug.self-private,
