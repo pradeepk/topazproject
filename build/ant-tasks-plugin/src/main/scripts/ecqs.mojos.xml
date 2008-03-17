@@ -120,7 +120,7 @@
           <name>ecqs-version</name>
           <property>ecqs-version</property>
           <required>true</required>
-          <defaultValue>2.0.6-1-t00803-SNAPSHOT</defaultValue>
+          <defaultValue>${project.version}</defaultValue>
           <expression>${ecqs-version}</expression>
         </parameter>
 

@@ -4,7 +4,7 @@
   <groupId>org.topazproject</groupId>
   <artifactId>ecqs</artifactId>
   <packaging>jar</packaging>
-  <version>2.0.6-1-t00803-SNAPSHOT</version>
+  <version>0.8.3-SNAPSHOT</version>
   <name>ESUP CAS Quick Start</name>
 
   <parent>

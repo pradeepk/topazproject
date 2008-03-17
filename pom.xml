@@ -703,8 +703,6 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t00803-SNAPSHOT</fedora-version>
-                  <ecqs-version>2.0.6-1-t00803-SNAPSHOT</ecqs-version>
                 </configuration>
               </execution>
               <execution>
@@ -890,6 +888,7 @@
           <goals>deploy</goals>                           <!-- disable site deploy -->
           <useReleaseProfile>false</useReleaseProfile>    <!-- no javadoc and source jars -->
           <tagBase>http://svn.topazproject.org/svn/tags</tagBase>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
           <preparationGoals>clean install</preparationGoals>
           <arguments>-Ppackages,rpm,release</arguments>
         </configuration>
