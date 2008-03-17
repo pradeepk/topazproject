@@ -25,17 +25,20 @@
       <artifactId>server-distribution</artifactId>
       <version>${fedoraVersion}</version>
       <type>tar</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>info.fedora</groupId>
       <artifactId>client-distribution</artifactId>
       <version>${fedoraVersion}</version>
       <type>tar</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>fedora-patches</artifactId>
       <version>${pom.parent.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
