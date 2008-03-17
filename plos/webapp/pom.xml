@@ -295,13 +295,6 @@
   <build>
     <finalName>plosone</finalName>
     <plugins>
-      <plugin>
-        <artifactId>maven-site-plugin</artifactId>
-        <configuration>
-          <locales>en</locales>
-        </configuration>
-      </plugin>
-
       <!--
         mvn clean jetty:run to run the webapp.
         ecqs should also be installed and running first
