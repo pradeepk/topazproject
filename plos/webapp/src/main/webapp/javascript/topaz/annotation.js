@@ -1383,6 +1383,64 @@ topaz.annotation = {
       return rangeContent;
   },
 
+  ////////////////////////////////
+
+  _promoteChildren: function(node) {
+    var cns = node.childNodes;
+    var cnt = cns.length;
+    if(cnt == 0) return;
+    var cn, pn;
+    for(var i=0; i<cnt; i++) {
+      // elevate all children as siblings of the the node's parent
+      cn = cns[i--];  // as we will be removing a child node
+      var cid = dojo.html.getAttribute(cn, 'id');
+      if(cn.nodeName == 'A' && (!cid || cid.length < 1) && dojo.html.hasClass(cn, 'bug')) {
+        // this is a pending bug (kill it)
+        //node.removeChild(cn);
+        dojo.dom.destroyNode(cn);  
+      }
+      else {
+        // promote child to succeeding sibling
+        pn = node.parentNode;
+        cn = node.childNodes[0];
+        pn.insertBefore(node.removeChild(cn), node.nextSibling);
+      }
+      cnt = cns.length;
+    }
+  },
+
+  _handleNode: function(n) {
+    // is this an existing note node?
+    this._promoteChildren(n);
+    var nc = n.childNodes.length;
+    if(n.nodeType != 3 && nc == 0) {
+      dojo.dom.destroyNode(n);
+      return;
+    }
+    if(dojo.html.hasAttribute(n, 'annotationid')) {
+      dojo.html.removeClass(n, 'note-pending');
+    }
+    else {
+      dojo.dom.destroyNode(n);
+    }
+  },
+
+  /**
+   * topaz.annotation.undoPendingAnnotation()
+   *
+   * Removes all pending annotation markup from the document 
+   * restoring it to the state it was in prior to a user selection.
+   * This method should be called when the user cancels the comment dialog. 
+   */
+  undoPendingAnnotation: function() {
+    var rdmref = dojo.byId(annotationConfig.regionalDialogMarker);
+    if(rdmref) this._handleNode(rdmref); 
+    var arr = dojo.html.getElementsByClass('note-pending', 'articleContainer');
+    if(arr) for(var i=0; i<arr.length; i++) this._handleNode(arr[i]);
+  },
+  
+  ////////////////////////
+
 	/**
 	 * topaz.annotation.normalizeText( Document object  documentObj, String resultStr)
 	 * 

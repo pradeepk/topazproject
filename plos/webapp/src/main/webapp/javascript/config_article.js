@@ -11,7 +11,7 @@ var annotationConfig = {
 	trigger: "addAnnotation",
   lastAncestor: "researchArticle",
   xpointerMarker: "xpt",
-  annotationMarker: "note",
+  annotationMarker: "note note-pending",  // NOTE: 'note-pending' class is used to identify js-based annotation related document markup prior to persisting the annotation
   annotationImgMarker: "noteImg",
 	regionalDialogMarker : "rdm",
 	excludeSelection: "noSelect",
