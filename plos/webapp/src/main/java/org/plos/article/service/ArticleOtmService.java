@@ -914,7 +914,7 @@ public class ArticleOtmService {
     // userProfile.getPositionType();
     // userProfile.getPostalAddress();
     // userProfile.getPublications();
-    // userProfile.getRealName();
+    userProfile.getRealName();
     // userProfile.getResearchAreasText();
     // userProfile.getSurnames();
     // userProfile.getTitle();
