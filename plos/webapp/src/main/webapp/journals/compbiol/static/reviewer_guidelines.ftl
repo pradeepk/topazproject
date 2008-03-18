@@ -1,3 +1,7 @@
+<#include "journal_include.ftl">
+<#include "/static/cj_shared_blocks.ftl">
+
+${publication_charges}
 
 <!-- begin : main content -->
 <div id="content" class="static">
