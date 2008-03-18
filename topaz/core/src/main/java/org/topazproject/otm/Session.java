@@ -12,6 +12,8 @@ package org.topazproject.otm;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -739,6 +741,9 @@ public class Session {
           }
 
           try {
+            if (m.getName().equals("writeReplace") 
+                && (self instanceof Serializable) && (args.length == 0))
+              return getSerializableReplacement(self);
             return proceed.invoke(self, args);
           } catch (InvocationTargetException ite) {
             if (log.isDebugEnabled())
@@ -749,6 +754,15 @@ public class Session {
 
         public boolean isLoaded() {
           return loaded;
+        }
+
+        private Object getSerializableReplacement(Object o) throws Throwable {
+           Object rep = clazz.newInstance();
+           Mapper id  = cm.getIdField();
+           id.setRawValue(rep, id.getRawValue(o, false));
+           for (Mapper m : cm.getFields())
+             m.setRawValue(rep, m.getRawValue(o, false));
+           return rep;
         }
 
       };
