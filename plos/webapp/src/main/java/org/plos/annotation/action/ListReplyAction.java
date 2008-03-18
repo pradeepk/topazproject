@@ -52,6 +52,11 @@ public class ListReplyAction extends AnnotationActionSupport {
    */
   public String listAllReplies() throws Exception {
     try {
+      // Allow a single 'root' param to be accepted. If 'inReplyTo' is null or empty string, set to root value. 
+      // This results in that single annotation being displayed. 
+      if ((inReplyTo == null) || inReplyTo.length() == 0) {
+        inReplyTo = root;
+      }
       if (log.isDebugEnabled()){
         log.debug("listing all Replies for root: " + root);
       }
@@ -83,7 +88,6 @@ public class ListReplyAction extends AnnotationActionSupport {
     return root;
   }
 
-  @RequiredStringValidator(message = "InReplyTo is required")
   public String getInReplyTo() {
     return inReplyTo;
   }
