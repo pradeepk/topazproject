@@ -18,7 +18,7 @@
 	<@s.password label="Please re-type your password " name="password2" required="true" tabindex="4" maxlength="128"/>
 	</ol>
 	<div class="btnwrap">
-		<@s.submit name="submit" value="Submit" tabindex="5"/>
+		<@s.submit value="Submit" tabindex="5"/>
 	</div>
 	</fieldset>
   </@s.form>
