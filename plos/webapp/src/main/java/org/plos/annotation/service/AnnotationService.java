@@ -59,7 +59,7 @@ public class AnnotationService {
   public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
   public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
   public static final String WEB_TYPE_REPLY = "Reply";
-  private static final Set<Class> CORRECTION_SET = new HashSet<Class>();
+  private static final Set<Class<? extends Annotation>> CORRECTION_SET = new HashSet<Class<? extends Annotation>>();
   static {
     CORRECTION_SET.add(Correction.class);
   }
@@ -314,7 +314,7 @@ public class AnnotationService {
    *
    * @throws RemoteException RemoteException
    */
-  public WebAnnotation[] listAnnotations(String target, Set<Class> annotationTypeClasses) throws ApplicationException {
+  public WebAnnotation[] listAnnotations(String target, Set<Class<? extends Annotation>> annotationTypeClasses) throws ApplicationException {
     // TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the AnnotationWebService directly!
     
     /** Placing the caching here rather than in AnnotationWebService because this

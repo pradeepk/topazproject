@@ -70,11 +70,12 @@ public class AnnotationWebService extends BaseAnnotationService {
   private Ehcache articleAnnotationCache;
   private static final String       PLOSONE_0_6_DEFAULT_TYPE =
     "http://www.w3.org/2000/10/annotationType#Annotation";
-  protected static final Set<Class> ALL_ANNOTATION_CLASSES = new HashSet<Class>();
+  protected static final Set<Class<? extends Annotation>> ALL_ANNOTATION_CLASSES = new HashSet<Class<? extends Annotation>>();
   static { 
     ALL_ANNOTATION_CLASSES.add(Comment.class);
-    ALL_ANNOTATION_CLASSES.add(FormalCorrection.class);
-    ALL_ANNOTATION_CLASSES.add(MinorCorrection.class);
+    ALL_ANNOTATION_CLASSES.add(Correction.class);
+    // ALL_ANNOTATION_CLASSES.add(FormalCorrection.class);
+    // ALL_ANNOTATION_CLASSES.add(MinorCorrection.class);
   }
 
   /**
@@ -382,7 +383,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @param annotationClassTypes
    * @return
    */
-  public List<Annotation> listAnnotationsForTarget(final String target, final Set<Class> annotationClassTypes) {
+  public List<Annotation> listAnnotationsForTarget(final String target, final Set<Class<? extends Annotation>> annotationClassTypes) {
     final Object lock = (FetchArticleService.ARTICLE_LOCK + target).intern(); // lock @ Article level
     List<Annotation> allAnnotations = CacheAdminHelper
         .getFromCache(articleAnnotationCache, ANNOTATION_KEY + target,
@@ -414,30 +415,32 @@ public class AnnotationWebService extends BaseAnnotationService {
     return allAnnotations;
   }
   
-    private List<Annotation> listAnnotations(final String target, 
-                                             final String mediator, final int state, final Set<Class> classTypes) {
-        if (target != null) {
-            pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
-        } else {
-            pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
-        }
-        
-        List<Annotation> combinedAnnotations = new ArrayList<Annotation>();
-        
-        for (Class anClass : classTypes) {
-            Criteria c = session.createCriteria(anClass);
-            setRestrictions(c, target, mediator, state);
-            combinedAnnotations.addAll((List<Annotation>)c.list());
-        }
-        
-        List<org.plos.models.Annotation> allAnnotations = combinedAnnotations;
-        
-        if (log.isDebugEnabled()) {
-            log.debug("retrieved annotation list from TOPAZ for target: " + target);
-        }
-        
-        return allAnnotations;
+  private List<Annotation> listAnnotations(final String target,
+                                           final String mediator,
+                                           final int state,
+                                           final Set<Class<? extends Annotation>> classTypes) {
+    if (target != null) {
+      pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
+    } else {
+      pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
     }
+
+    List<Annotation> combinedAnnotations = new ArrayList<Annotation>();
+
+    for (Class anClass : classTypes) {
+      Criteria c = session.createCriteria(anClass);
+      setRestrictions(c, target, mediator, state);
+      combinedAnnotations.addAll((List<Annotation>) c.list());
+    }
+
+    List<org.plos.models.Annotation> allAnnotations = combinedAnnotations;
+
+    if (log.isDebugEnabled()) {
+      log.debug("retrieved annotation list from TOPAZ for target: " + target);
+    }
+
+    return allAnnotations;
+  }
   
   /**
    * Helper method to set restrictions on the criteria used in listAnnotations()
@@ -485,7 +488,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws RemoteException RemoteException
    */
-  public AnnotationInfo[] listAnnotations(final String target, Set<Class> annotationClassTypes) throws RemoteException {
+  public AnnotationInfo[] listAnnotations(final String target, Set<Class<? extends Annotation>> annotationClassTypes) throws RemoteException {
     
     List<Annotation> allAnnotations = listAnnotationsForTarget(target, annotationClassTypes);
 
