@@ -17,6 +17,8 @@ import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,8 +29,8 @@ import org.plos.annotation.Commentary;
 import org.plos.annotation.FlagUtil;
 import org.plos.models.Annotation;
 import org.plos.models.Annotea;
-import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;
+import org.plos.models.Correction;
 import org.plos.models.FormalCorrection;
 import org.plos.models.MinorCorrection;
 import org.plos.models.Rating;
@@ -37,14 +39,13 @@ import org.plos.rating.service.RatingInfo;
 import org.plos.rating.service.RatingsService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
-import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.Session;
 
 /**
  * Used for both annotation and reply services.
  * Provides the Create/Read/Delete annotation operations .
  */
 public class AnnotationService {
+  // TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the AnnotationWebService directly!
   private AnnotationWebService annotationWebService;
   private ReplyWebService replyWebService;
   private RatingsService ratingsService;
@@ -58,6 +59,10 @@ public class AnnotationService {
   public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
   public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
   public static final String WEB_TYPE_REPLY = "Reply";
+  private static final Set<Class> CORRECTION_SET = new HashSet<Class>();
+  static {
+    CORRECTION_SET.add(Correction.class);
+  }
 
   /**
    * Create an annotation.
@@ -280,17 +285,47 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of annotations
    */
-  public WebAnnotation[] listAnnotations(final String target) throws ApplicationException {
+  public WebAnnotation[] listAnnotations(String target)  throws ApplicationException {
+    return listAnnotations(target, null);
+  }
+  
+  /**
+   * Lists all correction annotations for the given target DOI. 
+   * 
+   * @param target
+   * @return
+   * @throws ApplicationException
+   */
+  public WebAnnotation[] listCorrections(String target) throws ApplicationException {
+    return listAnnotations(target, CORRECTION_SET);
+  }
+  
+  /**
+   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If annotationClassTypes is null, then all 
+   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the 
+   * annotationClassTypes Set are returned. 
+   * 
+   * Each Class in annotationClassTypes should extend Annotation. E.G. Comment.class or FormalCorrection.class
+   *
+   * @param target target doi that the listed annotations annotate
+   * @param annotationClassTypes a set of Annotation class types to filter the results
+   *
+   * @return a list of annotations
+   *
+   * @throws RemoteException RemoteException
+   */
+  public WebAnnotation[] listAnnotations(String target, Set<Class> annotationTypeClasses) throws ApplicationException {
+    // TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the AnnotationWebService directly!
+    
     /** Placing the caching here rather than in AnnotationWebService because this
      *  produces the objects for the Commentary view.  The Article HTML is cached
      *  which calls the AnnotationWebService listAnnotations directly, so that call
      *  won't happen too much.
      */
-
     WebAnnotation[] allAnnotations;
     AnnotationInfo[] annotations;
     try {
-      annotations = annotationWebService.listAnnotations(target);
+      annotations = annotationWebService.listAnnotations(target, annotationTypeClasses);
     } catch (RemoteException re){
       log.error(re);
       throw new ApplicationException(re);

@@ -18,8 +18,11 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.rpc.ServiceException;
 
@@ -67,6 +70,12 @@ public class AnnotationWebService extends BaseAnnotationService {
   private Ehcache articleAnnotationCache;
   private static final String       PLOSONE_0_6_DEFAULT_TYPE =
     "http://www.w3.org/2000/10/annotationType#Annotation";
+  protected static final Set<Class> ALL_ANNOTATION_CLASSES = new HashSet<Class>();
+  static { 
+    ALL_ANNOTATION_CLASSES.add(Comment.class);
+    ALL_ANNOTATION_CLASSES.add(FormalCorrection.class);
+    ALL_ANNOTATION_CLASSES.add(MinorCorrection.class);
+  }
 
   /**
    * DOCUMENT ME!
@@ -347,9 +356,9 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   private void deleteAnnotation(final String annotationId) throws RemoteException {
-    
-    org.plos.models.Annotation a = session.get(org.plos.models.Annotation.class, annotationId);
-
+      
+    Annotation a = session.get(Annotation.class, annotationId);
+ 
     if (a != null) {
       session.delete(a);
       fetchArticleService.removeFromArticleCache(new String[] {a.getAnnotates().toString()});
@@ -360,55 +369,75 @@ public class AnnotationWebService extends BaseAnnotationService {
     }
   }
 
-  public List<org.plos.models.Annotation> listAnnotationsForTarget(
-      final String target) {
+  public List<Annotation> listAnnotationsForTarget(String target) {
+    return listAnnotationsForTarget(target, null);
+  }
+  
+  /**
+   * Retrieve all Annotation instances that annotate the given target DOI. If annotationClassTypes is null, then all 
+   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the 
+   * annotationClassTypes Set are returned. 
+   * 
+   * @param target
+   * @param annotationClassTypes
+   * @return
+   */
+  public List<Annotation> listAnnotationsForTarget(final String target, final Set<Class> annotationClassTypes) {
     final Object lock = (FetchArticleService.ARTICLE_LOCK + target).intern(); // lock @ Article level
-    List<org.plos.models.Annotation> allAnnotations = CacheAdminHelper
+    List<Annotation> allAnnotations = CacheAdminHelper
         .getFromCache(articleAnnotationCache, ANNOTATION_KEY + target,
             -1, lock, "annotation list",
-            new CacheAdminHelper.EhcacheUpdater<List<org.plos.models.Annotation>>() {
-              public List<org.plos.models.Annotation> lookup() {
-                return listAnnotations(target, getApplicationId(), -1);
+            new CacheAdminHelper.EhcacheUpdater<List<Annotation>>() {
+              public List<Annotation> lookup() {
+                return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
               }
             });
+    
+    // TODO: Since we cache the set of all annotations, we can't query and cache a limited set of annotations
+    // at this time, so we have to filter out the types here and query for all types above when populating the cache
+    if (annotationClassTypes != null) {
+      List<Annotation> filteredAnnotations = new ArrayList<Annotation>();
+      for (Annotation a : allAnnotations) {
+        for (Class classType : annotationClassTypes) {
+          if (classType.isInstance(a)) {
+            filteredAnnotations.add(a);
+            break;
+          }
+        }
+        if (annotationClassTypes.contains(a.getClass())) {
+          filteredAnnotations.add(a);
+        }
+      }
+      return filteredAnnotations;
+    }
+    
     return allAnnotations;
   }
   
-  private List<org.plos.models.Annotation> listAnnotations(final String target, final String mediator, final int state) {
-    if (target != null) {
-      pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
-    } else {
-      pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
+    private List<Annotation> listAnnotations(final String target, 
+                                             final String mediator, final int state, final Set<Class> classTypes) {
+        if (target != null) {
+            pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
+        } else {
+            pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
+        }
+        
+        List<Annotation> combinedAnnotations = new ArrayList<Annotation>();
+        
+        for (Class anClass : classTypes) {
+            Criteria c = session.createCriteria(anClass);
+            setRestrictions(c, target, mediator, state);
+            combinedAnnotations.addAll((List<Annotation>)c.list());
+        }
+        
+        List<org.plos.models.Annotation> allAnnotations = combinedAnnotations;
+        
+        if (log.isDebugEnabled()) {
+            log.debug("retrieved annotation list from TOPAZ for target: " + target);
+        }
+        
+        return allAnnotations;
     }
-
-    // xxx: See trac #357. The previous default was incorrect.
-    // Support both the old and the new to be compatible. (till
-    // data migration) - We need the data migration now!
-    Criteria c = session.createCriteria(Comment.class);
-    setRestrictions(c, target, mediator, state);
-    List<Comment> comments = c.list();
-
-    c = session.createCriteria(MinorCorrection.class);
-    setRestrictions(c, target, mediator, state);
-    List<MinorCorrection> minorCList = c.list();
-
-    c = session.createCriteria(FormalCorrection.class);
-    setRestrictions(c, target, mediator, state);
-    List<FormalCorrection> formalCList = c.list();
-
-    List<org.plos.models.Annotation> combinedAnnotations = new ArrayList<org.plos.models.Annotation>();
-    combinedAnnotations.addAll(comments);
-    combinedAnnotations.addAll(minorCList);
-    combinedAnnotations.addAll(formalCList);
-
-    List<org.plos.models.Annotation> allAnnotations = combinedAnnotations;
-
-    if (log.isDebugEnabled()) {
-      log.debug("retrieved annotation list from TOPAZ for target: " + target);
-    }
-
-    return allAnnotations;
-  }
   
   /**
    * Helper method to set restrictions on the criteria used in listAnnotations()
@@ -431,19 +460,36 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
   
   /**
-   * DOCUMENT ME!
+   * See listAnnotations(target, annotationClassTypes). This method returns the result of that 
+   * method that with annoationClassTypes set to null. 
+   * 
+   * @param target
+   * @return
+   * @throws RemoteException
+   */
+  public AnnotationInfo[] listAnnotations(final String target) throws RemoteException {
+    return listAnnotations(target, null);
+  }
+  
+  /**
+   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If annotationClassTypes is null, then all 
+   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the 
+   * annotationClassTypes Set are returned. 
+   * 
+   * Each Class in annotationClassTypes should extend Annotation. E.G. Comment.class or FormalCorrection.class
    *
-   * @param target target
+   * @param target target doi that the listed annotations annotate
+   * @param annotationClassTypes a set of Annotation class types to filter the results
    *
    * @return a list of annotations
    *
    * @throws RemoteException RemoteException
    */
-  public AnnotationInfo[] listAnnotations(final String target) throws RemoteException {
+  public AnnotationInfo[] listAnnotations(final String target, Set<Class> annotationClassTypes) throws RemoteException {
     
-    List<org.plos.models.Annotation> allAnnotations = listAnnotationsForTarget(target);
+    List<Annotation> allAnnotations = listAnnotationsForTarget(target, annotationClassTypes);
 
-// List<org.plos.models.Annotation> pepFilteredComments   = allArticleAnnotations;
+// List<Annotation> pepFilteredComments   = allArticleAnnotations;
 // // Note that the PubApp does not currently support private annotations so this logic is not necessary
 // // It is also not going to be possible to cache annotated article XML ones we do support it since the article
 // // XML could appear differently to each user. 
@@ -467,7 +513,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     int i = 0;
 
     // TODO: Flags should not extend Comment (or Annotation). When this is fixed, they should not be stored in this cache! 
-    for (org.plos.models.Annotation a : allAnnotations) {
+    for (Annotation a : allAnnotations) {
       if (a instanceof ArticleAnnotation) {
         annotations[i++] = new AnnotationInfo((ArticleAnnotation)a, fedora);
       } else {
@@ -549,7 +595,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public AnnotationInfo[] listAnnotations(final String mediator, final int state) 
       throws RemoteException {
-    List<Annotation> annotationList = listAnnotations(null, mediator, state);
+    List<Annotation> annotationList = listAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
     AnnotationInfo[] annotations = new AnnotationInfo[annotationList.size()];
 
     int i = 0;
@@ -578,62 +624,70 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @return
    * @throws Exception
    */
-  public String convertArticleAnnotationToType(final String srcAnnotationId, final Class newAnnotationClassType) 
-  throws Exception {
-    
-    org.plos.models.Annotation srcAnnotation = session.get(org.plos.models.Annotation.class, srcAnnotationId);
+  public String convertArticleAnnotationToType(final String srcAnnotationId,
+      final Class newAnnotationClassType) throws Exception {
+
+    Annotation srcAnnotation = session.get(Annotation.class, srcAnnotationId);
     if (srcAnnotation == null) {
       log.error("Annotation was null for id: " + srcAnnotationId);
       return null;
     }
-    
+
     if (!(srcAnnotation instanceof ArticleAnnotation)) {
-      log.error("Cannot convert Annotation to correction for id: " + srcAnnotationId);
+      log.error("Cannot convert Annotation to correction for id: "
+          + srcAnnotationId);
       return null;
     }
-    
+
     ArticleAnnotation oldAn = (ArticleAnnotation) srcAnnotation;
-    ArticleAnnotation newAn = (ArticleAnnotation)newAnnotationClassType.newInstance();
-    
+    ArticleAnnotation newAn = (ArticleAnnotation) newAnnotationClassType
+        .newInstance();
+
     BeanUtils.copyProperties(newAn, oldAn);
-    newAn.setId(null); // this should not have been copied (original ArticleAnnotation interface did not have a setId() method...but somehow it is! Reset to null. 
-  
-  
+    newAn.setId(null); // this should not have been copied (original
+                        // ArticleAnnotation interface did not have a setId()
+                        // method...but somehow it is! Reset to null.
+
     pep.checkAccess(pep.CREATE_ANNOTATION, oldAn.getAnnotates());
-    
+
     String newId = session.saveOrUpdate(newAn);
     URI newIdUri = new URI(newId);
     session.flush();
-    permissionsWebService.propagatePermissions(newId, new String[] { newAn.getBody().toString() });
-    
-    // Find all Annotations that refer to the old Annotation and update their target 'annotates' 
-    // property to point to the new Annotation. 
-    List<org.plos.models.Annotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
-    for (org.plos.models.Annotation refAn : refAns) {
+    permissionsWebService.propagatePermissions(newId, new String[] { newAn
+        .getBody().toString() });
+
+    // Find all Annotations that refer to the old Annotation and update their
+    // target 'annotates'
+    // property to point to the new Annotation.
+    List<Annotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
+    for (Annotation refAn : refAns) {
       refAn.setAnnotates(newIdUri);
       session.saveOrUpdate(refAn);
     }
     session.flush();
-    
-    // Delete the original annotation from mulgara. Note, we don't call deleteAnnotation() here
-    // since that also removes the body of the article from fedora and we are referencing that from 
-    // the new annotation. 
+
+    // Delete the original annotation from mulgara. Note, we don't call
+    // deleteAnnotation() here
+    // since that also removes the body of the article from fedora and we are
+    // referencing that from
+    // the new annotation.
     session.delete(oldAn);
 
-    // We must clear the annotated article from the article cache 
+    // We must clear the annotated article from the article cache
     String target = newAn.getAnnotates().toString();
-    fetchArticleService.removeFromArticleCache(new String[] {target});
+    fetchArticleService.removeFromArticleCache(new String[] { target });
     if (log.isDebugEnabled()) {
       log.debug("removed " + target + " from articleAnnotationCache");
     }
-    
+
     return newAn.getId().toString();
   }
   
   
   /**
-   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
-   *   to use.
+   * @param articleAnnotationCache
+   *          The Article(transformed)/ArticleInfo/Annotation/Citation cache to
+   *          use.
    */
   @Required
   public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
@@ -642,8 +696,9 @@ public class AnnotationWebService extends BaseAnnotationService {
 
   /**
    * Set the OTM session. Called by spring's bean wiring.
-   *
-   * @param session the otm session
+   * 
+   * @param session
+   *          the otm session
    */
   @Required
   public void setOtmSession(Session session) {
