@@ -21,7 +21,18 @@ var annotationConfig = {
   isPublic: true,
   dfltAnnSelErrMsg: 'This area of text cannot be notated.',
   annSelErrMsg: null,
-  rangeInfoObj: new Object()
+  rangeInfoObj: new Object(),
+  annTypeMinorCorrection: 'MinorCorrection',
+  annTypeFormalCorrection: 'FormalCorrection',
+  styleMinorCorrection: 'minrcrctn', // generalized css class name for minor corrections
+  styleFormalCorrection: 'frmlcrctn' // generalized css class name for formal corrections
+};
+
+var formalCorrectionConfig = {
+  styleFormalCorrectionHeader: 'fch', // css class name for the formal correction header node
+  fchId: 'fch', // the formal correction header node dom id
+  fcListId: 'fclist', // the formal correction header sub-node referencing the ordered list
+  annid: 'annid' // dom node attribute name to use to store annotation ids 
 };
 
 var formConfig = {
@@ -29,6 +40,7 @@ var formConfig = {
 };
 
 var commentConfig = {
+  cmtContainer: "cmtContainer",
   sectionTitle: "viewCmtTitle",
   sectionDetail: "viewCmtDetail",  
   sectionComment: "viewComment", 

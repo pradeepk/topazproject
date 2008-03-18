@@ -251,10 +251,25 @@ topaz.displayComment = {
     
     if (topaz.displayComment.sectionLink.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionLink);
     this.sectionLink.appendChild(this.buildDisplayViewLink(jsonObj));
+    
+    // set correction related styling
+    var cmtId = dojo.byId(commentConfig.cmtContainer);
+    if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeMinorCorrection) >= 0) {
+      // minor correction
+      dojo.html.addClass(cmtId, annotationConfig.styleMinorCorrection);
+    }
+    else if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeFormalCorrection) >= 0) {
+      // formal correction
+      dojo.html.addClass(cmtId, annotationConfig.styleFormalCorrection);
+    }
+    else {
+      dojo.html.removeClass(cmtId, annotationConfig.styleMinorCorrection);
+      dojo.html.removeClass(cmtId, annotationConfig.styleFormalCorrection);
+    }
   },
   
   /**
-   * topaz.displayComment.buildDisplayView(JSON jsonObj)
+   * topaz.displayComment.buildDisplayViewMultiple(JSON jsonObj)
    * 
    * Builds the comment dialog box for a multiple comments.  Empties out the inner 
    * containers if text already exists in it.
@@ -282,6 +297,18 @@ topaz.displayComment = {
       contentDiv.className = 'contentwrap active';
     else
       contentDiv.className = 'contentwrap';
+
+    // set correction related styling
+    if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeMinorCorrection) >= 0) {
+      // minor correction
+      dojo.html.addClass(newListItem, annotationConfig.styleMinorCorrection);
+      contentDiv.className += ' ' + annotationConfig.styleMinorCorrection;
+    }
+    else if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeFormalCorrection) >= 0) {
+      // formal correction
+      dojo.html.addClass(newListItem, annotationConfig.styleFormalCorrection);
+      contentDiv.className += ' ' + annotationConfig.styleFormalCorrection;
+    }
 
     contentDiv.innerHTML = this.buildDisplayBody(jsonObj);
     
@@ -315,7 +342,7 @@ topaz.displayComment = {
       var divList = topaz.domUtil.getChildElementsByTagAndClassName(secondaryContainer, 'div', null);
       dojo.dom.insertAfter(contentDiv, divList[divList.length - 1]);
     }
-    
+
     var multiDetailDivChild = secondaryContainer.childNodes[secondaryContainer.childNodes.length - 1];
     newListItem.onclick = function() {
         topaz.displayComment.mouseoutComment(topaz.displayComment.target);
