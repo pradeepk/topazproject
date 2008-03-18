@@ -10,9 +10,6 @@
 
 package org.plos.annotation.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.plos.ApplicationException;
 import org.plos.annotation.service.WebAnnotation;
 
@@ -27,17 +24,7 @@ public class GetCorrectionsCommentaryAction extends AbstractCommentaryAction {
 
   @Override
   protected WebAnnotation[] getAnnotations() throws ApplicationException {
-    WebAnnotation[] arr = getAnnotationService().listAnnotations(getTarget());
-    // for now just filter them here
-    // TODO push this filtering into the service layer
-    final List<WebAnnotation> list = new ArrayList<WebAnnotation>(arr.length);
-    for(WebAnnotation wa : arr) {
-      assert wa.getType() != null;
-      if(wa.getType().toLowerCase().indexOf("correction") >= 0) {
-        list.add(wa);
-      }
-    }
-    return list.toArray( new WebAnnotation[ list.size() ] );
+    return getAnnotationService().listCorrections(getTarget());
   }
 
   @Override
