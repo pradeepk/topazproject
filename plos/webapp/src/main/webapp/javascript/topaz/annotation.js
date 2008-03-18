@@ -11,40 +11,11 @@ dojo.provide("topaz.annotation");
   * column on the article page.
   * 
   * @author  Joycelyn Chung			joycelyn@orangetowers.com
+  * @author  jkirton            jopaki@gmail.com
   **/
 topaz.annotation = new Object();
 
 topaz.annotation = {
-/*
-  initialize: function() {
-  	if ( document.addEventListener )
-    {
-  		document.addEventListener( 'keyup', this._createAnnotationOnkeyup.bindAsEventListener(this), false );
-    }
-  	else if ( document.attachEvent ) 
-    {
-      document.attachEvent('onkeyup', this._createAnnotationOnkeyup.bindAsEventListener(this));
-    }  
-  	else  // for IE:
-  	{
-  		if ( document.onkeyup )
-  			document.onkeyup = function( event ) { this._createAnnotationOnkeyup(event).bindAsEventListener(this); document.onkeyup; }
-  		else
-  			document.onkeyup = this._createAnnotationOnkeyup(event).bindAsEventListener(this);
-  	}
-  	
-  },*/
-/*  
-  _LAST_ANCESTOR: "researchArticle",
-  _XPOINTER_MARKER: "xpt",
-  _ANNOTATION_MARKER: "note",
-  _ANNOTATION_IMG_MARKER: "noteImg",
-  _DIALOG_MARKER: "rdm",
-  _IS_AUTHOR: false,  //TODO: *** Default to false when the hidden input is hooked up.
-  _IS_PUBLIC: false,
-  rangeInfoObj: new Object(),
-*/  
-
   /** 
    * topaz.annotation._createAnnotationOnkeyup(event)
    * 
@@ -127,7 +98,7 @@ topaz.annotation = {
     
     if (annotationConfig.rangeInfoObj == annotationConfig.excludeSelection) {
       this.handleUserSelectionError();
-      getArticle();
+      this.undoPendingAnnotation();
       return false;
     }
     else if (!annotationConfig.rangeInfoObj) {
@@ -159,7 +130,7 @@ topaz.annotation = {
      
       if (mod == annotationConfig.excludeSelection) {
         alert("This area of text cannot be notated.");
-        getArticle();
+        this.undoPendingAnnotation();
         return false;
       }
 
@@ -228,6 +199,24 @@ topaz.annotation = {
   },
   */
 
+  isSimpleTextSelection: function(range) {
+    // IE
+    if (document.selection && document.selection.createRange) {
+      return (range.htmlText == range.text);
+    }
+    // Mozilla
+    else if (window.getSelection) {
+      var clonedSelection = range.cloneContents();
+      var div = document.createElement('div');
+      div.appendChild(clonedSelection);
+      var html = div.innerHTML;
+      return (html == range.toString());
+    }
+    else {
+      return false;
+    }
+  },
+
   /**
    * topaz.annotation.getRangeOfSelection()
    * 
@@ -245,18 +234,19 @@ topaz.annotation = {
 		// IE
     if (document.selection && document.selection.createRange) {
       rangeInfo = this.findIeRange();
-    
-      return rangeInfo;
     }
     // Mozilla
     else if (window.getSelection || document.getSelection) {
       rangeInfo = this.findMozillaRange();
-    
-      return rangeInfo;
     }
     else {
       return false;
     }
+
+    // is this range just simple text?
+    rangeInfo.isSimpleText = this.isSimpleTextSelection(rangeInfo.range);
+    
+    return rangeInfo;
   },
 
 	/**
@@ -377,17 +367,17 @@ topaz.annotation = {
   	    var endXpath       = endPoint.xpathLocation;
   	    var startParentId  = startPoint.element.id;
   	    var endParentId    = endPoint.element.id;
-  	    
+
         var ieRange = new Object();
         ieRange  = {range:          range,
-                    startPoint:     startPoint.offset,
-                    endPoint:       endPoint.offset,
-                    startParent:    startParent,
-                    endParent:      endParent,
-                    startXpath:     startXpath,
-                    endXpath:       endXpath,
-                    startParentId:  startParentId,
-                    endParentId:    endParentId,
+          startPoint:     startPoint.offset,
+          endPoint:       endPoint.offset,
+          startParent:    startParent,
+          endParent:      endParent,
+          startXpath:     startXpath,
+          endXpath:       endXpath,
+          startParentId:  startParentId,
+          endParentId:    endParentId,
                     selection:      null};
         
         return ieRange;
@@ -557,18 +547,18 @@ topaz.annotation = {
   	    var endXpath       = endPoint.xpathLocation;
   	    var startParentId  = startPoint.element.id;
   	    var endParentId    = endPoint.element.id;
-   	    
+
         var mozRange = new Object();
         mozRange = {range:          range,
-                    startPoint:     startPoint.offset,
-                    endPoint:       endPoint.offset,
-                    startParent:    startParent,
-                    endParent:      endParent,
-                    startXpath:     startXpath,
-                    endXpath:       endXpath,
-                    startParentId:  startParentId,
-                    endParentId:    endParentId,
-                    selection:      rangeSelection};    
+          startPoint:     startPoint.offset,
+          endPoint:       endPoint.offset,
+          startParent:    startParent,
+          endParent:      endParent,
+          startXpath:     startXpath,
+          endXpath:       endXpath,
+          startParentId:  startParentId,
+          endParentId:    endParentId,
+          selection:      rangeSelection};    
                           
         return mozRange;
       }
@@ -1433,9 +1423,16 @@ topaz.annotation = {
    * This method should be called when the user cancels the comment dialog. 
    */
   undoPendingAnnotation: function() {
+    var arr;    
+    // remove temp (IE) nodes
+    arr = dojo.html.getElementsByClass('temp', annotationConfig.articleContainer);
+    if(arr) for(var i=0; i<arr.length; i++) {
+      dojo.dom.removeNode(arr[i]);
+    }
+
     var rdmref = dojo.byId(annotationConfig.regionalDialogMarker);
     if(rdmref) this._handleNode(rdmref); 
-    var arr = dojo.html.getElementsByClass('note-pending', 'articleContainer');
+    var arr = dojo.html.getElementsByClass('note-pending', annotationConfig.articleContainer);
     if(arr) for(var i=0; i<arr.length; i++) this._handleNode(arr[i]);
   },
   

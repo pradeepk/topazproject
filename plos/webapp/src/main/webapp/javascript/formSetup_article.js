@@ -109,12 +109,17 @@ function initAnnotationForm() {
 	dojo.event.connect(btnCancel, "onclick", function(e) {
     dojo.dom.removeChildren(submitMsg);
     _dlg.hide();
-    /* don't re-fetch article on cancel
     topaz.formUtil.enableFormFields(_annotationForm);
-	  getArticle();
-    topaz.displayComment.processBugCount();
-    */
-    topaz.annotation.undoPendingAnnotation();
+    if(!annotationConfig.rangeInfoObj.isSimpleText) {
+      // we are in an INDETERMINISTIC state for annotation markup as we are overlapping existing annotations!
+      // Article re-fetch is necessary to maintain the integrity of the existing annotation markup
+      getArticle();
+      topaz.displayComment.processBugCount();
+    }
+    else {
+      // we can safely rollback the pending annotation markup from the dom
+      topaz.annotation.undoPendingAnnotation();
+    }
     e.preventDefault();
   });
 
