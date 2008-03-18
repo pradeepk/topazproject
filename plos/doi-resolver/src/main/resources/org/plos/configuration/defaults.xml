@@ -32,6 +32,7 @@
     <!-- Stuff used by doi-resolver -->
     <webserver-url>http://${network.hosts.default}:${network.ports.default}${pub.app-context}/</webserver-url>  <!-- pub app url -->
     <article-action>article/</article-action> <!-- action to which doi resolvers forwards to display an article -->
+    <annotation-action>annotation/</annotation-action> <!-- action to which doi resolvers forwards to display an annotation -->
     <figure-action1>article/slideshow.action?uri=</figure-action1> <!-- with figure-action2, constructs url for graphics and table display -->
     <figure-action2>&amp;imageURI=</figure-action2>
     <error-page>static/pageNotFound.action</error-page> <!-- error page to redirect to in pub app if article not found -->
