@@ -49,6 +49,8 @@ public class BrowseIssueAction extends BaseActionSupport{
   private ArrayList<TOCArticleGroup> articleGroups = new ArrayList<TOCArticleGroup>();
 
   private ArticleXMLUtils articleXmlUtils;
+
+  private VolumeInfo volumeInfo;
   
   @Override
   public String execute() {
@@ -103,6 +105,8 @@ public class BrowseIssueAction extends BaseActionSupport{
       return ERROR; 
     }
 
+    volumeInfo  = browseService.getVolumeInfo(issueInfo.getParentVolume());
+    
     // Translate the currentIssue description to HTML
     if (issueInfo.getDescription() != null) {
       try {
@@ -246,5 +250,13 @@ public class BrowseIssueAction extends BaseActionSupport{
 
   public String getIssueDescription() {
     return issueDescription;
+  }
+
+  /**
+   * returns the VolumeInfo for the current issue's parent volume
+   * @return
+   */
+  public VolumeInfo getVolumeInfo() {
+    return volumeInfo;
   }
 }
