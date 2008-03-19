@@ -25,6 +25,8 @@ import java.util.Map;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
+import net.sf.ehcache.Ehcache;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
@@ -44,6 +46,7 @@ import org.plos.models.License;
 import org.plos.models.ObjectInfo;
 import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
+import org.plos.util.CacheAdminHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -68,6 +71,7 @@ public class ArticleOtmService {
   private ArticlePEP     pep;
   private Session        session;
   private JournalService jrnlSvc;
+  private Ehcache        articleAnnotationCache;
 
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
 
@@ -541,28 +545,33 @@ public class ArticleOtmService {
    */
   public SecondaryObject[] listSecondaryObjects(final String article)
       throws NoSuchArticleIdException {
+
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
-    return TransactionHelper.doInTxE(session,
-                new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
-      public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
-        // get objects
-        Article art = tx.getSession().get(Article.class, article);
-        if (art == null)
-          throw new NoSuchArticleIdException(article);
+    // do cache aware lookup
+    final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern();  // lock @ Article
+    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+      FetchArticleService.ARTICLE_SECONDARY_KEY + article, -1, lock, "secondaryObjects",
+      new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
+        public SecondaryObject[] lookup() throws NoSuchArticleIdException {
+          return TransactionHelper.doInTxE(session,
+            new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
+              public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
+                // get objects
+                Article art = tx.getSession().get(Article.class, article);
+                if (art == null) { throw new NoSuchArticleIdException(article); }
 
-        /* sort the object list.
-         *
-         * TODO: the list should be stored using RdfSeq or RdfList instead of this next-object hack
-         * so we can just use art.getParts()
-         */
-        List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
-        for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject())
-          sorted.add(oi);
+                // TODO: Article.parts should be RdfSeq or RdfList, forced to walk nextObject
+                List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
+                for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject()) {
+                  sorted.add(oi);
+                }
 
-        // convert to SecondaryObject's. TODO: can't we just return ObjectInfo?
-        return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
-      }
+                // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
+                return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
+              }
+          });
+        }
     });
   }
 
@@ -731,6 +740,15 @@ public class ArticleOtmService {
   @Required
   public void setJournalService(JournalService service) {
     this.jrnlSvc = service;
+  }
+
+  /**
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
+   */
+  @Required
+  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**
