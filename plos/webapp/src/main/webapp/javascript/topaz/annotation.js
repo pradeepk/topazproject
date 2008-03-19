@@ -200,21 +200,21 @@ topaz.annotation = {
   */
 
   isSimpleTextSelection: function(range) {
-    // IE
-    if (document.selection && document.selection.createRange) {
-      return (range.htmlText == range.text);
+    if(range) {
+      // IE
+      if (document.selection && document.selection.createRange) {
+        return (range.htmlText == range.text);
+      }
+      // Mozilla
+      else if (window.getSelection) {
+        var clonedSelection = range.cloneContents();
+        var div = document.createElement('div');
+        div.appendChild(clonedSelection);
+        var html = div.innerHTML;
+        return (html == range.toString());
+      }
     }
-    // Mozilla
-    else if (window.getSelection) {
-      var clonedSelection = range.cloneContents();
-      var div = document.createElement('div');
-      div.appendChild(clonedSelection);
-      var html = div.innerHTML;
-      return (html == range.toString());
-    }
-    else {
-      return false;
-    }
+    return false;
   },
 
   /**
@@ -1373,71 +1373,61 @@ topaz.annotation = {
       return rangeContent;
   },
 
-  ////////////////////////////////
-
-  _promoteChildren: function(node) {
-    var cns = node.childNodes;
-    var cnt = cns.length;
-    if(cnt == 0) return;
-    var cn, pn;
-    for(var i=0; i<cnt; i++) {
-      // elevate all children as siblings of the the node's parent
-      cn = cns[i--];  // as we will be removing a child node
-      var cid = dojo.html.getAttribute(cn, 'id');
-      if(cn.nodeName == 'A' && (!cid || cid.length < 1) && dojo.html.hasClass(cn, 'bug')) {
-        // this is a pending bug (kill it)
-        //node.removeChild(cn);
-        dojo.dom.destroyNode(cn);  
-      }
-      else {
-        // promote child to succeeding sibling
-        pn = node.parentNode;
-        cn = node.childNodes[0];
-        pn.insertBefore(node.removeChild(cn), node.nextSibling);
-      }
-      cnt = cns.length;
-    }
-  },
-
-  _handleNode: function(n) {
-    // is this an existing note node?
-    this._promoteChildren(n);
-    var nc = n.childNodes.length;
-    if(n.nodeType != 3 && nc == 0) {
-      dojo.dom.destroyNode(n);
-      return;
-    }
-    if(dojo.html.hasAttribute(n, 'annotationid')) {
-      dojo.html.removeClass(n, 'note-pending');
-    }
-    else {
-      dojo.dom.destroyNode(n);
-    }
-  },
-
   /**
    * topaz.annotation.undoPendingAnnotation()
    *
    * Removes all pending annotation markup from the document 
    * restoring it to the state it was in prior to a user selection.
-   * This method should be called when the user cancels the comment dialog. 
+   *
+   * IMPT: This method only works when the selection consists soley of text (no HTML markup).
+   *
+   * @see isSimpleTextSelection(range) method
    */
   undoPendingAnnotation: function() {
     var arr;    
+    
+    // remove POINT_SPAN node (if present)
+    var pointSpan = document.getElementById('POINT_SPAN');
+    if(pointSpan) dojo.dom.destroyNode(dojo.dom.removeNode(pointSpan));
+
     // remove temp (IE) nodes
     arr = dojo.html.getElementsByClass('temp', annotationConfig.articleContainer);
     if(arr) for(var i=0; i<arr.length; i++) {
-      dojo.dom.removeNode(arr[i]);
+      dojo.dom.destroyNode(dojo.dom.removeNode(arr[i]));
     }
+    
+    // remove the rdm node (for IE this is the a.bug node, for Gecko this a span node)
+    var rdm = dojo.byId('rdm');
+    if(rdm) dojo.dom.destroyNode(dojo.dom.removeNode(rdm));
 
-    var rdmref = dojo.byId(annotationConfig.regionalDialogMarker);
-    if(rdmref) this._handleNode(rdmref); 
-    var arr = dojo.html.getElementsByClass('note-pending', annotationConfig.articleContainer);
-    if(arr) for(var i=0; i<arr.length; i++) this._handleNode(arr[i]);
+    // remove all span nodes having class marked as pending annotation 
+    // promoting any text node children as succeeding siblings of the span node to be removed
+    arr = dojo.html.getElementsByClass(annotationConfig.pendingAnnotationMarker, annotationConfig.articleContainer);
+    if(arr) { 
+      var i, j, n, cns, cn;
+      
+      // promote all found text node children
+      for(i=0; i<arr.length; i++) {
+        n = arr[i];
+        cns = n.childNodes;
+        if(cns.length > 0) {
+          for(j=0; j<cns.length; j++) {
+            cn = cns[j];
+            if(cn.nodeType == 3) {
+              // promote child to succeeding sibling
+              n.parentNode.insertBefore(n.removeChild(cn), n.nextSibling);
+            }
+          }
+        }
+      }
+      
+      // kill the pending annotation markup
+      for(var i=0; i<arr.length; i++) {
+        dojo.dom.destroyNode(dojo.dom.removeNode(arr[i]));
+      }
+    }
   },
   
-  ////////////////////////
-
 	/**
 	 * topaz.annotation.normalizeText( Document object  documentObj, String resultStr)
 	 * 
