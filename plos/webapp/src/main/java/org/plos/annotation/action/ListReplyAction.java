@@ -9,17 +9,17 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
-import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.service.Reply;
+import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.models.Article;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Action class to get a list of replies to annotations.
@@ -31,9 +31,11 @@ public class ListReplyAction extends AnnotationActionSupport {
   private WebAnnotation baseAnnotation;
   private ArticleOtmService articleOtmService;
   private Article articleInfo;
+  private String citation;
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
+  @Override
   public String execute() throws Exception {
     try {
       replies = getAnnotationService().listReplies(root, inReplyTo);
@@ -63,12 +65,48 @@ public class ListReplyAction extends AnnotationActionSupport {
       baseAnnotation = getAnnotationService().getAnnotation(root);
       replies = getAnnotationService().listAllReplies(root, inReplyTo);
       articleInfo = getArticleOtmService().getArticle(new URI(baseAnnotation.getAnnotates()));
+      
+      // construct citation string
+      citation = assembleCitationString();
+      
     } catch (final ApplicationException e) {
       log.error("Could not list all replies for root:" + root, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;
+  }
+  
+  /**
+   * Assemble the Correction annotation citation string.
+   * <p>FORMAT:
+   * <p>[Author of comment]. "[Comment Title]." Online comment. [Date Comment Posted]. "[Title of Original Article]." [Full name of first author of original article] et al. [Title of Journal]. {URL}
+   * @return Correction annotation citation string.
+   */
+  private String assembleCitationString() {
+    assert baseAnnotation != null;
+    assert articleInfo != null;
+    StringBuffer sb = new StringBuffer(1024);
+    sb.append(baseAnnotation.getCreatorName());
+    sb.append(". ");
+    sb.append(baseAnnotation.getCommentTitle());
+    sb.append(". Online comment.  ");
+    sb.append(baseAnnotation.getCreated());
+    sb.append(".  ");
+    sb.append(articleInfo.getDublinCore().getTitle());
+    sb.append(".  ");
+    sb.append(articleInfo.getDublinCore().getCreators().iterator().next()); 
+    sb.append(" et al.  ");
+    sb.append("[TODO Title of Journal].  ");
+    sb.append(baseAnnotation.getId());
+    return sb.toString();
+  }
+  
+  /**
+   * @return The constructed annotation citation string.
+   */
+  public String getCitation() {
+    return citation;
   }
 
   public void setRoot(final String root) {
