@@ -308,6 +308,7 @@ div#ftr div.powered { background-color: #202020; color: #bbb; font-size: .9em; p
 div.powered a:link,
 div.powered a:visited,
 div.powered a:hover { color: #ccc; font-weight: bold;}
+
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
@@ -391,6 +392,7 @@ dl#relatedArticles dd a:hover { color:#008ED5; text-decoration:underline; }
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
 #rhc ul li a.last		{ border-bottom-width: 0; }
 #rhc ol li a.commentary { background-image: none; display:block; margin-top:5px; padding: 2px 0 2px 0; font-weight: bold; }
+#rhc ol li a.corrections { display:block; margin-bottom:5px; background-position:left 0.2em; _display:inline; _background-position:left 0%;/*IE6 hacks to eliminate doubling of bottom margin. Results in no bottom margin for IE6 */ }
 ul#dcCount1 { margin-bottom:5px; } /* increases spacing below note and comment counts to help block view/join discussion section */
 
 /* correction article type styles */
@@ -398,13 +400,16 @@ div.correction span#oa { /* open access image */ background: #3D3D3D url(../imag
 div.correction h1 { color: #3D3D3D; }
 
 /* correction note types, header, and associated page styles */
-div.corrections td.title { background-color: #fff4f0; }/* "correction" name space conflict: see line #393 above and line #594 below. Resolved by using "corrections". */
+div#discussionContainer div.corrections td.title { background-color: #fff4f0; }/* "correction" name space conflict: see line #393 above and line #594 below. Resolved by using "corrections". */
+div#discussionContainer div.corrections div.original div.hd h3 { text-indent:20px; color:#ff0000; } 
+
 div.corrections td.title a,
 div.fch p.fch strong { color:#ff0000; }
 div.fch p.fch em { font-weight:bold; font-style:normal; }
 div.fch { margin: 15px 0; padding:0; border: 1px solid #ff0000; background-color: #fff4f0; }
 div.fch p.fch,
-div.corrections td.title a { background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
+div.corrections td.title a,
+div#discussionContainer div.corrections div.original div.hd h3 { background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
 div.fch p.fch { margin:8px 8px 0; text-indent:20px; }
 div.fch ol { margin:0 8px 8px; }
 div.fch ol li { list-style-position:inside; font-weight:bold; }

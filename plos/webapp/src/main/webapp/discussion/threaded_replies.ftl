@@ -74,7 +74,7 @@
 			<!-- begin : response body text -->
 			<blockquote>
 				${baseAnnotation.commentWithUrlLinking}
-				<hr /><b>Citation: </b>${citation}
+				<div class="citation"><strong>Citation: </strong>${citation}
 			</blockquote>
 			<!-- end : response body text -->
 			<!-- begin : toolbar options -->

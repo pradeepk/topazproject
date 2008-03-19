@@ -186,7 +186,7 @@ div.original div.hd { background: url(../images/pone_toolbar_bg.gif) repeat-x bo
 div.original div.toolbar a { cursor: pointer; }
 div.original blockquote,
 div.original blockquote * { background: #fff; }
-
+div#discussionContainer div.citation { border-top:1px solid #ccc; font-size:smaller; color:#333; line-height:1.5em; padding:5px 0 2px; }
 
 div.posting	{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
 div.flag	{ background-color: #3C9544; background-image: url(../images/pone_response_flag_bg.gif); }
