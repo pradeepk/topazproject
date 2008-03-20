@@ -10,4 +10,16 @@ public class FormalCorrection extends Correction implements ArticleAnnotation {
   public String getType() {
     return RDF_TYPE;
   }
+
+  /**
+   * Human friendly string for display and debugging.
+   *
+   * @return String for human consumption.
+   */
+  public String toString() {
+    return "FormalCorrection: {"
+            + "type: " + getType()
+            + ", " + super.toString()
+            + "}";
+  }
 }

@@ -41,5 +41,14 @@ public class Correction extends Annotation implements ArticleAnnotation, Seriali
   public void setBody(URI body) {
     this.body = body;
   }
+  
+  /**
+   * Human friendly string for display and debugging.
+   *
+   * @return String for human consumption.
+   */
+  public String toString() {
+    return "Correction: " + super.toString();
+  }
 }
 

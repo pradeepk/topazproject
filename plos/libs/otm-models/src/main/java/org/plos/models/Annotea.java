@@ -176,4 +176,16 @@ public abstract class Annotea {
   public void setType(String type) {
     this.type = type;
   }
+
+  /**
+   * Human friendly string for display and debugging.
+   *
+   * @return String for human consumption.
+   */
+  public String toString() {
+    return "Annotea: {"
+            + "created: " + getCreated()
+            + ", creator: " + getCreator()
+            + ", title: "   + getTitle() + "}";
+  }
 }
