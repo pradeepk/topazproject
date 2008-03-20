@@ -88,6 +88,18 @@ public class ArticleType implements Serializable {
     }
     return at;
   }
+  
+  /**
+   * Ensures that the same object instance is used for identical URIs. 
+   * The readResolve() method is called when deserializing an object. ArticleType objects
+   * are serialized and deserialized when propagated over the ehcache from one VM to another. 
+   * @return
+   * @throws java.io.ObjectStreamException
+   */
+  private Object readResolve() throws java.io.ObjectStreamException
+  {
+    return getArticleTypeForURI(this.uri, true);
+  }
 
   public static ArticleType addArticleType(URI uri, String heading) {
     if (_knownArticleTypes.containsKey(uri.toString())) {
@@ -182,6 +194,25 @@ public class ArticleType implements Serializable {
     if(articleTypes != null) {
       for(ArticleType at : articleTypes) {
         if(isResearchArticle(at)) return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Override equals() to verify if the the compared ArticleType is equal to this instance. 
+   * If super.equals() returns false, we compare the uri. Note that readResolve() is implemented
+   * above so that the super.equals() object-identity comparison should succeed if this
+   * object was deserialized. This implementation is a safety net in case that fails. 
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (super.equals(obj)) {
+      return true;
+    }
+    if (obj instanceof ArticleType) {
+      if (this.getUri() != null) {
+        return (this.getUri().equals(((ArticleType)obj).getUri()));
       }
     }
     return false;
