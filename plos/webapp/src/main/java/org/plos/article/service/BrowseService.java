@@ -213,10 +213,10 @@ public class BrowseService {
    * Get Issue information.
    *
    * @param doi DOI of Issue.
+   * @param eagerFetchArticles causes the ArticleInfos to be fetched
    * @return the Issue information.
    */
-  public IssueInfo getIssueInfo(final URI issueDOI) {
-    // XXX look up IssueInfo in Cache
+  public IssueInfo getIssueInfo(final URI issueDOI, final boolean eagerFetchArticles) {
     // get the Issue
     final Issue issue = session.get(Issue.class, issueDOI.toString());
     if (issue == null) {
@@ -262,20 +262,23 @@ public class BrowseService {
 
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI, nextIssueURI,
                                         imageArticle, description, parentVolume.getId());
-        
-    for (URI articleDoi : issue.getSimpleCollection()) {
-      ArticleInfo articleInIssue = getArticleInfo(articleDoi);
-      if (articleInIssue == null) {
-        log.warn("Article " + articleDoi + " missing; member of Issue " + issueDOI);
-        continue;
+
+    if (eagerFetchArticles) {
+      for (URI articleDoi : issue.getSimpleCollection()) {
+        ArticleInfo articleInIssue = getArticleInfo(articleDoi);
+        if (articleInIssue == null) {
+          log.warn("Article " + articleDoi + " missing; member of Issue " + issueDOI);
+          continue;
+        }
+        issueInfo.addArticleToIssue(articleInIssue);
       }
-      issueInfo.addArticleToIssue(articleInIssue);
     }
     return issueInfo;
   }
 
   /**
-   * Get VolumeInfos.
+   * Get VolumeInfos. Note that the IssueInfos contained in the volumes have not been instantiated
+   * with the ArticleInfos. 
    *
    * @param volumeDois to look up.
    * @return volumeInfos.
@@ -308,7 +311,7 @@ public class BrowseService {
 
       List<IssueInfo> issueInfos = new ArrayList<IssueInfo>();
       for (final URI issueDoi : volume.getIssueList()) {
-        issueInfos.add(getIssueInfo(issueDoi));
+        issueInfos.add(getIssueInfo(issueDoi, false));
       }
 
       // calculate prev/next
