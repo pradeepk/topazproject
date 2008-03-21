@@ -23,6 +23,8 @@ import java.sql.Date;
  *
  */
 public class CitationInfo implements Serializable {
+  private static final long serialVersionUID = 2798808464271769990L;
+  
   private String articleTitle;
   private Date publicationDate;
   private String journalName; 

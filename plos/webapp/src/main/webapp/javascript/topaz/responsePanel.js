@@ -186,6 +186,7 @@ function submitResponseInfo(targetObj) {
      
     },
     mimetype: "text/plain",
+    transport: "XMLHTTPTransport",
     formNode: targetForm
    };
    dojo.io.bind(bindArgs);

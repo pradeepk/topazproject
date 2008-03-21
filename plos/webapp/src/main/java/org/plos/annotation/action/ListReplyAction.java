@@ -9,29 +9,31 @@
  */
 package org.plos.annotation.action;
 
+import java.io.IOException;
 import java.net.URI;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Iterator;
-import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import javax.xml.parsers.ParserConfigurationException;
+
+import net.sf.ehcache.Ehcache;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.service.Reply;
 import org.plos.annotation.service.WebAnnotation;
+import org.plos.article.action.CreateCitation;
+import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
-import org.plos.journal.JournalService;
+import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.models.Article;
-import org.plos.models.Journal;
-import org.plos.user.service.UserService;
+import org.plos.util.ArticleXMLUtils;
+import org.plos.util.CacheAdminHelper;
+import org.plos.util.CitationUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
+import org.xml.sax.SAXException;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.thoughtworks.xstream.XStream;
 
 /**
  * Action class to get a list of replies to annotations.
@@ -39,23 +41,16 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 @SuppressWarnings("serial")
 public class ListReplyAction extends AnnotationActionSupport {
 
-  /**
-   * Date format used in constructing an annotation citation string
-   */
-  private static final DateFormat annotationCitationDateFormat = new SimpleDateFormat("yyyy");
-
-  private Session session;
   private FetchArticleService fetchArticleService;
-  private JournalService journalService;
-  private UserService userService;
 
   private String root;
   private String inReplyTo;
   private Reply[] replies;
   private WebAnnotation baseAnnotation;
   private Article articleInfo;
+  private ArticleXMLUtils citationService;
+  private Ehcache articleAnnotationCache;
   private String citation;
-  private Set<Journal> journalList;
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
@@ -94,93 +89,51 @@ public class ListReplyAction extends AnnotationActionSupport {
       final URI articleURI = new URI(baseAnnotation.getAnnotates());
       articleInfo = fetchArticleService.getArticleInfo(baseAnnotation.getAnnotates());
 
-      TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
-        public Void run(Transaction tx) {
-          journalList = journalService.getJournalsForObject(articleURI);
-          return null;
-        }
-      });
-
       // construct citation string
-      citation = assembleCitationString();
-
+      // we're only showing annotation citations for formal corrections
+      if(baseAnnotation.isFormalCorrection()) {
+        // lock @ Article level
+        final Object lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
+        Object result = CacheAdminHelper.getFromCache(articleAnnotationCache, CreateCitation.CITATION_KEY + articleURI,
+                                             -1, lock,
+                                             "citation",
+                                             new CacheAdminHelper.EhcacheUpdater<Object>() {
+            public Object lookup() {
+              try {
+                XStream xstream = new XStream();
+                CitationInfo citationInfo = (CitationInfo) xstream.fromXML(
+                                              citationService.getTransformedArticle(articleURI.toString()));
+                return citationInfo;
+              } catch (ApplicationException ae) {
+                return ae;
+              } catch (IOException ioe) {
+                return ioe;
+              } catch (NoSuchArticleIdException nsaie) {
+                return nsaie;
+              } catch (ParserConfigurationException pce) {
+                return pce;
+              } catch (SAXException se) {
+                return se;
+              }
+            }
+        });
+  
+        if (result instanceof Exception) {
+          citation = null;
+          if (log.isErrorEnabled()) { log.error(result); }
+          addActionError(result.toString());
+          return ERROR;
+        }
+  
+        citation = CitationUtils.generateArticleCorrectionCitationString((CitationInfo) result, baseAnnotation);
+      }
+      
     } catch (final ApplicationException e) {
       log.error("Could not list all replies for root:" + root, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;
-  }
-
-  /**
-   * Assembles a String representing an annotation citatation based on a
-   * prescribed format.
-   * <p>
-   * FORMAT:
-   * <p>
-   * {first five authors of the article}, et al. (<Year the annotation was
-   * created>) Correction: {article title}. {journal abbreviated name}
-   * {annotation URL}
-   * 
-   * @return A newly created String.
-   * @see http://wiki.plos.org/pmwiki.php/Topaz/Corrections for the format
-   *      specification
-   */
-  private String assembleCitationString() {
-    assert baseAnnotation != null;
-    assert articleInfo != null;
-    assert userService != null;
-
-    // we're only showing annotation citations for formal corrections
-    if (!baseAnnotation.isFormalCorrection()) {
-      return null;
-    }
-
-    StringBuffer sb = new StringBuffer(1024);
-
-    // first 5 author names et al.
-    // NOTE presuming the creator list, which is a Set, is ordered
-    // whereby the initial element is the "primary" author
-    try {
-      int numAuths = 0;
-      Iterator<String> itr = articleInfo.getDublinCore().getCreators().iterator();
-      while (itr.hasNext() && (numAuths++ < 5)) {
-        sb.append(itr.next());
-        sb.append(", ");
-      }
-      sb.append("et al. ");
-    } catch (Throwable t) {
-      sb.append("-Unknown Author(s)-");
-    }
-
-    // comment post date
-    sb.append(" (");
-    synchronized (annotationCitationDateFormat) {
-      sb.append(annotationCitationDateFormat.format(baseAnnotation.getCreatedAsDate()));
-    }
-    sb.append(") ");
-
-    sb.append("Correction: ");
-
-    // original article title
-    sb.append(articleInfo.getDublinCore().getTitle());
-    sb.append(". ");
-
-    // [primary] owning journal title
-    // NOTE presuming the journal list, which is a Set, is ordered
-    // whereby the initial element is the "primary" journal
-    try {
-      sb.append(journalList.iterator().next().getDublinCore().getTitle());
-    } catch (Throwable t) {
-      sb.append("-Unknown Journal(s)-");
-    }
-    sb.append(": ");
-
-    // annotation URI
-    sb.append("http://dx.doi.org");
-    sb.append(StringUtils.replace(baseAnnotation.getId(), "info:doi", ""));
-
-    return sb.toString();
   }
 
   /**
@@ -246,29 +199,21 @@ public class ListReplyAction extends AnnotationActionSupport {
   public void setArticleInfo(Article articleInfo) {
     this.articleInfo = articleInfo;
   }
-
+  
   /**
-   * @param session The session to set.
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
    */
   @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
+  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**
-   * @param journalService The journalService to set.
+   * @param citationService The citationService to set.
    */
   @Required
-  public void setJournalService(JournalService journalService) {
-    this.journalService = journalService;
-  }
-
-  /**
-   * @param userService The userService to set.
-   */
-  @Override
-  @Required
-  public void setUserService(UserService userService) {
-    this.userService = userService;
+  public void setCitationService(ArticleXMLUtils citationService) {
+    this.citationService = citationService;
   }
 }
