@@ -22,7 +22,8 @@
 						<span id="submitMsg" class="error"></span>
 						
 						<label for="cNoteType">This is a </label><select name="cNoteType" id="cNoteType"><option value="note">note</option><option value="correction">correction</option></select>
-						<span id="cdls" style="visibility:hidden;margin-left:1em">(<a href="#">What are corrections?</a>)</span>
+        				<@s.url id="wacl" namespace="/static" action="commentGuidelines" includeParams="none" target="${articleURI}" />
+						<span id="cdls" style="visibility:hidden;margin-left:1em">(<a href="${wacl}">What are corrections?</a>)</span>
 
 						<label for="cTitle" class="commentPublic"><span class="none">Enter your note title</span><!-- error message text <em>A title is required for all public notes</em>--></label>
 						<input type="text" name="cTitle" id="cTitle" value="Enter your note title..." class="title commentPublic" alt="Enter your note title..." />
