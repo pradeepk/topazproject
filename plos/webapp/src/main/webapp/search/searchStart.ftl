@@ -133,9 +133,7 @@
 <#if (category_index + 1) lte colSize>
 <#assign categoryId = category?replace("\\s|\'","","r")>
 <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
-                <li>
-                  <input name="limitToCategory" value="${categoryId}" type="checkbox"/>&nbsp;${category} (${categoryInfos[category]})
-                </li>
+                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${categoryId}" type="checkbox"/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
 </#if>
 </#list>
               </ul>
@@ -144,9 +142,7 @@
 <#if (category_index + 1) gt colSize>
 <#assign categoryId = category?replace("\\s|\'","","r")>
 <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
-                <li>
-                  <input name="limitToCategory" value="${categoryId}" type="checkbox"/>&nbsp;${category} (${categoryInfos[category]})
-                </li>
+                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${categoryId}" type="checkbox"/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
 </#if>
 </#list>
               </ul>
