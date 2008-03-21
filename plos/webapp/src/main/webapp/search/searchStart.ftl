@@ -2,6 +2,7 @@
 <div id="content" class="search">
   <!-- begin : right-hand column -->
   <div id="rhc">
+    <!-- commenting out the Quick Article locator box until spec is better defined
     <div class="rhcBox">
       <h6>Quick Article Locator</h6>
       <form id="quickFind" name="quickFind" onsubmit="return true;" action="" method="post" enctype="multipart/form-data" class="" title="Quick Article Locator">
@@ -23,7 +24,7 @@
           <li class="btnWrap"><input type="submit" id="button-find" value="Go"/></li>
         </ol>
       </form>              
-    </div>
+    </div>-->
   </div>
   <!-- end : right-hand column -->
   <!-- begin : primary content area -->
@@ -42,7 +43,7 @@
             <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value=""/>
             <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#" onclick="topaz.advsearch.onClickRmvAuthNameHandler(event); return false;">Remove</a><span id="as_a_spcr">&nbsp;|&nbsp;</span></span><a id="as_a_aa" href="#" onclick="topaz.advsearch.onClickAddAuthNameHandler(event); return false;">Add another author...</a></span></span>
           </li>
-          <li id="as_an_opts" class="options">
+          <li id="as_an_opts" class="options" style="display:none;">
             <fieldset>
               <legend>Search for: </legend>
               <ol>
@@ -98,7 +99,7 @@
               </select>
             </span>
           </li>
-          <li id="pubDateOptions" class="options">
+          <li id="pubDateOptions" class="options" style="display:none;">
             <fieldset>
               <legend>Published between: </legend>
               <ol>
