@@ -9,24 +9,22 @@
  */
 package org.plos.action;
 
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.views.util.UrlHelper;
+import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.views.util.UrlHelper;
 import org.plos.configuration.ConfigurationStore;
-
-import com.googlecode.jsonplugin.annotations.JSON;
-import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * Base class for all actions.
@@ -75,7 +73,6 @@ public abstract class BaseActionSupport extends ActionSupport {
    * Return the url for this request, which could be used to redirect the user to it in case of failure
    * @return the start url for this request
    */
-  @JSON(serialize = false)
   public String getStartingUrl() {
     final HttpServletRequest servletRequest = getRequest();
     final StringBuilder urlBuilder = new StringBuilder();
