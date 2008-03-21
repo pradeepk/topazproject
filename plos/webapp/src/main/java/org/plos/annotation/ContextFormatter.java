@@ -43,14 +43,13 @@ public abstract class ContextFormatter {
    * @throws ApplicationException When an encoding related problem arises
    */
   public static String asXPointer(Context c) throws ApplicationException {
+    assert c != null;
     final String startPath = c.getStartPath();
     final int startOffset = c.getStartOffset();
     final String endPath = c.getEndPath();
     final int endOffset = c.getEndOffset();
 
-    if (StringUtils.isBlank(startPath)) {
-      return null;
-    }
+    if(StringUtils.isBlank(startPath)) return null;
     try {
       String context;
       if (startPath.equals(endPath)) {
@@ -59,15 +58,18 @@ public abstract class ContextFormatter {
           // addFieldError("endOffset", errorMessage);
           throw new ApplicationException("Invalid length: " + length + " of the annotated content");
         }
-        context = XPointerUtils.createStringRangeFragment(startPath, "", startOffset, length);
+        context = XPointerUtils.createStringRangeFragment(startPath, "", startOffset, length, 1);
       }
       else {
         context = XPointerUtils.createRangeToFragment(XPointerUtils.createStringRangeFragment(
             startPath, "", startOffset), XPointerUtils.createStringRangeFragment(endPath, "",
             endOffset));
       }
-      if (log.isDebugEnabled()) log.debug("xpointer target context: " + context);
-      return XPointerUtils.createXPointer(c.getTarget(), context, "UTF-8");
+      String rval = XPointerUtils.createXPointer(c.getTarget(), context, "UTF-8");
+      if(log.isDebugEnabled()) {
+        log.debug("xpointer '" + rval + "' created from context: " + c.toString());
+      }
+      return rval;
     } catch (final UnsupportedEncodingException e) {
       throw new ApplicationException(e);
     }

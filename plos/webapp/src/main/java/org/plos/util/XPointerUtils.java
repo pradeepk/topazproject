@@ -25,14 +25,16 @@ public abstract class XPointerUtils {
    * Creates a string-range xpointer fragment.
    * 
    * @param location
-   * @param string
-   * @param offset
+   * @param string The string to match
+   * @param offset 
    * @param length
+   * @param occurrenceOrdinal The 1-based number to indicate the nth occurrence of the matching text.
    * @return string-range xpointer fragment
+   * @see http://www.w3.org/TR/WD-xptr#stringrange
    */
   public static String createStringRangeFragment(String location, String string, int offset,
-      int length) {
-    return "string-range(" + location + ", '" + string + "', " + offset + ", " + length + ")[1]";
+      int length, int occurrenceOrdinal) {
+    return "string-range(" + location + ", '" + string + "', " + offset + ", " + length + ")[" + occurrenceOrdinal + "]";
   }
 
   /**
@@ -42,6 +44,7 @@ public abstract class XPointerUtils {
    * @param string
    * @param offset
    * @return string-range xpointer fragment
+   * @see http://www.w3.org/TR/WD-xptr#stringrange
    */
   public static String createStringRangeFragment(String location, String string, int offset) {
     return "string-range(" + location + ", '" + string + "')[" + offset + "]";

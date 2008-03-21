@@ -15,14 +15,14 @@
 					<input type="hidden" name="endOffset" value="" />
 					<input type="hidden" name="commentTitle" id="commentTitle" value="" />
 					<input type="hidden" name="comment" id="commentArea" value="" />
-                    <input type="hidden" name="noteType" id="noteType" value="" />
+          <input type="hidden" name="noteType" id="noteType" value="" />
 					<fieldset>
 						<legend>Compose Your Note</legend>
 
 						<span id="submitMsg" class="error"></span>
 						
 						<label for="cNoteType">This is a </label><select name="cNoteType" id="cNoteType"><option value="note">note</option><option value="correction">correction</option></select>
-        				<@s.url id="wacl" namespace="/static" action="commentGuidelines" includeParams="none" anchor="corrections" target="${articleURI}" />
+            <@s.url id="wacl" namespace="/static" action="commentGuidelines" includeParams="none" anchor="corrections" target="${articleURI}" />
 						<span id="cdls" style="visibility:hidden;margin-left:1em">(<a href="${wacl}">What are corrections?</a>)</span>
 
 						<label for="cTitle" class="commentPublic"><span class="none">Enter your note title</span><!-- error message text <em>A title is required for all public notes</em>--></label>

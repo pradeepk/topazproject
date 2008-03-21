@@ -17,7 +17,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.Context;
 import org.plos.annotation.ContextFormatter;
-import org.plos.annotation.service.AnnotationService;
 import org.plos.util.ProfanityCheckingService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
