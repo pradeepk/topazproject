@@ -1404,7 +1404,7 @@ topaz.annotation = {
     // promoting any text node children as succeeding siblings of the span node to be removed
     arr = dojo.html.getElementsByClass(annotationConfig.pendingAnnotationMarker, annotationConfig.articleContainer);
     if(arr) { 
-      var i, j, n, cns, cn;
+      var i, j, n, cns, cn, pn;
       
       // promote all found text node children
       for(i=0; i<arr.length; i++) {
@@ -1423,9 +1423,18 @@ topaz.annotation = {
       
       // kill the pending annotation markup
       for(var i=0; i<arr.length; i++) {
-        dojo.dom.destroyNode(dojo.dom.removeNode(arr[i]));
+        n = arr[i];
+        pn = n.parentNode;
+        dojo.dom.destroyNode(dojo.dom.removeNode(n));
+        if(!(document.selection && document.selection.createRange)) {
+          // non IE
+          pn.normalize();	// to merge adjacent text nodes (non-IE only)
+        }
       }
     }
+    
+    // invoke native normalize() dom method to merge any adjacent text nodes
+    
   },
   
 	/**
