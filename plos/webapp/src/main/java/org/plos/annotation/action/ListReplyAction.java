@@ -12,6 +12,7 @@ package org.plos.annotation.action;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,8 +25,6 @@ import org.plos.article.service.ArticleOtmService;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Journal;
-import org.plos.models.UserProfile;
-import org.plos.user.PlosOneUser;
 import org.plos.user.service.UserService;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
@@ -42,12 +41,8 @@ public class ListReplyAction extends AnnotationActionSupport {
 
   /**
    * Date format used in constructing an annotation citation string
-   * <p>
-   * <code>d MMM yyyy</code>
-   * <p>
-   * E.g.: "5 Jan 2008"
    */
-  private static final DateFormat annotationCitationDateFormat = new SimpleDateFormat("d MMM yyyy");
+  private static final DateFormat annotationCitationDateFormat = new SimpleDateFormat("yyyy");
 
   private Session session;
   private ArticleOtmService articleOtmService;
@@ -121,9 +116,11 @@ public class ListReplyAction extends AnnotationActionSupport {
    * Assembles a String representing an annotation citatation based on a
    * prescribed format.
    * <p>
-   * FORMAT: <blockquote>{Author of comment}. {Comment Title}. Online comment.
-   * {Date Comment Posted}. {Title of Original Article}. {Full name of first
-   * author of original article} et al. {Title of Journal}. {annotation URL}</blockquote>
+   * FORMAT:
+   * <p>
+   * {first five authors of the article}, et al. (<Year the annotation was
+   * created>) Correction: {article title}. {journal abbreviated name}
+   * {annotation URL}
    * 
    * @return A newly created String.
    * @see http://wiki.plos.org/pmwiki.php/Topaz/Corrections for the format
@@ -134,47 +131,40 @@ public class ListReplyAction extends AnnotationActionSupport {
     assert articleInfo != null;
     assert userService != null;
 
+    // we're only showing annotation citations for formal corrections
+    if (!baseAnnotation.isFormalCorrection()) {
+      return null;
+    }
+
     StringBuffer sb = new StringBuffer(1024);
 
-    // author of comment
-    String plosOneUserId = baseAnnotation.getCreator();
-    try {
-      PlosOneUser poe = userService.getUserByTopazId(plosOneUserId);
-      assert poe != null;
-      UserProfile profile = poe.getUserProfile();
-      String firstName = profile.getGivenNames();
-      String lastName = profile.getSurnames();
-      sb.append(firstName);
-      sb.append(' ');
-      sb.append(lastName);
-    } catch (ApplicationException e) {
-      sb.append(baseAnnotation.getCreatorName());
-    }
-    sb.append(". ");
-
-    // comment title
-    sb.append(baseAnnotation.getCommentTitle());
-    sb.append(". Online comment.  ");
-
-    // comment post date
-    synchronized (annotationCitationDateFormat) {
-      sb.append(annotationCitationDateFormat.format(baseAnnotation.getCreatedAsDate()));
-    }
-    sb.append(".  ");
-
-    // original article title
-    sb.append(articleInfo.getDublinCore().getTitle());
-    sb.append(".  ");
-
-    // first author name et al.
+    // first 5 author names et al.
     // NOTE presuming the creator list, which is a Set, is ordered
     // whereby the initial element is the "primary" author
     try {
-      sb.append(articleInfo.getDublinCore().getCreators().iterator().next());
+      int numAuths = 0;
+      Iterator<String> itr = articleInfo.getDublinCore().getCreators().iterator();
+      while (itr.hasNext() && (numAuths++ < 5)) {
+        sb.append(itr.next());
+        sb.append(", ");
+      }
+      sb.append("et al. ");
     } catch (Throwable t) {
       sb.append("-Unknown Author(s)-");
     }
-    sb.append(" et al.  ");
+
+    // comment post date
+    sb.append(" (");
+    synchronized (annotationCitationDateFormat) {
+      sb.append(annotationCitationDateFormat.format(baseAnnotation.getCreatedAsDate()));
+    }
+    sb.append(") ");
+
+    sb.append("Correction: ");
+
+    // original article title
+    sb.append(articleInfo.getDublinCore().getTitle());
+    sb.append(". ");
 
     // [primary] owning journal title
     // NOTE presuming the journal list, which is a Set, is ordered
@@ -184,7 +174,7 @@ public class ListReplyAction extends AnnotationActionSupport {
     } catch (Throwable t) {
       sb.append("-Unknown Journal(s)-");
     }
-    sb.append(".  ");
+    sb.append(": ");
 
     // annotation URI
     sb.append("http://dx.doi.org");
