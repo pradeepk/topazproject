@@ -16,7 +16,8 @@ package org.plos.admin.service;
  *
  * @author jonnie
  */
-public class ImageRetrievalServiceException extends Exception {
+public class ImageRetrievalServiceException extends ImageProcessingException {
+  private static final long serialVersionUID = -3175658452639416889L;
 
   /**
    * Constructs an ImageRetrievalServiceException.

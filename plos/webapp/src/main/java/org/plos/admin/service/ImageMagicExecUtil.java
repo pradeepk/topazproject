@@ -14,62 +14,74 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.commons.configuration.Configuration;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.configuration.ConfigurationStore;
 
 /**
- * User: jonnie
- * Date: Jun 1, 2007
- * Time: 6:05:50 PM
+ * ImageMagicExecUtil
+ * 
+ * @author jonnie
  */
-
 public class ImageMagicExecUtil {
-  private static Log log = LogFactory.getLog(ImageMagicExecUtil.class);
+  private static final Log log = LogFactory.getLog(ImageMagicExecUtil.class);
 
-  private String pathToProgram;
+  private final String pathToProgram;
 
-  public ImageMagicExecUtil() throws ImageResizeException {
+  /**
+   * Constructor - Determines the image magic program path from the
+   * {@link ConfigurationStore}
+   * 
+   * @throws IllegalArgumentException When a valid path can't be resolved from
+   *           the {@link ConfigurationStore}.
+   */
+  public ImageMagicExecUtil() throws IllegalArgumentException {
     final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
     if (configuration.isEmpty()) {
-      throw new ImageResizeException("ERROR: configuration has no property values");
+      throw new IllegalArgumentException("ERROR: configuration has no property values");
     }
 
     final String pathToProgramKey = "topaz.utilities.image-magick.executable-path";
     final String pathToProgram = configuration.getString(pathToProgramKey);
 
     if (pathToProgram == null) {
-      throw new ImageResizeException("ERROR: configuration failed to associate a value with " +
-                                     pathToProgramKey);
+      throw new IllegalArgumentException("ERROR: configuration failed to associate a value with "
+          + pathToProgramKey);
     }
 
-    setPathToProgram(pathToProgram);
-  }
-
-  /**
-   * This method represents the externalized property pathToProgram
-   * @param pathToProgram - the object which represents the path to ImageMagick utility
-   *                        (which is responsible for image conversion)
-   */
-  public void setPathToProgram(final String pathToProgram) {
     this.pathToProgram = pathToProgram;
   }
 
   /**
-   * This method calls the convert utility to create a new image with the specified properties
-   * @param input       the object representing the file to be converted
-   * @param output      the file to be created (which results from the conversion operation)
-   * @param imageWidth  the maximum width of the converted and resized image
-   * @param imageHeight the maximum height of the converted and resized image
-   * @param quality     the quality of compressed image (100 is best quality).
-   * @return result     an indication of whether the program was run successfully or not
-   *                    (true = success & false = failure)
+   * Constructor
+   * 
+   * @param pathToProgram
+   * @throws IllegalArgumentException When the <code>pathToProgram</code> is
+   *           <code>null</code> or invalid.
    */
-  public boolean convert(final File input,final File output,
-                         final int imageWidth,final int imageHeight, int quality) {
+  public ImageMagicExecUtil(String pathToProgram) throws ImageResizeException {
+    if (pathToProgram == null) {
+      throw new ImageResizeException("A path to the image magic program must be specified.");
+    }
+    this.pathToProgram = pathToProgram;
+  }
+  
+  /**
+   * This method calls the convert utility to create a new image with the
+   * specified properties
+   * 
+   * @param input the object representing the file to be converted
+   * @param output the file to be created (which results from the conversion
+   *          operation)
+   * @param imageWidth the maximum width of the converted and resized image
+   * @param imageHeight the maximum height of the converted and resized image
+   * @param quality the quality of compressed image (100 is best quality).
+   * @return result an indication of whether the program was run successfully or
+   *         not (true = success & false = failure)
+   */
+  public boolean convert(final File input, final File output, final int imageWidth,
+      final int imageHeight, int quality) {
     final boolean result;
     final ArrayList<String> command = new ArrayList<String>(7);
     final String resizeOperation = "-resize";
@@ -82,7 +94,7 @@ public class ImageMagicExecUtil {
     if (quality < 0 || quality > 100) {
       quality = 100;
     }
-    
+
     try {
       command.add(this.pathToProgram);
       command.add(resizeOperation);
@@ -92,10 +104,10 @@ public class ImageMagicExecUtil {
       command.add(input.getCanonicalPath());
       command.add(output.getCanonicalPath());
 
-      final String[] commandArray = (String[])command.toArray(new String[]{});
+      final String[] commandArray = command.toArray(new String[] {});
 
       if (log.isDebugEnabled()) {
-        for (int position = 0;position < commandArray.length;position++) {
+        for (int position = 0; position < commandArray.length; position++) {
           log.debug(commandArray[position]);
         }
       }
@@ -108,17 +120,18 @@ public class ImageMagicExecUtil {
           break;
         } catch (InterruptedException e) {
           if (log.isDebugEnabled()) {
-            log.debug("Ignoring ...",e);
+            log.debug("Ignoring ...", e);
           }
         }
       }
 
       if (log.isDebugEnabled()) {
-        log.debug("exit-status: "+exitStatus);
+        log.debug("exit-status: " + exitStatus);
       }
     } catch (Exception e) {
-      log.fatal("",e);
-    } finally {
+      log.fatal("", e);
+    }
+    finally {
       result = (exitStatus == 0);
     }
 

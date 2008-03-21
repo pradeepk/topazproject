@@ -57,6 +57,24 @@ public class ArticleType implements Serializable {
   public static ArticleType getKnownArticleTypeForURI(URI uri) {
     return _knownArticleTypes.get(uri.toString());
   }
+  
+  /**
+   * Searches the known article types for one whose heading matches the one given.
+   * <p><strong>NOTE: </strong>There is no guarantee article type headings are unique 
+   * and this method simply returns the first encountered match. 
+   * @param heading The sought heading 
+   * @return ArticleType or <code>null</code> if not found.
+   */
+  public static ArticleType getKnownArticleTypeForHeading(String heading) {
+    if(heading != null) {
+      for(ArticleType at : _knownArticleTypes.values()) {
+        if(heading.equals(at.heading)) {
+          return at;
+        }
+      }
+    }
+    return null;
+  }
 
   /**
    * Returns an ArticleType object for the given URI. If one does not exist for that URI and
@@ -197,7 +215,7 @@ public class ArticleType implements Serializable {
     }
     return false;
   }
-
+  
   /**
    * Override equals() to verify if the the compared ArticleType is equal to this instance. 
    * If super.equals() returns false, we compare the uri. Note that readResolve() is implemented
@@ -220,5 +238,10 @@ public class ArticleType implements Serializable {
   @Override
   public int hashCode() {
     return new HashCodeBuilder().append(getUri()).hashCode();
+  }
+  
+  @Override
+  public String toString() {
+    return heading;
   }
 }

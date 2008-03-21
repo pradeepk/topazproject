@@ -16,7 +16,8 @@ package org.plos.admin.service;
  *
  * @author jonnie
  */
-public class ImageStorageServiceException extends Exception {
+public class ImageStorageServiceException extends ImageProcessingException {
+  private static final long serialVersionUID = -8212220732693254572L;
 
   /**
    * Creates an ImageStorageServiceException to be thrown to the environment

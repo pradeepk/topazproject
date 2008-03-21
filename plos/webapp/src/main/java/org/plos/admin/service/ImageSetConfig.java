@@ -14,27 +14,26 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
-public class ImageSetConfig {
-  private static final Log log = LogFactory.getLog(ImageSetConfig.class);
-  private static HashMap<String,ImageSetConfig> _imageSets = new HashMap<String, ImageSetConfig>();
-  // This map stores Properties defined for each type of image used in an article
-  private HashMap<String, Properties> imagePropertyMap = new HashMap<String, Properties>();
-  private String name;
+public final class ImageSetConfig {
+  //private static final Log log = LogFactory.getLog(ImageSetConfig.class);
+  
   // Keys to each type of image property map
   public static final String SMALL_IMAGE_PROP_KEY = "small";
   public static final String MEDIUM_IMAGE_PROP_KEY = "medium";
   public static final String LARGE_IMAGE_PROP_KEY = "large";
+  
   // Keys to known image processing properties stored in each imagePropertyMap
   public static final String IMAGE_PROP_KEY_QUALITY = "quality";
   public static final String IMAGE_PROP_KEY_MAX_DIMENSION = "maxDimension";
   public static final String IMAGE_PROP_KEY_WIDTH = "width";
 
+  private static HashMap<String,ImageSetConfig> _imageSets = new HashMap<String, ImageSetConfig>();
+  
   // Set up a map of default image processing properties to be used if not defined 
   private static final String DEFAULT_IMAGE_SET_NAME = "#default";
+  
   static {
     ImageSetConfig defaultImageSet = new ImageSetConfig(DEFAULT_IMAGE_SET_NAME);
     Properties defaultSmallProps = new Properties();
@@ -50,9 +49,7 @@ public class ImageSetConfig {
     Properties defaultLargeProps = new Properties();
     defaultLargeProps.put(IMAGE_PROP_KEY_QUALITY, "90");
     defaultImageSet.addImageProperties(LARGE_IMAGE_PROP_KEY, defaultLargeProps);
-  }
-  
-  static {
+
     configureImageSets(ConfigurationStore.getInstance().getConfiguration());
   }
   
@@ -60,43 +57,8 @@ public class ImageSetConfig {
     return _imageSets.get(name);
   }
   
-  public void addImageProperties(String key, Properties props) {
-    imagePropertyMap.put(key, props);
-  }
-
   public static ImageSetConfig getDefaultImageSetConfig() {
     return _imageSets.get(DEFAULT_IMAGE_SET_NAME);
-  }
-
-  public String getName() {
-    return name;
-  }
-  
-  /**
-   * Returns the image property for propertyName as defined in defaults.xml to be used 
-   * for this ImageSetConfig.  
-   * If not defined, attempt to use property defined for default ImageSetConfig. 
-   * If not defined there, null is returned. 
-   * 
-   * @return fixed width size of small images to use with this ArticleType
-   */
-  public String getImageProperty(String imageType, String propertyName) {
-    Properties props = imagePropertyMap.get(imageType);
-    if ( (props != null) && (props.containsKey(propertyName)) ) {
-      return props.getProperty(propertyName);
-    }
-    
-    ImageSetConfig defaultSet = getDefaultImageSetConfig();
-    if ((defaultSet != null) && (this != defaultSet)) {
-      return defaultSet.getImageProperty(imageType, propertyName);
-    }
-    
-    return null;
-  }
-  
-  protected ImageSetConfig(String configName) {
-    this.name = configName;
-    _imageSets.put(configName, this);
   }
 
   private static void configureImageSets(Configuration myConfig) {
@@ -125,6 +87,7 @@ public class ImageSetConfig {
    * @param baseString
    * @return
    */
+  @SuppressWarnings("unchecked")
   public static Properties getAttributesOfConfigElement(Configuration myConfig, String baseString) {
     Iterator<String> iter = myConfig.getKeys(baseString);
     Properties attributeProps = new Properties();
@@ -142,4 +105,52 @@ public class ImageSetConfig {
     return attributeProps;
   }
   
+  // This map stores Properties defined for each type of image used in an article
+  private final HashMap<String, Properties> imagePropertyMap = new HashMap<String, Properties>();
+  
+  private final String name;
+  
+  /**
+   * Constructor
+   * @param configName
+   */
+  private ImageSetConfig(String configName) {
+    this.name = configName;
+    _imageSets.put(configName, this);
+  }
+
+  public void addImageProperties(String key, Properties props) {
+    imagePropertyMap.put(key, props);
+  }
+
+  public String getName() {
+    return name;
+  }
+  
+  /**
+   * Returns the image property for propertyName as defined in defaults.xml to be used 
+   * for this ImageSetConfig.  
+   * If not defined, attempt to use property defined for default ImageSetConfig. 
+   * If not defined there, null is returned. 
+   * 
+   * @return fixed width size of small images to use with this ArticleType
+   */
+  public String getImageProperty(String imageType, String propertyName) {
+    Properties props = imagePropertyMap.get(imageType);
+    if ( (props != null) && (props.containsKey(propertyName)) ) {
+      return props.getProperty(propertyName);
+    }
+    
+    ImageSetConfig defaultSet = getDefaultImageSetConfig();
+    if ((defaultSet != null) && (this != defaultSet)) {
+      return defaultSet.getImageProperty(imageType, propertyName);
+    }
+    
+    return null;
+  }
+  
+  @Override
+  public String toString() {
+    return name;
+  }
 }

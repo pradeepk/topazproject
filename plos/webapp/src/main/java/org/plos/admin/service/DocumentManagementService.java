@@ -12,32 +12,29 @@ package org.plos.admin.service;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.servlet.ServletContext;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Source;
@@ -48,26 +45,16 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.ehcache.Ehcache;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-
-import org.plos.article.service.BrowseService;
 import org.plos.article.service.ArticleOtmService;
+import org.plos.article.service.BrowseService;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.service.SecondaryObject;
-import org.plos.model.article.ArticleType;
-import org.plos.models.Article;
-import org.plos.models.Journal;
-import org.plos.models.ObjectInfo;
 import org.plos.article.service.RepresentationInfo;
+import org.plos.article.service.SecondaryObject;
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.IngestException;
@@ -75,20 +62,24 @@ import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.journal.JournalService;
+import org.plos.model.article.ArticleType;
+import org.plos.models.Article;
+import org.plos.models.Journal;
+import org.plos.models.ObjectInfo;
 import org.plos.util.FileUtils;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
-import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.query.Results;
+import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.xml.transform.cache.CachedSource;
-
-import org.springframework.beans.factory.annotation.Required;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
- *
- * @author alan Manage documents on server. Ingest and access ingested documents.
+ * @author alan Manage documents on server. Ingest and access ingested
+ *         documents.
  */
 public class DocumentManagementService {
 
@@ -126,9 +117,7 @@ public class DocumentManagementService {
 
   /**
    * Set the article web service
-   *
-   * @param articleOtmService
-   *          articleOtmService
+   * @param articleOtmService articleOtmService
    */
   @Required
   public void setArticleOtmService(final ArticleOtmService articleOtmService) {
@@ -169,10 +158,8 @@ public class DocumentManagementService {
   }
 
   /**
-   * @param filenameOrURL
-   *          filenameOrURL
-   * @throws URISyntaxException
-   *           URISyntaxException
+   * @param filenameOrURL filenameOrURL
+   * @throws URISyntaxException URISyntaxException
    * @return the local or remote file or url as a java.io.File
    */
   private File getAsFile(final String filenameOrURL) throws URISyntaxException {
@@ -180,29 +167,26 @@ public class DocumentManagementService {
     if (null == resource) {
       // access it as a local file resource
       return new File(FileUtils.getFileName(filenameOrURL));
-    } else {
-      return new File(resource.toURI());
     }
+    return new File(resource.toURI());
   }
 
   /**
-   * Deletes an article from Topaz, but does not flush the cache
-   * Useful for deleting a recently ingested article that hasn't been published
-   *
-   * @param objectURI -
-   *          URI of the article to delete
+   * Deletes an article from Topaz, but does not flush the cache Useful for
+   * deleting a recently ingested article that hasn't been published
+   * @param objectURI - URI of the article to delete
    * @throws RemoteException
    * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI)
-      throws RemoteException, ServiceException, NoSuchArticleIdException, IOException {
+  public void delete(String objectURI) throws RemoteException, ServiceException,
+      NoSuchArticleIdException, IOException {
     articleOtmService.delete(objectURI);
   }
 
   /**
-   * Deletes articles from Topaz and flushes the servlet image cache and article cache
-   *
-   * @param objectURIs     URIs of the articles to delete
+   * Deletes articles from Topaz and flushes the servlet image cache and article
+   * cache
+   * @param objectURIs URIs of the articles to delete
    * @param servletContext Servlet Context under which the image cache exists
    * @return a list of messages describing what was successful and what failed
    */
@@ -212,8 +196,7 @@ public class DocumentManagementService {
       try {
         articleOtmService.delete(objectURI);
         msgs.add("Deleted: " + objectURI);
-        if (log.isDebugEnabled())
-          log.debug("deleted article: " + objectURI);
+        if (log.isDebugEnabled()) log.debug("deleted article: " + objectURI);
       } catch (Exception e) {
         log.error("Could not delete article: " + objectURI, e);
         msgs.add("Error deleting: " + objectURI + " - " + e);
@@ -227,9 +210,7 @@ public class DocumentManagementService {
   }
 
   /**
-   *
-   * @param pathname
-   *          of file on server to be ingested
+   * @param pathname of file on server to be ingested
    * @return URI of ingested document
    * @throws IngestException
    * @throws DuplicateArticleIdException
@@ -241,18 +222,15 @@ public class DocumentManagementService {
    * @throws ServiceException
    */
   public String ingest(String pathname) throws IngestException, DuplicateArticleIdException,
-  ImageResizeException, IOException, SAXException, TransformerException, NoSuchArticleIdException,
-  NoSuchObjectIdException, ServiceException {
+      ImageResizeException, IOException, SAXException, TransformerException, ServiceException {
     return ingest(new File(pathname));
   }
 
   /**
-   * Ingest the file. If successful move it to the ingestedDocumentDirectory then create the
-   * Transformed CrossRef xml file and deposit that in the Directory as well.
-   *
-   *
-   * @param file
-   *          to be ingested
+   * Ingest the file. If successful move it to the ingestedDocumentDirectory
+   * then create the Transformed CrossRef xml file and deposit that in the
+   * Directory as well.
+   * @param file to be ingested
    * @return URI of ingested document
    * @throws IngestException
    * @throws DuplicateArticleIdException
@@ -264,8 +242,7 @@ public class DocumentManagementService {
    * @throws ServiceException
    */
   public String ingest(File file) throws IngestException, DuplicateArticleIdException,
-  ImageResizeException, IOException, SAXException, TransformerException, NoSuchArticleIdException,
-  NoSuchObjectIdException, ServiceException {
+      ImageResizeException, IOException, SAXException, TransformerException, ServiceException {
     String uri;
     File ingestedDir = new File(ingestedDocumentDirectory);
     if (log.isDebugEnabled()) {
@@ -273,29 +250,31 @@ public class DocumentManagementService {
     }
     DataHandler dh = new DataHandler(file.toURL());
     uri = articleOtmService.ingest(dh);
-    
+
     ImageSetConfig imageSetConf = getImageSetConfigForArticleUri(uri);
     if (imageSetConf == null) {
       imageSetConf = ImageSetConfig.getDefaultImageSetConfig();
     }
-    
+
     if (log.isInfoEnabled()) {
       log.info("Ingested: " + file);
     }
     try {
-      resizeImages(uri, imageSetConf);
+      IProcessedArticleImageProvider paip = resolveProcessedArticleImageProvider(file);
+      resizeImages(uri, imageSetConf, paip);
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
         log.error("Resize images failed for article " + uri, e);
       }
       URI articleUri = null;
       try {
-        articleUri = new URI (uri);
+        articleUri = new URI(uri);
       } catch (URISyntaxException ue) {
       }
       ImageResizeException ire = new ImageResizeException(articleUri, e);
       throw ire;
-    } finally {
+    }
+    finally {
       try {
         dh.getOutputStream().close();
       } catch (Exception e) {
@@ -318,19 +297,18 @@ public class DocumentManagementService {
     }
     return uri;
   }
-  
+
   /**
    * Index all Articles.
-   *
    * @return Map of doi, index result Strings.
    */
   public Map<String, String> indexArticles() throws ApplicationException {
 
-    Map<String, String> results = new HashMap();
+    Map<String, String> results = new HashMap<String, String>();
 
     // repository is defined in config
     final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
-    final String FGS_REPO    = CONF.getString("topaz.fedoragsearch.repository");
+    final String FGS_REPO = CONF.getString("topaz.fedoragsearch.repository");
 
     // let ArticleUtil use standard methods to get fedoragsearch operations
     FgsOperations[] fgs;
@@ -351,7 +329,9 @@ public class DocumentManagementService {
     int indexCount = 0;
     while (dois.next()) {
       String doi = "doi:" + dois.get("doi").toString().substring(9).replace("/", "%2F");
-      if (log.isDebugEnabled()) {log.debug("re-indexing Article: " + doi); }
+      if (log.isDebugEnabled()) {
+        log.debug("re-indexing Article: " + doi);
+      }
 
       // index
       try {
@@ -359,9 +339,11 @@ public class DocumentManagementService {
           long start = (new Date()).getTime();
           final String result = fgs[onFgs].updateIndex("fromPid", doi, FGS_REPO, null, null, null);
           long end = (new Date()).getTime();
-          final String key = doi + "[" + onFgs + "] (" + (end-start) + "ms)";
+          final String key = doi + "[" + onFgs + "] (" + (end - start) + "ms)";
           results.put(key, result);
-          if (log.isDebugEnabled()) { log.debug("re-indexed Article: " + key + ", result: " + result); }
+          if (log.isDebugEnabled()) {
+            log.debug("re-indexed Article: " + key + ", result: " + result);
+          }
         }
       } catch (RemoteException re) {
         final String errorMessage = "Exception indexing Article: " + doi;
@@ -371,13 +353,15 @@ public class DocumentManagementService {
       indexCount++;
     }
 
-    if (log.isDebugEnabled()) { log.debug("re-indexed " + indexCount + " Articles"); }
+    if (log.isDebugEnabled()) {
+      log.debug("re-indexed " + indexCount + " Articles");
+    }
 
     return results;
   }
 
   /**
-   * Find the ImageSetConfig for the given Article URI String. 
+   * Find the ImageSetConfig for the given Article URI String.
    * @param uri of the article
    * @return ArticleType of the given article URI
    */
@@ -386,39 +370,96 @@ public class DocumentManagementService {
     try {
       article = fetchArticleService.getArticleInfo(uri);
     } catch (ApplicationException e) {
-      log.error("Unable to retrieve Article URI='"+uri+"'", e);
+      log.error("Unable to retrieve Article URI='" + uri + "'", e);
     }
     if (article == null) {
-      log.warn("fetchArticleService.getArticleInfo() returned null for article URI: '"+uri+"' so using default image set");
+      log.warn("fetchArticleService.getArticleInfo() returned null for article URI: '" + uri
+          + "' so using default image set");
       return ImageSetConfig.getDefaultImageSetConfig();
     }
-    
+
     Set<URI> artTypes = article.getArticleType();
     ArticleType at = null;
     ImageSetConfig isc;
     for (URI artTypeUri : artTypes) {
-      if ((at = ArticleType.getKnownArticleTypeForURI(artTypeUri))!= null) {
+      if ((at = ArticleType.getKnownArticleTypeForURI(artTypeUri)) != null) {
         if ((isc = ImageSetConfig.getImageSetConfig(at.getImageSetConfigName())) != null) {
           return isc;
         }
       }
     }
-    
-    log.debug("Unable to find ImageSetConfig for article: '"+uri+"'");
+
+    log.debug("Unable to find ImageSetConfig for article: '" + uri + "'");
     return null;
   }
 
-  private void resizeImages(String uri, ImageSetConfig imageSetConfig) throws NoSuchArticleIdException, NoSuchObjectIdException,
-                                               ImageResizeException, ImageStorageServiceException,
-                                               HttpException, IOException {
-    ImageResizeService irs;
-    ImageStorageService iss;
+  /**
+   * Factory method that resolves the appropriate IProcessedArticleImageProvider
+   * impl given the article zip file.
+   * @param articleZipFile The File of the article zip file
+   * @return The resolved IProcessedArticleImageProvider impl
+   */
+  private IProcessedArticleImageProvider resolveProcessedArticleImageProvider(File articleZipFile) {
+    assert articleZipFile != null;
+    if(ArticleZip.isProcessedArticleZipFile(articleZipFile)) {
+      return new PreProcessedArticleImageProvider(articleZipFile);
+    }
+    return new OnDemandArticleImageProvider();
+  }
 
+  /**
+   * Internal convenience method that handles article images.
+   * @param so The {@link SecondaryObject} representing the article image
+   *        "container".
+   * @param iso The ImageSetConfig to employ
+   * @param repMimeTypes The native processed image mime-types to apply
+   * @param paip The resolved IProcessedArticleImageProvider
+   * @return New DataHandler instance holding the data of the processed article
+   *         image.
+   * @throws MalformedURLException When a bad repUrl is provided
+   * @throws ImageProcessingException When an image processing related error
+   *         occurrs.
+   * @throws NoSuchObjectIdException
+   * @throws RemoteException
+   */
+  private void handleArticleImage(SecondaryObject so, ImageSetConfig iso, String[] repMimeTypes,
+      IProcessedArticleImageProvider paip) throws MalformedURLException, ImageProcessingException,
+      NoSuchObjectIdException, RemoteException {
+    assert so != null && repMimeTypes != null && iso != null && paip != null;
+    RepresentationInfo ri = so.getRepresentations()[0];
+    assert ri != null;
+    if (log.isDebugEnabled()) {
+      log.debug("Found image to resize: " + ri.getURL() + " repsize-" + ri.getSize());
+    }
+    for (String rmt : repMimeTypes) {
+      ProcessedImageDataSource pids = paip.getProcessedArticleImage(new URL(ri.getURL()), iso, rmt);
+      DataHandler dh = new DataHandler(pids);
+      articleOtmService.setRepresentation(so.getUri(), pids.getProcessedImageMimeType(), dh);
+      if (log.isDebugEnabled()) {
+        log.debug("Set processed article " + pids.getProcessedImageMimeType() + " image for "
+            + so.getUri());
+      }
+    }
+  }
+
+  /**
+   * Handles article image re-sizing.
+   * @param uri The ingested article URI String.
+   * @param imageSetConfig The ImageSetConfig to employ.
+   * @param paip The resolved IProcessedArticleImageProvider
+   * @throws NoSuchArticleIdException
+   * @throws NoSuchObjectIdException
+   * @throws ImageProcessingException
+   * @throws ImageStorageServiceException
+   * @throws IOException
+   */
+  private void resizeImages(String uri, ImageSetConfig imageSetConfig,
+      IProcessedArticleImageProvider paip) throws NoSuchArticleIdException,
+      NoSuchObjectIdException, ImageProcessingException, ImageStorageServiceException, IOException {
+    assert paip != null;
     SecondaryObject[] objects = articleOtmService.listSecondaryObjects(uri);
-    SecondaryObject object = null;
     for (int i = 0; i < objects.length; ++i) {
-      irs = new ImageResizeService(imageSetConfig);
-      object = objects[i];
+      SecondaryObject object = objects[i];
       if (log.isDebugEnabled()) {
         log.debug("retrieving Object Info for: " + object.getUri());
       }
@@ -430,84 +471,35 @@ public class DocumentManagementService {
       String context = info.getContextElement();
       if (context != null) {
         context = context.trim();
-        iss = new ImageStorageService();
+
+        // fig
         if (context.equalsIgnoreCase("fig")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
-          }
-
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
-              new PngDataSource(irs.getSmallScaledImage(originalBytes))));
-          if (log.isDebugEnabled()) {
-            log.debug("Set small image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
-              new PngDataSource(irs.getMediumScaledImage(originalBytes))));
-          if (log.isDebugEnabled()) {
-            log.debug("Set medium image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
-          if (log.isDebugEnabled()) {
-            log.debug("Set large image for " + object.getUri());
-          }
-        } else if (context.equalsIgnoreCase("table-wrap")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
-          }
-
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
-              new PngDataSource(irs.getSmallScaledImage(originalBytes))));
-          if (log.isDebugEnabled()) {
-            log.debug("Set small image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
-              new PngDataSource(irs.getMediumScaledImage(originalBytes))));
-          if (log.isDebugEnabled()) {
-            log.debug("Set medium image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
-          if (log.isDebugEnabled()) {
-            log.debug("Set large image for " + object.getUri());
-          }
-        } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize for disp-forumla: " + rep.getURL());
-          }
-
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
-        } else if (context.equals("inline-formula")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize for inline formula: " + rep.getURL());
-          }
-
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
+          handleArticleImage(object, imageSetConfig, new String[] {
+          "PNG_S", "PNG_M", "PNG_L"
+          }, paip);
         }
-        // Don't continue trying to process images if one of them failed
-        /*
-         * } catch (Exception e) {
-         *
-         * log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri())); }
-         */
+
+        // table-wrap
+        else if (context.equalsIgnoreCase("table-wrap")) {
+          handleArticleImage(object, imageSetConfig, new String[] {
+          "PNG_S", "PNG_M", "PNG_L"
+          }, paip);
+        }
+
+        // disp-formula || chem-struct-wrapper
+        else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
+          handleArticleImage(object, imageSetConfig, new String[] {
+            "PNG"
+          }, paip);
+        }
+
+        // inline-formula
+        else if (context.equals("inline-formula")) {
+          handleArticleImage(object, imageSetConfig, new String[] {
+            "PNG"
+          }, paip);
+        }
+        // NOTE: Don't continue trying to process images if one of them failed
       }
     }
   }
@@ -521,8 +513,7 @@ public class DocumentManagementService {
     if (dir.isDirectory()) {
       String filenames[] = dir.list();
       for (int i = 0; i < filenames.length; ++i) {
-        if (filenames[i].toLowerCase().endsWith(".zip"))
-          documents.add(filenames[i]);
+        if (filenames[i].toLowerCase().endsWith(".zip")) documents.add(filenames[i]);
       }
     }
 
@@ -536,8 +527,9 @@ public class DocumentManagementService {
    */
   public Collection<String> getPublishableFiles() throws ApplicationException {
     try {
-      List<String> articles =
-          fetchArticleService.getArticleIds(null, null, new int[] { Article.STATE_DISABLED });
+      List<String> articles = fetchArticleService.getArticleIds(null, null, new int[] {
+        Article.STATE_DISABLED
+      });
       Collections.sort(articles);
       return articles;
     } catch (Exception e) {
@@ -546,9 +538,9 @@ public class DocumentManagementService {
   }
 
   private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException,
-  TransformerException, SAXException {
+      TransformerException, SAXException {
     ZipFile zip = new ZipFile(file);
-    Enumeration entries = zip.entries();
+    Enumeration<?> entries = zip.entries();
 
     try {
       while (entries.hasMoreElements()) {
@@ -569,24 +561,26 @@ public class DocumentManagementService {
           fis.close();
           try {
             target_xml = crossRefXML(source_xml, target_xml);
-          } finally {
+          }
+          finally {
             source_xml.delete();
           }
           break;
         }
       }
-    } finally {
+    }
+    finally {
       zip.close();
     }
   }
 
-  private File crossRefXML(File src, File dest) throws IOException,
-  TransformerFactoryConfigurationError, TransformerException, SAXException {
+  private File crossRefXML(File src, File dest) throws TransformerFactoryConfigurationError,
+      TransformerException, SAXException {
 
     Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
     t.setParameter("plosDoiUrl", plosDoiUrl);
     t.setParameter("plosEmail", plosEmail);
-    Source       s_source = new CachedSource(new InputSource(src.toURI().toString()));
+    Source s_source = new CachedSource(new InputSource(src.toURI().toString()));
     StreamResult s_result = new StreamResult(dest);
     t.transform(s_source, s_result);
     return dest;
@@ -601,13 +595,14 @@ public class DocumentManagementService {
   }
 
   /**
-   * @param uris  uris to be published. Send CrossRef xml file to CrossRef - if it is _received_ ok
-   *              then set article stat to active
-   * @param vjMap a map giving the set of virtual-journals each article is to be published in
+   * @param uris uris to be published. Send CrossRef xml file to CrossRef - if
+   *        it is _received_ ok then set article stat to active
+   * @param vjMap a map giving the set of virtual-journals each article is to be
+   *        published in
    * @return a list of messages describing what was successful and what failed
    */
   public List<String> publish(String[] uris, Map<String, Set<String>> vjMap) {
-    final List<String> msgs             = new ArrayList<String>();
+    final List<String> msgs = new ArrayList<String>();
     final Set<Journal> modifiedJournals = new HashSet<Journal>();
 
     // publish articles
@@ -621,13 +616,12 @@ public class DocumentManagementService {
 
           try {
             int stat = crossRefPosterService.post(xref);
-            if (200 != stat)
-              throw new Exception("CrossRef status returned " + stat);
+            if (200 != stat) throw new Exception("CrossRef status returned " + stat);
           } catch (HttpException he) {
-            log.error ("Could not connect to CrossRef", he);
+            log.error("Could not connect to CrossRef", he);
             throw new Exception("Could not connect to CrossRef. " + he, he);
           } catch (IOException ioe) {
-            log.error ("Could not connect to CrossRef", ioe);
+            log.error("Could not connect to CrossRef", ioe);
             throw new Exception("Could not connect to CrossRef. " + ioe, ioe);
           }
         }
@@ -635,8 +629,7 @@ public class DocumentManagementService {
         // mark article as active
         articleOtmService.setState(article, Article.STATE_ACTIVE);
         msgs.add("Published: " + article);
-        if (log.isDebugEnabled())
-          log.debug("published article: '" + article + "'");
+        if (log.isDebugEnabled()) log.debug("published article: '" + article + "'");
 
         // register with journals
         final Set<String> vjs = vjMap.get(article);
@@ -648,8 +641,8 @@ public class DocumentManagementService {
                 // get Journal by name
                 final Journal journal = journalService.getJournal(virtualJournal);
                 if (journal == null)
-                  throw new Exception("Error adding article '" + art +
-                                      "' to non-existent journal '" + virtualJournal + "'");
+                  throw new Exception("Error adding article '" + art
+                      + "' to non-existent journal '" + virtualJournal + "'");
 
                 // add Article to Journal
                 journal.getSimpleCollection().add(URI.create(art));
@@ -658,11 +651,10 @@ public class DocumentManagementService {
                 session.saveOrUpdate(journal);
                 modifiedJournals.add(journal);
 
-                final String message =
-                  "Article '" + art + "' was published in the journal '" + virtualJournal + "'";
+                final String message = "Article '" + art + "' was published in the journal '"
+                    + virtualJournal + "'";
                 msgs.add(message);
-                if (log.isDebugEnabled())
-                  log.debug(message);
+                if (log.isDebugEnabled()) log.debug(message);
               }
 
               return null;
@@ -697,40 +689,6 @@ public class DocumentManagementService {
     return msgs;
   }
 
-  private static class PngDataSource implements DataSource {
-    private final byte[] src;
-
-    private final String ct;
-
-    public PngDataSource(byte[] content) {
-      this(content, "image/png");
-    }
-
-    public PngDataSource(byte[] content, String contType) {
-      src = content;
-      ct = contType;
-      if (log.isDebugEnabled()) {
-        log.debug("PngDataSource type=" + ct + " size=" + content.length);
-      }
-    }
-
-    public InputStream getInputStream() throws IOException {
-      return new ByteArrayInputStream(src);
-    }
-
-    public OutputStream getOutputStream() throws IOException {
-      throw new IOException("Not supported");
-    }
-
-    public String getContentType() {
-      return ct;
-    }
-
-    public String getName() {
-      return "png";
-    }
-  }
-
   /**
    * @param browseService The BrowseService to set.
    */
@@ -741,7 +699,6 @@ public class DocumentManagementService {
 
   /**
    * Sets the JournalService.
-   *
    * @param journalService The JournalService to set.
    */
   @Required
@@ -751,7 +708,6 @@ public class DocumentManagementService {
 
   /**
    * Sets the otm util.
-   *
    * @param session The otm session to set.
    */
   @Required

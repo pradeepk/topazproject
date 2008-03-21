@@ -17,7 +17,9 @@ import java.net.URI;
  *
  * @author stevec
  */
-public class ImageResizeException extends Exception {
+public class ImageResizeException extends ImageProcessingException {
+  private static final long serialVersionUID = 2256237883612015143L;
+  
   private URI articleURI;
 
   public ImageResizeException (final Throwable cause) {
@@ -27,11 +29,6 @@ public class ImageResizeException extends Exception {
   public ImageResizeException (final URI inArticleURI, final Throwable cause) {
     super(cause);
     this.articleURI = inArticleURI;
-  }
-
-  public ImageResizeException (final URI inArticleURI) {
-    this.articleURI = inArticleURI;
-    //this.imageURI = inImageURI;
   }
 
   public ImageResizeException (String message) {

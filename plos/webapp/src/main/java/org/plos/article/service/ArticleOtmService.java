@@ -12,8 +12,8 @@ package org.plos.article.service;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.text.ParseException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,13 +27,13 @@ import javax.xml.rpc.ServiceException;
 
 import net.sf.ehcache.Ehcache;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.time.DateUtils;
-
+import org.plos.admin.service.ImageProcessor;
 import org.plos.article.util.ArticleUtil;
-import org.plos.article.util.IngestException;
 import org.plos.article.util.DuplicateArticleIdException;
+import org.plos.article.util.IngestException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.util.Zip;
@@ -47,16 +47,14 @@ import org.plos.models.ObjectInfo;
 import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
 import org.plos.util.CacheAdminHelper;
-
 import org.springframework.beans.factory.annotation.Required;
-
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.Query;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.util.TransactionHelper;
 
@@ -68,7 +66,7 @@ public class ArticleOtmService {
   private String largeImageRep;
   private String mediumImageRep;
 
-  private ArticlePEP     pep;
+  private final ArticlePEP     pep;
   private Session        session;
   private JournalService jrnlSvc;
   private Ehcache        articleAnnotationCache;
@@ -103,7 +101,7 @@ public class ArticleOtmService {
           String ret = util.ingest(
             new Zip.DataSourceZip(
               new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
-                                                8192, "application/octet-stream", true)));
+                                                8192, "application/octet-stream", true)), ImageProcessor.procImgPfxPattern);
 
           jrnlSvc.objectWasAdded(URI.create(ret));
 
@@ -419,7 +417,7 @@ public class ArticleOtmService {
     // order by
     if (orderBy != null) {
       for (String field : orderBy.keySet()) {
-        boolean ascending = (boolean) orderBy.get(field);
+        boolean ascending = orderBy.get(field);
         articleCriteria.addOrder(ascending ? Order.asc(field) : Order.desc(field));
       }
     }
@@ -807,7 +805,7 @@ public class ArticleOtmService {
         getAllRelatedArticle(relatedArticle);
       }
     }
-    getAllObjectInfo((ObjectInfo) article);
+    getAllObjectInfo(article);
   }
 
   private static void getAllObjectInfo(ObjectInfo objectInfo) {

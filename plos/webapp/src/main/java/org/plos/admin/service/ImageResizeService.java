@@ -10,27 +10,24 @@
 
 package org.plos.admin.service;
 
-import com.sun.media.jai.codec.FileSeekableStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
 import org.apache.commons.configuration.Configuration;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.configuration.ConfigurationStore;
-import org.plos.model.article.ArticleType;
+
+import com.sun.media.jai.codec.FileSeekableStream;
 
 /**
  * ImageResizeService resizes images and converts them to PNG format for articles
@@ -39,24 +36,28 @@ import org.plos.model.article.ArticleType;
  * for each operation and an ArticleType passed to the constructor. The ImageResizeService
  * provides a limited set of public methods for producing converted images. 
  *
- * @author Alex Worden, stevec
+ * @author Alex Worden, stevec, jkirton
  */
 public class ImageResizeService {
   private static final Log log = LogFactory.getLog(ImageResizeService.class);
 
   private int height;
   private int width;
-  private String inputImageFileName;
-  private String outputImageFileName;
+  private final String inputImageFileName;
+  private final String outputImageFileName;
   private File location;
   private File inputImageFile;
   private File outputImageFile;
-  private ImageSetConfig imageSetConfig;
-  private Configuration configuration;
+  private final ImageSetConfig imageSetConfig;
 
+  /**
+   * Constructor
+   * @param imgSetConfig
+   * @throws ImageResizeException
+   */
   public ImageResizeService(ImageSetConfig imgSetConfig) throws ImageResizeException {
     this.imageSetConfig = imgSetConfig;
-    configuration = ConfigurationStore.getInstance().getConfiguration();
+    Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
     if (configuration.isEmpty()) {
       log.warn("Configuration has no property values");
     } else {
@@ -71,6 +72,13 @@ public class ImageResizeService {
     Integer disambiguation = new Integer(hashCode());
     inputImageFileName = "_" + disambiguation + "current";
     outputImageFileName = "_" + disambiguation + "final.png";
+  }
+
+  /**
+   * @return The processed image file type. 
+   */
+  public String getProcessedImageType() {
+    return "png";
   }
 
   /**
@@ -105,16 +113,6 @@ public class ImageResizeService {
     }
   }
 
-  /**
-   * Get the working directory configured for temporary image storage. 
-   * @return
-   * @throws ImageResizeException
-   */
-  public File getWorkingDirectory() throws ImageResizeException {
-    
-    return location;
-  }
-  
   /**
    * Initialize members inputImageFile, outputImageFile, width and height as follows:
    *
@@ -290,6 +288,7 @@ public class ImageResizeService {
    * @return byte array of the scaled and transformed (PNG) image
    * @throws ImageResizeException
    */
+  /*
   private byte[] scaleFixHeight(int fixHeight, int quality) throws ImageResizeException {
     final float scale;
     final int newHeight;
@@ -309,7 +308,8 @@ public class ImageResizeService {
 
     return getPNGByteArray(outputImageFile);
   }
-
+  */
+  
   /**
    * Scale the image to a maximum width of fixWidth (while preserving the
    * aspect ratio) and return a PNG version of it
