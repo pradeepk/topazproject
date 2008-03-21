@@ -77,8 +77,11 @@ public class BrowseService {
   private static final String ARTBYDATE_LIST_LOCK = "ArtByDateLock-";
   private static final String ARTBYDATE_LIST_KEY  = "ArtByDate-";
 
-  private static final String ARTICLE_LOCK        = "ArticleLock-";
-  private static final String ARTICLE_KEY         = "Article-";
+  public static final String ARTICLE_LOCK        = "ArticleLock-";
+  public static final String ARTICLE_KEY         = "Article-";
+  
+  public static final String ISSUE_LOCK        = "IssueLock-";
+  public static final String ISSUE_KEY         = "Issue-";
 
   private final ArticlePEP     pep;
   private       Session        session;
@@ -210,13 +213,45 @@ public class BrowseService {
   }
 
   /**
-   * Get Issue information.
+	 * Get Issue information.
+	 * 
+	 * @param issue
+	 *          DOI of Issue.
+	 * @param eagerFetchArticles
+	 *          causes the ArticleInfos to be fetched
+	 * @return the Issue information.
+	 */
+	public IssueInfo getIssueInfo(final URI doi, final boolean eagerFetchArticles) {
+
+    // Attempt to lookup IssueInfo in the cache - note that we can't cache complete
+    // IssueInfo because it contains a list of articles that are XACML specific to the
+    // user However - we can cache an IssueInfo that has eagerFetchArticles==false - which is
+    // a big improvement in performance for the BrowseVolumeAction.
+
+    if (eagerFetchArticles == false) {
+      return CacheAdminHelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
+          ISSUE_LOCK + doi, "issue " + doi,
+          new CacheAdminHelper.EhcacheUpdater<IssueInfo>() {
+            public IssueInfo lookup() {
+              return getIssueInfo2(doi, eagerFetchArticles);
+            }
+          });
+    } else {
+      return getIssueInfo2(doi, eagerFetchArticles);
+    }
+  }
+
+  /**
+   * Get Issue information - creates a transaction then calls getIssueInfoInTx. 
+   * FYI - I've left this in here to make the merge back to head easier and make the
+   * readability of getIssueInfo() easier. 
    *
    * @param doi DOI of Issue.
    * @param eagerFetchArticles causes the ArticleInfos to be fetched
    * @return the Issue information.
    */
-  public IssueInfo getIssueInfo(final URI issueDOI, final boolean eagerFetchArticles) {
+  private IssueInfo getIssueInfo2(final URI issueDOI, final boolean eagerFetchArticles) {
+
     // get the Issue
     final Issue issue = session.get(Issue.class, issueDOI.toString());
     if (issue == null) {

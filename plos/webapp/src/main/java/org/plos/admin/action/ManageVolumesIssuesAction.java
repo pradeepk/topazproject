@@ -15,9 +15,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import net.sf.ehcache.Ehcache;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.article.action.BrowseVolumeAction;
+import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.models.DublinCore;
 import org.plos.models.Issue;
@@ -55,6 +59,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   private Session session;
   private JournalService journalService;
+  private Ehcache browseCache;
 
   private static final Log log = LogFactory.getLog(ManageVolumesIssuesAction.class);
 
@@ -317,12 +322,18 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
     addActionMessage("Updated Issue: " + issue.toString());
 
+    // Flush the browse cache for this issue. Perhaps should synchronize
+    // here on ISSUE_LOCK+doi - but the only place where we write to the cache
+    // is inside transaction manager anyway so don't bother to avoid any risk
+    // of deadlock.
+    browseCache.remove(BrowseService.ISSUE_KEY + doi);
+    
     return SUCCESS;
   }
 
   /**
    * Gets all Volumes for the Journal.
-   *
+   * 
    * @return all Volumes for the Journal.
    */
   public List<Volume> getVolumes() {
@@ -447,5 +458,14 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
+  }
+  
+
+  /**
+   * @param browseCache The browse-cache to use.
+   */
+  @Required
+  public void setBrowseCache(Ehcache browseCache) {
+    this.browseCache = browseCache;
   }
 }
