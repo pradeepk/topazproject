@@ -36,25 +36,27 @@ public class AssignAdminRoleAction extends UserActionSupport {
 
     final String successMessage = "Topaz ID: " + topazId + " successfully assigned the role: " + Constants.ADMIN_ROLE;
     addActionMessage(successMessage);
-    log.debug(successMessage);
+    if (log.isDebugEnabled()) { log.debug(successMessage); }
 
     return SUCCESS;
   }
 
   /**
-   * Getter for topazId
-   * @return Value for property topazId.
+   * Struts setter for topazId.
+   * 
+   * @param topazId Value to set for topazId.
    */
-  @RequiredStringValidator(message = "Topaz id is required.")
-  public String getTopazId() {
-    return topazId;
+  @RequiredStringValidator(message = "Id is required.")
+  public void setTopazId(final String topazId) {
+    this.topazId = topazId;
   }
 
   /**
-   * Setter for topazId
-   * @param topazId Value to set for topazId.
+   * Struts getter for topazId.
+   * 
+   * @return Topaz Id.
    */
-  public void setTopazId(final String topazId) {
-    this.topazId = topazId;
+  public String getTopazId() {
+    return topazId;
   }
 }

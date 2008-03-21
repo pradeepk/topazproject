@@ -6,12 +6,12 @@
     <h1 style="text-align: center">PLoS ONE: Administration</h1>
 
     <@s.url id="editAnnotation" namespace="/admin" action="editAnnotation"/>
-    <@s.url id="findUserURL" namespace="/admin" action="findUser" />
+    <@s.url id="manageUsersURL" namespace="/admin" action="findUser" />
     <@s.url id="manageVirtualJournalsURL" namespace="/admin" action="manageVirtualJournals" />
     <@s.url id="manageCaches" namespace="/admin" action="manageCaches" />
     <p style="text-align: right">
       <@s.a href="${editAnnotation}">Edit Annotation</@s.a>&nbsp;|&nbsp;
-      <@s.a href="%{findUserURL}">Find User</@s.a>&nbsp;|&nbsp;
+      <@s.a href="%{manageUsersURL}">Manage Users</@s.a>&nbsp;|&nbsp;
       <@s.a href="%{manageVirtualJournalsURL}">Manage Virtual Journals</@s.a>&nbsp;|&nbsp;
       <@s.a href="%{manageCaches}">Manage Caches</@s.a>
     </p>
@@ -121,13 +121,13 @@
       </@s.form>
       <br/>
     </fieldset>
+    <hr/>
 
     <fieldset>
-      <legend><b>Misc Admin Utils</b></legend>
+      <legend><b>Delete Article</b></legend>
       <@s.form name="deleteArticle" action="deleteArticle" method="get" namespace="/admin">
         <@s.textfield label="ArticleDoi" name="article" size="80"/>&nbsp;<@s.submit value="Delete"/>
       </@s.form>
     </fieldset>
-
   </body>
 </html>
