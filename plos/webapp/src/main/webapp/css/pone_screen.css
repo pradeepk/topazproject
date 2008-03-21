@@ -392,7 +392,9 @@ dl#relatedArticles dd a:hover { color:#008ED5; text-decoration:underline; }
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
 #rhc ul li a.last		{ border-bottom-width: 0; }
 #rhc ol li a.commentary { background-image: none; display:block; margin-top:5px; padding: 2px 0 2px 0; font-weight: bold; }
-#rhc ol li a.corrections { display:block; margin-bottom:5px; background-position:left 0.2em; _display:inline; _background-position:left 0%;/*IE6 hacks to eliminate doubling of bottom margin. Results in no bottom margin for IE6 */ }
+#rhc ol li a.corrections { display:inline; background-position:left 0%; }
+div#rhc > div#sideNav > div#postcomment > div.commentview > ol > li > a.corrections { display:block; margin-bottom:5px; background-position:left 0.2em; }/* Valid use of child selector to hide these from IE6 which doubles bottom margin. Results in no bottom margin display for IE6 */ 
+
 ul#dcCount1 { margin-bottom:5px; } /* increases spacing below note and comment counts to help block view/join discussion section */
 
 /* correction article type styles */
