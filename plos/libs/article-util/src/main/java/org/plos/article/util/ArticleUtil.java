@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -52,8 +53,8 @@ import org.topazproject.otm.stores.ItqlStore;
 public class ArticleUtil {
   private static final Log           log   = LogFactory.getLog(ArticleUtil.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private static final String        MODEL = "<" + CONF.getString("topaz.models.articles") + ">";
-  private static final String        MODEL_PP = "<" + CONF.getString("topaz.models.pp") + ">";
+  //private static final String        MODEL = "<" + CONF.getString("topaz.models.articles") + ">";
+  //private static final String        MODEL_PP = "<" + CONF.getString("topaz.models.pp") + ">";
   private static final List          FGS_URLS  = CONF.getList("topaz.fedoragsearch.urls.url");
   private static final String        FGS_REPO  = CONF.getString("topaz.fedoragsearch.repository");
   private static final String        queueDir    = CONF.getString("pub.spring.ingest.source", "/var/spool/plosone/ingestion-queue");
@@ -124,13 +125,14 @@ public class ArticleUtil {
    * @param zip    a zip archive containing the article and associated objects. The content type
    *               should be <var>application/zip</var>. If possible this should contain the name
    *               of the zip too.
+   * @param exclude The ZipEntry name exclusion pattern
    * @return the URI of the new article
    * @throws DuplicateArticleIdException if the article already exists (as determined by its URI)
    * @throws IngestException if there's a problem ingesting the archive
    * @throws RemoteException if some other error occured
    */
-  public String ingest(Zip zip) throws DuplicateArticleIdException, IngestException {
-    return ingester.ingest(zip);
+  public String ingest(Zip zip, Pattern exclude) throws DuplicateArticleIdException, IngestException {
+    return ingester.ingest(zip, exclude);
   }
 
   public static long setDatastream(String pid, String rep, String ct, DataHandler content)
@@ -257,7 +259,7 @@ public class ArticleUtil {
     Session session = tx.getSession();
 
     // load article and objects
-    Article a = (Article) session.get(Article.class, article);
+    Article a = session.get(Article.class, article);
     if (a == null)
       throw new NoSuchArticleIdException(article);
 
