@@ -122,7 +122,7 @@ public class SearchAction extends BaseActionSupport {
     final Collection<String> fields = new ArrayList<String>();
 
     // Build Search terms for Authors if specified
-    if ((creator != null) && (creator.length > 0) && (StringUtils.isNotBlank(creator[1]))) {
+    if ((creator != null) && (creator.length > 0) && (StringUtils.isNotBlank(creator[0]))) {
       StringBuffer buf = new StringBuffer("(creator:(");
       boolean allAuthors = false;
       if ("all".equals(authorNameOp)) {
