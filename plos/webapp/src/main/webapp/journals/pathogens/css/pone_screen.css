@@ -30,6 +30,7 @@ code		{ font-family: "Courier New", Courier, monospace; }
 em			{ font-style: italic; }
 
 img			{ border: 0; }
+label { cursor: pointer; }
 label em 	{ display: block; color: #c00; } /* em wraps all error messages within labels */
 .error 		{ display: block; color: #c00; font-style: normal; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
@@ -79,10 +80,16 @@ a.annotation:visited,
 a.user,
 a.user:visited,
 a.instructions,
-a.instructions.visited	{ color: #006699; }
+a.instructions:visited,
+a.addannotation,
+a.addannotation:visited,
+a.corrections,
+a.corrections:visited { color: #006699; }
 
 a.tooltip,
-a.tooltip:visited	{ font-weight: bold; }
+a.tooltip:visited,
+a.corrections,
+a.corrections:visited { font-weight: bold; }
 	
 a.tooltip:hover,
 a.discuss:hover,
@@ -117,8 +124,8 @@ a.yourfeedback	{ background-image: url(../images/pone_icon_feedback.gif);} /* ke
 a.annotation	{ background-image: url(../images/pone_icon_annotation.gif); }
 a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
 a.commentary	{ background-image: url(../images/pone_icon_commentary.gif); }
+a.corrections	{ background-image: url(../images/pone_icon_correction.gif); }
 a.trackback	{ background-image: url(../images/pone_icon_trackback.gif); }
-
 
 a.xml 		{ background-image: url(../images/pone_sidenav_xml.gif); }
 a.pdf 		{ background-image: url(../images/pone_sidenav_pdf.gif); }
@@ -246,8 +253,7 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 
 
 /* Search Dashboard */
-
-	#db 			{ padding: 0; text-align: center; font-size: .8em; position: absolute; top: 50px; right: -20px; padding: 0; border-width: 0; color: #888; background: url(../images/pone_db_bg.gif) no-repeat top left; padding: 8px 15px 10px 11px;}
+#db 			{ padding: 0; text-align: center; font-size: .8em; position: absolute; top: 50px; right: -20px; padding: 0; border-width: 0; color: #888; background: url(../images/pone_db_bg.gif) no-repeat top left; padding: 8px 15px 10px 11px;}
 #db fieldset 	{ padding: 0; margin: 0; background-color: transparent; vertical-align: top; width: 327px; border: none; }
 #db fieldset div{ position: relative; }
 #db fieldset legend,
@@ -323,10 +329,12 @@ div.browse div#rhc { padding:0; }
 div.content 	{ margin-right: 255px; }
 
 div.static h1,
-div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em; margin: 10px 0 0 0;font-weight: normal; }
+div.content h1,
+div.search h1 { /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; }
 
 
-div.static h1 { padding-top: 10px; border-top: 6px solid #f60; }
+div.static h1,
+div.search h1		{ padding-top: 10px; border-top: 6px solid #f60; }
 div.pageerror h1	{ background-color: #f60; color:#fff; padding: 8px;}
 div.pageerror p		{ margin-left: 8px; }
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
@@ -366,8 +374,8 @@ p.affiliations	{ font-size: .85em; margin: 0; }
 div.abstract	{ margin: 15px 0; }
 div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #DBDBDB url(../images/pone_abstract_bg.gif) repeat-x top; }
 div.contributions { font-size: .9em; }
-div.articleinfo p,
-div.abstract p	{ margin: 0 0 1em 0; }
+div.articleinfo p
+/*div.abstract p -this is causing bad spacing between h2 and abstract on article pages. Not sure why this is in here.*/	{ margin: 0 0 1em 0; }
 div.abstract h2 { font-size: 1.6em; font-style: normal; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
 div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; letter-spacing: normal; border-bottom: none;}
 span.pullquote	{ font-size: 2em; line-height: 1em; width: 55%; padding: 10px; float: right; letter-spacing: -.05em; font-style: italic; margin: 5px; }
@@ -396,17 +404,41 @@ div#sideNav dl.related dd a:hover { color:#008ED5; text-decoration:underline; }
 #rhc ul li a,
 #rhc ul li a:visited 	{ background-color: transparent; background-position: 5% 50%; background-repeat: no-repeat; padding:1px 0 2px 0; padding-left:30px; border-bottom: 1px solid #ccc; margin: 0 3px; }
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
-#rhc ul li a.last		{ border-bottom:0!important; }
+#rhc ul li a.last		{ border-bottom-width: 0; }
+#rhc ol li a.commentary { background-image: none; display:block; margin-top:5px; padding: 2px 0 2px 0; font-weight: bold; }
+#rhc ol li a.corrections { display:inline; background-position:left 0%; }
+/* Valid use of child selector to hide these from IE6 which doubles bottom margin. Results in no bottom margin display for IE6 */ 
+div#rhc > div#sideNav > div#postcomment > div.commentview > ol > li > a.corrections,
+div#rhc > div#sideNav > div#postcommentfloat > div.commentview > ol > li > a.corrections/*for Safari*/ { display:block; margin-bottom:5px; background-position:left 0.2em; }
 /* temp styles for TOC floating nav - these should be removed when this menu is generated in the same way as the menu in articles */
 div.toc div#rhc div#sectionNavTop { position:static; width:240px; }
 div.toc div#rhc div#sectionNavTop ul li a,
 div.toc div#rhc div#sectionNavTop ul li a:visited { border-bottom:0; border-top:1px solid #ccc; }
 div.toc div#rhc div#sectionNavTop ul li a.first { border-top:0!important; }
 
+ul#dcCount1 { margin-bottom:5px; } /* increases spacing below note and comment counts to help block view/join discussion section */
 
-/* correction styles */
+/* correction article type styles */
 div.correction span#oa { /* open access image */ background: #3D3D3D url(../images/pone_correction_oa.gif) no-repeat 0 0; }
 div.correction h1 { color: #3D3D3D; }
+/* correction note types, header, and associated page styles */
+div#discussionContainer div.corrections td.title { background-color: #fff4f0; }/* "correction" name space conflict: see line #393 above and line #594 below. Resolved by using "corrections". */
+div#discussionContainer div.corrections div.original div.hd h3 { text-indent:20px; color:#ff0000; } 
+
+div.corrections td.title a,
+div.fch p.fch strong { color:#ff0000; }
+div.fch p.fch em { font-weight:bold; font-style:normal; }
+div.fch { margin: 15px 0; padding:0; border: 1px solid #ff0000; background-color: #fff4f0; }
+div.fch p.fch,
+div.corrections td.title a,
+div#discussionContainer div.corrections div.original div.hd h3 { background:url(../images/pone_icon_correction.gif) left 0% no-repeat; }
+div.fch p.fch { margin:8px 8px 0; text-indent:20px; }
+div.fch ol { margin:0 8px 8px; }
+div.fch ol li { list-style-position:inside; font-weight:bold; }
+div.fch ol li p { margin:0; padding:0; display:inline; font-weight:normal; }
+div.fch ol li p a:link { font-weight:normal; color:#069; }
+div.fch ol li p a:visited { font-weight:normal; color:#004e9c; }
+
 
 /* rhc rounded containers : top */
 div.links,
@@ -423,11 +455,14 @@ div.tools ul			{ background-image: url(../images/pone_tools_bg.gif); padding-bot
 div.links li
 div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
 
+/* rhc square box */
+div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; margin:0; padding:0; }
 
 div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/pone_toolbar_bg.gif) repeat-x top;}
 div.commentview	fieldset{ border: 1px solid #ccc; border-width: 1px 0; margin: 0 -5px 5px -5px; padding: 10px; background-color: #eee; position: relative;}
 div.commentview	 li 	{ font-size: .9em; }
-div.commentview h6		{ margin: 0; }
+div.commentview h6,
+div.rhcBox h6 { margin: 0; }
 div.commentview ol,
 div.commentview li		{ margin: 0; padding: 0; list-style-type: none; }
 div.commentview fieldset li	{ font-weight: bold; width: 100%; position: relative; }
@@ -495,6 +530,12 @@ a:visited.bug {
   background:url(../images/pone_annotation_bug.gif) top right no-repeat;
 }
 
+/* adds correction icon to bugs containing correction notes */
+span.minrcrctn a.bug span, span.frmlcrctn a.bug span {
+  background:url(../images/pone_icon_correction_small.gif) left center no-repeat;
+  padding-left:10px;
+}
+
 a.bug.self-private,
 a:visited.bug.self-private,
 span.self-private a.bug,
@@ -510,12 +551,11 @@ a:visited.bug.public,
 span.public a.bug,
 span.public a:visited.bug,
 span.public-active a.bug,
-span.public-active a:visited.bug { background-color: #c60;}
+span.public-active a:visited.bug { background-color: #069;}
 span.public-active			{ background-color:#D2F7FF; border:1px solid #fff; border-bottom: 1px solid #0bf; }
 span.public-active a.bug.public-active,
 span.public-active a:hover.bug.public-active		{ background-color: #0BF;}
 span.public { border:1px solid #fff; }
-
 
 a.bug.author,
 a:visited.bug.author,
@@ -527,9 +567,7 @@ span.author-active a:visited.bug,
 a.bug.author-active,
 a:hover.bug.author-active		{ background-color: #f63;}
 
-
 div.beta				{ text-align: center; font-size: .9em; color: #666; margin: 0;}
-
 
 /* ------ DOM Styles ------- */
 .commentPrivate { display: block; }
