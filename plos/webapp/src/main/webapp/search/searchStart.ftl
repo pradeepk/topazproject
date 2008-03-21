@@ -39,7 +39,7 @@
           <li>
             <label id="lblAuthorName" for="authorName">Author Name (<a href="#">help</a>): </label>
             <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value=""/>
-            <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#">Remove</a> | </span><a id="as_a_aa" href="#">Add another author...</a></span></span>
+            <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#" onclick="topaz.advsearch.onClickRmvAuthNameHandler(event); return false;">Remove</a><span id="as_a_spcr">&nbsp;|&nbsp;</span></span><a id="as_a_aa" href="#" onclick="topaz.advsearch.onClickAddAuthNameHandler(event); return false;">Add another author...</a></span></span>
           </li>
           <li class="options">
             <!--
@@ -100,14 +100,14 @@
               </select>
             </span>
           </li>
-          <li class="options">
+          <li id="pubDateOptions" class="options">
             <fieldset>
               <legend>Published between: </legend>
               <ol>
                 <li>
                   <span class="hide">(Year)</span><input type="text" name="startYear" size="4" maxlength="4" value="YYYY" id="range1"/>
                   <span class="hide">(Month)</span><input type="text" name="startMonth" size="2" maxlength="2" value="MM" id="range-m1"/>
-                  <span class="hide">(Day)</span><input type="text" name="startDay" size="2" maxlength="2" value="DD" id="range-d2"/>
+                  <span class="hide">(Day)</span><input type="text" name="startDay" size="2" maxlength="2" value="DD" id="range-d1"/>
                   <label for="range2"> and </label>
                   <span class="hide">(Year)</span><input type="text" name="endYear" size="4" maxlength="4" value="YYYY" id="range2"/>
                   <span class="hide">(Month)</span><input type="text" name="endMonth" size="2" maxlength="2" value="MM" id="range-m2"/>
@@ -121,10 +121,10 @@
       <fieldset id="subjCats">
         <legend><span>Subject Categories</span></legend>
         <ol>
-          <li><label><input type="radio" name="subjectCatOpt" value="all" checked="checked" /> Search all subject catogories</label></li>
+          <li><label><input id="subjectCatOpt_all" type="radio" name="subjectCatOpt" value="all" checked="checked" /> Search all subject catogories</label></li>
           <li class="options">
-            <fieldset>
-              <legend><label><input type="radio" name="subjectCatOpt" value="some" /> Only search in the following subject categories:</label></legend>
+            <fieldset id="fsSubjectCatOpt">
+              <legend><label><input id="subjectCatOpt_slct" type="radio" name="subjectCatOpt" value="some" /> Only search in the following subject categories:</label></legend>
               <p>(#) indicates the number of articles published in each subject category.</p>
 <#if categoryInfos?size gt 0>
 <#assign colSize = (categoryInfos?size / 2) + 0.5>
