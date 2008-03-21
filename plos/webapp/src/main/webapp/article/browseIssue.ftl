@@ -18,17 +18,17 @@
     <div id="sideNav">
           <p id="issueNav">
         <#if issueInfo.prevIssue?exists>
-          <@s.url id="prevIssueURL" action="browseIssue" namespace="/journals/ntd/article" issue="${issueInfo.prevIssue}" includeParams="none"/>
+          <@s.url id="prevIssueURL" action="browseIssue" namespace="/article" issue="${issueInfo.prevIssue}" includeParams="none"/>
           <a href="${prevIssueURL}">&lt;Previous Issue</a>
            | 
         </#if>
         <#if issueInfo.parentVolume?exists>
-          <@s.url id="archiveURL" action="browseVolume" namespace="/journals/ntd/article" includeParams="gotoVolume=${issueInfo.parentVolume}"/>
+          <@s.url id="archiveURL" action="browseVolume" namespace="/article" includeParams="gotoVolume=${issueInfo.parentVolume}"/>
           <a href="${archiveURL}">Archive</a>
            | 
         </#if>
         <#if issueInfo.nextIssue?exists>
-          <@s.url id="nextIssueURL" action="browseIssue" namespace="/journals/ntd/article" issue="${issueInfo.nextIssue}" includeParams="none"/>
+          <@s.url id="nextIssueURL" action="browseIssue" namespace="/article" issue="${issueInfo.nextIssue}" includeParams="none"/>
           <a href="${nextIssueURL}">Next Issue&gt;</a>
         </#if>
       </p>
