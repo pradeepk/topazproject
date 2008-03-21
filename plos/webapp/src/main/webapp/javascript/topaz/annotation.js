@@ -119,8 +119,6 @@ topaz.annotation = {
               "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath;
       }
 
-      _annotationForm.noteType.value = _annotationForm.cNoteType.value;
-
       _annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
       _annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
       _annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;

@@ -20,8 +20,9 @@ function initAnnotationForm() {
 	var submitMsg    = dojo.byId('submitMsg');
 	
   // Annotation Dialog Box: Note type field
-  dojo.event.connect(_noteType, "onchange", function () { 
-    dojo.byId('cdls').style.visibility = _noteType.value == 'correction' ? 'visible' : 'hidden';  
+  dojo.event.connect(_noteType, "onchange", function () {
+    dojo.byId('cdls').style.visibility = _noteType.value == 'correction' ? 'visible' : 'hidden';
+    _annotationForm.noteType.value = _noteType.value;
   });
   
 	// Annotation Dialog Box: Title field
