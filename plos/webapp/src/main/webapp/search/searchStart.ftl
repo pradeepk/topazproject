@@ -157,17 +157,17 @@ There are no subjects in the system.
           </li>
         </ol>
       </fieldset>
-      <#-- TODO: Figure out how to 'order by' via FGS
       <div class="btnwrap">
+      <#-- TODO: Figure out how to 'order by' via FGS
       <label for="results-sort">Sort results by: </label>
         <select id="results-sort">
           <option value="relevance">Relevance</option>
           <option value="chron-newFirst">Newest first</option>
           <option value="chron-oldFirst">Oldest first</option>
         </select>
+      -->
         <input type="submit" id="button-search" value="Search"/>
       </div>
-      -->
     </form>
   </div><!-- end : primary content area -->
 </div><!-- end : advanced search form -->
