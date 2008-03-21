@@ -225,7 +225,7 @@
             <!-- begin : blog block -->
             <div id="blog" class="block">
               <h3>From the PLoS Blog</h3>
-              <p>Read the <a href="http://www.plos.org/cms/blog" title="PLoS Blog">PLoS Blog</a> <a href="http://feeds.feedburner.com/plos/Blog"><img alt="RSS" src="/plosone-webapp/images/feed-icon-inline.gif" /></a> and contribute your views on scientific research and open-access publishing.</p>
+              <p>Read the <a href="http://www.plos.org/cms/blog" title="PLoS Blog">PLoS Blog</a> <a href="http://feeds.feedburner.com/plos/Blog"><img alt="RSS" src="images/feed-icon-inline.gif" /></a> and contribute your views on scientific research and open-access publishing.</p>
               <ul class="articles">
                 <li><a href="http://www.plos.org/cms/node/297">Children's medicines matter</a></li>
                 <li><a href="http://www.plos.org/cms/node/296">Accept no imitations, unless you're learning to speak</a></li>

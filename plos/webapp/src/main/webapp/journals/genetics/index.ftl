@@ -152,7 +152,7 @@
             <!-- begin : blog block -->
             <div id="blog" class="block">
               <h3>From the PLoS Blog</h3>
-              <p>Read the <a href="http://www.plos.org/cms/blog" title="PLoS Blog">PLoS Blog</a> and contribute your views on scientific research and open-access publishing.</p>
+              <p>Read the <a href="http://www.plos.org/cms/blog" title="PLoS Blog">PLoS Blog</a> <a href="http://feeds.feedburner.com/plos/Blog"><img alt="RSS" src="images/feed-icon-inline.gif" /></a> and contribute your views on scientific research and open-access publishing.</p>
               <ul class="articles">
                   <li><a href="http://www.plos.org/cms/node/274">Oops we missed our own birthday</a></li>
                   <li><a href="http://www.plos.org/cms/node/272">Journal Clubs - think of the future!</a></li>
