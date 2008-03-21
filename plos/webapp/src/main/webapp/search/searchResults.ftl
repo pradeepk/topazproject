@@ -48,7 +48,7 @@
 <#--  <p>Debug: noOfResults: ${noOfResults}, totalNoOfResults: ${totalNoOfResults}, startPage: ${startPage}, pageSize: ${pageSize}, hasMore: ${hasMore}</p> -->
 
     <#if noOfResults == 0>
-      There are no results for <strong>${query?html}</strong>.
+      <p>There are no results for <strong>${query?html}</strong>.</p>
     <#else>
       <#assign startIndex = startPage * pageSize>
       <p>
@@ -72,13 +72,14 @@
 
       for <strong>${query?html}</strong>.
       </p>
-      <div id="searchMore">
-        <a href="${advancedSearch}">Go to Advanced Search</a> to revise <em>or</em> 
-        <form name="reviseSearch" action="${searchURL}" method="get">
-          <label for="searchEdit" style="display:inline;">edit your query here (<a href="#">help</a>): </label><input type="text" size="50" value="${query?html}" id="searchEdit" name="query"/> <input type="submit"  value="Go" class="button"/>
-        </form>
-      </div>
     </#if>
+    
+    <div id="searchMore">
+      <a href="${advancedSearch}">Go to Advanced Search</a> to revise <em>or</em> 
+      <form name="reviseSearch" action="${searchURL}" method="get">
+        <label for="searchEdit" style="display:inline;">edit your query here (<a href="#">help</a>): </label><input type="text" size="50" value="${query?html}" id="searchEdit" name="query"/> <input type="submit"  value="Go" class="button"/>
+      </form>
+    </div>
 
     <div class="resultsTab"><@renderSearchPaginationLinks totalPages, hasMore/></div>
 
