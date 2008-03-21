@@ -986,6 +986,18 @@
       </result>
     </action>
 
+    <action name="indexArticles" class="org.plos.admin.action.IndexArticlesAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/WEB-INF/pages/admin/indexArticles.ftl</param>
+        <param name="noCache">true</param>
+      </result>
+      <!-- stay in adminTop even on error -->
+      <result name="error" type="plosOneFreemarker">
+        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="noCache">true</param>
+      </result>
+    </action>
+
     <action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
       <result name="success" type="plosOneFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>

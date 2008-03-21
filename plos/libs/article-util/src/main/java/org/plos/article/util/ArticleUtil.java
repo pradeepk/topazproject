@@ -327,7 +327,7 @@ public class ArticleUtil {
     return fedoraServer.resolve(path).toString();
   }
 
-  private static FgsOperations[] getFgsOperations() throws ServiceException {
+  public static FgsOperations[] getFgsOperations() throws ServiceException {
     FgsOperations ops[] = new FgsOperations[FGS_URLS.size()];
     for (int i = 0; i < ops.length; i++) {
       String url = FGS_URLS.get(i).toString();
