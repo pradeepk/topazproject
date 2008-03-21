@@ -14,6 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -23,6 +24,9 @@ import org.plos.article.service.ArticleOtmService;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Journal;
+import org.plos.models.UserProfile;
+import org.plos.user.PlosOneUser;
+import org.plos.user.service.UserService;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -45,13 +49,15 @@ public class ListReplyAction extends AnnotationActionSupport {
    */
   private static final DateFormat annotationCitationDateFormat = new SimpleDateFormat("d MMM yyyy");
 
+  private Session session;
+  private ArticleOtmService articleOtmService;
+  private JournalService journalService;
+  private UserService userService;
+
   private String root;
   private String inReplyTo;
   private Reply[] replies;
-  private Session session;
   private WebAnnotation baseAnnotation;
-  private ArticleOtmService articleOtmService;
-  private JournalService journalService;
   private Article articleInfo;
   private String citation;
   private Set<Journal> journalList;
@@ -126,11 +132,24 @@ public class ListReplyAction extends AnnotationActionSupport {
   private String assembleCitationString() {
     assert baseAnnotation != null;
     assert articleInfo != null;
+    assert userService != null;
 
     StringBuffer sb = new StringBuffer(1024);
 
     // author of comment
-    sb.append(baseAnnotation.getCreatorName());
+    String plosOneUserId = baseAnnotation.getCreator();
+    try {
+      PlosOneUser poe = userService.getUserByTopazId(plosOneUserId);
+      assert poe != null;
+      UserProfile profile = poe.getUserProfile();
+      String firstName = profile.getGivenNames();
+      String lastName = profile.getSurnames();
+      sb.append(firstName);
+      sb.append(' ');
+      sb.append(lastName);
+    } catch (ApplicationException e) {
+      sb.append(baseAnnotation.getCreatorName());
+    }
     sb.append(". ");
 
     // comment title
@@ -168,7 +187,8 @@ public class ListReplyAction extends AnnotationActionSupport {
     sb.append(".  ");
 
     // annotation URI
-    sb.append(baseAnnotation.getId());
+    sb.append("http://dx.doi.org");
+    sb.append(StringUtils.replace(baseAnnotation.getId(), "info:doi", ""));
 
     return sb.toString();
   }
@@ -257,5 +277,14 @@ public class ListReplyAction extends AnnotationActionSupport {
   @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
+  }
+
+  /**
+   * @param userService The userService to set.
+   */
+  @Override
+  @Required
+  public void setUserService(UserService userService) {
+    this.userService = userService;
   }
 }
