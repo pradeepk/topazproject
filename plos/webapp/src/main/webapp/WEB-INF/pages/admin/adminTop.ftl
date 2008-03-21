@@ -69,7 +69,11 @@
           <#list flaggedComments as flaggedComment>
             <#if flaggedComment.isAnnotation>
               <@s.url id="flagURL" namespace="/admin" action="viewAnnotation" annotationId="${flaggedComment.target}"/>
-              <#assign deleteLabel = "Delete Comment">
+              <#if flaggedComment.correction>
+                <#assign deleteLabel = "Delete Correction">
+              <#else>
+                <#assign deleteLabel = "Delete Comment">
+              </#if>
             <#elseif flaggedComment.isRating>
               <@s.url id="flagURL" namespace="/admin" action="viewRating" ratingId="${flaggedComment.target}"/>
               <#assign deleteLabel = "Delete Rating">
