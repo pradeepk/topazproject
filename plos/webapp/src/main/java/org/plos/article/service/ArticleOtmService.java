@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -263,34 +264,39 @@ public class ArticleOtmService {
    * @return the (possibly empty) list of articles.
    * @throws ParseException if any of the dates could not be parsed
    */
-  public Article[] getArticles(final String startDate, final String endDate,
-                               final String[] categories, final String[] authors,
-                               final int[] states, final boolean ascending)
+  public Article[] getArticles(final String startDate, final String endDate, final String[] categories,
+                               final String[] authors, final int[] states, final boolean ascending)
       throws ParseException {
+    
     // get a list of Articles that meet the specified Criteria and Restrictions
-    Map<String, Boolean> orderBy = new HashMap<String, Boolean>();
-    orderBy.put("dublinCore.date", ascending);
-
-    List<Article> articleList =
-        findArticles(startDate, endDate, categories, authors, states, orderBy, 0);
+    Map<String, Boolean> orderBy = new LinkedHashMap<String, Boolean>();
+    orderBy.put("dublinCore.date", ascending); // first order by publication date
+    orderBy.put("id", Boolean.TRUE); // secondary order by article id
+    List<Article> articleList = findArticles(startDate, endDate, categories, authors, states, orderBy, 0);
     return articleList.toArray(new Article[articleList.size()]);
   }
 
   /**
    * A full featured getArticles.
-   *
-   * @param startDate  is the date to start searching from. If null, start from begining of time.
-   *                   Can be iso8601 formatted or string representation of Date object.
-   * @param endDate    is the date to search until. If null, search until present date
-   * @param categories is list of categories to search for articles within (all categories if null
-   *                   or empty)
-   * @param authors    is list of authors to search for articles within (all authors if null or
-   *                   empty)
-   * @param states     the list of article states to search for (all states if null or empty)
-   * @param orderBy    controls the ordering. The keys specify the fields to be ordered, and the
-   *                   values whether order is ascending (true) or descending (false).
+   * 
+   * @param startDate
+   *            is the date to start searching from. If null, start from begining of time. Can be
+   *            iso8601 formatted or string representation of Date object.
+   * @param endDate
+   *            is the date to search until. If null, search until present date
+   * @param categories
+   *            is list of categories to search for articles within (all categories if null or
+   *            empty)
+   * @param authors
+   *            is list of authors to search for articles within (all authors if null or empty)
+   * @param states
+   *            the list of article states to search for (all states if null or empty)
+   * @param orderBy
+   *            controls the ordering. The keys specify the fields to be ordered, and the values
+   *            whether order is ascending (true) or descending (false).
    * @return the (possibly empty) list of articles.
-   * @throws ParseException if any of the dates could not be parsed
+   * @throws ParseException
+   *             if any of the dates could not be parsed
    */
   public List<Article> getArticles(final String startDate, final String endDate,
                                    final String[] categories, final String[] authors,
