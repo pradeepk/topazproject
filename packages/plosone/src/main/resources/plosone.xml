@@ -1045,6 +1045,14 @@
         </css>
       </page>
       <page>
+        <name>/static/searchHelp.ftl</name>
+        <css>
+          <file>/css/pone_screen.css</file>
+          <file>/css/pone_iepc.css</file>
+          <file>/css/pone_static.css</file>
+        </css>
+      </page>
+      <page>
         <name>/static/serverError.ftl</name>
         <css>
           <file>/css/pone_screen.css</file>

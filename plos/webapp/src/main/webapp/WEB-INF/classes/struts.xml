@@ -377,6 +377,12 @@
       </result>
     </action>
 
+    <action name="searchHelp" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/searchHelp.ftl</param>
+      </result>
+    </action>
+
     <action name="error" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/serverError.ftl</param>
