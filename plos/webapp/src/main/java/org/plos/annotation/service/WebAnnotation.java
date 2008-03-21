@@ -164,7 +164,17 @@ public abstract class WebAnnotation extends BaseAnnotation {
   * @return title as String.
   */
   public String getCommentTitle() {
-    return escapeText(annotation.getTitle());
+    String title;
+    if (isMinorCorrection()) {
+      title = "Minor Correction: " + annotation.getTitle();
+    }
+    else if (isFormalCorrection()) {
+      title = "Formal Correction: " + annotation.getTitle();
+    }
+    else {
+      title = annotation.getTitle();
+    }
+    return escapeText(title);
   }
 
   /**
@@ -174,8 +184,19 @@ public abstract class WebAnnotation extends BaseAnnotation {
   public String getType() {
     return annotation.getType();
   }
+  
+  public boolean isFormalCorrection() {
+    return AnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(annotation.getWebType());
+  }
+  
+  public boolean isMinorCorrection() {
+    return AnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(annotation.getWebType());
+  }
 
-
+  public boolean isCorrection() {
+    return isFormalCorrection() || isMinorCorrection();
+  }
+  
   public WebAnnotation(final AnnotationInfo annotation) {
     this.annotation = annotation;
   }
