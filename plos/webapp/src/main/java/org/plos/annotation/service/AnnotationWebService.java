@@ -68,8 +68,6 @@ public class AnnotationWebService extends BaseAnnotationService {
   private PermissionWebService      permissionsWebService;
   private FetchArticleService fetchArticleService;
   private Ehcache articleAnnotationCache;
-  private static final String       PLOSONE_0_6_DEFAULT_TYPE =
-    "http://www.w3.org/2000/10/annotationType#Annotation";
   protected static final Set<Class<? extends Annotation>> ALL_ANNOTATION_CLASSES = new HashSet<Class<? extends Annotation>>();
   static { 
     ALL_ANNOTATION_CLASSES.add(Comment.class);
@@ -118,7 +116,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
   
   /**
-   * Create an annotation.
+   * Create a Comment annotation.
    *
    * @param mimeType mimeType
    * @param target target
@@ -305,11 +303,10 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws RemoteException RemoteException
    */
-  public void unflagAnnotation(final String annotationId)
-      throws RemoteException {
+  public void unflagAnnotation(final String annotationId) throws RemoteException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
-
-    ArticleAnnotation a = session.get(Comment.class, annotationId);
+    
+    Annotation a = session.get(Annotation.class, annotationId);
     a.setState(a.getState() & ~FLAG_MASK);
     session.saveOrUpdate(a);
   }
@@ -318,12 +315,11 @@ public class AnnotationWebService extends BaseAnnotationService {
    * Delete an annotation subtree and not just mark it.
    * 
    * @param annotationId
-   *          annotationId
+   *            annotationId
    * @param deletePreceding
-   *          deletePreceding
-   * 
+   *            deletePreceding
    * @throws RemoteException
-   *           RemoteException
+   *             RemoteException
    */
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
                                throws RemoteException {
