@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Set;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Amit Kapoor
  */
 @Entity(type = Rdf.topaz + "Article", model = "ri")
-public class Article extends ObjectInfo {
+public class Article extends ObjectInfo implements Serializable {
   /** Article state of "Active" */
   public static final int STATE_ACTIVE   = 0;
   /** Article state of "Disabled" */

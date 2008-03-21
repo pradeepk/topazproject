@@ -10,8 +10,9 @@
 
 package org.plos.article.service;
 
-import java.sql.Date;
+import java.io.Serializable;
 import java.net.URLEncoder;
+import java.sql.Date;
 
 
 /**
@@ -21,7 +22,7 @@ import java.net.URLEncoder;
  * @author Stephen Cheng
  *
  */
-public class CitationInfo {
+public class CitationInfo implements Serializable {
   private String articleTitle;
   private Date publicationDate;
   private String journalName; 
