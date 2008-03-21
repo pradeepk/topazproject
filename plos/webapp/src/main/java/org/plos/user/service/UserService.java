@@ -156,24 +156,12 @@ public class UserService {
 
     final Object lock = (USER_LOCK + topazUserId).intern();
 
-    Object result = CacheAdminHelper.getFromCache(userCache, USER_KEY + topazUserId, -1, lock,
-                                                  "userName",
-                                                  new CacheAdminHelper.EhcacheUpdater<Object>() {
-        public Object lookup() {
-          try {
-            String displayName = getDisplayName(topazUserId);
-            return displayName;
-          } catch (ApplicationException ae) {
-            return ae;
-          }
-        }
+    return CacheAdminHelper.getFromCacheE(userCache, USER_KEY + topazUserId, -1, lock, "userName",
+                               new CacheAdminHelper.EhcacheUpdaterE<String, ApplicationException>() {
+      public String lookup() throws ApplicationException {
+        return getDisplayName(topazUserId);
+      }
     });
-
-    if (result instanceof ApplicationException) {
-      throw (ApplicationException) result;
-    }
-    
-    return (String) result;
   }
 
   private String getDisplayName(final String topazUserId) throws ApplicationException {

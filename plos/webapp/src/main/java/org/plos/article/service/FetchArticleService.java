@@ -28,8 +28,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -87,30 +87,13 @@ public class FetchArticleService {
                           RemoteException, NoSuchArticleIdException {
     final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
 
-    Object res = CacheAdminHelper.getFromCache(articleAnnotationCache,
-                                               ARTICLE_KEY  + articleURI, -1, lock,
-                                               "transformed article",
-                                               new CacheAdminHelper.EhcacheUpdater<Object>() {
-        public Object lookup() {
-          try {
-            String a = getTransformedArticle(articleURI);
-            return a;
-          } catch (Exception e) {
-            return e;
-          }
-        }
-      }
-    );
-
-    if (res instanceof ApplicationException)
-      throw (ApplicationException) res;
-    if (res instanceof NoSuchArticleIdException)
-      throw (NoSuchArticleIdException) res;
-    if (res instanceof RemoteException)
-      throw (RemoteException) res;
-    if (res instanceof RuntimeException)
-      throw (RuntimeException) res;
-    return (String) res;
+    return CacheAdminHelper.getFromCacheE(articleAnnotationCache, ARTICLE_KEY  + articleURI, -1,
+            lock, "transformed article",
+            new CacheAdminHelper.EhcacheUpdaterE<String, ApplicationException>() {
+              public String lookup() throws ApplicationException {
+                return getTransformedArticle(articleURI);
+              }
+            });
   }
 
   /**
@@ -255,30 +238,19 @@ public class FetchArticleService {
     // do caching here rather than at articleOtmService level because we want the cache key
     // to be article specific
     final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
-    Article artInfo = CacheAdminHelper.getFromCache(articleAnnotationCache,
-                                             ARTICLEINFO_KEY + articleURI, -1, lock, "objectInfo",
-                                             new CacheAdminHelper.EhcacheUpdater<Article>() {
-        public Article lookup() {
-          try {
-            Article artInfo = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
-            if (log.isDebugEnabled())
-              log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
-            return artInfo;
-          } catch (NoSuchArticleIdException nsaie) {
-            if (log.isErrorEnabled())
-              log.error("Failed to get object info for article URI: " + articleURI, nsaie);
-            return null;
-          } catch (URISyntaxException use) {
-            throw new RuntimeException("article uri '" + articleURI + "' is not a valid URI", use);
-          }
+    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+            ARTICLEINFO_KEY + articleURI, -1, lock, "objectInfo",
+            new CacheAdminHelper.EhcacheUpdaterE<Article, ApplicationException>() {
+              public Article lookup() throws ApplicationException {
+                try {
+                  return articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
+                } catch (NoSuchArticleIdException nsaie) {
+                  throw new ApplicationException(nsaie);
+                } catch (URISyntaxException use) {
+                  throw new ApplicationException(use);
+                }
         }
-      }
-    );
-
-    if (artInfo == null)
-      throw new ApplicationException("Failed to get object info " + articleURI);
-
-    return artInfo;
+      });
   }
 
   /**
