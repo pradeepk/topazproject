@@ -65,7 +65,7 @@
           </ul>
         </li>
 
-        <#if numCorrections ?size gt 0>
+        <#if numCorrections gt 0>
         <@s.url id="correctionsURL" namespace="/annotation" action="getCorrectionsCommentary" includeParams="none" target="${articleURI}"/>
         <li><a href="${correctionsURL}" class="corrections icon">View all corrections</a></li>
         </#if>
@@ -141,7 +141,7 @@
           </ul>
         </li>
         
-        <#if numCorrections ?size gt 0>
+        <#if numCorrections gt 0>
         <@s.url id="correctionsURL" namespace="/annotation" action="getCorrectionsCommentary" includeParams="none" target="${articleURI}"/>
         <li><a href="${correctionsURL}" class="corrections icon">View all corrections</a></li>
         </#if>
