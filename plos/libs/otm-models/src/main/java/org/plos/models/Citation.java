@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import java.util.List;
@@ -30,7 +31,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @Entity(type = PLoS.bibtex + "Entry", model = "ri")
 @UriPrefix(Rdf.topaz)
-public class Citation {
+public class Citation implements Serializable {
   @Id
   private URI   id;
 
@@ -89,6 +90,8 @@ public class Citation {
 
   @Predicate(uri = Rdf.rdf + "type", type = PropType.OBJECT)
   private String citationType;
+
+  private static final long serialVersionUID = 6405781304940950306L;
 
   /**
    * Get id.

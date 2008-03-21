@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import org.topazproject.otm.annotations.PredicateMap;
  * @author Amit Kapoor
  */
 @Entity(model = "ri")
-public class ObjectInfo {
+public class ObjectInfo implements Serializable {
   @Id
   private URI id;
 
@@ -63,6 +64,7 @@ public class ObjectInfo {
   @Predicate(uri = "http://prismstandard.org/namespaces/1.2/basic/eIssn")
   private String eIssn;
 
+  private static final long serialVersionUID = 4074534426473235595L;
   /**
    * There is a convention for two dynamic predicates:
    * <ul>
