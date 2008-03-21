@@ -81,6 +81,12 @@
       </result>
     </action>
 
+    <action name="eic" class="org.plos.action.NoOpAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/journals/pathogens/static/eic.ftl</param>
+      </result>
+    </action>
+
     <action name="guidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/pathogens/static/guidelines.ftl</param>
@@ -105,21 +111,9 @@
       </result>
     </action>
 
-    <action name="revisedChecklist" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/pathogens/static/revised_checklist.ftl</param>
-      </result>
-    </action>
-
     <action name="rssFeeds" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/pathogens/static/rssFeeds.ftl</param>
-      </result>
-    </action>
-
-    <action name="scope" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/pathogens/static/scope.ftl</param>
       </result>
     </action>
 
@@ -129,23 +123,11 @@
       </result>
     </action>
 
-    <action name="toc" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/pathogens/static/toc.ftl</param>
-      </result>
-    </action>
-
     <action name="users" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/journals/pathogens/static/users.ftl</param>
       </result>
     </action>
 
-    <action name="whypublish" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/journals/pathogens/static/whypublish.ftl</param>
-      </result>
-    </action>
-   
   </package>
 </struts>
