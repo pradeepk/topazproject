@@ -399,8 +399,11 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (annotationClassTypes != null) {
       List<Annotation> filteredAnnotations = new ArrayList<Annotation>();
       for (Annotation a : allAnnotations) {
-        if (annotationClassTypes.contains(a.getClass())) {
-          filteredAnnotations.add(a);
+        for (Class classType : annotationClassTypes) {
+          if (classType.isInstance(a)) {
+            filteredAnnotations.add(a);
+            break;
+          }
         }
       }
       return filteredAnnotations;
