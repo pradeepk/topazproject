@@ -50,13 +50,9 @@
           </fieldset>-->
         <!-- end : expanded block -->
         </li>
+        
         <@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
-
-        <#if Session[freemarker_config.userAttributeKey]?exists>
-        	<li><a href="${createDiscussionURL}" class="discuss icon">Make a general comment</a></li>
-        <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="discuss icon">Make a general comment</a></li>
-        </#if>
+       	<li><a href="${createDiscussionURL}" class="discuss icon">Make a general comment</a></li>
 
         <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
         <li><a href="${commentsURL}" class="commentary icon">View/join ongoing discussions</a>
@@ -127,12 +123,8 @@
           </fieldset>-->
         <!-- end : expanded block -->
         </li>
-        <#if Session[freemarker_config.userAttributeKey]?exists>
-        	<@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
-        	<li><a href="${createDiscussionURL}" class="discuss icon">Make a general comment</a></li>
-        <#else>
-            <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="discuss icon">Make a general comment</a></li>
-        </#if>
+       	
+       	<li><a href="${createDiscussionURL}" class="discuss icon">Make a general comment</a></li>
 
         <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
         <li><a href="${commentsURL}" class="commentary">View/join ongoing discussions</a>
