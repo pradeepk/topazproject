@@ -252,7 +252,11 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       if (log.isDebugEnabled()) {
         log.debug("Deleted reply: " + target);
       }
-    } else if (targetType.equals(AnnotationService.WEB_TYPE_COMMENT)) {
+    } else if (
+        targetType.equals(AnnotationService.WEB_TYPE_COMMENT) || 
+        targetType.equals(AnnotationService.WEB_TYPE_NOTE) ||
+        targetType.equals(AnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
+        targetType.equals(AnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
       replyWebService.deleteReplies(target, target);
       annotationService.deletePublicAnnotation(target);
       if (log.isDebugEnabled()) {
