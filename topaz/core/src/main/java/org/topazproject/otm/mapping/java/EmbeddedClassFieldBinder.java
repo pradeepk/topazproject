@@ -19,6 +19,8 @@ import java.util.Set;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.EmbeddedBinder;
 
 /**
  * FieldBinder for an embedded class field. The {@link #get} and {@link #set} methods are 
@@ -27,7 +29,7 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public class EmbeddedClassFieldBinder extends AbstractFieldBinder {
+public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements EmbeddedBinder {
   /**
    * Creates a new EmbeddedClassFieldBinder object.
    *
@@ -71,6 +73,13 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder {
       Map<String, Set<String>> types, Mapper mapper, 
       Session session) throws OtmException {
     throw new UnsupportedOperationException("Only raw get/set allowed");
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Binder promote(Binder binder) {
+    return new EmbeddedClassMemberFieldBinder(this, (FieldBinder)binder);
   }
 
 }

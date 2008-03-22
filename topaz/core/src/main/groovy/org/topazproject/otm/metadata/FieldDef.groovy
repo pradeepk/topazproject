@@ -23,11 +23,12 @@ import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.java.ArrayFieldBinder;
 import org.topazproject.otm.mapping.java.CollectionFieldBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
-import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.java.ScalarFieldBinder;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.MapperImpl;
+import org.topazproject.otm.mapping.RdfMapperImpl;
+import org.topazproject.otm.mapping.IdMapperImpl;
+import org.topazproject.otm.mapping.EmbeddedMapperImpl;
 import org.topazproject.otm.serializer.Serializer;
 
 import org.apache.commons.logging.Log;
@@ -175,15 +176,20 @@ public class FieldDef {
     // generate the mapper(s)
     List m;
     if (maxCard == 1 && embedded) {
-      def container = new EmbeddedClassFieldBinder(f, get, set)
-      m = classType.toClass().fields.collect{ new MapperImpl(it, new EmbeddedClassMemberFieldBinder(container, it.getBinder(EntityMode.POJO))) }
+      def cm = classType.toClass()
+      def container = new EmbeddedMapperImpl(new EmbeddedClassFieldBinder(f, get, set), cm)
+      m = cm.rdfMappers.collect{ container.promote(it) }
+      m.add(container)
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
       FieldBinder l = new ScalarFieldBinder(f, get, set, ser);
       if (ser != null)
         ft = null;
-      m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned, idGen,
+      if (isId)
+        m = [new IdMapperImpl(l, idGen)];
+      else
+        m = [new RdfMapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned, idGen,
 ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType))]
     } else {
       String     collType = colType ? colType : rdf.defColType
@@ -198,7 +204,7 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType))]
       else
         l = new CollectionFieldBinder(f, get, set, ser, compType);
 
-      m = [new MapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned,
+      m = [new RdfMapperImpl(pred, l, dtype, cm?.getType(), inverse, model, mt, owned,
                              idGen, ct, ft, cm?.getName(),
                   (ser == null) || inverse || "OBJECT".equals(propType)) ]
     }

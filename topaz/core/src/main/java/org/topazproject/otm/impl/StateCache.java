@@ -28,7 +28,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * A cache used to track modificationsto an object instance.
@@ -65,7 +65,7 @@ class StateCache {
    *
    * @return the collection of fields that were updated or null
    */
-  public Collection<Mapper> update(Object o, ClassMetadata cm, Session session)
+  public Collection<RdfMapper> update(Object o, ClassMetadata cm, Session session)
       throws OtmException {
     expunge();
 
@@ -101,7 +101,7 @@ class StateCache {
    *
    * @throws OtmException on an error
    */
-  public void delayedLoadComplete(Object o, Mapper field, Session session) throws OtmException {
+  public void delayedLoadComplete(Object o, RdfMapper field, Session session) throws OtmException {
     // expected to be called after insert - so no expunge
     InstanceState is = states.get(new ObjectReference(o));
     if (is != null)
@@ -136,15 +136,15 @@ class StateCache {
    * The state of an object as last seen by a Session.
    */
   private static class InstanceState {
-    private final Map<Mapper, List<String>> vmap; // serialized field values
+    private final Map<RdfMapper, List<String>> vmap; // serialized field values
     private Map<String, List<String>>       pmap; // serialized predicate map values
     private int blobLen = 0;
     private byte[] blobDigest;
 
     public <T>InstanceState(T instance, ClassMetadata cm, Session session) throws OtmException {
-      vmap                   = new HashMap<Mapper, List<String>>();
+      vmap                   = new HashMap<RdfMapper, List<String>>();
 
-      for (Mapper m : cm.getMappers()) {
+      for (RdfMapper m : cm.getRdfMappers()) {
         Binder b = m.getBinder(session);
         if (m.isPredicateMap())
           pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
@@ -156,17 +156,17 @@ class StateCache {
       }
     }
 
-    public void delayedLoadComplete(Object o, Mapper m, Session session) throws OtmException {
+    public void delayedLoadComplete(Object o, RdfMapper m, Session session) throws OtmException {
       Binder b = m.getBinder(session);
       vmap.put(m, !m.isAssociation() ? b.get(o) : session.getIds(b.get(o)));
     }
 
-    public <T> Collection<Mapper> update(T instance, ClassMetadata cm, Session session)
+    public <T> Collection<RdfMapper> update(T instance, ClassMetadata cm, Session session)
         throws OtmException {
-      Collection<Mapper> mappers = new ArrayList<Mapper>();
+      Collection<RdfMapper> rdfMappers = new ArrayList<RdfMapper>();
       boolean pmapChanged = false;
 
-      for (Mapper m : cm.getMappers()) {
+      for (RdfMapper m : cm.getRdfMappers()) {
         Binder b = m.getBinder(session);
         if (m.isPredicateMap()) {
           Map<String, List<String>> nv = (Map<String, List<String>>) b.getRawValue(instance, true);
@@ -184,15 +184,15 @@ class StateCache {
 
           if (!eq) {
             vmap.put(m, nv);
-            mappers.add(m);
+            rdfMappers.add(m);
           }
         }
       }
 
       if (pmapChanged)
-        mappers = cm.getMappers(); // all fields since predicate-map is a wild-card
+        rdfMappers = cm.getRdfMappers(); // all fields since predicate-map is a wild-card
 
-      return mappers;
+      return rdfMappers;
     }
 
     public BlobChange digestUpdate(Object instance, Binder blobField) throws OtmException {

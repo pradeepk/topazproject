@@ -20,7 +20,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.criterion.DetachedCriteria;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * Criterion Builder for comparison operations.
@@ -100,11 +100,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
     public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                   throws OtmException {
       ClassMetadata cm = criteria.getClassMetadata();
-      Mapper        m  = cm.getMapperByName(name);
-
-      if (m == null)
-        throw new OtmException("'" + name + "' does not exist in " + cm);
-
+      RdfMapper m  = getMapper(cm, name);
       String val   = serializeValue(value, criteria, name);
       String model = m.getModel();
       if ((model != null) && !cm.getModel().equals(model))

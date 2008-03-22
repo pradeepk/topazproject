@@ -22,6 +22,7 @@ import java.util.Set;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.serializer.Serializer;
 import org.topazproject.otm.query.Results;
@@ -58,7 +59,7 @@ public class Criteria implements Parameterizable<Criteria> {
   private final Session            session;
   private final ClassMetadata      classMetadata;
   private final Criteria           parent;
-  private final Mapper             mapping;
+  private final RdfMapper             mapping;
   private final Collection<Filter> filters;
   private       int                maxResults    = -1;
   private       int                firstResult   = -1;
@@ -77,7 +78,7 @@ public class Criteria implements Parameterizable<Criteria> {
    * @param classMetadata The class meta-data of this criteria
    * @param filters The filters to apply
    */
-  public Criteria(Session session, Criteria parent, Mapper mapping, ClassMetadata classMetadata,
+  public Criteria(Session session, Criteria parent, RdfMapper mapping, ClassMetadata classMetadata,
                   Collection<Filter> filters) {
     this.session                        = session;
     this.parent                         = parent;
@@ -144,7 +145,7 @@ public class Criteria implements Parameterizable<Criteria> {
    *
    * @return the mapper
    */
-  public Mapper getMapping() {
+  public RdfMapper getMapping() {
     return mapping;
   }
 
@@ -353,10 +354,11 @@ public class Criteria implements Parameterizable<Criteria> {
    * @throws OtmException if the parameter value cannot be resolved for this field
    */
   public String resolveParameter(String name, String field) throws OtmException {
-    Mapper m = classMetadata.getMapperByName(field);
-    if (m == null)
+    Mapper r = classMetadata.getMapperByName(field);
+    if (!(r instanceof RdfMapper))
       throw new OtmException("'" + field + "' does not exist in " + classMetadata);
 
+    RdfMapper m = (RdfMapper)r;
     Object val = getRoot().paramValues.get(name);
     if (val == null)
       throw new OtmException("No value specified for parameter '" + name + "': field '" 

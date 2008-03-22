@@ -25,7 +25,9 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.IdMapper;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.Results;
 
 import org.topazproject.otm.OtmException;
@@ -175,10 +177,10 @@ abstract class AbstractSession implements Session {
     ClassMetadata cm = criteria.getClassMetadata();
     Mapper           m  = cm.getMapperByName(path);
 
-    if (m == null)
+    if (!(m instanceof RdfMapper))
       throw new OtmException(path + " is not a valid field name for " + cm);
 
-    return new Criteria(this, criteria, m, checkClass(m.getAssociatedEntity()),
+    return new Criteria(this, criteria, (RdfMapper)m, checkClass(((RdfMapper)m).getAssociatedEntity()),
                         new ArrayList<Filter>(filters.values()));
   }
 
@@ -248,7 +250,7 @@ abstract class AbstractSession implements Session {
     if (cm == null)
       throw new OtmException("No class metadata found for " + o);
 
-    Mapper           idField = cm.getIdField();
+    IdMapper           idField = cm.getIdField();
     if (idField == null)
       throw new OtmException("No id-field found for " + cm);
 

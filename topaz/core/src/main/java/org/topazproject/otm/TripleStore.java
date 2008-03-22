@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
 
@@ -46,7 +46,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> void insert(ClassMetadata cm, Collection<Mapper> fields, String id, T o,
+  public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o,
                          Connection con) throws OtmException;
 
   /**
@@ -72,7 +72,7 @@ public interface TripleStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public <T> void delete(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void delete(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
                          Connection con) throws OtmException;
 
   /**

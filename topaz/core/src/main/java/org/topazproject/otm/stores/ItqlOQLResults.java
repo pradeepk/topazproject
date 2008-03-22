@@ -123,9 +123,7 @@ class ItqlOQLResults extends ItqlResults {
                                   null, sess);
 
       case CLASS:
-        // XXX: Other EntityModes
-        ClassMetadata cm = sess.getSessionFactory()
-                                  .getClassMetadata((Class<?>)qi.getTypes().get(idx));
+        ClassMetadata cm = (ClassMetadata) qi.getTypes().get(idx);
         return eager ? sess.get(cm, qa.getString(idx), false) :
                        sess.load(cm, qa.getString(idx));
 

@@ -28,7 +28,7 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * A common base class for triple-store impls.
@@ -69,13 +69,13 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
     cm.getIdField().getBinder(session).set(instance, Collections.singletonList(id));
 
     // re-map values based on the rdf:type look ahead
-    Map<Mapper, List<String>> mvalues = new HashMap();
+    Map<RdfMapper, List<String>> mvalues = new HashMap();
     boolean                   inverse = false;
 
     for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
       for (String p : values.keySet()) {
         for (String o : values.get(p)) {
-          Mapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
+          RdfMapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
 
           if (m != null) {
             List<String> v = mvalues.get(m);
@@ -92,7 +92,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
     }
 
     // now assign values to fields
-    for (Mapper m : mvalues.keySet()) {
+    for (RdfMapper m : mvalues.keySet()) {
       Binder b = m.getBinder(session);
       b.load(instance, mvalues.get(m), types, m, session);
       if (log.isDebugEnabled()) {
@@ -103,7 +103,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
 
     boolean found = false;
 
-    for (Mapper m : cm.getMappers()) {
+    for (RdfMapper m : cm.getRdfMappers()) {
       if (m.isPredicateMap()) {
         found = true;
 
@@ -115,7 +115,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
       Map<String, List<String>> map = new HashMap<String, List<String>>();
       map.putAll(fvalues);
 
-      for (Mapper m : cm.getMappers()) {
+      for (RdfMapper m : cm.getRdfMappers()) {
         if (m.isPredicateMap())
           continue;
 
@@ -125,7 +125,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
         map.remove(m.getUri());
       }
 
-      for (Mapper m : cm.getMappers()) {
+      for (RdfMapper m : cm.getRdfMappers()) {
         if (m.isPredicateMap())
           m.getBinder(session).setRawValue(instance, map);
       }
@@ -138,14 +138,14 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
    * inherited javadoc
    */
   public <T> void insert(ClassMetadata cm, String id, T o, Connection con) throws OtmException {
-    insert(cm, cm.getMappers(), id, o, con);
+    insert(cm, cm.getRdfMappers(), id, o, con);
   }
 
   /*
    * inherited javadoc
    */
   public <T> void delete(ClassMetadata cm, String id, T o, Connection con) throws OtmException {
-    delete(cm, cm.getMappers(), id, o, con);
+    delete(cm, cm.getRdfMappers(), id, o, con);
   }
 
   /*

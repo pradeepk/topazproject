@@ -26,7 +26,7 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.filter.ConjunctiveFilterDefinition;
 import org.topazproject.otm.filter.JunctionFilterDefinition;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * A helper class to build ITQL query for a Criteria.
@@ -195,7 +195,7 @@ public class ItqlCriteria {
   private static void buildPredicateWhere(ClassMetadata cm, Criteria c, String name, String subject,
                                           String object, StringBuilder qry, String model)
                             throws OtmException {
-    Mapper m = cm.getMapperByName(name);
+    RdfMapper m = (RdfMapper)cm.getMapperByName(name);
 
     if (m == null)
       throw new OtmException("No field with the name '" + name + "' in " + cm);

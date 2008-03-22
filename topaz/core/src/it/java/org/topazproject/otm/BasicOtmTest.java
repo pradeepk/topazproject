@@ -23,7 +23,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Annotea;
@@ -658,7 +658,7 @@ public class BasicOtmTest extends AbstractOtmTest {
     ClassMetadata cm = factory.getClassMetadata(Article.class);
     assertEquals(Rdf.topaz + "Article", cm.getType());
 
-    Mapper m = cm.getMapperByName("date");
+    RdfMapper m = (RdfMapper)cm.getMapperByName("date");
     assertNotNull(m);
     assertEquals(Rdf.dc + "date", m.getUri());
     assertEquals(Rdf.xsd + "date", m.getDataType());

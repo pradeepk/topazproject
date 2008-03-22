@@ -14,7 +14,7 @@ import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * A criterion for generating a triple pattern. The field name or value
@@ -75,11 +75,7 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
       return subjectVar + " " + varPrefix + "p " + varPrefix + "v";
 
     ClassMetadata cm = criteria.getClassMetadata();
-    Mapper        m  = cm.getMapperByName(getFieldName());
-
-    if (m == null)
-      throw new OtmException("'" + getFieldName() + "' does not exist in " + cm);
-
+    RdfMapper     m  = getMapper(cm, getFieldName());
     String val;
 
     if (unboundValue)

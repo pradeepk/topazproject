@@ -85,26 +85,26 @@ public interface Binder {
    * Load the values into this field of the given object instance.
    *
    * @param instance the object
-   * @param values   the values to set
-   * @param types    the type look ahead for associations
-   * @param mapper   the mapper that this loader is associated to (XXX:revisit) 
-   * @param session  the session under which the load is performed.
-   *                 Used for resolving associations etc.
+   * @param values the values to set
+   * @param types the type look ahead for associations
+   * @param mapper the mapper that this loader is associated to
+   * @param session the session under which the load is performed. Used for resolving associations
+   *        etc.
    *
    * @throws OtmException if a field's value cannot be set
    */
-  public void load(Object instance, List<String> values, 
-          Map<String, Set<String>> types, Mapper mapper, 
-          Session session) throws OtmException;
+  public void load(Object instance, List<String> values, Map<String, Set<String>> types,
+                   RdfMapper mapper, Session session) throws OtmException;
 
   /**
-   * Tests wether this field of the given object instance is loaded completely.
-   * Used mainly for testing if a lazy-loaded field is loaded or is still a proxy.
+   * Tests wether this field of the given object instance is loaded completely. Used mainly
+   * for testing if a lazy-loaded field is loaded or is still a proxy.
    *
    * @param instance the object
    *
    * @return true for all eager-loaded fields and lazy-loaded fields that are loaded completely
+   *
+   * @throws OtmException on an error
    */
-  public boolean isLoaded(Object instance);
-
+  public boolean isLoaded(Object instance) throws OtmException;
 }

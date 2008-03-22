@@ -28,6 +28,8 @@ import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.SpecialMappers;
@@ -821,13 +823,17 @@ public class CriteriaTest extends AbstractOtmTest {
   private void verifyDC(DetachedCriteria dc) {
     assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
     assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
-                 factory.getClassMetadata(Annotation.class).getMapperByName("annotates").getUri());
+                 getMapper(Annotation.class, "annotates").getUri());
     dc = dc.getChildCriteriaList().iterator().next();
     assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
     assertEquals("" + dc.da.predicateUri,
-                 factory.getClassMetadata(Annotation.class).getMapperByName("supersedes").getUri());
+                 getMapper(Annotation.class, "supersedes").getUri());
     assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
-                 factory.getClassMetadata(Annotation.class).getMapperByName("creator").getUri());
+                 getMapper(Annotation.class, "creator").getUri());
+  }
+
+  private RdfMapper getMapper(Class c, String name) {
+    return (RdfMapper)factory.getClassMetadata(c).getMapperByName(name);
   }
 
   /**

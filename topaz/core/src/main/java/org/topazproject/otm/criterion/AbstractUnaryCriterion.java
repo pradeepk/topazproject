@@ -19,6 +19,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * A base class for all operations involving a field name. 
@@ -81,10 +82,11 @@ public abstract class AbstractUnaryCriterion extends Criterion {
    * inherited javadoc
    */
   public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
-    Mapper m = cm.getMapperByName(fieldName);
-    if (m == null)
+    Mapper r = cm.getMapperByName(fieldName);
+    if (!(r instanceof RdfMapper))
       log.warn("onPreInsert: The field '" + fieldName + "' does not exist in " + cm);
     else {
+      RdfMapper m  = (RdfMapper)r;
       da.predicateUri = URI.create(m.getUri());
       da.inverse = m.hasInverseUri();
       if (log.isDebugEnabled())
@@ -96,7 +98,7 @@ public abstract class AbstractUnaryCriterion extends Criterion {
    * inherited javadoc
    */
   public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
-    Mapper m = (da.predicateUri == null) ? null :
+    RdfMapper m = (da.predicateUri == null) ? null :
                           cm.getMapperByUri(da.predicateUri.toString(), da.inverse, null);
 
     if (m == null)

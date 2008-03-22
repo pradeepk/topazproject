@@ -22,6 +22,7 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * Specification of an order-by on a Criteria.
@@ -147,11 +148,12 @@ public class Order {
    * @param cm the class metadata to use to resolve fields
    */
   public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
-    Mapper m = cm.getMapperByName(name);
+    Mapper r = cm.getMapperByName(name);
 
-    if (m == null)
+    if (!(r instanceof RdfMapper))
       log.warn("onPreInsert: The field '" + name + "' does not exist in " + cm);
     else {
+      RdfMapper      m  = (RdfMapper)r;
       da.predicateUri   = URI.create(m.getUri());
       da.inverse        = m.hasInverseUri();
 
@@ -167,7 +169,7 @@ public class Order {
    * @param cm the class metadata to use to resolve fields
    */
   public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
-    Mapper m =
+    RdfMapper m =
       (da.predicateUri == null) ? null
       : cm.getMapperByUri(da.predicateUri.toString(), da.inverse, null);
 

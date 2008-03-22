@@ -39,7 +39,7 @@ import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
 
@@ -61,14 +61,14 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public <T> void insert(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
                          Connection con) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
 
     storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getTypes().toArray(new String[0]));
 
-    for (Mapper m : fields) {
+    for (RdfMapper m : fields) {
       if (m.hasInverseUri())
         continue;
 
@@ -84,13 +84,13 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public <T> void delete(ClassMetadata cm, Collection<Mapper> fields, String id, T o,
+  public <T> void delete(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o,
                          Connection con) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
     String             model   = cm.getModel();
 
-    for (Mapper m : fields)
+    for (RdfMapper m : fields)
       storage.remove(model, id, m.getUri());
   }
 
@@ -112,7 +112,7 @@ public class MemStore extends AbstractTripleStore {
     value.put(Rdf.rdf + "type",
               new ArrayList<String>(storage.getProperty(model, id, Rdf.rdf + "type")));
 
-    for (Mapper p : cm.getMappers()) {
+    for (RdfMapper p : cm.getRdfMappers()) {
       String uri = p.getUri();
 
       if (!p.hasInverseUri())
@@ -241,15 +241,15 @@ public class MemStore extends AbstractTripleStore {
       String name       = ((PredicateCriterion) c).getName();
       Object o          = ((PredicateCriterion) c).getValue();
       String value;
+      RdfMapper m = (RdfMapper)cm.getMapperByName(name);
 
       try {
-        Mapper m        = cm.getMapperByName(name);
         value           = o.toString();
       } catch (Exception e) {
         throw new OtmException("Serializer exception", e);
       }
 
-      String uri = cm.getMapperByName(name).getUri();
+      String uri = m.getUri();
       ids = storage.getIds(model, uri, value);
     } else if (c instanceof SubjectCriterion) {
       String  id     = ((SubjectCriterion) c).getId();

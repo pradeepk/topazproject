@@ -31,10 +31,10 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
-import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldBinder;
+import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 import antlr.ASTPair;
 import antlr.RecognitionException;
@@ -114,22 +114,39 @@ options {
       // for embedded classes get the fully-qualified field-name
       String fname = "";
       if (type.getType() == ExprType.Type.EMB_CLASS) {
-        for (Binder m : type.getEmbeddedFields())
+        EmbeddedMapper last = null;
+        for (EmbeddedMapper m : type.getEmbeddedFields()) {
           fname += m.getName() + ".";
+          last = m;
+        }
+
+        // see if this is a partial match on a hierarchy of embedded classes
+        Mapper m = last.getEmbeddedClass().getMapperByName(field.getText());
+        if (m instanceof EmbeddedMapper) {
+          type.getEmbeddedFields().add((EmbeddedMapper)m);
+          return type;
+        }
       }
       fname += field.getText();
 
       // see if we have a mapper for the field; if so, great
       Mapper m = type.getMeta().getMapperByName(fname);
-      if (m != null) {
-        ExprType cType = getTypeForMapper(m);
+      if (m instanceof RdfMapper) {
+        RdfMapper r = (RdfMapper)m;
+        ExprType cType = getTypeForMapper(r);
 
-        String uri = "<" + m.getUri() + ">";
+        String uri = "<" + r.getUri() + ">";
         AST ref = #([URIREF, uri]);
-        updateAST(ref, type, cType, m, false);
+        updateAST(ref, type, cType, r, false);
         astFactory.addASTChild(cur, ref);
 
         return cType;
+      }
+      
+      if (m instanceof EmbeddedMapper) {
+        type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedMapper)m);
+        getCurAST(cur).setExprType(type);
+        return type;
       }
 
       // see if this is the id-field
@@ -144,19 +161,6 @@ options {
         return cType;
       }
 
-      // see if this is a partial match on a hierarchy of embedded classes
-      Binder l = findEmbeddedFieldBinder(type.getMeta(), fname);
-      if (l != null) {
-        if (type.getType() == ExprType.Type.EMB_CLASS)
-          type.getEmbeddedFields().add((EmbeddedClassFieldBinder) l);
-        else {
-          type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedClassFieldBinder) l);
-          getCurAST(cur).setExprType(type);
-        }
-
-        return type;
-      }
-
       // nope, nothing found, must be a user error
       throw new RecognitionException("no field '" + field.getText() + "' in " +
                                      type.getExprClass());
@@ -169,23 +173,6 @@ options {
       return (OqlAST) last;
     }
 
-    private static EmbeddedClassFieldBinder findEmbeddedFieldBinder(ClassMetadata md, String field) {
-      String[] parts = field.split("\\.");
-      mappers: for (Mapper m : md.getMappers()) {
-        Binder l = m.getBinder(EntityMode.POJO);
-        for (int idx = 0; idx < parts.length; idx++) {
-          if (!(l instanceof EmbeddedClassMemberFieldBinder))
-            continue mappers;
-          EmbeddedClassMemberFieldBinder ecfm = (EmbeddedClassMemberFieldBinder) l;
-          if (!ecfm.getContainer().getName().equals(parts[idx]))
-            continue mappers;
-          if (idx == parts.length - 1)
-            return ecfm.getContainer();
-          l = ecfm.getFieldBinder();
-        }
-      }
-      return null;
-    }
 
     private ExprType handlePredicate(ASTPair cur, ExprType type, AST ref)
         throws RecognitionException {
@@ -201,7 +188,7 @@ options {
       return null;
     }
 
-    private ExprType getTypeForMapper(Mapper m) {
+    private ExprType getTypeForMapper(RdfMapper m) {
       if (m == null)
         return null;
 
@@ -229,10 +216,11 @@ options {
       else if (prntType != null && prntType.getType() == ExprType.Type.EMB_CLASS)
         a.setModel(getModelUri(findEmbModel(prntType)));
 
-      if (m != null) {
-        a.setIsInverse(m.hasInverseUri());
-        if (m.getModel() != null)
-          a.setModel(getModelUri(m.getModel()));
+      if (m instanceof RdfMapper) {
+        RdfMapper r = (RdfMapper)m;
+        a.setIsInverse(r.hasInverseUri());
+        if (r.getModel() != null)
+          a.setModel(getModelUri(r.getModel()));
       }
 
       a.setIsVar(isVar);
@@ -246,15 +234,8 @@ options {
     }
 
     private String findEmbModel(ExprType type) {
-// XXX: ExprType need to maintain the Mapper also. Binder does not have model info.
-/*
-      List<EmbeddedClassFieldBinder> ecm = type.getEmbeddedFields();
-      for (int idx = ecm.size() - 1; idx >= 0; idx--) {
-        String m = ecm.get(idx).getModel();
-        if (m != null)
-          return m;
-      }
-*/
+      // it is the same as the enclosing class for the same reason super-class
+      // models are ignored (ie. embedding is a way of sub-classing)
       return type.getMeta().getModel();
     }
 

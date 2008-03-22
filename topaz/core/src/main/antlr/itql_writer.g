@@ -26,10 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.topazproject.otm.EntityMode;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
-import org.topazproject.otm.mapping.java.ClassBinder;
-
 import antlr.RecognitionException;
 import antlr.collections.AST;
 }
@@ -162,12 +158,11 @@ pexpr[QueryBuilder qb, AST var]
         else {
           switch (type.getType()) {
             case CLASS:
-              qb.prjTypes.add(((ClassBinder)type.getMeta().getEntityBinder(EntityMode.POJO)).getSourceClass());
+              qb.prjTypes.add(type.getExprClass());
               break;
 
             case EMB_CLASS:
-              List<EmbeddedClassFieldBinder> ef = type.getEmbeddedFields();
-              qb.prjTypes.add(ef.get(ef.size() - 1).getType());
+              qb.prjTypes.add(type.getExprClass());
               break;
 
             case URI:

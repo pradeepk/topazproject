@@ -46,7 +46,7 @@ import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.impl.TransactionImpl;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
@@ -103,11 +103,11 @@ public class ItqlStore extends AbstractTripleStore {
     return new ItqlStoreConnection(sess, readOnly);
   }
 
-  public <T> void insert(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void insert(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
-    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
+    Map<String, List<RdfMapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder insert = new StringBuilder(500);
 
     // for every model create an insert statement
@@ -141,18 +141,18 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata cm, 
-                                                               Collection<Mapper> fields) {
-    Map<String, List<Mapper>> mappersByModel = new HashMap<String, List<Mapper>>();
+  private static Map<String, List<RdfMapper>> groupMappersByModel(ClassMetadata cm, 
+                                                               Collection<RdfMapper> fields) {
+    Map<String, List<RdfMapper>> mappersByModel = new HashMap<String, List<RdfMapper>>();
 
     if (cm.getTypes().size() > 0)
-      mappersByModel.put(cm.getModel(), new ArrayList<Mapper>());
+      mappersByModel.put(cm.getModel(), new ArrayList<RdfMapper>());
 
-    for (Mapper p : fields) {
+    for (RdfMapper p : fields) {
       String m = (p.getModel() != null) ? p.getModel() : cm.getModel();
-      List<Mapper> pList = mappersByModel.get(m);
+      List<RdfMapper> pList = mappersByModel.get(m);
       if (pList == null)
-        mappersByModel.put(m, pList = new ArrayList<Mapper>());
+        mappersByModel.put(m, pList = new ArrayList<RdfMapper>());
       pList.add(p);
     }
 
@@ -160,10 +160,10 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
 
-  private void buildInsert(StringBuilder buf, List<Mapper> pList, String id, Object o, Session sess)
+  private void buildInsert(StringBuilder buf, List<RdfMapper> pList, String id, Object o, Session sess)
       throws OtmException {
     int i = ((TransactionImpl) sess.getTransaction()).ctr++;
-    for (Mapper p : pList) {
+    for (RdfMapper p : pList) {
       if (!p.isEntityOwned())
         continue;
       Binder b = p.getBinder(sess);
@@ -242,12 +242,12 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  public <T> void delete(ClassMetadata cm, Collection<Mapper> fields, String id, T o, 
+  public <T> void delete(ClassMetadata cm, Collection<RdfMapper> fields, String id, T o, 
                          Connection con) throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
-    final boolean partialDelete = (cm.getMappers().size() != fields.size());
-    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm, fields);
+    final boolean partialDelete = (cm.getRdfMappers().size() != fields.size());
+    Map<String, List<RdfMapper>> mappersByModel = groupMappersByModel(cm, fields);
     StringBuilder delete = new StringBuilder(500);
 
     // for every model create a delete statement
@@ -274,7 +274,7 @@ public class ItqlStore extends AbstractTripleStore {
     }
   }
 
-  private boolean buildDeleteSelect(StringBuilder qry, String model, List<Mapper> mappers,
+  private boolean buildDeleteSelect(StringBuilder qry, String model, List<RdfMapper> rdfMappers,
                                  boolean delTypes, String id)
       throws OtmException {
     qry.append("select $s $p $o from <").append(model).append("> where ");
@@ -283,7 +283,7 @@ public class ItqlStore extends AbstractTripleStore {
     // build forward statements
     boolean found = delTypes;
     boolean predicateMap = false;
-    for (Mapper p : mappers) {
+    for (RdfMapper p : rdfMappers) {
       if (!p.hasInverseUri() && p.isEntityOwned()) {
         if (p.isPredicateMap()) {
           predicateMap = true;
@@ -301,7 +301,7 @@ public class ItqlStore extends AbstractTripleStore {
       qry.append("($s $p $o and $s <mulgara:is> <").append(id).append("> and (");
       if (delTypes)
         qry.append("$p <mulgara:is> <rdf:type> or ");
-      for (Mapper p : mappers) {
+      for (RdfMapper p : rdfMappers) {
         if (!p.hasInverseUri() && p.isEntityOwned())
           qry.append("$p <mulgara:is> <").append(p.getUri()).append("> or ");
       }
@@ -312,7 +312,7 @@ public class ItqlStore extends AbstractTripleStore {
     // build reverse statements
     boolean needDisj = found | predicateMap;
     found = false;
-    for (Mapper p : mappers) {
+    for (RdfMapper p : rdfMappers) {
       if (p.hasInverseUri() && p.isEntityOwned()) {
         found = true;
         break;
@@ -323,7 +323,7 @@ public class ItqlStore extends AbstractTripleStore {
       if (needDisj)
         qry.append("or ");
       qry.append("($s $p $o and $o <mulgara:is> <").append(id).append("> and (");
-      for (Mapper p : mappers) {
+      for (RdfMapper p : rdfMappers) {
         if (p.hasInverseUri() && p.isEntityOwned())
           qry.append("$p <mulgara:is> <").append(p.getUri()).append("> or ");
       }
@@ -332,11 +332,11 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     // build rdf:List, rdf:Bag, rdf:Seq or rdf:Alt statements
-    Collection<Mapper> col = null;
-    for (Mapper p : mappers) {
+    Collection<RdfMapper> col = null;
+    for (RdfMapper p : rdfMappers) {
       if (p.getColType() == CollectionType.RDFLIST) {
         if (col == null)
-          col = new ArrayList<Mapper>();
+          col = new ArrayList<RdfMapper>();
         col.add(p);
       }
     }
@@ -345,19 +345,19 @@ public class ItqlStore extends AbstractTripleStore {
       qry.append("or ($s $p $o and <").append(id).append("> $x $c ")
         .append("and (trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <").append(id).append("> $x $s)")
         .append(" and $s <rdf:type> <rdf:List> and (");
-      for (Mapper p : col)
+      for (RdfMapper p : col)
         qry.append("$x <mulgara:is> <").append(p.getUri()).append("> or ");
       qry.setLength(qry.length() - 4);
       qry.append(") ) ");
     }
 
     col = null;
-    for (Mapper p : mappers) {
+    for (RdfMapper p : rdfMappers) {
       if ((p.getColType() == CollectionType.RDFBAG) || 
           (p.getColType() == CollectionType.RDFSEQ) ||
           (p.getColType() == CollectionType.RDFALT)) {
         if (col == null)
-          col = new ArrayList<Mapper>();
+          col = new ArrayList<RdfMapper>();
         col.add(p);
       }
     }
@@ -366,7 +366,7 @@ public class ItqlStore extends AbstractTripleStore {
       qry.append("or ($s $p $o and <").append(id).append("> $x $s ")
         .append(" and ($s <rdf:type> <rdf:Bag> ")
         .append("or $s <rdf:type> <rdf:Seq> or $s <rdf:type> <rdf:Alt>) and (");
-      for (Mapper p : col)
+      for (RdfMapper p : col)
         qry.append("$x <mulgara:is> <").append(p.getUri()).append("> or ");
       qry.setLength(qry.length() - 4);
       qry.append(") ) ");
@@ -455,7 +455,7 @@ public class ItqlStore extends AbstractTripleStore {
     // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
     String modelUri = getModelUri(cm.getModel(), isc);
     for (String p : fvalues.keySet()) {
-      Mapper m = cm.getMapperByUri(p, false, null);
+      RdfMapper m = cm.getMapperByUri(p, false, null);
       if (m == null)
         continue;
       String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), isc) : modelUri;
@@ -479,7 +479,7 @@ public class ItqlStore extends AbstractTripleStore {
     Set<ClassMetadata> fCls   = listFieldClasses(cm, sf);
     String                models = getModelsExpr(Collections.singleton(cm), isc);
     String                tmdls  = fCls.size() > 0 ? getModelsExpr(fCls, isc) : models;
-    List<Mapper>          assoc  = listAssociations(cm, sf);
+    List<RdfMapper>          assoc  = listAssociations(cm, sf);
 
     StringBuilder qry = new StringBuilder(500);
 
@@ -535,7 +535,7 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append(")");
   }
 
-  private void applyFieldFilters(StringBuilder qry, List<Mapper> assoc, boolean fwd, String id,
+  private void applyFieldFilters(StringBuilder qry, List<RdfMapper> assoc, boolean fwd, String id,
                                  List<Filter> filters, SessionFactory sf)
         throws OtmException {
     // avoid work if possible
@@ -544,7 +544,7 @@ public class ItqlStore extends AbstractTripleStore {
 
     // build predicate->filter map
     Map<String, Set<Filter>> applicFilters = new HashMap<String, Set<Filter>>();
-    for (Mapper m : assoc) {
+    for (RdfMapper m : assoc) {
       ClassMetadata mc = sf.getClassMetadata(m.getAssociatedEntity());
 
       for (Filter f : filters) {
@@ -614,7 +614,7 @@ public class ItqlStore extends AbstractTripleStore {
     Set<String> mList = new HashSet<String>();
     for (ClassMetadata cm : cmList) {
       mList.add(getModelUri(cm.getModel(), isc));
-      for (Mapper p : cm.getMappers()) {
+      for (RdfMapper p : cm.getRdfMappers()) {
         if (p.getModel() != null)
           mList.add(getModelUri(p.getModel(), isc));
       }
@@ -631,26 +631,26 @@ public class ItqlStore extends AbstractTripleStore {
   private static Set<ClassMetadata> listFieldClasses(ClassMetadata cm, SessionFactory sf) {
     Set<ClassMetadata> clss = new HashSet<ClassMetadata>();
 
-    for (Mapper p : cm.getMappers()) {
+    for (RdfMapper p : cm.getRdfMappers()) {
       ClassMetadata c = sf.getClassMetadata(p.getAssociatedEntity());
-      if ((c != null) && ((c.getTypes().size() + c.getMappers().size()) > 0))
+      if ((c != null) && ((c.getTypes().size() + c.getRdfMappers().size()) > 0))
         clss.add(c);
     }
 
     return clss;
   }
 
-  private static List<Mapper> listAssociations(ClassMetadata cm, SessionFactory sf) {
-    List<Mapper> mappers = new ArrayList<Mapper>();
+  private static List<RdfMapper> listAssociations(ClassMetadata cm, SessionFactory sf) {
+    List<RdfMapper> rdfMappers = new ArrayList<RdfMapper>();
 
     for (ClassMetadata c : allSubClasses(cm, sf)) {
-      for (Mapper p : c.getMappers()) {
+      for (RdfMapper p : c.getRdfMappers()) {
         if (p.isAssociation())
-          mappers.add(p);
+          rdfMappers.add(p);
       }
     }
 
-    return mappers;
+    return rdfMappers;
   }
 
   private static Set<ClassMetadata> allSubClasses(ClassMetadata top, SessionFactory sf) {
@@ -666,7 +666,7 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   private List<String> getRdfList(String sub, String pred, String modelUri, ItqlStoreConnection isc,
-                                  Map<String, Set<String>> types, Mapper m, SessionFactory sf,
+                                  Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
                                   List<Filter> filters)
         throws OtmException {
     String tmodel = modelUri;
@@ -687,7 +687,7 @@ public class ItqlStore extends AbstractTripleStore {
   }
 
   private List<String> getRdfBag(String sub, String pred, String modelUri, ItqlStoreConnection isc,
-                                 Map<String, Set<String>> types, Mapper m, SessionFactory sf,
+                                 Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
                                  List<Filter> filters)
         throws OtmException {
     String tmodel = modelUri;

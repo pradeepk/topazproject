@@ -19,7 +19,7 @@ import java.util.Set;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -28,7 +28,7 @@ import org.topazproject.otm.serializer.Serializer;
  *
  * @author Pradeep Krishnan
  */
-public class EmbeddedClassMemberFieldBinder implements FieldBinder {
+class EmbeddedClassMemberFieldBinder implements FieldBinder {
   private EmbeddedClassFieldBinder container;
   private FieldBinder              field;
 
@@ -97,7 +97,7 @@ public class EmbeddedClassMemberFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public void load(Object instance, List<String> values, 
-      Map<String, Set<String>> types, Mapper mapper, 
+      Map<String, Set<String>> types, RdfMapper mapper, 
       Session session) throws OtmException {
     load(instance, instance, values, types, mapper, session);
   }
@@ -106,7 +106,7 @@ public class EmbeddedClassMemberFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public void load(Object root, Object instance, List<String> values, 
-      Map<String, Set<String>> types, Mapper mapper, 
+      Map<String, Set<String>> types, RdfMapper mapper, 
       Session session) throws OtmException {
     field.load(root, container.getRawValue(instance, true), values, types, mapper, session);
   }
@@ -163,7 +163,7 @@ public class EmbeddedClassMemberFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public boolean isLoaded(Object o) {
+  public boolean isLoaded(Object o) throws OtmException {
     Object co = container.getRawValue(o, false);
     return (co == null) ? false : field.isLoaded(co);
   }

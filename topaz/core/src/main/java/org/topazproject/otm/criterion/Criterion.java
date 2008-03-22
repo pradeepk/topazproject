@@ -26,6 +26,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.serializer.Serializer;
 
@@ -142,10 +143,7 @@ public abstract class Criterion {
   protected static String serializeValue(Object value, Criteria criteria, String field)
       throws OtmException {
     ClassMetadata cm = criteria.getClassMetadata();
-    Mapper        m  = cm.getMapperByName(field);
-
-    if (m == null)
-      throw new OtmException("'" + field + "' does not exist in " + cm);
+    RdfMapper     m  = getMapper(cm, field);
 
     String val;
     if (value instanceof Parameter)
@@ -236,4 +234,24 @@ public abstract class Criterion {
 
     return conf.getUri();
   }
+
+  /**
+   * Gets the Mapper for the given property name.
+   *
+   * @param cm the Class metadata to look-up the property in
+   * @param name of the property
+   *
+   * @return the mapper
+   *
+   * @throws OtmException when a mapper is not found
+   */
+  protected static RdfMapper getMapper(ClassMetadata cm, String name) throws OtmException {
+    Mapper      r    = cm.getMapperByName(name);
+
+    if (!(r instanceof RdfMapper))
+      throw new OtmException("'" + name + "' does not exist in " + cm);
+
+   return (RdfMapper)r;
+  }
+
 }

@@ -31,7 +31,9 @@ import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.IdMapper;
+import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.VarMapper;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.query.Results;
 
@@ -68,7 +70,7 @@ public class SessionImpl extends AbstractSession {
         super.insert(o, cm, session);
       }
     }
-    public Collection<Mapper> update(Object o, ClassMetadata cm, Session session)
+    public Collection<RdfMapper> update(Object o, ClassMetadata cm, Session session)
         throws OtmException {
       synchronized(this) {
         return super.update(o, cm, session);
@@ -167,7 +169,7 @@ public class SessionImpl extends AbstractSession {
       ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
-      for (Mapper m : cm.getMappers()) {
+      for (RdfMapper m : cm.getRdfMappers()) {
         if (!m.isAssociation())
           continue;
 
@@ -212,7 +214,7 @@ public class SessionImpl extends AbstractSession {
       ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
-      for (Mapper m : cm.getMappers()) {
+      for (RdfMapper m : cm.getRdfMappers()) {
         if (!m.isAssociation())
           continue;
 
@@ -337,7 +339,8 @@ public class SessionImpl extends AbstractSession {
         // If those associations are loaded from the store even before
         // we complete this get() operation, there will be an instance
         // in our cache for this same Id.
-        o = sync(o, id, true, false, null, true);
+        if (!cm.isView())
+          o = sync(o, id, true, false, null, true);
       }
     }
 
@@ -350,7 +353,7 @@ public class SessionImpl extends AbstractSession {
   /*
    * inherited javadoc
    */
-  public void delayedLoadComplete(Object o, Mapper field) throws OtmException {
+  public void delayedLoadComplete(Object o, RdfMapper field) throws OtmException {
     Id id = checkObject(null, o, true, false);
 
     if (log.isDebugEnabled())
@@ -424,8 +427,9 @@ public class SessionImpl extends AbstractSession {
                                                                                getEntityMode(), o);
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
-    Binder                bf            = cm.getBlobField();
-    boolean               tp            = (cm.getMappers().size() + cm.getTypes().size()) > 0;
+    Binder                bf            = (cm.getBlobField() == null) ? null
+                                           : cm.getBlobField().getBinder(getEntityMode());
+    boolean               tp            = (cm.getRdfMappers().size() + cm.getTypes().size()) > 0;
 
     if (delete) {
       if (log.isDebugEnabled())
@@ -435,29 +439,29 @@ public class SessionImpl extends AbstractSession {
      if (bf != null)
        bs.delete(cm, id.getId(), getBlobStoreCon());
      if (tp)
-       store.delete(cm, cm.getMappers(), id.getId(), o, getTripleStoreCon());
+       store.delete(cm, cm.getRdfMappers(), id.getId(), o, getTripleStoreCon());
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
     } else {
-      Collection<Mapper> fields = states.update(o, cm, this);
+      Collection<RdfMapper> fields = states.update(o, cm, this);
       boolean firstTime = (fields == null);
       if (firstTime)
-        fields = cm.getMappers();
+        fields = cm.getRdfMappers();
       int nFields = fields.size();
       if (log.isDebugEnabled()) {
         if (firstTime)
           log.debug("Saving " + id + " to store.");
-        else if (nFields == cm.getMappers().size())
+        else if (nFields == cm.getRdfMappers().size())
             log.debug("Full update for " + id + ".");
         else if (nFields == 0)
           log.debug("Update skipped for " + id + ". No changes to the object state.");
         else {
-          Collection<Mapper> skips = new ArrayList(cm.getMappers());
+          Collection<RdfMapper> skips = new ArrayList(cm.getRdfMappers());
           skips.removeAll(fields);
           StringBuilder buf = new StringBuilder(100);
           char sep = ' ';
-          for (Mapper m : skips) {
+          for (RdfMapper m : skips) {
             buf.append(sep).append(m.getName());
             sep = ',';
           }
@@ -498,7 +502,7 @@ public class SessionImpl extends AbstractSession {
     if (cm.isView())
       instance = loadView(cm, id.getId(), instance,
                                   new ArrayList<Filter>(filters.values()), filterObj);
-    else if ((cm.getTypes().size() + cm.getMappers().size()) > 0)
+    else if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0)
       instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj);
     else if ((cm.getBlobField() != null) && (instance == null)) {
@@ -514,13 +518,13 @@ public class SessionImpl extends AbstractSession {
 
     cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
 
-    Binder bf = cm.getBlobField();
+    Binder bf = (cm.getBlobField() == null) ? null : cm.getBlobField().getBinder(getEntityMode());
     if (bf != null)
       bf.setRawValue(instance,
                      sessionFactory.getBlobStore().get(cm, id.getId(), getBlobStoreCon()));
 
     if (!cm.isView()) {
-      for (Mapper m : cm.getMappers())
+      for (RdfMapper m : cm.getRdfMappers())
         if (m.getFetchType() == FetchType.eager) {
           Binder b = m.getBinder(getEntityMode());
           for (Object o : b.get(instance))
@@ -575,7 +579,7 @@ public class SessionImpl extends AbstractSession {
     // a proj-var may appear multiple times, so have to delay closing of subquery results
     Set<Results> sqr = new HashSet<Results>();
 
-    for (Mapper m : cm.getMappers()) {
+    for (VarMapper m : cm.getVarMappers()) {
       int    idx = r.findVariable(m.getProjectionVar());
       // XXX: Other EntityModes
       Object val = getValue(r, idx, ((FieldBinder)m.getBinder(getEntityMode())).getComponentType(),
@@ -687,7 +691,7 @@ public class SessionImpl extends AbstractSession {
                                               getEntityMode(), o);
       Set<Wrapper> assocs = new HashSet<Wrapper>();
 
-      for (Mapper m : cm.getMappers()) {
+      for (RdfMapper m : cm.getRdfMappers()) {
         Binder b = m.getBinder(getEntityMode());
         if (!m.isAssociation() || (m.getUri() == null))
           continue;
@@ -740,8 +744,8 @@ public class SessionImpl extends AbstractSession {
 
     log.warn ("Copy(" + ((loopDetect==null) ? "shallow" : "deep") + ") merging " + id);
 
-    for (Mapper m : cm.getMappers()) {
-      Mapper om = ocm.getMapperByUri(m.getUri(), m.hasInverseUri(), m.getRdfType());
+    for (RdfMapper m : cm.getRdfMappers()) {
+      RdfMapper om = ocm.getMapperByUri(m.getUri(), m.hasInverseUri(), m.getRdfType());
 
       if (om == null)
         continue;
@@ -827,7 +831,7 @@ public class SessionImpl extends AbstractSession {
     }
   }
 
-  private Id checkObject(Mapper assoc, Object o, boolean isUpdate, boolean dupCheck) throws OtmException {
+  private Id checkObject(RdfMapper assoc, Object o, boolean isUpdate, boolean dupCheck) throws OtmException {
     if (o == null)
       throw new NullPointerException("Null object");
 
@@ -839,7 +843,7 @@ public class SessionImpl extends AbstractSession {
     if (cm.isView() && isUpdate)
       throw new OtmException("View's may not be updated: " + o.getClass());
 
-    Mapper           idField = cm.getIdField();
+    IdMapper           idField = cm.getIdField();
 
     if (idField == null)
       throw new OtmException("Must have an id field for " + cm);

@@ -191,11 +191,9 @@ options {
       if (type == null)
         return null;
 
-      Class cls = type.getExprClass();
-      if (cls == null)
+      ClassMetadata cm = type.getExprClass();
+      if (cm == null)
         return null;
-      // XXX: Other EntityModes
-      ClassMetadata cm = sess.getSessionFactory().getClassMetadata(cls);
 
       Collection<ItqlFilter> list = new ArrayList<ItqlFilter>();
       for (ItqlFilter f : filters) {

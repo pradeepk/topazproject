@@ -12,9 +12,6 @@ package org.topazproject.otm.mapping.java;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import java.net.URI;
-import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,10 +20,9 @@ import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -44,7 +40,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   private final Class               componentType;
 
   /**
-   * Creates a new AbstractMapper object for a regular class.
+   * Creates a new AbstractFieldBinder object for a regular class.
    *
    * @param field the java class field
    * @param getter the field get method or null
@@ -194,7 +190,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public final void load(Object instance, List<String> values, 
-      Map<String, Set<String>> types, Mapper mapper, 
+      Map<String, Set<String>> types, RdfMapper mapper, 
       Session session) throws OtmException {
     load(instance, instance, values, types, mapper, session);
   }
@@ -203,7 +199,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public void load(Object root, Object instance, List<String> values, 
-      Map<String, Set<String>> types, Mapper mapper, 
+      Map<String, Set<String>> types, RdfMapper mapper, 
       Session session) throws OtmException {
 
     if (!mapper.isAssociation()) {
@@ -229,7 +225,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * @throws OtmException on a failure in instantiating associations
    */
   protected void loadAssocs(List<String> ids, Map<String, Set<String>> types,
-      Session session, Collection assocs, Mapper mapper) throws OtmException {
+      Session session, Collection assocs, RdfMapper mapper) throws OtmException {
     SessionFactory sf     = session.getSessionFactory();
     ClassMetadata cm      = sf.getClassMetadata(mapper.getAssociatedEntity());
 
@@ -247,7 +243,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public boolean isLoaded(Object instance) {
+  public boolean isLoaded(Object instance) throws OtmException {
     return true;
   }
 

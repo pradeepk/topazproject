@@ -240,7 +240,7 @@ public class OqlTest extends AbstractTest {
       // unconstrained variables
       rdf.sessFactory.setClassMetadata(
           new ClassMetadata(new ClassBinder(Object.class), "Object", null, Collections.EMPTY_SET, 
-                            "ri", null, Collections.EMPTY_SET, null, null));
+                            "ri", null, Collections.EMPTY_SET, null, null, Collections.EMPTY_SET));
 
       r = s.createQuery("select o from Object o order by o;").execute()
       checker.verify(r) {

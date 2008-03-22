@@ -30,6 +30,8 @@ import java.util.Stack;
 
 import antlr.collections.AST;
 
+import org.topazproject.otm.ClassMetadata;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 }
@@ -380,8 +382,8 @@ options {
         return t2;
 
       // both are class-types: choose super-class
-      Class c1 = t1.getExprClass();
-      Class c2 = t2.getExprClass();
+      ClassMetadata c1 = t1.getExprClass();
+      ClassMetadata c2 = t2.getExprClass();
 
       if (c1.isAssignableFrom(c2))
         return t1;

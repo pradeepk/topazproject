@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.topazproject.otm.filter.FilterDefinition;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -438,5 +438,5 @@ public interface Session {
    * @param o the object whose field was lazy loaded
    * @param field the field that is lazy loaded
    */
-  public void delayedLoadComplete(Object o, Mapper field) throws OtmException;
+  public void delayedLoadComplete(Object o, RdfMapper field) throws OtmException;
 }

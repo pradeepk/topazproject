@@ -69,10 +69,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'http://rdf.topazproject.org/RDF/Test1'
     assert cm.model         == 'ri'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    def m = cm.fields.iterator().next()
-    def l = m.binder
+    def m = cm.rdfMappers.iterator().next()
+    def l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == String.class
     assert m.dataType == null
@@ -88,10 +88,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
     assert cm.model         == 'm2'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    m = cm.fields.iterator().next()
-    l = m.binder
+    m = cm.rdfMappers.iterator().next()
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == Integer.TYPE
     assert m.dataType == 'http://www.w3.org/2001/XMLSchema#int'
@@ -108,10 +108,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'foo:Test3'
     assert cm.model         == 'm3'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    m = cm.fields.iterator().next()
-    l = m.binder
+    m = cm.rdfMappers.iterator().next()
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == cls2
     assert m.dataType == null
@@ -132,10 +132,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'foo:Test4'
     assert cm.model         == 'm4'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    m = cm.fields.iterator().next()
-    l = m.binder
+    m = cm.rdfMappers.iterator().next()
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == rdf.sessFactory.getClassMetadata('State')
                                  .getEntityBinder(EntityMode.POJO).sourceClass
@@ -148,10 +148,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'bar4:State'
     assert cm.model         == 'm41'
-    assert cm.fields.size() == 2
+    assert cm.rdfMappers.size() == 2
 
-    m = cm.fields.asList()[0]
-    l = m.binder
+    m = cm.rdfMappers.asList()[0]
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'value'
     assert l.type     == String.class
     assert m.dataType == null
@@ -159,8 +159,8 @@ public class BuilderTest extends GroovyTestCase {
     assert !m.hasInverseUri()
     assert m.model    == 'm42'
 
-    m = cm.fields.asList()[1]
-    l = m.binder
+    m = cm.rdfMappers.asList()[1]
+    l = m.getBinder(EntityMode.POJO)
     assert m.name          == 'history'
     assert l.type          == List.class
     assert l.componentType == rdf.sessFactory.getClassMetadata('History')
@@ -174,10 +174,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'bar4:History'
     assert cm.model         == 'm41'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    m = cm.fields.asList()[0]
-    l = m.binder
+    m = cm.rdfMappers.asList()[0]
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'value'
     assert l.type     == String.class
     assert m.dataType == null
@@ -193,10 +193,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'foo:Test5'
     assert cm.model         == 'm5'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    m = cm.fields.iterator().next()
-    l = m.binder
+    m = cm.rdfMappers.iterator().next()
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == URI.class
     assert m.typeIsUri ()
@@ -213,10 +213,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'p6:Test6'
     assert cm.model         == 'ri'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    m = cm.fields.iterator().next()
-    l = m.binder
+    m = cm.rdfMappers.iterator().next()
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == URI.class
     assert m.dataType == Rdf.xsd + 'anyURI'
@@ -262,10 +262,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == null
     assert cm.model         == 'ri'
-    assert cm.fields.size() == 1
+    assert cm.rdfMappers.size() == 1
 
-    m = cm.fields.iterator().next()
-    l = m.binder
+    m = cm.rdfMappers.iterator().next()
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == String.class
     assert m.dataType == null
@@ -283,10 +283,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == null
     assert cm.model         == 'ri'
-    assert cm.fields.size() == 2
+    assert cm.rdfMappers.size() == 2
 
-    m = cm.fields.asList()[0]
-    l = m.binder
+    m = cm.rdfMappers.asList()[0]
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'blah'
     assert l.type     == String.class
     assert m.dataType == null
@@ -294,8 +294,8 @@ public class BuilderTest extends GroovyTestCase {
     assert !m.hasInverseUri()
     assert m.model    == null
 
-    m = cm.fields.asList()[1]
-    l = m.binder
+    m = cm.rdfMappers.asList()[1]
+    l = m.getBinder(EntityMode.POJO)
     assert m.name     == 'state'
     assert l.type     == String.class
     assert m.dataType == null
@@ -649,10 +649,10 @@ public class BuilderTest extends GroovyTestCase {
       }
     }
 
-    def mappers = rdf.sessFactory.getClassMetadata(cls).fields
+    def mappers = rdf.sessFactory.getClassMetadata(cls).rdfMappers
     assert mappers.size() == 3
     for (Mapper m : mappers)
-      assert ((FieldBinder)m.binder).serializer != null
+      assert m.getBinder(EntityMode.POJO).serializer != null
     assert mappers.name.sort() == [ 'name.givenName', 'name.surname', 'state' ]
 
     // nested embeddings
@@ -668,10 +668,10 @@ public class BuilderTest extends GroovyTestCase {
       }
     }
 
-    mappers = rdf.sessFactory.getClassMetadata(cls).fields
+    mappers = rdf.sessFactory.getClassMetadata(cls).rdfMappers
     assert mappers.size() == 3
     for (Mapper m : mappers)
-      assert ((FieldBinder)m.binder).serializer != null
+      assert m.getBinder(EntityMode.POJO).serializer != null
     assert mappers.name.sort() ==
                       [ 'info.personal.name.givenName', 'info.personal.name.surname', 'state' ]
 
@@ -846,10 +846,10 @@ public class BuilderTest extends GroovyTestCase {
 
     assert cm.type          == 'foo:Test1'
     assert cm.model         == 'm1'
-    assert cm.fields.size() == 3
+    assert cm.rdfMappers.size() == 3
 
-    Mapper m = cm.fields.asList()[0]
-    FieldBinder l = (FieldBinder)m.binder
+    Mapper m = cm.rdfMappers.asList()[0]
+    FieldBinder l = (FieldBinder)m.getBinder(EntityMode.POJO)
     assert m.name     == 'sel'
     assert l.type     == cls
     assert m.dataType == null
@@ -861,8 +861,8 @@ public class BuilderTest extends GroovyTestCase {
     assert !m.isCascadable(CascadeType.merge)
     assert !m.isCascadable(CascadeType.refresh)
 
-    m = cm.fields.asList()[1]
-    l = (FieldBinder)m.binder
+    m = cm.rdfMappers.asList()[1]
+    l = (FieldBinder)m.getBinder(EntityMode.POJO)
     assert m.name     == 'all'
     assert l.type     == cls
     assert m.dataType == null
@@ -874,8 +874,8 @@ public class BuilderTest extends GroovyTestCase {
     assert m.isCascadable(CascadeType.merge)
     assert m.isCascadable(CascadeType.refresh)
 
-    m = cm.fields.asList()[2]
-    l = (FieldBinder)m.binder
+    m = cm.rdfMappers.asList()[2]
+    l = (FieldBinder)m.getBinder(EntityMode.POJO)
     assert m.name     == 'none'
     assert l.type     == cls
     assert m.dataType == null

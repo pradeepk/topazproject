@@ -15,7 +15,7 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * A criterion for a triple pattern where the predicate and value is matched transitively. eg.
@@ -48,10 +48,8 @@ public class TransCriterion extends AbstractBinaryCriterion {
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
     ClassMetadata cm = criteria.getClassMetadata();
-    Mapper        m  = cm.getMapperByName(getFieldName());
+    RdfMapper     m  = getMapper(cm, getFieldName());
 
-    if (m == null)
-      throw new OtmException("'" + getFieldName() + "' does not exist in " + cm);
     if (!m.typeIsUri())
       throw new OtmException("Value must be a uri for trans(): field is "
                              + m.getName());

@@ -35,6 +35,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * DetachedCriteria is similar to Criteria except that it can exist without a Session. This
@@ -222,7 +223,8 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     if (cm == null)
       return null;
     Mapper m = cm.getMapperByName(alias);
-    return (m == null) ? null : sf.getClassMetadata(m.getAssociatedEntity());
+    return (!(m instanceof RdfMapper)) ? null
+      : sf.getClassMetadata(((RdfMapper)m).getAssociatedEntity());
   }
 
   /*
@@ -257,10 +259,11 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
       if (cm == null)
         log.warn("onPreInsert: Parent of '" + alias + "' not found in session factory");
       else {
-        Mapper m = cm.getMapperByName(alias);
-        if (m == null)
+        Mapper r = cm.getMapperByName(alias);
+        if (!(r instanceof RdfMapper))
           log.warn("onPreInsert: Field '" + alias + "' not found in " + cm);
         else {
+          RdfMapper m = (RdfMapper)r;
           cm = sf.getClassMetadata(m.getAssociatedEntity());
           da.rdfType = (cm == null) ? null : URI.create(cm.getType());
           da.predicateUri = URI.create(m.getUri());
@@ -313,7 +316,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
       if (cm == null)
         log.warn("onPostLoad: Parent of '" + alias + "' not found in session factory");
       else {
-        Mapper m = cm.getMapperByUri(ser(da.predicateUri), da.inverse, ser(da.rdfType));
+        RdfMapper m = cm.getMapperByUri(ser(da.predicateUri), da.inverse, ser(da.rdfType));
         if (m == null)
           log.warn("onPostLoad: A field matching " + da +  " not found in " + cm);
         else {

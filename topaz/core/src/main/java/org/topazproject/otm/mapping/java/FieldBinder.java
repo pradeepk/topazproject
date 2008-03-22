@@ -19,7 +19,7 @@ import java.util.Set;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * Mapper for a java class field to rdf triples having a specific predicate.
@@ -70,13 +70,13 @@ public interface FieldBinder extends Binder {
    * @param instance the current nested embedded instance
    * @param values   the values to set
    * @param types    the type look ahead for associations
-   * @param mapper   the mapper that this loader is associated to (XXX:revisit) 
+   * @param mapper   the mapper that this loader is associated to
    * @param session  the session under which the load is performed.
    *                 Used for resolving associations etc.
    *
    * @throws OtmException if a field's value cannot be set
    */
   public void load(Object root, Object instance, List<String> values, 
-          Map<String, Set<String>> types, Mapper mapper, 
+          Map<String, Set<String>> types, RdfMapper mapper, 
           Session session) throws OtmException;
 }

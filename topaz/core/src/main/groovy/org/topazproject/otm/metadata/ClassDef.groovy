@@ -13,6 +13,8 @@ package org.topazproject.otm.metadata;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.java.ClassBinder;
+import org.topazproject.otm.mapping.EmbeddedMapper;
+import org.topazproject.otm.mapping.RdfMapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -211,16 +213,26 @@ public class ClassDef {
 
     clsDef = rdf.classDefsByName[extendsClass]
     while (clsDef) {
-      mappers.addAll(clsDef.toClass().getMappers())
+      mappers.addAll(clsDef.toClass().getRdfMappers())
+      mappers.addAll(clsDef.toClass().getEmbeddedMappers())
       if (!idmapper)
         idmapper = clsDef.toClass().getIdField()
       clsDef = rdf.classDefsByName[clsDef.extendsClass]
     }
 
+    def rdfs = []
+    def embeds = []
+    for (m in mappers) {
+      if (m instanceof RdfMapper)
+         rdfs.add(m)
+      if (m instanceof EmbeddedMapper)
+         embeds.add(m)
+    }
+
     def blobBinder = null
     ClassBinder binder = new ClassBinder(clazz);
     metadata = new ClassMetadata(binder, getShortName(clazz), type, allTypes, model,
-                                 idmapper, mappers, blobBinder, extendsClass)
+                                 idmapper, rdfs, blobBinder, extendsClass, embeds)
 
     if (log.debugEnabled)
       log.debug "created metadata for class '${clazz.name}': ${metadata}"

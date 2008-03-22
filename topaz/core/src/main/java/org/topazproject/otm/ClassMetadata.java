@@ -21,8 +21,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.mapping.BlobMapper;
+import org.topazproject.otm.mapping.EmbeddedMapper;
+import org.topazproject.otm.mapping.IdMapper;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.VarMapper;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.java.ClassBinder;
 
@@ -40,14 +44,16 @@ public class ClassMetadata {
   private final String                    name;
   private final String                    superEntity;
   private final String                    model;
-  private final Mapper                    idField;
-  private final Binder                    blobField;
-  private final Map<String, List<Mapper>> uriMap;
+  private final IdMapper                  idField;
+  private final BlobMapper                blobField;
+  private final Map<String, List<RdfMapper>> uriMap;
   private final Map<String, Mapper>       nameMap;
   private final EntityBinder              binder;
-  private final Collection<Mapper>        fields;
+  private final Collection<RdfMapper>     rdfFields;
+  private final Collection<VarMapper>     varFields;
+  private final Collection<EmbeddedMapper> embeds;
   private final String                    query;
-  private final Map<String, List<Mapper>> varMap;
+  private final Map<String, List<VarMapper>> varMap;
 
   /**
    * Creates a new ClassMetadata object for an Entity.
@@ -61,9 +67,11 @@ public class ClassMetadata {
    * @param fields mappers for all persistable fields (includes embedded class fields)
    * @param blobField loader for the blob
    * @param superEntity a super class entity for which this is a sub-class of
+   * @param embeds fields that are embeds
    */
   public ClassMetadata(EntityBinder binder, String name, String type, Set<String> types, String model,
-                       Mapper idField, Collection<Mapper> fields, Binder blobField, String superEntity)
+                       IdMapper idField, Collection<RdfMapper> fields, BlobMapper blobField, String superEntity,
+                       Collection<EmbeddedMapper> embeds)
                 throws OtmException {
     this.binder                               = binder;
     this.name                                 = name;
@@ -75,31 +83,38 @@ public class ClassMetadata {
     this.superEntity                          = superEntity;
 
     this.types                                = Collections.unmodifiableSet(new HashSet<String>(types));
-    this.fields                               = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
+    this.embeds                               = Collections.unmodifiableCollection(new ArrayList<EmbeddedMapper>(embeds));
+    this.rdfFields                            = Collections.unmodifiableCollection(new ArrayList<RdfMapper>(fields));
+    this.varFields                            = null;
     this.names                                = buildNames(name, binder);
 
-    Map<String, List<Mapper>> uriMap          = new HashMap<String, List<Mapper>>();
+    Map<String, List<RdfMapper>> uriMap       = new HashMap<String, List<RdfMapper>>();
     Map<String, Mapper>       nameMap         = new HashMap<String, Mapper>();
 
-    for (Mapper m : fields) {
-      List<Mapper> mappers = uriMap.get(m.getUri());
+    for (RdfMapper m : fields) {
+      List<RdfMapper> rdfMappers = uriMap.get(m.getUri());
 
       // See ticket #840. The following enforces the current restrictions.
-      if (mappers == null)
-        uriMap.put(m.getUri(), mappers = new ArrayList<Mapper>());
-      else if (isDuplicateMapping(mappers, m))
+      if (rdfMappers == null)
+        uriMap.put(m.getUri(), rdfMappers = new ArrayList<RdfMapper>());
+      else if (isDuplicateMapping(rdfMappers, m))
         throw new OtmException("Duplicate predicate uri for " + m.getName() + " in " + name);
-      else if (mappers.get(0).getColType() != m.getColType())
+      else if (rdfMappers.get(0).getColType() != m.getColType())
         throw new OtmException("The colType for " + m.getName() + " in " + name + 
-            ", must be " + mappers.get(0).getColType() + " as defined by " 
-            + mappers.get(0).getName() + " since they both share the same predicate uri");
-      else if (!sameModel(mappers.get(0), m, model))
+            ", must be " + rdfMappers.get(0).getColType() + " as defined by " 
+            + rdfMappers.get(0).getName() + " since they both share the same predicate uri");
+      else if (!sameModel(rdfMappers.get(0), m, model))
         throw new OtmException("The model for " + m.getName() + " in " + name + 
-            ", must be " + mappers.get(0).getModel() + " as defined by " 
-            + mappers.get(0).getName() + " since they both share the same predicate uri");
+            ", must be " + rdfMappers.get(0).getModel() + " as defined by " 
+            + rdfMappers.get(0).getName() + " since they both share the same predicate uri");
 
-      mappers.add(m);
+      rdfMappers.add(m);
 
+      if (nameMap.put(m.getName(), m) != null)
+        throw new OtmException("Duplicate field name " + m.getName() + " in " + name);
+    }
+
+    for (EmbeddedMapper m : embeds) {
       if (nameMap.put(m.getName(), m) != null)
         throw new OtmException("Duplicate field name " + m.getName() + " in " + name);
     }
@@ -118,8 +133,8 @@ public class ClassMetadata {
    * @param idField the mapper for the id field
    * @param fields  mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(EntityBinder binder, String name, String query, Mapper idField,
-                       Collection<Mapper> fields)
+  public ClassMetadata(EntityBinder binder, String name, String query, IdMapper idField,
+                       Collection<VarMapper> fields)
                 throws OtmException {
     this.binder      = binder;
     this.name        = name;
@@ -131,19 +146,21 @@ public class ClassMetadata {
     this.superEntity = null;
 
     this.types       = Collections.emptySet();
-    this.fields      = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
+    this.varFields   = Collections.unmodifiableCollection(new ArrayList<VarMapper>(fields));
+    this.rdfFields   = null;
+    this.embeds      = null;
     this.names       = buildNames(name, binder);
 
-    Map<String, List<Mapper>> varMap  = new HashMap<String, List<Mapper>>();
+    Map<String, List<VarMapper>> varMap  = new HashMap<String, List<VarMapper>>();
     Map<String, Mapper>       nameMap = new HashMap<String, Mapper>();
-    for (Mapper m : fields) {
+    for (VarMapper m : fields) {
       if (nameMap.put(m.getName(), m) != null)
         throw new OtmException("Duplicate field name " + m.getName() + " in view " + name);
 
-      List<Mapper> mappers = varMap.get(m.getProjectionVar());
-      if (mappers == null)
-        varMap.put(m.getProjectionVar(), mappers = new ArrayList<Mapper>());
-      mappers.add(m);
+      List<VarMapper> varMappers = varMap.get(m.getProjectionVar());
+      if (varMappers == null)
+        varMap.put(m.getProjectionVar(), varMappers = new ArrayList<VarMapper>());
+      varMappers.add(m);
     }
 
     this.uriMap  = null;
@@ -242,8 +259,26 @@ public class ClassMetadata {
    *
    * @return collection of field mappers.
    */
-  public Collection<Mapper> getMappers() {
-    return fields;
+  public Collection<RdfMapper> getRdfMappers() {
+    return rdfFields;
+  }
+
+  /**
+   * Gets the mappers for all projection variables in a view.
+   *
+   * @return collection of field mappers.
+   */
+  public Collection<VarMapper> getVarMappers() {
+    return varFields;
+  }
+
+  /**
+   * Gets the mappers for all embedded variables in a view.
+   *
+   * @return collection of embedded mappers.
+   */
+  public Collection<EmbeddedMapper> getEmbeddedMappers() {
+    return embeds;
   }
 
   /**
@@ -251,7 +286,7 @@ public class ClassMetadata {
    *
    * @return the id field or null for embeddable classes and views
    */
-  public Mapper getIdField() {
+  public IdMapper getIdField() {
     return idField;
   }
 
@@ -260,7 +295,7 @@ public class ClassMetadata {
    *
    * @return the blob field or null
    */
-  public Binder getBlobField() {
+  public BlobMapper getBlobField() {
     return blobField;
   }
 
@@ -273,15 +308,15 @@ public class ClassMetadata {
    *
    * @return the mapper or null
    */
-  public Mapper getMapperByUri(String uri, boolean inverse, String type) {
-    List<Mapper> mappers = uriMap.get(uri);
+  public RdfMapper getMapperByUri(String uri, boolean inverse, String type) {
+    List<RdfMapper> rdfMappers = uriMap.get(uri);
 
-    if (mappers == null)
+    if (rdfMappers == null)
       return null;
 
-    Mapper candidate = null;
+    RdfMapper candidate = null;
 
-    for (Mapper m : mappers) {
+    for (RdfMapper m : rdfMappers) {
       if (m.hasInverseUri() != inverse)
         continue;
 
@@ -307,7 +342,7 @@ public class ClassMetadata {
    *
    * @return the mapper or null
    */
-  public Mapper getMapperByUri(SessionFactory sf, String uri, boolean inverse,
+  public RdfMapper getMapperByUri(SessionFactory sf, String uri, boolean inverse,
                                Collection<String> typeUris) {
     if ((typeUris == null) || (typeUris.size() == 0))
       return getMapperByUri(uri, inverse, null);
@@ -315,15 +350,15 @@ public class ClassMetadata {
     if (typeUris.size() == 1)
       return getMapperByUri(uri, inverse, typeUris.iterator().next());
 
-    List<Mapper> mappers = uriMap.get(uri);
+    List<RdfMapper> rdfMappers = uriMap.get(uri);
 
-    if (mappers == null)
+    if (rdfMappers == null)
       return null;
 
     Set<String> uris      = new HashSet<String>(typeUris);
-    Mapper      candidate = null;
+    RdfMapper      candidate = null;
 
-    for (Mapper m : mappers) {
+    for (RdfMapper m : rdfMappers) {
       if (m.hasInverseUri() != inverse)
         continue;
 
@@ -358,10 +393,11 @@ public class ClassMetadata {
    * @param var the projection variable name.
    * @return the mappers or null
    */
-  public List<Mapper> getMappersByVar(String var) {
-    List<Mapper> mappers = varMap.get(var);
-    return (mappers != null) ? new ArrayList<Mapper>(mappers) : null;
+  public List<VarMapper> getMappersByVar(String var) {
+    List<VarMapper> mappers = varMap.get(var);
+    return (mappers != null) ? new ArrayList<VarMapper>(mappers) : null;
   }
+
 
   /** 
    * Get the OQL query string if this is for a View.
@@ -387,11 +423,11 @@ public class ClassMetadata {
    * @return true only if this class can be persisted
    */
   public boolean isPersistable() {
-    if (idField == null)
+    if ((idField == null) || (rdfFields == null))
       return false;
     if (model != null)
       return true;
-    return ((types.size() + fields.size()) == 0) && (blobField != null);
+    return ((types.size() + rdfFields.size()) == 0) && (blobField != null);
   }
 
   /**
@@ -403,8 +439,8 @@ public class ClassMetadata {
     return (query != null);
   }
 
-  private static boolean isDuplicateMapping(List<Mapper> mappers, Mapper o) {
-    for (Mapper m : mappers) {
+  private static boolean isDuplicateMapping(List<RdfMapper> rdfMappers, RdfMapper o) {
+    for (RdfMapper m : rdfMappers) {
       if (m.hasInverseUri() != o.hasInverseUri())
         continue;
 
@@ -418,7 +454,7 @@ public class ClassMetadata {
     return false;
   }
 
-  private static boolean sameModel(Mapper m1, Mapper m2, String model) {
+  private static boolean sameModel(RdfMapper m1, RdfMapper m2, String model) {
     String g1 = m1.getModel();
     String g2 = m2.getModel();
 

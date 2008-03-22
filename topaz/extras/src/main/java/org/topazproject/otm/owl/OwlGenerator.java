@@ -21,7 +21,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -219,7 +219,7 @@ public class OwlGenerator {
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
-      for (Mapper m: cm.getMappers()) {
+      for (RdfMapper m: cm.getRdfMappers()) {
         log.debug("Processing field: " + m.getName());
         // Ignore if not annotated
         if (m.getUri() == null)
@@ -330,7 +330,7 @@ public class OwlGenerator {
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
-      for (Mapper m: cm.getMappers()) {
+      for (RdfMapper m: cm.getRdfMappers()) {
         log.debug("Processing field: " + m.getName());
         // If not annotated or not association
         if ((m.getUri() == null) || (!m.isAssociation()))
@@ -392,7 +392,7 @@ public class OwlGenerator {
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
-      for (Mapper m: cm.getMappers()) {
+      for (RdfMapper m: cm.getRdfMappers()) {
         log.debug("Processing field: " + m.getName());
         // If not annotated or an association
         if ((m.getUri() == null) || (m.isAssociation()))

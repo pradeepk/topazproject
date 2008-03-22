@@ -54,13 +54,21 @@ import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.BlobMapper;
+import org.topazproject.otm.mapping.BlobMapperImpl;
+import org.topazproject.otm.mapping.IdMapper;
+import org.topazproject.otm.mapping.IdMapperImpl;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.MapperImpl;
+import org.topazproject.otm.mapping.RdfMapperImpl;
+import org.topazproject.otm.mapping.VarMapper;
+import org.topazproject.otm.mapping.VarMapperImpl;
+import org.topazproject.otm.mapping.EmbeddedMapper;
+import org.topazproject.otm.mapping.EmbeddedMapperImpl;
 import org.topazproject.otm.mapping.java.ArrayFieldBinder;
 import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.CollectionFieldBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
-import org.topazproject.otm.mapping.java.EmbeddedClassMemberFieldBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.java.ScalarFieldBinder;
 import org.topazproject.otm.serializer.Serializer;
@@ -106,10 +114,11 @@ public class AnnotationClassMetaFactory {
     String             type      = null;
     String             model     = null;
     String             uriPrefix = null;
-    Mapper             idField   = null;
-    Binder             blobField = null;
+    IdMapper           idField   = null;
+    BlobMapper         blobField = null;
     String             superEntity = null;
-    Collection<Mapper> fields    = new ArrayList<Mapper>();
+    Collection<RdfMapper> fields      = new ArrayList<RdfMapper>();
+    Collection<EmbeddedMapper> embeds = new ArrayList<EmbeddedMapper>();
 
     Class<?>           s         = clazz.getSuperclass();
 
@@ -123,7 +132,8 @@ public class AnnotationClassMetaFactory {
       types       = superMeta.getTypes();
       idField     = superMeta.getIdField();
       blobField   = superMeta.getBlobField();
-      fields.addAll(superMeta.getMappers());
+      fields.addAll(superMeta.getRdfMappers());
+      embeds.addAll(superMeta.getEmbeddedMappers());
       superEntity = superMeta.getName();
     }
 
@@ -168,37 +178,26 @@ public class AnnotationClassMetaFactory {
         continue;
 
       for (Mapper m : mappers) {
-        FieldBinder l = (FieldBinder)m.getBinder(EntityMode.POJO);
-        Field f2 = l.getField();
-        Id id = f2.getAnnotation(Id.class);
-        Blob blob = f2.getAnnotation(Blob.class);
-        if ((id == null) && (blob == null))
-          fields.add(m);
-        else if (id != null) {
+        if (m instanceof RdfMapper)
+          fields.add((RdfMapper)m);
+        else if (m instanceof IdMapper) {
           if (idField != null)
-            if (f.equals(f2))
-              throw new OtmException("Duplicate @Id field " + toString(f));
-             else
-               throw new OtmException("Duplicate @Id field " + toString(f2) 
-                   + " embedded from " + toString(f));
-          idField = m;
-        } else {
+              throw new OtmException("Duplicate @Id field " + m.getName() + " in " + clazz);
+          idField = (IdMapper)m;
+        } else if (m instanceof BlobMapper) {
           if (blobField != null)
-            if (f.equals(f2))
-              throw new OtmException("Duplicate @Blob field " + toString(f));
-             else
-               throw new OtmException("Duplicate @Blob field " + toString(f2) 
-                   + " embedded from " + toString(f));
-          blobField = l;
-        }
+              throw new OtmException("Duplicate @Blob field " + m.getName() + " in " + clazz);
+          blobField = (BlobMapper)m;
+        } else if (m instanceof EmbeddedMapper)
+          embeds.add((EmbeddedMapper)m);
       }
     }
 
     ClassBinder binder = createBinder(clazz, idField);
-    return new ClassMetadata(binder, name, type, types, model, idField, fields, blobField, superEntity);
+    return new ClassMetadata(binder, name, type, types, model, idField, fields, blobField, superEntity, embeds);
   }
 
- private ClassBinder createBinder(Class<?> clazz, Mapper idField) {
+ private ClassBinder createBinder(Class<?> clazz, IdMapper idField) {
    Method getter;
 
    if (idField == null)
@@ -222,21 +221,20 @@ public class AnnotationClassMetaFactory {
       name = !"".equals(sv.name()) ? sv.name() : getName(clazz);
     }
 
-    Mapper             idField = null;
-    Collection<Mapper> fields  = new ArrayList<Mapper>();
+    IdMapper             idField = null;
+    Collection<VarMapper> fields  = new ArrayList<VarMapper>();
 
     for (Field f : clazz.getDeclaredFields()) {
       Collection<? extends Mapper> mappers = createMapper(f, clazz, clazz, null, true);
       if (mappers != null) {
         for (Mapper m : mappers) {
-          String var = m.getProjectionVar();
-          if (var != null)
-            fields.add(m);
+          if (m instanceof VarMapper)
+            fields.add((VarMapper)m);
           else {
             if (idField != null)
               throw new OtmException("Duplicate @Id field " + toString(f));
 
-            idField = m;
+            idField = (IdMapper)m;
           }
         }
       }
@@ -324,7 +322,7 @@ public class AnnotationClassMetaFactory {
       if (embedded)
         throw new OtmException("@Embedded and @Blob both cannot be applied to a field: " + toString(f));
       FieldBinder loader = new ArrayFieldBinder(f, getMethod, setMethod, null, Byte.TYPE);
-      Mapper p = new MapperImpl(null, loader, null, null);
+      Mapper p = new BlobMapperImpl(loader);
 
       return Collections.singletonList(p);
     }
@@ -386,12 +384,12 @@ public class AnnotationClassMetaFactory {
 
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
-      Mapper     p;
+      IdMapper     p;
       ScalarFieldBinder loader = new ScalarFieldBinder(f, getMethod, setMethod, serializer);
       if (isView)
-        p = new MapperImpl(null, loader, null, null);
+        p = new IdMapperImpl(loader, null);
       else
-        p = new MapperImpl(loader, generator);
+        p = new IdMapperImpl(loader, generator);
 
       return Collections.singletonList(p);
     }
@@ -471,9 +469,9 @@ public class AnnotationClassMetaFactory {
         loader = new ScalarFieldBinder(f, getMethod, setMethod, serializer);
       Mapper            p;
       if (isView)
-        p = new MapperImpl(var, loader, ft, assoc);
+        p = new VarMapperImpl(loader, var, ft, assoc);
       else
-        p = new MapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft, 
+        p = new RdfMapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft, 
                            assoc, objectProperty);
 
       return Collections.singletonList(p);
@@ -491,22 +489,17 @@ public class AnnotationClassMetaFactory {
                              + toString(f), e);
     }
 
-    // xxx: this is a restriction on this API. revisit to allow this case too.
-    if (cm.getType() != null)
-      throw new OtmException("@Embedded class '" + type + "' embedded at " + toString(f)
-                             + " should not declare an rdf:type of its own. (fix me)");
+    EmbeddedClassFieldBinder ecp  = new EmbeddedClassFieldBinder(f, getMethod, setMethod);
+    Collection<Mapper>  mappers   = new ArrayList<Mapper>();
+    EmbeddedMapperImpl em         = new EmbeddedMapperImpl(ecp, cm);
 
-    EmbeddedClassFieldBinder ecp     = new EmbeddedClassFieldBinder(f, getMethod, setMethod);
+    mappers.add(em);
+    for (RdfMapper p : cm.getRdfMappers())
+      mappers.add(em.promote(p));
 
-    Collection<Mapper>  mappers = new ArrayList<Mapper>();
-
-    for (Mapper p : cm.getMappers())
-      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder(EntityMode.POJO))));
-
-    Mapper p = cm.getIdField();
-
-    if (p != null)
-      mappers.add(new MapperImpl(p, new EmbeddedClassMemberFieldBinder(ecp, (FieldBinder)p.getBinder(EntityMode.POJO))));
+    for (Mapper p : new Mapper[]{cm.getIdField(), cm.getBlobField()})
+      if (p != null)
+        mappers.add(em.promote(p));
 
     return mappers;
   }
@@ -538,7 +531,7 @@ public class AnnotationClassMetaFactory {
     return (rdf == null) ? CollectionType.PREDICATE : rdf.collectionType();
   }
 
-  private Mapper createPredicateMap(Field field, Method getter, Method setter)
+  private RdfMapper createPredicateMap(Field field, Method getter, Method setter)
                              throws OtmException {
     String model = null; // TODO: allow predicate maps from other models
     Type type = field.getGenericType();
@@ -558,7 +551,7 @@ public class AnnotationClassMetaFactory {
 
           if ((targs.length == 1) && (targs[0] instanceof Class)
                && String.class.isAssignableFrom((Class) targs[0]))
-            return new MapperImpl(new ScalarFieldBinder(field, getter, setter, null), model);
+            return new RdfMapperImpl(new ScalarFieldBinder(field, getter, setter, null), model);
         }
       }
     }

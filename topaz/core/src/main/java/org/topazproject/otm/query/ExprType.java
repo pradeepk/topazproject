@@ -16,8 +16,7 @@ import java.util.List;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.EntityMode;
-import org.topazproject.otm.mapping.java.ClassBinder;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
+import org.topazproject.otm.mapping.EmbeddedMapper;
 
 /** 
  * This describes the type of an expression. It can be an untyped literal, a typed literal,
@@ -31,11 +30,11 @@ class ExprType {
 
   private final Type                      type;
   private final ClassMetadata             meta;
-  private final List<EmbeddedClassFieldBinder> embFields;
+  private final List<EmbeddedMapper>      embFields;
   private final String                    datatype;
-  private final CollectionType                colType;
+  private final CollectionType            colType;
 
-  private ExprType(Type type, ClassMetadata meta, List<EmbeddedClassFieldBinder> embFields,
+  private ExprType(Type type, ClassMetadata meta, List<EmbeddedMapper> embFields,
                    String datatype, CollectionType colType) {
     this.type      = type;
     this.meta      = meta;
@@ -66,13 +65,13 @@ class ExprType {
    * @return the new type
    * @throws NullPointerException if <var>meta</var> or <var>field</var> is null
    */
-  public static ExprType embeddedClassType(ClassMetadata meta, EmbeddedClassFieldBinder field) {
+  public static ExprType embeddedClassType(ClassMetadata meta, EmbeddedMapper field) {
     if (meta == null)
       throw new NullPointerException("class metadata may not be null");
     if (field == null)
       throw new NullPointerException("class field may not be null");
 
-    List<EmbeddedClassFieldBinder> fields = new ArrayList<EmbeddedClassFieldBinder>();
+    List<EmbeddedMapper> fields = new ArrayList<EmbeddedMapper>();
     fields.add(field);
     return new ExprType(Type.EMB_CLASS, meta, fields, null, null);
   }
@@ -135,7 +134,7 @@ class ExprType {
    *
    * @return the mappers if this is an embedded class; null otherwise
    */
-  public List<EmbeddedClassFieldBinder> getEmbeddedFields() {
+  public List<EmbeddedMapper> getEmbeddedFields() {
     return embFields;
   }
 
@@ -161,18 +160,16 @@ class ExprType {
 
   /** 
    * Get the class of this type. For non class or embedded-class types this returns null.
-   *<p>
-   * XXX: This need to be re-adjusted to support other entity modes
-   *</p>
-   * @return the class, or null if not a class type
+   *
+   * @return the class metadata, or null if not a class type
    */
-  public Class getExprClass() {
+  public ClassMetadata getExprClass() {
     switch (type) {
       case CLASS:
-        return ((ClassBinder)meta.getEntityBinder(EntityMode.POJO)).getSourceClass();
+        return meta;
 
       case EMB_CLASS:
-        return embFields.get(embFields.size() - 1).getType();
+        return embFields.get(embFields.size() - 1).getEmbeddedClass();
 
       default:
         return null;
@@ -215,7 +212,7 @@ class ExprType {
 
   private String embFieldNames() {
     StringBuilder res = new StringBuilder();
-    for (EmbeddedClassFieldBinder m : embFields)
+    for (EmbeddedMapper m : embFields)
       res.append('.').append(m.getName());
     return res.toString();
   }

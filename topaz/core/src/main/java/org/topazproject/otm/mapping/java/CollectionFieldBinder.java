@@ -32,7 +32,7 @@ import java.util.TreeSet;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -111,7 +111,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
    * inherited javadoc
    */
   public void load(Object root, Object instance, List<String> values, 
-      Map<String, Set<String>> types, Mapper mapper, 
+      Map<String, Set<String>> types, RdfMapper mapper, 
       Session session) throws OtmException {
 
     if (mapper.isAssociation() && (mapper.getFetchType() == FetchType.lazy) 
@@ -177,13 +177,13 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
    * @param session  the session under which the load is performed.
    *                 Used for resolving associations etc.
    * @param instance the object
-   * @param mapper   the mapper that this loader is associated to (XXX:revisit) 
+   * @param mapper   the mapper that this loader is associated to
    *
    * @return the dynamic proxy instance of
    */
   protected Collection newProxy(final List<String> values, 
       final Map<String, Set<String>> types, final Session session, 
-      final Object instance, final Mapper mapper) throws OtmException {
+      final Object instance, final RdfMapper mapper) throws OtmException {
     final Class t = getType();
     final Collection real = newInstance();
 
