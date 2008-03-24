@@ -76,6 +76,8 @@ public class ArticleXMLUtils {
   // designed for Singleton use, Templates are threadsafe
   private static Templates objInfoXsltTemplate;  // initialized from objInfo.xsl template
   private static Templates translet;             // initialized from xslTemplate, per bean property
+  private static final String OBJECTINFO_XSLT_LOCK  = "OBJECTINFO_XSLT_LOCK";
+  private static final String XSLTEMPLATE_XSLT_LOCK = "XSLTEMPLATE_XSLT_LOCK";
 
   /**
    * Initialization method called by Spring
@@ -168,7 +170,7 @@ public class ArticleXMLUtils {
   
   private Transformer getTranslet() throws TransformerException, FileNotFoundException {
     // synchronize test/creation block for translet (Template)
-    synchronized(translet) {
+    synchronized(XSLTEMPLATE_XSLT_LOCK) {
       if (null == translet) {
         // Instantiate the TransformerFactory, and use it with a StreamSource
         // XSL stylesheet to create a translet as a Templates object.
@@ -307,7 +309,7 @@ public class ArticleXMLUtils {
    */
   public Transformer getSecondaryObjectTranslet() throws ApplicationException, TransformerException, FileNotFoundException, URISyntaxException {
     // synchronize test/creation block for objInfoXsltTemplate (Template)
-    synchronized(objInfoXsltTemplate) {
+    synchronized(OBJECTINFO_XSLT_LOCK) {
       if (objInfoXsltTemplate == null) {
         // Instantiate the TransformerFactory, and use it with a StreamSource
         // XSL stylesheet to create a translet as a Templates object.
