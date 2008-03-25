@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.FetchArticleService;
-import org.plos.model.article.ArticleType;
+import org.plos.article.util.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;

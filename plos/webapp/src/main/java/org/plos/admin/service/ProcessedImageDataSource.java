@@ -24,9 +24,6 @@ public abstract class ProcessedImageDataSource implements DataSource {
   public ProcessedImageDataSource(byte[] content, String contType) {
     src = content;
     ct = contType;
-    if(OnDemandArticleImageProvider.log.isDebugEnabled()) {
-      OnDemandArticleImageProvider.log.debug("ProcessedImageDataSource type=" + ct + " size=" + content.length);
-    }
   }
   
   /**

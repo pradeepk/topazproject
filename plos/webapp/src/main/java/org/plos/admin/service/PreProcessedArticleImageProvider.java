@@ -19,6 +19,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.plos.article.util.ArticleZip;
+import org.plos.article.util.ImageProcessingException;
+import org.plos.article.util.ImageSetConfig;
+
 /**
  * PreProcessedArticleImageProvider - Provides pre-processed article images.
  * @author jkirton

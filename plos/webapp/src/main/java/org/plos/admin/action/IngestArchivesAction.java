@@ -16,9 +16,9 @@ import java.rmi.RemoteException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.admin.service.ImageResizeException;
 
 import org.plos.article.util.DuplicateArticleIdException;
+import org.plos.article.util.ImageResizeException;
 
 public class IngestArchivesAction extends BaseAdminActionSupport {
 

@@ -1,4 +1,4 @@
-package org.plos.admin.service;
+package org.plos.article.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.zip.ZipFile;
  * ArticleZip - Convenience wrapper for a File that is an article zip file.
  * @author jkirton
  */
-final class ArticleZip {
+public final class ArticleZip {
 
   /**
    * Filename prefix indicating a processed article zip file.

@@ -10,6 +10,8 @@
 
 package org.plos.admin.service;
 
+import org.plos.article.util.ImageProcessingException;
+
 /**
  * This is the exception thrown by the ImageStorageService to indicate the
  * failure of an operation.

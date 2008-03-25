@@ -15,6 +15,9 @@ import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
+import org.plos.article.util.ImageRetrievalService;
+import org.plos.article.util.ImageRetrievalServiceException;
+
 /**
  * This Stores an image from a given URL in a buffer and provides the images as
  * a byte array.

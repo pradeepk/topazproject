@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.admin.service;
+package org.plos.article.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,7 +25,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
-import org.plos.model.article.ArticleType;
 
 /**
  * ImageProcessor - Processes images contained in a "raw" un-adulterated article
@@ -318,8 +317,7 @@ public final class ImageProcessor {
 
   /**
    * Processes an un-processed image creating temp files holding the processed
-   * image data. The names of these temp files are ammended to the given
-   * processed image names list.
+   * image data.
    * @param baseName The name of the zip file entry w/o an extension suffix
    * @param imgf The image File to process
    * @param isc The ImageSetConfig instance to employ

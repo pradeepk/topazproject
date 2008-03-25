@@ -29,11 +29,11 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.struts2.ServletActionContext;
 
+import org.plos.article.util.ArticleType;
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
-import org.plos.model.article.ArticleType;
 import org.plos.model.article.RelatedArticleInfo;
 import org.plos.model.article.Years;
 import org.plos.models.Article;

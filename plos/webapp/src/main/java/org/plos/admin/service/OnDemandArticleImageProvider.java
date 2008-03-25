@@ -13,6 +13,10 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.article.util.ImageProcessingException;
+import org.plos.article.util.ImageResizeException;
+import org.plos.article.util.ImageResizeService;
+import org.plos.article.util.ImageSetConfig;
 
 /**
  * OnDemandArticleImageProvider - Performs image processing on demand.

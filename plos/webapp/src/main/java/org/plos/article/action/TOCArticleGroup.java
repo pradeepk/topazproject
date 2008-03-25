@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.plos.article.util.ArticleType;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleInfoMostRecentDateComparator;
-import org.plos.model.article.ArticleType;
 /**
  * Represents a group of articles for display in the presentation layer. 
  *  

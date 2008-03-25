@@ -11,6 +11,9 @@ package org.plos.admin.service;
 
 import java.net.URL;
 
+import org.plos.article.util.ImageProcessingException;
+import org.plos.article.util.ImageSetConfig;
+
 /**
  * IProcessedArticleImageProvider - Inidicates the ability to provide processed
  * article images.

@@ -188,18 +188,6 @@
       <artifactId>servlet-api</artifactId>
     </dependency>
 
-     <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jai_core</artifactId>
-      <version>1.1.3</version>
-    </dependency>
-   
-    <dependency>
-      <groupId>javax.media</groupId>
-      <artifactId>jai_codec</artifactId>
-      <version>1.1.3</version>
-    </dependency>
-
     <!-- required by the xsl transformation using translets -->
     <dependency>
       <groupId>org.apache.bcel</groupId>
@@ -364,6 +352,33 @@
               <name>org.apache.commons.logging.Log</name>
               <value>org.apache.commons.logging.impl.Log4JLogger</value>
             </systemProperty>
+            
+            <!-- if you don't want to import the cert into your systemwide java keystore, you can point to here -->
+            <systemProperty>
+              <name>javax.net.ssl.trustStore</name>
+              <value>/etc/topaz/keystore.jks</value>
+            </systemProperty>
+            <systemProperty>
+              <name>javax.net.ssl.trustStorePassword</name>
+              <value>changeit</value>
+            </systemProperty>
+            
+            <!-- values for location of ingest files -->
+            <systemProperty>
+              <name>pub.spring.ingest.source</name>
+              <value>/topaz/ingest/</value>
+            </systemProperty>
+            <systemProperty>
+              <name>pub.spring.ingest.destination</name>
+              <value>/topaz/spool/ingested/</value>
+            </systemProperty>
+
+            <!-- search webapp URL -->
+            <systemProperty>
+              <name>topaz.fedoragsearch.urls.url</name>
+              <value>http://plosone-branch.plos.org:8080/ws-search-webapp/services/FedoraGenericSearchServicePort</value>
+            </systemProperty>
+
           </systemProperties>
           <scanIntervalSeconds>5</scanIntervalSeconds>
           <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>

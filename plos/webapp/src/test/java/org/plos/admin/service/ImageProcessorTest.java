@@ -2,6 +2,8 @@ package org.plos.admin.service;
 
 import java.util.regex.Pattern;
 
+import org.plos.article.util.ImageProcessor;
+
 import junit.framework.TestCase;
 
 /**

@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.admin.service;
+package org.plos.article.util;
 
 /**
  * ImageProcessingException - Common base class for image processing related exceptions.
