@@ -423,7 +423,6 @@ public class AnnotationClassMetaFactory {
       boolean inverse = (rdf != null) && rdf.inverse();
       String  model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
 
-      String  rt      = (serializer == null) ? getRdfType(type) : null;
       String  assoc   = (serializer == null) ? getEntityName(type) : null;
 
       if (inverse && (model == null) && (serializer == null))
@@ -471,7 +470,7 @@ public class AnnotationClassMetaFactory {
       if (isView)
         p = new VarMapperImpl(loader, var, ft, assoc);
       else
-        p = new RdfMapperImpl(uri, loader, dt, rt, inverse, model, mt, !notOwned, generator, ct, ft, 
+        p = new RdfMapperImpl(uri, loader, dt, inverse, model, mt, !notOwned, generator, ct, ft, 
                            assoc, objectProperty);
 
       return Collections.singletonList(p);
@@ -586,18 +585,6 @@ public class AnnotationClassMetaFactory {
     }
 
     return null;
-  }
-
-  private String getRdfType(Class<?> clazz) {
-    if (clazz == null)
-      return null;
-
-    Entity entity = clazz.getAnnotation(Entity.class);
-
-    if ((entity != null) && !"".equals(entity.type()))
-      return sf.expandAlias(entity.type());
-
-    return getRdfType(clazz.getSuperclass());
   }
 
   private static String getModel(Class<?> clazz) {

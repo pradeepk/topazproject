@@ -11,12 +11,17 @@ package org.topazproject.otm.criterion;
 
 import java.net.URI;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Embedded;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
@@ -81,7 +86,7 @@ public abstract class AbstractUnaryCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+  public void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm) {
     Mapper r = cm.getMapperByName(fieldName);
     if (!(r instanceof RdfMapper))
       log.warn("onPreInsert: The field '" + fieldName + "' does not exist in " + cm);
@@ -89,6 +94,13 @@ public abstract class AbstractUnaryCriterion extends Criterion {
       RdfMapper m  = (RdfMapper)r;
       da.predicateUri = URI.create(m.getUri());
       da.inverse = m.hasInverseUri();
+
+      if (m.isAssociation()) {
+        ClassMetadata assoc = ses.getSessionFactory().getClassMetadata(m.getAssociatedEntity());
+        if (assoc != null)
+          da.rdfType        = assoc.getTypes();
+      }
+
       if (log.isDebugEnabled())
         log.debug("onPreInsert: Converted field '" + fieldName + "' to " + da + " in " + cm);
     }
@@ -97,9 +109,10 @@ public abstract class AbstractUnaryCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+  public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
     RdfMapper m = (da.predicateUri == null) ? null :
-                          cm.getMapperByUri(da.predicateUri.toString(), da.inverse, null);
+                  cm.getMapperByUri(ses.getSessionFactory(), da.predicateUri.toString(),
+                      da.inverse, da.rdfType);
 
     if (m == null)
       log.warn("onPostLoad: " + da + " not found in " + cm);
@@ -123,6 +136,8 @@ public abstract class AbstractUnaryCriterion extends Criterion {
   public static class DeAliased {
     public URI              predicateUri;
     public boolean          inverse;
+    @Predicate(type=Predicate.PropType.OBJECT)
+    public Set<String>      rdfType;
 
     public String toString() {
       return "[predicateUri: <" + predicateUri + ">, inverse: " + inverse + "]";

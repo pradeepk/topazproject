@@ -14,6 +14,7 @@ import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.RdfMapper;
 
 /**
@@ -155,14 +156,14 @@ public class PredicateCriterion extends AbstractBinaryCriterion {
   /*
    * inherited javadoc
    */
-  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+  public void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm) {
     throw new UnsupportedOperationException("Not meant to be persisted");
   }
 
   /*
    * inherited javadoc
    */
-  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+  public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
     throw new UnsupportedOperationException("Not meant to be persisted");
   }
 

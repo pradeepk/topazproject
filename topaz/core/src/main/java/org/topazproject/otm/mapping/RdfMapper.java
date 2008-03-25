@@ -47,13 +47,6 @@ public interface RdfMapper extends Mapper {
   public boolean isPredicateMap();
 
   /**
-   * Gets the rdf:type for an association field.
-   *
-   * @return the rdf:type or null for un-typed
-   */
-  public String getRdfType();
-
-  /**
    * Gets the rdf predicate uri. All fields other than an 'Id' field must have a uri (for regular
    * classes) or a projection-variable (for views).
    *

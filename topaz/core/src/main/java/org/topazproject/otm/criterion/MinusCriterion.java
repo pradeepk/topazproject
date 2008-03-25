@@ -16,6 +16,7 @@ import java.util.HashSet;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
 
 /**
@@ -120,16 +121,16 @@ public class MinusCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
-    minuend.onPreInsert(dc, cm);
-    subtrahend.onPreInsert(dc, cm);
+  public void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm) {
+    minuend.onPreInsert(ses, dc, cm);
+    subtrahend.onPreInsert(ses, dc, cm);
   }
 
   /*
    * inherited javadoc
    */
-  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
-    minuend.onPostLoad(dc, cm);
-    subtrahend.onPostLoad(dc, cm);
+  public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
+    minuend.onPostLoad(ses, dc, cm);
+    subtrahend.onPostLoad(ses, dc, cm);
   }
 }

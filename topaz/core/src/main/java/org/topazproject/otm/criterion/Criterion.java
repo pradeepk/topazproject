@@ -21,6 +21,7 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -186,18 +187,20 @@ public abstract class Criterion {
   /**
    * Do any pre-insert processing. eg. converting field names to predicate-uri
    *
+   * @param ses the Session that is generating this event
    * @param dc the detached criteria that is being persisted
    * @param cm the class metadata to use to resolve fields
    */
-  public abstract void onPreInsert(DetachedCriteria dc, ClassMetadata cm);
+  public abstract void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm);
 
   /**
    * Do any post-load processing. eg. converting predicate-uri to field name
    *
+   * @param ses the Session that is generating this event
    * @param dc the detached criteria that is being loaded
    * @param cm the class metadata to use to resolve fields
    */
-  public abstract void onPostLoad(DetachedCriteria dc, ClassMetadata cm);
+  public abstract void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm);
 
   /**
    * Gets the URI for the mulgara prefix model used in rdf collection queries.

@@ -302,39 +302,6 @@ public class ClassMetadata {
   /**
    * Gets a field mapper by its predicate uri.
    *
-   * @param uri the predicate uri
-   * @param inverse if the mapping is reverse (ie. o,p,s instead of s,p,o))
-   * @param type for associations the rdf:type or null
-   *
-   * @return the mapper or null
-   */
-  public RdfMapper getMapperByUri(String uri, boolean inverse, String type) {
-    List<RdfMapper> rdfMappers = uriMap.get(uri);
-
-    if (rdfMappers == null)
-      return null;
-
-    RdfMapper candidate = null;
-
-    for (RdfMapper m : rdfMappers) {
-      if (m.hasInverseUri() != inverse)
-        continue;
-
-      String rt = m.getRdfType();
-
-      if ((type == null) || type.equals(rt))
-        return m;
-
-      if ((rt == null) && (candidate == null))
-        candidate = m;
-    }
-
-    return candidate;
-  }
-
-  /**
-   * Gets a field mapper by its predicate uri.
-   *
    * @param sf the session factory for looking up associations
    * @param uri the predicate uri
    * @param inverse if the mapping is reverse (ie. o,p,s instead of s,p,o))
@@ -344,31 +311,35 @@ public class ClassMetadata {
    */
   public RdfMapper getMapperByUri(SessionFactory sf, String uri, boolean inverse,
                                Collection<String> typeUris) {
-    if ((typeUris == null) || (typeUris.size() == 0))
-      return getMapperByUri(uri, inverse, null);
-
-    if (typeUris.size() == 1)
-      return getMapperByUri(uri, inverse, typeUris.iterator().next());
-
     List<RdfMapper> rdfMappers = uriMap.get(uri);
 
     if (rdfMappers == null)
       return null;
 
-    Set<String> uris      = new HashSet<String>(typeUris);
-    RdfMapper      candidate = null;
+    Collection<String> uris = typeUris;
+    RdfMapper   candidate = null;
 
     for (RdfMapper m : rdfMappers) {
       if (m.hasInverseUri() != inverse)
         continue;
 
-      String rt = m.getRdfType();
-
-      if ((rt == null) && (candidate == null))
+      if (candidate == null)
         candidate = m;
 
-      if (uris.contains(rt)) {
-        uris.removeAll(sf.getClassMetadata(m.getAssociatedEntity()).getTypes());
+      if ((uris == null) || uris.isEmpty())
+        break;
+
+      ClassMetadata assoc = !m.isAssociation() ? null
+                            : sf.getClassMetadata(m.getAssociatedEntity());
+
+      if ((assoc == null) || (assoc.getType() == null))
+        continue;
+
+      if (uris.contains(assoc.getType())) {
+        if (uris == typeUris)
+          uris = new HashSet<String>(typeUris); // lazy copy
+
+        uris.removeAll(assoc.getTypes());
         candidate = m;
       }
     }
@@ -444,10 +415,10 @@ public class ClassMetadata {
       if (m.hasInverseUri() != o.hasInverseUri())
         continue;
 
-      if (m.getRdfType() != null) {
-        if (m.getRdfType().equals(o.getRdfType()))
-          return true;
-      } else if (o.getRdfType() == null)
+      if (!m.isAssociation() || !o.isAssociation())
+        return true;
+
+      if (m.getAssociatedEntity().equals(o.getAssociatedEntity()))
         return true;
     }
 

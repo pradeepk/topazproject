@@ -454,17 +454,29 @@ public class ItqlStore extends AbstractTripleStore {
 
     // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
     String modelUri = getModelUri(cm.getModel(), isc);
-    for (String p : fvalues.keySet()) {
-      RdfMapper m = cm.getMapperByUri(p, false, null);
-      if (m == null)
+    Set<String> replaced = null;
+    for (RdfMapper m : cm.getRdfMappers()) {
+      if (m.hasInverseUri() || !fvalues.containsKey(m.getUri()) || 
+          (m.getColType() == CollectionType.PREDICATE))
         continue;
+
+      String p = m.getUri();
       String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), isc) : modelUri;
-      if (CollectionType.RDFLIST == m.getColType())
-        fvalues.put(p, getRdfList(id, p, mUri, isc, types, m, sf, filters));
-      else if (CollectionType.RDFBAG == m.getColType() ||
-          CollectionType.RDFSEQ == m.getColType() || 
-          CollectionType.RDFALT == m.getColType())
-        fvalues.put(p, getRdfBag(id, p, mUri, isc, types, m, sf, filters));
+      List<String> vals;
+      if (m.getColType() == CollectionType.RDFLIST)
+        vals = getRdfList(id, p, mUri, isc, types, m, sf, filters);
+      else
+        vals = getRdfBag(id, p, mUri, isc, types, m, sf, filters);
+
+      if (replaced == null)
+        replaced = new HashSet<String>();
+
+      if (replaced.contains(p))
+        fvalues.get(p).addAll(vals);
+      else {
+        fvalues.put(p, vals);
+        replaced.add(p);
+      }
     }
 
     if (log.isDebugEnabled())

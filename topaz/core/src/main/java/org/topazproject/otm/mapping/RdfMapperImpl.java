@@ -25,7 +25,6 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
   private final boolean             objectProperty;
   private final String              model;
   private final String              dataType;
-  private final String              rdfType;
   private final CollectionType      colType;
   private final boolean             entityOwned;
   private final boolean             predicateMap;
@@ -40,7 +39,6 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
    * @param uri the rdf predicate
    * @param binder the binder for the field
    * @param dataType of literals or null for un-typed
-   * @param rdfType of associations or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
    * @param model  the model where this field is persisted
    * @param colType the collection type of this field
@@ -51,14 +49,13 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
    * @param associatedEntity the entity name for associations
    * @param objectProperty if this is an object property 
    */
-  public RdfMapperImpl(String uri, Binder binder, String dataType, String rdfType, boolean inverse,
+  public RdfMapperImpl(String uri, Binder binder, String dataType, boolean inverse,
                        String model, CollectionType colType, boolean entityOwned,
                        IdentifierGenerator generator, CascadeType[] cascade, FetchType fetchType,
                        String associatedEntity, boolean objectProperty) {
     super(binder);
     this.uri                = uri;
     this.dataType           = dataType;
-    this.rdfType            = rdfType;
     this.inverse            = inverse;
     this.model              = model;
     this.colType            = colType;
@@ -81,7 +78,6 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
     super(binder);
     this.uri                = null;
     this.dataType           = null;
-    this.rdfType            = null;
     this.inverse            = false;
     this.model              = model;
     this.colType            = null;
@@ -127,13 +123,6 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
    */
   public boolean isPredicateMap() {
     return predicateMap;
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public String getRdfType() {
-    return rdfType;
   }
 
   /*
@@ -200,8 +189,8 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
    * inherited javadoc
    */
   public String toString() {
-    return getClass().getName() + "[pred=" + uri + ", dataType=" + dataType + ", rdfType="
-           + rdfType + ", colType=" + colType + ", inverse=" + inverse + ", fetchType=" + fetchType
+    return getClass().getName() + "[pred=" + uri + ", dataType=" + dataType
+           + ", colType=" + colType + ", inverse=" + inverse + ", fetchType=" + fetchType
            + ", cascade=" + cascade + ", generator="
            + ((generator != null) ? generator.getClass() : "-null-") + "]";
   }

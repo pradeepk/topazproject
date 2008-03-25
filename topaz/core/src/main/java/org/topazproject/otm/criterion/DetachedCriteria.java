@@ -241,18 +241,18 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
         log.warn("onPreInsert: Entity name '" + alias 
             + "' is not found in session factory.");
       else {
-        da.rdfType = URI.create(cm.getType());
+        da.rdfType = cm.getTypes();
         da.predicateUri = null;
         da.inverse = false;
 
         if (log.isDebugEnabled())
-          log.debug("onPreInsert: converted entity '" + alias + "' to <" + da.rdfType + ">");
+          log.debug("onPreInsert: converted entity '" + alias + "' to " + da.rdfType);
 
         for (Criterion cr : criterionList)
-          cr.onPreInsert(this, cm);
+          cr.onPreInsert(session, this, cm);
 
         for (Order or : orderList)
-          or.onPreInsert(this, cm);
+          or.onPreInsert(session, this, cm);
       }
     } else {
       ClassMetadata cm = parent.getClassMetadata(sf);
@@ -265,17 +265,18 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
         else {
           RdfMapper m = (RdfMapper)r;
           cm = sf.getClassMetadata(m.getAssociatedEntity());
-          da.rdfType = (cm == null) ? null : URI.create(cm.getType());
+          if (cm != null)
+            da.rdfType = cm.getTypes();
           da.predicateUri = URI.create(m.getUri());
           da.inverse = m.hasInverseUri();
           if (log.isDebugEnabled())
             log.debug("onPreInsert: converted field '" + alias + "' to "  + da);
 
           for (Criterion cr : criterionList)
-            cr.onPreInsert(this, cm);
+            cr.onPreInsert(session, this, cm);
 
           for (Order or : orderList)
-            or.onPreInsert(this, cm);
+            or.onPreInsert(session, this, cm);
         }
       }
     }
@@ -289,10 +290,10 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     SessionFactory sf = session.getSessionFactory();
 
     if (parent == null) {
-      ClassMetadata cm = sf.getAnySubClassMetadata(null, Collections.singleton(ser(da.rdfType)));
+      ClassMetadata cm = sf.getAnySubClassMetadata(null, da.rdfType);
       if (cm == null) {
         cm = sf.getClassMetadata(alias);
-        if ((cm != null) && !cm.getTypes().contains(da.rdfType))
+        if ((cm != null) && !cm.getTypes().containsAll(da.rdfType))
           cm = null;
       }
 
@@ -303,20 +304,20 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
         alias = cm.getName();
 
         if (log.isDebugEnabled())
-          log.debug("onPostLoad: converted rdfType <" + da.rdfType + "> to entity '" + alias + "'");
+          log.debug("onPostLoad: converted rdfType " + da.rdfType + " to entity '" + alias + "'");
 
         for (Criterion cr : criterionList)
-          cr.onPostLoad(this, cm);
+          cr.onPostLoad(session, this, cm);
 
         for (Order or : orderList)
-          or.onPostLoad(this, cm);
+          or.onPostLoad(session, this, cm);
       }
     } else {
       ClassMetadata cm = parent.getClassMetadata(sf);
       if (cm == null)
         log.warn("onPostLoad: Parent of '" + alias + "' not found in session factory");
       else {
-        RdfMapper m = cm.getMapperByUri(ser(da.predicateUri), da.inverse, ser(da.rdfType));
+        RdfMapper m = cm.getMapperByUri(sf, ser(da.predicateUri), da.inverse, da.rdfType);
         if (m == null)
           log.warn("onPostLoad: A field matching " + da +  " not found in " + cm);
         else {
@@ -328,10 +329,10 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
           cm = sf.getClassMetadata(m.getAssociatedEntity());
 
           for (Criterion cr : criterionList)
-            cr.onPostLoad(this, cm);
+            cr.onPostLoad(session, this, cm);
 
           for (Order or : orderList)
-            or.onPostLoad(this, cm);
+            or.onPostLoad(session, this, cm);
         }
       }
     }
@@ -543,14 +544,15 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    */
   @UriPrefix(Criterion.NS)
   public static class DeAliased {
-    public URI rdfType;
+    @Predicate(type=Predicate.PropType.OBJECT)
+    public Set<String> rdfType = new HashSet<String>();
     public URI predicateUri;
     public boolean inverse;
 
     public String toString() {
       return "[predicate: <" + predicateUri
-            + ">, rdf:type: <" + rdfType
-            + ">, inverse: " + inverse
+            + ">, rdf:type: " + rdfType
+            + ", inverse: " + inverse
             + "]";
     }
   }

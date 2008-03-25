@@ -11,10 +11,15 @@ package org.topazproject.otm.criterion;
 
 import java.net.URI;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -144,10 +149,11 @@ public class Order {
   /**
    * Do pre-insert processing. Converts the order by field names to predicate-uri
    *
+   * @param ses the session that is generating this event
    * @param dc the detached criteria that is being persisted
    * @param cm the class metadata to use to resolve fields
    */
-  public void onPreInsert(DetachedCriteria dc, ClassMetadata cm) {
+  public void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm) {
     Mapper r = cm.getMapperByName(name);
 
     if (!(r instanceof RdfMapper))
@@ -157,6 +163,12 @@ public class Order {
       da.predicateUri   = URI.create(m.getUri());
       da.inverse        = m.hasInverseUri();
 
+      if (m.isAssociation()) {
+        ClassMetadata assoc = ses.getSessionFactory().getClassMetadata(m.getAssociatedEntity());
+        if (assoc != null)
+          da.rdfType        = assoc.getTypes();
+      }
+
       if (log.isDebugEnabled())
         log.debug("onPreInsert: Converted field '" + name + "' to " + da + " in " + cm);
     }
@@ -165,13 +177,14 @@ public class Order {
   /**
    * Do post-load processing. Converting predicate-uri to field name.
    *
+   * @param ses the session that is generating this event
    * @param dc the detached criteria that is being loaded
    * @param cm the class metadata to use to resolve fields
    */
-  public void onPostLoad(DetachedCriteria dc, ClassMetadata cm) {
+  public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
     RdfMapper m =
       (da.predicateUri == null) ? null
-      : cm.getMapperByUri(da.predicateUri.toString(), da.inverse, null);
+      : cm.getMapperByUri(ses.getSessionFactory(), da.predicateUri.toString(), da.inverse, da.rdfType);
 
     if (m == null)
       log.warn("onPostLoad: " + da + " not found in " + cm);
@@ -194,8 +207,10 @@ public class Order {
    */
   @UriPrefix(Criterion.NS)
   public static class DeAliased {
-    public URI     predicateUri;
-    public boolean inverse;
+    public URI         predicateUri;
+    public boolean     inverse;
+    @Predicate(type=Predicate.PropType.OBJECT)
+    public Set<String> rdfType = new HashSet<String>();
 
     public String toString() {
       return "[predicateUri: <" + predicateUri + ">, inverse: " + inverse + "]";
