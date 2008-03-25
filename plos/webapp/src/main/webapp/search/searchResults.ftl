@@ -95,10 +95,31 @@
         <@s.hidden name="endDay" />
         <@s.hidden name="subjectCatOpt" />
         <@s.hidden name="limitToCategory" />
-        <!-- <input type="text" size="50" value="${query?html}" id="searchEdit" name="query"/>
-        <input type="submit"  value="Go" class="button"/> -->
       </form>
-      <a href="#" onclick="document.reviseSearch.submit();return false;">Go to Advanced Search</a> to revise <em>or</em><label for="searchEdit" style="display:inline;">edit your query here (<a href="${searchHelpURL}">help</a>): </label> 
+      <form name="reviseQuery" action="${searchURL}" method="get">
+        <@s.hidden name="noSearchFlag" value="set" />
+        <@s.hidden name="creator" />
+        <@s.hidden name="authorNameOp" />
+        <@s.hidden name="textSearchAll" />
+        <@s.hidden name="textSearchExactPhrase" />
+        <@s.hidden name="textSearchAtLeastOne" />
+        <@s.hidden name="textSearchWithout" />
+        <@s.hidden name="textSearchOption" />
+        <@s.hidden name="dateTypeSelect" />
+        <@s.hidden name="startYear" />
+        <@s.hidden name="startMonth" />
+        <@s.hidden name="startDay" />
+        <@s.hidden name="endYear" />
+        <@s.hidden name="endMonth" />
+        <@s.hidden name="endDay" />
+        <@s.hidden name="subjectCatOpt" />
+        <@s.hidden name="limitToCategory" />
+        <a href="#" onclick="document.reviseSearch.submit();return false;">Go to Advanced Search</a> to revise <em>or</em>
+        <label for="searchEdit" style="display:inline;">edit your query here</label>
+        (<a href="${searchHelpURL}">help</a>):&nbsp;
+        <input type="text" size="50" value="${query?html}" id="searchEdit" name="query"/>
+        <input type="submit"  value="Go" class="button"/>
+      </form>
     </div>
 
     <div class="resultsTab"><@renderSearchPaginationLinks totalPages, hasMore/></div>
