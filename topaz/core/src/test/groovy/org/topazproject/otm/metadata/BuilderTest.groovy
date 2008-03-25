@@ -498,28 +498,27 @@ public class BuilderTest extends GroovyTestCase {
       }
     }).contains('Duplicate')
 
+    cls = rdf.class('Test1'){}
     cls = rdf.class('Test2') {
         f1 (maxCard:-1, colType:'Array', type:'xsd:anyURI', propType:'OBJECT', 
                         colMapping:'Predicate', pred:'test:f')
         f2 (maxCard:-1, colType:'Array', type:'xsd:anyURI', propType:'OBJECT', 
                         colMapping:'Predicate', pred:'test:f', inverse:true)
     }
-    def obj = cls.newInstance(id:'foo:1'.toURI(), f1:['bar:1'.toURI(), 'bar:2'.toURI()])
-    assert obj.f1 instanceof URI[]
+    def obj = cls.newInstance(id:'foo:1'.toURI())
 
     cls = rdf.class('Test3') {
-        f1 (maxCard:-1, colType:'Array', type:'xsd:anyURI', propType:'OBJECT', 
+        f1 (maxCard:-1, colType:'Array', type:'Test1', 
                         colMapping:'Predicate', pred:'test:f')
         f2 (maxCard:-1, colType:'Array', type:'Test2',
                         colMapping:'Predicate', pred:'test:f')
     }
-    obj = cls.newInstance(id:'foo:1'.toURI(), f1:['bar:1'.toURI(), 'bar:2'.toURI()])
-    assert obj.f1 instanceof URI[]
+    obj = cls.newInstance(id:'foo:1'.toURI())
 
     // duplicate
     assert shouldFail(OtmException.class, {
       cls = rdf.class('Test4') {
-        f1 (maxCard:-1, colType:'Array', type:'Test2',
+        f1 (maxCard:-1, colType:'Array', type:'xsd:anyURI', propType:'OBJECT',
                         colMapping:'Predicate', pred:'test:f')
         f2 (maxCard:-1, colType:'Array', type:'Test2',
                         colMapping:'Predicate', pred:'test:f')
@@ -529,7 +528,7 @@ public class BuilderTest extends GroovyTestCase {
     // invalid collection mapping
     assert shouldFail(OtmException.class, {
       cls = rdf.class('Test5') {
-        f1 (maxCard:-1, colType:'Array', type:'xsd:anyURI', propType:'OBJECT', 
+        f1 (maxCard:-1, colType:'Array', type:'Test1', 
                         colMapping:'Predicate', pred:'test:f')
         f2 (maxCard:-1, colType:'Array', type:'Test2',
                         colMapping:'RdfSeq', pred:'test:f')
@@ -539,7 +538,7 @@ public class BuilderTest extends GroovyTestCase {
     // unsupported(see #840) model mapping
     assert shouldFail(OtmException.class, {
       cls = rdf.class('Test6') {
-        f1 (maxCard:-1, colType:'Array', type:'xsd:anyURI', propType:'OBJECT', 
+        f1 (maxCard:-1, colType:'Array', type:'Test1',
                         colMapping:'Predicate', pred:'test:f')
         f2 (maxCard:-1, colType:'Array', type:'Test2', model:'foo',
                         colMapping:'Predicate', pred:'test:f')

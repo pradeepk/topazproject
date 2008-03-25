@@ -235,8 +235,8 @@ public class OwlGenerator {
           log.debug("Processing association field: " + m.getName());
           OWLObjectProperty objectProperty = getOWLObjectProperty(m.getUri(), m.getName());
           OWLClass range = null;
-          if (m.getRdfType() != null)
-            range = getOWLClass(m.getRdfType(), null);
+          if (getRdfType(m) != null)
+            range = getOWLClass(getRdfType(m), m.getAssociatedEntity());
           else
             range = factory.getOWLThing();
           OWLAxiom domainRestriction = null;
@@ -355,8 +355,8 @@ public class OwlGenerator {
         log.debug("Processing association field: " + m.getName());
         OWLObjectProperty objectProperty = getOWLObjectProperty(m.getUri(), m.getName());
         OWLClass range = null;
-        if (m.getRdfType() != null)
-          range = getOWLClass(m.getRdfType(), null);
+        if (getRdfType(m) != null)
+          range = getOWLClass(getRdfType(m), m.getAssociatedEntity());
         else
           range = factory.getOWLThing();
 
@@ -431,5 +431,12 @@ public class OwlGenerator {
   private static Class getSourceClass(ClassMetadata cm) {
     // XXX: temporary
     return ((ClassBinder)cm.getEntityBinder(EntityMode.POJO)).getSourceClass();
+  }
+
+  private String getRdfType(RdfMapper m) {
+    ClassMetadata cm = otmFactory.getClassMetadata(m.getAssociatedEntity());
+    if (cm != null)
+      return cm.getType();
+    return null;
   }
 }

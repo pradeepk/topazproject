@@ -821,11 +821,11 @@ public class CriteriaTest extends AbstractOtmTest {
   }
 
   private void verifyDC(DetachedCriteria dc) {
-    assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
+    assertEquals(dc.da.rdfType, factory.getClassMetadata(Annotation.class).getTypes());
     assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
                  getMapper(Annotation.class, "annotates").getUri());
     dc = dc.getChildCriteriaList().iterator().next();
-    assertEquals("" + dc.da.rdfType, factory.getClassMetadata(Annotation.class).getType());
+    assertEquals(dc.da.rdfType, factory.getClassMetadata(Annotation.class).getTypes());
     assertEquals("" + dc.da.predicateUri,
                  getMapper(Annotation.class, "supersedes").getUri());
     assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
