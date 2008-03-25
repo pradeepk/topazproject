@@ -266,16 +266,16 @@ public class DocumentManagementService {
     try {
       IProcessedArticleImageProvider paip = resolveProcessedArticleImageProvider(file);
       resizeImages(uri, imageSetConf, paip);
-    } catch (Exception e) {
+    } catch (Throwable t) {
       if (log.isErrorEnabled()) {
-        log.error("Resize images failed for article " + uri, e);
+        log.error("Resize images failed for article " + uri, t);
       }
       URI articleUri = null;
       try {
         articleUri = new URI(uri);
       } catch (URISyntaxException ue) {
       }
-      ImageResizeException ire = new ImageResizeException(articleUri, e);
+      ImageResizeException ire = new ImageResizeException(articleUri, t);
       throw ire;
     }
     finally {

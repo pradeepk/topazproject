@@ -9,7 +9,7 @@
  */
 
 import org.plos.util.ToolHelper
-import org.plos.admin.service.ImageProcessor
+import org.plos.article.util.ImageProcessor
 
 long startTime = System.currentTimeMillis()
 def seconds = { return (int) (((System.currentTimeMillis() - startTime) / 1000) + 0.5f) }

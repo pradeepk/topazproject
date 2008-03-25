@@ -183,16 +183,17 @@ public final class ImageProcessor {
    *         processing.
    */
   public File process(File inputFile) throws IllegalArgumentException, ImageProcessingException {
-    if (inputFile == null || !inputFile.isFile()) {
-      throw new IllegalArgumentException(inputFile == null ? "Unspecified article zip file"
-          : "Invalid article zip file: " + inputFile.toString());
+    log.debug("Assembling article zip container...");
+    ArticleZip articleZip;
+    try {
+      articleZip = new ArticleZip(inputFile);
+    }
+    catch(IllegalArgumentException iae) {
+      throw new ImageProcessingException(iae.getMessage(), iae);
     }
 
-    log.debug("Assembling article zip container...");
-    ArticleZip articleZip = new ArticleZip(inputFile);
-
     if (log.isInfoEnabled())
-      log.info("Processing article zip: '" + articleZip.getFile().toString() + "' ...");
+      log.info("Processing article zip file: '" + articleZip.toString() + "' ...");
 
     log.debug("Obtaining File handle for processed zip output...");
     File outputFile;

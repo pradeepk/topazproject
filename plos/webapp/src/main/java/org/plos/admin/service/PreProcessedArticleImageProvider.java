@@ -37,8 +37,6 @@ final class PreProcessedArticleImageProvider implements IProcessedArticleImagePr
    */
   public PreProcessedArticleImageProvider(File articleZipFile) {
     super();
-    if (articleZipFile == null)
-      throw new IllegalArgumentException("An article zip file must be specified");
     this.articleZip = new ArticleZip(articleZipFile);
   }
 

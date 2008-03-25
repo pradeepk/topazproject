@@ -40,14 +40,26 @@ public final class ArticleZip {
    */
   private volatile ZipFile zf;
 
-  public ArticleZip(File f) {
+  /**
+   * Constructor
+   * @param f The File ref to the article zip file
+   * @throws IllegalArgumentException When the File arg is <code>null</code> or when its name does not
+   *         end with '.zip'
+   */
+  public ArticleZip(File f) throws IllegalArgumentException {
     super();
-    assert f != null;
+    
+    if (f == null || !f.isFile()) {
+      throw new IllegalArgumentException(f == null ? "Unspecified article zip file"
+          : "Invalid article zip file: " + f.toString());
+    }
     this.f = f;
 
     // determine the base name
     String n = f.getName();
-    assert n.endsWith(".zip");
+    if(!n.endsWith(".zip")) {
+      throw new IllegalArgumentException("The article zip file must end with the .zip extension");
+    }
     baseName = n.substring(0, n.length() - 4);
   }
 
