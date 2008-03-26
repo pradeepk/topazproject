@@ -467,7 +467,7 @@
     </constructor-arg>
   </bean>
 
-  <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
+  <bean id="browseService" class="org.plos.article.service.BrowseService" scope="request">
     <aop:scoped-proxy/>
   </bean>
 
