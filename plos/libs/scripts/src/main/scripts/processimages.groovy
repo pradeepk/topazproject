@@ -39,7 +39,14 @@ println 'Loading configuration...'
 ToolHelper.loadConfiguration(opt.c)
 
 // get an image processor to do the work 
-final ImageProcessor ip = new ImageProcessor(opt.d, opt.o)
+final ImageProcessor ip;
+try {
+  ip = new ImageProcessor(opt.d, opt.o)
+}
+catch(Throwable t) {
+  cli.usage()
+  return
+}
 
 // go
 println ('Processing file: ' + articleFile + '...')
