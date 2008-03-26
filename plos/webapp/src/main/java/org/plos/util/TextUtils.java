@@ -9,20 +9,20 @@
  */
 package org.plos.util;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.Node;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.w3c.dom.Node;
 
 /**
  * Provides some useful text manipulation functions.
@@ -66,9 +66,18 @@ public class TextUtils {
   public static String hyperlink(final String text) {
     if (StringUtils.isBlank(text)) {
       return text;
-    } else {
-      return com.opensymphony.util.TextUtils.linkURL(text); 
     }
+    // HACK: [issue - if the text ends with ')' this is included in the hyperlink]
+    // so to avoid this we explicitly guard against it here
+    // NOTE: com.opensymphony.util.TextUtils.linkURL guards against an atomically wrapped url:  
+    // "(http://www.domain.com)" but NOT "(see http://www.domain.com)"
+    String s = text.replace('(', '{');
+    s = s.replace(')', '}');
+    s = com.opensymphony.util.TextUtils.linkURL(s);
+    s = StringUtils.replace(s, "{", "(");
+    s = StringUtils.replace(s, "}", ")");
+    // END HACK
+    return s;
   }
   
   /**
@@ -112,7 +121,7 @@ public class TextUtils {
       URI u = new URI(url);
 
       //To see if we can get a valid url or if we get an exception
-      final URL urlFromUri = u.toURL();
+      u.toURL();
       return true;
     } catch (Exception e) {
       return false;
