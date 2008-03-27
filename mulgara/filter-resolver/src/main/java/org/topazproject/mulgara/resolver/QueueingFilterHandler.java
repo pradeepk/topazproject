@@ -29,15 +29,15 @@ import org.mulgara.resolver.spi.DummyXAResource;
  * 
  * @author Ronald Tschalär
  */
-abstract class QueueingFilterHandler extends AbstractFilterHandler {
-  protected final Logger           logger;
-  protected final boolean          orderedMods;
-  protected final List             updQueue = new ArrayList();
-  protected final Map<Xid, List>   txQueue  = new HashMap<Xid, List>();
-  protected       boolean          newUpdPending;
-  protected final XAResource       xaResource;
-  protected final Worker           worker;
-  protected final ThreadLocal<Xid> currentTxId = new ThreadLocal<Xid>();
+abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
+  protected final Logger            logger;
+  protected final boolean           orderedMods;
+  protected final List<T>           updQueue = new ArrayList<T>();
+  protected final Map<Xid, List<T>> txQueue  = new HashMap<Xid, List<T>>();
+  protected       boolean           newUpdPending;
+  protected final XAResource        xaResource;
+  protected final Worker            worker;
+  protected final ThreadLocal<Xid>  currentTxId = new ThreadLocal<Xid>();
 
   /** 
    * Create a new queueing-filter instance. Events are queued and the queue is processed by a
@@ -65,11 +65,11 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
     worker = new Worker(workerName, workWait, clscWait);
   }
 
-  protected void queue(Object obj) {
+  protected void queue(T obj) {
     synchronized (txQueue) {
-      List queue = txQueue.get(currentTxId.get());
+      List<T> queue = txQueue.get(currentTxId.get());
       if (queue == null)
-        txQueue.put(currentTxId.get(), queue = new ArrayList());
+        txQueue.put(currentTxId.get(), queue = new ArrayList<T>());
 
       queue.add(obj);
     }
@@ -117,15 +117,15 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
       logger.debug("Processing worker queue");
 
     // make a copy of the queue and clear it
-    final Collection mods = orderedMods ? (Collection) new ArrayList() : new HashSet();
+    final Collection<T> mods = orderedMods ? (Collection<T>) new ArrayList<T>() : new HashSet<T>();
     synchronized (updQueue) {
       mods.addAll(updQueue);
       updQueue.clear();
       newUpdPending = false;
     }
 
-    Iterator iter = mods.iterator();
-    Object cur = null;
+    Iterator<T> iter = mods.iterator();
+    T cur = null;
     try {
       while (iter.hasNext())
         handleQueuedItem(cur = iter.next());
@@ -142,7 +142,7 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
     }
   }
 
-  protected abstract void handleQueuedItem(Object obj) throws Exception;
+  protected abstract void handleQueuedItem(T obj) throws Exception;
 
   protected abstract void idleCallback() throws Exception;
 
@@ -162,7 +162,7 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
     }
 
     public void commit(Xid xid, boolean onePhase) {
-      List queue;
+      List<T> queue;
       synchronized (txQueue) {
         queue = txQueue.remove(xid);
       }

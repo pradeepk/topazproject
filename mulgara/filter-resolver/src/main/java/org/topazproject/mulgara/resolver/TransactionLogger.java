@@ -60,7 +60,7 @@ import org.mulgara.resolver.spi.Statements;
  *
  * @author Ronald Tschalär
  */
-class TransactionLogger extends QueueingFilterHandler {
+class TransactionLogger extends QueueingFilterHandler<String> {
   private static final Logger logger = Logger.getLogger(TransactionLogger.class);
   private        final TxLog  txLog;
 
@@ -169,8 +169,8 @@ class TransactionLogger extends QueueingFilterHandler {
    * =====================================================================
    */
 
-  protected void handleQueuedItem(Object obj) throws IOException {
-    txLog.write((String) obj);
+  protected void handleQueuedItem(String cmd) throws IOException {
+    txLog.write(cmd);
   }
 
   protected void idleCallback() throws IOException {

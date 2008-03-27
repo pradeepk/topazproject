@@ -148,7 +148,7 @@ import net.sf.ehcache.Ehcache;
  *
  * @author Ronald Tschalär
  */
-class CacheInvalidator extends QueueingFilterHandler {
+class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
   private static final Logger logger = Logger.getLogger(CacheInvalidator.class);
   private static final String DEF_QC_NAME = "queryCache";
 
@@ -490,7 +490,7 @@ class CacheInvalidator extends QueueingFilterHandler {
     }
   }
 
-  private static class ModItem {
+  static class ModItem {
     final String cache;
     final String key;
     final String query;
@@ -527,9 +527,7 @@ class CacheInvalidator extends QueueingFilterHandler {
    * =====================================================================
    */
 
-  protected void handleQueuedItem(Object obj) throws IOException {
-    ModItem mi = (ModItem) obj;
-
+  protected void handleQueuedItem(ModItem mi) throws IOException {
     // get the Ehcache instance
     Ehcache cache = CacheManager.getInstance().getEhcache(mi.cache);
     if (cache == null) {
