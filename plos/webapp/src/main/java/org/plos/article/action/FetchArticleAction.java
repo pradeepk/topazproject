@@ -99,7 +99,7 @@ public class FetchArticleAction extends BaseActionSupport {
           public Void run(Transaction tx) {
             
             // get the alternate ArticleInfo, e.g. contains RelatedArticles
-            articleInfoX = browseService.getArticleInfo(URI.create(articleURI), tx);
+            articleInfoX = browseService.getArticleInfo(URI.create(articleURI));
             
             journalList = journalService.getJournalsForObject(URI.create(articleURI));
             return null;

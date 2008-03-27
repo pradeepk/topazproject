@@ -12,26 +12,23 @@ package org.plos.model;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.plos.model.article.ArticleInfo;
-
 /**
- * The info about a single Issue that the UI needs.
+ * The info about a single Issue that the UI needs. 
  *
  * This class is immutable.
  */
 public class IssueInfo implements Serializable {
-
+  private static final long serialVersionUID = 1L;
   private URI          id;
   private String       displayName;
   private URI          prevIssue;
   private URI          nextIssue;
   private URI          imageArticle;
   private String       description;
-  private List<ArticleInfo> articlesInIssue = new ArrayList<ArticleInfo>();
   private URI parentVolume;
+  private List<URI> articleUriList;
 
   // XXX TODO, List<URI> w/Article DOI vs. List<ArticleInfo>???
 
@@ -45,10 +42,6 @@ public class IssueInfo implements Serializable {
     this.imageArticle = imageArticle;
     this.description = description;
     this.parentVolume = parentVolume;
-  }
-
-  public void addArticleToIssue(ArticleInfo article) {
-    articlesInIssue.add(article);
   }
 
   /**
@@ -114,7 +107,23 @@ public class IssueInfo implements Serializable {
     return parentVolume;
   }
 
-  public List<ArticleInfo> getArticlesInIssue() {
-    return articlesInIssue;
+  /**
+   * Set the list of article DOI's that this issue contains. Please update
+   * the browseCache for this IssueInfo if you change this list. 
+   * @param articleList
+   */
+  public void setArticleUriList(List<URI> articleList) {
+    articleUriList = articleList;
+  }
+  
+  /**
+   * Returns a list of Article DOI's that this issue contains. Note that is you need the actual 
+   * articles themselves, use BrowseService.getArticleInfosForIssue() since it attempts to use
+   * cached ArticleInfos for efficiency. 
+   * 
+   * @return
+   */
+  public List<URI> getArticleUriList() {
+    return articleUriList;
   }
 }

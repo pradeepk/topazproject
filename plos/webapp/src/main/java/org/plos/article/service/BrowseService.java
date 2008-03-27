@@ -58,12 +58,11 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * Class to get all Articles in system and organize them by date and by category
  *
- * @author stevec
+ * @author Alex Worden, stevec
  */
 public class BrowseService {
   private static final Log log = LogFactory.getLog(BrowseService.class);
@@ -83,6 +82,8 @@ public class BrowseService {
   
   public static final String ISSUE_LOCK        = "IssueLock-";
   public static final String ISSUE_KEY         = "Issue-";
+
+  public static final String VOL_INFOS_FOR_JOURNAL_KEY = "VolInfos_";
 
   private final ArticlePEP     pep;
   private       Session        session;
@@ -146,7 +147,7 @@ public class BrowseService {
       return null;
     } else {
       numArt[0] = uris.size();
-      return getArticles(uris, pageNum, pageSize);
+      return loadArticles(uris, pageNum, pageSize);
     }
   }
 
@@ -187,7 +188,7 @@ public class BrowseService {
       return null;
     } else {
       numArt[0] = uris.size();
-      return getArticles(uris, pageNum, pageSize);
+      return loadArticles(uris, pageNum, pageSize);
     }
   }
 
@@ -218,29 +219,17 @@ public class BrowseService {
 	 * 
 	 * @param issue
 	 *          DOI of Issue.
-	 * @param eagerFetchArticles
-	 *          causes the ArticleInfos to be fetched
 	 * @return the Issue information.
 	 */
-	public IssueInfo getIssueInfo(final URI doi, final boolean eagerFetchArticles) {
-
-    // Attempt to lookup IssueInfo in the cache - note that we can't cache complete
-    // IssueInfo because it contains a list of articles that are XACML specific to the
-    // user However - we can cache an IssueInfo that has eagerFetchArticles==false - which is
-    // a big improvement in performance for the BrowseVolumeAction.
-
-    if (eagerFetchArticles == false) {
-      return CacheAdminHelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
+	public IssueInfo getIssueInfo(final URI doi) {
+	  return CacheAdminHelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
           ISSUE_LOCK + doi, "issue " + doi,
           new CacheAdminHelper.EhcacheUpdater<IssueInfo>() {
             public IssueInfo lookup() {
-              return getIssueInfo2(doi, eagerFetchArticles);
+              return getIssueInfo2(doi);
             }
           });
-    } else {
-      return getIssueInfo2(doi, eagerFetchArticles);
-    }
-  }
+    } 
 
   /**
    * Get Issue information - creates a transaction then calls getIssueInfoInTx. 
@@ -251,7 +240,7 @@ public class BrowseService {
    * @param eagerFetchArticles causes the ArticleInfos to be fetched
    * @return the Issue information.
    */
-  private IssueInfo getIssueInfo2(final URI doi, final boolean eagerFetchArticles) {
+  private IssueInfo getIssueInfo2(final URI doi) {
 
     // XXX look up IssueInfo in Cache
 
@@ -263,7 +252,7 @@ public class BrowseService {
 
         public IssueInfo run(Transaction tx) {
 
-          return getIssueInfoInTx(session, doi, eagerFetchArticles);
+          return getIssueInfoInTx(doi);
         }
       });
   }
@@ -275,7 +264,7 @@ public class BrowseService {
 	 *          DOI of Issue.
 	 * @return the Issue information.
 	 */
-  private IssueInfo getIssueInfoInTx(Session session, final URI issueDOI, boolean eagerFetchArticles) {
+  private IssueInfo getIssueInfoInTx(final URI issueDOI) {
 
     // XXX look up IssueInfo in Cache
 
@@ -324,33 +313,75 @@ public class BrowseService {
 
     IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI, nextIssueURI,
                                         imageArticle, description, parentVolume.getId());
-    if (eagerFetchArticles) {
-      for (URI articleDoi : issue.getSimpleCollection()) {
-        ArticleInfo articleInIssue = getArticleInfo(articleDoi, session.getTransaction());
-        if (articleInIssue == null) {
-          log.warn("Article " + articleDoi + " missing; member of Issue " + issueDOI);
-          continue;
-        }
-        issueInfo.addArticleToIssue(articleInIssue);
-      }
-    }
+    issueInfo.setArticleUriList(issue.getSimpleCollection());
     return issueInfo;
+  }
+  
+  /**
+   * Returns the list of ArticleInfos contained in this Issue. The list will contain only ArticleInfos for 
+   * Articles that the current user has permission to view. 
+   * 
+   * @param issueDOI
+   * @return
+   */
+  public List<ArticleInfo> getArticleInfosForIssue(final URI issueDOI) {
+    
+    IssueInfo iInfo = getIssueInfo(issueDOI);
+    List<ArticleInfo> aInfos = new ArrayList<ArticleInfo>();
+    
+    for (URI articleDoi : iInfo.getArticleUriList()) {
+      ArticleInfo ai = getArticleInfo(articleDoi);
+      if (ai == null) {
+        log.warn("Article " + articleDoi + " missing; member of Issue " + issueDOI);
+        continue;
+      }
+      aInfos.add(ai);
+    }
+    return aInfos;
   }
 
   /**
-   * Get a VolumeInfo for the given id
+   * Get a VolumeInfo for the given id. This only works if the volume is in the current journal.
    * 
    * @param id
    * @return
    */
   public VolumeInfo getVolumeInfo(URI id) {
+    // Attempt to get the volume infos from the cached journal list... 
+    List<VolumeInfo> volumes = getVolumeInfosForJournal(journalService.getCurrentJournal(session));
+    for (VolumeInfo vol : volumes) {
+      if (id.equals(vol.getId())) {
+        return vol;
+      }
+    }
+    
+    // If we have no luck with the cached journal list, attempt to load the volume re-using loadVolumeInfos();
     List<URI> l = new ArrayList<URI>();
     l.add(id);
-    List<VolumeInfo> vols = getVolumeInfos(l);
+    List<VolumeInfo> vols = loadVolumeInfos(l);
     if (vols != null && vols.size() > 0) {
       return vols.get(0);
     }
     return null;
+  }
+  
+  /**
+   * Returns a list of VolumeInfos for the given Journal. Uses the CacheAdminHelper pull-through cache. 
+   * 
+   * @param journal
+   * @return
+   */
+  public List<VolumeInfo> getVolumeInfosForJournal(final Journal journal) {
+    
+    String key = (VOL_INFOS_FOR_JOURNAL_KEY + (journal.getKey())).intern();
+    
+    return CacheAdminHelper.getFromCache(browseCache, key, -1, key, "List of volumes for journal" + journal.getId(),
+                                         new CacheAdminHelper.EhcacheUpdater<List<VolumeInfo>>() {
+       public List<VolumeInfo> lookup() {
+         final List<URI> volumeDois = journal.getVolumes();
+         
+         return loadVolumeInfos(volumeDois);
+       }});
   }
   
   /**
@@ -360,7 +391,7 @@ public class BrowseService {
    * @param volumeDois to look up.
    * @return volumeInfos.
    */
-  public List<VolumeInfo> getVolumeInfos(final List<URI> volumeDois) {
+  public List<VolumeInfo> loadVolumeInfos(final List<URI> volumeDois) {
 
     // XXX look up VolumeInfos in Cache
 
@@ -371,7 +402,7 @@ public class BrowseService {
         // TODO should all of this be in a tx???
         public List<VolumeInfo> run(Transaction tx) {
 
-          List<VolumeInfo> volumeInfos = new ArrayList();
+          List<VolumeInfo> volumeInfos = new ArrayList<VolumeInfo>();
           // get the Volumes
           for (int onVolumeDoi = 0; onVolumeDoi < volumeDois.size(); onVolumeDoi++) {
             final URI volumeDoi = volumeDois.get(onVolumeDoi);
@@ -391,9 +422,9 @@ public class BrowseService {
               }
             }
 
-            List<IssueInfo> issueInfos = new ArrayList();
+            List<IssueInfo> issueInfos = new ArrayList<IssueInfo>();
             for (final URI issueDoi : volume.getIssueList()) {
-              issueInfos.add(getIssueInfo(issueDoi, false));
+              issueInfos.add(getIssueInfo(issueDoi));
             }
 
             // calculate prev/next
@@ -409,7 +440,7 @@ public class BrowseService {
         }
       });
   }
-
+  
   private Object getCatInfo(String key, String desc, boolean load) {
     return getCatInfo(key, desc, load, getCurrentJournal());
   }
@@ -573,6 +604,7 @@ public class BrowseService {
     synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
       browseCache.remove(CAT_INFO_KEY + jnlName);
       browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
+      browseCache.remove(BrowseService.VOL_INFOS_FOR_JOURNAL_KEY + jnlName);
     }
 
     synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
@@ -629,47 +661,50 @@ public class BrowseService {
     browseCache.put(new Element(CAT_INFO_KEY + jnlName, catSizes));
   }
 
-  private ArticleInfo loadArticleInfo(final URI id, Transaction tx) {
-    Results r = tx.getSession().createQuery(
-        "select a.id, dc.date, dc.title, ci, " +
-        "(select a.articleType from Article aa), " +
-        "(select aa2.id, aa2.dublinCore.title from Article aa2 " +
-        "   where aa2 = a.relatedArticles.article) " +
-        "from Article a, BrowseService$CitationInfo ci " +
-        "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;").
-        setParameter("id", id).execute();
-
-    r.beforeFirst();
-    if (!r.next())
-      return null;
-
-    ArticleInfo ai = new ArticleInfo();
-    ai.id    = id;
-    ai.date  = r.getLiteralAs(1, Date.class);
-    ai.title = r.getString(2);
-
-    for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
-      upi.hashCode();     // force load
-      ai.authors.add(upi.realName);
-    }
-
-    Results sr = r.getSubQueryResults(4);
-    while (sr.next()) {
-      ai.articleTypes.add(ArticleType.getArticleTypeForURI(sr.getURI(0), true));
-    }
-
-    sr = r.getSubQueryResults(5);
-    while (sr.next()) {
-      ai.relatedArticles.add(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
-    }
-
-    if (log.isDebugEnabled())
-      log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes
-                + "', date='" + ai.date + "', title='" + ai.title
-                + "', authors='" + ai.authors + "', related-articles='" + ai.relatedArticles +
-                "'");
-
-    return ai;
+  private ArticleInfo loadArticleInfo(final URI id) {
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<ArticleInfo>() {
+      public ArticleInfo run(Transaction tx) {
+        Results r = tx.getSession()
+            .createQuery(
+                         "select a.id, dc.date, dc.title, ci, " + "(select a.articleType from Article aa), "
+                             + "(select aa2.id, aa2.dublinCore.title from Article aa2 "
+                             + "   where aa2 = a.relatedArticles.article) "
+                             + "from Article a, BrowseService$CitationInfo ci "
+                             + "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;")
+            .setParameter("id", id).execute();
+        
+        r.beforeFirst();
+        if (!r.next())
+          return null;
+        
+        ArticleInfo ai = new ArticleInfo();
+        ai.id = id;
+        ai.date = r.getLiteralAs(1, Date.class);
+        ai.title = r.getString(2);
+        
+        for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
+          upi.hashCode(); // force load
+          ai.authors.add(upi.realName);
+        }
+        
+        Results sr = r.getSubQueryResults(4);
+        while (sr.next()) {
+          ai.articleTypes.add(ArticleType.getArticleTypeForURI(sr.getURI(0), true));
+        }
+        
+        sr = r.getSubQueryResults(5);
+        while (sr.next()) {
+          ai.relatedArticles.add(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
+        }
+        
+        if (log.isDebugEnabled())
+          log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes + "', date='" + ai.date
+                    + "', title='" + ai.title + "', authors='" + ai.authors + "', related-articles='"
+                    + ai.relatedArticles + "'");
+        
+        return ai;
+      }
+    });
   }
 
   private Years loadArticleDates() {
@@ -742,7 +777,7 @@ public class BrowseService {
     });
   }
 
-  private List<ArticleInfo> getArticles(final List<URI> ids, int pageNum, int pageSize) {
+  private List<ArticleInfo> loadArticles(final List<URI> ids, int pageNum, int pageSize) {
     final int beg = (pageSize > 0) ? pageNum * pageSize : 0;
     final int end = (pageSize > 0) ? Math.min((pageNum + 1) * pageSize, ids.size()) : ids.size();
 
@@ -753,7 +788,7 @@ public class BrowseService {
         for (int idx = beg; idx < end; idx++) {
           URI id = ids.get(idx);
 
-          ArticleInfo ai = getArticleInfo(id, tx);
+          ArticleInfo ai = getArticleInfo(id);
           if (ai != null)
             res.add(ai);
         }
@@ -763,7 +798,7 @@ public class BrowseService {
     });
   }
 
-  public ArticleInfo getArticleInfo(final URI id, final Transaction tx) {
+  public ArticleInfo getArticleInfo(final URI id) {
     try {
       pep.checkAccess(ArticlePEP.READ_META_DATA, id);
     } catch (SecurityException se) {
@@ -777,7 +812,7 @@ public class BrowseService {
                                     "article " + id,
                                     new CacheAdminHelper.EhcacheUpdater<ArticleInfo>() {
         public ArticleInfo lookup() {
-          return loadArticleInfo(id, tx);
+          return loadArticleInfo(id);
         }
       });
   }

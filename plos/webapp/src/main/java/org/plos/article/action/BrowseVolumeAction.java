@@ -36,11 +36,11 @@ public class BrowseVolumeAction extends BaseActionSupport {
   @Override
   public String execute() throws Exception {
     Journal currentJournal = journalService.getCurrentJournal(session);
-    volumeInfos = browseService.getVolumeInfos(currentJournal.getVolumes());
+    volumeInfos = browseService.getVolumeInfosForJournal(currentJournal);
     Collections.reverse(volumeInfos);
     currentVolume = volumeInfos.get(0);
 
-    currentIssue = browseService.getIssueInfo(currentJournal.getCurrentIssue(), false);
+    currentIssue = browseService.getIssueInfo(currentJournal.getCurrentIssue());
     if (currentIssue != null) {
       // Figure out what issue number the currentIssue is in its volume
       for (VolumeInfo vol : volumeInfos) {
