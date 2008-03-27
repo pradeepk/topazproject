@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import org.topazproject.otm.annotations.Entity;
@@ -20,7 +21,7 @@ import org.topazproject.otm.annotations.Id;
  * @author Amit Kapoor
  */
 @Entity(type = PLoS.creativeCommons + "License", model = "ri")
-public abstract class License {
+public abstract class License implements Serializable {
   @Id
   private URI   id;
 

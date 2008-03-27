@@ -10,6 +10,7 @@
 
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +27,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Ronald Tschalär
  */
 @Entity(type = Rdf.foaf + "OnlineAccount", model = "users")
-public class UserAccount {
+public class UserAccount implements Serializable {
   /** the state indicating the user account is active: {@value} */
   public static final int ACNT_ACTIVE    = 0;
   /** the state indicating the user account is suspended: {@value} */

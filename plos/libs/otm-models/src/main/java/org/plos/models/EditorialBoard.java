@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
   */
 @Entity(type = PLoS.plos + "EditorialBoard", model = "ri")
-public class EditorialBoard {
+public class EditorialBoard implements Serializable {
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/editorialBoard/")
   private URI            id;

@@ -10,6 +10,7 @@
 
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
@@ -30,7 +31,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix(Rdf.topaz + "TrackbackContent/")
 @Entity(model = "ri", type = Rdf.topaz + "TrackbackContent")
-public class TrackbackContent {
+public class TrackbackContent implements Serializable {
 
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/trackbackContent/")

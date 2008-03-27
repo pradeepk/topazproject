@@ -10,6 +10,7 @@
 
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -29,7 +30,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix(Rdf.foaf)
 @Entity(type = Rdf.foaf + "Person")
-public class FoafPerson {
+public class FoafPerson implements Serializable {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/profile/")
   private URI      id;
 

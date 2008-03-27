@@ -10,6 +10,7 @@
 
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +31,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Ronald Tschalär
  */
 @Entity(model = "preferences")
-public class UserPreferences {
+public class UserPreferences implements Serializable {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/preferences/")
   private URI    id;
   @Predicate(uri = Rdf.dc_terms + "mediator")

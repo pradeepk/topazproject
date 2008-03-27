@@ -9,6 +9,8 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,7 +29,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix(Rdf.topaz + "RatingContent/")
 @Entity(model = "ri", type = Rdf.topaz + "RatingContent")
-public class RatingContent {
+public class RatingContent implements Serializable {
 
   public static final int INSIGHT_WEIGHT = 6;
   public static final int RELIABILITY_WEIGHT = 5;

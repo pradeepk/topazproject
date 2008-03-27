@@ -9,6 +9,8 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,7 +28,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix(Rdf.topaz + "RatingSummaryContent/")
 @Entity(model = "ri", type = Rdf.topaz + "RatingSummaryContent")
-public class RatingSummaryContent {
+public class RatingSummaryContent implements Serializable {
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/ratingSummaryContent/")
   private String id;

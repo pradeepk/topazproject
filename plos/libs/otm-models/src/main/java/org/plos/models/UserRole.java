@@ -10,6 +10,7 @@
 
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import org.topazproject.otm.Rdf;
@@ -24,7 +25,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Ronald Tschalär
  */
 @Entity(model = "users")
-public class UserRole {
+public class UserRole implements Serializable {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/roles/")
   private URI    id;
   @Predicate(uri = Rdf.topaz + "role")

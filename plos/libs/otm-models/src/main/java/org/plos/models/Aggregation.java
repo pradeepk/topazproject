@@ -9,6 +9,7 @@
  */
 package org.plos.models;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import org.topazproject.otm.criterion.DetachedCriteria;
  * @author Amit Kapoor
  */
 @Entity(type = "http://purl.org/dc/dcmitype/Collection", model = "ri")
-public class Aggregation {
+public class Aggregation implements Serializable {
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/aggregation/")
   private URI                            id;

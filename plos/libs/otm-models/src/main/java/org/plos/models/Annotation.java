@@ -9,7 +9,6 @@
  */
 package org.plos.models;
 
-import java.io.Serializable;
 import java.net.URI;
 
 import org.topazproject.otm.Rdf;
@@ -24,7 +23,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 @Entity(type = Annotation.RDF_TYPE)
-public abstract class Annotation extends Annotea implements Serializable {
+public abstract class Annotation extends Annotea {
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
   private URI                                                               id;
