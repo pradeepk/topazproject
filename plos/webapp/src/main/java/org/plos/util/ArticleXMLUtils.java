@@ -12,7 +12,6 @@ package org.plos.util;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -28,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -73,24 +73,40 @@ public class ArticleXMLUtils {
   private String articleRep;
   private Map<String, String> xmlFactoryProperty;
 
-  // designed for Singleton use, Templates are threadsafe
-  private static Templates objInfoXsltTemplate;  // initialized from objInfo.xsl template
-  private static Templates translet;             // initialized from xslTemplate, per bean property
-  private static final String OBJECTINFO_XSLT_LOCK  = "OBJECTINFO_XSLT_LOCK";
-  private static final String XSLTEMPLATE_XSLT_LOCK = "XSLTEMPLATE_XSLT_LOCK";
+  // designed for Singleton use, set in init(), then Templates are threadsafe for reuse
+  private Templates objInfoXsltTemplate;  // initialized from objInfo.xsl template
+  private Templates translet;             // initialized from xslTemplate, per bean property
 
   /**
-   * Initialization method called by Spring
+   * Initialization method called by Spring.
+   *
+   * @throws ApplicationException On Template creation Exceptions.
    */
-  public void init() {
-    // Set the TransformerFactory system properties.
+  public void init() throws ApplicationException {
+
+    // set JAXP properties
     System.getProperties().putAll(xmlFactoryProperty);
 
     // Create a document builder factory and set the defaults
     factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
     factory.setValidating(false);
-  }
+
+    // set the Templates
+    final TransformerFactory tFactory = TransformerFactory.newInstance();
+    final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate", "/objInfo.xsl"));
+    if (resource == null) {
+      throw new ApplicationException("Failed to get stylesheet: /objInfo.xsl");
+    }
+    try {
+      translet = tFactory.newTemplates(new StreamSource(xslTemplate));
+      objInfoXsltTemplate = tFactory.newTemplates(new StreamSource(new File(resource.toURI())));
+    } catch (TransformerConfigurationException tce) {
+      throw new ApplicationException(tce);
+    } catch (URISyntaxException use) {
+      throw new ApplicationException(use);
+    }
+}
 
   /**
    * Pass in an XML string fragment, and will return back a string representing the document after
@@ -168,16 +184,13 @@ public class ArticleXMLUtils {
     return builder;
   }
   
-  private Transformer getTranslet() throws TransformerException, FileNotFoundException {
-    // synchronize test/creation block for translet (Template)
-    synchronized(XSLTEMPLATE_XSLT_LOCK) {
-      if (null == translet) {
-        // Instantiate the TransformerFactory, and use it with a StreamSource
-        // XSL stylesheet to create a translet as a Templates object.
-        final TransformerFactory tFactory = TransformerFactory.newInstance();
-        translet = tFactory.newTemplates(new StreamSource(xslTemplate));
-      }
-    }
+  /**
+   * Get a translet, compiled stylesheet, for the xslTemplate.
+   *
+   * @return Translet for the xslTemplate.
+   * @throws TransformerException TransformerException.
+   */
+  private Transformer getTranslet() throws TransformerException {
 
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
@@ -301,31 +314,15 @@ public class ArticleXMLUtils {
   }
 
   /**
-   * Get a translet - a compiled stylesheet - for the secondary objects.
+   * Get a translet, compiled stylesheet, for the secondary objects.
    *
-   * @return translet
-   * @throws TransformerException TransformerException
-   * @throws FileNotFoundException FileNotFoundException
+   * @return Translet for the secondary objects.
+   * @throws TransformerException TransformerException.
    */
-  public Transformer getSecondaryObjectTranslet() throws ApplicationException, TransformerException, FileNotFoundException, URISyntaxException {
-    // synchronize test/creation block for objInfoXsltTemplate (Template)
-    synchronized(OBJECTINFO_XSLT_LOCK) {
-      if (objInfoXsltTemplate == null) {
-        // Instantiate the TransformerFactory, and use it with a StreamSource
-        // XSL stylesheet to create a translet as a Templates object.
-        final TransformerFactory tFactory = TransformerFactory.newInstance();
-        final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate", "/objInfo.xsl"));
-        if (resource == null) {
-          throw new ApplicationException("Failed to get stylesheet");
-        }
-        objInfoXsltTemplate = tFactory.newTemplates(new StreamSource(new File(resource.toURI())));
-      }
-    }
+  public Transformer getSecondaryObjectTranslet() throws TransformerException {
 
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
     return objInfoXsltTemplate.newTransformer();
-  }
-
-  
+  }  
 }

@@ -21,31 +21,27 @@
     <property name="annotationWebService" ref="annotationWebService"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="articleXmlUtils" ref="articleXmlUtils"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="articleXmlUtils" class="org.plos.util.ArticleXMLUtils" scope="request" init-method="init">
+  <bean id="articleXmlUtils" class="org.plos.util.ArticleXMLUtils" scope="singleton" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="citationService" class="org.plos.util.ArticleXMLUtils" scope="request" init-method="init">
+  <bean id="citationService" class="org.plos.util.ArticleXMLUtils" scope="singleton" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/citation.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="secondaryObjectService" class="org.plos.util.ArticleXMLUtils" scope="request" init-method="init">
+  <bean id="secondaryObjectService" class="org.plos.util.ArticleXMLUtils" scope="singleton" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/objInfo.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
-    <aop:scoped-proxy/>
   </bean>
 
 
