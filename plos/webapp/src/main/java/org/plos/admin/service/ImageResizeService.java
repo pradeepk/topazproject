@@ -24,6 +24,8 @@ import java.io.IOException;
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 
+import org.apache.commons.io.IOUtils;
+
 import org.apache.commons.configuration.Configuration;
 
 import org.apache.commons.logging.Log;
@@ -127,8 +129,6 @@ public class ImageResizeService {
    * @throws ImageResizeException
    */
   private void preOperation(final byte[] image) throws ImageResizeException {
-    final ImageRetrievalService imageRetrievalService = new ImageRetrievalService();
-
     inputImageFile = new File(location,inputImageFileName);
     outputImageFile = new File(location,outputImageFileName);
 
@@ -154,9 +154,7 @@ public class ImageResizeService {
         final FileOutputStream out = new FileOutputStream(inputImageFile);
 
         try {
-          imageRetrievalService.transferImage(in,out);
-        } catch (ImageRetrievalServiceException e) {
-          throw new ImageResizeException(e);
+          IOUtils.copyLarge(in, out);
         } finally {
           out.close();
         }
@@ -238,8 +236,6 @@ public class ImageResizeService {
     assert(sourceFile != null && sourceFile.exists() && sourceFile.length() > 0);
 
     final byte[] result;
-    final ImageRetrievalService imageRetrievalService = new ImageRetrievalService();
-
     try {
       final InputStream in = new FileInputStream(sourceFile);
       final long fileSize = sourceFile.length();
@@ -248,14 +244,12 @@ public class ImageResizeService {
         final ByteArrayOutputStream out = new ByteArrayOutputStream((int) fileSize);
 
         try {
-          imageRetrievalService.transferImage(in,out);
+          IOUtils.copyLarge(in, out);
           result = out.toByteArray();
 
           if (log.isDebugEnabled()) {
             log.debug("file size: " + result.length);
           }
-        } catch (ImageRetrievalServiceException e) {
-          throw new ImageResizeException(e);
         } finally {
           out.close();
         }

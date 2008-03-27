@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * This Stores an image from a given URL in a buffer and provides the images as
  * a byte array.
@@ -48,15 +50,11 @@ public class ImageStorageService {
    * @throws ImageStorageServiceException
    */
   public void captureImage(final URL url) throws ImageStorageServiceException {
-    final ImageRetrievalService imageRetrievalService = new ImageRetrievalService();
-
     try {
       final InputStream in = url.openStream();
-      imageRetrievalService.transferImage(in,buffer);
+      IOUtils.copyLarge(in, buffer);
     } catch (IOException e) {
-      throw new ImageStorageServiceException("",e);
-    } catch (ImageRetrievalServiceException e) {
-      throw new ImageStorageServiceException("",e);
+      throw new ImageStorageServiceException("", e);
     }
   }
 
