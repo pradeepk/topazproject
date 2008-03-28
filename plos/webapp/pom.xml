@@ -316,12 +316,12 @@
                 -keystore $JAVA_HOME/jre/lib/security/cacerts) Path to cacerts depends if you 
                 are using JDK or JRE
               -->
-              <keystore>
-                ${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/server.ks
-              </keystore>
-              <password>secret</password>
-              <keyPassword>secret</keyPassword>
-            </connector>
+	      <keystore>
+ 	      	${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/server.ks
+ 	      </keystore>
+ 	      <password>secret</password>
+ 	      <keyPassword>secret</keyPassword>
+	    </connector>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>8080</port>
               <maxIdleTime>3000000</maxIdleTime>
@@ -352,33 +352,6 @@
               <name>org.apache.commons.logging.Log</name>
               <value>org.apache.commons.logging.impl.Log4JLogger</value>
             </systemProperty>
-            
-            <!-- if you don't want to import the cert into your systemwide java keystore, you can point to here -->
-            <systemProperty>
-              <name>javax.net.ssl.trustStore</name>
-              <value>/etc/topaz/keystore.jks</value>
-            </systemProperty>
-            <systemProperty>
-              <name>javax.net.ssl.trustStorePassword</name>
-              <value>changeit</value>
-            </systemProperty>
-            
-            <!-- values for location of ingest files -->
-            <systemProperty>
-              <name>pub.spring.ingest.source</name>
-              <value>/topaz/ingest/</value>
-            </systemProperty>
-            <systemProperty>
-              <name>pub.spring.ingest.destination</name>
-              <value>/topaz/spool/ingested/</value>
-            </systemProperty>
-
-            <!-- search webapp URL -->
-            <systemProperty>
-              <name>topaz.fedoragsearch.urls.url</name>
-              <value>http://plosone-branch.plos.org:8080/ws-search-webapp/services/FedoraGenericSearchServicePort</value>
-            </systemProperty>
-
           </systemProperties>
           <scanIntervalSeconds>5</scanIntervalSeconds>
           <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
