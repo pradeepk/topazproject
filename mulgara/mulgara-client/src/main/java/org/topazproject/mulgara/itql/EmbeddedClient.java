@@ -30,7 +30,6 @@ import org.mulgara.connection.Connection;
 import org.mulgara.connection.SessionConnection;
 import org.mulgara.query.QueryException;
 import org.mulgara.resolver.Database;
-import org.mulgara.server.Session;
 import org.mulgara.server.SessionFactory;
 
 /** 
@@ -129,13 +128,8 @@ public class EmbeddedClient extends TIClient {
 
   private static SessionFactory newSessionFactory(URI uri, String dbDir, URL conf)
       throws QueryException {
-    /* We don't use SessionFactoryFinder and LocalSessionFactory here for a couple reasons.
-     * First, SessionFactoryFinder doesn't give us a way to properly specify our own config.
-     * Second, LocalSessionFactory uses a static variable to hold the underlying session factory,
-     * which means we can't create multiple instances.
-     */
-    final File dir = createDir(dbDir);
-    SessionFactory sf = new EmbeddedSessionFactory(uri, dir, conf);
+    File dir = createDir(dbDir);
+    SessionFactory sf = newSessionFactory(uri, dir, conf);
 
     if (dbDir == null) {
       FileCleaner.track(dir, sf, FileDeleteStrategy.FORCE);
@@ -143,6 +137,23 @@ public class EmbeddedClient extends TIClient {
     }
 
     return sf;
+  }
+
+  private static SessionFactory newSessionFactory(URI uri, File dir, URL conf)
+      throws QueryException {
+    /* We don't use SessionFactoryFinder and LocalSessionFactory here for a couple reasons.
+     * First, SessionFactoryFinder doesn't give us a way to properly specify our own config.
+     * Second, LocalSessionFactory uses a static variable to hold the underlying session factory,
+     * which means we can't create multiple instances.
+     */
+    try {
+      MulgaraConfig mc = MulgaraConfig.unmarshal(new InputStreamReader(conf.openStream()));
+      return new Database(uri, dir, mc);
+    } catch (QueryException qe) {
+      throw qe;
+    } catch (Exception e) {
+      throw new QueryException("Error creating Database instance", e);
+    }
   }
 
   private static File createDir(String dir) {
@@ -171,50 +182,5 @@ public class EmbeddedClient extends TIClient {
     }
 
     return d;
-  }
-
-  private static class EmbeddedSessionFactory implements SessionFactory {
-    private final URI            uri;
-    private final URL            conf;
-    private final File           dir;
-    private final SessionFactory sessionFactory;
-
-    public EmbeddedSessionFactory(URI uri, File dir, URL conf) throws QueryException {
-      this.uri  = uri;
-      this.conf = conf;
-      this.dir  = dir;
-
-      sessionFactory = newSessionFactory();
-    }
-
-    public URI getSecurityDomain() {
-      return null;
-    }
-
-    public Session newSession() throws QueryException {
-      return sessionFactory.newSession();
-    }
-
-    public Session newJRDFSession() throws QueryException {
-      return sessionFactory.newJRDFSession();
-    }
-
-    private SessionFactory newSessionFactory() throws QueryException {
-      try {
-        MulgaraConfig mc = MulgaraConfig.unmarshal(new InputStreamReader(conf.openStream()));
-        return new Database(uri, dir, mc);
-      } catch (QueryException qe) {
-        throw qe;
-      } catch (Exception e) {
-        throw new QueryException("Error creating Database instance", e);
-      }
-    }
-
-    public void close() throws QueryException {
-      sessionFactory.close();
-    }
-
-    public void delete() {
-    }
   }
 }
