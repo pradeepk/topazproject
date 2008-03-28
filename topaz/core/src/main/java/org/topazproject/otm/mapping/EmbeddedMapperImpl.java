@@ -20,6 +20,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.metadata.EmbeddedDefinition;
 
 /**
  * A convenient base class for all mappers.
@@ -27,24 +28,21 @@ import org.topazproject.otm.Session;
  * @author Pradeep krishnan
  */
 public class EmbeddedMapperImpl extends AbstractMapper implements EmbeddedMapper {
-  private final ClassMetadata embedded;
-
-  //XXX: temporary
-  public EmbeddedMapperImpl(Binder binder, ClassMetadata embedded) {
-    super(binder);
-    this.embedded = embedded;
-  }
+  private final ClassMetadata      embedded;
+  private final EmbeddedDefinition def;
 
   /**
    * Creates a new EmbeddedMapperImpl object.
    *
-   * @param name name of the mapper
+   * @param def     the property definition
    * @param binders the binders
    * @param embedded the embedded class metadata
    */
-  public EmbeddedMapperImpl(String name, Map<EntityMode, Binder> binders, ClassMetadata embedded) {
-    super(name, binders);
-    this.embedded = embedded;
+  public EmbeddedMapperImpl(EmbeddedDefinition def, Map<EntityMode, Binder> binders,
+                            ClassMetadata embedded) {
+    super(binders);
+    this.embedded   = embedded;
+    this.def        = def;
   }
 
   /*
@@ -107,5 +105,12 @@ public class EmbeddedMapperImpl extends AbstractMapper implements EmbeddedMapper
 
     return (Mapper) Proxy.newProxyInstance(m.getClass().getClassLoader(),
                                            m.getClass().getInterfaces(), handler);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public EmbeddedDefinition getDefinition() {
+    return def;
   }
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.metadata.PropertyDefinition;
 
 /**
  * Defines a Mapper for a property .
@@ -51,4 +52,11 @@ public interface Mapper {
    * @return the name
    */
   public Map<EntityMode, Binder> getBinders();
+
+  /**
+   * Gets the property definition for this mapper.
+   *
+   * @return the name
+   */
+  public PropertyDefinition getDefinition();
 }

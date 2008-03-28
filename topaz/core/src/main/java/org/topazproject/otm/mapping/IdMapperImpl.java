@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.metadata.IdDefinition;
 
 /**
  * An implementation of Mapper for Id fields.
@@ -20,30 +21,30 @@ import org.topazproject.otm.id.IdentifierGenerator;
  * @author Pradeep krishnan
  */
 public class IdMapperImpl extends AbstractMapper implements IdMapper {
-  private IdentifierGenerator gen;
-
-  // XXX: temporary
-  public IdMapperImpl(Binder binder, IdentifierGenerator gen) {
-    super(binder);
-    this.gen = gen;
-  }
+  private final IdDefinition def;
 
   /**
    * Creates a new IdMapperImpl object.
    *
-   * @param name the name of this mapper
+   * @param def     the property definition
    * @param binders the binders
-   * @param gen id geberator or null
    */
-  public IdMapperImpl(String name, Map<EntityMode, Binder> binders, IdentifierGenerator gen) {
-    super(name, binders);
-    this.gen = gen;
+  public IdMapperImpl(IdDefinition def, Map<EntityMode, Binder> binders) {
+    super(binders);
+    this.def = def;
   }
 
   /*
    * inherited javadoc
    */
   public IdentifierGenerator getGenerator() {
-    return gen;
+    return getDefinition().getGenerator();
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public IdDefinition getDefinition() {
+    return def;
   }
 }

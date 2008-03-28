@@ -37,7 +37,7 @@ public class ClassBinder<T> implements EntityBinder {
    * @param clazz the java class to bind this entity to
    * @param ignore the methods to ignore when lazily loaded
    */
-  public ClassBinder(Class<T> clazz, Method[] ignore) {
+  public ClassBinder(Class<T> clazz, Method... ignore) {
     this.clazz = clazz;
 
     int mod = clazz.getModifiers();

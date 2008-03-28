@@ -11,6 +11,7 @@
 package org.topazproject.otm.metadata;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.EmbeddedMapper;
@@ -230,8 +231,8 @@ public class ClassDef {
     }
 
     def blobBinder = null
-    ClassBinder binder = new ClassBinder(clazz);
-    metadata = new ClassMetadata(binder, getShortName(clazz), type, allTypes, model,
+    def binders = [(EntityMode.POJO) : new ClassBinder(clazz)]
+    metadata = new ClassMetadata(binders, getShortName(clazz), type, allTypes, model,
                                  idmapper, rdfs, blobBinder, extendsClass, embeds)
 
     if (log.debugEnabled)

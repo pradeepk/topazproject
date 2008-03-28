@@ -20,6 +20,9 @@ import javax.transaction.TransactionManager;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
+import org.topazproject.otm.metadata.ClassBindings;
+import org.topazproject.otm.metadata.ClassDefinition;
+import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
 
@@ -69,6 +72,47 @@ public interface SessionFactory {
   public void preload(Class<?> c) throws OtmException;
 
   /**
+   * Gets a previously added definition.
+   *
+   * @param name the name of the definition.
+   *
+   * @returns the definition or null
+   */
+  public Definition getDefinition(String name);
+
+  /**
+   * Adds a new definition. 
+   *
+   * @param def the definition to add
+   *
+   * @throws OtmException in case of a duplicate
+   */
+  public void addDefinition(Definition def);
+
+  /**
+   * Removes a definition.
+   *
+   * @param name the name of the definition.
+   *
+   * @throws OtmException in case of an error
+   */
+  public void removeDefinition(String name);
+
+  /**
+   * Gets the list of all class definitions.
+   *
+   * @return all entity definitions
+   */
+  public Collection<String> listClassDefinitions();
+
+  /**
+   * Gets the binding for a class definition.
+   *
+   * @return the class bindings
+   */
+  public  ClassBindings getClassBindings(String name);
+
+  /**
    * Return the most specific instantiable subclass metadata for the given class metadata that 
    * is mapped to one of the given rdf types. We assume that we don't have two subclasses that 
    * are associated with the same rdf type. If this is not the case then the returned class will 
@@ -111,6 +155,8 @@ public interface SessionFactory {
    * @param cm the class metadata
    *
    * @throws OtmException on an error
+   *
+   * @Deprecated exists only to support the RdfBuilder
    */
   public void setClassMetadata(ClassMetadata cm) throws OtmException;
 

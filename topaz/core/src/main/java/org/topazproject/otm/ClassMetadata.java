@@ -40,7 +40,6 @@ public class ClassMetadata {
 
   private final Set<String>               types;
   private final String                    type;
-  private final Set<String>               names;
   private final String                    name;
   private final String                    superEntity;
   private final String                    model;
@@ -48,7 +47,7 @@ public class ClassMetadata {
   private final BlobMapper                blobField;
   private final Map<String, List<RdfMapper>> uriMap;
   private final Map<String, Mapper>       nameMap;
-  private final EntityBinder              binder;
+  private final Map<EntityMode, EntityBinder>              binders;
   private final Collection<RdfMapper>     rdfFields;
   private final Collection<VarMapper>     varFields;
   private final Collection<EmbeddedMapper> embeds;
@@ -58,7 +57,7 @@ public class ClassMetadata {
   /**
    * Creates a new ClassMetadata object for an Entity.
    *
-   * @param binder the entity binder (XXX: temporary)
+   * @param binders the entity binders
    * @param name the entity name for use in queries
    * @param type the most specific rdf:type that identify this class
    * @param types set of rdf:type values that identify this class
@@ -69,11 +68,11 @@ public class ClassMetadata {
    * @param superEntity a super class entity for which this is a sub-class of
    * @param embeds fields that are embeds
    */
-  public ClassMetadata(EntityBinder binder, String name, String type, Set<String> types, String model,
-                       IdMapper idField, Collection<RdfMapper> fields, BlobMapper blobField, String superEntity,
-                       Collection<EmbeddedMapper> embeds)
+  public ClassMetadata(Map<EntityMode, EntityBinder> binders, String name, String type, Set<String> types,
+                       String model, IdMapper idField, Collection<RdfMapper> fields, BlobMapper blobField,
+                       String superEntity, Collection<EmbeddedMapper> embeds)
                 throws OtmException {
-    this.binder                               = binder;
+    this.binders                              = binders;
     this.name                                 = name;
     this.query                                = null;
     this.type                                 = type;
@@ -86,7 +85,6 @@ public class ClassMetadata {
     this.embeds                               = Collections.unmodifiableCollection(new ArrayList<EmbeddedMapper>(embeds));
     this.rdfFields                            = Collections.unmodifiableCollection(new ArrayList<RdfMapper>(fields));
     this.varFields                            = null;
-    this.names                                = buildNames(name, binder);
 
     Map<String, List<RdfMapper>> uriMap       = new HashMap<String, List<RdfMapper>>();
     Map<String, Mapper>       nameMap         = new HashMap<String, Mapper>();
@@ -127,16 +125,16 @@ public class ClassMetadata {
   /**
    * Creates a new ClassMetadata object for a View.
    *
-   * @param binder  the entity binder (XXX: temporary) 
+   * @param binders the entity binders
    * @param name    the view name (used to look up class-metadata)
    * @param query   the query, or null for SubView's
    * @param idField the mapper for the id field
    * @param fields  mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(EntityBinder binder, String name, String query, IdMapper idField,
+  public ClassMetadata(Map<EntityMode, EntityBinder> binders, String name, String query, IdMapper idField,
                        Collection<VarMapper> fields)
                 throws OtmException {
-    this.binder      = binder;
+    this.binders     = binders;
     this.name        = name;
     this.query       = query;
     this.type        = null;
@@ -149,7 +147,6 @@ public class ClassMetadata {
     this.varFields   = Collections.unmodifiableCollection(new ArrayList<VarMapper>(fields));
     this.rdfFields   = null;
     this.embeds      = null;
-    this.names       = buildNames(name, binder);
 
     Map<String, List<VarMapper>> varMap  = new HashMap<String, List<VarMapper>>();
     Map<String, Mapper>       nameMap = new HashMap<String, Mapper>();
@@ -168,12 +165,15 @@ public class ClassMetadata {
     this.varMap  = Collections.unmodifiableMap(varMap);
   }
 
-  private static Set<String> buildNames(String name, EntityBinder binder) {
+  private static Set<String> buildNames(String name, Collection<EntityBinder> binders) {
     Set<String>               names           = new HashSet<String>();
 
     names.add(name);
-    Collections.addAll(names, binder.getNames());
-    return Collections.unmodifiableSet(names);
+
+    for (EntityBinder binder : binders)
+      Collections.addAll(names, binder.getNames());
+
+    return names;
   }
 
   /**
@@ -184,7 +184,7 @@ public class ClassMetadata {
    * @return the entity binder
    */
   public EntityBinder getEntityBinder(EntityMode mode) {
-    return binder;
+    return binders.get(mode);
   }
 
   /**
@@ -195,7 +195,7 @@ public class ClassMetadata {
    * @return the entity binder
    */
   public EntityBinder getEntityBinder(Session session) {
-    return binder;
+    return binders.get(session.getEntityMode());
   }
 
   /**
@@ -222,7 +222,7 @@ public class ClassMetadata {
    * @return set of unique names for this entity
    */
   public Set<String> getNames() {
-    return names;
+    return buildNames(name, binders.values());
   }
 
   /**
@@ -440,7 +440,10 @@ public class ClassMetadata {
 
   public boolean isAssignableFrom(ClassMetadata other) {
     // XXX: temporary
-    return ((ClassBinder)binder).getSourceClass().isAssignableFrom(((ClassBinder)other.binder).getSourceClass());
+    ClassBinder thisBinder = (ClassBinder)getEntityBinder(EntityMode.POJO);
+    ClassBinder otherBinder = (ClassBinder)other.getEntityBinder(EntityMode.POJO);
+
+    return thisBinder.getSourceClass().isAssignableFrom(otherBinder.getSourceClass());
   }
 
   @Override

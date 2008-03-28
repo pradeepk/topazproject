@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
+import org.topazproject.otm.metadata.VarDefinition;
 
 /**
  * An implementation of Mapper for view projection fields.
@@ -20,60 +21,51 @@ import org.topazproject.otm.FetchType;
  * @author Pradeep krishnan
  */
 public class VarMapperImpl extends AbstractMapper implements VarMapper {
-  private final String    var;
-  private final FetchType fetch;
-  private final String    assoc;
-
-  // XXX: temporary
-  public VarMapperImpl(Binder binder, String var, FetchType fetch, String assoc) {
-    super(binder);
-    this.var     = var;
-    this.fetch   = fetch;
-    this.assoc   = assoc;
-  }
+  private final VarDefinition def;
 
   /**
    * Creates a new VarMapperImpl object.
    *
-   * @param name the property name
+   * @param def     the property definition
    * @param binders the list of binders
-   * @param var the projection variable
-   * @param fetch the fetch mode for associations
-   * @param assoc the associated entity name
    */
-  public VarMapperImpl(String name, Map<EntityMode, Binder> binders, String var, FetchType fetch,
-                       String assoc) {
-    super(name, binders);
-    this.var     = var;
-    this.fetch   = fetch;
-    this.assoc   = assoc;
+  public VarMapperImpl(VarDefinition def, Map<EntityMode, Binder> binders) {
+    super(binders);
+    this.def = def;
   }
 
   /*
    * inherited javadoc
    */
   public String getProjectionVar() {
-    return var;
+    return getDefinition().getProjectionVar();
   }
 
   /*
    * inherited javadoc
    */
   public FetchType getFetchType() {
-    return fetch;
+    return getDefinition().getFetchType();
   }
 
   /*
    * inherited javadoc
    */
   public String getAssociatedEntity() {
-    return assoc;
+    return getDefinition().getAssociatedEntity();
   }
 
   /*
    * inherited javadoc
    */
   public boolean isAssociation() {
-    return (assoc != null);
+    return getDefinition().getAssociatedEntity() != null;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public VarDefinition getDefinition() {
+    return def;
   }
 }

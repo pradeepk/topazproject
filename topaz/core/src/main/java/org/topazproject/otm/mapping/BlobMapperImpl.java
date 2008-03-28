@@ -12,6 +12,7 @@ package org.topazproject.otm.mapping;
 import java.util.Map;
 
 import org.topazproject.otm.EntityMode;
+import org.topazproject.otm.metadata.BlobDefinition;
 
 /**
  * An implementation of Mapper for Blob fields.
@@ -19,19 +20,23 @@ import org.topazproject.otm.EntityMode;
  * @author Pradeep krishnan
  */
 public class BlobMapperImpl extends AbstractMapper implements BlobMapper {
-
-  // XXX: temporary
-  public BlobMapperImpl(Binder binder) {
-    super(binder);
-  }
+  private final BlobDefinition def;
 
   /**
    * Creates a new BlobMapperImpl object.
    *
-   * @param name name of the blob field
+   * @param def     the property definition
    * @param binders the binders
    */
-  public BlobMapperImpl(String name, Map<EntityMode, Binder> binders) {
-    super(name, binders);
+  public BlobMapperImpl(BlobDefinition def, Map<EntityMode, Binder> binders) {
+    super(binders);
+    this.def = def;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public BlobDefinition getDefinition() {
+    return def;
   }
 }

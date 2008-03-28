@@ -29,8 +29,12 @@ import org.objectweb.jotm.Jotm;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
-import org.topazproject.otm.mapping.java.ClassBinder;
+import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
+import org.topazproject.otm.metadata.Definition;
+import org.topazproject.otm.metadata.ClassDefinition;
+import org.topazproject.otm.metadata.ClassBindings;
 import org.topazproject.otm.query.DefaultQueryFunctionFactory;
 import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
@@ -62,6 +66,16 @@ public class SessionFactoryImpl implements SessionFactory {
   private static final Log log = LogFactory.getLog(SessionFactory.class);
 
   /**
+   * definition name to definition map
+   */
+  private final Map<String, Definition> defs = new HashMap<String, Definition>();
+
+  /**
+   * class definition name to class-bindings map
+   */
+  private final Map<String, SFClassBindings> classDefs = new HashMap<String, SFClassBindings>();
+
+  /**
    * rdf:type to entity mapping
    */
   private final Map<String, Set<ClassMetadata>> typemap = new HashMap<String, Set<ClassMetadata>>();
@@ -76,11 +90,6 @@ public class SessionFactoryImpl implements SessionFactory {
    * root classes.
    */
   private final Map<String, Set<ClassMetadata>> subClasses = new HashMap<String, Set<ClassMetadata>>();
-
-  /**
-   * POJO mapping specific: Class to ClassMetadata mapping
-   */
-  private final Map<Class, ClassMetadata> classmap = new HashMap<Class, ClassMetadata>();
 
   /**
    * Model to config mapping (uris, types etc.)
@@ -170,6 +179,55 @@ public class SessionFactoryImpl implements SessionFactory {
   /*
    * inherited javadoc
    */
+  public Definition getDefinition(String name) {
+    return defs.get(name);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void addDefinition(Definition def) {
+    if (defs.containsKey(def.getName()))
+      throw new OtmException("Duplicate definition :" + def.getName());
+
+    defs.put(def.getName(), def);
+
+    if (log.isDebugEnabled())
+      log.debug("Added definition : " + def.getName());
+
+    if (def instanceof ClassDefinition)
+      classDefs.put(def.getName(), new SFClassBindings((ClassDefinition)def));
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void removeDefinition(String name) {
+    defs.remove(name);
+    classDefs.remove(name);
+
+    if (log.isDebugEnabled())
+      log.debug("Removed definition : " + name);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Collection<String> listClassDefinitions() {
+    return classDefs.keySet();
+  }
+
+
+  /*
+   * inherited javadoc
+   */
+  public  ClassBindings getClassBindings(String name) {
+    return classDefs.get(name);
+  }
+
+  /*
+   * inherited javadoc
+   */
   public ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
                                 Collection<String> typeUris) {
     return getSubClassMetadata(clazz, mode, typeUris, true);
@@ -245,12 +303,6 @@ public class SessionFactoryImpl implements SessionFactory {
         throw new OtmException("An entity with name or alias of '" + name + "' already exists.");
     }
 
-    // XXX: temporary
-    Class c = ((ClassBinder)cm.getEntityBinder(EntityMode.POJO)).getSourceClass();
-    if (classmap.containsKey(c))
-      throw new OtmException("An entity for class " + c + " already exists.");
-    classmap.put(c, cm);
-
     for (String name : cm.getNames())
       entitymap.put(name, cm);
 
@@ -283,7 +335,7 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public ClassMetadata getClassMetadata(Class<?> clazz) {
-    return classmap.get(clazz);
+    return getClassMetadata(clazz.getName());
   }
 
   /*
@@ -491,6 +543,39 @@ public class SessionFactoryImpl implements SessionFactory {
       }
     } finally {
       super.finalize();
+    }
+  }
+
+  private class SFClassBindings extends ClassBindings {
+    public SFClassBindings(ClassDefinition def) {
+      super(def);
+    }
+
+    @Override
+    public void bind(EntityMode mode, EntityBinder binder)
+            throws OtmException {
+
+      for (String alias : binder.getNames())
+        if (entitymap.containsKey(alias))
+          throw new OtmException("An entity with name or alias of '" + alias + "' already exists.");
+
+      super.bind(mode, binder);
+
+      // If we already have a class-metadata, then make that discoverable by
+      // alternate names supplied by the binder.
+      ClassMetadata cm = entitymap.get(getName());
+      if (cm != null) {
+        for (String alias : binder.getNames())
+          entitymap.put(alias, cm);
+      }
+    }
+
+    @Override
+    public void addAndBindProperty(String prop, EntityMode mode, Binder binder) throws OtmException {
+      if (getProperties().contains(prop) && entitymap.containsKey(getName()))
+        throw new OtmException("Cannot add a new property to " + getName() 
+            + " since a ClassMetadata is already created for this Class");
+      super.addAndBindProperty(prop, mode, binder);
     }
   }
 }

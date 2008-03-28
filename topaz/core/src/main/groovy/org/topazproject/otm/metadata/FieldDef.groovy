@@ -29,6 +29,9 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapperImpl;
 import org.topazproject.otm.mapping.IdMapperImpl;
 import org.topazproject.otm.mapping.EmbeddedMapperImpl;
+import org.topazproject.otm.metadata.EmbeddedDefinition;
+import org.topazproject.otm.metadata.IdDefinition;
+import org.topazproject.otm.metadata.RdfDefinition;
 import org.topazproject.otm.serializer.Serializer;
 
 import org.apache.commons.logging.Log;
@@ -165,6 +168,7 @@ public class FieldDef {
    */
   protected List toMapper(RdfBuilder rdf, Class cls, IdentifierGenerator idGen) {
     Field  f   = cls.getDeclaredField(name)
+    String dn  = cls.name.substring(cls.name.lastIndexOf('.') + 1) + ":" + name
     Method get = cls.getMethod('get' + RdfBuilder.capitalize(name))
     Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
     CollectionType mt = getColType(rdf)
@@ -177,7 +181,9 @@ public class FieldDef {
     List m;
     if (maxCard == 1 && embedded) {
       def cm = classType.toClass()
-      def container = new EmbeddedMapperImpl(new EmbeddedClassFieldBinder(f, get, set), cm)
+      def metaDef = new EmbeddedDefinition(dn, cm.getName())
+      def binders = [(EntityMode.POJO) : new EmbeddedClassFieldBinder(f, get, set)]
+      def container = new EmbeddedMapperImpl(metaDef, binders, cm)
       m = cm.rdfMappers.collect{ container.promote(it) }
       m.add(container)
     } else if (maxCard == 1) {
@@ -187,10 +193,10 @@ public class FieldDef {
       if (ser != null)
         ft = null;
       if (isId)
-        m = [new IdMapperImpl(l, idGen)];
+        m = [new IdMapperImpl(new IdDefinition(dn, idGen), [(EntityMode.POJO) : l])];
       else
-        m = [new RdfMapperImpl(pred, l, dtype, inverse, model, mt, owned, idGen,
-ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType))]
+        m = [new RdfMapperImpl(new RdfDefinition(dn, pred, dtype, inverse, model, mt, owned, idGen,
+ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
@@ -204,9 +210,9 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType))]
       else
         l = new CollectionFieldBinder(f, get, set, ser, compType);
 
-      m = [new RdfMapperImpl(pred, l, dtype, inverse, model, mt, owned,
+      m = [new RdfMapperImpl(new RdfDefinition(dn, pred, dtype, inverse, model, mt, owned,
                              idGen, ct, ft, cm?.getName(),
-                  (ser == null) || inverse || "OBJECT".equals(propType)) ]
+                  (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
     }
 
     // done

@@ -13,6 +13,7 @@ package org.topazproject.otm.query;
 import org.topazproject.otm.AbstractTest;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -239,7 +240,7 @@ public class OqlTest extends AbstractTest {
 
       // unconstrained variables
       rdf.sessFactory.setClassMetadata(
-          new ClassMetadata(new ClassBinder(Object.class), "Object", null, Collections.EMPTY_SET, 
+          new ClassMetadata([(EntityMode.POJO):new ClassBinder(Object.class)], "Object", null, Collections.EMPTY_SET, 
                             "ri", null, Collections.EMPTY_SET, null, null, Collections.EMPTY_SET));
 
       r = s.createQuery("select o from Object o order by o;").execute()

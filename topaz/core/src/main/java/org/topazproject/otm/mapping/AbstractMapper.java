@@ -9,7 +9,6 @@
  */
 package org.topazproject.otm.mapping;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.topazproject.otm.EntityMode;
@@ -22,24 +21,14 @@ import org.topazproject.otm.Session;
  */
 public abstract class AbstractMapper implements Mapper {
   private final Map<EntityMode, Binder> binders;
-  private final String                  name;
-
-  // XXX : temporary
-  public AbstractMapper(Binder binder) {
-    name      = binder.getName();
-    binders   = new HashMap<EntityMode, Binder>();
-    binders.put(EntityMode.POJO, binder);
-  }
 
   /**
    * Creates a new AbstractMapper object.
    *
-   * @param name    name of this property
    * @param binders the binders for this property
    */
-  public AbstractMapper(String name, Map<EntityMode, Binder> binders) {
-    this.name      = name;
-    this.binders   = binders;
+  public AbstractMapper(Map<EntityMode, Binder> binders) {
+    this.binders = binders;
   }
 
   /*
@@ -60,7 +49,7 @@ public abstract class AbstractMapper implements Mapper {
    * inherited javadoc
    */
   public String getName() {
-    return name;
+    return getDefinition().getNamespaceSpecific();
   }
 
   /*
@@ -68,5 +57,12 @@ public abstract class AbstractMapper implements Mapper {
    */
   public Map<EntityMode, Binder> getBinders() {
     return binders;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public String toString() {
+    return getClass().getName() + "[def=" + getDefinition() + ", binders =" + binders + "]";
   }
 }
