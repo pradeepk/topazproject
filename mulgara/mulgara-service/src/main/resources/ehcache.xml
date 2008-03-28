@@ -381,11 +381,11 @@
     -->
     <cache name="queryCache"
            maxElementsInMemory="10000"
-           eternal="false"
+           eternal="true"
            overflowToDisk="false"
-           timeToIdleSeconds="3600"
+           timeToIdleSeconds="0"
            timeToLiveSeconds="0"
-           memoryStoreEvictionPolicy="LRU"
+           memoryStoreEvictionPolicy="LFU"
             />
     <!--
     permission-grants cache.
