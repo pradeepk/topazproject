@@ -15,6 +15,7 @@ import java.security.Guard;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.article.util.NoSuchArticleIdException;
 
 /**
  * Iterator wrapper that returns the subset of its delegate iterator that are not guarded.
@@ -50,10 +51,11 @@ public class GuardedIterator implements Iterator {
         guard.checkGuard(element);
         return true;
       } catch (SecurityException se) {
-        if (se.getCause() != null)
+        if (!(se.getCause() instanceof NoSuchArticleIdException)) {
           log.warn("Guard blocked '" + element + "'", se); // Log exception
-        else if (log.isDebugEnabled())
+        } else if (log.isDebugEnabled()) {
           log.debug("Guard blocked '" + element + "' - " + se);
+        }
         element = null; // Don't want this element returned
       }
     }

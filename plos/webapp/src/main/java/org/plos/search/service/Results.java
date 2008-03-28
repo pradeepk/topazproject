@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
+import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.search.SearchResultPage;
@@ -205,7 +206,8 @@ public class Results {
       try {
         Article article = fetchArticleService.getArticleInfo(uri);
         if (article == null) {
-          throw new SecurityException("Article '" + uri + "' not in current journal");
+          throw new SecurityException(new NoSuchArticleIdException(
+                  "Article '" + uri + "' not in current journal"));
         }
       } catch (ApplicationException ae) {
         throw new SecurityException(ae);
