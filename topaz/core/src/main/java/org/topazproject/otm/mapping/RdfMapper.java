@@ -35,22 +35,24 @@ public interface RdfMapper extends Mapper {
   public String getDataType();
 
   /**
-   * Checks if the type is an association and not a serialized literal/URI.
-   * When a field is not an association, the node is considered a leaf node
-   * in the rdf graph.
+   * Checks if the type is an association and not a serialized literal/URI. When a field is
+   * not an association, the node is considered a leaf node in the rdf graph.
    *
-   * @return true if this field is 
+   * @return true if this field is
    */
   public boolean isAssociation();
 
-  // XXX: for now
+  /**
+   * Tests if this is a wild-card (no predicate-uri) mapping.
+   *
+   * @return true if no predicate-uri
+   */
   public boolean isPredicateMap();
 
   /**
-   * Gets the rdf predicate uri. All fields other than an 'Id' field must have a uri (for regular
-   * classes) or a projection-variable (for views).
+   * Gets the rdf predicate uri.
    *
-   * @return the rdf predicate uri
+   * @return the rdf predicate uri or null for predicate maps.
    */
   public String getUri();
 
@@ -64,7 +66,7 @@ public interface RdfMapper extends Mapper {
   /**
    * Gets the model where this field is persisted.
    *
-   * @return the model name or null 
+   * @return the model name or null
    */
   public String getModel();
 
@@ -78,7 +80,7 @@ public interface RdfMapper extends Mapper {
   /**
    * Tests if the triples for this field are owned by the containing entity.
    *
-   * @return true if owned, 
+   * @return true if owned,
    */
   public boolean isEntityOwned();
 
@@ -98,6 +100,10 @@ public interface RdfMapper extends Mapper {
 
   /**
    * Tests if an operation is cascaded for this field
+   *
+   * @param op the operation to test
+   *
+   * @return true if the operation is cascadable
    */
   public boolean isCascadable(CascadeType op);
 
@@ -110,7 +116,7 @@ public interface RdfMapper extends Mapper {
 
   /**
    * For associations, the name of the associated entity.
-   * 
+   *
    * @return the name of the associated entity or null if this is not an association mapping
    */
   public String getAssociatedEntity();

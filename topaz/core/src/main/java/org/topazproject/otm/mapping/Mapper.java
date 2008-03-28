@@ -21,14 +21,18 @@ import org.topazproject.otm.Session;
  */
 public interface Mapper {
   /**
-   * Get the Binder for this field
+   * Get the Binder for this field.
+   *
+   * @param session the session
    *
    * @return the binder for this field
    */
   public Binder getBinder(Session session);
 
   /**
-   * Get the Binder for this field
+   * Get the Binder for this field.
+   *
+   * @param mode the entity mode
    *
    * @return the binder for this field
    */

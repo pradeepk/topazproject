@@ -28,7 +28,7 @@ public interface VarMapper extends Mapper {
   /**
    * Checks if the type is an association and not a serialized literal/URI.
    *
-   * @return true if this field is an association 
+   * @return true if this field is an association
    */
   public boolean isAssociation();
 
@@ -41,7 +41,7 @@ public interface VarMapper extends Mapper {
 
   /**
    * For associations, the name of the associated entity.
-   * 
+   *
    * @return the name of the associated entity or null if this is not an association mapping
    */
   public String getAssociatedEntity();
