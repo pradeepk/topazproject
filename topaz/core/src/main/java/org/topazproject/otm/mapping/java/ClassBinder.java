@@ -9,8 +9,8 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
@@ -27,9 +27,9 @@ import org.topazproject.otm.mapping.EntityBinder;
  * @param <T> The object type instantiated by this class
  */
 public class ClassBinder<T> implements EntityBinder {
-  private final Class<T> clazz;
-  private final Class<? extends T> proxy;
-  private final boolean  instantiable;
+  private final Class<T>          clazz;
+  private final Class<?extends T> proxy;
+  private final boolean           instantiable;
 
   /**
    * Creates a new ClassBinder object.
@@ -42,9 +42,9 @@ public class ClassBinder<T> implements EntityBinder {
 
     int mod = clazz.getModifiers();
 
-    instantiable = !Modifier.isAbstract(mod) && !Modifier.isInterface(mod)
-                    && Modifier.isPublic(mod);
-    proxy = instantiable ? createProxy(clazz, ignore) : null;
+    instantiable   = !Modifier.isAbstract(mod) && !Modifier.isInterface(mod)
+                      && Modifier.isPublic(mod);
+    proxy          = instantiable ? createProxy(clazz, ignore) : null;
   }
 
   /*
@@ -92,8 +92,8 @@ public class ClassBinder<T> implements EntityBinder {
     return clazz;
   }
 
-  public static <T> Class<? extends T> createProxy(Class<T> clazz, final Method[] ignoreList) {
-    MethodFilter mf     =
+  public static <T> Class<?extends T> createProxy(Class<T> clazz, final Method[] ignoreList) {
+    MethodFilter mf =
       new MethodFilter() {
         public boolean isHandled(Method m) {
           if (m.getName().equals("finalize"))
@@ -107,11 +107,11 @@ public class ClassBinder<T> implements EntityBinder {
         }
       };
 
-    ProxyFactory f      = new ProxyFactory();
+    ProxyFactory f  = new ProxyFactory();
     f.setSuperclass(clazz);
     f.setFilter(mf);
 
-    Class<? extends T> c = f.createClass();
+    Class<?extends T> c = f.createClass();
 
     return c;
   }
@@ -120,6 +120,6 @@ public class ClassBinder<T> implements EntityBinder {
    * inherited javadoc
    */
   public String[] getNames() {
-    return new String[] {clazz.getName()};
+    return new String[] { clazz.getName() };
   }
 }
