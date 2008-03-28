@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -155,9 +157,10 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
   private final Rule[]             rules;
   private final Map<String,String> aliases;
   private final Ehcache            queryCache;
-  private final URI                dbURI;
+  private final XAResource         xaResource;
   private       Session            session;
-  private       TqlInterpreter     parser;
+  private final SessionFactory     sessFactory;
+  private final TqlInterpreter     parser = new TqlInterpreter();
 
   /** 
    * Create a new cache-invalidator instance. 
@@ -169,6 +172,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
    */
   public CacheInvalidator(Configuration config, String base, URI dbURI) throws Exception {
     super(0, getInvIval(config), "CacheInvalidator-Worker", false, logger);
+    xaResource = new CIXAResource();
 
     config = config.subset("cacheInvalidator");
     base  += ".cacheInvalidator";
@@ -207,7 +211,12 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     queryCache    = CacheManager.getInstance().getEhcache(qcName);
 
     // delay session creation because at this point we're already in a session-creation call
-    this.dbURI = dbURI;
+    /* This makes a whole bunch of assumptions regarding how LocalSessionFactory works and
+     * under what environment we're being used. Basically we assume that A) all
+     * LocalSessionFactory instances really use the same underlying SessionFactory, and B) that
+     * somebody else has already set this up.
+     */
+    sessFactory = SessionFactoryFinder.newSessionFactory(dbURI);
 
     // we're ready
     worker.start();
@@ -249,6 +258,14 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
 
     logger.info("Loaded " + res.size() + " rules: " + res);
     return res.toArray(new Rule[res.size()]);
+  }
+
+  public XAResource getXAResource() {
+    return xaResource;
+  }
+
+  public void modelRemoved(URI filterModel, URI realModel) throws ResolverException {
+    // FIXME: implement
   }
 
   public void modelModified(URI filterModel, URI realModel, Statements stmts, boolean occurs,
@@ -426,8 +443,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
       if (str == null)
         return null;
 
-      for (Iterator<String> iter = aliases.keySet().iterator(); iter.hasNext(); ) {
-        String alias = iter.next();
+      for (String alias : aliases.keySet()) {
         String value = aliases.get(alias);
         str = str.replaceAll("\\b" + alias + ":", value);
       }
@@ -494,6 +510,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     final String cache;
     final String key;
     final String query;
+          Map<String,Set<String>> beforeMod;
 
     ModItem(String cache, String key) {
       this.cache = cache;
@@ -521,6 +538,84 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     }
   }
 
+  /**
+   * This exists to capture query states before the commit in order to be able to do a proper diff.
+   */
+  private class CIXAResource extends QueueingXAResource {
+    public int prepare(Xid xid) throws XAException {
+      // get the list of modifications
+      List<ModItem> queue;
+      synchronized (txQueue) {
+        queue = txQueue.get(xid);
+      }
+
+      if (queue == null)
+        return XA_OK;
+
+      /* for each query-based item, get the query results from before the mods. If the results
+       * are not in the cache then run the query now.
+       */
+      List<ModItem> qryItems = new ArrayList<ModItem>();
+      for (ModItem mi : queue) {
+        if (mi.query == null)
+          continue;
+
+        net.sf.ehcache.Element prevElem = queryCache.get(new QCacheKey(mi));
+        if (prevElem != null)
+          mi.beforeMod = (Map<String,Set<String>>) prevElem.getObjectValue();
+        else
+          qryItems.add(mi);
+      }
+
+      // run all queries and remember and cache their results
+      if (!qryItems.isEmpty()) {
+        QueryRunner qr = getQueryRunner();
+        try {
+          qr.runQueries(qryItems);
+        } catch (InterruptedException ie) {
+          throw (XAException) new XAException(XAException.XAER_RMERR).initCause(ie);
+        } finally {
+          returnQueryRunner(qr);
+        }
+
+        for (ModItem mi : qryItems)
+          queryCache.put(new net.sf.ehcache.Element(new QCacheKey(mi), mi.beforeMod));
+      }
+
+      return XA_OK;
+    }
+  }
+
+  // this will be no larger than the maximum number of concurrent writers, which currently is 1
+  private final List<QueryRunner> qrPool = new ArrayList<QueryRunner>();
+
+  private QueryRunner getQueryRunner() {
+    synchronized (qrPool) {
+      return qrPool.isEmpty() ? newQueryRunner() : qrPool.remove(qrPool.size() - 1);
+    }
+  }
+
+  private void returnQueryRunner(QueryRunner qr) {
+    synchronized (qrPool) {
+      qrPool.add(qr);
+    }
+  }
+
+  private QueryRunner newQueryRunner() {
+    QueryRunner qr = new QueryRunner("QueryRunner", newSession());
+    qr.start();
+    return qr;
+  }
+
+  private synchronized Session newSession() {
+    try {
+      return sessFactory.newSession();
+    } catch (Exception e) {
+      logger.error("Error creating session", e);
+      return null;
+    }
+  }
+
 
   /* =====================================================================
    * ==== Everything below is run in the context of the Worker thread ====
@@ -536,15 +631,10 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     }
 
     // figure out the keys to invalidate
-    Set<String> keys = new HashSet<String>();
-    if (mi.key != null)
-      keys.add(mi.key);
-    else
-      runQuery(mi, keys);
+    Set<String> keys = (mi.key != null) ? Collections.singleton(mi.key) : getKeysFromQuery(mi);
 
     // invalidate the keys
-    for (Iterator<String> iter = keys.iterator(); iter.hasNext(); ) {
-      String key = iter.next();
+    for (String key : keys) {
       if (logger.isDebugEnabled())
         logger.debug("Invalidating key '" + key + "' in cache '" + mi.cache + "'");
 
@@ -556,74 +646,32 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
     }
   }
 
-  private void runQuery(ModItem mi, Set<String> keys) {
+  private Set<String> getKeysFromQuery(ModItem mi) {
+    Set<String> keys = new HashSet<String>();
+
+    // get our session
     if (session == null) {
-      /* Delayed session and parser creation.
-       *
-       * This makes a whole bunch of assumptions regarding how LocalSessionFactory works and
-       * under what environment we're being used. Basically we assume that A) all
-       * LocalSessionFactory instances really use the same underlying SessionFactory, and B) that
-       * somebody else has already set this up.
-       */
-      try {
-        SessionFactory sf = SessionFactoryFinder.newSessionFactory(dbURI);
-        session = sf.newSession();
-        parser  = new TqlInterpreter();
-        logger.info("Created session and itql-parser");
-      } catch (Exception e) {
-        logger.error("Error creating session and itql-parser", e);
-        return;
-      }
+      session = newSession();
+      if (session == null)
+        return keys;
+      logger.info("Created session");
     }
 
-    if (logger.isTraceEnabled())
-      logger.trace("Running query '" + mi.query + "'");
-
     try {
-      // run the query and check for errors
-      Answer answer = session.query(parser.parseQuery(mi.query));
+      // do the query
+      Map<String,Set<String>> res = getQueryResults(mi.query, session);
 
-      // gather up the results, grouping them by key
-      Map<String,Set<String>> res = new HashMap<String,Set<String>>();
-
-      try {
-        answer.beforeFirst();
-        while (answer.next()) {
-          String key = nodeToString(answer.getObject(0));
-          String val = nodeToString(answer.getObject(1));
-
-          Set<String> vals = res.get(key);
-          if (vals == null)
-            res.put(key, vals = new HashSet<String>());
-          vals.add(val);
-        }
-      } finally {
-        try {
-          answer.close();
-        } catch (TuplesException te) {
-          logger.warn("Error closing answer", te);
-        }
-      }
-
-      if (logger.isTraceEnabled())
-        logger.trace("Query results: " + res);
-
-      // update the cache.
-      QCacheKey              qcKey    = new QCacheKey(mi.cache, mi.query);
-      net.sf.ehcache.Element prevElem = queryCache.get(qcKey);
-
-      Map<String,Set<String>> prevRes = (Map<String,Set<String>>)
-          (prevElem != null ? prevElem.getObjectValue() : Collections.EMPTY_MAP);
+      // get previous results
+      Map<String,Set<String>> prevRes =
+          (mi.beforeMod != null) ? mi.beforeMod : Collections.EMPTY_MAP;
 
       if (logger.isTraceEnabled())
         logger.trace("Previous query results: " + prevRes);
 
       // invalidate new or changed values
-      for (Iterator<String> iter = res.keySet().iterator(); iter.hasNext(); ) {
-        String      key  = iter.next();
-
+      for (String key : res.keySet()) {
         Set<String> vals  = res.get(key);
-        Set<String> ovals = prevRes.remove(key);
+        Set<String> ovals = prevRes.get(key);
 
         if (ovals == null || !ovals.equals(vals))
           keys.add(key);
@@ -633,27 +681,67 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
         logger.trace("New or updated keys: " + keys);
 
       // invalidate deleted values
-      keys.addAll(prevRes.keySet());
+      Set<String> remKeys = new HashSet<String>(prevRes.keySet());
+      remKeys.removeAll(res.keySet());
+
+      keys.addAll(remKeys);
 
       if (logger.isTraceEnabled())
-        logger.trace("Removed keys: " + prevRes.keySet());
+        logger.trace("Removed keys: " + remKeys);
 
       // update cache if anything changed
-      if (keys.size() > 0)
-        queryCache.put(new net.sf.ehcache.Element(qcKey, res));
+      if (!keys.isEmpty())
+        queryCache.put(new net.sf.ehcache.Element(new QCacheKey(mi), res));
 
     } catch (Exception e) {
       logger.error("Error executing query '" + mi.query + "'", e);
     }
+
+    return keys;
+  }
+
+  private Map<String,Set<String>> getQueryResults(String query, Session sess) throws Exception {
+    if (logger.isTraceEnabled())
+      logger.trace("Running query '" + query + "'");
+
+    // run the query and check for errors
+    Answer answer = sess.query(parser.parseQuery(query));
+
+    // gather up the results, grouping them by key
+    Map<String,Set<String>> res = new HashMap<String,Set<String>>();
+
+    try {
+      answer.beforeFirst();
+      while (answer.next()) {
+        String key = nodeToString(answer.getObject(0));
+        String val = nodeToString(answer.getObject(1));
+
+        Set<String> vals = res.get(key);
+        if (vals == null)
+          res.put(key, vals = new HashSet<String>());
+        vals.add(val);
+      }
+    } finally {
+      try {
+        answer.close();
+      } catch (TuplesException te) {
+        logger.warn("Error closing answer", te);
+      }
+    }
+
+    if (logger.isTraceEnabled())
+      logger.trace("Query results: " + res);
+
+    return res;
   }
 
   private static class QCacheKey {
     final String cache;
     final String query;
 
-    QCacheKey(String cache, String query) {
-      this.cache = cache;
-      this.query = query;
+    QCacheKey(ModItem mi) {
+      this.cache = mi.cache;
+      this.query = mi.query;
     }
 
     public int hashCode() {
@@ -666,6 +754,10 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
       QCacheKey o = (QCacheKey) obj;
       return (o.cache.equals(cache) && o.query.equals(query));
     }
+
+    public String toString() {
+      return "QCacheKey[cache='" + cache + "', query='" + query + "']";
+    }
   }
 
   protected void idleCallback() {
@@ -674,5 +766,71 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
   protected void shutdownCallback() {
     CacheManager.getInstance().shutdown();
     logger.info("shut down cache-manager");
+  }
+
+  /**
+   * This is used to run queries from another thread.
+   */
+  private class QueryRunner extends Thread {
+    private final Session       session;
+    private       List<ModItem> qryItems;
+
+    /**
+     * Create a query-runne.
+     *
+     * @param name    the thread-name for this thread
+     * @param session the session to use for the queries
+     */
+    public QueryRunner(String name, Session session) {
+      super(name);
+      setDaemon(true);
+      this.session = session;
+    }
+
+    /**
+     * Run the queries and stores the results in the mod-item again. Notifies the thread and waits
+     * for it to complete the queries.
+     *
+     * @param qryItems the mod-items with the queries to run
+     * @throws InterruptedException if waiting for the results is interrupted
+     */
+    public synchronized void runQueries(List<ModItem> qryItems) throws InterruptedException {
+      assert this.qryItems == null;
+
+      this.qryItems = qryItems;
+      notify();
+
+      while (this.qryItems != null)
+        wait();
+    }
+
+    @Override
+    public synchronized void run() {
+      while (true) {
+        // wait for a job
+        try {
+          while (qryItems == null)
+            wait();
+        } catch (InterruptedException ie) {
+          logger.warn("QueryRunner thread interrupted - exiting", ie);
+          break;
+        }
+
+        // run the queries
+        try {
+          for (ModItem mi : qryItems) {
+            try {
+              mi.beforeMod = CacheInvalidator.this.getQueryResults(mi.query, session);
+            } catch (Throwable e) {
+              logger.warn("Failed to run query '" + mi.query +
+                          "' - not all invalidations may get sent", e);
+            }
+          }
+        } finally {
+          qryItems = null;
+          notify();
+        }
+      }
+    }
   }
 }
