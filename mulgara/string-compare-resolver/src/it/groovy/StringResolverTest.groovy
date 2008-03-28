@@ -13,12 +13,17 @@ import org.mulgara.server.SessionFactory;
 import org.mulgara.server.driver.SessionFactoryFinder;
 
 class StringResolverTest extends GroovyTestCase {
-  String MULGARA    = 'local:///topazproject'
-  String TEST_MODEL = '<local:///topazproject#EqualIgnoreCaseTests>'
-  String RSLV_MODEL = '<local:///topazproject#str>'
-  String RSLV_TYPE  = '<http://topazproject.org/models#StringCompare>'
-  SessionFactory sf = SessionFactoryFinder.newSessionFactory(MULGARA.toURI());
+  static final String MULGARA    = 'local:///topazproject'
+  static final String TEST_MODEL = '<local:///topazproject#EqualIgnoreCaseTests>'
+  static final String RSLV_MODEL = '<local:///topazproject#str>'
+  static final String RSLV_TYPE  = '<http://topazproject.org/models#StringCompare>'
+  static final SessionFactory sf = SessionFactoryFinder.newSessionFactory(MULGARA.toURI());
+
   ItqlInterpreterBean itql
+
+  static {
+    sf.setDirectory(new File('target/mulgara-db'))
+  }
 
   // somewhere: sf.delete()
 
