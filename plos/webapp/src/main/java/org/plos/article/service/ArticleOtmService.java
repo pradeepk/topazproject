@@ -16,6 +16,8 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -563,6 +565,63 @@ public class ArticleOtmService {
                 List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
                 for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject()) {
                   sorted.add(oi);
+                }
+
+                // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
+                return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
+              }
+          });
+        }
+    });
+  }
+
+  /**
+   * Return a list of Figures and Tables in DOI order.
+   *
+   * @param article DOI.
+   * @return Figures and Tables for the article in DOI order.
+   * @throws NoSuchArticleIdException NoSuchArticleIdException.
+   */
+  public SecondaryObject[] listFiguresTables(final String article) throws NoSuchArticleIdException {
+
+    final String FIGURE_CONTEXT = "fig";
+    final String TABLE_CONTEXT = "table-wrap";
+
+    pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
+
+    // do cache aware lookup
+    final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern();  // lock @ Article
+    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+      FetchArticleService.ARTICLE_FIGURESTABLE_KEY + article, -1, lock, "figuresTables",
+      new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
+        public SecondaryObject[] lookup() throws NoSuchArticleIdException {
+          return TransactionHelper.doInTxE(session,
+            new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
+              public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
+                
+                Disjunction figuresTables = Restrictions.disjunction();
+                figuresTables.add(Restrictions.eq("contextElement", FIGURE_CONTEXT))
+                        .add(Restrictions.eq("contextElement", TABLE_CONTEXT));
+                
+                List<ObjectInfo> sorted = tx.getSession().createCriteria(ObjectInfo.class)
+                        .add(Restrictions.eq("isPartOf", article))
+                        .add(figuresTables)
+                        .addOrder(Order.asc("id"))
+                        .list();
+                
+                if (log.isDebugEnabled()) {
+                  log.debug("list of figures and tables for " + article + ":" + sorted);
+                }
+                
+                // TODO: why sort it again?
+                Collections.sort(sorted, new Comparator<ObjectInfo>() {
+                  public int compare(ObjectInfo arg0, ObjectInfo arg1) {
+                    return arg0.getId().compareTo((arg1.getId()));
+                  }
+                });
+
+                if (log.isDebugEnabled()) {
+                  log.debug("*post sort*: list of figures and tables for " + article + ":" + sorted);
                 }
 
                 // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo

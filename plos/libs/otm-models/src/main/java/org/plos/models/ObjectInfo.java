@@ -253,4 +253,11 @@ public class ObjectInfo implements Serializable {
   public void setEIssn(String eIssn) {
     this.eIssn = eIssn;
   }
+
+  public String toString() {
+    return "ObjectInfo: ["
+            + "id: " + getId()
+            + ", contextElement: " + getContextElement()
+            + "]";
+  }
 }
