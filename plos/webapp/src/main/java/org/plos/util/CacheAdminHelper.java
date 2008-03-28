@@ -74,6 +74,11 @@ public class CacheAdminHelper {
         if (refresh > 0)
           e.setTimeToLive(refresh);
 
+        if (log.isDebugEnabled()
+              && e.getObjectValue() == null) {
+          log.debug("caching a null value for key: " + key);
+        }
+
         cache.put(e);
       } else if (log.isDebugEnabled()) {
           log.debug("cache hit: " + cache.getName() + "/" + key + "(" + desc + ")");
@@ -114,6 +119,11 @@ public class CacheAdminHelper {
         e = new Element(key, updater.lookup());
         if (refresh > 0)
           e.setTimeToLive(refresh);
+
+        if (log.isDebugEnabled()
+              && e.getObjectValue() == null) {
+          log.debug("caching a null value for key: " + key);
+        }
 
         cache.put(e);
       } else if (log.isDebugEnabled()) {
