@@ -465,12 +465,11 @@
     It also bootstraps from the cluster, using default properties.
     -->
     <cache name="article-state"
-           maxElementsInMemory="20000"
+           maxElementsInMemory="100000"
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="true"
-           diskExpiryThreadIntervalSeconds="3600">
+           overflowToDisk="false">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -529,12 +528,11 @@
       This cache stores action page results.
     -->
     <cache name="SimplePageCachingFilter"
-           maxElementsInMemory="5000"
+           maxElementsInMemory="10000"
            eternal="false"
-           timeToIdleSeconds="21600"
-           timeToLiveSeconds="0"
-           overflowToDisk="true"
-           diskExpiryThreadIntervalSeconds="3600">
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="86400"
+           overflowToDisk="false">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -551,14 +549,13 @@
     <cache name="ArticleAnnotationCache"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToIdleSeconds="86400"
-           timeToLiveSeconds="0"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="86400"
            overflowToDisk="false">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
-                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicatePuts=true, replicateUpdatesViaCopy=true"/>
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
     <!--
       User cache.
