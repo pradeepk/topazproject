@@ -83,6 +83,13 @@ public class ClassBinder<T> implements EntityBinder {
     return clazz.isInstance(o);
   }
 
+  /*
+   * inherited javadoc
+   */
+  public boolean isAssignableFrom(EntityBinder other) {
+    return (other instanceof ClassBinder) && clazz.isAssignableFrom(((ClassBinder)other).clazz);
+  }
+
   /**
    * Gets the java class that this binder binds to.
    *

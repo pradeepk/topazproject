@@ -57,6 +57,15 @@ public interface EntityBinder {
   public boolean isInstance(Object o);
 
   /**
+   * Tests if the instances of this binder are assignment compatible with instances of another.
+   *
+   * @param other the other binder to test
+   *
+   * @return true if instances of this binder are assignable from instances of the other
+   */
+  public boolean isAssignableFrom(EntityBinder other);
+
+  /**
    * Gets all unique alias names by which this entity is known. For java classes
    * this is the class name.
    *

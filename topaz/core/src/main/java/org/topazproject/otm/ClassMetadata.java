@@ -28,7 +28,6 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.VarMapper;
 import org.topazproject.otm.mapping.EntityBinder;
-import org.topazproject.otm.mapping.java.ClassBinder;
 
 /**
  * Meta information for mapping a class to a set of triples.
@@ -438,12 +437,27 @@ public class ClassMetadata {
     return (g1 != null) ? g1.equals(g2) : (g2 == null);
   }
 
+  /**
+   * Tests to see if instances of this ClassMetadata is assignment compatible from
+   * instances of another. Additionally this test will pass only if all binders
+   * are assignable from the corresponding binders from the other ClassMetadata.
+   * However this could later be made more EntityMode specific.
+   *
+   * @param other the other ClassMetadata
+   *
+   * @return true if instances of this is assignable from instances of the other
+   */
   public boolean isAssignableFrom(ClassMetadata other) {
-    // XXX: temporary
-    ClassBinder thisBinder = (ClassBinder)getEntityBinder(EntityMode.POJO);
-    ClassBinder otherBinder = (ClassBinder)other.getEntityBinder(EntityMode.POJO);
+    if (!other.types.containsAll(this.types))
+      return false;
 
-    return thisBinder.getSourceClass().isAssignableFrom(otherBinder.getSourceClass());
+    for (EntityMode mode : binders.keySet()) {
+      EntityBinder thisBinder = getEntityBinder(mode);
+      EntityBinder otherBinder = other.getEntityBinder(mode);
+      if (!thisBinder.isAssignableFrom(otherBinder))
+        return false;
+    }
+    return true;
   }
 
   @Override
