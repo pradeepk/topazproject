@@ -11,11 +11,6 @@
 -->
 <config>
   <topaz>
-    <mulgara>
-      <serverUri>local:///topazproject</serverUri>
-      <databaseDir>webctxt:/WEB-INF/mulgara_db</databaseDir>
-    </mulgara>
-
     <fr>
       <filterHandler>
         <class_0>org.topazproject.mulgara.resolver.TransactionLogger</class_0>
