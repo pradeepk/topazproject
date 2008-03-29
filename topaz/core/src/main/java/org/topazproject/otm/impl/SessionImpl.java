@@ -32,6 +32,7 @@ import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.IdMapper;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.VarMapper;
 import org.topazproject.otm.mapping.java.FieldBinder;
@@ -745,13 +746,12 @@ public class SessionImpl extends AbstractSession {
     log.warn ("Copy(" + ((loopDetect==null) ? "shallow" : "deep") + ") merging " + id);
 
     for (RdfMapper m : cm.getRdfMappers()) {
-      ClassMetadata am = m.isAssociation() ? checkClass(m.getAssociatedEntity()) : null;
-      RdfMapper om = ocm.getMapperByUri(sessionFactory, m.getUri(), m.hasInverseUri(), 
-                     (am == null) ? null : am.getTypes());
+      Mapper p = ocm.getMapperByName(m.getName());
 
-      if (om == null)
+      if (!(p instanceof RdfMapper))
         continue;
 
+      RdfMapper om = (RdfMapper)p;
       Binder b  = m.getBinder(getEntityMode());
       Binder ob = om.getBinder(getEntityMode());
       if ((loopDetect == null) || !m.isAssociation())
