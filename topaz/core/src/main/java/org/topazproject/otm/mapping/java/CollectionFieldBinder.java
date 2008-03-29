@@ -226,7 +226,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
   /*
    * inherited javadoc
    */
-  public boolean isLoaded(Object instance) {
+  public boolean isLoaded(Object instance) throws OtmException {
     Collection val = (Collection)getRawValue(instance, false);
     return (val == null) || !isOurProxy(val) ||
       ((OtmInvocationHandler)Proxy.getInvocationHandler(val)).isLoaded();

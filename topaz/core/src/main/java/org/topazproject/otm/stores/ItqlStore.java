@@ -68,7 +68,7 @@ public class ItqlStore extends AbstractTripleStore {
    * 
    * @param server  the uri of the iTQL server.
    */
-  public ItqlStore(URI server) {
+  public ItqlStore(URI server) throws OtmException {
     this(server, new DefaultItqlClientFactory());
   }
 
@@ -78,7 +78,7 @@ public class ItqlStore extends AbstractTripleStore {
    * @param server  the uri of the iTQL server.
    * @param icf     the itql-client-factory to use
    */
-  public ItqlStore(URI server, ItqlClientFactory icf) {
+  public ItqlStore(URI server, ItqlClientFactory icf) throws OtmException {
     serverUri   = server;
     itqlFactory = icf;
 

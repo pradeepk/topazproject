@@ -87,7 +87,7 @@ public interface SessionFactory {
    *
    * @throws OtmException in case of a duplicate
    */
-  public void addDefinition(Definition def);
+  public void addDefinition(Definition def) throws OtmException;
 
   /**
    * Removes a definition.

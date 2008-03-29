@@ -79,7 +79,7 @@ public class ProxyCriterion extends Criterion {
    * @return the Criterion builder that is registerd with the 
    *         {@link org.topazproject.otm.TripleStore}
    */
-  protected CriterionBuilder getCriterionBuilder(Criteria criteria) {
+  protected CriterionBuilder getCriterionBuilder(Criteria criteria) throws OtmException {
     return criteria.getSession().getSessionFactory().getTripleStore().getCriterionBuilder(func);
   }
 

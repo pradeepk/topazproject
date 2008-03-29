@@ -186,7 +186,7 @@ public class SessionFactoryImpl implements SessionFactory {
   /*
    * inherited javadoc
    */
-  public void addDefinition(Definition def) {
+  public void addDefinition(Definition def) throws OtmException {
     if (defs.containsKey(def.getName()))
       throw new OtmException("Duplicate definition :" + def.getName());
 

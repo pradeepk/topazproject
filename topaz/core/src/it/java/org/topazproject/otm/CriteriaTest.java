@@ -125,7 +125,7 @@ public class CriteriaTest extends AbstractOtmTest {
    * DOCUMENT ME!
    */
   @Test
-  public void testUnrestricted() {
+  public void testUnrestricted() throws OtmException {
     log.info("Testing unrestricted ...");
 
     final List<Annotation> al = new ArrayList();
@@ -152,7 +152,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testUnrestricted"}
   )
-  public void testEq() {
+  public void testEq() throws OtmException {
     log.info("Testing EQ ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -180,7 +180,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testEq"}
   )
-  public void testIdEq() {
+  public void testIdEq() throws OtmException {
     log.info("Testing EQ on id field ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -201,7 +201,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testIdEq"}
   )
-  public void testDefaultConjunction() {
+  public void testDefaultConjunction() throws OtmException {
     log.info("Testing default conjunction ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -224,7 +224,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testDefaultConjunction"}
   )
-  public void testEmptyResultSet() {
+  public void testEmptyResultSet() throws OtmException {
     log.info("Testing empty result-set ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -243,7 +243,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testEmptyResultSet"}
   )
-  public void testConjunction() {
+  public void testConjunction() throws OtmException {
     log.info("Testing conjunction ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -267,7 +267,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testConjunction"}
   )
-  public void testDisjunction() {
+  public void testDisjunction() throws OtmException {
     log.info("Testing disjunction ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -296,7 +296,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testDisjunction"}
   )
-  public void testWalk1() {
+  public void testWalk1() throws OtmException {
     log.info("Testing walk 1 ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -321,7 +321,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testWalk1"}
   )
-  public void testWalk2() {
+  public void testWalk2() throws OtmException {
     log.info("Testing walk 2 ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -344,7 +344,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testWalk2"}
   )
-  public void testTrans1() {
+  public void testTrans1() throws OtmException {
     log.info("Testing trans 1 ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -369,7 +369,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testTrans1"}
   )
-  public void testTrans2() {
+  public void testTrans2() throws OtmException {
     log.info("Testing trans 2 ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -392,7 +392,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testTrans2"}
   )
-  public void testNe() {
+  public void testNe() throws OtmException {
     log.info("Testing NE ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -418,7 +418,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testNe"}
   )
-  public void testMaxResults() {
+  public void testMaxResults() throws OtmException {
     log.info("Testing max-results ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -441,7 +441,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testMaxResults"}
   )
-  public void testFirstResult() {
+  public void testFirstResult() throws OtmException {
     log.info("Testing first-result ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -464,7 +464,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testFirstResult"}
   )
-  public void testAscOrder() {
+  public void testAscOrder() throws OtmException {
     log.info("Testing asc order ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -487,7 +487,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testAscOrder"}
   )
-  public void testDescOrder() {
+  public void testDescOrder() throws OtmException {
     log.info("Testing desc order ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -507,7 +507,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testDescOrder"}
   )
-  public void testIdOrder() {
+  public void testIdOrder() throws OtmException {
     log.info("Testing id order ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -536,7 +536,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testIdOrder"}
   )
-  public void testGT() {
+  public void testGT() throws OtmException {
     log.info("Testing GT ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -559,7 +559,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testGT"}
   )
-  public void testLT() {
+  public void testLT() throws OtmException {
     log.info("Testing LT ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -579,7 +579,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testLT"}
   )
-  public void testLE() {
+  public void testLE() throws OtmException {
     log.info("Testing LE ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -602,7 +602,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testLE"}
   )
-  public void testGE() {
+  public void testGE() throws OtmException {
     log.info("Testing GE ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -627,7 +627,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testGE"}
   )
-  public void testExists() {
+  public void testExists() throws OtmException {
     log.info("Testing exists() ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -648,7 +648,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testExists"}
   )
-  public void testNotExists() {
+  public void testNotExists() throws OtmException {
     log.info("Testing notExists() ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -673,7 +673,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testNotExists"}
   )
-  public void testChild() {
+  public void testChild() throws OtmException {
     log.info("Testing child criteria ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -697,7 +697,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testChild"}
   )
-  public void testChildWithOrderByChild() {
+  public void testChildWithOrderByChild() throws OtmException {
     log.info("Testing child criteria with order-by on child ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -721,7 +721,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testChildWithOrderByChild"}
   )
-  public void testChildWithOrderByChildMember() {
+  public void testChildWithOrderByChildMember() throws OtmException {
     log.info("Testing child criteria with order-by on child member ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -746,7 +746,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testChildWithOrderByChildMember"}
   )
-  public void testParamBinding() {
+  public void testParamBinding() throws OtmException {
     log.info("Testing param binding ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -767,7 +767,7 @@ public class CriteriaTest extends AbstractOtmTest {
       });
   }
 
-  private DetachedCriteria createDC() {
+  private DetachedCriteria createDC() throws OtmException {
     DetachedCriteria dc = new DetachedCriteria("Annotation");
     dc.createCriteria("supersedes").addOrder(Order.desc("creator"))
        .add(Restrictions.eq("annotates", new Parameter("p1")));
@@ -793,7 +793,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testParamBinding"}
   )
-  public void testDC() {
+  public void testDC() throws OtmException {
     log.info("Testing detached criteria ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
@@ -808,7 +808,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testDC"}
   )
-  public void testDCSave() {
+  public void testDCSave() throws OtmException {
     log.info("Testing detached criteria saveOrUpdate ...");
 
     final DetachedCriteria dc = createDC();
@@ -842,7 +842,7 @@ public class CriteriaTest extends AbstractOtmTest {
   @Test(dependsOnMethods =  {
     "testDCSave"}
   )
-  public void testDCLoad() {
+  public void testDCLoad() throws OtmException {
     log.info("Testing detached criteria load ...");
 
     doInSession(new Action() {
@@ -859,7 +859,7 @@ public class CriteriaTest extends AbstractOtmTest {
   }
 
   @Test(dependsOnMethods =  {"testDCLoad"})
-  public void testCollections() {
+  public void testCollections() throws OtmException {
     for (String field : new String[] {"list", "seq"}) {
       log.info("Testing EQ on an rdf:" + field + " field ...");
       doCollectionsTest("eq", field, "a1", new String[] {sm1Id});
@@ -900,7 +900,7 @@ public class CriteriaTest extends AbstractOtmTest {
   }
 
   private void doCollectionsTest(final String op, final String field, final String val, 
-      final String[] results) {
+      final String[] results) throws OtmException {
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           Criterion crit;
