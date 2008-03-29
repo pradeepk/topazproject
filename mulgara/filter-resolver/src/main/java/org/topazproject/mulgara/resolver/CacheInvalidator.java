@@ -68,6 +68,10 @@ import net.sf.ehcache.Ehcache;
  *   <dd>the location of the config for Ehcache. If this starts with a '/' it is treated as a
  *       resource; otherwise as a URL. If null, the default config location "/ehcache.xml" is
  *       used.</dd>
+ *   <dt>topaz.fr.cacheInvalidator.queryCache</dt>
+ *   <dd>the name of the cache to use for storing rules-query results. If undefined it defaults
+ *       to "queryCache". If no cache with the given name has been configured in Ehcache then
+ *       no results will be cached. This cache would usually be a memory-only, lfu cache.</dd>
  * </dl>
  *
  * The DTD for the rules is:
@@ -108,10 +112,17 @@ import net.sf.ehcache.Ehcache;
  * <p>The object section specifies the name of the cache to which the invalidation should be sent,
  * and the key that should be invalidated. The key can either be one of the elements of the quad
  * that was matched, or it can be an itql query. Queries must return exactly two columns, a key
- * and a value. These (key, value) pairs are stored, and each time the rule is triggered the query
- * is rerun and the new (key, value) pairs compared with the previously stored ones; all keys which
- * were not present before, or are not present anymore, or whose values changed, will be
- * invalidated.
+ * and a value. Each time the a rule is triggered the query is run before and after the
+ * modifications are applied to the db and the two lists of (key, value) pairs are compared: all
+ * keys which were not present before, are not present anymore, or whose values changed, will be
+ * invalidated. To reduce the number of queries run, the query results are cached (see the
+ * "queryCache" parameter above). Also, the guarantee is only that the first query will have run
+ * some time before the modifications are applied, and the second query will run some time after
+ * the modifications are applied, though this time will be short (in the range of seconds, though
+ * the latter delay is controlled by the "invalidationInterval" parameter above). This means that
+ * if, say, a value changes and then is immediately reset to the original value, or if a statement
+ * is inserted and then immediately deleted again, that those changes may or may not trigger a
+ * cache invalidation.
  *
  * <p>Example rules:
  * <pre>
@@ -209,6 +220,10 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
 
     String qcName = config.getString("queryCache", DEF_QC_NAME);
     queryCache    = CacheManager.getInstance().getEhcache(qcName);
+    if (queryCache != null)
+      logger.info("Using cache '" + qcName + "' for the query caching");
+    else
+      logger.info("No cache named '" + qcName + "' found - disabling query caching");
 
     // delay session creation because at this point we're already in a session-creation call
     /* This makes a whole bunch of assumptions regarding how LocalSessionFactory works and
@@ -560,7 +575,8 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
         if (mi.query == null)
           continue;
 
-        net.sf.ehcache.Element prevElem = queryCache.get(new QCacheKey(mi));
+        net.sf.ehcache.Element prevElem =
+            (queryCache != null) ? queryCache.get(new QCacheKey(mi)) : null;
         if (prevElem != null)
           mi.beforeMod = (Map<String,Set<String>>) prevElem.getObjectValue();
         else
@@ -578,8 +594,10 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
           returnQueryRunner(qr);
         }
 
-        for (ModItem mi : qryItems)
-          queryCache.put(new net.sf.ehcache.Element(new QCacheKey(mi), mi.beforeMod));
+        if (queryCache != null) {
+          for (ModItem mi : qryItems)
+            queryCache.put(new net.sf.ehcache.Element(new QCacheKey(mi), mi.beforeMod));
+        }
       }
 
       return XA_OK;
@@ -690,7 +708,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
         logger.trace("Removed keys: " + remKeys);
 
       // update cache if anything changed
-      if (!keys.isEmpty())
+      if (!keys.isEmpty() && queryCache != null)
         queryCache.put(new net.sf.ehcache.Element(new QCacheKey(mi), res));
 
     } catch (Exception e) {
