@@ -12,7 +12,6 @@ package org.topazproject.mulgara.resolver;
 
 import java.net.URI;
 import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
 
 import org.mulgara.resolver.spi.ResolverException;
 import org.mulgara.resolver.spi.ResolverSession;
