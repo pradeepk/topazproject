@@ -10,6 +10,7 @@
 package org.plos.models;
 
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 
@@ -26,7 +27,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "ri")
 @UriPrefix(Annotea.W3C_NS)
-public abstract class Annotea {
+public abstract class Annotea implements Serializable {
   /**
    * Annotea Namespace URI
    */
@@ -48,6 +49,8 @@ public abstract class Annotea {
   private String                                            mediator;
   @Predicate(uri = Rdf.topaz + "state", dataType = Predicate.UNTYPED)
   private int                                               state;
+
+  static final long serialVersionUID = 7228784439724175998L;
 
   public abstract URI getId();
   
