@@ -9,6 +9,8 @@
  */
 package org.topazproject.otm.impl;
 
+import java.io.Serializable;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -803,6 +805,9 @@ public class SessionImpl extends AbstractSession {
           }
 
           try {
+            if (m.getName().equals("writeReplace") && (self instanceof Serializable) 
+                && (args.length == 0))
+              return getSerializableReplacement(self);
             return proceed.invoke(self, args);
           } catch (InvocationTargetException ite) {
             if (log.isDebugEnabled())
@@ -815,6 +820,24 @@ public class SessionImpl extends AbstractSession {
           return loaded;
         }
 
+        private Object getSerializableReplacement(Object o) throws Throwable {
+          ClassMetadata cm = id.getClassMetadata();
+          Object rep = cm.getEntityBinder(getEntityMode()).newInstance();
+          for (Mapper m : new Mapper[] {cm.getIdField(), cm.getBlobField()})
+            if (m != null) {
+              Binder b = m.getBinder(getEntityMode());
+              b.setRawValue(rep, b.getRawValue(o, false));
+            }
+          for (Mapper m : cm.getRdfMappers()) {
+            Binder b = m.getBinder(getEntityMode());
+            b.setRawValue(rep, b.getRawValue(o, false));
+          }
+
+          if (log.isDebugEnabled())
+            log.debug("Serializable replacement created for " + o);
+
+          return rep;
+        }
       };
 
     try {

@@ -9,6 +9,9 @@
  */
 package org.topazproject.otm.mapping.java;
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -87,7 +90,7 @@ public class ClassBinder<T> implements EntityBinder {
    * inherited javadoc
    */
   public boolean isAssignableFrom(EntityBinder other) {
-    return (other instanceof ClassBinder) && clazz.isAssignableFrom(((ClassBinder)other).clazz);
+    return (other instanceof ClassBinder) && clazz.isAssignableFrom(((ClassBinder) other).clazz);
   }
 
   /**
@@ -116,6 +119,10 @@ public class ClassBinder<T> implements EntityBinder {
 
     ProxyFactory f  = new ProxyFactory();
     f.setSuperclass(clazz);
+
+    if (Serializable.class.isAssignableFrom(clazz))
+      f.setInterfaces(new Class[] { WriteReplace.class });
+
     f.setFilter(mf);
 
     Class<?extends T> c = f.createClass();
@@ -128,5 +135,9 @@ public class ClassBinder<T> implements EntityBinder {
    */
   public String[] getNames() {
     return new String[] { clazz.getName() };
+  }
+
+  public static interface WriteReplace {
+    public Object writeReplace() throws ObjectStreamException;
   }
 }

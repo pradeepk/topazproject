@@ -9,6 +9,13 @@
  */
 package org.topazproject.otm;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -22,12 +29,18 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import org.topazproject.otm.annotations.UriPrefix;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
+
+import javassist.util.proxy.ProxyObject;
 
 /**
  * Session tests.
@@ -57,6 +70,7 @@ public class SessionTest extends AbstractOtmTest {
   public void setUp() throws OtmException {
     try {
       initFactory();
+      factory.preload(Serial.class);
       initModels();
       setUpData();
       createSession();
@@ -91,6 +105,15 @@ public class SessionTest extends AbstractOtmTest {
           session.saveOrUpdate(a1);
           session.saveOrUpdate(a2);
           session.saveOrUpdate(a3);
+
+          Serial s1 = new Serial();
+          s1.id = "foo:id/l1";
+          s1.s1 = "Loop1";
+          s1.ch = new Serial();
+          s1.ch.id = "foo:id/l2";
+          s1.ch.s1 = "Loop2";
+          s1.ch.ch = s1;
+          session.saveOrUpdate(s1);
         }
       });
   }
@@ -273,5 +296,47 @@ public class SessionTest extends AbstractOtmTest {
     assertFalse(r.next());
 
     r.close();
+  }
+
+  @Test
+  public void testSerial() throws Exception {
+    log.info("Testing serialization of proxy objects ...");
+    Serial l1 = session.load(Serial.class, "foo:id/l1");
+    l1.equals(null); // force load
+    l1.ch.equals(null); // force load
+    assertTrue(l1 instanceof ProxyObject);
+    assertTrue(l1.ch instanceof ProxyObject);
+
+    ByteArrayOutputStream bo = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(bo);
+
+    oos.writeObject(l1);
+
+    oos.close();
+
+    byte[] buf = bo.toByteArray();
+
+    ByteArrayInputStream bi = new ByteArrayInputStream(buf);
+    ObjectInputStream ois = new ObjectInputStream(bi);
+
+    Serial s1 = (Serial) ois.readObject();
+
+    ois.close();
+
+    assertEquals(s1.id, l1.id);
+    assertEquals(s1.s1, l1.s1);
+    assertEquals(s1.ch.id, l1.ch.id);
+    assertEquals(s1.ch.s1, l1.ch.s1);
+    assertEquals(s1.ch.ch.id, l1.ch.ch.id);
+    assertEquals(s1.ch.ch.s1, l1.ch.ch.s1);
+  }
+
+  @UriPrefix("foo:")
+  @Entity(model="ri")
+  public static class Serial implements Serializable {
+    @Id
+    public String id;
+    public String s1;
+    public Serial ch;
   }
 }
