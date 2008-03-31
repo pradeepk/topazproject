@@ -59,7 +59,8 @@ public class Criteria implements Parameterizable<Criteria> {
   private final Session            session;
   private final ClassMetadata      classMetadata;
   private final Criteria           parent;
-  private final RdfMapper             mapping;
+  private final RdfMapper          mapping;
+  private final boolean            isReferrer;
   private final Collection<Filter> filters;
   private       int                maxResults    = -1;
   private       int                firstResult   = -1;
@@ -69,20 +70,25 @@ public class Criteria implements Parameterizable<Criteria> {
   private final List<Order>        orderPosition;
   private final Set<String>        paramNames;
   private final Map<String, Object> paramValues;
+
   /**
    * Creates a new Criteria object. Called by {@link Session#createCriteria}.
    *
    * @param session The session that created it
    * @param parent The parent criteria for which this is a sub-criteria
-   * @param mapping The mapping of the association field in parent 
+   * @param mapping The mapping of the association field
+   * @param isReferrer if true then <var>mapping</var> is in this criteria and the association
+   *                   points to the parent; if false then <var>mapping</var> is in
+   *                   <var>parent</var> and the association points from the parent to us.
    * @param classMetadata The class meta-data of this criteria
    * @param filters The filters to apply
    */
-  public Criteria(Session session, Criteria parent, RdfMapper mapping, ClassMetadata classMetadata,
-                  Collection<Filter> filters) {
+  public Criteria(Session session, Criteria parent, RdfMapper mapping, boolean isReferrer,
+                  ClassMetadata classMetadata, Collection<Filter> filters) {
     this.session                        = session;
     this.parent                         = parent;
     this.mapping                        = mapping;
+    this.isReferrer                     = isReferrer;
     this.classMetadata                  = classMetadata;
     this.filters                        = filters;
 
@@ -107,7 +113,25 @@ public class Criteria implements Parameterizable<Criteria> {
    * @throws OtmException on an error
    */
   public Criteria createCriteria(String path) throws OtmException {
-    Criteria c = session.createCriteria(this, path);
+    Criteria c = session.createCriteria(this, null, path);
+    children.add(c);
+
+    return c;
+  }
+
+  /**
+   * Creates a new sub-criteria for an association from another object to the current object.
+   * Whereas {@link #createCriteria} allows one to walk down associations to other objects, this
+   * allows one to walk up an assocation from another object.
+   *
+   * @param referrer the entity whose association points to us
+   * @param path     to the association (in <var>entity</var>); this must point to this criteria's
+   *                 entity
+   * @return the newly created sub-criteria
+   * @throws OtmException on an error
+   */
+  public Criteria createReferrerCriteria(String referrer, String path) throws OtmException {
+    Criteria c = session.createCriteria(this, referrer, path);
     children.add(c);
 
     return c;
@@ -147,6 +171,15 @@ public class Criteria implements Parameterizable<Criteria> {
    */
   public RdfMapper getMapping() {
     return mapping;
+  }
+
+  /**
+   * Whether this entity of this criteria is the parent or child of the association
+   *
+   * @return 
+   */
+  public boolean isReferrer() {
+    return isReferrer;
   }
 
   /**

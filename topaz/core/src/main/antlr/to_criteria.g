@@ -403,7 +403,7 @@ options {
       if (cm == null)
         throw new RecognitionException("No metadata found for class '" + cls.getText() + "'");
 
-      crit   = new Criteria(sess, null, null, cm, null);
+      crit   = new Criteria(sess, null, null, false, cm, null);
       topVar = var.getText();
 
       critMap.put(topVar, crit);

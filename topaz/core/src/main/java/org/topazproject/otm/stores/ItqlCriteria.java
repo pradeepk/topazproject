@@ -135,7 +135,8 @@ public class ItqlCriteria {
     if (!isFilter) {
       for (Order o : criteria.getOrderList())
         if (!id.equals(o.getName()))
-          buildPredicateWhere(cm, criteria, o.getName(), subject, object + i++, qry, model);
+          buildPredicateWhere(criteria.isReferrer() ? criteria.getClassMetadata() : cm, criteria,
+                              o.getName(), subject, object + i++, qry, model);
     }
 
     i = 0;
@@ -158,7 +159,8 @@ public class ItqlCriteria {
 
     for (Criteria cr : criteria.getChildren()) {
       String child = pfx + "c" + i++;
-      buildPredicateWhere(cm, cr, cr.getMapping().getName(), subject, child, qry, model);
+      buildPredicateWhere(cr.isReferrer() ? cr.getClassMetadata() : cm, cr,
+                          cr.getMapping().getName(), subject, child, qry, model);
       buildWhereClause(cr, qry, child, child, true, isFilter);
     }
   }
@@ -206,10 +208,10 @@ public class ItqlCriteria {
 
     String mUri = (m.getModel() != null) ? getModelUri(c, m.getModel()) : model;
 
-    if (m.hasInverseUri()) {
+    if (m.hasInverseUri() ^ c.isReferrer()) {
       String tmp = object;
-      object    = subject;
-      subject   = tmp;
+      object     = subject;
+      subject    = tmp;
     }
 
     qry.append(subject).append(" <").append(m.getUri()).append("> ").append(object).append(" in <")

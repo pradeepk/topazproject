@@ -28,11 +28,17 @@ import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.SpecialMappers;
+
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.UriPrefix;
 
 /**
  * Tests for Criteria.
@@ -46,6 +52,8 @@ public class CriteriaTest extends AbstractOtmTest {
   private URI              id2   = URI.create("http://localhost/annotation/2");
   private URI              id3   = URI.create("http://localhost/annotation/3");
   private URI              id4   = URI.create("http://localhost/annotation/4");
+  private URI              idl1  = URI.create("http://localhost/annotation-link/1");
+  private URI              idl2  = URI.create("http://localhost/annotation-link/2");
   private String           sm1Id = "http://localhost/sm/1";
   private String           sm2Id = "http://localhost/sm/2";
 
@@ -803,11 +811,140 @@ public class CriteriaTest extends AbstractOtmTest {
       });
   }
 
+  @Entity(name = "AnnotationLink", model = "ri")
+  @UriPrefix(Rdf.topaz)
+  public static class AnnotationLink {
+    @Id
+    public URI        id;
+    public Annotation ann1;
+    public Annotation ann2;
+    @Predicate(inverse = true)
+    public Annotation annR;
+  }
+
   /**
    * DOCUMENT ME!
    */
   @Test(dependsOnMethods =  {
     "testChildWithOrderByChildMember"}
+  )
+  public void testReferrer() throws OtmException {
+    log.info("Testing referrer criteria ...");
+
+    factory.preload(AnnotationLink.class);
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          AnnotationLink l1 = new AnnotationLink();
+          AnnotationLink l2 = new AnnotationLink();
+          l1.id = idl1;
+          l2.id = idl2;
+
+          l1.ann1 = session.get(Annotation.class, id1.toString());
+          l1.ann2 = session.get(Annotation.class, id2.toString());
+          l2.ann1 = session.get(Annotation.class, id3.toString());
+          l2.ann2 = session.get(Annotation.class, id4.toString());
+
+          session.saveOrUpdate(l1);
+          session.saveOrUpdate(l2);
+        }
+      });
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          List l = session.createCriteria(Annotation.class)
+                          .createReferrerCriteria("AnnotationLink", "ann1")
+                          .add(new SubjectCriterion(idl1.toString()))
+                          .list();
+          assertEquals(1, l.size());
+
+          Annotation a = (Annotation) l.get(0);
+          assertEquals(id1, a.getId());
+
+          l = session.createCriteria(Annotation.class)
+                     .createReferrerCriteria("AnnotationLink", "ann2")
+                     .createCriteria("ann1")
+                     .add(Restrictions.eq("annotates", "bar:1"))
+                     .list();
+          assertEquals(1, l.size());
+
+          a = (Annotation) l.get(0);
+          assertEquals(id4, a.getId());
+        }
+      });
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  @Test(dependsOnMethods =  {
+    "testReferrer"}
+  )
+  public void testReferrerWithInvPredicate() throws OtmException {
+    log.info("Testing referrer criteria with inverse predicate ...");
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          AnnotationLink l = session.get(AnnotationLink.class, idl1.toString());
+          Annotation     a = session.get(Annotation.class, id3.toString());
+          l.annR = a;
+        }
+      });
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          List l = session.createCriteria(Annotation.class)
+                          .createReferrerCriteria("AnnotationLink", "annR")
+                          .add(Restrictions.exists("ann1"))
+                          .list();
+          assertEquals(1, l.size());
+
+          Annotation a = (Annotation) l.get(0);
+          assertEquals(id3, a.getId());
+        }
+      });
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  @Test(dependsOnMethods =  {
+    "testReferrerWithInvPredicate"}
+  )
+  public void testReferrerWithOrderByChildMember() throws OtmException {
+    log.info("Testing referrer criteria with order-by on child member ...");
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          List l = session.createCriteria(Annotation.class)
+                          .createReferrerCriteria("AnnotationLink", "ann1")
+                          .addOrder(Order.asc("id")).add(Restrictions.exists("ann2"))
+                          .list();
+          assertEquals(2, l.size());
+
+          Annotation a1 = (Annotation) l.get(0);
+          Annotation a2 = (Annotation) l.get(1);
+          assertEquals(id1, a1.getId());
+          assertEquals(id3, a2.getId());
+
+          l = session.createCriteria(Annotation.class)
+                          .createReferrerCriteria("AnnotationLink", "ann1")
+                          .addOrder(Order.desc("id")).add(Restrictions.exists("ann2"))
+                          .list();
+          assertEquals(2, l.size());
+
+          a1 = (Annotation) l.get(0);
+          a2 = (Annotation) l.get(1);
+          assertEquals(id3, a1.getId());
+          assertEquals(id1, a2.getId());
+        }
+      });
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  @Test(dependsOnMethods =  {
+    "testReferrerWithOrderByChildMember"}
   )
   public void testParamBinding() throws OtmException {
     log.info("Testing param binding ...");
@@ -833,7 +970,9 @@ public class CriteriaTest extends AbstractOtmTest {
   private DetachedCriteria createDC() throws OtmException {
     DetachedCriteria dc = new DetachedCriteria("Annotation");
     dc.createCriteria("supersedes").addOrder(Order.desc("creator"))
-       .add(Restrictions.eq("annotates", new Parameter("p1")));
+       .add(Restrictions.eq("annotates", new Parameter("p1")))
+       .createReferrerCriteria("AnnotationLink", "ann1")
+       .add(Restrictions.exists("ann2"));
     dc.addOrder(Order.desc("annotates"));
 
     return dc;
@@ -842,12 +981,10 @@ public class CriteriaTest extends AbstractOtmTest {
   private void evaluateDC(DetachedCriteria dc, Session session)
                    throws OtmException {
     List l = dc.getExecutableCriteria(session).setParameter("p1", "foo:1").list();
-    assertEquals(2, l.size());
+    assertEquals(1, l.size());
 
     Annotation a1 = (Annotation) l.get(0);
-    Annotation a2 = (Annotation) l.get(1);
-    assertEquals(id3, a1.getId());
-    assertEquals(id2, a2.getId());
+    assertEquals(id2, a1.getId());
   }
 
   /**
@@ -887,12 +1024,20 @@ public class CriteriaTest extends AbstractOtmTest {
     assertEquals(dc.da.rdfType, factory.getClassMetadata(Annotation.class).getTypes());
     assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
                  getMapper(Annotation.class, "annotates").getUri());
+
+    assertEquals(1, dc.getChildCriteriaList().size());
     dc = dc.getChildCriteriaList().iterator().next();
     assertEquals(dc.da.rdfType, factory.getClassMetadata(Annotation.class).getTypes());
     assertEquals("" + dc.da.predicateUri,
                  getMapper(Annotation.class, "supersedes").getUri());
     assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
                  getMapper(Annotation.class, "creator").getUri());
+
+    assertEquals(1, dc.getChildCriteriaList().size());
+    dc = dc.getChildCriteriaList().iterator().next();
+    assertEquals(dc.da.rdfType, factory.getClassMetadata(AnnotationLink.class).getTypes());
+    assertEquals("" + dc.da.predicateUri,
+                 getMapper(AnnotationLink.class, "ann1").getUri());
   }
 
   private RdfMapper getMapper(Class c, String name) {

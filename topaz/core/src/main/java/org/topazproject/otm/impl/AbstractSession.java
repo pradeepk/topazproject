@@ -157,7 +157,7 @@ abstract class AbstractSession implements Session {
    * inherited javadoc
    */
   public Criteria createCriteria(Class clazz) throws OtmException {
-    return new Criteria(this, null, null, checkClass(clazz),
+    return new Criteria(this, null, null, false, checkClass(clazz),
                         new ArrayList<Filter>(filters.values()));
   }
 
@@ -165,22 +165,32 @@ abstract class AbstractSession implements Session {
    * inherited javadoc
    */
   public Criteria createCriteria(String entity) throws OtmException {
-    return new Criteria(this, null, null, checkClass(entity),
+    return new Criteria(this, null, null, false, checkClass(entity),
                         new ArrayList<Filter>(filters.values()));
   }
 
   /*
    * inherited javadoc
    */
-  public Criteria createCriteria(Criteria criteria, String path)
+  public Criteria createCriteria(Criteria parent, String referrer, String path)
                           throws OtmException {
-    ClassMetadata cm = criteria.getClassMetadata();
-    Mapper           m  = cm.getMapperByName(path);
+    ClassMetadata cm = checkClass(referrer != null ? referrer :
+                                                     parent.getClassMetadata().getName());
+    Mapper        m  = cm.getMapperByName(path);
 
     if (!(m instanceof RdfMapper))
       throw new OtmException(path + " is not a valid field name for " + cm);
+    RdfMapper rm = (RdfMapper) m;
 
-    return new Criteria(this, criteria, (RdfMapper)m, checkClass(((RdfMapper)m).getAssociatedEntity()),
+    if (rm.getAssociatedEntity() == null)
+      throw new OtmException(path + " is not an association of " + cm);
+
+    if (referrer != null && !rm.getAssociatedEntity().equals(parent.getClassMetadata().getName()))
+      throw new OtmException("'" + path + "' in " + cm + " does not point to '" +
+                             parent.getClassMetadata().getName() + "'");
+
+    return new Criteria(this, parent, rm, referrer != null,
+                        checkClass(referrer != null ? referrer : rm.getAssociatedEntity()),
                         new ArrayList<Filter>(filters.values()));
   }
 

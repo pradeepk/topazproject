@@ -56,7 +56,8 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   private static final Log        log               = LogFactory.getLog(DetachedCriteria.class);
   private static final String     NL                = System.getProperty("line.separator");
 
-  private           String        alias;
+  private String                  alias;
+  private String                  referrer;
   private DetachedCriteria        parent;
   private Integer                 maxResults;
   private Integer                 firstResult;
@@ -98,13 +99,21 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * class name. 
    */
   public DetachedCriteria(String entity) {
-    this.alias   = entity;
-    this.parent  = null;
+    this.alias    = entity;
+    this.parent   = null;
+    this.referrer = null;
   }
 
   private DetachedCriteria(DetachedCriteria parent, String path) {
     this.alias    = path;
     this.parent   = parent;
+    this.referrer = null;
+  }
+
+  private DetachedCriteria(DetachedCriteria parent, String referrer, String path) {
+    this.alias    = path;
+    this.parent   = parent;
+    this.referrer = referrer;
   }
 
   /**
@@ -150,7 +159,9 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
       c.addOrder(or);
 
     for (DetachedCriteria dc : childCriteriaList)
-      dc.copyTo(c.createCriteria(dc.getAlias()));
+      dc.copyTo(dc.getReferrer() != null ?
+                        c.createReferrerCriteria(dc.getReferrer(), dc.getAlias()) :
+                        c.createCriteria(dc.getAlias()));
   }
 
   /**
@@ -164,6 +175,24 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    */
   public DetachedCriteria createCriteria(String path) throws OtmException {
     DetachedCriteria c = new DetachedCriteria(this, path);
+    childCriteriaList.add(c);
+
+    return c;
+  }
+
+  /**
+   * Creates a new sub-criteria for an association from another object to the current object.
+   * Whereas {@link #createCriteria} allows one to walk down associations to other objects, this
+   * allows one to walk up an assocation from another object.
+   *
+   * @param referrer the entity whose association points to us
+   * @param path     to the association (in <var>entity</var>); this must point to this criteria's
+   *                 entity
+   * @return the newly created sub-criteria
+   * @throws OtmException on an error
+   */
+  public DetachedCriteria createReferrerCriteria(String referrer, String path) throws OtmException {
+    DetachedCriteria c = new DetachedCriteria(this, referrer, path);
     childCriteriaList.add(c);
 
     return c;
@@ -219,6 +248,9 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   private ClassMetadata getClassMetadata(SessionFactory sf) {
     if (parent == null)
       return sf.getClassMetadata(alias);
+    if (referrer != null)
+      return sf.getClassMetadata(referrer);
+
     ClassMetadata cm = parent.getClassMetadata(sf);
     if (cm == null)
       return null;
@@ -255,7 +287,8 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
           or.onPreInsert(session, this, cm);
       }
     } else {
-      ClassMetadata cm = parent.getClassMetadata(sf);
+      ClassMetadata cm =
+              (referrer != null) ? sf.getClassMetadata(referrer) : parent.getClassMetadata(sf);
       if (cm == null)
         log.warn("onPreInsert: Parent of '" + alias + "' not found in session factory");
       else {
@@ -264,11 +297,14 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
           log.warn("onPreInsert: Field '" + alias + "' not found in " + cm);
         else {
           RdfMapper m = (RdfMapper)r;
-          cm = sf.getClassMetadata(m.getAssociatedEntity());
+          if (referrer == null)
+            cm = sf.getClassMetadata(m.getAssociatedEntity());
+
           if (cm != null)
             da.rdfType = cm.getTypes();
           da.predicateUri = URI.create(m.getUri());
           da.inverse = m.hasInverseUri();
+
           if (log.isDebugEnabled())
             log.debug("onPreInsert: converted field '" + alias + "' to "  + da);
 
@@ -313,7 +349,8 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
           or.onPostLoad(session, this, cm);
       }
     } else {
-      ClassMetadata cm = parent.getClassMetadata(sf);
+      ClassMetadata cm =
+              (referrer != null) ? sf.getClassMetadata(referrer) : parent.getClassMetadata(sf);
       if (cm == null)
         log.warn("onPostLoad: Parent of '" + alias + "' not found in session factory");
       else {
@@ -326,7 +363,8 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
           if (log.isDebugEnabled())
             log.debug("onPostLoad: converted " + da + " to '" + alias + "'");
 
-          cm = sf.getClassMetadata(m.getAssociatedEntity());
+          if (referrer == null)
+            cm = sf.getClassMetadata(m.getAssociatedEntity());
 
           for (Criterion cr : criterionList)
             cr.onPostLoad(session, this, cm);
@@ -487,6 +525,26 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    */
   public void setAlias(String alias) {
     this.alias = alias;
+  }
+
+  /**
+   * Get referrer.
+   *
+   * @return the referrer, or null
+   */
+  public String getReferrer() {
+    return referrer;
+  }
+
+  /**
+   * Set referrer. For use by persistence.
+   *
+   * DO NOT USE DIRECTLY. Use {@link #createReferrerCriteria} instead on the parent.
+   *
+   * @param referrer the value to set.
+   */
+  public void setReferrer(String referrer) {
+    this.referrer = referrer;
   }
 
   /**
