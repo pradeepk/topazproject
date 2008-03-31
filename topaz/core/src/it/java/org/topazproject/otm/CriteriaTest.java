@@ -518,7 +518,14 @@ public class CriteriaTest extends AbstractOtmTest {
           assertEquals(1, l.size());
           Annotation a1 = (Annotation) l.get(0);
           assertEquals(id2, a1.getId());
-          
+
+          l = session.createCriteria(Annotation.class)
+                        .setFirstResult(1).setMaxResults(1).addOrder(Order.desc("id")).list();
+
+          assertEquals(1, l.size());
+          a1 = (Annotation) l.get(0);
+          assertEquals(id3, a1.getId());
+
           l = session.createCriteria(Annotation.class)
                         .setFirstResult(1).setMaxResults(1).addOrder(Order.asc("id"))
                         .addOrder(Order.desc("creator")).list();
@@ -526,6 +533,14 @@ public class CriteriaTest extends AbstractOtmTest {
           assertEquals(1, l.size());
           a1 = (Annotation) l.get(0);
           assertEquals(id2, a1.getId());
+
+          l = session.createCriteria(Annotation.class)
+                        .setFirstResult(1).setMaxResults(1).addOrder(Order.desc("id"))
+                        .addOrder(Order.desc("creator")).list();
+
+          assertEquals(1, l.size());
+          a1 = (Annotation) l.get(0);
+          assertEquals(id3, a1.getId());
         }
       });
   }
@@ -711,6 +726,16 @@ public class CriteriaTest extends AbstractOtmTest {
           Annotation a2 = (Annotation) l.get(1);
           assertEquals(id2, a1.getId());
           assertEquals(id3, a2.getId());
+
+          l = session.createCriteria(Annotation.class).addOrder(Order.desc("supersedes"))
+                        .createCriteria("supersedes").add(Restrictions.eq("annotates", "foo:1"))
+                        .list();
+          assertEquals(2, l.size());
+
+          a1 = (Annotation) l.get(0);
+          a2 = (Annotation) l.get(1);
+          assertEquals(id3, a1.getId());
+          assertEquals(id2, a2.getId());
         }
       });
   }
@@ -725,8 +750,9 @@ public class CriteriaTest extends AbstractOtmTest {
     log.info("Testing child criteria with order-by on child member ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
+          // order on non-id
           Criteria criteria = session.createCriteria(Annotation.class);
-          criteria.createCriteria("supersedes").addOrder(Order.desc("creator"))
+          criteria.createCriteria("supersedes").addOrder(Order.asc("creator"))
                    .add(Restrictions.eq("annotates", "foo:1"));
 
           List l = criteria.addOrder(Order.desc("annotates")).list();
@@ -734,6 +760,43 @@ public class CriteriaTest extends AbstractOtmTest {
 
           Annotation a1 = (Annotation) l.get(0);
           Annotation a2 = (Annotation) l.get(1);
+          assertEquals(id2, a1.getId());
+          assertEquals(id3, a2.getId());
+
+          criteria = session.createCriteria(Annotation.class);
+          criteria.createCriteria("supersedes").addOrder(Order.desc("creator"))
+                   .add(Restrictions.eq("annotates", "foo:1"));
+
+          l = criteria.addOrder(Order.desc("annotates")).list();
+          assertEquals(2, l.size());
+
+          a1 = (Annotation) l.get(0);
+          a2 = (Annotation) l.get(1);
+          assertEquals(id3, a1.getId());
+          assertEquals(id2, a2.getId());
+
+          // order on id
+          criteria = session.createCriteria(Annotation.class);
+          criteria.createCriteria("supersedes").addOrder(Order.asc("id"))
+                   .add(Restrictions.eq("annotates", "foo:1"));
+
+          l = criteria.addOrder(Order.desc("annotates")).list();
+          assertEquals(2, l.size());
+
+          a1 = (Annotation) l.get(0);
+          a2 = (Annotation) l.get(1);
+          assertEquals(id2, a1.getId());
+          assertEquals(id3, a2.getId());
+
+          criteria = session.createCriteria(Annotation.class);
+          criteria.createCriteria("supersedes").addOrder(Order.desc("id"))
+                   .add(Restrictions.eq("annotates", "foo:1"));
+
+          l = criteria.addOrder(Order.desc("annotates")).list();
+          assertEquals(2, l.size());
+
+          a1 = (Annotation) l.get(0);
+          a2 = (Annotation) l.get(1);
           assertEquals(id3, a1.getId());
           assertEquals(id2, a2.getId());
         }

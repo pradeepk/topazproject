@@ -59,14 +59,11 @@ public class ItqlCriteria {
 
     qry.append("select $s");
 
-    int len = qry.length();
-    buildProjections(criteria, qry, "$s");
-
-    boolean hasOrderBy = len != qry.length();
+    boolean hasOrderBy = buildProjections(criteria, qry, "$s", true);
 
     qry.append(" from <").append(model).append("> where ");
 
-    len = qry.length();
+    int len = qry.length();
     buildWhereClause(criteria, qry, "$s", "$s", true, false);
 
     if (qry.length() == len)
@@ -96,20 +93,27 @@ public class ItqlCriteria {
     return qry.toString();
   }
 
-  private void buildProjections(Criteria criteria, StringBuilder qry, String subject) {
+  private boolean buildProjections(Criteria criteria, StringBuilder qry, String subject,
+                                   boolean isTop) {
     int    i      = 0;
     String prefix = " " + subject + "o";
 
     String id = criteria.getClassMetadata().getIdField().getName();
 
-    for (Order o : criteria.getOrderList())
+    boolean hasOrder = !criteria.getOrderList().isEmpty();
+    for (Order o : criteria.getOrderList()) {
       if (!id.equals(o.getName()))
         qry.append(prefix + i++);
+      else if (!isTop)
+        qry.append(" " + subject);
+    }
 
     i = 0;
 
     for (Criteria cr : criteria.getChildren())
-      buildProjections(cr, qry, subject + "c" + i++);
+      hasOrder |= buildProjections(cr, qry, subject + "c" + i++, false);
+
+    return hasOrder;
   }
 
   private static void buildWhereClause(Criteria criteria, StringBuilder qry, String subject,
