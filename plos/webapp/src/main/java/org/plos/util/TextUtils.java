@@ -71,13 +71,16 @@ public class TextUtils {
     // so to avoid this we explicitly guard against it here
     // NOTE: com.opensymphony.util.TextUtils.linkURL guards against an atomically wrapped url:  
     // "(http://www.domain.com)" but NOT "(see http://www.domain.com)"
+    if(text.indexOf('}') >= 0 || text.indexOf('{') >= 0) {
+      return com.opensymphony.util.TextUtils.linkURL(text);
+    }
     String s = text.replace('(', '{');
     s = s.replace(')', '}');
     s = com.opensymphony.util.TextUtils.linkURL(s);
     s = StringUtils.replace(s, "{", "(");
     s = StringUtils.replace(s, "}", ")");
-    // END HACK
     return s;
+    // END HACK
   }
   
   /**
