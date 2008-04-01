@@ -678,13 +678,13 @@ public class BrowseService {
           return null;
         
         ArticleInfo ai = new ArticleInfo();
-        ai.id = id;
-        ai.date = r.getLiteralAs(1, Date.class);
-        ai.title = r.getString(2);
+        ai.setId(id);
+        ai.setDate(r.getLiteralAs(1, Date.class));
+        ai.setTitle(r.getString(2));
         
         for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
           upi.hashCode(); // force load
-          ai.authors.add(upi.realName);
+          ai.addAuthor(upi.realName);
         }
         
         Results sr = r.getSubQueryResults(4);
@@ -694,13 +694,16 @@ public class BrowseService {
         
         sr = r.getSubQueryResults(5);
         while (sr.next()) {
-          ai.relatedArticles.add(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
+          ai.addRelatedArticle(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
         }
         
         if (log.isDebugEnabled())
-          log.debug("loaded ArticleInfo: id='" + ai.id + "', articleTypes='" + ai.articleTypes + "', date='" + ai.date
-                    + "', title='" + ai.title + "', authors='" + ai.authors + "', related-articles='"
-                    + ai.relatedArticles + "'");
+          log.debug("loaded ArticleInfo: id='" + ai.getId() + 
+                    "', articleTypes='" + ai.getArticleTypes() + 
+                    "', date='" + ai.getDate() +
+                    "', title='" + ai.getTitle() + 
+                    "', authors='" + ai.getAuthors() + 
+                    "', related-articles='" + ai.getRelatedArticles() + "'");
         
         return ai;
       }
