@@ -17,7 +17,7 @@ a:visited 	{ color: #00475f; }
 a:hover		{ color: #09c; text-decoration: none;}
 a:active	{ }
 
-blockquote	{ font-style: italic; font-size: .9em; margin: 0 20px;}
+blockquote	{ font-size: .9em; margin: 0 20px;}
 div.quotes { margin:20px 0; }
 blockquote.decorative { background:transparent url(../images/pone_quote_left.gif) no-repeat scroll 0 0;
 margin:0 0 .5em 0; color:#333333; font-family:Georgia,"Times New Roman",Times,serif; }
