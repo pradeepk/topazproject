@@ -63,6 +63,15 @@ try {
 }
 println "created Fedora Service: fgs: $fgs, fgsRepository: $fgsRepository, fgsAction: $fgsAction"
 
+// could be 1 & only 1 Doi specified on the cmd line
+if (opt.o) {
+  print "Only re-indexing Article: ${opt.o}..."
+  indexDoi(fgsRepository, fgsAction, opt.o, fgs)
+  println ''
+
+  System.exit(0)
+}
+
 // get a list of Article dois
 // Setup OTM
 def factory = new SessionFactory();
@@ -85,12 +94,20 @@ while (results.next()) {
   def doi = "doi:${results.get('doi').toString().substring(9).replace('/', '%2F')}"
 
   // parms allow skipping of Doi's
-  if (opt.o && doi.compareTo(opt.o) != 0) { continue }
   if (opt.s && doi.compareTo(opt.s) < 0) { continue }
 
   print "re-indexing Article: $doi..."
 
   // re-index in each index
+  indexDoi(fgsRepository, fgsAction, doi, fgs)
+  indexCount++
+  println ''
+}
+
+println ''
+println "total re-indexed Articles: $indexCount"
+
+private void indexDoi(String fgsRepository, String fgsAction, String doi, FgsOperations[] fgs) {
   try {
     for (int onFgs = 0; onFgs < fgs.length; onFgs++) {
       def start = (new Date()).getTime()
@@ -103,9 +120,4 @@ while (results.next()) {
     log.error(errorMessage, re)
     throw new Exception(errorMessage, re)
   }
-  indexCount++
-  println ''
 }
-
-println ''
-println "total re-indexed Articles: $indexCount"
