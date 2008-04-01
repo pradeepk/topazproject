@@ -11,6 +11,18 @@
   <filter>
     <filter-name>MultipleRequestFilter</filter-name>
     <filter-class>org.plos.web.MultipleRequestFilter</filter-class>
+    <init-param>
+      <param-name>includePattern_fetchArticle</param-name>
+      <param-value>.*\/article\/info.*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>includePattern_browseIssue</param-name>
+      <param-value>.*browseIssue\.action.*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>includePattern_browseVolume</param-name>
+      <param-value>.*browseVolume\.action.*</param-value>
+    </init-param>
   </filter>
 
   <filter>
@@ -101,6 +113,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <filter-name>MultipleRequestFilter</filter-name>
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
+    
   </filter-mapping>
   
   <filter-mapping>

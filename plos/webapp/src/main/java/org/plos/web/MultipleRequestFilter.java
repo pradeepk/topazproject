@@ -1,7 +1,14 @@
 package org.plos.web;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -31,14 +38,30 @@ public class MultipleRequestFilter implements Filter
 {
   private static final Log log = LogFactory.getLog(MultipleRequestFilter.class);
   private static final String REQUEST_MAP = "REQUEST_MAP";
+  private List<Pattern> includePatterns;
 
   public void destroy()
   {
     // do nothing
   }
 
-  public void init(FilterConfig filterConfig) throws ServletException {
-    // Nothing to initialize
+  public void init( FilterConfig config ) throws ServletException
+  {
+    // parse all of the initialization parameters, collecting the exclude
+    // patterns and the max wait parameters
+    Enumeration<String> paramNames = config.getInitParameterNames();
+    includePatterns = new LinkedList<Pattern>();
+    while( paramNames.hasMoreElements() )
+    {
+      String paramName = ( String )paramNames.nextElement();
+      String paramValue = config.getInitParameter( paramName );
+      if( paramName.startsWith( "includePattern" ) )
+      {
+        // compile the pattern only this once
+        Pattern excludePattern = Pattern.compile( paramValue );
+        includePatterns.add( excludePattern );
+      }
+    }
   }
   
   /**
@@ -51,7 +74,22 @@ public class MultipleRequestFilter implements Filter
     HttpSession session = httpRequest.getSession();
 
     HashSet<String> requestedUrlSet = getRequestHashSet(session);
-    String urlKey = (session.getId()+httpRequest.getRequestURI()).intern();
+    StringBuffer buf = new StringBuffer();
+    buf.append(httpRequest.getRequestURI());
+    String queryString = httpRequest.getQueryString(); 
+    if ((queryString != null) && (queryString.length() > 0)) {
+      buf.append("?");
+      buf.append(httpRequest.getQueryString());
+    }
+    if( !isFilteredRequest( buf.toString() ) )
+    {
+      chain.doFilter( request, response );
+      return;
+    }
+    
+    buf.insert(0, session.getId()); // Note, we have to add the session id since we're going to sync on this interned key. 
+    String urlKey = (buf.toString()).intern();
+    
     synchronized( urlKey)
     {
       if (requestedUrlSet.contains(urlKey)) {
@@ -91,6 +129,26 @@ public class MultipleRequestFilter implements Filter
     }
   }
 
+  /**
+   * Determine if this String matches one of the excludePattern init parameters defined in web.xml. 
+   * 
+   * @param request
+   * @return
+   */
+  private boolean isFilteredRequest(String path)
+  {
+    // iterate through the exclude patterns.  If one matches this path,
+    // then the request is excluded.
+    for (Pattern p : includePatterns) {
+      Matcher m = p.matcher( path );
+      if( m.matches() )
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   @SuppressWarnings("unchecked")
   private HashSet<String> getRequestHashSet(HttpSession session) {
     HashSet<String> map;
