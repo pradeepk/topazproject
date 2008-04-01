@@ -6,17 +6,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URI;
 
+import junit.framework.TestCase;
+
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.plos.article.util.ArticleType;
 import org.plos.configuration.ConfigurationStore;
-
-import junit.framework.TestCase;
 
 public class ArticleTypeTest extends TestCase {
   private ConfigurationStore store;
 
+  @Override
   protected void setUp() {
     store = ConfigurationStore.getInstance();
     CombinedConfiguration config = new CombinedConfiguration();

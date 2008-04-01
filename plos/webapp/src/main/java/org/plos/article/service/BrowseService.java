@@ -24,16 +24,17 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.struts2.ServletActionContext;
-
-import org.plos.article.util.ArticleType;
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
+import org.plos.model.article.ArticleType;
 import org.plos.model.article.RelatedArticleInfo;
 import org.plos.model.article.Years;
 import org.plos.models.Article;
@@ -43,21 +44,15 @@ import org.plos.models.PLoS;
 import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
-import org.topazproject.otm.query.Results;
-import org.topazproject.otm.util.TransactionHelper;
-
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
-import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.query.Results;
+import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * Class to get all Articles in system and organize them by date and by category

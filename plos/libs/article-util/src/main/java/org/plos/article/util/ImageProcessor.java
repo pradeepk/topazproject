@@ -25,6 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
+import org.plos.model.article.ArticleType;
 
 /**
  * ImageProcessor - Processes images contained in a "raw" un-adulterated article

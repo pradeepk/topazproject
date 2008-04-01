@@ -11,18 +11,14 @@ package org.plos.rating.action;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Date;
 import java.util.List;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.util.ArticleType;
+import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
@@ -31,13 +27,13 @@ import org.plos.models.RatingSummaryContent;
 import org.plos.rating.service.RatingsPEP;
 import org.plos.user.PlosOneUser;
 import org.plos.util.ProfanityCheckingService;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.util.TransactionHelper;
 
-import org.springframework.beans.factory.annotation.Required;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 
 /**

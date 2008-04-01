@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.article.util;
+package org.plos.model.article;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;

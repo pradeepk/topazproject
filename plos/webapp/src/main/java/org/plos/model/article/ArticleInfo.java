@@ -17,8 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.plos.article.util.ArticleType;
-
 
 /**
  * The info about a single article that the UI needs.
