@@ -378,6 +378,8 @@ div.abstract h2 { font-size: 1.6em; font-style: normal; margin: 20px 0 0 0; bord
 div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; border-bottom: none;}
 span.pullquote	{ font-size: 2em; line-height: 1em; width: 55%; padding: 10px; float: right; letter-spacing: -.05em; font-style: italic; margin: 5px; }
 div.box			{ color: #000; padding: 10px; background-color: #D2F7FF; }
+div.content div.box h3,
+div.content div.box h4 { margin:0; }
 span.genus-species { font-style:italic; }
 
 /* Menu next to article title containing download links, print link, etc. */
@@ -549,8 +551,7 @@ span.public-active a:visited.bug { background-color: #069;}
 span.public-active			{ background-color:#D2F7FF; border:1px solid #fff; border-bottom: 1px solid #0bf; }
 span.public-active a.bug.public-active,
 span.public-active a:hover.bug.public-active		{ background-color: #0BF;}
-span.public { border:1px solid #fff; }
-
+span.public { border:1px solid transparent; }
 
 a.bug.author,
 a:visited.bug.author,
