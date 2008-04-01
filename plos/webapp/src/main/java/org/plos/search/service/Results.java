@@ -206,11 +206,14 @@ public class Results {
       try {
         Article article = fetchArticleService.getArticleInfo(uri);
         if (article == null) {
-          throw new SecurityException(new NoSuchArticleIdException(
-                  "Article '" + uri + "' not in current journal"));
+          throw new SecurityException(new NoSuchArticleIdException(uri));
         }
       } catch (ApplicationException ae) {
-        throw new SecurityException(ae);
+        if (ae.getCause() instanceof NoSuchArticleIdException) {
+          throw new SecurityException(ae.getCause());
+        } else {
+          throw new SecurityException(ae);
+        }
       }
     }
   }
