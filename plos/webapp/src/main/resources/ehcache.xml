@@ -465,7 +465,7 @@
     It also bootstraps from the cluster, using default properties.
     -->
     <cache name="article-state"
-           maxElementsInMemory="10000"
+           maxElementsInMemory="20000"
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
@@ -583,9 +583,10 @@
            timeToIdleSeconds="86400"
            timeToLiveSeconds="86400"
            overflowToDisk="false">
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
-                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-                properties="replicatePuts=false, replicateUpdatesViaCopy=false"/>
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
     <!--
     Article Feed cache
@@ -595,10 +596,9 @@
     <cache name="FeedCache"
            maxElementsInMemory="10000"
            eternal="false"
-           timeToIdleSeconds="43200"
-           timeToLiveSeconds="43200"
-           overflowToDisk="true"
-           diskExpiryThreadIntervalSeconds="3600">
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="86400"
+           overflowToDisk="false">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory

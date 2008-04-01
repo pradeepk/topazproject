@@ -37,6 +37,10 @@
     <level value="info" /> <!-- change to 'debug' for bug reports -->
   </logger>
 
+  <category name="org.mulgara.resolver.DatabaseSession"> <!-- andreas suggests -->
+    <priority value="info"/>
+  </category>
+
   <logger name="org.mulgara">
     <level value="warn" /> <!-- change to 'info' for bug reports -->
   </logger>

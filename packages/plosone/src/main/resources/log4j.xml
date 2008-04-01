@@ -44,8 +44,8 @@
     <level value="info"/>
   </logger>
 
-  <logger name="org.plos">  <!-- set to debug for troubleshooting -->
-    <level value="info"/>
+  <logger name="org.plos">
+    <level value="info"/> <!-- set to debug for troubleshooting -->
   </logger>
 
   <logger name="edu.yale">
