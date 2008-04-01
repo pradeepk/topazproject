@@ -37,7 +37,7 @@ class CacheInvalidatorTest extends GroovyTestCase {
   ItqlInterpreterBean itql
 
   static {
-    sf.setDirectory(new File('target/mulgara-db'))
+    sf.setDirectory(new File(new File(System.getProperty('basedir')), 'target/mulgara-db'))
     openDb()
   }
 
