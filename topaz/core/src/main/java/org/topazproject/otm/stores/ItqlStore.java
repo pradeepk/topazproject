@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.xml.rpc.ServiceException;
 
@@ -57,7 +56,7 @@ import org.topazproject.otm.query.Results;
  */
 public class ItqlStore extends AbstractTripleStore {
   private static final Log log = LogFactory.getLog(ItqlStore.class);
-  private static final Map<Object, ArrayBlockingQueue<ItqlHelper>> conCache = new HashMap();
+  private static final Map<Object, List<ItqlHelper>> conCache = new HashMap();
   private        final URI serverUri;
 
   /** 
@@ -793,85 +792,30 @@ public class ItqlStore extends AbstractTripleStore {
     return mc.getUri().toString();
   }
 
-  /**
-   * Get an ItqlHelper for a serverUri.
-   * 
-   * The first request for a unique serverUri will create a collection of ItqlHelpers.  The size of
-   * the collection is set with the System Property
-   * org.topazproject.otm.stores.ItqlStore.maxItqlHelpers and has a default of 5.
-   * 
-   * Once a collection of ItqlHelpers exists for a serverUri, all requests are served from that
-   * collection.  If the collection is empty at the time of request, the request will block until
-   * an ItqlHelper is returned.
-   * 
-   * @param serverUri Uri of server.
-   * @return ItqlHelper for specified serverUri.
-   * @throws OtmException All root cause Exceptions are wrapped.
-   */
   private static ItqlHelper getItqlHelper(URI serverUri) throws OtmException {
-    
-    // each serverUri will have its own collection of ItqlHelpers
-    ArrayBlockingQueue<ItqlHelper> itqlHelpers = null;
     synchronized (conCache) {
-      itqlHelpers = conCache.get(serverUri);
-      if (itqlHelpers == null) {
-        // bootstrap Itqlhelpers for this serverUri
-        final int maxItqlHelpers = Integer.parseInt(System.getProperty(
-                "org.topazproject.otm.stores.ItqlStore.maxItqlHelpers", "5"));
-        itqlHelpers = new ArrayBlockingQueue<ItqlHelper>(maxItqlHelpers, false);
-        for (int onItqlHelper = 0; onItqlHelper < maxItqlHelpers; onItqlHelper++) {
-          try {
-            itqlHelpers.add(new ItqlHelper(serverUri));
-          } catch (RemoteException re) {
-            throw new OtmException("Error talking to '" + serverUri + "'", re);
-          } catch (ServiceException se) {
-            throw new OtmException("Error talking to '" + serverUri + "'", se);
-          } catch (MalformedURLException mue) {
-            throw new OtmException("Invalid server URI '" + serverUri + "'", mue);
-          }
-        }
-
-        // add to connection cache for others to use
-        conCache.put(serverUri, itqlHelpers);
-        if (log.isInfoEnabled()) {
-          log.info(maxItqlHelpers + " ItqlHelpers created for " + serverUri);
-        }
-      } else {
-        if (log.isDebugEnabled()) {
-          log.debug("reusing ItqlHelper for " + serverUri);
-        }
+      List<ItqlHelper> list = conCache.get(serverUri);
+      if (list != null && list.size() > 0)
+        return list.remove(list.size() - 1);
+      try {
+        return new ItqlHelper(serverUri);
+      } catch (ServiceException se) {
+        throw new OtmException("Error talking to '" + serverUri + "'", se);
+      } catch (RemoteException re) {
+        throw new OtmException("Error talking to '" + serverUri + "'", re);
+      } catch (MalformedURLException mue) {
+        throw new OtmException("Invalid server URI '" + serverUri + "'", mue);
       }
-    }
-    
-    // get an ItqlHelper, waiting if necessary for one to become available
-    try {
-      return itqlHelpers.take();
-    } catch (InterruptedException ie) {
-      throw new OtmException("Error returning ItqlHelper '" + serverUri + "'", ie);
     }
   }
 
-  /**
-   * Return an ItqlHelper for a serverUri so it can be reused.
-   * 
-   * @param serverUri Uri of server.
-   * @param itql ItqlHelper to return.
-   */
   private static void returnItqlHelper(URI serverUri, ItqlHelper itql) {
-
-    // each serverUri will have its own collection of ItqlHelpers
-    ArrayBlockingQueue<ItqlHelper> itqlHelpers = null;
-    
     synchronized (conCache) {
-      itqlHelpers = conCache.get(serverUri);
-      if (itqlHelpers == null) {
-        throw new IllegalArgumentException(
-                "Attempting to return ItqlHelper for non-existent server Uri: " + serverUri);
-      }
+      List<ItqlHelper> list = conCache.get(serverUri);
+      if (list == null)
+        conCache.put(serverUri, list = new ArrayList<ItqlHelper>());
+      list.add(itql);
     }
-    
-    // syncronized add, will Exception if no room
-    itqlHelpers.add(itql);
   }
 
   public void createModel(ModelConfig conf) throws OtmException {
