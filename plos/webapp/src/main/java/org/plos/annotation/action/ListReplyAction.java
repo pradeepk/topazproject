@@ -43,7 +43,6 @@ import com.thoughtworks.xstream.XStream;
 public class ListReplyAction extends AnnotationActionSupport {
 
   private FetchArticleService fetchArticleService;
-  private ArticleOtmService articleOtmService;
   private String root;
   private String inReplyTo;
   private Reply[] replies;
