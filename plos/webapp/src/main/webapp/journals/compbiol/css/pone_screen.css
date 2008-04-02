@@ -343,11 +343,13 @@ div.static h2,
 div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px;}
 
 div.static h3,
-div.content h4	{ /* article second level heading */ font-size: 1.3em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold; border-bottom:0; }
+div.content h4	{ /* article second level heading */ font-size: 1.3em; margin: 20px 0 1.25em; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold; border-bottom:0; }
+html>body div.static h3,
+html>body div.content h4	{ margin-bottom:1em; } /* correct margin for all browsers except IE6 which uses the margin set above */
 
 div.static h4,
 div.static h5,
-div.content h5	{ font-size: 1em; color: #333; margin-bottom:0; }
+div.content h5	{ float:left; margin:0 0.5em 0 0; font-size: 1em; color: #333; }
 div.static h4+p,
 div.static h5+p,
 div.content h5+p	{ margin-top:0; }
@@ -510,7 +512,7 @@ div.buttons a.print:hover{ background-position: -120px 0; }
 
 div.figure				{ background-color: #c7d6ed; padding: 10px; font-size: .85em; margin: 10px 0;}
 div.figure:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
-div.figure h5			{ margin: 0; color: #000;}
+div.figure h5			{ float:none; margin: 0; color: #000;}
 div.figure p			{ margin: 5px 0; }
 #content div.figure img.thumbnail	{ margin: 0 10px 10px 0; float: left;} /* only thumbnails will float, not in-line images */
 div.figure a img.thumbnail 		{ border: 2px solid #FFF; } /* only thumbnails will float, not in-line images */
