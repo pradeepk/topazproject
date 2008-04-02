@@ -54,6 +54,3 @@ div.rsep { margin-top: 10px;  margin-right: -5px; padding: 0; border: none; back
 .inline-rating-rhc .current-rating { float:none; position:static; }
 .inline-rating-rhc .overall-rating { margin-left:0; }
 .inline-rating-rhc .single-rating { margin-left:0; }
-div#ratingRhc1 ol li  { float:left; }
-div#ratingRhc1 ol:after { content:"."; display:block; height:0; clear:both; visibility:hidden; }
-
