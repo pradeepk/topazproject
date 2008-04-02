@@ -12,6 +12,7 @@ package org.plos.article.action;
 
 import java.io.IOException;
 
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.ehcache.Ehcache;
@@ -82,6 +83,9 @@ public class CreateCitation extends BaseActionSupport {
               }
     });
 
+    citationString = CitationUtils.generateArticleCitationString(citation);
+    
+    
     citationString = CitationUtils.generateArticleCitationString(citation);
     
     return SUCCESS;
