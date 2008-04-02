@@ -73,7 +73,6 @@ public class SessionTest extends AbstractOtmTest {
       factory.preload(Serial.class);
       initModels();
       setUpData();
-      createSession();
     } catch (OtmException e) {
       log.error("OtmException in setup", e);
       throw e;
@@ -118,19 +117,32 @@ public class SessionTest extends AbstractOtmTest {
       });
   }
 
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  @Test
+  public void testBasicOps() throws OtmException {
+    try {
+      createSession();
+      testLoad();
+      testCriteriaSessionCache();
+      testOQLSessionCache();
+      testDelete();
+      testFlush();
+    } finally {
+      endSession();
+    }
+  }
+
   private void createSession() throws OtmException {
     log.info("Setting up session for tests ...");
     session   = factory.openSession();
     txn       = session.beginTransaction();
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  @AfterClass
-  public void endSession() throws OtmException {
+  private void endSession() throws OtmException {
     log.info("Closing session after tests ...");
 
     try {
@@ -154,13 +166,7 @@ public class SessionTest extends AbstractOtmTest {
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  @Test
-  public void testLoad() throws OtmException {
+  private void testLoad() throws OtmException {
     log.info("Testing/Loading data ...");
 
     a = session.load(Article.class, foo.toString());
@@ -182,15 +188,7 @@ public class SessionTest extends AbstractOtmTest {
     assertEquals(foo, a3.getAnnotates());
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  @Test(dependsOnMethods =  {
-    "testLoad"}
-  )
-  public void testCriteriaSessionCache() throws OtmException {
+  private void testCriteriaSessionCache() throws OtmException {
     log.info("Testing usage of session cache by criteria ...");
 
     List l = session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", foo)).list();
@@ -207,15 +205,7 @@ public class SessionTest extends AbstractOtmTest {
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  @Test(dependsOnMethods =  {
-    "testLoad"}
-  )
-  public void testOQLSessionCache() throws OtmException {
+  private void testOQLSessionCache() throws OtmException {
     log.info("Testing usage of session cache by OQL ...");
 
     Results r =
@@ -240,15 +230,7 @@ public class SessionTest extends AbstractOtmTest {
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  @Test(dependsOnMethods =  {
-    "testCriteriaSessionCache", "testOQLSessionCache"}
-  )
-  public void testDelete() throws OtmException {
+  private void testDelete() throws OtmException {
     log.info("Testing removal of objects from session cache by delete ...");
 
     session.delete(a);
@@ -269,15 +251,7 @@ public class SessionTest extends AbstractOtmTest {
     r.close();
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  @Test(dependsOnMethods =  {
-    "testDelete"}
-  )
-  public void testFlush() throws OtmException {
+  private void testFlush() throws OtmException {
     log.info("Testing removal of objects from session cache by delete and flush...");
 
     session.flush();
@@ -301,34 +275,46 @@ public class SessionTest extends AbstractOtmTest {
   @Test
   public void testSerial() throws Exception {
     log.info("Testing serialization of proxy objects ...");
-    Serial l1 = session.load(Serial.class, "foo:id/l1");
-    l1.equals(null); // force load
-    l1.ch.equals(null); // force load
-    assertTrue(l1 instanceof ProxyObject);
-    assertTrue(l1.ch instanceof ProxyObject);
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          try {
+            Serial l1 = session.load(Serial.class, "foo:id/l1");
+            l1.equals(null); // force load
+            l1.ch.equals(null); // force load
+            assertTrue(l1 instanceof ProxyObject);
+            assertTrue(l1.ch instanceof ProxyObject);
 
-    ByteArrayOutputStream bo = new ByteArrayOutputStream();
-    ObjectOutputStream oos = new ObjectOutputStream(bo);
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bo);
 
-    oos.writeObject(l1);
+            oos.writeObject(l1);
 
-    oos.close();
+            oos.close();
 
-    byte[] buf = bo.toByteArray();
+            byte[] buf = bo.toByteArray();
 
-    ByteArrayInputStream bi = new ByteArrayInputStream(buf);
-    ObjectInputStream ois = new ObjectInputStream(bi);
+            ByteArrayInputStream bi = new ByteArrayInputStream(buf);
+            ObjectInputStream ois = new ObjectInputStream(bi);
 
-    Serial s1 = (Serial) ois.readObject();
+            Serial s1 = (Serial) ois.readObject();
 
-    ois.close();
+            ois.close();
 
-    assertEquals(s1.id, l1.id);
-    assertEquals(s1.s1, l1.s1);
-    assertEquals(s1.ch.id, l1.ch.id);
-    assertEquals(s1.ch.s1, l1.ch.s1);
-    assertEquals(s1.ch.ch.id, l1.ch.ch.id);
-    assertEquals(s1.ch.ch.s1, l1.ch.ch.s1);
+            assertEquals(s1.id, l1.id);
+            assertEquals(s1.s1, l1.s1);
+            assertEquals(s1.ch.id, l1.ch.id);
+            assertEquals(s1.ch.s1, l1.ch.s1);
+            assertEquals(s1.ch.ch.id, l1.ch.ch.id);
+            assertEquals(s1.ch.ch.s1, l1.ch.ch.s1);
+          } catch (OtmException oe) {
+            throw oe;
+          } catch (RuntimeException re) {
+            throw re;
+          } catch (Exception e) {
+            throw new OtmException("Error in serialization test", e);
+          }
+        }
+      });
   }
 
   @UriPrefix("foo:")
