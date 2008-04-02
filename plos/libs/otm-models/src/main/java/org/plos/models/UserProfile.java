@@ -10,6 +10,8 @@
 
 package org.plos.models;
 
+import java.io.Serializable;
+
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -35,7 +37,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix(Rdf.topaz)
 @Entity(model = "profiles")
-public class UserProfile extends FoafPerson {
+public class UserProfile extends FoafPerson implements Serializable {
   private static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
   private static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
 
@@ -77,6 +79,8 @@ public class UserProfile extends FoafPerson {
   /** text containing their research areas */
   @Predicate(uri = Rdf.topaz + "researchAreas")
   private String researchAreasText;
+
+static final long serialVersionUID = -1224761277569005857L;
 
   /**
    * Get the name to use for display on the site.

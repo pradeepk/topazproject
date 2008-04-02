@@ -685,7 +685,7 @@ public class ArticleOtmService {
 
     if (article == null) { return; }
 
-    iterateAll(article.getArticleType());
+    // iterateAll(article.getArticleType());
     if (article.getCategories() != null) {
       for (Category category : article.getCategories()) { getAllCategory(category); }
     }
@@ -704,70 +704,70 @@ public class ArticleOtmService {
 
     if (objectInfo == null) { return; }
 
-    objectInfo.getContextElement();
-    objectInfo.getData();
+    // objectInfo.getContextElement();
+    // objectInfo.getData();
     getAllDublinCore(objectInfo.getDublinCore());
-    objectInfo.getEIssn();
-    objectInfo.getId();
+    // objectInfo.getEIssn();
+    // objectInfo.getId();
     // skip objectInfo.getIsPartOf(), avoid recursing into self Article
     getAllObjectInfo(objectInfo.getNextObject());
-    objectInfo.getPid();
-    iterateAll(objectInfo.getRepresentations());
-    objectInfo.getState();
+    // objectInfo.getPid();
+    // iterateAll(objectInfo.getRepresentations());
+    // objectInfo.getState();
   }
 
   private static void getAllRelatedArticle(RelatedArticle relatedArticle) {
 
     if (relatedArticle == null) { return; }
 
-    relatedArticle.getArticle();
-    relatedArticle.getId();
-    relatedArticle.getRelationType();
+    // relatedArticle.getArticle();
+    // relatedArticle.getId();
+    // relatedArticle.getRelationType();
   }
 
   private static void getAllDublinCore(DublinCore dublinCore) {
 
     if (dublinCore == null) { return; }
 
-    dublinCore.getAccepted();
-    dublinCore.getAvailable();
+    // dublinCore.getAccepted();
+    // dublinCore.getAvailable();
     getAllCitation(dublinCore.getBibliographicCitation());
-    dublinCore.getConformsTo();
-    iterateAll(dublinCore.getContributors());
-    dublinCore.getCopyrightYear();
-    dublinCore.getCreated();
-    iterateAll(dublinCore.getCreators());
-    dublinCore.getDate();
-    dublinCore.getDescription();
-    dublinCore.getFormat();
-    dublinCore.getIdentifier();
-    dublinCore.getIssued();
-    dublinCore.getLanguage();
+    // dublinCore.getConformsTo();
+    // iterateAll(dublinCore.getContributors());
+    // dublinCore.getCopyrightYear();
+    // dublinCore.getCreated();
+    // iterateAll(dublinCore.getCreators());
+    // dublinCore.getDate();
+    // dublinCore.getDescription();
+    // dublinCore.getFormat();
+    // dublinCore.getIdentifier();
+    // dublinCore.getIssued();
+    // dublinCore.getLanguage();
     if (dublinCore.getLicense() != null) {
       for (License license : dublinCore.getLicense()) { getAllLicense(license); }
     }
-    dublinCore.getModified();
-    dublinCore.getPublisher();
+    // dublinCore.getModified();
+    // dublinCore.getPublisher();
     if (dublinCore.getReferences() != null) {
       for (Citation citation : dublinCore.getReferences()) { getAllCitation(citation); }
     }
-    dublinCore.getSource();
-    iterateAll(dublinCore.getSubjects());
-    dublinCore.getSubmitted();
-    iterateAll(dublinCore.getSummary());
-    dublinCore.getTitle();
-    dublinCore.getType();
+    // dublinCore.getSource();
+    // iterateAll(dublinCore.getSubjects());
+    // dublinCore.getSubmitted();
+    // iterateAll(dublinCore.getSummary());
+    // dublinCore.getTitle();
+    // dublinCore.getType();
   }
 
   private static void getAllCategory(Category category) {
 
     if (category == null) { return; }
 
-    category.getId();
-    category.getMainCategory();
-    category.getPid();
-    category.getState();
-    category.getSubCategory();
+    // category.getId();
+    // category.getMainCategory();
+    // category.getPid();
+    // category.getState();
+    // category.getSubCategory();
   }
 
   private static void getAllCitation(Citation citation) {
@@ -777,63 +777,63 @@ public class ArticleOtmService {
     if (citation.getAuthors() != null) {
       for (UserProfile userProfile : citation.getAuthors()) { getAllUserProfile(userProfile); }
     }
-    iterateAll(citation.getAuthorsRealNames());
-    citation.getCitationType();
-    citation.getDisplayYear();
+    // iterateAll(citation.getAuthorsRealNames());
+    // citation.getCitationType();
+    // citation.getDisplayYear();
     if (citation.getEditors() != null) {
       for (UserProfile userProfile : citation.getEditors()) { getAllUserProfile(userProfile); }
     }
-    citation.getId();
-    citation.getIssue();
-    citation.getJournal();
-    citation.getKey();
-    citation.getMonth();
-    citation.getNote();
-    citation.getPages();
-    citation.getPublisherLocation();
-    citation.getPublisherName();
-    citation.getSummary();
-    citation.getTitle();
-    citation.getUrl();
-    citation.getVolume();
-    citation.getVolumeNumber();
-    citation.getYear();
+    // citation.getId();
+    // citation.getIssue();
+    // citation.getJournal();
+    // citation.getKey();
+    // citation.getMonth();
+    // citation.getNote();
+    // citation.getPages();
+    // citation.getPublisherLocation();
+    // citation.getPublisherName();
+    // citation.getSummary();
+    // citation.getTitle();
+    // citation.getUrl();
+    // citation.getVolume();
+    // citation.getVolumeNumber();
+    // citation.getYear();
   }
 
   private static void getAllUserProfile(UserProfile userProfile) {
 
     if (userProfile == null) { return; }
 
-    userProfile.getBiography();
-    userProfile.getBiographyText();
-    userProfile.getCity();
-    userProfile.getCountry();
-    userProfile.getDisplayName();
-    userProfile.getEmail();
-    userProfile.getEmailAsString();
-    userProfile.getGender();
-    userProfile.getGivenNames();
-    userProfile.getHomePage();
-    userProfile.getId();
-    iterateAll(userProfile.getInterests());
-    userProfile.getInterestsText();
-    userProfile.getOrganizationName();
-    userProfile.getOrganizationType();
-    userProfile.getPositionType();
-    userProfile.getPostalAddress();
-    userProfile.getPublications();
-    userProfile.getRealName();
-    userProfile.getResearchAreasText();
-    userProfile.getSurnames();
-    userProfile.getTitle();
-    userProfile.getWeblog();
+    // userProfile.getBiography();
+    // userProfile.getBiographyText();
+    // userProfile.getCity();
+    // userProfile.getCountry();
+    // userProfile.getDisplayName();
+    // userProfile.getEmail();
+    // userProfile.getEmailAsString();
+    // userProfile.getGender();
+    // userProfile.getGivenNames();
+    // userProfile.getHomePage();
+    // userProfile.getId();
+    // iterateAll(userProfile.getInterests());
+    // userProfile.getInterestsText();
+    // userProfile.getOrganizationName();
+    // userProfile.getOrganizationType();
+    // userProfile.getPositionType();
+    // userProfile.getPostalAddress();
+    // userProfile.getPublications();
+    // userProfile.getRealName();
+    // userProfile.getResearchAreasText();
+    // userProfile.getSurnames();
+    // userProfile.getTitle();
+    // userProfile.getWeblog();
   }
 
   private static void getAllLicense(License license) {
 
     if (license == null) { return; }
 
-    license.getId();
+    // license.getId();
   }
 
   private static void iterateAll(Collection collection) {
