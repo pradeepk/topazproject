@@ -57,6 +57,9 @@ import org.topazproject.otm.stores.SimpleBlobStore;
  */
 public abstract class AbstractOtmTest {
   private static final Log log = LogFactory.getLog(AbstractOtmTest.class);
+
+  private static int modelCnt = 1;
+
   /**
    * Shared session factory
    */
@@ -65,14 +68,14 @@ public abstract class AbstractOtmTest {
   protected void initFactory() throws OtmException {
     log.info("initializing otm session factory ...");
     ModelConfig[] models = new ModelConfig[] {
-      new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null),
-      new ModelConfig("grants", URI.create("local:///topazproject#otmtest2"), null),
-      new ModelConfig("revokes", URI.create("local:///topazproject#otmtest3"), null),
-      new ModelConfig("criteria", URI.create("local:///topazproject#otmtest4"), null),
+      new ModelConfig("ri", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
+      new ModelConfig("grants", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
+      new ModelConfig("revokes", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
+      new ModelConfig("criteria", URI.create("local:///topazproject#otmtest" + modelCnt++), null),
       new ModelConfig("str", URI.create("local:///topazproject#str"),
                                       URI.create("http://topazproject.org/models#StringCompare")),
       new ModelConfig("prefix", URI.create("local:///topazproject#prefix"),
-            URI.create("http://mulgara.org/mulgara#PrefixModel")),
+                                      URI.create("http://mulgara.org/mulgara#PrefixModel")),
     };
     URI storeUri = URI.create("local:///topazproject");
     DefaultItqlClientFactory cf = new DefaultItqlClientFactory();
