@@ -42,13 +42,13 @@ import com.thoughtworks.xstream.XStream;
 @SuppressWarnings("serial")
 public class ListReplyAction extends AnnotationActionSupport {
 
-  private FetchArticleService fetchArticleService;
   private String root;
   private String inReplyTo;
   private Reply[] replies;
   private WebAnnotation baseAnnotation;
-  private Article articleInfo;
+  private Article article;
   private ArticleXMLUtils citationService;
+  private FetchArticleService fetchArticleService;
   private Ehcache articleAnnotationCache;
   private String citation;
 
@@ -86,23 +86,23 @@ public class ListReplyAction extends AnnotationActionSupport {
       }
       baseAnnotation = getAnnotationService().getAnnotation(root);
       replies = getAnnotationService().listAllReplies(root, inReplyTo);
-      final URI articleURI = new URI(baseAnnotation.getAnnotates());
-      articleInfo = fetchArticleService.getArticleInfo(baseAnnotation.getAnnotates());
+      final String articleId = baseAnnotation.getAnnotates();
+      article = fetchArticleService.getArticleInfo(articleId);
 
       // construct citation string
       // we're only showing annotation citations for formal corrections
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
-        final Object lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
+        final Object lock = (FetchArticleService.ARTICLE_LOCK + articleId).intern();
         CitationInfo result = CacheAdminHelper.getFromCacheE(articleAnnotationCache,
-                CreateCitation.CITATION_KEY + articleURI, -1, lock, "citation",
+                CreateCitation.CITATION_KEY + articleId, -1, lock, "citation",
                 new CacheAdminHelper.EhcacheUpdaterE<CitationInfo, ApplicationException>() {
                   public CitationInfo lookup() throws ApplicationException {
 
                     XStream xstream = new XStream();
                     try {
                       return (CitationInfo) xstream.fromXML(
-                              citationService.getTransformedArticle(articleURI.toString()));
+                              citationService.getTransformedArticle(articleId));
                     } catch (IOException ie) {
                       throw new ApplicationException(ie);
                     } catch (NoSuchArticleIdException nsaie) {
@@ -171,23 +171,22 @@ public class ListReplyAction extends AnnotationActionSupport {
   /**
    * @param fetchArticleService The fetchArticleService to set.
    */
-  @Required
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  public void setFetchArticleService(FetchArticleService s) {
+    this.fetchArticleService = s;
   }
 
   /**
    * @return Returns the articleInfo.
    */
   public Article getArticleInfo() {
-    return articleInfo;
+    return article;
   }
 
   /**
    * @param articleInfo The articleInfo to set.
    */
   public void setArticleInfo(Article articleInfo) {
-    this.articleInfo = articleInfo;
+    this.article = articleInfo;
   }
   
   /**

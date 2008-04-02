@@ -59,7 +59,9 @@ import org.topazproject.otm.criterion.Restrictions;
  * Wrapper over annotation(not the same as reply) web service
  */
 public class AnnotationWebService extends BaseAnnotationService {
-  public static final String ANNOTATION_KEY = "ArticleAnnotationCache-Annotation-";
+  public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
+  public static final String ANNOTATION_KEY = "ArticleAnnotationCache-SingleAnnotation-";
+  public static final String ANNOTATION_LOCK = "ArticleAnnotationCache-lock-";
   private static final Log          log                      =
     LogFactory.getLog(AnnotationWebService.class);
   private AnnotationsPEP            pep;
@@ -68,6 +70,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   private PermissionWebService      permissionsWebService;
   private FetchArticleService fetchArticleService;
   private Ehcache articleAnnotationCache;
+  
   protected static final Set<Class<? extends Annotation>> ALL_ANNOTATION_CLASSES = new HashSet<Class<? extends Annotation>>();
   static { 
     ALL_ANNOTATION_CLASSES.add(Comment.class);
@@ -152,23 +155,23 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (log.isDebugEnabled())
       log.debug("created fedora object " + bodyUri + " for annotation ");
 
-    final Comment a = new Comment();
+    final Comment newComment = new Comment();
 
-    a.setMediator(getApplicationId());
-    a.setType(getDefaultType());
-    a.setAnnotates(URI.create(target));
-    a.setContext(context);
-    a.setTitle(title);
+    newComment.setMediator(getApplicationId());
+    newComment.setType(getDefaultType());
+    newComment.setAnnotates(URI.create(target));
+    newComment.setContext(context);
+    newComment.setTitle(title);
 
     if (isAnonymous())
-      a.setAnonymousCreator(user);
+      newComment.setAnonymousCreator(user);
     else
-      a.setCreator(user);
+      newComment.setCreator(user);
 
-    a.setBody(URI.create(bodyUri));
-    a.setCreated(new Date());
+    newComment.setBody(URI.create(bodyUri));
+    newComment.setCreated(new Date());
 
-    String newId = session.saveOrUpdate(a);
+    String newId = session.saveOrUpdate(newComment);
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + newId + " for " + target + " annotated by " + bodyUri);
@@ -195,7 +198,10 @@ public class AnnotationWebService extends BaseAnnotationService {
       }
     }
 
+    // TODO - is it necessary to remove the article from the cache just because we changed an annotation?
     fetchArticleService.removeFromArticleCache(new String[] {target});
+    // Flush the annotation cache for this target and the annotation
+    removeAnnotationFromCache(newComment);
     if (log.isDebugEnabled()) {
       log.debug("removed " + target + " from articleAnnotationCache");
     }
@@ -359,6 +365,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (a != null) {
       session.delete(a);
       fetchArticleService.removeFromArticleCache(new String[] {a.getAnnotates().toString()});
+      removeAnnotationFromCache(a);
       if (a instanceof ArticleAnnotation) {
         ArticleAnnotation aa = (ArticleAnnotation)a;
         fedora.purgeObjects(new String[] { FedoraHelper.uri2PID(aa.getBody().toString()) });
@@ -382,7 +389,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   public List<Annotation> listAnnotationsForTarget(final String target, final Set<Class<? extends Annotation>> annotationClassTypes) {
     final Object lock = (FetchArticleService.ARTICLE_LOCK + target).intern(); // lock @ Article level
     List<Annotation> allAnnotations = CacheAdminHelper
-        .getFromCache(articleAnnotationCache, ANNOTATION_KEY + target,
+        .getFromCache(articleAnnotationCache, ANNOTATED_KEY + target,
             -1, lock, "annotation list",
             new CacheAdminHelper.EhcacheUpdater<List<Annotation>>() {
               public List<Annotation> lookup() {
@@ -536,7 +543,15 @@ public class AnnotationWebService extends BaseAnnotationService {
                                throws RemoteException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
 
-    Annotation a = session.get(Annotation.class, annotationId);
+    final Object lock = (ANNOTATION_LOCK + annotationId).intern();
+    Annotation a = CacheAdminHelper.getFromCache(articleAnnotationCache, ANNOTATION_KEY + annotationId,
+        -1, lock, "individual annotation",
+        new CacheAdminHelper.EhcacheUpdater<Annotation>() {
+          public Annotation lookup() {
+                return session.get(Annotation.class, annotationId);
+          }
+        });
+
     if (a == null)
       throw new IllegalArgumentException("invalid annoation id: " + annotationId);
 
@@ -556,9 +571,10 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public void setPublic(final String annotationDoi) throws RemoteException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
-    
+
     Annotation a = session.get(Annotation.class, annotationDoi);
     a.setState(a.getState() | PUBLIC_MASK);
+    removeAnnotationFromCache(a);
     session.saveOrUpdate(a);
   }
 
@@ -574,6 +590,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     Annotation a = session.get(Annotation.class, annotationId);
     a.setState(a.getState() | FLAG_MASK);
+    removeAnnotationFromCache(a);
     session.saveOrUpdate(a);
   }
 
@@ -658,6 +675,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     List<Annotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
     for (Annotation refAn : refAns) {
       refAn.setAnnotates(newIdUri);
+      removeAnnotationFromCache(refAn);
       session.saveOrUpdate(refAn);
     }
     session.flush();
@@ -667,6 +685,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     // since that also removes the body of the article from fedora and we are
     // referencing that from
     // the new annotation.
+    removeAnnotationFromCache(srcAnnotation);
     session.delete(oldAn);
 
     // We must clear the annotated article from the article cache
@@ -679,6 +698,14 @@ public class AnnotationWebService extends BaseAnnotationService {
     return newAn.getId().toString();
   }
   
+  /**
+   * Remove this annotation from the cache, and remove the cached list of annotation that is targets
+   * @param a
+   */
+  public void removeAnnotationFromCache(Annotation a) {
+    articleAnnotationCache.remove(ANNOTATION_KEY + a.getId().toString());
+    articleAnnotationCache.remove(ANNOTATED_KEY + a.getAnnotates().toString());
+  }
   
   /**
    * @param articleAnnotationCache
