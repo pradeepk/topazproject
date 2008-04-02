@@ -35,12 +35,13 @@
     <li><a href="contact.action" title="PLoS ONE | Contact">Contact Us</a></li>
   </ul>
   
-<h2>For Users</h2>
+<h2>For Readers</h2>
 <ul>
 	<!-- <li><a href="faq.action" title="PLoS ONE | Frequently Asked Questions">Frequently Asked Questions</a></li> -->
-    <li><a href="commentGuidelines.action" title="PLoS ONE | Commenting Guidelines">Commenting Guidelines</a></li>
-    <li><a href="ratingGuidelines.action" title="PLoS ONE | Rating Guidelines">Rating Guidelines</a></li>
+    <li><a href="commentGuidelines.action" title="PLoS ONE | Guidelines for Notes, Comments, and Corrections">Guidelines for Notes, Comments, and Corrections</a></li>
+    <li><a href="ratingGuidelines.action" title="PLoS ONE | Guidelines for Rating">Guidelines for Rating</a></li>
     <li><a href="help.action" title="PLoS ONE | Help Using this Site">Help Using This Site</a></li>
+	<li><a href="journalClub.action" title="PLoS ONE | Journal Club Archives">Journal Club Archives</a></li>
     <li><a href="sitemap.action" title="PLoS ONE | Site Map">Site Map</a></li>
 </ul>
 
@@ -56,7 +57,7 @@
     <ul>
 		<li><a href="latex.action" title="PLoS ONE | Converting LaTeX Files to Word or RTF Format">Converting LaTeX Files</a></li>
 	</ul>
-    <li><a href="figureGuidelines.action" title="PLoS ONE | Figure Guidelines">Figure Guidelines</a></li>
+    <li><a href="figureGuidelines.action" title="PLoS ONE | Guidelines for Figure and Table Preparation">Guidelines for Figure and Table Preparation</a></li>
     <li><a href="checklist.action" title="PLoS ONE | Submission Checklist">Submit Your Paper - Submission Checklist</a>
     <ul>
 		<li><a href="http://one.plosjms.org/" title="PLoS ONE | Online Manuscript Submission and Review System">Submit Manuscript</a></li>

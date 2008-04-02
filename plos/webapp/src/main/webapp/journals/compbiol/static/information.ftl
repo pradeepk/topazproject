@@ -1,77 +1,60 @@
+<#include "journal_include.ftl">
+<#include "/static/cj_shared_blocks.ftl">
+
 <!-- begin : main content -->
 <div id="content" class="static">
 
-<h1><em>PLoS Neglected Tropical Diseases</em> Journal Information</h1>
+<h1>About <em>${journal_name}</em></h1>
 
-<h2>About <em>PLoS Neglected Tropical Diseases</em></h2>
+<p><em>PLoS Computational Biology</em> (eISSN 1553-7358, ISSN 1553-734X) is an open-access, peer-reviewed journal published monthly by the <a href="http://www.plos.org">Public Library of Science</a> (PLoS) as the official journal of the <a href="http://www.iscb.org">International Society for Computational Biology</a> (ISCB). </p>
 
-<p class="intro"><em>PLoS Neglected Tropical Diseases</em> (eISSN 1935-2735) is the first open-access journal devoted to the world's most <a href="scope.action">neglected tropical diseases</a> (NTDs), such as elephantiasis, river blindness, leprosy, hookworm, schistosomiasis, and African sleeping sickness. The journal publishes high-quality, peer-reviewed research on all scientific, medical, and public-health aspects of these forgotten diseases affecting the world's forgotten people.</p> 
+<p><em>PLoS Computational Biology</em> is run by an international <a href="edboard.action">Editorial Board</a>, headed by the Editor-in-Chief, <a href="eic.action">Philip E. Bourne</a> (University of California, San Diego, USA).</p>
+ 
+<h2>Journal Scope</h2>
 
-<p><em>PLoS Neglected Tropical Diseases</em> is particularly keen to publish research from authors in countries where the NTDs are endemic. It aims to:</p>
+<p><em>PLoS Computational Biology</em> features works of exceptional significance that further our understanding of living systems at all scales&#8212;from molecules and cells, to patient populations and ecosystems&#8212;through the application of computational methods. Readers include life and computational scientists, who can take the important findings presented here to the next level of discovery.</p> 
 
-<ul>
-	<li>Provide a forum for the NTDs community of scientific investigators, health practitioners, control experts, and advocates to publish their findings in an open-access format</li>
-	<li>Promote and profile the efforts of scientists, health practitioners, and public-health experts from <a href="http://medicine.plosjournals.org/perlserv/?request=slideshow&amp;type=figure&amp;doi=10.1371/journal.pmed.0020336" title="Geographic Overlap of the Neglected Tropical Diseases" target="_blank">endemic countries</a>, and build science and health capacity in those countries</li>
-	<li>Highlight the global public-health importance of the NTDs and advocate for the plight of the poor who suffer from these diseases in endemic countries</li>
-</ul>
+<p>Research articles that primarily describe new methods and offer only limited biological insight will be considered only in those exceptional instances in which the method is expected to significantly impact the field of computational biology, typically making substantial breakthroughs in areas of demonstrated importance. Research articles modeling aspects of biological systems should demonstrate both scientific novelty and profound new biological insights.  Research articles describing improved or routine methods, models, software, and databases will not be considered by <em>PLoS Computational Biology</em>, and may be more appropriate for <a href="http://www.plosone.org/" title="PLoS ONE"><em>PLoS ONE</em></a>.</p> 
 
+<p>Generally, reliability and significance of biological discovery are validated and enriched by experimental studies.  Experimental validation is not required for publication, however, nor does experimental validation of a modest biological discovery render a manuscript suitable for <em>PLoS Computational Biology</em>.</p>
 
-<p><em>PLoS Neglected Tropical Diseases</em> is published online by the Public Library of Science (PLoS), a nonprofit organization. The journal's start-up phase is supported by a grant from the <a href="http://www.gatesfoundation.org/GlobalHealth" title="Bill and Melinda Gates Foundation: Global Health Program">Bill and Melinda Gates Foundation</a>.</p>
+<p>For all submissions, authors must clearly provide detail, data, and software to ensure readers' ability to reproduce the models, methods, and results.</p>
 
-<h2>Scope</h2>
+<p>Authors unsure of whether their work is within the scope of the journal should submit a <a href="guidelines.action#presubs" title="Presubmission Inquiry">presubmission inquiry</a>.</p> 
 
-<p><em>PLoS Neglected Tropical Diseases</em> is devoted to the pathology, epidemiology, treatment, control, and prevention of the NTDs, as well as public policy relevant to this group of diseases. </p>
+ 
+<h2>Journal Contents</h2>
 
-<p>The NTDs are defined as a group of poverty-promoting chronic infectious diseases, which primarily occur in rural areas and poor urban areas of low-income and middle-income countries. They are poverty-promoting because of their impact on child health and development, pregnancy, and worker productivity, as well as their stigmatizing features.</p>
+<p>Outstanding primary <strong>research articles</strong> on all aspects of computational biology applied to different and integrated biological scales, from molecules and cells to patient populations and ecosystems.</p> 
 
-<p>To see which diseases are included in the journal, please read the <a href="scope.action" title="Journal Scope">detailed scope</a>.</p>
+<p>Invited and submitted <strong>reviews</strong> and <strong>perspectives</strong> on topics of broad interest to the readership.  Historical reviews and high-quality <strong>tutorials</strong> (including multimedia presentations) teaching important concepts in the field of computational biology.</p> 
 
-<h2>Content</h2>
+<p><strong>Announcements</strong> of activities of the International Society for Computational Biology (ISCB) and other  information of interest to scientists in this and related fields.</p>   
 
-<h3>Original Research Papers</h3>
-
-<p>Research articles consider all aspects of the NTDs, including their pathogenesis, clinical features, pharmacology and treatment, diagnosis, epidemiology, vector biology, and vaccinology and prevention. Demographic, ecological and social determinants, public health, and policy aspects of these diseases (including cost-effectiveness analyses) are also a priority. <em>PLoS Neglected Tropical Diseases</em> is pleased to publish relevant in vitro and animal studies as well as human investigations. The journal is organized to provide additional support for authors from endemic countries, and such authors are particularly encouraged to submit their research to <em>PLoS Neglected Tropical Diseases</em>. Academic editors, supported by expert peer-reviewers, will select for publication those studies that drive their respective fields forward. </p>
-
-<p>Please refer to our <a href="guidelines.action" title="Guidelines for Authors">Author Guidelines</a> for instructions on preparing research manuscripts.</p>
-
-<h3>The Magazine Section</h3>
-
-<p>The <strong>Editorial</strong> is written by the Editor-in-Chief or a member of the Editorial Board. </p>
-
-<p>The <strong>Viewpoint</strong> section contains opinion pieces grounded in evidence on topics of broad interest to the journal's readership.</p>
-
-<p>The <strong>Debate</strong> section highlights controversial issues in the field of NTDs.</p>
-
-<p>The <strong>Policy Platform</strong> is for authors to discuss policies that could improve the lives of those at risk of, or affected by, the NTDs. </p>
-
-<p>The <strong>Reviews</strong> section is for authors to summarize the best available evidence on a topic relevant to the NTD community.  </p>
-
-<p>In an <strong>Expert Commentary</strong>, authors discuss the clinical, policy, public-health, or research implications of a freely available research article.</p>
-
-<p><strong>From Innovation to Application</strong> is a section in which authors discuss new technologies, including drugs, vaccines, and diagnostics.</p>
-
-<p>In the <strong>Symposium</strong> section, authors discuss a "real world" problem, from the clinic, laboratory, or community, and how best it can be tackled.</p>
-
-<p><strong>Historical Profiles &amp; Perspectives</strong> look back in history to discuss a notable figure or a control program that worked or failed.</p>
-
-<p><strong>Interviews</strong> highlight the work of a person who has made a notable contribution to controlling NTDs.</p>
+<p>Please refer to our <a href="guidelines.action">Author Guidelines</a> when you are preparing your manuscript for submission. If you are unsure whether your paper is suitable for <em>PLoS Computational Biology</em>, you can send a <a href="guidelines.action#presubs" title="Presubmission Inquiry">Presubmission Inquiry</a>.</p>
 
 <h2>Open Access</h2>
+ 
+${open_access}
 
-The Public Library of Science (PLoS) applies the <a href="license.action">Creative Commons Attribution License</a> (CCAL) to all works we publish. Under the CCAL, authors retain ownership of the copyright for their article, but authors allow anyone to download, reuse, reprint, modify, distribute, and/or copy articles in PLoS journals, so long as the original authors and source are cited. No permission is required from the authors or the publishers.
+<h2>Publications Charges</h2>
+ 
+${publication_charges}
 
-<h2>Publication Charges</h2>
 
-<p>To provide open access, PLoS journals use a business model in which our expenses-including those of peer review, journal production, and online hosting and archiving-are recovered in part by charging a publication fee to the authors or research sponsors for each article they publish. For <em>PLoS Neglected Tropical Diseases</em> the publication fee is US$2100. Authors who are affiliated with one of our <a href="http://www.plos.org/support/instmembers.html" title="PLoS.org | Institutional Members">Institutional Members</a> are eligible for a discount on this fee.</p>
+<a name="if" id="if"></a>
+<h2>Measuring Impact</h2>
+<p> The impact factor is calculated in large part by how often a journal's papers have been cited in a particular year. <em>${journal_name}</em> has received its first impact factor of ${impact_factor} from Thomson Scientific, a preliminary figure based on just six months of published work in 2005, which places it highest in ISI's "Mathematical & Computational Biology" category. Although the impact factor cannot fully measure the value of published work or its wider influence, we are delighted with the response from and support of the computational biology community and remain focused on our principal goal of publishing high-quality, substantive science. We also encourage contributors and readers to consider the wider issues surrounding the impact factor (see, for example, the <a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0030291" title="Read the PLoS Medicine Editorial">June 2006 editorial</a> in <em>PLoS Medicine</em>) and to participate in efforts to develop alternative metrics.</p>
+ 
 
-<p>We offer a complete or partial fee waiver for authors who do not have funds to cover publication fees. Editors and reviewers have no access to payment information, and hence inability to pay will not influence the decision to publish a paper.</p>
+<h2>About the International Society for Computational Biology</h2>
 
-<p>For further information, see our <a href="http://www.plos.org/about/faq.html#pubquest" title="View Publication Fee FAQ on PLoS.org">Publication Fee FAQ</a>.</p>
-
+<p>The International Society for Computational Biology is a scholarly society dedicated to advancing the scientific understanding of living systems through computation. Founded in 1997, the ISCB communicates the significance of our science to the larger scientific community, governments, and the public at large. The ISCB serves a global membership by impacting government and scientific policies, providing high quality publications and meetings, and through distribution of valuable information about training, education, employment and relevant news from related fields. For more information about the ISCB, visit <a href="http://www.iscb.org" title="www.iscb.org">www.iscb.org</a>.</p>
 
 <h2>About the Public Library of Science</h2>
 
-The Public Library of Science (PLoS) is a non-profit organization of scientists and physicians committed to making the world's scientific and medical literature a freely available public resource. For more information about PLoS, visit <a href="http://www.plos.org/">www.plos.org</a>.
+${about_plos}
+
 
 </div>
 <!-- end : main contents -->

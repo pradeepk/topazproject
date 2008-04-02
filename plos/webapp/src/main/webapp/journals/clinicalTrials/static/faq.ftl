@@ -18,10 +18,7 @@
     Open access is ideally suited to community building because everything published is
     available for anyone to <a href="http://www.plos.org/journals/creativeuses.html"
     title="PLoS.org | Creative Uses">download, print, and share, without restriction</a>.
-    The interactive tools for <@s.a href="${rateGuideURL}" title="PLoS Hub | Rating Guidelines">rating</@s.a>,
-    <@s.a href="${commentURL}" title="PLoS Hub | Comment Guidelines">annotating, and discussing</@s.a>
-    articles included in the PLoS Hub allow users to enhance the value of research findings, to provide
-    novel insights, and to accelerate scientific progress.
+    The interactive tools for adding <@s.a href="${commentURL}" title="PLoS Hub | Comment Guidelines">Notes, Comments</@s.a>, and <@s.a href="${rateGuideURL}" title="PLoS Hub | Rating Guidelines">Ratings</@s.a> to articles included in the PLoS Hub allow users to enhance the value of research findings, to provide novel insights, and to accelerate scientific progress. 
   </p>
 
   <h2>What kind of subjects will be covered?</h2>
@@ -52,7 +49,7 @@
   <ul>
     <li>Faster turnaround times (acceptance to publication in as little as three weeks) </li>
     <li>Lower publication fees</li>
-    <li>Interactive tools and functionality&#8212;ratings, annotation, and discussion threads</li>
+    <li>Interactive tools and functionality&#8212;Notes, Comments, and Ratings</li>
   </ul>
 
   <h2>What content can I see now in the PLoS Hub for Clinical Trials?</h2>

@@ -2,409 +2,488 @@
 <!-- begin : main content -->
 <div id="content" class="edboard static">
 
-<h1><em>PLoS Neglected Tropical Diseases</em> Editorial Board</h1> 
+<h1><em>PLoS Genetics</em> Editorial Board</h1> 
 
-<h2><a href="eic.action">Editor-in-Chief</a></h2>
+<h2>Editor-in-Chief</h2>
+
+		<dl>
+			<dt><a href="eic.action">Wayne N. Frankel</a></dt>
+			<dd>
+				The Jackson Laboratory<br />
+				Bar Harbor, USA<br />
+				E-mail: <strong>wfrankel [at] plos.org</strong>
+			</dd>
+		</dl>
+
+<h2>Deputy Editor</h2>
 
 <dl>
-<dt>Peter Hotez</dt>
-<dd>The George Washington University<br />
-Washington DC, USA</dd>
+<dt>Gregory S. Barsh</dt>
+			<dd>
+				Stanford University<br />
+				Stanford, USA</dd>
 </dl>
 
-<h2>Deputy Editors</h2>
 
-<dl>
-<dt>Serap Aksoy</dt>
-<dd>Yale School of Public<br />
-New Haven, Connecticut, USA</dd>
+<h2>Section Editors</h2>
 
-<dt>Yasmine Belkaid</dt>
-<dd>National Institutes of Health<br />
-Bethesda, Maryland, USA</dd>
+		<dl>
+			<dt>Greg Gibson</dt>
+			<dd>
+				North Carolina State University<br />
+				Raleigh, USA<br />
+				<em>Gene Expression Profiling<br />
+				 Natural Variation</em></dd>
+			<dt>Gil McVean</dt>
+			<dd>
+				University of Oxford<br />
+				Oxford, UK<br />
+				<em>Evolutionary Genetics</em></dd>
 
-<dt>Jeff Bethony</dt>
-<dd>George Washington University Medical Center<br />
-Washington DC, USA</dd>
 
-<dt>Simon Brooker</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
+			<dt>Wolf Reik</dt>
+			<dd>
+				The Babraham Institute<br />
+				Cambridge, UK<br />
+				<em>Epigenetics</em></dd>
+		</dl>		
+		
+<h2>Reviews Editors</h2>
+		<dl>
+			<dt>Elizabeth M. C. Fisher</dt>
+			<dd>
+				Institute of Neurology<br />
+				London, UK</dd>
+		
+			<dt>Nicholas Katsanis</dt>
+			<dd>
+				Johns Hopkins University School of Medicine<br />
+				Baltimore, USA</dd>
+	
+		<dt>Marcy E. MacDonald</dt>
+			<dd>
+				Massachusetts General Hospital<br />
+				Boston, USA</dd>
+		
+			<dt>Susan M. Rosenberg</dt>
+			<dd>
+				Baylor College of Medicine<br />
+				Houston, USA</dd>
+		</dl>
+		
+<h2>Interviews Editor</h2>
 
-<dt>Charles King</dt>
-<dd>Case Western Reserve University<br />
-Cleveland, Ohio, USA</dd>
+		<dl>
+			<dt>Jane Gitschier</dt>
+			<dd>
+				University of California, San Francisco<br />
+				San Francisco, USA</dd>
+		</dl>
 
-<dt>Albert Ko</dt>
-<dd>Oswaldo Cruz Foundation, Brazil<br />
-Weill Medical College of Cornell University, New York</dd>
 
-<dt>Alex Loukas</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
-
-<dt>Sara Lustigman</dt>
-<dd>Lindsley F. Kimball Research Institute,<br />New York Blood Center<br />
-New York, New York, USA</dd>
-
-<dt>Juerg Utzinger</dt>
-<dd>Swiss Tropical Institute<br />
-Basel, Switzerland</dd>
-</dl>
 
 <h2>Associate Editors</h2>
-<dl>
-<dt>Judith Allen</dt>
-<dd>University of Edinburgh<br />
-Edinburgh, UK</dd>
+		<dl>
+			<dt>Gon&#231;alo Abecasis</dt>
+			<dd>
+				University of Michigan<br />
+				Ann Arbor, USA<br />
+				<small>human complex disease: genetic mapping, computational and statistical tools</small></dd>
 
-<dt>Maria-Gloria Basáñez</dt>
-<dd>Imperial College London<br />
-London, UK</dd>
+			<dt>Asifa Akhtar</dt>
+			<dd>
+				European Molecular Biology Laboratory<br />
+				Heidelberg, Germany<br />
+				<small>dosage compensation, chromatin and transcription, epigenetics</small></dd>
+			
+			
+			<dt>David B. Allison</dt>
+			<dd>
+				University of Alabama at Birmingham<br />
+				Birmingham, USA<br />
+				<small>obesity, quantitative genetics, clinical trials, and statistical and research methodology</small></dd>
 
-<dt>Zvi Bentwich</dt>
-<dd>Center for Infectious Diseases and AIDS, Ben Gurion University<br />
-Beer Sheba, Israel</dd>
+			<dt>David R. Beier</dt>
+			<dd>
+				Harvard Medical School<br />
+				Boston, USA<br />
+				<small>mouse genetics, positional cloning, development, mutagenesis, kidney disease</small></dd>
 
-<dt>Alok Bhattacharya</dt>
-<dd>Jawaharlal Nehru University<br />
-New Delhi, India</dd>
+			<dt>Joy Bergelson</dt>
+			<dd>
+				Univerity of Chicago<br />
+				Chicago, USA<br />
+				<small>the ecology and evolution of plant&ndash;enemy interactions</small>
+			</dd>	
 
-<dt>David Blair</dt>
-<dd>James Cook University<br />
-Townsville, Australia</dd>
+			
+			<dt>Wendy Bickmore</dt>
+			<dd>
+				MRC Human Genetics Unit<br />
+				Edinburgh, UK<br />
+				<small>nuclear organisation, genome organisation, chromatin</small></dd>
+			
+			<dt>Sue Biggins</dt>
+			<dd>
+				Fred Hutchinson Cancer Research Center<br />
+				Seattle, USA<br />
+				<small>mitosis, yeast genetics, checkpoints</small></dd>
+			
+			
+			<dt>William F. Burkholder</dt>
+			<dd>
+				Stanford University<br />
+				Stanford, USA<br />
+				<small>prokaryotic genetics, DNA replication, microbial stress responses,<br /> cell cycle checkpoints, prokaryotic development</small></dd>
+			
+			
+			
+			<dt>Vivian G. Cheung</dt>
+			<dd>
+				University of Pennsylvania<br />
+				Philadelphia, USA<br />
+				<small>human genetics, genomics, genetics of gene expression</small></dd>
 
-<dt>Marleen Boelaert</dt>
-<dd>Institute of Tropical Medicine<br />
-Antwerp, Belgium</dd>
+			<dt>Andrew G. Clark</dt>
+			<dd>
+				Cornell University<br />
+				Ithaca, USA<br />
+				<small>adaptive variation in natural populations, population genetics,<br /> evolution, genetic basis of complex disease</small></dd>
 
-<dt>Maria Elena Bottazzi</dt>
-<dd>The George Washington University<br />
-Washington DC, USA</dd>
 
-<dt>Pierre Buffet</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
+			<dt>Bruce E. Clurman</dt>
+			<dd>
+				Fred Hutchinson Cancer Research Center<br />
+				Seattle, USA<br />
+				<small>cancer biology, cell cycle control, proteolysis</small></dd>
 
-<dt>Michael Cappello</dt>
-<dd>Yale University<br />
-New Haven, Connecticut, USA</dd>
+			<dt>Orna Cohen-Fix</dt>
+			<dd>
+				National Institute of Diabetes & Digestive & Kidney Diseases<br />
+				Bethesda, USA<br />
+				<small>cell cycle regulation, mitosis/cell division, nuclear structure/nuclear architecture,<br /> yeast genetics</small></dd>
 
-<dt>H&eacute;l&egrave;ne Carabin</dt>
-<dd>University of Oklahoma Health Sciences Center<br />
-Oklahoma City, Oklahoma, USA</dd>
 
-<dt>Jane Carlton</dt>
-<dd>New York University School of Medicine<br />
-New York, New York, USA</dd>
+            <dt>Gregory P. Copenhaver</dt>
+			<dd>
+				The University of North Carolina at Chapel Hill<br />
+				Chapel Hill, USA<br />
+				<small>meiotic recombination, centromere biology, plant biology</small></dd>
 
-<dt>Edgar Carvalho</dt>
-<dd>Universidade Federal da Bahia Salvador<br />
-Bahia, Brazil</dd>
+<dt>Gregory A. Cox</dt>
+<dd>The Jackson Laboratory<br />
+Bar Harbor, USA<br />
+<small>neuromuscular disease, mouse genetics, positional cloning</small>
+<br /></dd>
 
-<dt>John Dalton</dt>
-<dd>Institute for the Biotechnology of Infectious Diseases,<br  />University of Technology<br />
-Sydney, Australia</dd>
 
-<dt>Clive Davies</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
+			<dt>Emmanouil T. Dermitzakis</dt>
+			<dd>
+				The Wellcome Trust Sanger Institute<br />
+				Cambridge, UK<br />
+				<small>population genomics, functional variation, gene expression</small></dd>
 
-<dt>David Diemert</dt>
-<dd>Human Hookworm Vaccine Initiative,<br />Sabin Vaccine Institute<br />
-Washington DC, USA</dd>
+				
 
-<dt>Dirk Engels</dt>
-<dd>The World Health Organization<br />
-Geneva, Switzerland</dd>
+			<dt>Susan K. Dutcher</dt>
+			<dd>
+				Washington University<br />
+				St. Louis, USA<br />
+				<small><em>Chlamydomonas</em> genetics, ciliary and basal body biology,<br /> cytoskeleton, positional cloning, chloroplast genetics</small></dd>
 
-<dt>Christian Engwerda</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
 
-<dt>Carlos Franco-Paredes</dt>
-<dd>Emory School of Medicine, Atlanta<br />
-Hospital Infantil de Mexico Federico Gomez, Mexico City</dd>
+			<dt>Joseph R. Ecker</dt>
+			<dd>
+				The Salk Institute for Biological Studies<br />
+				San Diego, USA<br />
+				<small>plant genetics, epigenetics, genomics, systems biology</small></dd>
 
-<dt>Amadou Garba</dt>
-<dd>Ministere de la Sante Publique<br />
-Niamey, Niger</dd>
 
-<dt>Hector H. Garcia</dt>
-<dd>Universidad Peruana Cayetano Heredia<br />
-Lima, Peru</dd>
+			<dt>Anne C. Ferguson-Smith</dt>
+			<dd>
+				University of Cambridge<br />
+				Cambridge, UK<br />
+				<small>mammalian developmental genetics and epigenetics, comparative genomics, gene regulation</small></dd>
 
-<dt>Ricardo E. Gurtler</dt>
-<dd>Universidad de Buenos Aires<br />
-Buenos Aires, Argentina</dd>
 
-<dt>John Gyapong</dt>
-<dd>Health Research Unit,<br />Ghana Health Service<br />
-Accra, Ghana</dd>
+			<dt>Jonathan Flint</dt>
+			<dd>
+				University of Oxford/Wellcome Trust Centre for Human Genetics<br />
+				 Oxford, UK<br />
+				<small>complex trait genetics (mouse and human), QTL analysis,<br /> behavioral genetics, psychiatric genetics</small></dd>
 
-<dt>Eva Harris</dt>
-<dd>University of California, Berkeley<br />
-Berkeley, California, USA</dd>
 
-<dt>Charles Jaffe</dt>
-<dd>Hadassah Medical School,<br />Hebrew University<br />
-Jerusalem, Israel</dd>
+			<dt>Claire M. Fraser-Liggett</dt>
+			<dd>
+				University of Maryland School of Medicine<br />
+				Baltimore, USA<br />
+				<small>prokaryotic genomics and sequencing, comparative genomics</small></dd>
+			
+			
+			<dt>Michel Georges</dt>
+			<dd>University of Li&#232ge<br />
+			Li&#232ge, Belgium<br />
+			<small>complex traits, QTL mapping, epigenetics</small></dd>
 
-<dt>Malcolm K. Jones</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
+			<dt>Takashi Gojobori</dt>
+			<dd>
+				National Institute of Genetics<br />
+				Mishima, Japan<br />
+				<small>evolutionary genetics, population genetics, bioinformatics, genomics-oriented human genetics</small></dd>
 
-<dt>Jennifer Keiser</dt>
-<dd>Swiss Tropical Institute<br />
-Basel, Switzerland</dd>
+			<dt>David S. Guttman</dt>
+			<dd>
+				University of Toronto<br />
+				Toronto, Canada<br />
+				<small>bacterial evolutionary genetics, evolution of virulence and host specificity, comparative genomics</small></dd>
 
-<dt>Matty Knight</dt>
-<dd>Biomedical Research Institute<br />
-Rockville, Maryland, USA</dd>
+			<dt>James E. Haber</dt>
+			<dd>
+				Brandeis University<br />
+				Waltham, USA<br />
+				<small>yeast genetics, recombination, DNA repair, replication</small></dd>
 
-<dt>Dominique Kyelem</dt>
-<dd>Ministry of Health<br />
-Ouagadogou, Burkina Faso</dd>
 
-<dt>A. Desiree La Beaud</dt>
-<dd>Case Western Reserve University<br />
-Cleveland, Ohio, USA</dd>
+			<dt>R. Scott Hawley</dt>
+			<dd>
+				Stowers Institute for Medical Research<br />
+				Kansas City, USA<br />
+				<small>meiosis, chromosome pairing, chromosome segregation,<br /> mutant screens and mutational analysis in <em>Drosophila</em>, mitosis, chromosome structure</small></dd>	
 
-<dt>Diane Lockwood</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
 
-<dt>Anuradha Lohia</dt>
-<dd>Bose Institute<br />
-Kolkata, India</dd>
+			<dt>Yoshihide Hayashizaki</dt>
+			<dd>
+				RIKEN Genomic Sciences Center<br />
+				Yokohama, Japan<br />
+				<small>molecular genetics, genomics, transcriptomics, post-genome technology</small></dd>
+			
+			
+			<dt>Tetsuji Kakutani</dt>
+<dd>National Institute of Genetics<br />
+Mishima, Japan<br />
+<small>plant epigenetics, DNA methylation, heterochromatin</small></dd>
 
-<dt>Hechmi Louzir</dt>
-<dd>Institute Pasteur de Tunis<br />
-Tunis, Tunisia</dd>
+			
+			
+			<dt>Kathleen Kerr</dt>
+			<dd>
+				University of Washington<br />
+				Seattle, USA<br />
+				<small>expression arrays, experimental design, statistical methods</small></dd>
+			
+			<dt>Stuart K. Kim</dt>
+			<dd>
+				Stanford University<br>
+				Stanford, USA<br>
+				<small>genomics, systems biology, <em>C. elegans</em> genetics, aging</small></dd>
 
-<dt>Sheila Lukehart</dt>
-<dd>University of Washington<br />
-Seattle, Washington, USA</dd>
+			<dt>Leonid Kruglyak</dt>
+			<dd>
+				Princeton University<br />
+				Princeton, USA<br />
+				<small>genetic variation and disease, genomics, gene expression (human, dogs, yeast)</small></dd>
 
-<dt>Kirsten E. Lyke</dt>
-<dd>Center for Vaccine Development,<br />University of Maryland<br />
-Baltimore, Maryland, USA</dd>
 
-<dt>Andrew MacDonald</dt>
-<dd>University of Edinburgh<br />
-Edinburgh, Scotland</dd>
+			<dt>Suzanne M. Leal</dt>
+			<dd>
+				Baylor College of Medicine<br />
+				Boston, USA<br />
+				<small>methods in statistical genetics and genetic epidemiology,<br /> population and family-based association studies, linkage analysis</small></dd>
 
-<dt>Elizabeth A. L. Martins</dt>
-<dd>Instituto Butantan<br />
-Sao Paulo, Brazil</dd>
 
-<dt>Greg Matlashewski</dt>
-<dd>McGill University<br />
-Montreal, Canada</dd>
+			
 
-<dt>James McCarthy</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
 
-<dt>Genevieve Milon</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
 
-<dt>Jorge Motta</dt>
-<dd>Instituto Conmemorativo Gorgas de Estudios de la Salud<br />
-Panama City, Panama</dd>
 
-<dt>Dunstan Mukoko</dt>
-<dd>Ministry of Health<br />
-Nairobi, Kenya</dd>
+			<dt>Jeannie T. Lee</dt>
+			<dd>
+				Massachusetts General Hospital<br />
+				Boston, USA<br />
+				<small>sex chromosomes, X and autosomal imprinting, noncoding RNA</small></dd>
+			
+			<dt>Michael Lichten</dt>
+			<dd>
+				National Cancer Institute<br />
+				Bethesda, USA<br />
+				<small>meiosis, recombination, chromosome structure/function</small></dd>
 
-<dt>Kosta Y. Mumcuoglu</dt>
-<dd>Hadassah Medical School,<br />Hebrew University<br />
-Jerusalem, Israel</dd>
+			<dt>Trudy F. Mackay</dt>
+			<dd>
+				North Carolina State University<br />
+				Raleigh, USA<br />
+				<small>complex trait genetics, QTL mapping, LD mapping, evolutionary genetics</small></dd>
 
-<dt>Mariam Mwanje</dt>
-<dd>Ministry of Health<br />
-Nairobi, Kenya</dd>
 
-<dt>Richard Ndyomugyenyi</dt>
-<dd>Vector Control Division,<br />Ministry of Health<br />
-Kampala, Uganda</dd>
+			<dt>Harmit S. Malik</dt>
+			<dd>
+				Fred Hutchinson Cancer Research Center<br />
+				Seattle, USA<br />
+				<small>eukaryotic mobile elements and host defenses, heterochromatin,<br /> molecular evolution, multigene families</small></dd>
 
-<dt>Rodrigo Correa Oliveira</dt>
-<dd>FIOCRUZ<br />Rio de Janeiro, Brazil<br />
-Belo Horizonte, Brazil</dd>
+			<dt>Susan E. Mango</dt>
+			<dd>
+				Huntsman Cancer Institute<br />
+				Salt Lake City, USA<br />
+				<small><em>C. elegans</em> genetics, promoter analysis, genomics,<br > organogenesis and development, epithelium formation</small></dd>
 
-<dt>Sergio Costa Oliveira</dt>
-<dd>Federal University of Minas Gerais<br />
-Minas Gerais, Brazil</dd>
 
-<dt>Mathieu Picardeau</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
+			<dt>Jonathan Marchini</dt>
+			<dd>
+				University of Oxford<br />
+				Oxford, UK<br />
+				<small>association mapping, statistical methods, human complex disease, population structure</small></dd>
 
-<dt>Giovanna Raso</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
 
-<dt>Helton da Costa Santiago</dt>
-<dd>George Washington School of Medicine<br />
-Washington DC, USA</dd>
+			<dt>Ivan Matic</dt>
+			<dd>
+				Universit&#233; Paris V, INSERM U571<br />
+				Paris, France<br />
+				<small>prokaryotic genetics, recombination, DNA repair, mutagenesis, evolution, infectious diseases</small></dd>
+			
+			<dt>Michael T. McManus</dt>
+			<dd>
+				UCSF Diabetes Center<br />
+				San Francisco, USA<br />
+				<small>RNA expression arrays, mouse transgenics, mechanisms of small RNA biology</small></dd>
 
-<dt>Julius Schachter</dt>
-<dd>University of California San Francisco<br />
-San Francisco, California, USA</dd>
+			<dt>Mary C. Mullins</dt>
+			<dd>
+				University of Pennsylvania<br />
+				Philadelphia, USA<br />
+				<small>zebrafish genetics, positional cloning, developmental genetics</small></dd>
 
-<dt>Nilanthi de Silva</dt>
-<dd>University of Kelaniya<br />
-Dalugama, Sri Lanka</dd>
 
-<dt>Gary Simon</dt>
-<dd>The George Washington University<br />
-Washington DC, USA</dd>
+			<dt>Harry T. Orr</dt>
+			<dd>
+				University of Minnesota<br />
+				Minneapolis, USA<br />
+				<small>mammalian genetics, neurodegeneration, triplet repeat diseases</small></dd>
+			
+			<dt>Norbert Perrimon</dt>
+			<dd>
+				Harvard Medical School, Howard Hughes Medical Institute<br />
+				Boston, USA<br />
+				<small><em>Drosophila</em> developmental genetics, signal transduction</small>
+			</dd>
 
-<dt>Photini Sinnis</dt>
-<dd>New York University School of Medicine<br />
-New York, New York, USA</dd>
 
-<dt>Pamela Small</dt>
-<dd>University of Tennessee<br />
-Knoxville, Tennessee, USA</dd>
+<dt>Dmitri A. Petrov</dt>
+<dd>Stanford University<br />
+Stanford, USA<br />
+<small>inference of evolutionary patterns from molecular data, genome evolution,<br /> molecular population genetics, eukaryotic transposable elements</small><br />
+</dd>
 
-<dt>Banchob Sripa</dt>
-<dd>Khon Kaen University<br />
-Khon Kaen, Thailand</dd>
+			<dt>Jonathan K. Pritchard</dt>
+			<dd>
+				University of Chicago<br />
+				Chicago, USA<br />
+				<small>population genetics, human population structure, association mapping</small></dd>
 
-<dt>Louis-Albert Tchuem Tchuent&eacute;</dt>
-<dd>Centre for Schistosomiasis and Parasitology,<br />University of Yaound&eacute; I<br />
-Yaound&eacute;, Cameroon</dd>
 
-<dt>Melissa K. Van Dyke</dt>
-<dd>Centers for Disease Control and Prevention<br />
-Atlanta, Georgia, USA</dd>
+			<dt>Molly Przeworski</dt>
+			<dd>
+				University of Chicago<br />
+				Chicago, USA<br />
+				<small>population genetics, molecular evolution, human evolution, human linkage disequilibrium studies</small></dd>
 
-<dt>Joanne Webster</dt>
-<dd>Imperial College London<br />
-London, UK</dd>
 
-<dt>Maria Yazdanbakhsh</dt>
-<dd>Leiden University Medical Center<br />
-Leiden, Netherlands</dd>
+			<dt>Paul M. Richardson</dt>
+			<dd>
+				Department of Energy Joint Genome Institute<br />
+				Walnut Creek, USA<br />
+				<small>microbial genomics, sequencing technology</small></dd>
 
-<dt>Xiao-Nong Zhou</dt>
-<dd>National Institute of Parasitic Diseases,<br />Chinese Center for Disease Control and Prevention<br />
-Shanghai, China</dd>
+
+
+			<dt>Derry C. Roopenian</dt>
+			<dd>
+				The Jackson Laboratory<br />
+				Bar Harbor, USA<br />
+				<small>immunogenetics, mouse genetics</small></dd>
+
+			<dt>Eric Rulifson</dt>
+			<dd>
+				University of California, San Francisco<br />
+				San Francisco, USA<br />
+				<small><em>Drosophila</em> developmental genetics, endocrine system organogenesis and biology</small>
+			</dd>
+
+
+            <dt>Mikkel H. Schierup</dt>
+			<dd>
+				University of Aarhus<br />
+				Aarhus, Denmark<br />
+				<small>molecular evolution, comparative genomics, population genetics</small></dd>
+
+			<dt>Nicholas J. Schork</dt>
+			<dd>
+				The Scripps Research Institute &amp; University of California at San Diego<br />
+				La Jolla, USA<br />
+				<small>the genetic basis of complex traits and diseases, computational and statistical tools</small>
+ 			</dd>
+ 
+			<dt>Michael Snyder</dt>
+			<dd>
+				Yale University<br />
+				New Haven, USA<br />
+				<small>yeast and human genomics and proteomics, chromosome segregation, morphogenesis, cell cycle</small></dd>
+
+
+			<dt>David L. Stern</dt>
+			<dd>
+				Princeton University<br />
+				Princeton, USA<br />
+				<small>evolutionary developmental biology, genetics in non-model insects,<br /> genetics, physiology, development and evolution of size, control of polyphenisms,<br /> development and genetics of bacterial symbiosis</small></dd>
+			
+
+			<dt>Lisa Stubbs</dt>
+			<dd>
+				Lawrence Livermore National Laboratory<br />
+				Livermore, USA<br />
+				<small>mammalian genetics, comparative genomics, genome evolution, gene regulation</small></dd>
+
+			<dt>Joseph S. Takahashi</dt>
+			<dd>
+				Howard Hughes Medical Institute, Northwestern University<br />
+				Evanston, USA<br />
+				<small>mouse genetics and genomics, molecular neuroscience, genetics of behavior, circadian biology</small></dd>
+
+			<dt>Barbara J. Trask</dt>
+			<dd>
+				Fred Hutchinson Cancer Research Center<br />
+				Seattle, USA<br />
+				<small>mammalian genome organization, cytogenetics, gene families, duplications, cancer genetics,<br /> nuclear organization, molecular evolution, gross polymorphism</small></dd>
+
+
+			<dt>David Valle</dt>
+			<dd>
+				Johns Hopkins University School of Medicine<br />
+				Baltimore, USA<br />
+				<small>human genetics, disease gene identification, analysis,<br /> disease mechanisms and model systems, inborn errors of metabolism, genomics</small></dd>
+
+
+			<dt>Veronica van Heyningen</dt>
+			<dd>
+				MRC Human Genetics Unit<br />
+				Edinburgh, UK<br />
+				<small>developmental genetics, human disease and mutational mechanisms, regulation of gene expression,<br /> genomic organisation, model organisms, gene-environment interactions</small></dd>
+
+
+			<dt>Bas van Steensel</dt>
+			<dd>
+				Netherlands Cancer Institute<br />
+				Amsterdam, the Netherlands<br />
+				<small>chromatin structure and composition, epigenetics, gene regulatory networks,<br /> genome-wide mapping techniques</small></dd>
+			
+			<dt>Peter M. Visscher</dt>
+			<dd>
+				Queensland Institute of Medical Research<br />
+				Brisbane, Australia<br />
+				<small>quantitative genetics, methods in statistical genetics and genetic epidemiology,<br /> complex disease genetics</small></dd>
 
 </dl>
 
-<h2>Editorial Advisors</h2>
-
-<dl>
-
-<dt>Uche Amazigo</dt>
-<dd>African Programme for Onchocerciasis Control,<br />The World Health Organization<br />
-Ouagadougou, Burkina Faso</dd>
-
-<dt>Daniel G. Colley</dt>
-<dd>University of Georgia<br />
-Athens, Georgia, USA</dd>
-
-<dt>Simon Croft</dt>
-<dd>Drugs for Neglected Diseases Initiative<br />
-Geneva, Switzerland</dd>
-
-<dt>Pierre Druilhe</dt>
-<dd>Institut Pasteur<br />
-Paris, France</dd>
-
-<dt>Richard Feachem</dt>
-<dd>The Global Fund to Fight AIDS, Tuberculosis, and Malaria<br />
-Geneva, Switzerland</dd>
-
-<dt>Alan Fenwick</dt>
-<dd>Imperial College London<br />
-London, UK</dd>
-
-<dt>Paul Fine</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
-
-<dt>Victoria Hale</dt>
-<dd>Institute for OneWorld Health<br />
-San Francisco, California, USA</dd>
-
-<dt>Paul Hunt</dt>
-<dd>The Human Rights Centre, University of Essex<br />
-Essex, UK</dd>
-
-<dt>Santiago Mas-Coma</dt>
-<dd>Departamento de Parasitologia, Universidad de Valencia<br />
-Valencia, Spain</dd>
-
-<dt>Don McManus</dt>
-<dd>The Queensland Institute of Medical Research<br />
-Brisbane, Australia</dd>
-
-<dt>David Molyneux</dt>
-<dd>Liverpool School of Tropical Medicine<br />
-Liverpool, UK</dd>
-
-<dt>Carlos Morel</dt>
-<dd>FIOCRUZ<br />
-Rio de Janeiro, Brazil</dd>
-
-<dt>James Mwanzia</dt>
-<dd>Prevention and Control of Communicable Diseases, World Health Organization<br />
-Brazzaville, Republic of Congo</dd>
-
-<dt>G. Richard Olds</dt>
-<dd>Medical College of Wisconsin<br />
-Milwaukee, Wisconsin, USA</dd>
-
-<dt>Eric A. Ottesen</dt>
-<dd>Task Force for Child Survival and Development, &<br />Rollins School of Public Health, Emory University<br />
-Atlanta, Georgia, USA</dd>
-
-<dt>Frank Richards, Jr.</dt>
-<dd>The Carter Center<br />
-Atlanta, Georgia, USA</dd>
-
-<dt>Laura C. Rodrigues</dt>
-<dd>London School of Hygiene and Tropical Medicine<br />
-London, UK</dd>
-
-<dt>Jeffrey D. Sachs</dt>
-<dd>The Earth Institute at Columbia University<br />
-New York, New York, USA</dd>
-
-<dt>Nancy Gore Saravia</dt>
-<dd>Centro Internacional de Entrenamiento e Investigaciones Medicas<br />
-Cali, Colombia</dd>
-
-<dt>Lorenzo Savioli</dt>
-<dd>The World Health Organization<br />
-Geneva, Switzerland</dd>
-
-<dt>Terrence Spithill</dt>
-<dd>Institute of Parasitology, McGill University<br />
-Montreal, Canada</dd>
-
-<dt>Ken Stuart</dt>
-<dd>Seattle Biomedical Research Institute<br />
-Seattle, Washington, USA</dd>
-
-<dt>Marcel Tanner</dt>
-<dd>Swiss Tropical Institute<br />
-Basel, Switzerland</dd>
-
-<dt>Thomas R. Unnasch</dt>
-<dd>The University of Alabama at Birmingham<br />
-Birmingham, Alabama, USA</dd>
-
-<dt>Gary Weil</dt>
-<dd>Washington University<br />
-St. Louis, Missouri, USA</dd>
-
-</dl>
 
 </div>
 <!-- end : main contents -->

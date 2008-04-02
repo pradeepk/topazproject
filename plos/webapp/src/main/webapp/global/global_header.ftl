@@ -44,18 +44,22 @@
   <ul id="links"><@s.url id="browseURL" includeParams="none" namespace="/article" action="browse"/><li class="browse"><a href="${browseURL}?field=date" title="Browse Articles">Browse</a></li><@s.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/><li class="rss"><a href="${rssURL}" title="RSS Feeds">RSS</a></li></ul>
   <!-- end : search links -->
   <!-- begin : dashboard -->
-  <div id="db">
+    <#if journalContext != "PLoSONE">
+    	<div id="db" style="background-image: url(${freemarker_config.context}/images/pone_db_bg_noSearchCJs.gif); width: 331px; height: 35px;">
+    <#else>
+    	<div id="db" style="background-image: url(${freemarker_config.context}/images/pone_db_bg_noSearchONE.gif); width: 331px; height: 35px;">
+    </#if>
     <@s.url id="searchURL" includeParams="none" namespace="/search" action="simpleSearch" />
-    <form name="searchForm" action="${searchURL}" method="get">
+    <!--form name="searchForm" action="${searchURL}" method="get">
       <fieldset>
         <legend>Search</legend>
         <label for="search">Search</label>
-        <div class="wrap"><input id="search" type="text" name="query" value="Search articles..." onfocus="if(this.value=='Search articles...')value='';" onblur="if(this.value=='')value='Search articles...';" class="searchField" alt="Search articles..."/></div>
+        <div class="wrap"><input id="search" type="text" name="query" value="Search is disabled" onfocus="if(this.value=='Search is disabled')value='';" onblur="if(this.value=='')value='Search is disabled';" class="searchField" alt="Search is disabled"/></div>
         <input src="${freemarker_config.context}/images/pone_search_btn1.gif" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
       </fieldset>
     </form>
     <@s.url action="advancedSearch" namespace="/search" includeParams="none" id="advancedSearch"/>
-    <a href="${advancedSearch}" id="advSearch">Advanced Search</a>
+    <a href="${advancedSearch}" id="advSearch">Advanced Search</a-->
   </div>
   <!-- end : dashboard -->
   <!-- begin : navigation -->

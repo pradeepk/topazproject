@@ -12,7 +12,7 @@
     <ul>
 		<li><a href="latex.action" title="PLoS ONE | Converting LaTeX Files to Word or RTF Format">Converting LaTeX Files</a></li>
 	</ul>
-	<li><a href="figureGuidelines.action" title="PLoS ONE | Figure Guidelines">Figure Guidelines</a> - Detailed guidelines for preparing publication-quality figures and tables</li>
+	<li><a href="figureGuidelines.action" title="PLoS ONE | Guidelines for Figure and Table Preparation">Guidelines for Figure and Table Preparation</a> - Detailed guidelines for preparing publication-quality figures and tables</li>
 	<li><a href="checklist.action" title="PLoS ONE | Submit Your Paper">Submit Your Paper</a> - Check this list before you submit your manuscript</li>
 	<ul>
 		<li><a href="http://one.plosjms.org/" title="PLoS ONE | Online Manuscript Submission and Review System">Submit Manuscript</a></li>

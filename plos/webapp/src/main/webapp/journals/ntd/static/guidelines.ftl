@@ -4,7 +4,7 @@
 
 <h1><em>PLoS Neglected Tropical Diseases</em> Guidelines for Authors</h1> 
 
-<p class="intro">Detailed below are guidelines for authors about the journal, open access, the editorial process, and the production process. We also provide a <a href="checklist.action" title="PLoS NTDs | Manuscript Submission Checklist">checklist for submitting manuscripts</a> for the first time, a <a href="revisedChecklist.action" title="PLoS NTDs | Checklist for Revised Manuscripts">checklist for submitting revised manuscripts</a>, and detailed <a href="figureGuidelines.action" title="PLoS NTDs | Guidelines for Table and Figure Preparation">guidelines for table and figure preparation</a>. <em>PLoS Neglected Tropical Diseases</em> also offers <a href="developing.action">several means of support</a> to authors in developing countries.</p>
+<p class="intro">Detailed below are guidelines for authors about the journal, open access, the editorial process, and the production process. We also provide a <a href="checklist.action" title="PLoS NTDs | Manuscript Submission Checklist">checklist for submitting manuscripts</a> for the first time, a <a href="revisedChecklist.action" title="PLoS NTDs | Checklist for Revised Manuscripts">checklist for submitting revised manuscripts</a>, and detailed <a href="figureGuidelines.action" title="PLoS NTDs | Guidelines for Figure and Table Preparation">guidelines for figure and table preparation</a>. <em>PLoS Neglected Tropical Diseases</em> also offers <a href="developing.action">several means of support</a> to authors in developing countries.</p>
 <h2>Contents:</h2>
 <ol>
 	<li><a href="#about">About <em>PLoS Neglected Tropical Diseases</em></a></li>
@@ -125,7 +125,7 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 <p>A signed form of informed consent for publication should be included as supporting material for the editors and reviewers of the manuscript (<a href="http://journals.plos.org/plos_consent_form.pdf" title="download Consent Form">click here to download Consent Form&#8212;116 KB PDF</a>; also available in <a href="http://journals.plos.org/plos_consent_form_french.pdf" title="Consent Form for Publication in a PLoS Journal in French">French</a>, <a href="http://journals.plos.org/plos_consent_form_portuguese.pdf" title="Consent Form for Publication in a PLoS Journal in Portuguese">Portuguese</a>, and <a href="http://journals.plos.org/plos_consent_form_spanish.pdf" title="Consent Form for Publication in a PLoS Journal in Spanish">Spanish</a>). The PLoS open-access license means that the images and text we publish online become available for any lawful purpose. This information should be conveyed when obtaining consent for publication from patients.</p>
 
 <a name="reporting_guidelines" id="reporting_guidelines"></a>
-<h3>Material required for the submission of Specific Study Types</h3>
+<h3>Material Required for the Submission of Specific Study Types</h3>
 
 <a name="clinical_trials"></a>
 <h5>a. Clinical Trials</h5> 
@@ -200,7 +200,9 @@ The Public Library of Science (PLoS) applies the <a href="license.action" title=
 
 <h4>Manuscript and Table Files</h4>
 
-<p>Our publication system supports a limited range of formats for text and graphics. Text files can be submitted in DOC or RTF format. Please <a href="latex.action" title="PLoS NTDs | Converting LaTeX files to Word or RTF format">convert LaTeX files</a> to one of the acceptable formats.</p>
+<p>Our publication system supports a limited range of formats for text and graphics. Text files can be submitted in DOC or RTF format.</p>
+
+<p>Manuscripts prepared in LaTeX may be submitted in PDF format for use during the review process. Post acceptance, these authors will be asked to submit their .tex files and formatting information as a zipped file. Please consult our <a href="latexGuidelines.action">LaTeX Guidelines</a> for a list of what will be required.</p>
 
 <p>If you experience difficulties with the manuscript submission Web site or are concerned about the suitability of your files, please contact the journal (<strong>plosntds [at] plos.org</strong>).</p>
 

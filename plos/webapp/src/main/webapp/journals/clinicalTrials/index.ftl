@@ -1,4 +1,4 @@
-<!-- begin : main content -->
+﻿<!-- begin : main content -->
 <div id="content">
   <!-- begin : home page wrapper -->
   <div id="wrap">
@@ -12,7 +12,8 @@
           <div class="col last">
           <!-- SWT removed horizontalTabs -->
             <div id="new" class="block">
-              <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
+ 		  <p style="position:relative; zoom:1; font-size:0.9em; margin: 25px 0 0px; padding:3px 10px; border:1px dashed red; background-color:#ffc;"><strong>Note to our readers:</strong> We apologize for the recent slowness and intermittent downtime for this journal website. Please bear with us as we work to improve the website performance and stability. <a href="http://www.plos.org/cms/node/334">More information</a></p>
+             <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
               <h2>What is the PLoS Hub for Clinical Trials?</h2>
               <p>The PLoS Hub for Clinical Trials collects PLoS journal articles that relate to clinical trials. The Hub is a site for researchers to share their views and build a dynamic, interactive community.</p>
               <p>Currently, the PLoS Hub for Clinical Trials features articles originally published in <em>PLoS Clinical Trials</em>, along with clinical trials articles from <em>PLoS ONE</em>.</p>
@@ -27,32 +28,33 @@
             </div>
             <div id="rss">
               <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/>
-	      <a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><span><strong>Subscribe</strong>
+		<a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><span><strong>Subscribe</strong>
               Subscribe to the clinical trials RSS content feed</span></a>
               <a href="${rssinfo}" class="adInfo">What is RSS?</a>
             </div>
             <!-- end : calls to action blocks -->
             <div class="block recent">
               <h2>Recently Added Clinical Trials</h2>
-              <ul class="articles">
-                <@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001018"/>
-                <@s.url id="article2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001023"/>
-                <@s.url id="article3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000991"/>
-                <@s.url id="article4" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000919"/>
+              <ul class="articles">    
+               	<@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001779"/>	
+                <@s.url id="article2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001665"/>
+               	<@s.url id="article3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001610"/>
+               	<@s.url id="article4" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001630"/>
 
-               <li><@s.a href="%{article1}" title="Read Open Access Article">
-				A Randomized Placebo-Controlled Phase Ia Malaria Vaccine Trial of Two Virosome-Formulated Synthetic Peptides in Healthy Adult Volunteers
+  		
+                <li><@s.a href="%{article1}" title="Read Open Access Article">
+				Open-Label Comparative Clinical Study of Chlorproguanil−Dapsone Fixed Dose Combination (Lapdap<sup>TM</sup>) Alone or with Three Different Doses of Artesunate for Uncomplicated <em>Plasmodium falciparum</em> Malaria
 				</@s.a></li>
                 <li><@s.a href="%{article2}" title="Read Open Access Article">
-				Primaquine Clears Submicroscopic <em>Plasmodium falciparum</em> Gametocytes that Persist after Treatment with Sulphadoxine-Pyrimethamine and Artesunate
+				Broad Clade 2 Cross-Reactive Immunity Induced by an Adjuvanted Clade 1 rH5N1 Pandemic Influenza Vaccine
 				</@s.a></li>
-                <li><@s.a href="%{article3}" title="Read Open Access Article">
-				Creatine Monohydrate and Conjugated Linoleic Acid Improve Strength and Body Composition Following Resistance Exercise in Older Adults
+ 				<li><@s.a href="%{article3}" title="Read Open Access Article">
+				Poor Reporting of Scientific Leadership Information in Clinical Trial Registers
 				</@s.a></li>
-                <li><@s.a href="%{article4}" title="Read Open Access Article">
-				Naturopathic Care For Chronic Low Back Pain: A Randomized Trial
+               <li><@s.a href="%{article4}" title="Read Open Access Article">
+				Safety and Efficacy of Methylene Blue Combined with Artesunate or Amodiaquine for Uncomplicated Falciparum Malaria: A Randomized Controlled Trial from Burkina Faso
 				</@s.a></li>
-               </ul>
+				</ul>
             </div><!-- end : block recent -->
             <!-- begin : browse widget block -->
             <div id="browseWidget" class="block">
@@ -66,17 +68,17 @@
           <!-- begin : col 3 -->
           <div class="subcol first">
             <div class="info block">
-              <@s.url action="commentGuidelines" anchor="annotation" namespace="/static" includeParams="none" id="annotation"/>
-              <@s.url action="commentGuidelines" anchor="discussion" namespace="/static" includeParams="none" id="discussion"/>
+              <@s.url action="commentGuidelines" anchor="note" namespace="/static" includeParams="none" id="note"/>
               <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
               <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
               <h3>Join the Community</h3>
-              <p><a href="${freemarker_config.registrationURL}" title="Register">Register now</a> and share your views on clinical trials research. Only registrants can <a href="${rating}" title="Rating Guidelines">rate</a>, <a href="${discussion}" title="Learn how to start a discussion">discuss</a> and <a href="${annotation}" title="Learn how to add an annotation">annotate</a> articles in the Hub.</p>
-              <h3>Submit Your Work</h3>
+              <p><a href="${freemarker_config.registrationURL}" title="Register">Register now</a> and share your views on clinical trials research. Only registrants can add <a href="${note}" title="Guidelines for Notes, Comments, and Corrections">Notes, Comments</a>, and <a href="${rating}" title="Guidelines for Rating">Ratings</a> to articles in the Hub.</p>
+			  <h3>Submit Your Work</h3>
               <p>PLoS is committed to publishing the results of all clinical trials, regardless of outcome, and making this essential information freely and publicly available. <a href="${checklist}" title="Submission Info">Find out how to submit your work</a>.</p>
             </div><!-- end : info block -->
             <!-- begin : advocacy blocks -->
-            <script language='JavaScript' type='text/javascript'>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+			<script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
@@ -88,8 +90,9 @@
                  document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
              //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=abd0d95d' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:184&#38;source=PHUBCT&#38;n=abd0d95d' border='0' alt=''/></a></noscript>
-            <script language='JavaScript' type='text/javascript'>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=abd0d95d' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:184&#38;source=PHUBCT&#38;n=abd0d95d' border='0' alt=''></a></noscript>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+           <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
@@ -102,7 +105,8 @@
                   document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a56536b2' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:185&#38;source=PHUBCT&#38;n=a56536b2' border='0' alt=''/></a></noscript>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a56536b2' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:185&#38;source=PHUBCT&#38;n=a56536b2' border='0' alt=''></a></noscript>
+           <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
             <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
@@ -115,28 +119,34 @@
                   document.write ("&#38;referer=" + escape(document.referrer));
                document.write ("'><" + "/script>");
             //-->
-            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a6f9fd36' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:186&#38;source=PHUBCT&#38;n=a6f9fd36' border='0' alt=''/></a></noscript>
+            </script><noscript><a href='http://ads.plos.org/adclick.php?n=a6f9fd36' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:186&#38;source=PHUBCT&#38;n=a6f9fd36' border='0' alt=''></a></noscript>
             <!-- end : advocacy blocks -->
-            <!-- start : info block -->
             <div class="info block">
               <h3>Highlights From Other Open Access Journals</h3>
               <p>Links to relevant content that is not currently in the Hub. We will be adding content in coming months.</p>
               <dl class="category">
                 <dt><em>PLoS Medicine</em></dt>
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050022">Market Failure and the Poverty of New Drugs in Maternal Health</a></dd>
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050021">Incorporating Molecular Tools into Early-Stage Clinical Trials</a></dd>	
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050020">CONSORT for Reporting Randomized Controlled Trials in Journal and Conference Abstracts: Explanation and Elaboration</a></dd>
-                 <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050008">Antitumor Activity of Rapamycin in a Phase I Trial for Patients with Recurrent PTEN-Deficient Glioblastoma</a></dd>
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050045">Initial Severity and Antidepressant Benefits: A Meta-Analysis of Data Submitted to the Food and Drug Administration</a></dd>
+                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050006">Could an Open-Source Clinical Trial Data-Management System Be What We Have All Been Looking For</a></dd>	
+                 <dt><em>Trials</em></dt>
+                <dd><a href="http://www.trialsjournal.com/content/9/1/12">What constitutes a "clinical trial"?: A survey of oncology professionals</a></dd>
+				<dt><em>Open Medicine</em></dt>
+				<dd><a href="http://www.openmedicine.ca/article/view/153/106">Toward a definition of pharmaceutical innovation</a></dd>
+				<dt><em>CMAJ</em></dt>
+				<dd><a href="http://www.cmaj.ca/cgi/content/full/178/5/576">
+The efficacy and safety of intensive statin therapy: a meta-analysis of randomized trials </a></dd>              
               </dl>
               <h3>From the Web</h3>
-              <p><a href="http://www.wma.net/e/ethicsunit/helsinki.htm" title="WMA.net | Ethics Unit: Declaration of Helsinki">World Medical Association undertakes review of Declaration of Helsinki</a></p>
+			  <p>Encouraging Transparency in Research Reporting: Register now for <a href="http://www.equator-network.org/index.aspx?o=1113">EQUATOR Network Launch Meeting</a>.</p>
+			  <p>UK Medicines and Healthcare Products Regulatory Agency <a href="http://www.mhra.gov.uk/Howweregulate/Medicines/Medicinesregulatorynews/CON014153">concludes investigation</a> into GlaxoSmithKline.</p>
             </div><!-- end : info block -->
            </div><!-- end : subcol first -->
           <!-- end : col 3 -->
           <!-- begin : col 4 -->
           <div class="subcol last">
             <div class="block banner">
-              <script language='JavaScript' type='text/javascript'>
+            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+             <script language='JavaScript' type='text/javascript'>
               <!--
                 if (!document.phpAds_used) document.phpAds_used = ',';
                 phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
@@ -148,7 +158,7 @@
                   document.write ("&#38;referer=" + escape(document.referrer));
                 document.write ("'><" + "/script>");
               //-->
-              </script><noscript><a href='http://ads.plos.org/adclick.php?n=a595dcde' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:181&#38;source=PHUBCT&#38;n=a595dcde' border='0' alt=''/></a></noscript>
+              </script><noscript><a href='http://ads.plos.org/adclick.php?n=a595dcde' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:181&#38;source=PHUBCT&#38;n=a595dcde' border='0' alt=''></a></noscript>
             </div><!-- end : block banner -->
           </div><!-- end : subcol last -->
         </div><!-- end : wrapper for cols 3 & 4 -->

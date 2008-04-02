@@ -21,11 +21,13 @@
 
 <h2>Browse Articles</h2>
 <ul>
-	<@s.url action="browseIssue" field="issue" namespace="/article" includeParams="none" id="browseIssueURL"/>
-	<@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
+    <@s.url action="toc" namespace="/static" includeParams="none" id="browseIssueURL"/>
+    <@s.url action="archive" namespace="/static" includeParams="none" id="browseVolumeURL"/>
+    <@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubURL"/>
 	
-	<li><@s.a href="${tocStatic}" title="PLoS NTDs | Current Issue">Current Issue</@s.a></li><!-- Note that this is a temporary var to static TOC. Once dynamic TOC is in place, should be changed back to "browseIssueURL" -->
+    <li><@s.a href="${browseIssueURL}" title="PLoS NTDs | Current Issue">Current Issue</@s.a></li>
+	<li><@s.a href="${browseVolumeURL}" title="PLoS NTDs | Journal Archive">Journal Archive</@s.a></li>
     <li><@s.a href="${browseDateURL}" title="PLoS NTDs | Browse by Publication Date">By Publication Date</@s.a></li>
     <li><@s.a href="${browseSubURL}" title="PLoS NTDs | Browse by Subject">By Subject</@s.a></li>
     <li><a href="http://collections.plos.org/plosntds/" title="Collections.plos.org | PLoS NTDs Collections">Collections</a></li>
@@ -55,8 +57,8 @@
     <@s.url action="help" namespace="/static" includeParams="none" id="helpURL"/>
     <@s.url action="downloads" namespace="/static" includeParams="none" id="downloadsURL"/>
 	
-    <li><@s.a href="${commentURL}" title="PLoS NTDs | Commenting Guidelines">Commenting Guidelines</@s.a></li>
-    <li><@s.a href="${ratingURL}" title="PLoS NTDs | Rating Guidelines">Rating Guidelines</@s.a></li>
+    <li><@s.a href="${commentURL}" title="PLoS NTDs | Guidelines for Notes, Comments, and Corrections">Guidelines for Notes, Comments, and Corrections</@s.a></li>
+    <li><@s.a href="${ratingURL}" title="PLoS NTDs | Guidelines for Rating">Guidelines for Rating</@s.a></li>
     <li><@s.a href="${helpURL}" title="PLoS NTDs | Help Using this Site">Help Using This Site</@s.a></li>
 	<li><@s.a href="${downloadsURL}" title="PLoS NTDs | Media Downloads">Media Downloads</@s.a></li>
     <li>Site Map</li>
@@ -69,7 +71,7 @@
 	<@s.url action="policies" namespace="/static" includeParams="none" id="policiesURL"/>
 	<@s.url action="competing" namespace="/static" includeParams="none" id="competingURL"/>
 	<@s.url action="guidelines" namespace="/static" includeParams="none" id="guidelinesURL"/>
-	<@s.url action="latex" namespace="/static" includeParams="none" id="latexURL"/>
+	<@s.url action="latexGuidelines" namespace="/static" includeParams="none" id="latexURL"/>
 	<@s.url action="figureGuidelines" namespace="/static" includeParams="none" id="figureGuidelinesURL"/>
 	<@s.url action="checklist" namespace="/static" includeParams="none" id="cklistURL"/>
 	<@s.url action="revisedChecklist" namespace="/static" includeParams="none" id="revisedChecklistURL"/>
@@ -83,9 +85,9 @@
 	</ul>
 	<li><@s.a href="${guidelinesURL}" title="PLoS NTDs | Guidelines for Authors">Author Guidelines</@s.a></li>
 	<ul>
-		<li><@s.a href="${latexURL}" title="PLoS NTDs | Converting LaTeX files to Word or RTF format">Converting LaTeX Files</@s.a></li>
+		<li><@s.a href="${latexURL}" title="PLoS NTDs | LaTeX Guidelines">LaTeX Guidelines</@s.a></li>
 	</ul>
-	<li><@s.a href="${figureGuidelinesURL}" title="PLoS NTDs | Guidelines for Table and Figure Preparation">Table and Figure Preparation</@s.a></li>
+	<li><@s.a href="${figureGuidelinesURL}" title="PLoS NTDs | Guidelines for Figure and Table Preparation">Guidelines for Figure and Table Preparation</@s.a></li>
 	<li><@s.a href="${cklistURL}" title="PLoS NTDs | Manuscript Submission Checklist">Submit Your Manuscript</@s.a></li>
 	<ul>
 		<li><a href="http://ntds.plosjms.org/" title="PLoS NTDs | Online Manuscript Submission and Review System">Submit Manuscript</a></li>

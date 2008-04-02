@@ -46,7 +46,7 @@
 <a name="sharing"></a>
 <h2>4. Sharing of Materials, Methods, and Data</h2>
 
-<p>Publication is conditional upon the agreement of authors to make freely available any materials and information associated <p>Publication is conditional upon the agreement of authors to make freely available any materials and information associated with their publication that are reasonably requested by others for the purpose of academic, noncommercial research.</p>
+<p>Publication is conditional upon the agreement of authors to make freely available any materials and information associated with their publication that are reasonably requested by others for the purpose of academic, noncommercial research.</p>
 
 <h5>Data Availability</h5>
 
@@ -70,7 +70,7 @@
 <a name="clinical_trials"></a>
 <h5>a. Clinical Trials</h5> 
 
-<p>We follow the WHO definition of a clinical trial &#8212; see <a href="http://www.who.int/ictrp/en/">http://www.who.int/ictrp/en/</a>. "A clinical trial is any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes. Interventions include but are not restricted to drugs, cells and other biological products, surgical procedures, radiologic procedures, devices, behavioural treatments, process-of-care changes, preventive care, etc"</p>
+<p>We follow the <a href="http://www.who.int/ictrp/en/">WHO definition of a clinical trial</a>. "A clinical trial is any research study that prospectively assigns human participants or groups of humans to one or more health-related interventions to evaluate the effects on health outcomes. Interventions include but are not restricted to drugs, cells and other biological products, surgical procedures, radiologic procedures, devices, behavioural treatments, process-of-care changes, preventive care, etc"</p>
 
 <p>PLoS supports the position of the International Committee of Medical Journal Editors (ICMJE) on trial registration. All trials initiated after 1 July 2005 must be registered prospectively in a publicly accessible registry (i.e., before patient recruitment has begun), or they will not be considered for publication. For trials initiated before 1 July 2005, all trials must be registered before submission to our journals. See the <a href="http://www.icmje.org/faq.pdf" title="ICMJE faq">ICMJE faq on trial registration</a> on trial registration for further details. The WHO's list of approved registries is listed here <a href="http://www.who.int/ictrp/network/list_registers/en/index.html">http://www.who.int/ictrp/network/list_registers/en/index.html</a>.</p>
 
@@ -79,7 +79,7 @@
 <a name="systematic_reviews"></a>
 <h5>b. Systematic Reviews and Meta-Analyses of Randomized Controlled Trials</h5>
 
-<p>Reports of meta-analyses of randomized controlled studies should use the QUOROM statement as a guide (Moher D, Cook DJ, Eastwood S, Olkin I, Rennie D, Stroup DF [1999] Improving the quality of reports of meta-analyses of randomized controlled trials: The QUOROM statement. Lancet 354: 1896–900), and should include a copy of the <a href="http://www.consort-statement.org/QUOROM.pdf" title="QUOROM checklist">QUOROM checklist</a>. 
+<p>Reports of meta-analyses of randomized controlled studies should use the QUOROM statement as a guide (Moher D, Cook DJ, Eastwood S, Olkin I, Rennie D, Stroup DF [1999] Improving the quality of reports of meta-analyses of randomized controlled trials: The QUOROM statement. Lancet 354: 1896-900), and should include a copy of the <a href="http://www.consort-statement.org/QUOROM.pdf" title="QUOROM checklist">QUOROM checklist</a>. 
 </p> 
 
 <a name="diagnostic_studies"></a>
