@@ -85,9 +85,6 @@ public class CreateCitation extends BaseActionSupport {
 
     citationString = CitationUtils.generateArticleCitationString(citation);
     
-    
-    citationString = CitationUtils.generateArticleCitationString(citation);
-    
     return SUCCESS;
   }
 

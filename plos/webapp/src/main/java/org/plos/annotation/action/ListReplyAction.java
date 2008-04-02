@@ -94,38 +94,27 @@ public class ListReplyAction extends AnnotationActionSupport {
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
         final Object lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
-        Object result = CacheAdminHelper.getFromCache(articleAnnotationCache, CreateCitation.CITATION_KEY + articleURI,
-                                             -1, lock,
-                                             "citation",
-                                             new CacheAdminHelper.EhcacheUpdater<Object>() {
-            public Object lookup() {
-              try {
-                XStream xstream = new XStream();
-                CitationInfo citationInfo = (CitationInfo) xstream.fromXML(
-                                              citationService.getTransformedArticle(articleURI.toString()));
-                return citationInfo;
-              } catch (ApplicationException ae) {
-                return ae;
-              } catch (IOException ioe) {
-                return ioe;
-              } catch (NoSuchArticleIdException nsaie) {
-                return nsaie;
-              } catch (ParserConfigurationException pce) {
-                return pce;
-              } catch (SAXException se) {
-                return se;
-              }
+        CitationInfo result = CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+                CreateCitation.CITATION_KEY + articleURI, -1, lock, "citation",
+                new CacheAdminHelper.EhcacheUpdaterE<CitationInfo, ApplicationException>() {
+                  public CitationInfo lookup() throws ApplicationException {
+
+                    XStream xstream = new XStream();
+                    try {
+                      return (CitationInfo) xstream.fromXML(
+                              citationService.getTransformedArticle(articleURI.toString()));
+                    } catch (IOException ie) {
+                      throw new ApplicationException(ie);
+                    } catch (NoSuchArticleIdException nsaie) {
+                      throw new ApplicationException(nsaie);
+                    } catch (ParserConfigurationException pce) {
+                      throw new ApplicationException(pce);
+                    } catch (SAXException se) {
+                      throw new ApplicationException(se);
+                    }
             }
         });
-  
-        if (result instanceof Exception) {
-          citation = null;
-          if (log.isErrorEnabled()) { log.error(result); }
-          addActionError(result.toString());
-          return ERROR;
-        }
-  
-        citation = CitationUtils.generateArticleCorrectionCitationString((CitationInfo) result, baseAnnotation);
+        citation = CitationUtils.generateArticleCorrectionCitationString(result, baseAnnotation);
       }
     } catch (ApplicationException ae) {
       citation = null;

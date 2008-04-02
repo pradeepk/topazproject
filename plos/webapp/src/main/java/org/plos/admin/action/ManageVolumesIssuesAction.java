@@ -19,17 +19,13 @@ import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.plos.article.action.BrowseVolumeAction;
 import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.models.DublinCore;
 import org.plos.models.Issue;
 import org.plos.models.Journal;
 import org.plos.models.Volume;
-
 import org.springframework.beans.factory.annotation.Required;
-
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
@@ -49,8 +45,8 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   private String manageVolumesIssuesAction;
   private Journal journal;
-  private List<Volume> volumes = new ArrayList();
-  private List<Issue> issues = new ArrayList();
+  private List<Volume> volumes = new ArrayList<Volume>();
+  private List<Issue> issues = new ArrayList<Issue>();
   private URI doi;
   private String displayName;
   private URI image;
@@ -154,7 +150,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
     // process Issues
     if (aggregation != null && aggregation.length() != 0) {
-      List<URI> issues = new ArrayList();
+      List<URI> issues = new ArrayList<URI>();
       for (final String issueToAdd : aggregation.split(SEPARATORS)) {
         if (issueToAdd.length() == 0) { continue; }
         issues.add(URI.create(issueToAdd.trim()));
