@@ -342,20 +342,15 @@ div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; fon
 div.static h2,
 div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px;}
 
-div.static h3,	
-div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold;}
-div.static > h3,	
-div.content > h4 { margin-bottom:1em; }
+div.static h3,
+div.content h4	{ /* article second level heading */ font-size: 1.3em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold; border-bottom:0; }
 
 div.static h4,
 div.static h5,
 div.content h5	{ font-size: 1em; color: #333; margin-bottom:0; }
-div.static > h4,
-div.static > h5,
-div.content > h5	{ display:inline; padding-right:1em; }
 div.static h4+p,
 div.static h5+p,
-div.content h5+p	{ display:inline; }
+div.content h5+p	{ margin-top:0; }
 
 div.content ul,
 div.content ol	{ margin: 10px 0 10px 60px; padding: 0; }
@@ -386,7 +381,7 @@ div.contributions { font-size: .9em; }
 div.articleinfo p
 /*div.abstract p -this is causing bad spacing between h2 and abstract on article pages. Not sure why this is in here.*/	{ margin: 0 0 1em 0; }
 div.abstract h2 { font-size: 1.6em; font-style: normal; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
-div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; letter-spacing: normal; border-bottom: none;}
+div.abstract h3	{ font-size: 1.3em; margin: 20px 0 0 0; padding:0; border-bottom:0; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold; }
 span.pullquote	{ font-size: 2em; line-height: 1em; width: 55%; padding: 10px; float: right; letter-spacing: -.05em; font-style: italic; margin: 5px; }
 div.box			{ color: #000; padding: 10px; background-color: #edffe8; margin: 10px 0; }
 div.content div.box h3,
