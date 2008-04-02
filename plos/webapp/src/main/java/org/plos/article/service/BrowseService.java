@@ -57,12 +57,11 @@ import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * Class to get all Articles in system and organize them by date and by category
  *
- * @author stevec
+ * @author Alex Worden, stevec
  */
 public class BrowseService {
   private static final Log log = LogFactory.getLog(BrowseService.class);
@@ -222,6 +221,7 @@ public class BrowseService {
 	 * @return the Issue information.
 	 */
 	public IssueInfo getIssueInfo(final URI doi, final boolean eagerFetchArticles) {
+
     // Attempt to lookup IssueInfo in the cache - note that we can't cache complete
     // IssueInfo because it contains a list of articles that are XACML specific to the
     // user However - we can cache an IssueInfo that has eagerFetchArticles==false - which is
@@ -239,15 +239,15 @@ public class BrowseService {
       return getIssueInfo2(doi, eagerFetchArticles);
     }
   }
-	
+
   /**
-	 * Get Issue information inside of a Transaction.
+	 * Get Issue information - needs to be called inside a Transaction.
 	 * 
 	 * @param issue
 	 *          DOI of Issue.
 	 * @return the Issue information.
 	 */
-  private IssueInfo getIssueInfo2(final URI issueDOI, final boolean eagerFetchArticles) {
+  private IssueInfo getIssueInfo2(final URI issueDOI, boolean eagerFetchArticles) {
 
     // get the Issue
     final Issue issue = session.get(Issue.class, issueDOI.toString());
@@ -320,8 +320,8 @@ public class BrowseService {
 
     // TODO should all of this be in a tx???
 
-    List<VolumeInfo> volumeInfos = new ArrayList();
-    // get the Volumes
+    List<VolumeInfo> volumeInfos = new ArrayList<VolumeInfo>();
+    // get the Volumes  
     for (int onVolumeDoi = 0; onVolumeDoi < volumeDois.size(); onVolumeDoi++) {
       final URI volumeDoi = volumeDois.get(onVolumeDoi);
       final Volume volume  = session.get(Volume.class, volumeDoi.toString());
