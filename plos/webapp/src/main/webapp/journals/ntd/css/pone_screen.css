@@ -365,6 +365,14 @@ div.content li	{ margin: 0; padding: 0; }
 div.static ul li,
 div.content	ul li{ list-style-type: none; background: url(../images/pone_sectionnav_li_bg.gif) no-repeat 0 6px; padding-left: 12px;}
 
+div.content dl { margin-left:0; }
+div.content dl dt:first-child { margin-top:0; } /*fixes vertical misalignment in Firefox and IE7*/
+div.content dt { float:left; font-weight:bold; margin-right:0.5em; }
+html>body div.content dt { margin-top:0.5em; } /*for all browsers except IE6*/
+div.content dd { padding:0; }
+html>body div.content dd { margin-top:0.5em; } /*for all browsers except IE6*/
+div.content dd p { margin:0; }
+
 div#contentHeader { /* open access image */ position: relative; top:0; height:34px; margin:0; background:#67a96d url(../images/pone_content_oa.gif) no-repeat 100% 0; }
 div#contentHeader p { margin: 0; padding:0; text-indent: -9999px; }
 div#contentHeader p#articleType { text-transform:uppercase; text-indent:7px; margin-top:-13px; font-weight:bold; color:#fff; background-color:transparent; }
