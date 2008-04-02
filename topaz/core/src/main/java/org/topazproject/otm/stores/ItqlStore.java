@@ -444,7 +444,9 @@ public class ItqlStore extends AbstractTripleStore {
     ClassMetadata sup = cm;
     cm = sf.getSubClassMetadata(cm, isc.getSession().getEntityMode(), t);
     if (cm == null) {
-      log.warn("Statements found about '" + id 
+      HashSet<String> props = new HashSet<String>(fvalues.keySet());
+      props.addAll(rvalues.keySet());
+      log.warn("Properties " + props + " on '" + id 
           + "' does not satisfy the restrictions imposed by " + sup
           + ". No object will be instantiated.");
       return null;
