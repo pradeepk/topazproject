@@ -222,7 +222,6 @@ public class BrowseService {
 	 * @return the Issue information.
 	 */
 	public IssueInfo getIssueInfo(final URI doi, final boolean eagerFetchArticles) {
-
     // Attempt to lookup IssueInfo in the cache - note that we can't cache complete
     // IssueInfo because it contains a list of articles that are XACML specific to the
     // user However - we can cache an IssueInfo that has eagerFetchArticles==false - which is
@@ -240,16 +239,14 @@ public class BrowseService {
       return getIssueInfo2(doi, eagerFetchArticles);
     }
   }
-
+	
   /**
-   * Get Issue information - creates a transaction then calls getIssueInfoInTx. 
-   * FYI - I've left this in here to make the merge back to head easier and make the
-   * readability of getIssueInfo() easier. 
-   *
-   * @param doi DOI of Issue.
-   * @param eagerFetchArticles causes the ArticleInfos to be fetched
-   * @return the Issue information.
-   */
+	 * Get Issue information inside of a Transaction.
+	 * 
+	 * @param issue
+	 *          DOI of Issue.
+	 * @return the Issue information.
+	 */
   private IssueInfo getIssueInfo2(final URI issueDOI, final boolean eagerFetchArticles) {
 
     // get the Issue
@@ -342,7 +339,6 @@ public class BrowseService {
           description = article.getDublinCore().getDescription();
         }
       }
-
 
       List<IssueInfo> issueInfos = new ArrayList<IssueInfo>();
       for (final URI issueDoi : volume.getIssueList()) {
