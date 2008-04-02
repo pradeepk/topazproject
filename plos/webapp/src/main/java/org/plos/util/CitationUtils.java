@@ -59,8 +59,9 @@ public abstract class CitationUtils {
    * Appends to the given {@link StringBuffer} the article authors in a prescribed format.
    * @param ci CitationInfo
    * @param sb StringBuffer to which the authors String is appended
+   * @param initializeGivenNames
    */
-  private static void handleAuthors(CitationInfo ci, StringBuffer sb) {
+  private static void handleAuthors(CitationInfo ci, StringBuffer sb, boolean initializeGivenNames) {
     // obtain a list of all author names
     Author[] authors = ci.getAuthors();
     if(authors != null) {
@@ -81,13 +82,23 @@ public abstract class CitationUtils {
           for(String gn :givenNames) {
             if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
               String[] sarr = gn.split("\\p{Pd}");
-              for(String s : sarr) {
-                sb.append(s);
-                break;
+              String fistGivenName  = sarr[0];
+              if(initializeGivenNames) {
+                sb.append(fistGivenName.charAt(0));
+                sb.append('.');
+              }
+              else {
+                sb.append(fistGivenName);
               }
             }
             else {
-              sb.append(gn);
+              if(initializeGivenNames) {
+                sb.append(gn.charAt(0));
+                sb.append('.');
+              }
+              else {
+                sb.append(gn);
+              }
               break;
             }
           }
@@ -119,7 +130,7 @@ public abstract class CitationUtils {
     
     StringBuffer sb = new StringBuffer(1024);
     
-    handleAuthors(ci, sb);
+    handleAuthors(ci, sb, true);
     
     // publication date
     synchronized(dateFormat) {
@@ -178,7 +189,7 @@ public abstract class CitationUtils {
     StringBuffer sb = new StringBuffer(1024);
     
     // authors
-    handleAuthors(ci, sb);
+    handleAuthors(ci, sb, true);
 
     // comment post date
     sb.append(" (");
@@ -198,7 +209,7 @@ public abstract class CitationUtils {
     sb.append(": ");
     
     // annotation URI
-    sb.append("http://dx.doi.org");
+    sb.append("http://dx.plos.org");
     sb.append(StringUtils.replace(wa.getId(), "info:doi", ""));
 
     return sb.toString();
