@@ -116,7 +116,7 @@
                 <a href="#">${hit.title}</a>
               </#if>
             </span>       
-            <span class="authors"> <!-- hitScore: ${hit.hitScore} --> ${hit.creator}</span>
+            <span class="authors"> <!-- hitScore: ${hit.hitScore} --> ${hit.creator!""}</span>
             <span class="cite">${hit.highlight}</span>
           </li>
         </#list>
