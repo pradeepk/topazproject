@@ -74,7 +74,9 @@
         <interceptor-ref name="model-driven"/>
         <interceptor-ref name="fileUpload"/>
         <interceptor-ref name="static-params"/>
-        <interceptor-ref name="params"/>
+        <interceptor-ref name="params">
+          <param name="excludeParams">ticket</param>
+        </interceptor-ref>
         <interceptor-ref name="conversionError"/>
         <interceptor-ref name="validation">
           <param name="excludeMethods">input,back,cancel,browse</param>
