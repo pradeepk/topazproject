@@ -16,11 +16,25 @@
     <dependency>
       <groupId>owlapi</groupId>
       <artifactId>apibinding</artifactId>
+      <version>2.1.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>antlr-runtime</groupId>
+          <artifactId>antlr-runtime</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+      <version>3.0</version>
     </dependency>
 
     <dependency>
       <groupId>owlapi</groupId>
       <artifactId>api</artifactId>
+      <version>2.1.1</version>
     </dependency>
 
     <dependency>
