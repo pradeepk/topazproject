@@ -30,7 +30,7 @@
   <!-- begin : primary content area -->
   <div class="content">
     <h1>Advanced Search</h1>
-    <#assign currentJournalName = Request[freemarker_config.journalContextAttributeKey].journal />
+    <#assign currentJournalName = freemarker_config.getDisplayName(journalContext) />
     <p>Search the full text of all issues of <em>${currentJournalName}</em></p>
     <@s.url id="advSearchURL" includeParams="none" namespace="/search" action="advancedSearch" />
     <form id="advSearchForm" name="advSearchForm" onsubmit="return true;" action="${advSearchURL}" 
