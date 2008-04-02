@@ -76,7 +76,7 @@
       <!-- default values used if no virtual journal rules match -->
       <default>
         <journal>PLoSONE</journal>
-        <description>PLoSONE</description>
+        <description>PLoS ONE</description> <!-- should be == to article xml <journal-title> -->
         <mappingPrefix></mappingPrefix>
         <url>http://plosone...</url>
       </default>
