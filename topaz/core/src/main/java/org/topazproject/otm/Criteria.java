@@ -176,7 +176,8 @@ public class Criteria implements Parameterizable<Criteria> {
   /**
    * Whether this entity of this criteria is the parent or child of the association
    *
-   * @return 
+   * @return true if the association points from this criteria's entity to that of the parent
+   *         criteria; false if the other way around
    */
   public boolean isReferrer() {
     return isReferrer;

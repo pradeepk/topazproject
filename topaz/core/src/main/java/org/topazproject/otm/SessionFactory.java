@@ -76,7 +76,7 @@ public interface SessionFactory {
    *
    * @param name the name of the definition.
    *
-   * @returns the definition or null
+   * @return the definition or null
    */
   public Definition getDefinition(String name);
 
@@ -156,7 +156,7 @@ public interface SessionFactory {
    *
    * @throws OtmException on an error
    *
-   * @Deprecated exists only to support the RdfBuilder
+   * @deprecated exists only to support the RdfBuilder
    */
   public void setClassMetadata(ClassMetadata cm) throws OtmException;
 

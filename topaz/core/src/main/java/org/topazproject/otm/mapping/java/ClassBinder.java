@@ -23,7 +23,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.EntityBinder;
 
 /**
- * Binds an entity to an {@link org.topazproject.otm.EntityMode.POJO} specific implementation.
+ * Binds an entity to an {@link org.topazproject.otm.EntityMode#POJO} specific implementation.
  *
  * @author Pradeep Krishnan
  *

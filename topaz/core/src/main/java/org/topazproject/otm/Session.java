@@ -313,7 +313,7 @@ public interface Session {
   /**
    * Creates the 'criteria' for retrieving a set of objects for an entity.
    *
-   * @param clazz the class
+   * @param entity the entity
    *
    * @return a newly created Criteria object
    *

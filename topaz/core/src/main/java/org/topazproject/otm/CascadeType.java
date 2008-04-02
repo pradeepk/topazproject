@@ -38,7 +38,7 @@ public enum CascadeType {
    *
    * @param e the CascadeType to test
    *
-   * @return
+   * @return true if this implies <var>e</var>
    */
   public boolean implies(CascadeType e) {
     return e.equals(this);
