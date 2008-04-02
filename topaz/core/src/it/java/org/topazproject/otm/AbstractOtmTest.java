@@ -58,6 +58,10 @@ import org.topazproject.otm.stores.SimpleBlobStore;
 public abstract class AbstractOtmTest {
   private static final Log log = LogFactory.getLog(AbstractOtmTest.class);
 
+  /**
+   * Used to ensure that all test classes get different models so as to avoid
+   * conflicts when tests from different classes are interleaved by testng.
+   */
   private static int modelCnt = 1;
 
   /**
