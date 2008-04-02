@@ -33,7 +33,7 @@ public class CASFilterWrapper extends CASFilter {
     final Map<String, String> params = new HashMap<String, String>(6);
 
     final InitParamProvider initParamProvider = new InitParamProvider(){
-      public Enumeration getInitParameterNames() {
+      public Enumeration<?> getInitParameterNames() {
         return filterConfig.getInitParameterNames();
       }
       public String getInitParameter(final String key) {
