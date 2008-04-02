@@ -84,6 +84,25 @@ topaz.corrections = {
   },//apply
 
   /**
+   * truncateFcText
+   *
+   * Truncates the comment of formal correction 
+   * suitable for display in the formal correction header.
+   *
+   * @param etc The formal correction escaped truncated comment as a string 
+   *            with expected format of: "<p>{markup}</p>"
+   * @return String of HTML markup (suitable for innerHTML) 
+   */
+  truncateFcText: function(etc) {
+    if(!etc) return "";
+    // currently we grab the first paragraph
+    var node = document.createElement('span');
+    node.innerHTML = etc;
+    node = node.childNodes[0];
+    return '<p>' + topaz.domUtil.findTextNode(node,true).nodeValue + '</p>';
+  },
+
+  /**
    * _toLi
    *
    * Creates an html li element for the given formal correction 
@@ -94,7 +113,7 @@ topaz.corrections = {
    */
   _toLi: function(fc) {
     var li = document.createElement('li');
-    li.innerHTML = fc.escapedTruncatedComment;
+    li.innerHTML = this.truncateFcText(fc.escapedTruncatedComment);
     var p = li.firstChild;
     var tn = p.firstChild;
     tn.nodeValue = tn.nodeValue + ' (';
