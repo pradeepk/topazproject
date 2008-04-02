@@ -39,8 +39,6 @@ private static final String OUT_LOC_P = 'output-loc'
 
 log = LogFactory.getLog(this.getClass())
 
-// Use ToolHelper (currently in wrong place -- article-util) to patch args
-args = ToolHelper.fixArgs(args)
 
 def cli = new CliBuilder(
   usage: 'validateArticleZip [-c config-overrides.xml] [-t file:/tmp] -f file:/tmp/article.zip')
@@ -48,6 +46,8 @@ cli.h(longOpt:'help', "help (this message)")
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz.xml')
 cli.t(args:1, 'file:/tmp - location of tmp dir')
 cli.f(args:1, 'file:/tmp/article.zip - article.zip')
+
+args = ToolHelper.fixArgs(args)
 
 def opt = cli.parse(args);
 
