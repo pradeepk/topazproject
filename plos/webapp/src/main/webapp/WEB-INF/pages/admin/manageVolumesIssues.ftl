@@ -89,12 +89,13 @@
                   <#if volume.image?exists>
                     <@s.url id="volumeImage" action="fetchObject" namespace="/article"
                       uri="${volume.image}.g001" representation="PNG_S" includeParams="none"/>
+                      
                     <#assign altText="Volume Image" />
                   <#else>
                     <@s.url id="volumeImage" value="" />
                     <#assign altText="Submit (Volume Image null)" />
                   </#if>
-                  <@s.submit type="image" value="${altText}" src="${volumeImage}"/>
+                  <input type="image" value="${altText}" src="${volumeImage}" alt="${altText}" height=50/>
                 </td>
                 <td align="center">
                   <@s.checkbox name="aggregationToDelete" fieldValue="${volume.id}"/>
@@ -183,7 +184,7 @@
                   <@s.url id="issueImage" value="" />
                   <#assign altText="Submit (Issue Image null)" />
                 </#if>
-                <@s.submit type="image" value="${altText}" src="${issueImage}"/>
+                <input type="image" value="${altText}" src="${issueImage}" alt="${altText}" height=50/>
               </td>
               <td align="center">
                 <@s.checkbox name="aggregationToDelete" fieldValue="${issue.id}"/>
