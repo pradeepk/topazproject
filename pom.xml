@@ -555,6 +555,7 @@
 
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.2</version>
         <configuration>
           <!-- <sourcepath>${project.build.directory}/generated-sources</sourcepath> -->
           <linksource>true</linksource>
