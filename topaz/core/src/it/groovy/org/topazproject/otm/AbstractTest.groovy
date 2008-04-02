@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Common superclass for integration tests.
  */
-public class AbstractTest extends GroovyTestCase {
+public abstract class AbstractTest extends GroovyTestCase {
   private static final Log log = LogFactory.getLog(AbstractTest.class);
 
   def rdf;
