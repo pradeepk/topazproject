@@ -15,8 +15,8 @@ import java.net.URL;
 import java.text.ParseException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +40,10 @@ import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.models.Citation;
+import org.plos.models.DublinCore;
+import org.plos.models.License;
 import org.plos.models.ObjectInfo;
+import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -52,6 +55,7 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
+import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * Provide Article "services" via OTM.
@@ -373,12 +377,6 @@ public class ArticleOtmService {
       Article article = (Article) it.next();
       try {
         pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
-
-        // Force some more things to be loaded via the OTM
-        Citation bc = article.getDublinCore().getBibliographicCitation();
-        if (bc != null)
-          for (UserProfile profile: bc.getAuthors())
-            profile.getRealName();
       } catch (SecurityException se) {
         it.remove();
         if (log.isDebugEnabled())
@@ -386,6 +384,10 @@ public class ArticleOtmService {
                     + " from Article list due to PEP SecurityException", se);
       }
     }
+
+    // TODO: touch all of the Article to force OTM to resolve references,
+    // needed for cache Serialization, avoid lazy loading issues in webapp usage.
+    for (Article article : articleList) {  getAllArticle(article); }
 
     return articleList;
   }
@@ -428,7 +430,7 @@ public class ArticleOtmService {
    * Get an Article by URI.
    *
    * NOTE: Use FetchArticleService.getArticleInfo() instead of method since it caches
-   * the Article. Also - ensure that the cache is cleared if the data you want to access is updated. 
+   * the Article. Also - ensure that the cache is cleared if the data you want to access is updated.
    *
    * @param uri URI of Article to get.
    * @return Article with specified URI or null if not found.
@@ -457,6 +459,9 @@ public class ArticleOtmService {
     if (article == null)
       throw new NoSuchArticleIdException(uri.toString());
 
+    // TODO: touch all of the Article to force OTM to resolve references,
+    // needed for cache Serialization, avoid lazy loading issues in webapp usage.
+    getAllArticle(article);
     return article;
   }
 
@@ -673,6 +678,171 @@ public class ArticleOtmService {
       if (log.isDebugEnabled())
         log.debug("failed to parse date '" + date + "' use Date - trying iso8601 format", iae);
       return parseDate(date);
+    }
+  }
+
+  private static void getAllArticle(Article article) {
+
+    if (article == null) { return; }
+
+    iterateAll(article.getArticleType());
+    if (article.getCategories() != null) {
+      for (Category category : article.getCategories()) { getAllCategory(category); }
+    }
+    if (article.getParts() != null) {
+      for (ObjectInfo objectInfo : article.getParts()) { getAllObjectInfo(objectInfo); }
+    }
+    if (article.getRelatedArticles() != null) {
+      for (RelatedArticle relatedArticle : article.getRelatedArticles()) {
+        getAllRelatedArticle(relatedArticle);
+      }
+    }
+    getAllObjectInfo((ObjectInfo) article);
+  }
+
+  private static void getAllObjectInfo(ObjectInfo objectInfo) {
+
+    if (objectInfo == null) { return; }
+
+    objectInfo.getContextElement();
+    objectInfo.getData();
+    getAllDublinCore(objectInfo.getDublinCore());
+    objectInfo.getEIssn();
+    objectInfo.getId();
+    // skip objectInfo.getIsPartOf(), avoid recursing into self Article
+    getAllObjectInfo(objectInfo.getNextObject());
+    objectInfo.getPid();
+    iterateAll(objectInfo.getRepresentations());
+    objectInfo.getState();
+  }
+
+  private static void getAllRelatedArticle(RelatedArticle relatedArticle) {
+
+    if (relatedArticle == null) { return; }
+
+    relatedArticle.getArticle();
+    relatedArticle.getId();
+    relatedArticle.getRelationType();
+  }
+
+  private static void getAllDublinCore(DublinCore dublinCore) {
+
+    if (dublinCore == null) { return; }
+
+    dublinCore.getAccepted();
+    dublinCore.getAvailable();
+    getAllCitation(dublinCore.getBibliographicCitation());
+    dublinCore.getConformsTo();
+    iterateAll(dublinCore.getContributors());
+    dublinCore.getCopyrightYear();
+    dublinCore.getCreated();
+    iterateAll(dublinCore.getCreators());
+    dublinCore.getDate();
+    dublinCore.getDescription();
+    dublinCore.getFormat();
+    dublinCore.getIdentifier();
+    dublinCore.getIssued();
+    dublinCore.getLanguage();
+    if (dublinCore.getLicense() != null) {
+      for (License license : dublinCore.getLicense()) { getAllLicense(license); }
+    }
+    dublinCore.getModified();
+    dublinCore.getPublisher();
+    if (dublinCore.getReferences() != null) {
+      for (Citation citation : dublinCore.getReferences()) { getAllCitation(citation); }
+    }
+    dublinCore.getSource();
+    iterateAll(dublinCore.getSubjects());
+    dublinCore.getSubmitted();
+    iterateAll(dublinCore.getSummary());
+    dublinCore.getTitle();
+    dublinCore.getType();
+  }
+
+  private static void getAllCategory(Category category) {
+
+    if (category == null) { return; }
+
+    category.getId();
+    category.getMainCategory();
+    category.getPid();
+    category.getState();
+    category.getSubCategory();
+  }
+
+  private static void getAllCitation(Citation citation) {
+
+    if (citation == null) { return; }
+
+    if (citation.getAuthors() != null) {
+      for (UserProfile userProfile : citation.getAuthors()) { getAllUserProfile(userProfile); }
+    }
+    iterateAll(citation.getAuthorsRealNames());
+    citation.getCitationType();
+    citation.getDisplayYear();
+    if (citation.getEditors() != null) {
+      for (UserProfile userProfile : citation.getEditors()) { getAllUserProfile(userProfile); }
+    }
+    citation.getId();
+    citation.getIssue();
+    citation.getJournal();
+    citation.getKey();
+    citation.getMonth();
+    citation.getNote();
+    citation.getPages();
+    citation.getPublisherLocation();
+    citation.getPublisherName();
+    citation.getSummary();
+    citation.getTitle();
+    citation.getUrl();
+    citation.getVolume();
+    citation.getVolumeNumber();
+    citation.getYear();
+  }
+
+  private static void getAllUserProfile(UserProfile userProfile) {
+
+    if (userProfile == null) { return; }
+
+    userProfile.getBiography();
+    userProfile.getBiographyText();
+    userProfile.getCity();
+    userProfile.getCountry();
+    userProfile.getDisplayName();
+    userProfile.getEmail();
+    userProfile.getEmailAsString();
+    userProfile.getGender();
+    userProfile.getGivenNames();
+    userProfile.getHomePage();
+    userProfile.getId();
+    iterateAll(userProfile.getInterests());
+    userProfile.getInterestsText();
+    userProfile.getOrganizationName();
+    userProfile.getOrganizationType();
+    userProfile.getPositionType();
+    userProfile.getPostalAddress();
+    userProfile.getPublications();
+    userProfile.getRealName();
+    userProfile.getResearchAreasText();
+    userProfile.getSurnames();
+    userProfile.getTitle();
+    userProfile.getWeblog();
+  }
+
+  private static void getAllLicense(License license) {
+
+    if (license == null) { return; }
+
+    license.getId();
+  }
+
+  private static void iterateAll(Collection collection) {
+
+    if (collection == null) { return; }
+
+    Iterator iterator = collection.iterator();
+    while (iterator.hasNext()) {
+      iterator.next();
     }
   }
 }
