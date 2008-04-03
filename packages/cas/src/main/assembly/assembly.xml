@@ -8,7 +8,7 @@
 
   <fileSets>
     <fileSet>
-      <directory>${project.bug_workaround.build.directory}/${ecqs-tomcat}/webapps/cas</directory>
+      <directory>${project.build.directory}/${ecqs-tomcat}/webapps/cas</directory>
       <outputDirectory>/webapps/cas</outputDirectory>
       <excludes>
         <exclude>WEB-INF/LoggerConf.xml</exclude>
@@ -46,9 +46,10 @@
 
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/webapps/</outputDirectory>
-      <outputFileNameMapping>plos-registration</outputFileNameMapping>
+      <outputDirectory>/webapps/plos-registration</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.plos:plos-registration-webapp</include>
       </includes>
@@ -57,6 +58,7 @@
       <outputDirectory>/</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.topazproject.packages:*</include>
       </includes>

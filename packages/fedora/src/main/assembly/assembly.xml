@@ -10,6 +10,7 @@
       <outputDirectory>/</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.topazproject:fedora</include>
       </includes>
@@ -17,7 +18,6 @@
         <exclude>info.fedora:*</exclude>
       </excludes>
       <unpackOptions>
-        <!-- Note: these don't work (yet) -->
         <excludes>
           <exclude>META-INF/**</exclude>
           <exclude>fedora-2.1.1/client/demo/**</exclude>
