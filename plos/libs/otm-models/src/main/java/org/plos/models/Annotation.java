@@ -131,4 +131,15 @@ public abstract class Annotation extends Annotea implements Serializable {
   public void setId(URI id) {
     this.id = id;
   }
+
+  /**
+   * Human friendly string for display and debugging.
+   *
+   * @return String for human consumption.
+   */
+  public String toString() {
+    return "Annotation: {"
+            + "id: " + getId()
+            + ", " + super.toString() + "}";
+  }
 }
