@@ -779,7 +779,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (comment == null) { return; }
 
-    // comment.getBody();
+    comment.getBody();
     // comment.getType();
 
     getAllAnnotation((Annotation) comment);
@@ -789,7 +789,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (correction == null) { return; }
 
-    // correction.getBody();
+    correction.getBody();
 
     getAllAnnotation((Annotation) correction);
   }
@@ -798,7 +798,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (trackback == null) { return; }
 
-    // trackback.getBlog_name();
+    trackback.getBlog_name();
     getAllTrackbackContent(trackback.getBody());
     // trackback.getExcerpt();
     // trackback.getTitle();
@@ -811,7 +811,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (trackbackContent == null) { return; }
 
-    // trackbackContent.getBlog_name();
+    trackbackContent.getBlog_name();
     // trackbackContent.getExcerpt();
     // trackbackContent.getId();
     // trackbackContent.getTitle();
@@ -822,7 +822,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (annotation == null) { return; }
 
-    // annotation.getAnnotates();
+    annotation.getAnnotates();
     // annotation.getContext();
     // annotation.getId();
     getAllAnnotation(annotation.getSupersededBy());
@@ -835,7 +835,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     if (annotea == null) { return; }
 
-    // annotea.getAnonymousCreator();
+    annotea.getAnonymousCreator();
     // annotea.getCreated();
     // annotea.getCreator();
     // annotea.getId();

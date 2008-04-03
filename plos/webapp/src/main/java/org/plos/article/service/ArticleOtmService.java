@@ -707,7 +707,7 @@ public class ArticleOtmService {
 
     if (article == null) { return; }
 
-    // iterateAll(article.getArticleType());
+    iterateAll(article.getArticleType());
     if (article.getCategories() != null) {
       for (Category category : article.getCategories()) { getAllCategory(category); }
     }
@@ -726,7 +726,7 @@ public class ArticleOtmService {
 
     if (objectInfo == null) { return; }
 
-    // objectInfo.getContextElement();
+    objectInfo.getContextElement();
     // objectInfo.getData();
     getAllDublinCore(objectInfo.getDublinCore());
     // objectInfo.getEIssn();
@@ -742,7 +742,7 @@ public class ArticleOtmService {
 
     if (relatedArticle == null) { return; }
 
-    // relatedArticle.getArticle();
+    relatedArticle.getArticle();
     // relatedArticle.getId();
     // relatedArticle.getRelationType();
   }
@@ -751,7 +751,7 @@ public class ArticleOtmService {
 
     if (dublinCore == null) { return; }
 
-    // dublinCore.getAccepted();
+    dublinCore.getAccepted();
     // dublinCore.getAvailable();
     getAllCitation(dublinCore.getBibliographicCitation());
     // dublinCore.getConformsTo();
@@ -785,7 +785,7 @@ public class ArticleOtmService {
 
     if (category == null) { return; }
 
-    // category.getId();
+    category.getId();
     // category.getMainCategory();
     // category.getPid();
     // category.getState();
@@ -799,7 +799,7 @@ public class ArticleOtmService {
     if (citation.getAuthors() != null) {
       for (UserProfile userProfile : citation.getAuthors()) { getAllUserProfile(userProfile); }
     }
-    // iterateAll(citation.getAuthorsRealNames());
+    iterateAll(citation.getAuthorsRealNames());
     // citation.getCitationType();
     // citation.getDisplayYear();
     if (citation.getEditors() != null) {
@@ -826,7 +826,7 @@ public class ArticleOtmService {
 
     if (userProfile == null) { return; }
 
-    // userProfile.getBiography();
+    userProfile.getBiography();
     // userProfile.getBiographyText();
     // userProfile.getCity();
     // userProfile.getCountry();
@@ -855,7 +855,7 @@ public class ArticleOtmService {
 
     if (license == null) { return; }
 
-    // license.getId();
+    license.getId();
   }
 
   private static void iterateAll(Collection collection) {
