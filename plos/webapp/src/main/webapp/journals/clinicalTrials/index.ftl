@@ -11,8 +11,8 @@
         <!-- begin : col 2 -->
           <div class="col last">
           <!-- SWT removed horizontalTabs -->
+            <p style="position:relative; zoom:1; font-size:0.9em; margin: 25px 0 0px; padding:3px 10px; border:1px dashed red; background-color:#ffc;"><strong>Note to our readers:</strong> We apologize for the recent slowness and intermittent downtime for this journal website. Please bear with us as we work to improve the website performance and stability. <a href="http://www.plos.org/cms/node/334">More information</a></p>
             <div id="info" class="block">
- 		  <p style="position:relative; zoom:1; font-size:0.9em; margin: 25px 0 0px; padding:3px 10px; border:1px dashed red; background-color:#ffc;"><strong>Note to our readers:</strong> We apologize for the recent slowness and intermittent downtime for this journal website. Please bear with us as we work to improve the website performance and stability. <a href="http://www.plos.org/cms/node/334">More information</a></p>
              <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
               <h2>What is the PLoS Hub for Clinical Trials?</h2>
               <p>The PLoS Hub for Clinical Trials collects PLoS journal articles that relate to clinical trials. The Hub is a site for researchers to share their views and build a dynamic, interactive community.</p>
@@ -28,7 +28,7 @@
             </div>
             <div id="rss">
               <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/>
-		<a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><span><strong>Subscribe</strong>
+              <a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><span><strong>Subscribe</strong>
               Subscribe to the clinical trials RSS content feed</span></a>
               <a href="${rssinfo}" class="adInfo">What is RSS?</a>
             </div>
@@ -36,12 +36,10 @@
             <div class="block recent">
               <h2>Recently Added Clinical Trials</h2>
               <ul class="articles">    
-               	<@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001779"/>	
-                <@s.url id="article2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001665"/>
-               	<@s.url id="article3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001610"/>
-               	<@s.url id="article4" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001630"/>
-
-  		
+              <@s.url id="article1" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001779"/>	
+              <@s.url id="article2" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001665"/>
+              <@s.url id="article3" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001610"/>
+              <@s.url id="article4" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001630"/>
                 <li><@s.a href="%{article1}" title="Read Open Access Article">
 				Open-Label Comparative Clinical Study of Chlorproguanil−Dapsone Fixed Dose Combination (Lapdap<sup>TM</sup>) Alone or with Three Different Doses of Artesunate for Uncomplicated <em>Plasmodium falciparum</em> Malaria
 				</@s.a></li>
@@ -54,7 +52,7 @@
                <li><@s.a href="%{article4}" title="Read Open Access Article">
 				Safety and Efficacy of Methylene Blue Combined with Artesunate or Amodiaquine for Uncomplicated Falciparum Malaria: A Randomized Controlled Trial from Burkina Faso
 				</@s.a></li>
-				</ul>
+				      </ul>
             </div><!-- end : block recent -->
             <!-- begin : browse widget block -->
             <div id="browseWidget" class="block">
@@ -93,8 +91,8 @@
             <div class="block">
               <@s.url action="commentGuidelines" anchor="note" namespace="/static" includeParams="none" id="note"/>
               <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
-              <h3>Join the Community</h3>
-              <p><a href="${freemarker_config.registrationURL}" title="Register">Register now</a> and share your views on clinical trials research. Only registrants can <a href="${rating}" title="Rating Guidelines">rate</a>, <a href="${discussion}" title="Learn how to start a discussion">discuss</a> and <a href="${annotation}" title="Learn how to add an annotation">annotate</a> articles in the Hub.</p>
+ 	              <h3>Join the Community</h3>
+                <p><a href="${freemarker_config.registrationURL}" title="Register">Register now</a> and share your views on clinical trials research. Only registrants can add <a href="${note}" title="Guidelines for Notes, Comments, and Corrections">Notes, Comments</a>, and <a href="${rating}" title="Guidelines for Rating">Ratings</a> to articles in the Hub.</p>
             </div>
             <div class="block">
               <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
@@ -147,22 +145,6 @@
             </script><noscript><a href='http://ads.plos.org/adclick.php?n=a6f9fd36' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:186&#38;source=PHUBCT&#38;n=a6f9fd36' border='0' alt=''></a></noscript>
             </div>
             <!-- end : advocacy blocks -->
-            <!--<div class="block">
-              <h3>Highlights From Other Open Access Journals</h3>
-              <p>Links to relevant content that is not currently in the Hub. We will be adding content in coming months.</p>
-              <dl class="category">
-                <dt><em>PLoS Medicine</em></dt>
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050045">Initial Severity and Antidepressant Benefits: A Meta-Analysis of Data Submitted to the Food and Drug Administration</a></dd>
-                <dd><a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0050006">Could an Open-Source Clinical Trial Data-Management System Be What We Have All Been Looking For</a></dd>	
-                 <dt><em>Trials</em></dt>
-                <dd><a href="http://www.trialsjournal.com/content/9/1/12">What constitutes a "clinical trial"?: A survey of oncology professionals</a></dd>
-				<dt><em>Open Medicine</em></dt>
-				<dd><a href="http://www.openmedicine.ca/article/view/153/106">Toward a definition of pharmaceutical innovation</a></dd>
-				<dt><em>CMAJ</em></dt>
-				<dd><a href="http://www.cmaj.ca/cgi/content/full/178/5/576">
-The efficacy and safety of intensive statin therapy: a meta-analysis of randomized trials </a></dd>              
-              </dl>
-            </div>-->
             <div class="block">
               <h3>From the Web</h3>
               <p>Encouraging Transparency in Research Reporting: Register now for <a href="#">EQUATOR Network Launch Meeting</a>.</p>
