@@ -9,21 +9,14 @@
  */
 package org.plos.search.service;
 
-import org.plos.ApplicationException;
-import org.plos.search.SearchResultPage;
-import org.plos.user.PlosOneUser;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.spring.OtmTransactionManager;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
-import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Service to provide search capabilities for the application
@@ -39,7 +32,6 @@ public class SearchService {
 
   private SearchWebService           searchWebService;
   private FetchArticleService        fetchArticleService;
-  private OtmTransactionManager      txManager;
 
   /**
    * Find the results for a given query.
@@ -86,10 +78,5 @@ public class SearchService {
    */
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
     this.fetchArticleService = fetchArticleService;
-  }
-
-  @Required
-  public void setTxManager(OtmTransactionManager txManager) {
-    this.txManager = txManager;
   }
 }
