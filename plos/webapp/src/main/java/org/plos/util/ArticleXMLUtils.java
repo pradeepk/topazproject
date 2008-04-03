@@ -44,6 +44,8 @@ import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.configuration.ConfigurationStore;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import org.w3c.dom.Document;
@@ -65,13 +67,15 @@ public class ArticleXMLUtils {
 
   private static final Log log = LogFactory.getLog(ArticleXMLUtils.class);
 
-  private Templates translet;
   private File xslTemplate;
   private DocumentBuilderFactory factory;
   private ArticleOtmService articleService;
   private String articleRep;
   private Map<String, String> xmlFactoryProperty;
-  private Templates objInfoXsltTemplate; // Initialized from the objInfo.xsl template
+
+  // designed for Singleton use, Templates are threadsafe
+  private static Templates objInfoXsltTemplate;  // initialized from objInfo.xsl template
+  private static Templates translet;             // initialized from xslTemplate, per bean property
 
   /**
    * Initialization method called by Spring
@@ -163,11 +167,14 @@ public class ArticleXMLUtils {
   }
   
   private Transformer getTranslet() throws TransformerException, FileNotFoundException {
-    if (null == translet) {
-      // Instantiate the TransformerFactory, and use it with a StreamSource
-      // XSL stylesheet to create a translet as a Templates object.
-      final TransformerFactory tFactory = TransformerFactory.newInstance();
-      translet = tFactory.newTemplates(new StreamSource(xslTemplate));
+    // synchronize test/creation block for translet (Template)
+    synchronized(translet) {
+      if (null == translet) {
+        // Instantiate the TransformerFactory, and use it with a StreamSource
+        // XSL stylesheet to create a translet as a Templates object.
+        final TransformerFactory tFactory = TransformerFactory.newInstance();
+        translet = tFactory.newTemplates(new StreamSource(xslTemplate));
+      }
     }
 
     // For each thread, instantiate a new Transformer, and perform the
@@ -198,6 +205,7 @@ public class ArticleXMLUtils {
    *
    * @param xslTemplate The xslTemplate to set.
    */
+  @Required
   public void setXslTemplate(String xslTemplate)  throws URISyntaxException {
     File file = getAsFile(xslTemplate);
     if (!file.exists()) {
@@ -298,15 +306,18 @@ public class ArticleXMLUtils {
    * @throws FileNotFoundException FileNotFoundException
    */
   public Transformer getSecondaryObjectTranslet() throws ApplicationException, TransformerException, FileNotFoundException, URISyntaxException {
-    if (objInfoXsltTemplate == null) {
-      // Instantiate the TransformerFactory, and use it with a StreamSource
-      // XSL stylesheet to create a translet as a Templates object.
-      final TransformerFactory tFactory = TransformerFactory.newInstance();
-      final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate", "/objInfo.xsl"));
-      if (resource == null) {
-        throw new ApplicationException("Failed to get stylesheet");
+    // synchronize test/creation block for objInfoXsltTemplate (Template)
+    synchronized(objInfoXsltTemplate) {
+      if (objInfoXsltTemplate == null) {
+        // Instantiate the TransformerFactory, and use it with a StreamSource
+        // XSL stylesheet to create a translet as a Templates object.
+        final TransformerFactory tFactory = TransformerFactory.newInstance();
+        final URL resource = getClass().getResource(System.getProperty("secondaryObjectXslTemplate", "/objInfo.xsl"));
+        if (resource == null) {
+          throw new ApplicationException("Failed to get stylesheet");
+        }
+        objInfoXsltTemplate = tFactory.newTemplates(new StreamSource(new File(resource.toURI())));
       }
-      objInfoXsltTemplate = tFactory.newTemplates(new StreamSource(new File(resource.toURI())));
     }
 
     // For each thread, instantiate a new Transformer, and perform the
