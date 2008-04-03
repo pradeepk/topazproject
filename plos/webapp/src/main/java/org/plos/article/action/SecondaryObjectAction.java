@@ -32,9 +32,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
   private ArticleXMLUtils secondaryObjectService;
   private static final Log log = LogFactory.getLog(SecondaryObjectAction.class);
 
-  private static final String FIGURE_CONTEXT = "fig";
-  private static final String TABLE_CONTEXT = "table-wrap";
-
+  @Override
   public String execute() throws Exception {
     try {
       secondaryObjects = articleOtmService.listSecondaryObjects(uri);
@@ -55,46 +53,42 @@ public class SecondaryObjectAction extends BaseActionSupport {
 
   public String listFiguresAndTables() throws Exception {
     try {
-      secondaryObjects = articleOtmService.listSecondaryObjects(uri);
+      secondaryObjects = articleOtmService.listFiguresTables(uri);
       ArrayList<SecondaryObject> figTables = new ArrayList<SecondaryObject>(secondaryObjects.length);
-      String contextElem;
       String allTransformed;
       String[] elems;
       StringBuilder desc;
       String doi;
 
       for (SecondaryObject s: secondaryObjects) {
-        contextElem = s.getContextElement();
-        if (FIGURE_CONTEXT.equals(contextElem) || TABLE_CONTEXT.equals(contextElem)) {
-          figTables.add(s);
-          try {
-            allTransformed = secondaryObjectService.getTranformedDocument(s.getDescription());
-            if (log.isDebugEnabled()){
-              log.debug("Transformed figure captions for article: " + uri);
-              log.debug(allTransformed);
-            }
-            elems = allTransformed.split("END_TITLE");
-            desc = new StringBuilder();
-            doi = s.getDoi();
-            if (elems.length > 1) {
-              s.setTransformedCaptionTitle(elems[0]);
-              s.setPlainCaptionTitle(elems[0].replaceAll("<.*>",""));
-              desc.append(elems[1]);
-              if ((doi != null) && (doi.length() > 0)) {
-                desc.append("doi:").append(doi);
-              }
-              s.setTransformedDescription(desc.toString());
-            } else if (elems.length == 1) {
-              desc.append(elems[0]);
-              if ((doi != null) && (doi.length() > 0)) {
-                desc.append("doi:").append(doi);
-              }
-              s.setTransformedDescription(desc.toString());
-            }
-          } catch (Exception e) {
-            log.warn("Could not transform description for Object: " + getUri(), e);
-            s.setTransformedDescription(s.getDescription());
+        figTables.add(s);
+        try {
+          allTransformed = secondaryObjectService.getTranformedDocument(s.getDescription());
+          if (log.isDebugEnabled()){
+            log.debug("Transformed figure captions for article: " + uri);
+            log.debug(allTransformed);
           }
+          elems = allTransformed.split("END_TITLE");
+          desc = new StringBuilder();
+          doi = s.getDoi();
+          if (elems.length > 1) {
+            s.setTransformedCaptionTitle(elems[0]);
+            s.setPlainCaptionTitle(elems[0].replaceAll("<.*>",""));
+            desc.append(elems[1]);
+            if ((doi != null) && (doi.length() > 0)) {
+              desc.append("doi:").append(doi);
+            }
+            s.setTransformedDescription(desc.toString());
+          } else if (elems.length == 1) {
+            desc.append(elems[0]);
+            if ((doi != null) && (doi.length() > 0)) {
+              desc.append("doi:").append(doi);
+            }
+            s.setTransformedDescription(desc.toString());
+          }
+        } catch (Exception e) {
+          log.warn("Could not transform description for Object: " + getUri(), e);
+          s.setTransformedDescription(s.getDescription());
         }
       }
       secondaryObjects = figTables.toArray(new SecondaryObject[figTables.size()]);

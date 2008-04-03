@@ -16,6 +16,8 @@ import java.text.ParseException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
+
+import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +48,7 @@ import org.plos.models.License;
 import org.plos.models.ObjectInfo;
 import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
+import org.plos.util.CacheAdminHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -68,6 +73,7 @@ public class ArticleOtmService {
   private ArticlePEP     pep;
   private Session        session;
   private JournalService jrnlSvc;
+  private Ehcache        articleAnnotationCache;
 
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
 
@@ -563,6 +569,63 @@ public class ArticleOtmService {
     });
   }
 
+  /**
+   * Return a list of Figures and Tables in DOI order.
+   *
+   * @param article DOI.
+   * @return Figures and Tables for the article in DOI order.
+   * @throws NoSuchArticleIdException NoSuchArticleIdException.
+   */
+  public SecondaryObject[] listFiguresTables(final String article) throws NoSuchArticleIdException {
+
+    final String FIGURE_CONTEXT = "fig";
+    final String TABLE_CONTEXT = "table-wrap";
+
+    pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
+
+    // do cache aware lookup
+    final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern();  // lock @ Article
+    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+      FetchArticleService.ARTICLE_FIGURESTABLE_KEY + article, -1, lock, "figuresTables",
+      new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
+        public SecondaryObject[] lookup() throws NoSuchArticleIdException {
+          return TransactionHelper.doInTxE(session,
+            new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
+              public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
+                
+                Disjunction figuresTables = Restrictions.disjunction();
+                figuresTables.add(Restrictions.eq("contextElement", FIGURE_CONTEXT))
+                        .add(Restrictions.eq("contextElement", TABLE_CONTEXT));
+                
+                List<ObjectInfo> sorted = tx.getSession().createCriteria(ObjectInfo.class)
+                        .add(Restrictions.eq("isPartOf", article))
+                        .add(figuresTables)
+                        .addOrder(Order.asc("id"))
+                        .list();
+                
+                if (log.isDebugEnabled()) {
+                  log.debug("list of figures and tables for " + article + ":" + sorted);
+                }
+                
+                // TODO: why sort it again?
+                Collections.sort(sorted, new Comparator<ObjectInfo>() {
+                  public int compare(ObjectInfo arg0, ObjectInfo arg1) {
+                    return arg0.getId().compareTo((arg1.getId()));
+                  }
+                });
+
+                if (log.isDebugEnabled()) {
+                  log.debug("*post sort*: list of figures and tables for " + article + ":" + sorted);
+                }
+
+                // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
+                return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
+              }
+          });
+        }
+    });
+  }
+
   private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
     if (objectInfos == null) {
       return null;
@@ -728,6 +791,15 @@ public class ArticleOtmService {
   @Required
   public void setJournalService(JournalService service) {
     this.jrnlSvc = service;
+  }
+
+  /**
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
+   */
+  @Required
+  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**
