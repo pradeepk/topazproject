@@ -8,7 +8,7 @@
     <div id="issueImage">
       <div id="thumbnail">
       
-        <@s.url id="currentIssueURL" action="browseIssue" namespace="/journals/ntd/article"
+        <@s.url id="currentIssueURL" action="browseIssue" namespace="/article"
                 issue="${currentIssue.id}" includeParams="none"/>
 <#if currentIssue.imageArticle?exists>
         <@s.url id="currentIssueImgURL" action="fetchObject" namespace="/article" 
@@ -42,7 +42,7 @@
       <div class="plosTabPane" id="Vol_${volNum}">
         <#assign issueNum = 1/>
         <#list volumeInfo.issueInfos as issueInfo>
-          <@s.url id="issueURL" action="browseIssue" namespace="/journals/ntd/article"
+          <@s.url id="issueURL" action="browseIssue" namespace="/article"
                   issue="${issueInfo.id}" includeParams="none"/>
           <div class="thumbnail">
 <#if issueInfo.imageArticle?exists>
