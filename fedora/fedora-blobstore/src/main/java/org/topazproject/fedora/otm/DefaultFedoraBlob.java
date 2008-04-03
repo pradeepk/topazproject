@@ -225,7 +225,6 @@ public class DefaultFedoraBlob implements FedoraBlob {
    * inherited javadoc
    */
   public byte[] get(FedoraConnection con) throws OtmException {
-    FedoraAPIM apim   = con.getAPIM();
     Datastream stream = getDatastream(con);
 
     if (stream == null)

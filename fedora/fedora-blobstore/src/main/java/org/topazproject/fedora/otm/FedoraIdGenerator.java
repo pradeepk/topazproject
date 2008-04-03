@@ -9,8 +9,6 @@
  */
 package org.topazproject.fedora.otm;
 
-import javax.transaction.xa.XAException;
-
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;

@@ -181,7 +181,6 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
   public FedoraBlob toBlob(ClassMetadata cm, String blobId)
                     throws OtmException {
     FedoraBlobFactory bf   = mostSpecificBlobFactory(blobId);
-    FedoraBlob        blob;
 
     if (bf == null)
       throw new OtmException("Can't find a blob factory for " + blobId);
