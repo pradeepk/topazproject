@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 
 /** 

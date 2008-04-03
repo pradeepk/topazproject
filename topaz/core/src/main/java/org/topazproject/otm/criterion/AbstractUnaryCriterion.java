@@ -11,8 +11,6 @@ package org.topazproject.otm.criterion;
 
 import java.net.URI;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;

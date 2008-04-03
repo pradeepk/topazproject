@@ -2,7 +2,6 @@ package org.plos.article.action;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleInfoMostRecentDateComparator;
@@ -17,11 +16,11 @@ public class TOCArticleGroup {
   ArrayList<ArticleInfo> articles = new ArrayList<ArticleInfo>();
   private String id = null;
   private String heading = null;
-  
+
   public TOCArticleGroup(ArticleType type) {
     this.type = type;
   }
-  
+
   /**
    * The heading displayed for this article group. 
    *
@@ -36,7 +35,7 @@ public class TOCArticleGroup {
       return "Undefined";
     }
   }
-  
+
   public void setHeading(String h) {
     heading = h;
   }
@@ -49,7 +48,7 @@ public class TOCArticleGroup {
   public void setId(String i) {
     this.id = i;
   }
-  
+
   public String getId() {
     if (id != null) {
       return id;
@@ -57,7 +56,7 @@ public class TOCArticleGroup {
       return "id_"+getHeading();
     }
   }
-  
+
   public void addArticle(ArticleInfo article) {
     articles.add(article);
   }
@@ -65,7 +64,7 @@ public class TOCArticleGroup {
   public ArticleType getArticleType() {
     return type;
   }
-  
+
   public ArrayList<ArticleInfo> getArticles() {
     return articles;
   }

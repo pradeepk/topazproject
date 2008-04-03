@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * This service allows client code to operate on ratings objects.

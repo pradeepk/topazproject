@@ -37,7 +37,6 @@ import org.plos.article.util.IngestException;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
-import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.Zip;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
@@ -59,7 +58,6 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * Provide Article "services" via OTM.

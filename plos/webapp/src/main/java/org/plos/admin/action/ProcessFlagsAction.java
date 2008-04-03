@@ -16,7 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.service.AnnotationService;
-import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyWebService;
 import org.plos.annotation.service.ReplyInfo;

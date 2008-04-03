@@ -11,7 +11,6 @@ package org.topazproject.otm.owl;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
@@ -22,14 +21,12 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.io.OWLXMLOntologyFormat;
 import org.semanticweb.owl.io.RDFXMLOntologyFormat;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
@@ -39,10 +36,8 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataRange;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLException;
-import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyFormat;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.vocab.XSDVocabulary;
 

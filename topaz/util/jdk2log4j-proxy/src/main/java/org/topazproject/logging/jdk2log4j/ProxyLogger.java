@@ -48,7 +48,7 @@ import org.apache.log4j.spi.LocationInfo;
  *
  * @author Eric Brown
  */
-public class ProxyLogger extends java.util.logging.Logger {
+public class ProxyLogger extends Logger {
   /**
    * The log4j logger we're proxying to.
    */
@@ -118,10 +118,11 @@ public class ProxyLogger extends java.util.logging.Logger {
     super(log4jLogger.getName(), null);
     this.log4jLogger = log4jLogger;
     this.setLevel(Level.ALL); // We decide this based on log4j level, NOT jdk level
-    
+
     /* If we want to be most efficient and don't care about any log4j configuration changes
      * or initialization order dependencies, setting a fixed level here would offer the
      * greates performance:
+     *
      *   this.setLevel(getJdkLevel(log4jLogger.getEffectiveLevel()));
      */
   }

@@ -27,8 +27,6 @@ import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyInfo;
 import org.plos.annotation.service.ReplyWebService;
-import org.plos.models.FormalCorrection;
-import org.plos.models.MinorCorrection;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
 

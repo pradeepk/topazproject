@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
-import org.plos.model.article.ArticleType;
 
 /**
  * ImageResizeService resizes images and converts them to PNG format for articles

@@ -12,7 +12,6 @@ package org.topazproject.otm.criterion;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
-import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.mapping.RdfMapper;

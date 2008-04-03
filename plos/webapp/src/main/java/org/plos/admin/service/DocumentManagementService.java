@@ -48,8 +48,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.ehcache.Ehcache;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 

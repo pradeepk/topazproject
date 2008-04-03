@@ -10,7 +10,6 @@
 
 package org.plos.admin.action;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 import org.apache.commons.logging.Log;
@@ -18,7 +17,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.admin.service.DocumentManagementService;
 import org.plos.admin.service.FlagManagementService;
-import org.plos.ApplicationException;
 
 public class BaseAdminActionSupport  extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(BaseAdminActionSupport.class);

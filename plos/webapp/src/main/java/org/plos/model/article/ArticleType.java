@@ -18,12 +18,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.SortedMap;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.plos.configuration.ConfigurationStore;
-import org.plos.models.PLoS;
 
 @SuppressWarnings("serial")
 public class ArticleType implements Serializable {

@@ -18,11 +18,8 @@ import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.model.article.ArticleInfo;
 import org.plos.models.Article;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -38,20 +35,20 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * @author Alex Worden
  */
 public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
-  
+
   protected final Log log = LogFactory.getLog(this.getClass());
 
   private String target;
   private Commentary[] commentary;
   private Article article;
   private FetchArticleService fetchArticleService;
-  
+
   /**
    * @return Simple presentation worthy description 
    * of this implementation's use case.
    */
   protected abstract String useCaseDescriptor();
-  
+
   /**
    * Provides the use case specific array of {@link WebAnnotation}s 
    * for which commentary is provided.

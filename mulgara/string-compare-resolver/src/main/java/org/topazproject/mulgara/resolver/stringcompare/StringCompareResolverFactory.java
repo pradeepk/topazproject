@@ -12,8 +12,6 @@ package org.topazproject.mulgara.resolver.stringcompare;
 
 import java.net.URI;
 
-import org.apache.log4j.Logger;
-
 import org.mulgara.query.rdf.URIReferenceImpl;
 import org.mulgara.resolver.spi.InitializerException;
 import org.mulgara.resolver.spi.Resolver;

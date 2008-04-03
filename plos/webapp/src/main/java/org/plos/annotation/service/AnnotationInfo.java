@@ -21,10 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.models.Annotation;
 import org.plos.models.Annotea;
 import org.plos.models.ArticleAnnotation;
-import org.plos.models.Comment;
-import org.plos.models.FormalCorrection;
-import org.plos.models.MinorCorrection;
-import org.plos.models.Rating;
 
 /**
  * Annotation meta-data - compatible with topaz annotation ws.

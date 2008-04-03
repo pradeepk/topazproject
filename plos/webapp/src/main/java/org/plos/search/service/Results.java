@@ -13,15 +13,12 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
-import org.topazproject.otm.Session;
-import org.topazproject.otm.OtmException;
 import org.topazproject.otm.spring.OtmTransactionManager;
 
 import java.security.Guard;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
-import java.security.Guard;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -214,10 +211,10 @@ public class Results {
     public void checkGuard(Object object) throws SecurityException {
       SearchHit hit = (SearchHit) object;
       final String uri = hit.getPid();
-      
+
       // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
       pep.checkAccess(SearchPEP.READ_METADATA, URI.create(uri));
-      
+
       // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
       try {
         Article article = fetchArticleService.getArticleInfo(uri);

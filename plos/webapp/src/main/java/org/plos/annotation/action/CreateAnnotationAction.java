@@ -17,7 +17,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.Context;
 import org.plos.annotation.ContextFormatter;
-import org.plos.annotation.service.AnnotationService;
 import org.plos.util.ProfanityCheckingService;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -42,7 +41,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
 
   private ProfanityCheckingService profanityCheckingService;
   private static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
-  
+
   /**
    * {@inheritDoc}
    * Also does some profanity check for commentTitle and comment before creating the annotation.

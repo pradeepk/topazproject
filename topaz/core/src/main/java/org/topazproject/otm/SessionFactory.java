@@ -21,7 +21,6 @@ import javax.transaction.TransactionManager;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.metadata.ClassBindings;
-import org.topazproject.otm.metadata.ClassDefinition;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;

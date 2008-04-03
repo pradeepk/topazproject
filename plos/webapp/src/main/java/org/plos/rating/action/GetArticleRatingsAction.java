@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.service.FetchArticleService;
 import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Rating;

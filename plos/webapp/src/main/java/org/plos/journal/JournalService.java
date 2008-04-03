@@ -10,7 +10,6 @@
 
 package org.plos.journal;
 
-import java.lang.reflect.Method;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
