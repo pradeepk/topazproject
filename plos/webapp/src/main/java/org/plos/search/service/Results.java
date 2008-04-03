@@ -9,34 +9,36 @@
  */
 package org.plos.search.service;
 
-import org.plos.search.SearchResultPage;
-import org.plos.search.SearchUtil;
-
-import org.plos.xacml.AbstractSimplePEP;
-import org.plos.xacml.XacmlUtil;
 import com.sun.xacml.ParsingException;
-import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.PDP;
+import com.sun.xacml.UnknownIdentifierException;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.spring.OtmTransactionManager;
 
 import java.security.Guard;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Iterator;
+import java.net.URI;
+import java.security.Guard;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.io.IOException;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.ApplicationException;
+import org.plos.article.service.FetchArticleService;
 import org.plos.configuration.ConfigurationStore;
-import org.apache.commons.configuration.Configuration;
+import org.plos.models.Article;
+import org.plos.search.SearchResultPage;
+import org.plos.search.SearchUtil;
+import org.plos.xacml.AbstractSimplePEP;
+import org.plos.xacml.XacmlUtil;
 
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionStatus;
@@ -53,20 +55,22 @@ public class Results {
   private static final Log           log  = LogFactory.getLog(Results.class);
   private SearchPEP                  pep;
   private SearchWebService           service;
+  private FetchArticleService        fetchArticleService;
   private CachingIterator            cache;
   private String                     query;
   private int                        totalHits = 0;
-  private Session                    otmSession;
   private OtmTransactionManager      txManager;
 
   /**
    * Construct a search Results object.
    *
-   * @param query    the lucene query to build the search results for.
-   * @param service  the fedoragsearch service
+   * @param query               the lucene query to build the search results for.
+   * @param service             the fedoragsearch service
+   * @param fetchArticleService the FetchArticleService.
    */
-  public Results(String query, SearchWebService service) {
+  public Results(String query, SearchWebService service, FetchArticleService fetchArticleService) {
     this.service  = service;
+    this.fetchArticleService = fetchArticleService;
     this.query    = query;
     this.cache    = new CachingIterator(new GuardedIterator(new HitIterator(), new HitGuard()));
     try {
@@ -81,18 +85,13 @@ public class Results {
    *
    * @param startPage the page number to return (starts with 0)
    * @param pageSize  the number of entries to return
-   * @param otmSession the current otm session
    * @param txManager  the current otm transaction manager
    * @return The results for one page of a search.
    * @throws UndeclaredThrowableException if there was a problem retrieving the search results.
    *         It likely wraps a RemoteException (talking to the search webapp) or an IOException
    *         parsing the results.
    */
-  public SearchResultPage getPage(int startPage, int pageSize, Session otmSession,
-                                  OtmTransactionManager txManager) {
-    // Stash the otmSession so we can use it in the HitGuard
-    this.otmSession = otmSession;
-    this.txManager  = txManager;
+  public SearchResultPage getPage(int startPage, int pageSize) {
 
     ArrayList<SearchHit> hits = new ArrayList<SearchHit>(pageSize);
     int                  cnt  = 0; // Actual number of hits retrieved
@@ -114,15 +113,11 @@ public class Results {
   }
 
   /**
-   * @param otmSession the current otm session
    * @param txManager  the current otm transaction manager
    * @return The total number of records lucene thinks we have. This may be inaccurate if
    *         XACML filters any out.
    */
-  public int getTotalHits(Session otmSession, OtmTransactionManager txManager) {
-    // Stash the otmSession so we can use it in the HitGuard
-    this.otmSession = otmSession;
-    this.txManager  = txManager;
+  public int getTotalHits() {
 
     cache.hasNext(); // Read at least one record to populate totalHits instance variable
     return totalHits;
@@ -217,26 +212,20 @@ public class Results {
    */
   private class HitGuard implements Guard {
     public void checkGuard(Object object) throws SecurityException {
-      SearchHit    hit = (SearchHit) object;
+      SearchHit hit = (SearchHit) object;
       final String uri = hit.getPid();
-
+      
+      // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
+      pep.checkAccess(SearchPEP.READ_METADATA, URI.create(uri));
+      
+      // verify that Aricle exists, is accessible by user, is in Journal, etc., be cache aware
       try {
-        // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
-        pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
-
-        // Verify otm returns one record...
-        if (!otmSession.createQuery("select a.id from Article a where a.id = :id;")
-             .setParameter("id", uri).execute().next())
+        Article article = fetchArticleService.getArticleInfo(uri);
+        if (article == null) {
           throw new SecurityException("Article '" + uri + "' not in current journal");
-
-        if (log.isDebugEnabled())
-          log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
-      } catch (OtmException oe) {
-        throw (SecurityException)
-          new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
-      } catch (URISyntaxException us) {
-        throw (SecurityException)
-          new SecurityException("HitGuard: Unable to create URI '" + uri + "'").initCause(us);
+        }
+      } catch (ApplicationException ae) {
+        throw new SecurityException(ae);
       }
     }
   }
