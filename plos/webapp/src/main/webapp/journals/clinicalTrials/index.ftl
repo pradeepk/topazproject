@@ -11,7 +11,7 @@
         <!-- begin : col 2 -->
           <div class="col last">
           <!-- SWT removed horizontalTabs -->
-            <div id="new" class="block">
+            <div id="info" class="block">
  		  <p style="position:relative; zoom:1; font-size:0.9em; margin: 25px 0 0px; padding:3px 10px; border:1px dashed red; background-color:#ffc;"><strong>Note to our readers:</strong> We apologize for the recent slowness and intermittent downtime for this journal website. Please bear with us as we work to improve the website performance and stability. <a href="http://www.plos.org/cms/node/334">More information</a></p>
              <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
               <h2>What is the PLoS Hub for Clinical Trials?</h2>
@@ -61,24 +61,49 @@
               <p>Browse Clinical Trials Articles: <a href="${browseSubjectURL}">By Subject</a> or <a href="${browseDateURL}">By Publication Date</a></p>
             </div>
             <!-- end : browse block -->
+            <!-- begin : other block -->
+            <div class="other block">
+              <h2>Highlights From Other Open Access Journals</h2>
+              <div class="section">
+                <h3><a href="http://www.plosmedicine.org/"><em>PLoS Medicine</em></a></h3>
+                <ul class="articles">
+                  <li><a href="#" title="Read Open Access Article">Observational Research, Randomised Trials, and Two Views of Medical Science</a></li>
+                </ul>
+              </div>
+              <div class="section">
+                <h3><a href="#"><em>BMJ</em></a></h3>
+                <ul class="articles">
+                  <li><a href="#" title="Read Open Access Article">A legal framework for drug safety</a></li>
+                  <li><a href="#" title="Read Open Access Article">Empirical evidence of bias in treatment effect estimates in controlled trials with different interventions and outcomes: meta-epidemiological study</a></li>
+                </ul>
+              </div>
+              <div class="section lastSection">
+                <h3><a href="#"><em>Open Medicine</em></a></h3>
+                <ul class="articles">
+                  <li><a href="#" title="Read Open Access Article">Toward a definition of pharmaceutical innovation</a></li>
+                </ul>
+              </div>
+            </div><!-- end : other block -->
           </div><!-- end : col last -->
         </div><!-- end : wrapper for cols 1 & 2 -->
         <!-- begin : wrapper for cols 3 & 4 -->
         <div id="second" class="col">
           <!-- begin : col 3 -->
           <div class="subcol first">
-            <div class="info block">
+            <div class="block">
               <@s.url action="commentGuidelines" anchor="note" namespace="/static" includeParams="none" id="note"/>
               <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rating"/>
-              <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
               <h3>Join the Community</h3>
-              <p><a href="${freemarker_config.registrationURL}" title="Register">Register now</a> and share your views on clinical trials research. Only registrants can add <a href="${note}" title="Guidelines for Notes, Comments, and Corrections">Notes, Comments</a>, and <a href="${rating}" title="Guidelines for Rating">Ratings</a> to articles in the Hub.</p>
-			  <h3>Submit Your Work</h3>
+              <p><a href="${freemarker_config.registrationURL}" title="Register">Register now</a> and share your views on clinical trials research. Only registrants can <a href="${rating}" title="Rating Guidelines">rate</a>, <a href="${discussion}" title="Learn how to start a discussion">discuss</a> and <a href="${annotation}" title="Learn how to add an annotation">annotate</a> articles in the Hub.</p>
+            </div>
+            <div class="block">
+              <@s.url action="checklist" namespace="/static" includeParams="none" id="checklist"/>
+              <h3>Submit Your Work</h3>
               <p>PLoS is committed to publishing the results of all clinical trials, regardless of outcome, and making this essential information freely and publicly available. <a href="${checklist}" title="Submission Info">Find out how to submit your work</a>.</p>
-            </div><!-- end : info block -->
+            </div><!-- end : block -->
             <!-- begin : advocacy blocks -->
-            <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-			<script language='JavaScript' type='text/javascript'>
+            <div id="adWrap">
+            <script language='JavaScript' type='text/javascript'>
             <!--
                if (!document.phpAds_used) document.phpAds_used = ',';
                phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
@@ -120,8 +145,9 @@
                document.write ("'><" + "/script>");
             //-->
             </script><noscript><a href='http://ads.plos.org/adclick.php?n=a6f9fd36' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:186&#38;source=PHUBCT&#38;n=a6f9fd36' border='0' alt=''></a></noscript>
+            </div>
             <!-- end : advocacy blocks -->
-            <div class="info block">
+            <!--<div class="block">
               <h3>Highlights From Other Open Access Journals</h3>
               <p>Links to relevant content that is not currently in the Hub. We will be adding content in coming months.</p>
               <dl class="category">
@@ -136,11 +162,13 @@
 				<dd><a href="http://www.cmaj.ca/cgi/content/full/178/5/576">
 The efficacy and safety of intensive statin therapy: a meta-analysis of randomized trials </a></dd>              
               </dl>
+            </div>-->
+            <div class="block">
               <h3>From the Web</h3>
-			  <p>Encouraging Transparency in Research Reporting: Register now for <a href="http://www.equator-network.org/index.aspx?o=1113">EQUATOR Network Launch Meeting</a>.</p>
-			  <p>UK Medicines and Healthcare Products Regulatory Agency <a href="http://www.mhra.gov.uk/Howweregulate/Medicines/Medicinesregulatorynews/CON014153">concludes investigation</a> into GlaxoSmithKline.</p>
+              <p>Encouraging Transparency in Research Reporting: Register now for <a href="#">EQUATOR Network Launch Meeting</a>.</p>
+              <p>UK Medicines and Healthcare Products Regulatory Agency <a href="#">concludes investigation</a> into GlaxoSmithKline.</p>
             </div><!-- end : info block -->
-           </div><!-- end : subcol first -->
+          </div><!-- end : subcol first -->
           <!-- end : col 3 -->
           <!-- begin : col 4 -->
           <div class="subcol last">
