@@ -252,12 +252,12 @@
       <dependency>
         <groupId>org.mulgara</groupId>
         <artifactId>mulgara</artifactId>
-        <version>1.2-SNAPSHOT</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>org.mulgara</groupId>
         <artifactId>driver</artifactId>
-        <version>1.2-SNAPSHOT</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>info.fedora</groupId>
