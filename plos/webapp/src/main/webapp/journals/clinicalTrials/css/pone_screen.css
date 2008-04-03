@@ -352,7 +352,10 @@ div.content h5 { font-size: 1em; color: #333; margin-bottom:0; }
 
 div.content h5	{ margin:0 0.5em 0 0; }
 html>body div.content h5	{ float:left; } /* float allow headers to display inline with following paragraph except for IE6 */
-div.content h5+div { clear:left; }
+div.content h5+div,
+div.content h5+ol,
+div.content h5+ul,
+div.content h5+dl { clear:left; }
 div.content h5+p	{ margin-top:0; }
 
 div.content ul,
