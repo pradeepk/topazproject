@@ -1146,12 +1146,10 @@ Make article meta data
   <xsl:for-each select="front/article-meta">
     <xsl:apply-templates select="title-group" mode="front"/>
 <!--    <xsl:variable name="matchto" select="author"/>-->
-    <p class="authors" xpathLocation="noSelect">
-      <!--
-      <xsl:call-template name="makeXpathLocation">
+    <p class="authors">
+      <xsl:call-template name="makeXpathLocation" >
         <xsl:with-param name="node" select="."/>
       </xsl:call-template>
-      -->
       <xsl:for-each select="contrib-group/contrib[@contrib-type='author']">
         <xsl:choose>
           <xsl:when test="@xlink:href">
@@ -1181,12 +1179,10 @@ Make article meta data
                              mode="front"/>
       </xsl:for-each> <!-- end of contrib -->
     </p>
-    <p class="affiliations" xpathLocation="noSelect">
-      <!--
+    <p class="affiliations">
       <xsl:call-template name="makeXpathLocation" >
         <xsl:with-param name="node" select="."/>
       </xsl:call-template>
-      -->
       <xsl:for-each select="contrib-group/aff | contrib-group/contrib[@contrib-type='author']/aff">
         <xsl:apply-templates select="label"/>
         <xsl:if test="label">
@@ -1895,9 +1891,9 @@ Make article meta data
 <xsl:template match="inline-graphic">
   <xsl:element name="img">
     <xsl:if test="@xlink:href">
-    <xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-    <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
-    <xsl:attribute name="border">0</xsl:attribute>
+      <xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
+      <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+      <xsl:attribute name="border">0</xsl:attribute>
     </xsl:if>
   </xsl:element>
 </xsl:template>
@@ -2680,12 +2676,10 @@ Make article meta data
 </xsl:template>
 
 <xsl:template match="article-title" mode="front">
-  <h1 xpathLocation="noSelect">
-  	<!--
+  <h1>
   	<xsl:call-template name="makeXpathLocation" >
       <xsl:with-param name="node" select="."/>
 	</xsl:call-template>
-	-->
     <xsl:apply-templates/>
   </h1>
   <xsl:call-template name="nl-1"/>
@@ -3897,12 +3891,10 @@ Make article meta data
   <ol class="references" xpathLocation="noSelect">
     <xsl:for-each select="ref">
     <xsl:sort data-type="number" select="label"/>
-      <li xpathLocation="noSelect">
-      	<!--
+      <li>
         <xsl:call-template name="makeElementXpathLocation" >
           <xsl:with-param name="node" select="."/>
         </xsl:call-template>
-        -->
         <a>
           <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
           <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>

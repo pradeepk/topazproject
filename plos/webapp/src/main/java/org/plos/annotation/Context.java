@@ -85,4 +85,21 @@ public class Context {
   public void setTarget(String target) {
     this.target = target;
   }
+  
+  @Override
+  public String toString() {
+    StringBuffer sb = new StringBuffer(512);
+    sb.append("START[path:");
+    sb.append(startPath);
+    sb.append(", offset:");
+    sb.append(startOffset);
+    sb.append("] END[");
+    sb.append(endPath);
+    sb.append(", offset:");
+    sb.append(endOffset);
+    sb.append("] (target:");
+    sb.append(target);
+    sb.append(')');
+    return sb.toString();
+  }
 }
