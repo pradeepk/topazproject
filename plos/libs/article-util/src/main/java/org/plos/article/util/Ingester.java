@@ -11,8 +11,8 @@ package org.plos.article.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
@@ -41,27 +40,29 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.Controller;
-import net.sf.saxon.TransformerFactoryImpl;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.configuration.ConfigurationStore;
-import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.fedora.client.Uploader;
-import org.topazproject.fedoragsearch.service.FgsOperations;
-import org.topazproject.otm.ModelConfig;
-import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
-import org.topazproject.xml.transform.cache.CachedSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import org.plos.configuration.ConfigurationStore;
+import org.topazproject.fedora.client.Uploader;
+import org.topazproject.fedora.client.FedoraAPIM;
+
+import org.topazproject.xml.transform.cache.CachedSource;
+import org.topazproject.fedoragsearch.service.FgsOperations;
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
+
+import net.sf.saxon.Controller;
+import net.sf.saxon.TransformerFactoryImpl;
 
 /**
  * The article ingestor.
@@ -83,17 +84,14 @@ public class Ingester {
   private static final String DATASTREAM   = "Datastream";
   private static final String DS_CONTLOC_A = "contLoc";
   private static final String DS_ID_A      = "id";
-  /*
   private static final String DS_ST_A      = "state";
   private static final String DS_CGRP_A    = "controlGroup";
   private static final String DS_MIME_A    = "mimeType";
   private static final String DS_LBL_A     = "label";
   private static final String DS_ALTID_A   = "altIds";
   private static final String DS_FMT_A     = "formatUri";
-  private static final String DSCRPTN      = "Description";
-  */
   private static final String RDF          = "RDF";
-  
+  private static final String DSCRPTN      = "Description";
   private static final String RDFNS        = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
   private static final String RDF_MDL_A    = "model";
 
@@ -129,19 +127,17 @@ public class Ingester {
    * Ingest a new article.
    *
    * @param zip  the zip archive containing the article and it's related objects
-   * @param exclude ZipEntry name exclusion Pattern
    * @return the URI of the new article
    * @throws DuplicateArticleIdException if an article or other object already exists with any
    *                                     of the URI's specified in the zip
    * @throws IngestException if there's any other problem ingesting the article
-   * @see Zip2Xml#describeZip(Zip, Pattern)
    */
-  public String ingest(Zip zip, Pattern exclude) throws DuplicateArticleIdException, IngestException {
+  public String ingest(Zip zip) throws DuplicateArticleIdException, IngestException {
     File tmpDir = createTempDir();
 
     try {
       // get zip info
-      String zipInfo = Zip2Xml.describeZip(zip, exclude);
+      String zipInfo = Zip2Xml.describeZip(zip);
       if (log.isDebugEnabled())
         log.debug("Extracted zip-description: " + zipInfo);
 
@@ -625,7 +621,6 @@ public class Ingester {
       this.zip = zip;
     }
 
-    @Override
     public Source resolve(String href, String base) throws TransformerException {
       if (log.isDebugEnabled())
         log.debug("resolving: base='" + base + "', href='" + href + "'");

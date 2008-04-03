@@ -11,7 +11,6 @@ package org.plos.article.util;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.codec.binary.Base64;
@@ -60,14 +59,12 @@ public class Zip2Xml {
 
   /**
    * Generate a description of the given zip archive.
-   * @param zip the zip archive to describe
-   * @param exclude The ZipEntry name exclusion Pattern that is checked against
-   *        each {@link ZipEntry}'s name. May be <code>null</code>.
+   *
+   * @param zip  the zip archive to describe
    * @return the xml doc describing the archive (adheres to zip.dtd)
    * @throws IOException if an exception occurred reading the zip archive
    */
-  @SuppressWarnings("unchecked")
-  public static String describeZip(Zip zip, Pattern exclude) throws IOException {
+  public static String describeZip(Zip zip) throws IOException {
     StringBuffer res = new StringBuffer(500);
     res.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     res.append("<ZipInfo");
@@ -75,13 +72,10 @@ public class Zip2Xml {
       res.append(" name=\"").append(attrEscape(zip.getName())).append("\"");
     res.append(">\n");
 
-    Enumeration<? extends ZipEntry> entries = zip.getEntries();
+    Enumeration entries = zip.getEntries();
     while (entries.hasMoreElements()) {
-      ZipEntry ze = entries.nextElement();
-      String zen = ze.getName();
-      if(exclude != null && !exclude.matcher(zen).find()) {
-        entry2xml(ze, res);
-      }
+      ZipEntry ze = (ZipEntry) entries.nextElement();
+      entry2xml(ze, res);
     }
 
     res.append("</ZipInfo>\n");
