@@ -309,6 +309,22 @@ public class BrowseService {
   }
 
   /**
+   * Get a VolumeInfo for the given id
+   * 
+   * @param id
+   * @return
+   */
+  public VolumeInfo getVolumeInfo(URI id) {
+    List<URI> l = new ArrayList<URI>();
+    l.add(id);
+    List<VolumeInfo> vols = getVolumeInfos(l);
+    if (vols != null && vols.size() > 0) {
+      return vols.get(0);
+    }
+    return null;
+  }
+  
+  /**
    * Get VolumeInfos. Note that the IssueInfos contained in the volumes have not been instantiated
    * with the ArticleInfos. 
    *
