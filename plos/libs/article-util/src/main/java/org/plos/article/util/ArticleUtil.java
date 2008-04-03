@@ -11,6 +11,7 @@ package org.plos.article.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -215,7 +216,7 @@ public class ArticleUtil {
    * @throws IOException if there was a problem moving files back to the ingest queue
    * @throws ArticleDeleteException 
    */
-  public static void delete(String article, Transaction tx)
+  public static void delete(final String article, Transaction tx)
       throws NoSuchArticleIdException, RemoteException, IOException, ArticleDeleteException {
     try {
       log.debug("Deleting '" + article + "'");
@@ -234,16 +235,32 @@ public class ArticleUtil {
         log.info("'" + ingestedXmlFile + "' does not exist - cannot delete: " + fnfe);
       }
       if (!queueDir.equals(ingestedDir)) {
-        String fname = article.substring(25) + ".zip";
-        File fromFile = new File(ingestedDir, fname);
-        File toFile   = new File(queueDir,    fname);
-        log.debug("Copying '" + fromFile + "' to '" + toFile + "'");
+        // be flexible in finding the .zip file name,
+        // e.g. has it been ArticleZip.PROCESSED_FILENAME_PREFIX'd
+        String[] files = (new File(ingestedDir)).list(new FilenameFilter() {
+          public boolean accept(File dir, String name) {
+            return name.matches(".*" + article.substring(25) + ".*\\.zip");
+          }
+        });
+        if (files.length != 1) {
+          throw new IOException("Found inappropriate number of .zip files for Article: " + article
+                  + ", files: " + files);
+        }
+        File fromFile = new File(ingestedDir, files[0]);
+        File toFile   = new File(queueDir,files[0].startsWith(ArticleZip.PROCESSED_FILENAME_PREFIX)
+                ? files[0].substring(ArticleZip.PROCESSED_FILENAME_PREFIX.length())
+                : files[0]);
+        if (log.isDebugEnabled()) {
+          log.debug("Copying '" + fromFile + "' to '" + toFile + "'");
+        }
         try {
           FileUtils.copyFile(fromFile, toFile);
-          log.debug("Deleting '" + fromFile + "'");
+          if (log.isDebugEnabled()) {
+            log.debug("Deleting '" + fromFile + "'");
+          }
           FileUtils.forceDelete(fromFile);
         } catch (FileNotFoundException fnfe) {
-          log.info("Could not copy '" + fromFile + "' to '" + toFile + "': " + fnfe);
+          log.error("Could not copy '" + fromFile + "' to '" + toFile + "': " + fnfe);
         }
       }
     } catch (MalformedURLException e) {
