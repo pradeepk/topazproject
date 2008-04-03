@@ -110,10 +110,9 @@ public class DefaultFedoraBlob implements FedoraBlob {
     String     newPid = pid;
 
     try {
-      String     ref    = upld.upload(blob);
-      Datastream stream = getDatastream(con);
+      String ref = upld.upload(blob);
 
-      if (stream != null)
+      if (exists(con))
         apim.modifyDatastreamByReference(pid, dsId, null, getDatastreamLabel(), false,
                                          getContentType(), null, ref, "A", "updated", false);
       else
@@ -171,46 +170,60 @@ public class DefaultFedoraBlob implements FedoraBlob {
   }
 
   /**
+   * Checks the existence of this blob in Fedora.
+   *
+   * @param con the Fedora APIM stub to use
+   *
+   * @return true if it exists, false otherwise
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  protected boolean exists(FedoraConnection con) throws OtmException {
+    if (getDatastream(con) == null)
+      return false;
+
+    // XXX: Bug in Fedora. Check if the object really exists
+    URL location = con.getDatastreamLocation(pid, dsId);
+
+    try {
+      location.openStream().close();
+
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
    * Gets the data-stream meta object from Fedora.
    *
    * @param con the Fedora APIM stub to use
    *
    * @return the data-stream meta object
+   *
+   * @throws OtmException on an error
    */
-  protected Datastream getDatastream(FedoraConnection con) {
-    Datastream  stream;
-    InputStream in = null;
-
+  protected Datastream getDatastream(FedoraConnection con)
+                              throws OtmException {
     try {
-      stream = con.getAPIM().getDatastream(pid, dsId, null);
-
-      if (stream != null) {
-        // XXX: Bug in Fedora. Check if the object really exists
-        URL location = con.getDatastreamLocation(pid, dsId);
-        in = location.openStream();
-      }
+      return con.getAPIM().getDatastream(pid, dsId, null);
     } catch (Exception e) {
-      stream = null;
-    } finally {
-      try {
-        if (in != null)
-          in.close();
-      } catch (Throwable t) {
-      }
-    }
+      if ((e.getMessage().indexOf("Server.userException") < 0)
+           && (e.getMessage().indexOf("no path in db registry for") < 0))
+        throw new OtmException("Error while getting the data-stream to " + pid + "/" + dsId, e);
 
-    return stream;
+      return null;
+    }
   }
 
   /*
    * inherited javadoc
    */
   public void purge(FedoraConnection con) throws OtmException {
-    FedoraAPIM apim   = con.getAPIM();
-    Datastream stream = getDatastream(con);
+    FedoraAPIM apim = con.getAPIM();
 
     try {
-      if (stream != null) {
+      if (exists(con)) {
         apim.purgeObject(pid, "deleted", false);
 
         if (log.isDebugEnabled())
@@ -230,12 +243,23 @@ public class DefaultFedoraBlob implements FedoraBlob {
     if (stream == null)
       return null;
 
-    URL         location = con.getDatastreamLocation(pid, dsId);
     InputStream in       = null;
-    byte[]      buf;
+    URL         location = null;
 
     try {
-      in                 = location.openStream();
+      location   = con.getDatastreamLocation(pid, dsId);
+      in         = location.openStream();
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("Error while opening a stream to read from " + pid + "/" + dsId
+                  + ". According to Fedora the stream must exist - but most likeley was"
+                  + " purged recently. Treating this as if it was purged and does not exist.", e);
+
+      return null;
+    }
+
+    try {
+      byte[] buf;
 
       if (stream.getSize() != 0) {
         buf   = new byte[(int) stream.getSize()];
@@ -258,12 +282,15 @@ public class DefaultFedoraBlob implements FedoraBlob {
         log.debug("Got " + buf.length + " bytes from " + location);
 
       return buf;
-    } catch (IOException e) {
-      throw new OtmException("Get failed", e);
+    } catch (Exception e) {
+      throw new OtmException("Get failed on " + blobId, e);
     } finally {
       try {
-        in.close();
+        if (in != null)
+          in.close();
       } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Failed to close connection to " + location, t);
       }
     }
   }
