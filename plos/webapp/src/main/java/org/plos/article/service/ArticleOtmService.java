@@ -25,6 +25,8 @@ import java.util.Map;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
+import net.sf.ehcache.Ehcache;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
@@ -35,6 +37,7 @@ import org.plos.article.util.IngestException;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
+import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.Zip;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
@@ -45,6 +48,7 @@ import org.plos.models.License;
 import org.plos.models.ObjectInfo;
 import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
+import org.plos.util.CacheAdminHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -68,6 +72,7 @@ public class ArticleOtmService {
   private ArticlePEP     pep;
   private Session        session;
   private JournalService jrnlSvc;
+  private Ehcache        articleAnnotationCache;
 
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
 
@@ -456,14 +461,16 @@ public class ArticleOtmService {
     }
 
     Article article = session.get(Article.class, uri.toString());
-    if (article == null)
+    if (article == null) {
       throw new NoSuchArticleIdException(uri.toString());
-
+    }
+    
     // TODO: touch all of the Article to force OTM to resolve references,
     // needed for cache Serialization, avoid lazy loading issues in webapp usage.
     getAllArticle(article);
     return article;
   }
+
 
   /**
    * Return the list of secondary objects
@@ -471,26 +478,32 @@ public class ArticleOtmService {
    * @return the secondary objects of the article
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public SecondaryObject[] listSecondaryObjects(final String article)
-      throws NoSuchArticleIdException {
+  public SecondaryObject[] listSecondaryObjects(final String article) throws NoSuchArticleIdException {
+    
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
-
-    // get objects
-    Article art = session.get(Article.class, article);
-    if (art == null)
-      throw new NoSuchArticleIdException(article);
-
-    /* sort the object list.
-     *
-     * TODO: the list should be stored using RdfSeq or RdfList instead of this next-object hack
-     * so we can just use art.getParts()
-     */
-    List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
-    for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject())
-      sorted.add(oi);
-
-    // convert to SecondaryObject's. TODO: can't we just return ObjectInfo?
-    return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
+    
+    // do cache aware lookup
+    final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern(); // lock @ Article
+    return CacheAdminHelper
+        .getFromCacheE(articleAnnotationCache, FetchArticleService.ARTICLE_SECONDARY_KEY + article, -1, lock,
+                       "secondaryObjects",
+                       new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
+                         public SecondaryObject[] lookup() throws NoSuchArticleIdException {
+                           // get objects
+                           Article art = session.get(Article.class, article);
+                           if (art == null) {
+                             throw new NoSuchArticleIdException(article);
+                           }
+                           // TODO: Article.parts should be RdfSeq or RdfList, forced to walk
+                            // nextObject
+                           List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
+                           for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject()) {
+                             sorted.add(oi);
+                           }
+                           // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
+                           return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
+                         }
+                       });
   }
 
   private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
@@ -639,6 +652,15 @@ public class ArticleOtmService {
   @Required
   public void setJournalService(JournalService service) {
     this.jrnlSvc = service;
+  }
+
+  /**
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
+   */
+  @Required
+  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**

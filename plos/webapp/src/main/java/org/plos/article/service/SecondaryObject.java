@@ -9,16 +9,14 @@
  */
 package org.plos.article.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.Serializable;
 
 import org.plos.models.ObjectInfo;
 
 /**
  * Wrapper around topaz's ObjectInfo.
  */
-public class SecondaryObject {
-  private static final Log log = LogFactory.getLog(SecondaryObject.class);
+public class SecondaryObject implements Serializable {
 
   private final ObjectInfo objectInfo;
   private String repSmall;
@@ -28,6 +26,7 @@ public class SecondaryObject {
   private String transformedCaptionTitle;
   private String plainCaptionTitle;
 
+  static final long serialVersionUID = 7439718780407844715L;
 
   public SecondaryObject(final ObjectInfo objectInfo,
                          final String repSmall, final String repMedium, final String repLarge)  {
