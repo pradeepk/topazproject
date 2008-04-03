@@ -51,9 +51,8 @@ public abstract class BaseAnnotation {
     String comment = getComment();
     if (comment.length() > TRUNCATED_COMMENT_LENGTH) {
       return TextUtils.hyperlinkEnclosedWithPTags(comment.substring(0, TRUNCATED_COMMENT_LENGTH) + "...");
-    } else {
-      return TextUtils.hyperlinkEnclosedWithPTags(comment);
     }
+    return TextUtils.hyperlinkEnclosedWithPTags(comment);
   }
 
   /**
