@@ -132,15 +132,10 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
     HttpSession session = request.getSession(true);
     String      user    = (String) session.getAttribute(USER_KEY);
     String      authId  = getAuthenticatedUser(request);
-    String      current = (String) session.getAttribute(AUTH_KEY);
-    boolean     same    = (current == null) ? (authId == null) : current.equals(authId);
 
-
-    if ((user != null) && same) {
+    if ((user != null) && (authId == null)) {
       if (log.isDebugEnabled())
-        log.debug("Changed user to '" + user + "' using value found in session-id: "
-                  + session.getId());
-
+        log.debug("Existing user '" + user + "' found in session-id: " + session.getId());
       return user;
     }
 
