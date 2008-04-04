@@ -244,7 +244,12 @@ public class FetchArticleService {
             new CacheAdminHelper.EhcacheUpdaterE<Article, ApplicationException>() {
               public Article lookup() throws ApplicationException {
                 try {
-                  return articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
+                  Article article = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
+                  // don't cache nulls, e.g. journal filtered Articles.
+                  if (article == null) {
+                    throw new ApplicationException("null Article for: " + articleURI);
+                  }
+                  return article;
                 } catch (NoSuchArticleIdException nsaie) {
                   throw new ApplicationException(nsaie);
                 } catch (URISyntaxException use) {
