@@ -16,12 +16,12 @@ import java.net.URI;
  * @author jkirton
  */
 public class ImageProcessingException extends Exception {
-  
+
   private static final long serialVersionUID = 1989216981562835187L;
 
   private URI articleURI;
-  
-  public ImageProcessingException (final Throwable cause) {
+
+  public ImageProcessingException(final Throwable cause) {
     super(cause);
   }
 
@@ -29,7 +29,7 @@ public class ImageProcessingException extends Exception {
    * Constructor
    * @param message
    */
-  public ImageProcessingException (String message) {
+  public ImageProcessingException(String message) {
     super(message);
   }
 
@@ -38,8 +38,8 @@ public class ImageProcessingException extends Exception {
    * @param message
    * @param cause
    */
-  public ImageProcessingException (String message, Throwable cause) {
-    super (message, cause);
+  public ImageProcessingException(String message, Throwable cause) {
+    super(message, cause);
   }
 
   /**

@@ -9,6 +9,7 @@
  */
 package org.plos.admin.service;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,8 +20,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.plos.article.util.ArticleZip;
 import org.plos.article.util.ImageProcessingException;
 import org.plos.article.util.ImageSetConfig;
@@ -52,7 +51,7 @@ final class PreProcessedArticleImageProvider implements IProcessedArticleImagePr
       assert zf != null;
 
       // get the unique img token name
-      // url FORMAT: blah/[journal.|something?]{img file name w/o ext}/TIF 
+      // url FORMAT: blah/[journal.||something?]{img file name w/o ext}/TIF 
       String path = url.getPath(), imgTknNme;
       path = URLDecoder.decode(path, "UTF-8");
       int lindx = path.lastIndexOf('/');
@@ -67,23 +66,26 @@ final class PreProcessedArticleImageProvider implements IProcessedArticleImagePr
         ZipEntry ze = enm.nextElement();
         if (isMatch(imgTknNme, mimeType, ze)) {
           // found it
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          final long lsize = ze.getSize();
+          if(lsize > Integer.MAX_VALUE) {
+            // shouldn't happen but guard for it nonetheless
+            throw new Error("Encountered zip file entry whose size exceeds the max allowed for int type");
+          }
+          byte[] buf = new byte[(int) lsize];
           InputStream is = articleZip.getZipFile().getInputStream(ze);
           try {
-            IOUtils.copy(is, baos);
-          }
-          finally {
+            new DataInputStream(is).readFully(buf, 0, buf.length);
+          } finally {
             is.close();
           }
-          return new ProcessedPngImageDataSource(baos.toByteArray(), mimeType);
+          return new ProcessedPngImageDataSource(buf, mimeType);
         }
       }
     } catch (ZipException e) {
       throw new ImageProcessingException(e);
     } catch (IOException e) {
       throw new ImageProcessingException(e);
-    }
-    finally {
+    } finally {
       if (zf != null) {
         try {
           articleZip.close();
@@ -106,12 +108,12 @@ final class PreProcessedArticleImageProvider implements IProcessedArticleImagePr
    */
   private boolean isMatch(String imgTknNme, String mimeType, ZipEntry ze)
       throws ImageProcessingException {
-    
+
     String zen = ze.getName();
     assert zen != null && zen.length() > 4;
-    
-    if(zen.indexOf(imgTknNme) < 0) return false;
-    
+
+    if (zen.indexOf(imgTknNme) < 0) return false;
+
     String pfx;
     if ("PNG_S".equals(mimeType)) {
       pfx = "S_";
