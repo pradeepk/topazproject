@@ -50,7 +50,16 @@ public abstract class BaseAnnotation {
   public String getEscapedTruncatedComment() throws ApplicationException {
     String comment = getComment();
     if (comment.length() > TRUNCATED_COMMENT_LENGTH) {
-      return TextUtils.hyperlinkEnclosedWithPTags(comment.substring(0, TRUNCATED_COMMENT_LENGTH) + "...");
+      final String abrsfx = "...";
+      final int abrsfxlen = 3;
+      // attempt to truncate on a word boundary
+      int index = TRUNCATED_COMMENT_LENGTH - 1;
+      while(!Character.isWhitespace(comment.charAt(index)) || index > (TRUNCATED_COMMENT_LENGTH - abrsfxlen - 1)) {
+        if(--index == 0) break;
+      }
+      if(index == 0) index = TRUNCATED_COMMENT_LENGTH - abrsfxlen - 1;
+      comment = comment.substring(0, index) + abrsfx;
+      assert comment.length() <= TRUNCATED_COMMENT_LENGTH;
     }
     return TextUtils.hyperlinkEnclosedWithPTags(comment);
   }
