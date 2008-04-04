@@ -363,6 +363,10 @@
 		<typeHeading>Policy Forum</typeHeading>
 	</articleType>
 	<articleType>
+		<typeUri>http://rdf.plos.org/RDF/articleType/Guidelines%20and%20Guidance</typeUri>
+		<typeHeading>Guidelines and Guidance</typeHeading>
+	</articleType>
+	<articleType>
 		<typeUri>http://rdf.plos.org/RDF/articleType/Historical%20Profiles%20and%20Perspectives</typeUri>
 		<typeHeading>Historical Profiles and Perspectives</typeHeading>
 	</articleType>
