@@ -330,12 +330,12 @@
             <connector implementation="org.mortbay.jetty.security.SslSocketConnector">
               <port>10443</port>
               <maxIdleTime>300000</maxIdleTime>
-              <keystore>
-                ${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/server.ks
-              </keystore>
-              <password>secret</password>
-              <keyPassword>secret</keyPassword>
-            </connector>
+	      <keystore>
+ 	      	${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/server.ks
+ 	      </keystore>
+ 	      <password>secret</password>
+ 	      <keyPassword>secret</keyPassword>
+	    </connector>
             -->
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>8080</port>
