@@ -16,14 +16,16 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>/lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>*:jar</include>
       </includes>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/scripts</outputDirectory>
-      <unpack>true</unpack>
       <outputFileNameMapping></outputFileNameMapping>
+      <unpack>true</unpack>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.plosone:plosone-scripts:jar:scripts</include>
       </includes>
