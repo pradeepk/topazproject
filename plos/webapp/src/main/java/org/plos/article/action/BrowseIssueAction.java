@@ -72,7 +72,6 @@ public class BrowseIssueAction extends BaseActionSupport{
            */ 
           List<VolumeInfo> vols = browseService.getVolumeInfosForJournal(currentJournal);
           if (vols.size() > 0) {
-            Collections.reverse(vols);
             for (VolumeInfo volInfo : vols) {
               IssueInfo latestIssue = null;
               List<IssueInfo> issuesInVol = volInfo.getIssueInfos();
