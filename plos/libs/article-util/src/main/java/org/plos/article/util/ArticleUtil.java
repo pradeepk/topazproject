@@ -247,9 +247,7 @@ public class ArticleUtil {
                   + ", files: " + files);
         }
         File fromFile = new File(ingestedDir, files[0]);
-        File toFile   = new File(queueDir,files[0].startsWith(ArticleZip.PROCESSED_FILENAME_PREFIX)
-                ? files[0].substring(ArticleZip.PROCESSED_FILENAME_PREFIX.length())
-                : files[0]);
+        File toFile   = new File(queueDir,    files[0]);
         if (log.isDebugEnabled()) {
           log.debug("Copying '" + fromFile + "' to '" + toFile + "'");
         }
