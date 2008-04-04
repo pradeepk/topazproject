@@ -29,24 +29,25 @@
     <level value="info"/>
   </logger>
 
-  <!-- logs mapping of virtual journal action mapping, every Request -->
-  <logger name="org.plos.struts2.PlosOneActionMapper">
-    <level value="info"/>
+  <!-- set to debug for troubleshooting and uncomment loggers below to avoid terminal verbosity -->
+  <logger name="org.plos">
+    <level value="info"/> 
   </logger>
+
+  <!-- logs mapping of virtual journal action mapping, every Request -->
+  <!--logger name="org.plos.struts2.PlosOneActionMapper">
+    <level value="info"/>
+  </logger-->
 
   <!-- logs setting of virtual journal context, every Request -->
-  <logger name="org.plos.web.VirtualJournalContextFilter">
+  <!--logger name="org.plos.web.VirtualJournalContextFilter">
     <level value="info"/>
-  </logger>
+  </logger-->
 
   <!-- logs mapping of virtual journal resources, every resource -->
-  <logger name="org.plos.web.VirtualJournalMappingFilter">
+  <!--logger name="org.plos.web.VirtualJournalMappingFilter">
     <level value="info"/>
-  </logger>
-
-  <logger name="org.plos">
-    <level value="info"/> <!-- set to debug for troubleshooting -->
-  </logger>
+  </logger-->
 
   <logger name="edu.yale">
     <level value="info"/>
@@ -55,6 +56,16 @@
   <logger name="org.topazproject">
     <level value="info"/>
   </logger>
+
+  <!-- uncomment for cache debugging -->
+  <!--logger name="net.sf.ehcache">
+    <level value="debug"/>
+  </logger-->
+
+  <!-- uncomment for mulgara transaction debugging -->
+  <!--logger name="org.topazproject.mulgara.itql.ItqlHelper">
+    <level value="debug"/>
+  </logger-->
 
   <root>
     <priority value ="info" />
