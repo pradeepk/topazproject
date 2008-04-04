@@ -526,39 +526,33 @@ public class ArticleOtmService {
       FetchArticleService.ARTICLE_FIGURESTABLE_KEY + article, -1, lock, "figuresTables",
       new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
         public SecondaryObject[] lookup() throws NoSuchArticleIdException {
-          return TransactionHelper.doInTxE(session,
-            new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
-              public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
-                
-                Disjunction figuresTables = Restrictions.disjunction();
-                figuresTables.add(Restrictions.eq("contextElement", FIGURE_CONTEXT))
-                        .add(Restrictions.eq("contextElement", TABLE_CONTEXT));
-                
-                List<ObjectInfo> sorted = tx.getSession().createCriteria(ObjectInfo.class)
-                        .add(Restrictions.eq("isPartOf", article))
-                        .add(figuresTables)
-                        .addOrder(Order.asc("id"))
-                        .list();
-                
-                if (log.isDebugEnabled()) {
-                  log.debug("list of figures and tables for " + article + ":" + sorted);
-                }
-                
-                // TODO: why sort it again?
-                Collections.sort(sorted, new Comparator<ObjectInfo>() {
-                  public int compare(ObjectInfo arg0, ObjectInfo arg1) {
-                    return arg0.getId().compareTo((arg1.getId()));
-                  }
-                });
-
-                if (log.isDebugEnabled()) {
-                  log.debug("*post sort*: list of figures and tables for " + article + ":" + sorted);
-                }
-
-                // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
-                return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
-              }
+          Disjunction figuresTables = Restrictions.disjunction();
+          figuresTables.add(Restrictions.eq("contextElement", FIGURE_CONTEXT))
+                  .add(Restrictions.eq("contextElement", TABLE_CONTEXT));
+          
+          List<ObjectInfo> sorted = session.createCriteria(ObjectInfo.class)
+                  .add(Restrictions.eq("isPartOf", article))
+                  .add(figuresTables)
+                  .addOrder(Order.asc("id"))
+                  .list();
+          
+          if (log.isDebugEnabled()) {
+            log.debug("list of figures and tables for " + article + ":" + sorted);
+          }
+          
+          // TODO: why sort it again?
+          Collections.sort(sorted, new Comparator<ObjectInfo>() {
+            public int compare(ObjectInfo arg0, ObjectInfo arg1) {
+              return arg0.getId().compareTo((arg1.getId()));
+            }
           });
+
+          if (log.isDebugEnabled()) {
+            log.debug("*post sort*: list of figures and tables for " + article + ":" + sorted);
+          }
+
+          // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
+          return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
         }
     });
   }
