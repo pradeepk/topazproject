@@ -722,9 +722,9 @@ public class ItqlStore extends AbstractTripleStore {
 
   private List<String> execCollectionsQry(String qry, ItqlStoreConnection isc,
       Map<String, Set<String>> types) throws OtmException {
-    SessionFactory sf = isc.getSession().getSessionFactory();
+    if (log.isDebugEnabled())
+      log.debug("rdf:List/rdf:Bag query : " + qry);
 
-    log.debug("rdf:List/rdf:Bag query : " + qry);
     List<Answer> ans;
     try {
       ans = isc.getItqlClient().doQuery(qry);

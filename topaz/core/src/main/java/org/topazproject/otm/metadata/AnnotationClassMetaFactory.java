@@ -358,11 +358,10 @@ public class AnnotationClassMetaFactory {
       if (ann == null)
         ann = type.getAnnotation(Embeddable.class);
 
-      if ((ann != null) && !(ann instanceof Id)) {
-        if ((cd instanceof ViewDefinition) ^ (ann instanceof Projection))
-          throw new OtmException("@Projection can-only/must be applied to Views or Sub-Views : "
-                                 + this);
-      }
+      if (((ann != null) && !(ann instanceof Id)) && 
+          ((cd instanceof ViewDefinition) ^ (ann instanceof Projection)))
+        throw new OtmException("@Projection can-only/must be applied to Views or Sub-Views : "
+            + this);
 
       if ((ann == null) && (cd instanceof ViewDefinition))
         return null;

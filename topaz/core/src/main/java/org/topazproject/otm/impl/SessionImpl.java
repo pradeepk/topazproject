@@ -366,7 +366,6 @@ public class SessionImpl extends AbstractSession {
     if (deleteMap.get(id) != null)
       return;
 
-    ClassMetadata cm = id.getClassMetadata();
     states.delayedLoadComplete(o, field, this);
 
     if (!field.isCascadable(CascadeType.deleteOrphan))
@@ -472,11 +471,9 @@ public class SessionImpl extends AbstractSession {
         }
       }
 
-      if (tp) {
-        if (firstTime || (nFields > 0)) {
-          store.delete(cm, fields, id.getId(), o, getTripleStoreCon());
-          store.insert(cm, fields, id.getId(), o, getTripleStoreCon());
-        }
+      if (tp && (firstTime || (nFields > 0))) {
+        store.delete(cm, fields, id.getId(), o, getTripleStoreCon());
+        store.insert(cm, fields, id.getId(), o, getTripleStoreCon());
       }
       if (bf != null) {
         switch(states.digestUpdate(o, bf)) {
@@ -503,8 +500,7 @@ public class SessionImpl extends AbstractSession {
     ClassMetadata cm = id.getClassMetadata();
 
     if (cm.isView())
-      instance = loadView(cm, id.getId(), instance,
-                                  new ArrayList<Filter>(filters.values()), filterObj);
+      instance = loadView(cm, id.getId(), instance);
     else if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0)
       instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj);
@@ -550,8 +546,7 @@ public class SessionImpl extends AbstractSession {
     return instance;
   }
 
-  private Object loadView(ClassMetadata cm, String id, Object instance, List<Filter> filters,
-                         boolean filterObj) throws OtmException {
+  private Object loadView(ClassMetadata cm, String id, Object instance) throws OtmException {
     Query q = createQuery(cm.getQuery());
     Set<String> paramNames = q.getParameterNames();
     if (paramNames.size() != 1 || !"id".equals(paramNames.iterator().next()))

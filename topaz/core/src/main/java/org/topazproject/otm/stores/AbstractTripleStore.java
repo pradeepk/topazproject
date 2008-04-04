@@ -95,10 +95,8 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
     for (RdfMapper m : mvalues.keySet()) {
       Binder b = m.getBinder(session);
       b.load(instance, mvalues.get(m), types, m, session);
-      if (log.isDebugEnabled()) {
-        if (!b.isLoaded(instance))
-          log.debug("Lazy collection '" + m.getName() + "' created for " + id);
-      }
+      if (log.isDebugEnabled() && !b.isLoaded(instance))
+        log.debug("Lazy collection '" + m.getName() + "' created for " + id);
     }
 
     boolean found = false;

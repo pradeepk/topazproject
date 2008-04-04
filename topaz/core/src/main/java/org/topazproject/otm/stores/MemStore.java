@@ -345,10 +345,8 @@ public class MemStore extends AbstractTripleStore {
       Set<String> data = getProperty(model, id, uri);
       data.clear();
 
-      if (backingStore != null) {
-        PropertyId p = new PropertyId(model, id, uri);
+      if (backingStore != null)
         pendingDeletes.add(new PropertyId(model, id, uri));
-      }
     }
 
     public Set<String> getProperty(PropertyId prop) {
@@ -364,11 +362,10 @@ public class MemStore extends AbstractTripleStore {
         subjectData.put(uri, val);
       }
 
-      if (backingStore != null) {
-        if (!pendingDeletes.contains(new PropertyId(model, id, uri)))
-          synchronized (backingStore) {
-            val.addAll(backingStore.getProperty(model, id, uri));
-          }
+      if ((backingStore != null) && (!pendingDeletes.contains(new PropertyId(model, id, uri)))) {
+        synchronized (backingStore) {
+          val.addAll(backingStore.getProperty(model, id, uri));
+        }
       }
 
       return val;

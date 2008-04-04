@@ -71,8 +71,6 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
                                      args.size());
 
     // check argument type compatiblity
-    OqlAST   larg  = args.get(0);
-    OqlAST   rarg  = args.get(1);
     ExprType ltype = types.get(0);
     ExprType rtype = types.get(1);
 

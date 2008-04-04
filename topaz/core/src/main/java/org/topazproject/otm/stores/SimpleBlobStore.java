@@ -33,6 +33,9 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.otm.AbstractConnection;
 import org.topazproject.otm.AbstractStore;
 import org.topazproject.otm.BlobStore;
@@ -48,6 +51,7 @@ import org.topazproject.otm.Session;
  * @author Pradeep Krishnan
  */
 public class SimpleBlobStore extends AbstractStore implements BlobStore {
+  private static final Log log = LogFactory.getLog(ItqlStore.class);
   private File              root;
   private File              store;
   private static int        nextId = 1;
@@ -275,6 +279,7 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
           if (o != null)
             o.close();
         } catch (Throwable t) {
+          log.warn("Failed to close file for blob " + id, t);
         }
 
         throw new OtmException("Failed to write blob for " + id, e);
@@ -295,7 +300,7 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
       l.acquire(this);
       locks.add(l);
 
-      File f = toFile(txn, id); // Catch any path creation errors early
+      toFile(txn, id); // Catch any path creation errors early
       File o = toFile(store, id);
 
       // XXX: Treats deletion of non-existing files as 
@@ -352,18 +357,20 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
 
         return blob;
       } catch (Exception e) {
-        throw new OtmException("Failed to read blob: id = " + id);
+        throw new OtmException("Failed to read blob: id = " + id, e);
       } finally {
         try {
           if (in != null)
             in.close();
         } catch (Throwable t) {
+          log.warn("Failed to close file for blob: id = "  + id, t);
         }
 
         try {
           if (out != null)
             out.close();
         } catch (Throwable t) {
+          log.warn("Failed to close copy of blob: id = "  + id, t);
         }
 
         if (l != null)
@@ -503,6 +510,9 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
       try {
         rename(map, dest, null);
       } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Ignoring the error while renaming. Some or all files in " 
+              + map.values() + " may not have been renamed", t);
       }
     }
 
@@ -511,6 +521,8 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
         try {
           map.get(id).delete();
         } catch (Throwable t) {
+          if (map.get(id).exists())
+            log.warn("Failed to delete file " + map.get(id), t);
         }
       }
     }
