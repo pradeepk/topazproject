@@ -467,7 +467,7 @@ public class ClassMetadata {
 
     ClassMetadata o = (ClassMetadata) other;
 
-    return name.equals(name);
+    return name.equals(o.name);
   }
 
   @Override

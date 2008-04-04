@@ -810,13 +810,32 @@ public class BuilderTest extends GroovyTestCase {
     ClassMetadata wrong = rdf.sessFactory.getClassMetadata(wrongc);
     ClassMetadata right = rdf.sessFactory.getClassMetadata(rightc);
 
+    assert base.isAssignableFrom(base)
+    assert base.isAssignableFrom(right)
+    assert base.isAssignableFrom(wrong)
+    assert right.isAssignableFrom(right)
+    assert !right.isAssignableFrom(wrong)
+    assert !right.isAssignableFrom(base)
+    assert wrong.isAssignableFrom(wrong)
+    assert !wrong.isAssignableFrom(right)
+    assert !wrong.isAssignableFrom(base)
+
     ClassMetadata p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, ['base:type', 'sub:type'])
+    assert right == p
+
+    p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, ['sub:type', 'base:type'])
     assert right == p
 
     p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['base:type', 'sub:type'])
     assert wrong == p;
 
+    p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['sub:type', 'base:type'])
+    assert wrong == p;
+
     p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['base:type', 'sub:type'])
+    assert right == p;
+
+    p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['sub:type', 'base:type'])
     assert right == p;
 
     p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['base:type'])

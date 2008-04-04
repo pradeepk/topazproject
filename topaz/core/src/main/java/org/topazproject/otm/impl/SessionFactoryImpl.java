@@ -245,32 +245,47 @@ public class SessionFactoryImpl implements SessionFactory {
     if ((typeUris == null) || (typeUris.size() == 0))
       return (clazz == null) ? null : ((clazz.getType() != null) ? null : clazz);
 
-    ClassMetadata solution  = null;
-
+    Set<ClassMetadata> solutions = null;
     for (String uri : typeUris) {
       Set<ClassMetadata> classes = typemap.get(uri);
 
       if (classes == null)
         continue;
 
-      ClassMetadata candidate = clazz;
+      Set<ClassMetadata> candidates = new HashSet<ClassMetadata>();
 
-      //find the most specific class with the same rdf:type
       for (ClassMetadata cl : classes) {
         if (instantiable && !cl.getEntityBinder(mode).isInstantiable())
           continue;
-
-        if ((candidate == null) || candidate.isAssignableFrom(cl))
-          candidate = cl;
+        if (typeUris.contains(cl.getType()) &&
+           ((clazz == null) || clazz.isAssignableFrom(cl)))
+          candidates.add(cl);
       }
 
-      // accept this candidate only if it corresponds to the type-uris
-      if (classes.contains(candidate) 
-          && ((solution == null) || solution.isAssignableFrom(candidate)))
-            solution = candidate;
+      if ((solutions == null) || solutions.isEmpty())
+        solutions = candidates;
+      else if (!candidates.isEmpty()) {
+        Set<ClassMetadata> intersection = new HashSet<ClassMetadata>(solutions);
+        intersection.retainAll(candidates);
+        if (intersection.isEmpty())
+          solutions.addAll(candidates);
+        else
+          solutions = intersection;
+      }
     }
 
-    return solution;
+    if (solutions == null)
+      return null;
+
+    if (solutions.size() == 1)
+      return solutions.iterator().next();
+
+    ClassMetadata random = null;
+    for (ClassMetadata cl : solutions)
+      if ((random == null) || random.isAssignableFrom(cl))
+        random = cl;
+
+    return random;
   }
 
   /*
@@ -306,9 +321,7 @@ public class SessionFactoryImpl implements SessionFactory {
     for (String name : cm.getNames())
       entitymap.put(name, cm);
 
-    String type = cm.getType();
-
-    if (type != null) {
+    for (String type : cm.getTypes()) {
       Set<ClassMetadata> set = typemap.get(type);
 
       if (set == null) {
