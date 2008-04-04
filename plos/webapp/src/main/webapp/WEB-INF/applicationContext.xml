@@ -221,10 +221,6 @@
     </constructor-arg>
   </bean>
 
-  <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
-    <aop:scoped-proxy/>
-  </bean>
-
   <!-- OTM setups -->
   <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration" scope="singleton">
     <constructor-arg index="0" value="${pub.spring.itql.uri}" />

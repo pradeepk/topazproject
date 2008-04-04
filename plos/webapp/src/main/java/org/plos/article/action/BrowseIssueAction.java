@@ -70,7 +70,7 @@ public class BrowseIssueAction extends BaseActionSupport{
            * from the latest volume. If no issue exists in the latest volume - 
            * look at the previous volume and so on.
            */ 
-          List<VolumeInfo> vols = browseService.getVolumeInfos(currentJournal.getVolumes());
+          List<VolumeInfo> vols = browseService.getVolumeInfosForJournal(currentJournal);
           if (vols.size() > 0) {
             Collections.reverse(vols);
             for (VolumeInfo volInfo : vols) {
@@ -99,7 +99,7 @@ public class BrowseIssueAction extends BaseActionSupport{
     }
 
     // look up Issue
-    issueInfo = browseService.getIssueInfo(URI.create(issue), true);
+    issueInfo = browseService.getIssueInfo(URI.create(issue));
     if (issueInfo == null) {
       log.error("Failed to retrieve IssueInfo for issue id='"+issue+"'");
       return ERROR; 
@@ -133,10 +133,11 @@ public class BrowseIssueAction extends BaseActionSupport{
       }
     }
 
+    List<ArticleInfo> articlesInIssue = browseService.getArticleInfosForIssue(issueInfo.getId());
     // For every article that is of the same ArticleType as a
     // TOCArticleGroup, add it to that group. Articles can appear in
     // multiple TOCArticleGroups.
-    for (ArticleInfo ai : issueInfo.getArticlesInIssue()) {
+    for (ArticleInfo ai : articlesInIssue) {
       boolean articleAddedToAtLeastOneGroup = false;
       for (TOCArticleGroup ag : articleGroups) {
         for (ArticleType articleType : ai.getArticleTypes()) {
