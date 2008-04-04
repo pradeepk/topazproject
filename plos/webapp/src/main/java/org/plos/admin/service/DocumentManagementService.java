@@ -291,7 +291,7 @@ public class DocumentManagementService {
     if (!file.renameTo(new File(ingestedDir, file.getName()))) {
       throw new IOException("Cannot relocate ingested document: " + file.getName());
     }
-    if (log.isInfoEnabled()) log.info("Ingested document relocated to: " + file.toString());
+    if (log.isInfoEnabled()) log.info("Ingested document moved to: " + ingestedDir);
     
     return uri;
   }
@@ -442,36 +442,48 @@ public class DocumentManagementService {
   }
   
   /**
-   * Determines the processed image mime-types given the image context
-   * @param imageContext The image context name
-   * @return Array of quasi-mime-types representing the processed image
-   *         mime-types for the given image context
-   * @throws ImageProcessingException When the given image context is unhandled
+   * ProcessedImageMimeTypeBinder - Defines the associations between image
+   * contexts and their processed image mime-type counterparts.
+   * @author jkirton
    */
-  private String[] resolveProcessedImageMimeTypes(String imageContext) throws ImageProcessingException {
-    assert imageContext != null;
+  static final class ProcessedImageMimeTypeBinder {
+    public static final String IMAGE_CONTEXT_FIG = "fig";
+    public static final String IMAGE_CONTEXT_TABLE_WRAP = "table-wrap";
+    public static final String IMAGE_CONTEXT_DISP_FORMULA = "disp-formula";
+    public static final String IMAGE_CONTEXT_CHEM_STRUCT_WRAPPER = "chem-struct-wrapper";
+    public static final String IMAGE_CONTEXT_INLINE_FORMULA = "inline-formula";
+
+    public static final String[] smallMediumLarge = { "PNG_S", "PNG_M", "PNG_L" };
+    public static final String[] singleLarge = { "PNG" };
     
-    // fig || table-wrap
-    if (imageContext.equalsIgnoreCase("fig") || imageContext.equalsIgnoreCase("table-wrap")) {
-      return new String[] {
-      "PNG_S", "PNG_M", "PNG_L"
-      };
+    /**
+     * Map of article image contexts and their associated processed image
+     * mime-types.
+     */
+    public static final Map<String, String[]> bindings = new HashMap<String, String[]>();
+    
+    static {
+      bindings.put(IMAGE_CONTEXT_FIG, smallMediumLarge);
+      bindings.put(IMAGE_CONTEXT_TABLE_WRAP, smallMediumLarge);
+      bindings.put(IMAGE_CONTEXT_DISP_FORMULA, singleLarge);
+      bindings.put(IMAGE_CONTEXT_CHEM_STRUCT_WRAPPER, singleLarge);
+      bindings.put(IMAGE_CONTEXT_INLINE_FORMULA, singleLarge);
     }
-
-    // disp-formula || chem-struct-wrapper || inline-formula
-    else if (imageContext.equalsIgnoreCase("disp-formula")
-        || imageContext.equalsIgnoreCase("chem-struct-wrapper")
-        || imageContext.equalsIgnoreCase("inline-formula")) {
-      return new String[] {
-        "PNG"
-      };
+    
+    /**
+     * Provides the appropriate processed image mime-types for the given image
+     * context.
+     * <p>
+     * <strong>IMPT: </strong>If the image context is <code>null</code> or
+     * there is no defined binding, <code>null</code> is returned.
+     * @param imageContext The image context
+     * @return The associated processed image mime-types
+     */
+    public static String[] getProcessedImageMimeTypes(String imageContext) {
+      return imageContext == null ? null : bindings.get(imageContext.toLowerCase());
     }
-
-    // unhandled image context!
-    throw new ImageProcessingException("Encountered unhandled image context: " + imageContext
-        + " while attempting to resolve the processed image mime types.");
   }
-
+  
   /**
    * Handles article image processing.
    * @param uri The ingested article URI String.
@@ -517,19 +529,22 @@ public class DocumentManagementService {
         }
         
         // determine the processed image mime types for this image
-        final String[] piMimeTypes = resolveProcessedImageMimeTypes(context);
-        assert piMimeTypes != null && piMimeTypes.length > 0;
-        if(log.isInfoEnabled()) {
-          log.info("Applying processed image mime-types: " + 
-              ToStringBuilder.reflectionToString(piMimeTypes) + " for " + info.toString());
+        // NOTE: if there are no processed image mime-typs for the image context, we do NOT process the image
+        final String[] piMimeTypes = ProcessedImageMimeTypeBinder.getProcessedImageMimeTypes(context);
+        if(piMimeTypes != null) {
+          assert piMimeTypes.length > 0;
+          if(log.isInfoEnabled()) {
+            log.info("Applying processed image mime-types: " + 
+                ToStringBuilder.reflectionToString(piMimeTypes) + " for " + info.toString());
+          }
+          
+          // process the image
+          processImage(object, imageSetConfig, piMimeTypes, paip);
+          // NOTE: Don't continue trying to process images if one of them failed
         }
-        
-        // process the image
-        processImage(object, imageSetConfig, piMimeTypes, paip);
-        // NOTE: Don't continue trying to process images if one of them failed
       }
       else {
-        if(log.isInfoEnabled()) log.info("No image context for " + info.toString() + ". Skipping.");
+        if(log.isWarnEnabled()) log.warn("No image context for " + info.toString() + ". Skipping.");
       }
     }
   }
