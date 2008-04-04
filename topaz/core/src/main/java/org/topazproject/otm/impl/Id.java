@@ -23,7 +23,7 @@ class Id {
   /**
    * Creates a new Id object.
    *
-   * @param clazz entity class
+   * @param cm entity class
    * @param id entity id
    */
   public Id(ClassMetadata cm, String id) throws NullPointerException {
