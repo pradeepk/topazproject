@@ -84,8 +84,7 @@ public class CacheAdminHelper {
           log.debug("cache hit: " + cache.getName() + "/" + key + "(" + desc + ")");
       }
 
-      // as Objects are in the Cache, get by Object value (PLoS models are not Serializable)
-      return (T) e.getObjectValue();
+      return (T) e.getValue();
     }
   }
 
@@ -130,8 +129,7 @@ public class CacheAdminHelper {
           log.debug("cache hit: " + cache.getName() + "/" + key + "(" + desc + ")");
       }
 
-      // as Objects are in the Cache, get by Object value (PLoS models are not Serializable)
-      return (T) e.getObjectValue();
+      return (T) e.getValue();
     }
   }
 
