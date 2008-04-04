@@ -344,16 +344,19 @@ div.static h3,
 div.content h4	{ /* article second level heading */ font-size: 1.3em; margin: 20px 0 1.25em; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold; border-bottom:0; }
 html>body div.static h3,
 html>body div.content h4	{ margin-bottom:1em; } /* correct margin for all browsers except IE6 which uses the margin set above */
-
 div.static h4,
 div.static h5,
+div.content h5 { font-size: 1em; color: #333; margin-bottom:0; }
+
+/*div.static h4,
+div.static h5,*/
 div.content h5	{ margin:0 0.5em 0 0; font-size: 1em; color: #333; }
-html>body div.static h4,
-html>body div.static h5,
+/*html>body div.static h4,
+html>body div.static h5,*/
 html>body div.content h5	{ float:left; } /* float allow headers to display inline with following paragraph except for IE6 */
 div.content h5+div { clear:left; }
-div.static h4+p,
-div.static h5+p,
+/*div.static h4+p,
+div.static h5+p,*/
 div.content h5+p	{ margin-top:0; }
 
 div.content ul,
