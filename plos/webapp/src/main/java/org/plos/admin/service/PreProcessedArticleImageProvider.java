@@ -19,6 +19,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.plos.article.util.ArticleZip;
 import org.plos.article.util.ImageProcessingException;
 import org.plos.article.util.ImageSetConfig;
@@ -65,17 +67,15 @@ final class PreProcessedArticleImageProvider implements IProcessedArticleImagePr
         ZipEntry ze = enm.nextElement();
         if (isMatch(imgTknNme, mimeType, ze)) {
           // found it
-          final int size = (int) ze.getSize();
-          byte[] bytes = new byte[size];
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
           InputStream is = articleZip.getZipFile().getInputStream(ze);
           try {
-            while (is.read(bytes) > 0) {
-            }
+            IOUtils.copy(is, baos);
           }
           finally {
             is.close();
           }
-          return new ProcessedPngImageDataSource(bytes, mimeType);
+          return new ProcessedPngImageDataSource(baos.toByteArray(), mimeType);
         }
       }
     } catch (ZipException e) {
@@ -129,4 +129,8 @@ final class PreProcessedArticleImageProvider implements IProcessedArticleImagePr
     return zen.startsWith(pfx);
   }
 
+  @Override
+  public String toString() {
+    return getClass().getName();
+  }
 }

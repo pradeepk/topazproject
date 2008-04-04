@@ -10,48 +10,38 @@
 
 package org.plos.article.util;
 
-import java.net.URI;
 
 /**
  * This is the exception used by the ImageResizeService to indicate the
  * failure of an operation.
  *
- * @author stevec
+ * @author stevec, jkirton
  */
 public class ImageResizeException extends ImageProcessingException {
   private static final long serialVersionUID = 2256237883612015143L;
-  
-  private URI articleURI;
 
-  public ImageResizeException (final Throwable cause) {
-    super(cause);
+  /**
+   * Constructor
+   * @param message
+   * @param cause
+   */
+  public ImageResizeException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public ImageResizeException (final URI inArticleURI, final Throwable cause) {
-    super(cause);
-    this.articleURI = inArticleURI;
-  }
-
-  public ImageResizeException (String message) {
+  /**
+   * Constructor
+   * @param message
+   */
+  public ImageResizeException(String message) {
     super(message);
   }
 
-  public ImageResizeException (String message, Throwable cause) {
-    super (message, cause);
-  }
-
   /**
-   * @return Returns the articleURI.
+   * Constructor
+   * @param cause
    */
-  public URI getArticleURI() {
-    return articleURI;
+  public ImageResizeException(Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * @param articleURI The articleURI to set.
-   */
-  public void setArticleURI(URI articleURI) {
-    this.articleURI = articleURI;
-  }
-
 }

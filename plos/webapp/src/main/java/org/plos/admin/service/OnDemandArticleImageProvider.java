@@ -46,5 +46,9 @@ final class OnDemandArticleImageProvider implements IProcessedArticleImageProvid
     }
     return new ProcessedPngImageDataSource(bytes, mimeType);
   }
-
+  
+  @Override
+  public String toString() {
+    return getClass().getName();
+  }
 }

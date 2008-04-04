@@ -47,6 +47,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -59,7 +60,6 @@ import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.ArticleZip;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.article.util.ImageProcessingException;
-import org.plos.article.util.ImageResizeException;
 import org.plos.article.util.ImageSetConfig;
 import org.plos.article.util.IngestException;
 import org.plos.article.util.NoSuchArticleIdException;
@@ -222,11 +222,11 @@ public class DocumentManagementService {
    * @throws TransformerException
    * @throws NoSuchArticleIdException
    * @throws NoSuchObjectIdException
-   * @throws ImageResizeException
+   * @throws ImageProcessingException
    * @throws ServiceException
    */
   public String ingest(String pathname) throws IngestException, DuplicateArticleIdException,
-      ImageResizeException, IOException, SAXException, TransformerException, ServiceException {
+      ImageProcessingException, IOException, SAXException, TransformerException, ServiceException {
     return ingest(new File(pathname));
   }
 
@@ -242,41 +242,35 @@ public class DocumentManagementService {
    * @throws TransformerException
    * @throws NoSuchArticleIdException
    * @throws NoSuchObjectIdException
-   * @throws ImageResizeException
+   * @throws ImageProcessingException
    * @throws ServiceException
    */
   public String ingest(File file) throws IngestException, DuplicateArticleIdException,
-      ImageResizeException, IOException, SAXException, TransformerException, ServiceException {
+      ImageProcessingException, IOException, SAXException, TransformerException, ServiceException {
+    
+    if(file == null) throw new IngestException("No ingest file specified");
+    
+    // do main ingest
     String uri;
     File ingestedDir = new File(ingestedDocumentDirectory);
-    if (log.isDebugEnabled()) {
-      log.debug("Ingesting: " + file);
-    }
+    if (log.isDebugEnabled()) log.debug("Ingesting: " + file.toString() + "...");
     DataHandler dh = new DataHandler(file.toURL());
     uri = articleOtmService.ingest(dh);
+    if (log.isInfoEnabled()) log.info("Ingested: " + file.toString());
 
-    ImageSetConfig imageSetConf = getImageSetConfigForArticleUri(uri);
-    if (imageSetConf == null) {
-      imageSetConf = ImageSetConfig.getDefaultImageSetConfig();
-    }
-
-    if (log.isInfoEnabled()) {
-      log.info("Ingested: " + file);
-    }
+    // process images
     try {
-      IProcessedArticleImageProvider paip = resolveProcessedArticleImageProvider(file);
-      resizeImages(uri, imageSetConf, paip);
+      processImages(uri, file);
     } catch (Throwable t) {
-      if (log.isErrorEnabled()) {
-        log.error("Resize images failed for article " + uri, t);
-      }
+      if (log.isErrorEnabled()) log.error("Image processing failed for article " + uri, t);
       URI articleUri = null;
       try {
         articleUri = new URI(uri);
       } catch (URISyntaxException ue) {
       }
-      ImageResizeException ire = new ImageResizeException(articleUri, t);
-      throw ire;
+      ImageProcessingException ipe = new ImageProcessingException(t.getMessage(), t);
+      ipe.setArticleURI(articleUri);
+      throw ipe;
     }
     finally {
       try {
@@ -285,20 +279,20 @@ public class DocumentManagementService {
         // ignore
       }
     }
-
-    if (log.isInfoEnabled()) {
-      log.info("Resized images");
-    }
+    if (log.isInfoEnabled()) log.info("Article images processed for: " + file.toString() + "...");
+    
+    // generate xref doc
+    if (log.isInfoEnabled()) log.info("Generating Xref for file: " + file.toString() + " ...");
     generateCrossRefInfoDoc(file, uri);
-    if (log.isInfoEnabled()) {
-      log.info("Generated Xref for file: " + file);
-    }
+    if (log.isInfoEnabled()) log.info("Xref generated");
+    
+    // relocate article zip file
+    if (log.isInfoEnabled()) log.info("Relocating ingested document: " + file.toString() + " ...");
     if (!file.renameTo(new File(ingestedDir, file.getName()))) {
-      throw new IOException("Cannot relocate ingested documented " + file.getName());
+      throw new IOException("Cannot relocate ingested document: " + file.getName());
     }
-    if (log.isInfoEnabled()) {
-      log.info("Ingested and relocated " + file + ":" + uri);
-    }
+    if (log.isInfoEnabled()) log.info("Ingested document relocated to: " + file.toString());
+    
     return uri;
   }
 
@@ -412,10 +406,10 @@ public class DocumentManagementService {
   }
 
   /**
-   * Internal convenience method that handles article images.
+   * Processes a single article image.
    * @param so The {@link SecondaryObject} representing the article image
    *        "container".
-   * @param iso The ImageSetConfig to employ
+   * @param imageSetConfig The ImageSetConfig to employ
    * @param repMimeTypes The native processed image mime-types to apply
    * @param paip The resolved IProcessedArticleImageProvider
    * @return New DataHandler instance holding the data of the processed article
@@ -426,17 +420,18 @@ public class DocumentManagementService {
    * @throws NoSuchObjectIdException
    * @throws RemoteException
    */
-  private void handleArticleImage(SecondaryObject so, ImageSetConfig iso, String[] repMimeTypes,
+  private void processImage(SecondaryObject so, ImageSetConfig imageSetConfig, String[] repMimeTypes,
       IProcessedArticleImageProvider paip) throws MalformedURLException, ImageProcessingException,
       NoSuchObjectIdException, RemoteException {
-    assert so != null && repMimeTypes != null && iso != null && paip != null;
+    assert so != null && repMimeTypes != null && imageSetConfig != null && paip != null;
+    
     RepresentationInfo ri = so.getRepresentations()[0];
     assert ri != null;
     if (log.isDebugEnabled()) {
-      log.debug("Found image to resize: " + ri.getURL() + " repsize-" + ri.getSize());
+      log.debug("Processing article image: " + ri.getURL() + " (size:" + ri.getSize() + ")");
     }
     for (String rmt : repMimeTypes) {
-      ProcessedImageDataSource pids = paip.getProcessedArticleImage(new URL(ri.getURL()), iso, rmt);
+      ProcessedImageDataSource pids = paip.getProcessedArticleImage(new URL(ri.getURL()), imageSetConfig, rmt);
       DataHandler dh = new DataHandler(pids);
       articleOtmService.setRepresentation(so.getUri(), pids.getProcessedImageMimeType(), dh);
       if (log.isDebugEnabled()) {
@@ -445,65 +440,96 @@ public class DocumentManagementService {
       }
     }
   }
+  
+  /**
+   * Determines the processed image mime-types given the image context
+   * @param imageContext The image context name
+   * @return Array of quasi-mime-types representing the processed image
+   *         mime-types for the given image context
+   * @throws ImageProcessingException When the given image context is unhandled
+   */
+  private String[] resolveProcessedImageMimeTypes(String imageContext) throws ImageProcessingException {
+    assert imageContext != null;
+    
+    // fig || table-wrap
+    if (imageContext.equalsIgnoreCase("fig") || imageContext.equalsIgnoreCase("table-wrap")) {
+      return new String[] {
+      "PNG_S", "PNG_M", "PNG_L"
+      };
+    }
+
+    // disp-formula || chem-struct-wrapper || inline-formula
+    else if (imageContext.equalsIgnoreCase("disp-formula")
+        || imageContext.equalsIgnoreCase("chem-struct-wrapper")
+        || imageContext.equalsIgnoreCase("inline-formula")) {
+      return new String[] {
+        "PNG"
+      };
+    }
+
+    // unhandled image context!
+    throw new ImageProcessingException("Encountered unhandled image context: " + imageContext
+        + " while attempting to resolve the processed image mime types.");
+  }
 
   /**
-   * Handles article image re-sizing.
+   * Handles article image processing.
    * @param uri The ingested article URI String.
-   * @param imageSetConfig The ImageSetConfig to employ.
-   * @param paip The resolved IProcessedArticleImageProvider
+   * @param file The article zip file ref
    * @throws NoSuchArticleIdException
    * @throws NoSuchObjectIdException
    * @throws ImageProcessingException
    * @throws ImageStorageServiceException
    * @throws IOException
    */
-  private void resizeImages(String uri, ImageSetConfig imageSetConfig,
-      IProcessedArticleImageProvider paip) throws NoSuchArticleIdException,
+  private void processImages(String uri, File file) throws NoSuchArticleIdException,
       NoSuchObjectIdException, ImageProcessingException, ImageStorageServiceException, IOException {
+    assert uri != null && file != null;
+
+    // resolve the image set config to employ
+    if (log.isInfoEnabled()) log.info("Processing article images for: " + file.toString() + "...");
+    ImageSetConfig imageSetConfig = getImageSetConfigForArticleUri(uri);
+    if (imageSetConfig == null) {
+      imageSetConfig = ImageSetConfig.getDefaultImageSetConfig();
+    }
+    assert imageSetConfig != null;
+    if (log.isInfoEnabled()) log.info("Employing image set: " + imageSetConfig.toString() + "  for: " + file.toString() + "...");
+    
+    // determine the processed article image provider to employ 
+    IProcessedArticleImageProvider paip = resolveProcessedArticleImageProvider(file);
+    if (log.isInfoEnabled()) log.info("Employing : " + paip.toString() + "  for: " + file.toString() + "...");
     assert paip != null;
+    
+    // iterate the article images and process
     SecondaryObject[] objects = articleOtmService.listSecondaryObjects(uri);
     for (int i = 0; i < objects.length; ++i) {
+      
       SecondaryObject object = objects[i];
       if (log.isDebugEnabled()) {
-        log.debug("retrieving Object Info for: " + object.getUri());
+        log.debug("Retrieving ObjectInfo for: " + object.getUri() + " ...");
       }
       ObjectInfo info = articleOtmService.getObjectInfo(object.getUri());
-      if (log.isDebugEnabled()) {
-        log.debug("object Info " + info);
-        log.debug("contextElement" + info.getContextElement());
-      }
       String context = info.getContextElement();
       if (context != null) {
         context = context.trim();
-
-        // fig
-        if (context.equalsIgnoreCase("fig")) {
-          handleArticleImage(object, imageSetConfig, new String[] {
-          "PNG_S", "PNG_M", "PNG_L"
-          }, paip);
+        if (log.isDebugEnabled()) {
+          log.debug("Image context for " + info.toString() + " resolved to: " + context.toString());
         }
-
-        // table-wrap
-        else if (context.equalsIgnoreCase("table-wrap")) {
-          handleArticleImage(object, imageSetConfig, new String[] {
-          "PNG_S", "PNG_M", "PNG_L"
-          }, paip);
+        
+        // determine the processed image mime types for this image
+        final String[] piMimeTypes = resolveProcessedImageMimeTypes(context);
+        assert piMimeTypes != null && piMimeTypes.length > 0;
+        if(log.isInfoEnabled()) {
+          log.info("Applying processed image mime-types: " + 
+              ToStringBuilder.reflectionToString(piMimeTypes) + " for " + info.toString());
         }
-
-        // disp-formula || chem-struct-wrapper
-        else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
-          handleArticleImage(object, imageSetConfig, new String[] {
-            "PNG"
-          }, paip);
-        }
-
-        // inline-formula
-        else if (context.equals("inline-formula")) {
-          handleArticleImage(object, imageSetConfig, new String[] {
-            "PNG"
-          }, paip);
-        }
+        
+        // process the image
+        processImage(object, imageSetConfig, piMimeTypes, paip);
         // NOTE: Don't continue trying to process images if one of them failed
+      }
+      else {
+        if(log.isInfoEnabled()) log.info("No image context for " + info.toString() + ". Skipping.");
       }
     }
   }

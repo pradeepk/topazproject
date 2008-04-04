@@ -16,9 +16,8 @@ import java.rmi.RemoteException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-
 import org.plos.article.util.DuplicateArticleIdException;
-import org.plos.article.util.ImageResizeException;
+import org.plos.article.util.ImageProcessingException;
 
 public class IngestArchivesAction extends BaseAdminActionSupport {
 
@@ -29,6 +28,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
     filesToIngest = files;
   }
 
+  @Override
   public String execute() throws RemoteException, ApplicationException {
     if (filesToIngest != null) {
       String articleURI = null;
@@ -43,10 +43,10 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
         } catch (DuplicateArticleIdException de) {
           addActionError("Error ingesting: " + filename + " - " + de.toString());
           log.error("Error ingesting article: " + filename , de);
-        } catch (ImageResizeException ire) {
-          addActionError("Error ingesting: " + filename + " - " + ire.getCause().toString());
-          log.error("Error ingesting articles: " + filename, ire);
-          articleURI = ire.getArticleURI().toString();
+        } catch (ImageProcessingException ipe) {
+          addActionError("Error ingesting: " + filename + " - " + ipe.getCause().toString());
+          log.error("Error ingesting articles: " + filename, ipe);
+          articleURI = ipe.getArticleURI().toString();
           if (log.isDebugEnabled()) {
             log.debug("trying to delete: " + articleURI);
           }
