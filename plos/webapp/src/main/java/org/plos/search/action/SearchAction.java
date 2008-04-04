@@ -76,7 +76,10 @@ public class SearchAction extends BaseActionSupport {
    * @return return simple search result
    */
   public String executeSimpleSearch() {
-    return executeSearch(query);
+    String rval = executeSearch(query);
+    // the simple search text field correlates to advanced search's "for all the words" field
+    this.textSearchAll = query;
+    return rval;
   }
 
   /**
