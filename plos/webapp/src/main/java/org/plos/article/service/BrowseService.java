@@ -24,11 +24,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.struts2.ServletActionContext;
-
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
@@ -43,20 +44,14 @@ import org.plos.models.PLoS;
 import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
-
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.query.Results;
-
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
-import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.query.Results;
 
 /**
  * Class to get all Articles in system and organize them by date and by category
@@ -78,7 +73,7 @@ public class BrowseService {
 
   public static final String ARTICLE_LOCK        = "ArticleLock-";
   public static final String ARTICLE_KEY         = "Article-";
-  
+
   public static final String ISSUE_LOCK        = "IssueLock-";
   public static final String ISSUE_KEY         = "Issue-";
 
@@ -215,7 +210,7 @@ public class BrowseService {
 
   /**
 	 * Get Issue information.
-	 * 
+	 *
 	 * @param issue
 	 *          DOI of Issue.
 	 * @return the Issue information.
@@ -228,11 +223,11 @@ public class BrowseService {
               return getIssueInfo2(doi);
             }
           });
-    } 
+    }
 
   /**
 	 * Get Issue information inside of a Transaction.
-	 * 
+	 *
 	 * @param issue
 	 *          DOI of Issue.
 	 * @return the Issue information.
@@ -243,14 +238,14 @@ public class BrowseService {
     final Issue issue = session.get(Issue.class, issueDOI.toString());
     if (issue == null) {
       log.error("Faiiled to retrieve Issue for doi='"+issueDOI.toString()+"'");
-      return null; 
+      return null;
     }
 
     // get the image Article
     URI imageArticle = null;
     String description = null;
-    if (issue.getImage() != null
-        && issue.getImage().toString().length() != 0) {
+    if ((issue.getImage() != null)
+        && (issue.getImage().toString().length() != 0)) {
       final Article article = session.get(Article.class, issue.getImage().toString());
       if (article != null) {
         imageArticle = issue.getImage();
@@ -262,16 +257,16 @@ public class BrowseService {
     URI prevIssueURI = null;
     URI nextIssueURI = null;
     Volume parentVolume = null;
-    
+
     // String oqlQuery = "select v from Volume v where v.issueList = <" + issueDOI + "> ;";
     // Results results = session.createQuery(oqlQuery).execute();
-    
+
     Results results = session.createQuery("select v from Volume v where v.issueList = :doi ;")
     .setParameter("doi", issueDOI).execute();
-    
+
     results.beforeFirst();
     if (results.next()) {
-      parentVolume = (Volume)results.get("v"); 
+      parentVolume = (Volume)results.get("v");
     }
     if (parentVolume != null) {
       final List<URI> issues = parentVolume.getIssueList();
@@ -287,19 +282,19 @@ public class BrowseService {
     issueInfo.setArticleUriList(issue.getSimpleCollection());
     return issueInfo;
   }
-  
+
   /**
-   * Returns the list of ArticleInfos contained in this Issue. The list will contain only ArticleInfos for 
-   * Articles that the current user has permission to view. 
-   * 
+   * Returns the list of ArticleInfos contained in this Issue. The list will contain only ArticleInfos for
+   * Articles that the current user has permission to view.
+   *
    * @param issueDOI
    * @return
    */
   public List<ArticleInfo> getArticleInfosForIssue(final URI issueDOI) {
-    
+
     IssueInfo iInfo = getIssueInfo(issueDOI);
     List<ArticleInfo> aInfos = new ArrayList<ArticleInfo>();
-    
+
     for (URI articleDoi : iInfo.getArticleUriList()) {
       ArticleInfo ai = getArticleInfo(articleDoi);
       if (ai == null) {
@@ -313,51 +308,51 @@ public class BrowseService {
 
   /**
    * Get a VolumeInfo for the given id. This only works if the volume is in the current journal.
-   * 
+   *
    * @param id
    * @return
    */
   public VolumeInfo getVolumeInfo(URI id) {
-    // Attempt to get the volume infos from the cached journal list... 
+    // Attempt to get the volume infos from the cached journal list...
     List<VolumeInfo> volumes = getVolumeInfosForJournal(journalService.getCurrentJournal(session));
     for (VolumeInfo vol : volumes) {
       if (id.equals(vol.getId())) {
         return vol;
       }
     }
-    
+
     // If we have no luck with the cached journal list, attempt to load the volume re-using loadVolumeInfos();
     List<URI> l = new ArrayList<URI>();
     l.add(id);
     List<VolumeInfo> vols = loadVolumeInfos(l);
-    if (vols != null && vols.size() > 0) {
+    if ((vols != null) && (vols.size() > 0)) {
       return vols.get(0);
     }
     return null;
   }
-  
+
   /**
-   * Returns a list of VolumeInfos for the given Journal. Uses the CacheAdminHelper pull-through cache. 
-   * 
+   * Returns a list of VolumeInfos for the given Journal. Uses the CacheAdminHelper pull-through cache.
+   *
    * @param journal
    * @return
    */
   public List<VolumeInfo> getVolumeInfosForJournal(final Journal journal) {
-    
+
     String key = (VOL_INFOS_FOR_JOURNAL_KEY + (journal.getKey())).intern();
-    
+
     return CacheAdminHelper.getFromCache(browseCache, key, -1, key, "List of volumes for journal" + journal.getId(),
                                          new CacheAdminHelper.EhcacheUpdater<List<VolumeInfo>>() {
        public List<VolumeInfo> lookup() {
          final List<URI> volumeDois = journal.getVolumes();
-         
+
          return loadVolumeInfos(volumeDois);
        }});
   }
-  
+
   /**
    * Get VolumeInfos. Note that the IssueInfos contained in the volumes have not been instantiated
-   * with the ArticleInfos. 
+   * with the ArticleInfos.
    *
    * @param volumeDois to look up.
    * @return volumeInfos.
@@ -368,7 +363,7 @@ public class BrowseService {
     // TODO should all of this be in a tx???
 
     List<VolumeInfo> volumeInfos = new ArrayList<VolumeInfo>();
-    // get the Volumes  
+    // get the Volumes
     for (int onVolumeDoi = 0; onVolumeDoi < volumeDois.size(); onVolumeDoi++) {
       final URI volumeDoi = volumeDois.get(onVolumeDoi);
       final Volume volume  = session.get(Volume.class, volumeDoi.toString());
@@ -403,7 +398,7 @@ public class BrowseService {
 
     return volumeInfos;
   }
-  
+
   private Object getCatInfo(String key, String desc, boolean load) {
     return getCatInfo(key, desc, load, getCurrentJournal());
   }
@@ -415,11 +410,13 @@ public class BrowseService {
       Element e = browseCache.get(key);
 
       if (e == null) {
-        if (!load)
+        if (!load) {
           return null;
+        }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
           log.debug("retrieving " + desc + " from db");
+        }
 
         loadCategoryInfos(jnlName);
         e = browseCache.get(key);
@@ -454,8 +451,9 @@ public class BrowseService {
             getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
         if (artByCat != null) {
           Set<URI> uriSet = new HashSet<URI>();
-          for (String uri : artMap.get(jnlName))
+          for (String uri : artMap.get(jnlName)) {
             uriSet.add(URI.create(uri));
+          }
 
           cat: for (Iterator<List<URI>> catIter = artByCat.values().iterator(); catIter.hasNext(); ) {
             List<URI> articles = catIter.next();
@@ -464,11 +462,13 @@ public class BrowseService {
               if (uriSet.remove(art)) {
                 artIter.remove();
 
-                if (articles.isEmpty())
+                if (articles.isEmpty()) {
                   catIter.remove();
+                }
 
-                if (uriSet.isEmpty())
+                if (uriSet.isEmpty()) {
                   break cat;
+                }
               }
             }
           }
@@ -481,14 +481,16 @@ public class BrowseService {
       browseCache.remove(DATE_LIST_KEY + jnlName);
 
       for (Object key : browseCache.getKeysNoDuplicateCheck()) {
-        if (key instanceof String && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName))
+        if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
           browseCache.remove(key);
+        }
       }
     }
 
     // update article cache
-    for (String uri : uris)
+    for (String uri : uris) {
       browseCache.remove(ARTICLE_KEY + uri);
+    }
   }
 
   /**
@@ -513,8 +515,9 @@ public class BrowseService {
         if (artByCat != null) {
           for (NewArtInfo nai: nais) {
             List<URI> arts = artByCat.get(nai.category);
-            if (arts == null)
+            if (arts == null) {
               artByCat.put(nai.category, arts = new ArrayList<URI>());
+            }
             arts.add(0, nai.id);
           }
 
@@ -526,15 +529,17 @@ public class BrowseService {
       synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
         Years dates = getArticleDates(false, jnlName);
         if (dates != null) {
-          for (NewArtInfo nai: nais)
+          for (NewArtInfo nai: nais) {
             insertDate(dates, nai.date);
+          }
         }
         updateArticleDates(dates, jnlName);
       }
 
       for (Object key : browseCache.getKeysNoDuplicateCheck()) {
-        if (key instanceof String && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName))
+        if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
           browseCache.remove(key);
+        }
       }
     }
   }
@@ -548,8 +553,9 @@ public class BrowseService {
     for (String uri : artUris) {
       for (Journal j : journalService.getJournalsForObject(URI.create(uri))) {
         Set<String> artList = artMap.get(j.getKey());
-        if (artList == null)
+        if (artList == null) {
           artMap.put(j.getKey(), artList = new HashSet<String>());
+        }
         artList.add(uri);
       }
     }
@@ -575,8 +581,9 @@ public class BrowseService {
     }
 
     for (Object key : browseCache.getKeysNoDuplicateCheck()) {
-      if (key instanceof String && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName))
+      if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
         browseCache.remove(key);
+      }
     }
   }
 
@@ -597,8 +604,9 @@ public class BrowseService {
     while (r.next()) {
       String cat = r.getString(0);
       List<URI> ids = artByCat.get(cat);
-      if (ids == null)
+      if (ids == null) {
         artByCat.put(cat, ids = new ArrayList<URI>());
+      }
       ids.add(r.getURI(1));
     }
 
@@ -608,8 +616,9 @@ public class BrowseService {
   private void updateCategoryCaches(SortedMap<String, List<URI>> artByCat, String jnlName) {
     // calculate number of articles in each category
     SortedMap<String, Integer> catSizes = new TreeMap<String, Integer>();
-    for (Map.Entry<String, List<URI>> e : artByCat.entrySet())
+    for (Map.Entry<String, List<URI>> e : artByCat.entrySet()) {
       catSizes.put(e.getKey(), e.getValue().size());
+    }
 
     // save in cache
     browseCache.put(new Element(ARTBYCAT_LIST_KEY + jnlName, artByCat));
@@ -627,14 +636,15 @@ public class BrowseService {
         setParameter("id", id).execute();
 
     r.beforeFirst();
-    if (!r.next())
+    if (!r.next()) {
       return null;
+    }
 
     ArticleInfo ai = new ArticleInfo();
     ai.setId(id);
     ai.setDate(r.getLiteralAs(1, Date.class));
     ai.setTitle(r.getString(2));
-    
+
     for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
       upi.hashCode(); // force load
       ai.addAuthor(upi.realName);
@@ -651,14 +661,14 @@ public class BrowseService {
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("loaded ArticleInfo: id='" + ai.getId() + 
-                "', articleTypes='" + ai.getArticleTypes() + 
+      log.debug("loaded ArticleInfo: id='" + ai.getId() +
+                "', articleTypes='" + ai.getArticleTypes() +
                 "', date='" + ai.getDate() +
-                "', title='" + ai.getTitle() + 
-                "', authors='" + ai.getAuthors() + 
+                "', title='" + ai.getTitle() +
+                "', authors='" + ai.getAuthors() +
                 "', related-articles='" + ai.getRelatedArticles() + "'");
     }
-    
+
     return ai;
   }
 
@@ -717,8 +727,9 @@ public class BrowseService {
     List<URI> dates = new ArrayList<URI>();
 
     r.beforeFirst();
-    while (r.next())
+    while (r.next()) {
       dates.add(r.getURI(0));
+    }
 
     return dates;
   }
@@ -733,8 +744,9 @@ public class BrowseService {
       URI id = ids.get(idx);
 
       ArticleInfo ai = getArticleInfo(id);
-      if (ai != null)
+      if (ai != null) {
         res.add(ai);
+      }
     }
 
     return res;
@@ -744,8 +756,9 @@ public class BrowseService {
     try {
       pep.checkAccess(ArticlePEP.READ_META_DATA, id);
     } catch (SecurityException se) {
-      if (log.isDebugEnabled())
+      if (log.isDebugEnabled()) {
         log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
+      }
       return null;
     }
 
@@ -763,8 +776,9 @@ public class BrowseService {
     String query =
             "select cat, a.id articleId, a.dublinCore.date date from Article a " +
             "where cat := a.categories.mainCategory and (";
-        for (String uri : uris)
+        for (String uri : uris) {
           query += "a.id = <" + uri + "> or ";
+        }
         query = query.substring(0, query.length() - 4) + ") order by date desc, articleId;";
 
     Results r = session.createQuery(query).execute();
