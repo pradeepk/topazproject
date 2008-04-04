@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.8.3-SNAPSHOT</version>
+  <version>0.8.3</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -89,9 +89,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.topazproject.org/svn/head/</developerConnection>
-    <connection>scm:svn:http://svn.topazproject.org/svn-pub/head/</connection>
-    <url>http://www.topazproject.org/trac/browser</url>
+    <developerConnection>scm:svn:http://svn.topazproject.org/svn/tags/the-whole-shebang-0.8.3</developerConnection>
+    <connection>scm:svn:http://svn.topazproject.org/svn-pub/tags/the-whole-shebang-0.8.3</connection>
+    <url>scm:svn:http://svn.topazproject.org/svn/tags/the-whole-shebang-0.8.3</url>
   </scm>
 
   <modules>
@@ -552,7 +552,7 @@
           <encoding>UTF-8</encoding>
           <charset>UTF-8</charset>
           <use>false</use>
-          <header>&lt;a href='http://www.topazproject.org/trac/log/head?rev=${svnversion}&amp;verbose=on' target='_top'>r${svnversion}&lt;/a></header>
+          <header>&lt;a href='http://www.topazproject.org/trac/log/head?rev=${svnversion}&amp;verbose=on' target='_top'&gt;r${svnversion}&lt;/a&gt;</header>
           <groups>
             <group>
               <title>Core OTM Packages</title>
@@ -863,7 +863,7 @@
         <plugin>
           <groupId>org.topazproject.plugins</groupId>
           <artifactId>integration-tests-plugin</artifactId>
-          <version>0.8.3-SNAPSHOT</version>
+          <version>0.8.3</version>
           <executions>
             <execution>
               <goals>
