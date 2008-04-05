@@ -36,9 +36,9 @@
   </organization>
   <licenses>
     <license>
-      <name>Educational Community License version 1.0</name>
-      <url>http://opensource.org/licenses/ecl1.php</url>
-      <comments>Copyright (c) 2006 by Topaz, Inc.</comments>
+      <name>Licensed under the Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <comments>Copyright (c) 2006-2008 by Topaz, Inc.</comments>
       <distribution>repo</distribution>
     </license>
   </licenses>

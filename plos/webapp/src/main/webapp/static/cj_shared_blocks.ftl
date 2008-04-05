@@ -1,3 +1,22 @@
+<!--
+  $HeadURL::                                                                            $
+  $Id$
+  
+  Copyright (c) 2007-2008 by Topaz, Inc.
+  http://topazproject.org
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <#--Journal Information Blocks - from global_common-->
 
 <#assign open_access = '<p>The Public Library of Science (PLoS) applies the <a href="license.action" title="Creative Commons Attribution License">Creative Commons Attribution License</a> (CCAL) to all works we publish. Under the CCAL, authors retain ownership of the copyright for their article, but authors allow anyone to download, reuse, reprint, modify, distribute, and/or copy articles in PLoS journals, so long as the original authors and source are cited. No permission is required from the authors or the publishers.</p>'>
