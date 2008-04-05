@@ -19,7 +19,6 @@
 package org.plos.models;
 
 import java.io.Serializable;
-import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 
