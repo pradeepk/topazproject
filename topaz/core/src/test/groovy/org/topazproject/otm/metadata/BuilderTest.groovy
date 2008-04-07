@@ -873,8 +873,11 @@ public class BuilderTest extends GroovyTestCase {
     p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['sub:type'])
     assert null == p;
 
-    p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, ['junk:type'])
+    p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, ['junk:type'])
     assert null == p;
+
+    p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, ['junk:type'])
+    assert nt == p;
 
     p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, [])
     assert nt == p;

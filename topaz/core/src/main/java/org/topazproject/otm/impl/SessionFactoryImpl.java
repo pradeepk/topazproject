@@ -255,6 +255,12 @@ public class SessionFactoryImpl implements SessionFactory {
       return (clazz == null) ? null : ((clazz.getType() != null) ? null : clazz);
 
     Set<ClassMetadata> solutions = null;
+
+    if ((clazz != null) && (clazz.getType() == null)) {
+      solutions = new HashSet<ClassMetadata>();
+      solutions.add(clazz);
+    }
+
     for (String uri : typeUris) {
       Set<ClassMetadata> classes = typemap.get(uri);
 
