@@ -44,7 +44,7 @@ public abstract class Annotation extends Annotea implements Serializable {
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private Annotation                                                        supersededBy;
   public static final String RDF_TYPE = Annotea.W3C_NS + "Annotation";
-  
+
   /**
    * Creates a new Annotation object.
    */

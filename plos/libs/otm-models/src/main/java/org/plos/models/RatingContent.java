@@ -232,7 +232,7 @@ public class RatingContent implements Serializable {
 
     return calculateOverall((double) insightValue, (double) reliabilityValue, (double) styleValue);
   }
-  
+
   /**
    * Calculate weighted overall.
    *

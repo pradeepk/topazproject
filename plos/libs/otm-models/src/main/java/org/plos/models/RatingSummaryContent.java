@@ -218,7 +218,7 @@ public class RatingSummaryContent implements Serializable {
   public void setSingleRatingTotal(double singleRatingTotal) {
     this.singleRatingTotal = singleRatingTotal;
   }
-  
+
   /**
    * @return Returns the overall Rating.
    */
@@ -229,7 +229,7 @@ public class RatingSummaryContent implements Serializable {
       getReliabilityTotal() / getReliabilityNumRatings(),
       getStyleTotal() / getStyleNumRatings());
   }
-  
+
   /**
    * @return The calculated single rating. 
    */

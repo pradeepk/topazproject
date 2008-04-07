@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = Rdf.topaz + "RatingSummaryAnnotation")
 public class RatingSummary extends Annotation {
   private static final long serialVersionUID = -8110763767878695617L;
-  
+
   @Predicate(uri = Annotea.W3C_NS + "body")
   private RatingSummaryContent body;
 

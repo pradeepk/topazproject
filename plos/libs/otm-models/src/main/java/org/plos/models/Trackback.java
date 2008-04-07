@@ -34,7 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = Rdf.topaz + "TrackbackAnnotation")
 public class Trackback extends Annotation implements Serializable {
   private static final long serialVersionUID = -1224471659454172666L;
-  
+
   @Predicate(uri = Annotea.W3C_NS + "body")
   private TrackbackContent body;
 

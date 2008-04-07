@@ -62,7 +62,7 @@ public abstract class Annotea implements Serializable {
   static final long serialVersionUID = 7228784439724175998L;
 
   public abstract URI getId();
-  
+
   /**
    * Get creator.
    *

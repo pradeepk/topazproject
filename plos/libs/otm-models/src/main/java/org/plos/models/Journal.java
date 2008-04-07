@@ -41,7 +41,7 @@ public class Journal extends Aggregation {
   /** DOI of "current issue" */
   @Predicate(uri = PLoS.plos + "Journal/currentIssue")
   private URI currentIssue;
-  
+
   @Predicate(uri = PLoS.plos + "Journal/volumes")
   private List<URI> volumes = new ArrayList();
 

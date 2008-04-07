@@ -49,7 +49,7 @@ public class Volume extends Aggregation {
   // TODO - "issueList" should probably not be prefixed with Rdf.dc_terms. We'll need a data migration to change this :(
   @Predicate(uri = Rdf.dc_terms + "issueList", collectionType = CollectionType.RDFSEQ)
   private List<URI> issueList = new ArrayList<URI>();
-  
+
   /**
    * Get the image for this Volume.
    *
@@ -103,7 +103,7 @@ public class Volume extends Aggregation {
             + ", " + super.toString()
             + "]";
   }
-  
+
   /**
    * Retrieves an ordered list of issue DOIs contained in this volume
    * @return ordered list of issue DOIs contained in this volume. 

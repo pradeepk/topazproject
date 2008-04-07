@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = Annotea.W3C_TYPE_NS + "Change")
 public class Correction extends Annotation implements ArticleAnnotation, Serializable {
   private static final long serialVersionUID = -8174779804923945692L;
-  
+
   @Predicate(uri = Annotea.W3C_NS + "body")
   private URI body;
 
@@ -50,7 +50,7 @@ public class Correction extends Annotation implements ArticleAnnotation, Seriali
   public void setBody(URI body) {
     this.body = body;
   }
-  
+
   /**
    * Human friendly string for display and debugging.
    *

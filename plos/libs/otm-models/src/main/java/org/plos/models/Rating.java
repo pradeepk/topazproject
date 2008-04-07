@@ -32,7 +32,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = Rating.RDF_TYPE)
 public class Rating extends Annotation implements Serializable {
   private static final long serialVersionUID = 849445395175525204L;
-  
+
   public static final String RDF_TYPE = Rdf.topaz + "RatingsAnnotation";
   /** Style */
   public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";
@@ -67,7 +67,7 @@ public class Rating extends Annotation implements Serializable {
   public void setBody(RatingContent rating) {
     this.body = rating;
   }
-  
+
   public String getType() {
     return RDF_TYPE;
   }

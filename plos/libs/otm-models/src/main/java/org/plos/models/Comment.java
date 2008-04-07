@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = Comment.RDF_TYPE)
 public class Comment extends Annotation implements ArticleAnnotation, Serializable {
   private static final long serialVersionUID = 7759871310632000347L;
-  
+
   public static final String RDF_TYPE = Annotea.W3C_TYPE_NS + "Comment";
   /**
    * Annotation type Namespace URI
@@ -62,7 +62,7 @@ public class Comment extends Annotation implements ArticleAnnotation, Serializab
   public void setBody(URI body) {
     this.body = body;
   }
-  
+
   public String getType() {
     return RDF_TYPE;
   }

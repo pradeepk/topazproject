@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = Rdf.topaz + "Article", model = "ri")
 public class Article extends ObjectInfo implements Serializable {
   private static final long serialVersionUID = 7195650215022649188L;
-  
+
   /** Article state of "Active" */
   public static final int STATE_ACTIVE   = 0;
   /** Article state of "Disabled" */

@@ -36,7 +36,7 @@ public interface ArticleAnnotation {
 
   public URI getId();
   public void setId(URI newId);
-  
+
   public URI getBody();
   public void setBody(URI body);
 
@@ -45,13 +45,13 @@ public interface ArticleAnnotation {
 
   public URI getAnnotates();
   public void setAnnotates(URI annotated);
-  
+
   public String getContext();
   public void setContext(String context);
 
   public String getCreator();
   public void setCreator(String user);
-  
+
   public String getAnonymousCreator();
   public void setAnonymousCreator(String user);
 
@@ -60,7 +60,7 @@ public interface ArticleAnnotation {
 
   public Annotation getSupersedes();
   public void setSupersedes(Annotation a);
-  
+
   public Annotation getSupersededBy();
   public void setSupersededBy(Annotation a);
 

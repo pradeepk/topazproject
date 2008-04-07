@@ -135,7 +135,7 @@ public class Reply extends Annotea {
   public void setId(URI id) {
     this.id = id;
   }
-  
+
   public String getType() {
     return RDF_TYPE;
   }
