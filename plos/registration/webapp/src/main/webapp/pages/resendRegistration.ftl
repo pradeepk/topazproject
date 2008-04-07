@@ -14,7 +14,7 @@
     	<@s.textfield name="loginName" label="E-mail " required="true" id="email" tabindex="1" maxlength="256"/>
 		</ol>
   	<div class="btnwrap">
-	  <@s.submit name="submit" id="submit" value="Submit" tabindex="2"/>
+	  <@s.submit id="submit" value="Submit" tabindex="2"/>
 	</div>
 	</fieldset>
 
