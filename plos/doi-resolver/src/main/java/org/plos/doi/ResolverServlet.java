@@ -224,8 +224,6 @@ public class ResolverServlet extends HttpServlet{
     String doiUriStr = INFO_DOI_PREFIX + doi;
     if (rdfTypes.contains(RDF_TYPE_ANNOTATION)) {
       try {
-        DOITypeResolver resolver = new DOITypeResolver(new URI(
-          myConfig.getString("topaz.services.itql.uri")));
         String annotatedRoot = resolver.getAnnotatedRoot(doiUriStr);
         String rootUri = matchDoiToJournal(annotatedRoot);
         if (rootUri != null) {
