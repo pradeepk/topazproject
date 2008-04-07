@@ -56,7 +56,6 @@ public class BrowseVolumeAction extends BaseActionSupport {
   public String execute() throws Exception {
     Journal currentJournal = journalService.getCurrentJournal(session);
     volumeInfos = browseService.getVolumeInfosForJournal(currentJournal);
-    Collections.reverse(volumeInfos);
     currentVolume = volumeInfos.get(0);
 
     currentIssue = browseService.getIssueInfo(currentJournal.getCurrentIssue());

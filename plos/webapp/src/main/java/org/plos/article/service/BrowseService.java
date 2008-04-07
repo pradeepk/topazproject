@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -341,10 +342,12 @@ public class BrowseService {
   }
 
   /**
-   * Returns a list of VolumeInfos for the given Journal. Uses the CacheAdminHelper pull-through cache.
-   *
-   * @param journal
-   * @return
+   * Returns a list of VolumeInfos for the given Journal.
+   * VolumeInfos are sorted in reverse order to reflect most common usage.
+   * Uses the CacheAdminHelper pull-through cache. 
+   * 
+   * @param journal To find VolumeInfos for.
+   * @return VolumeInfos for journal in reverse order.
    */
   public List<VolumeInfo> getVolumeInfosForJournal(final Journal journal) {
 
@@ -354,8 +357,9 @@ public class BrowseService {
                                          new CacheAdminHelper.EhcacheUpdater<List<VolumeInfo>>() {
        public List<VolumeInfo> lookup() {
          final List<URI> volumeDois = journal.getVolumes();
-
-         return loadVolumeInfos(volumeDois);
+         List<VolumeInfo> volumeInfos = loadVolumeInfos(volumeDois);
+         Collections.reverse(volumeInfos);
+         return volumeInfos;
        }});
   }
 
