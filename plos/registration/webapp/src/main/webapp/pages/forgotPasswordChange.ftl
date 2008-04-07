@@ -50,7 +50,7 @@
       <@s.password name="password1" label="New password " required="true" id="newPassword1" tabindex="1" maxlength="255" after=" (Password must be at least 6 characters)"/>
       <@s.password name="password2" label="Please re-type your new password " required="true" id="newPassword2" tabindex="2" maxlength="255" />
 		</ol>
-	  <@s.submit name="submit" id="submit" value="Submit" tabindex="3"/>
+	  <@s.submit id="submit" value="Submit" tabindex="3"/>
 	</fieldset>
 	
 	</@s.form>

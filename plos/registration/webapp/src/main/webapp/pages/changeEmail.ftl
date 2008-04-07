@@ -35,7 +35,7 @@
       <@s.textfield name="newLogin2" label="Please re-type your new e-mail address " required="true" id="newLogin2" tabindex="4" maxlength="256" />
 		</ol>
 	<div class="btnwrap">
-	  <@s.submit name="submit" id="submit" value="Submit" tabindex="5"/>
+	  <@s.submit id="submit" value="Submit" tabindex="5"/>
 	</div>
 	</fieldset>
 	
