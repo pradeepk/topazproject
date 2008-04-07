@@ -95,3 +95,5 @@ opt.arguments().each() { uri ->
 
 if (!TEST)
   tx.commit()
+
+System.exit(0)

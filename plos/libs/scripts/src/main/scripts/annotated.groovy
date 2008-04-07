@@ -128,3 +128,4 @@ while (results.next()) {
 }
 
 sess.close()
+System.exit(0)

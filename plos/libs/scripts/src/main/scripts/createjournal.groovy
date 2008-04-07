@@ -162,3 +162,5 @@ if (!DRYRUN) {
 }
 
 // TODO: Deal with errors (i.e. catch exceptions)
+
+System.exit(0)

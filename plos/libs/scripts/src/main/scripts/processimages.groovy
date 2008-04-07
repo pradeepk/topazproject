@@ -153,6 +153,8 @@ try {
   }
 }
 
+System.exit(0)
+
 private void resizeImage(img, imgNames, file) {
   name =  img.getName()
   baseName = name.substring(0, name.length()-4) + '.png'

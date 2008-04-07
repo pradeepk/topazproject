@@ -130,3 +130,5 @@ private void indexDoi(String fgsRepository, String fgsAction, String doi, FgsOpe
     throw new Exception(errorMessage, re)
   }
 }
+
+System.exit(0)

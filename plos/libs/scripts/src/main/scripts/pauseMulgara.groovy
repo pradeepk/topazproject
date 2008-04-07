@@ -58,3 +58,4 @@ println "Issuing lock cmd: $lockCmd ..."
 itql.doUpdate(lockCmd, null)
 
 println " completed!"
+System.exit(0)

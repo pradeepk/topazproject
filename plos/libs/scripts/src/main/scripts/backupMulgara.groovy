@@ -61,3 +61,4 @@ print "Issuing backup cmd: $backupCmd ..."
 itql.doUpdate(backupCmd, null)
 
 println " completed!"
+System.exit(0)

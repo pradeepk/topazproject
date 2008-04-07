@@ -127,6 +127,7 @@ if (msgs.getBuffer().length() > 0)
   throw new TransformerException(msgs.toString());
 
 println "result: ${res.getSystemId()}, ${res.getNode()}"
+System.exit(0)
 
 /* Note: it would be preferable (and correct according to latest JAXP specs) to use
  * t.setErrorListener(), but Saxon does not forward <xls:message>'s to the error listener.

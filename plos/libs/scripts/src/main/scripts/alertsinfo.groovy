@@ -105,3 +105,4 @@ while (true)
 }
 
 sess.close()
+System.exit(0)
