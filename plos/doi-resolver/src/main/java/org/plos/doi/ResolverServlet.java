@@ -151,8 +151,6 @@ public class ResolverServlet extends HttpServlet {
       log.warn("Could not resolve doi: " + doi, e);
       failWithError(resp);
     }
-
-    return;
   }
 
   /**
@@ -163,8 +161,6 @@ public class ResolverServlet extends HttpServlet {
    */
   public void doPost(HttpServletRequest req, HttpServletResponse resp) {
     failWithError(resp);
-
-    return;
   }
 
   private Set<String> lookupDOI(String doi) {
@@ -201,29 +197,27 @@ public class ResolverServlet extends HttpServlet {
       if (journalRegEx.matcher(doi).matches()) {
         rdfTypes = lookupDOI(doi);
 
-        if (rdfTypes != null) {
-          if (rdfTypes.contains(RDF_TYPE_ARTICLE)) {
-            redirectURL = new StringBuilder(urls[i]);
+        if ((rdfTypes != null) && rdfTypes.contains(RDF_TYPE_ARTICLE)) {
+          redirectURL = new StringBuilder(urls[i]);
 
-            try {
-              redirectURL.append(myConfig.getString("pub.article-action"))
-                          .append(URLEncoder.encode(INFO_DOI_PREFIX, "UTF-8"))
-                          .append(URLEncoder.encode(doi, "UTF-8"));
-            } catch (UnsupportedEncodingException uee) {
-              if (log.isDebugEnabled()) {
-                log.debug("Couldn't encode URL with UTF-8 encoding", uee);
-              }
-
-              redirectURL.append(myConfig.getString("pub.article-action"))
-                          .append(URLEncoder.encode(INFO_DOI_PREFIX)).append(URLEncoder.encode(doi));
-            }
-
+          try {
+            redirectURL.append(myConfig.getString("pub.article-action"))
+              .append(URLEncoder.encode(INFO_DOI_PREFIX, "UTF-8"))
+              .append(URLEncoder.encode(doi, "UTF-8"));
+          } catch (UnsupportedEncodingException uee) {
             if (log.isDebugEnabled()) {
-              log.debug("Matched: " + doi + "; redirecting to: " + redirectURL.toString());
+              log.debug("Couldn't encode URL with UTF-8 encoding", uee);
             }
 
-            return redirectURL.toString();
+            redirectURL.append(myConfig.getString("pub.article-action"))
+              .append(URLEncoder.encode(INFO_DOI_PREFIX)).append(URLEncoder.encode(doi));
           }
+
+          if (log.isDebugEnabled()) {
+            log.debug("Matched: " + doi + "; redirecting to: " + redirectURL.toString());
+          }
+
+          return redirectURL.toString();
         }
       }
 
@@ -231,19 +225,17 @@ public class ResolverServlet extends HttpServlet {
         String possibleArticleDOI = doi.substring(0, doi.length() - 5);
         rdfTypes = lookupDOI(possibleArticleDOI);
 
-        if (rdfTypes != null) {
-          if (rdfTypes.contains(RDF_TYPE_ARTICLE)) {
-            redirectURL = new StringBuilder(urls[i]);
-            redirectURL.append(myConfig.getString("pub.figure-action1")).append(INFO_DOI_PREFIX)
-                        .append(possibleArticleDOI).append(myConfig.getString("pub.figure-action2"))
-                        .append(INFO_DOI_PREFIX).append(doi);
+        if ((rdfTypes != null) && rdfTypes.contains(RDF_TYPE_ARTICLE)) {
+          redirectURL = new StringBuilder(urls[i]);
+          redirectURL.append(myConfig.getString("pub.figure-action1")).append(INFO_DOI_PREFIX)
+            .append(possibleArticleDOI).append(myConfig.getString("pub.figure-action2"))
+            .append(INFO_DOI_PREFIX).append(doi);
 
-            if (log.isDebugEnabled()) {
-              log.debug("Matched: " + doi + "; redirecting to: " + redirectURL.toString());
-            }
-
-            return redirectURL.toString();
+          if (log.isDebugEnabled()) {
+            log.debug("Matched: " + doi + "; redirecting to: " + redirectURL.toString());
           }
+
+          return redirectURL.toString();
         }
       }
     }
