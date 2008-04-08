@@ -61,8 +61,6 @@ import org.topazproject.otm.stores.ItqlStore;
 public class ArticleUtil {
   private static final Log           log   = LogFactory.getLog(ArticleUtil.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private static final String        MODEL = "<" + CONF.getString("topaz.models.articles") + ">";
-  private static final String        MODEL_PP = "<" + CONF.getString("topaz.models.pp") + ">";
   private static final List          FGS_URLS  = CONF.getList("topaz.fedoragsearch.urls.url");
   private static final String        FGS_REPO  = CONF.getString("topaz.fedoragsearch.repository");
   private static final String        queueDir    = CONF.getString("pub.spring.ingest.source", "/var/spool/plosone/ingestion-queue");
@@ -70,7 +68,6 @@ public class ArticleUtil {
 
   private final Uploader   uploader;
   private final FedoraAPIM apim;
-  private final Session sess;
   private final FgsOperations[] fgs;
   private final Ingester   ingester;
   private static final URI        fedoraServer = getFedoraBaseUri();
@@ -123,7 +120,6 @@ public class ArticleUtil {
     this.uploader = new Uploader(uploadUri, uploadUserName, uploadPasswd);
     this.apim     = APIMStubFactory.create(fedoraUri, fedoraUserName, fedoraPasswd);
     this.fgs      = getFgsOperations();
-    this.sess     = sess;
     this.ingester = new Ingester(sess, apim, uploader, fgs);
   }
 

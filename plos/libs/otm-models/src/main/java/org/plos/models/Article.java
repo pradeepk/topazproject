@@ -18,7 +18,6 @@
  */
 package org.plos.models;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
