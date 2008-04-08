@@ -46,7 +46,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix(Rdf.topaz)
 @Entity(model = "profiles")
-public class UserProfile extends FoafPerson implements Serializable {
+public class UserProfile extends FoafPerson {
   private static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
   private static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
 

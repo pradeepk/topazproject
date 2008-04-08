@@ -36,7 +36,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Amit Kapoor
  */
 @Entity(type = Rdf.topaz + "Article", model = "ri")
-public class Article extends ObjectInfo implements Serializable {
+public class Article extends ObjectInfo {
   private static final long serialVersionUID = 7195650215022649188L;
 
   /** Article state of "Active" */

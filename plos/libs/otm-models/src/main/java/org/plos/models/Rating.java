@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Stephen Cheng
  */
 @Entity(type = Rating.RDF_TYPE)
-public class Rating extends Annotation implements Serializable {
+public class Rating extends Annotation {
   private static final long serialVersionUID = 849445395175525204L;
 
   public static final String RDF_TYPE = Rdf.topaz + "RatingsAnnotation";
