@@ -188,7 +188,6 @@ public class OwlGenerator {
    * @param graph the named graph where the OWL metadata is to be stored
    */
   public void save(ModelConfig graph) throws OtmException {
-    Session otmSession = otmFactory.openSession();
     otmFactory.addModel(graph);
     otmFactory.getTripleStore().createModel(graph);
   }
@@ -220,7 +219,6 @@ public class OwlGenerator {
       if (type == null)
         continue;
       OWLClass domain = getOWLClass(type,cm.getName());
-      HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
       for (RdfMapper m: cm.getRdfMappers()) {
