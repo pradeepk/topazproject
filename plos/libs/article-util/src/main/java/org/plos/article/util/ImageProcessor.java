@@ -150,7 +150,7 @@ public final class ImageProcessor {
             sindx = s.indexOf(TKN_ARTICLE_TYPE_PREFIX_B, sindx);
             if(sindx >= 0) {
               sindx += TKN_ARTICLE_TYPE_PREFIX_B.length();
-              int eindx = s.indexOf('<', sindx + TKN_ARTICLE_TYPE_PREFIX_B.length());
+              int eindx = s.indexOf('<', sindx);
               s = s.substring(sindx, eindx);
               ArticleType at = ArticleType.getKnownArticleTypeForHeading(s);
               if (at == null) {
