@@ -81,6 +81,7 @@ public class UserService {
   private Collection<String> monthlyCategories;
   private Map<String, String> categoryNames;
   private UserContext userContext;
+  private CacheAdminHelper cahelper;
 
   public UserService() throws IOException {
     pep = new UsersPEP();
@@ -201,7 +202,7 @@ public class UserService {
 
     final Object lock = (USER_LOCK + topazUserId).intern();
 
-    return CacheAdminHelper.getFromCacheE(userCache, USER_KEY + topazUserId, -1, lock, "userName",
+    return cahelper.getFromCacheE(userCache, USER_KEY + topazUserId, -1, lock, "userName",
                                new CacheAdminHelper.EhcacheUpdaterE<String, ApplicationException>() {
       public String lookup() throws ApplicationException {
         return getDisplayName(topazUserId);
@@ -781,6 +782,16 @@ public class UserService {
     this.session = session;
   }
 
+  /**
+   * Spring injected method to set the CacheAdminHelper. 
+   * 
+   * @param cah - the Spring injected CacheAdminHelper
+   */
+  @Required
+  public void setCacheAdminHelper(CacheAdminHelper cah) {
+    this.cahelper = cah;
+  }
+  
   /**
    * Set the user's context which can be used to obtain user's session values/attributes
    * @param userContext userContext

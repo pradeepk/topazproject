@@ -49,6 +49,7 @@ public class CreateCitation extends BaseActionSupport {
   private CitationInfo citation;
   private String citationString;
   private Ehcache articleAnnotationCache;
+  private CacheAdminHelper cahelper;
 
   private static final Log log = LogFactory.getLog(CreateCitation.class);
 
@@ -63,7 +64,8 @@ public class CreateCitation extends BaseActionSupport {
     // lock @ Article level
     final Object lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
 
-    citation = CacheAdminHelper.getFromCacheE(articleAnnotationCache, CITATION_KEY + articleURI, -1,
+    
+    citation = cahelper.getFromCacheE(articleAnnotationCache, CITATION_KEY + articleURI, -1,
             lock, "citation",
             new CacheAdminHelper.EhcacheUpdaterE<CitationInfo, ApplicationException>() {
               public CitationInfo lookup() throws ApplicationException {
@@ -129,5 +131,15 @@ public class CreateCitation extends BaseActionSupport {
   @Required
   public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
+  }
+  
+  /**
+   * Spring injected method to set the CacheAdminHelper. 
+   * 
+   * @param cah - the Spring injected CacheAdminHelper
+   */
+  @Required
+  public void setCacheAdminHelper(CacheAdminHelper cah) {
+    this.cahelper = cah;
   }
 }

@@ -62,6 +62,7 @@ public class FetchArticleService {
 
   private Ehcache articleAnnotationCache;
   private Ehcache simplePageCachingFilter;
+  private CacheAdminHelper cahelper;
 
   private String getTransformedArticle(final String articleURI) throws ApplicationException {
     try {
@@ -90,7 +91,7 @@ public class FetchArticleService {
                           RemoteException, NoSuchArticleIdException {
     final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
 
-    return CacheAdminHelper.getFromCacheE(articleAnnotationCache, ARTICLE_KEY  + articleURI, -1,
+    return cahelper.getFromCacheE(articleAnnotationCache, ARTICLE_KEY  + articleURI, -1,
             lock, "transformed article",
             new CacheAdminHelper.EhcacheUpdaterE<String, ApplicationException>() {
               public String lookup() throws ApplicationException {
@@ -241,7 +242,7 @@ public class FetchArticleService {
     // do caching here rather than at articleOtmService level because we want the cache key
     // to be article specific
     final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
-    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+    return cahelper.getFromCacheE(articleAnnotationCache,
             ARTICLEINFO_KEY + articleURI, -1, lock, "objectInfo",
             new CacheAdminHelper.EhcacheUpdaterE<Article, ApplicationException>() {
               public Article lookup() throws ApplicationException {
@@ -289,5 +290,15 @@ public class FetchArticleService {
 
     // TODO: would be ideal to invalidate cache after every Article removal, performance issues?
     // simplePageCachingFilter.removeAll();
+  }
+
+  /**
+   * Spring injected method to set the CacheAdminHelper. 
+   * 
+   * @param cah - the Spring injected CacheAdminHelper
+   */
+  @Required
+  public void setCacheAdminHelper(CacheAdminHelper cah) {
+    this.cahelper = cah;
   }
 }

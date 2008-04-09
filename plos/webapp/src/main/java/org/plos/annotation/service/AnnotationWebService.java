@@ -71,6 +71,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   private PermissionWebService      permissionsWebService;
   private FetchArticleService fetchArticleService;
   private Ehcache articleAnnotationCache;
+  private CacheAdminHelper cahelper;
 
   protected static final Set<Class<? extends Annotation>> ALL_ANNOTATION_CLASSES = new HashSet<Class<? extends Annotation>>();
   static {
@@ -418,14 +419,15 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public List<Annotation> listAnnotationsForTarget(final String target, final Set<Class<? extends Annotation>> annotationClassTypes) {
     final Object lock = (FetchArticleService.ARTICLE_LOCK + target).intern(); // lock @ Article level
-    List<Annotation> allAnnotations = CacheAdminHelper
-        .getFromCache(articleAnnotationCache, ANNOTATED_KEY + target,
-            -1, lock, "annotation list",
-            new CacheAdminHelper.EhcacheUpdater<List<Annotation>>() {
-              public List<Annotation> lookup() {
-                return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
-              }
-            });
+    List<Annotation> allAnnotations = 
+      cahelper.getFromCache(articleAnnotationCache, ANNOTATED_KEY + target, -1, lock,
+                            "annotation list",
+                            new CacheAdminHelper.EhcacheUpdater<List<Annotation>>() {
+                              public List<Annotation> lookup() {
+                                return listAnnotations(target, getApplicationId(), -1,
+                                                       ALL_ANNOTATION_CLASSES);
+                              }
+                            });
 
     // TODO: Since we cache the set of all annotations, we can't query and cache a limited set of annotations
     // at this time, so we have to filter out the types here and query for all types above when populating the cache
@@ -584,9 +586,8 @@ public class AnnotationWebService extends BaseAnnotationService {
                                throws RemoteException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
     final Object lock = (ANNOTATION_LOCK + annotationId).intern();
-    Annotation a = CacheAdminHelper.getFromCache(articleAnnotationCache, ANNOTATION_KEY + annotationId,
-        -1, lock, "individual annotation",
-        new CacheAdminHelper.EhcacheUpdater<Annotation>() {
+    Annotation a = cahelper.getFromCache(articleAnnotationCache, ANNOTATION_KEY + annotationId,
+        -1, lock, "individual annotation", new CacheAdminHelper.EhcacheUpdater<Annotation>() {
           public Annotation lookup() {
             return TransactionHelper.doInTx(session,
                 new TransactionHelper.Action<Annotation>() {
@@ -888,5 +889,15 @@ public class AnnotationWebService extends BaseAnnotationService {
     // annotea.getState();
     // annotea.getTitle();
     // annotea.getType();
+  }
+
+  /**
+   * Spring injected method to set the CacheAdminHelper. 
+   * 
+   * @param cah - the Spring injected CacheAdminHelper
+   */
+  @Required
+  public void setCacheAdminHelper(CacheAdminHelper cah) {
+    this.cahelper = cah;
   }
 }

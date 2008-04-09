@@ -451,6 +451,10 @@
     <aop:scoped-proxy/>
   </bean>
 
+  <bean id="cacheAdminHelper" class="org.plos.util.CacheAdminHelper" scope="request">
+    <aop:scoped-proxy/>
+  </bean>
+
   <bean id="journalService" class="org.plos.journal.JournalService" scope="singleton">
     <constructor-arg index="0">
       <ref bean="otmSessionFactory"/>

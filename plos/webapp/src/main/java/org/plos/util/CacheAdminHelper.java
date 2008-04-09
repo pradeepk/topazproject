@@ -15,6 +15,8 @@ import net.sf.ehcache.Element;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.Session;
 
 /**
  * Helper to deal with cache administration.
@@ -37,12 +39,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CacheAdminHelper {
   private static Log log = LogFactory.getLog(CacheAdminHelper.class);
-
-  /** 
-   * Not meant to be instantiated. 
-   */
-  private CacheAdminHelper() {
-  }
+  private Session otmSession;
   
   /** 
    * Look up a value in the cache, updating the cache with a new value if not found or if the old
@@ -51,15 +48,32 @@ public class CacheAdminHelper {
    * @param cache   the cache to look up the value in
    * @param key     the key to use for the lookup
    * @param refresh the max-age of entries in the cache (in seconds), or -1 for indefinite
+   * @param otmSession TODO
    * @param lock    the object to synchronized on
    * @param desc    a short description of the object being retrieved (for logging only)
    * @param updater the updater to call to get the value if not found in the cache; may be null
+   * @param otmSession the current otm session if any for this request
    * @return the value in the cache, or returned by the <var>updater</var> if not in the cache
    */
-  public static <T> T getFromCache(Ehcache cache, String key, int refresh, Object lock,
-                                   String desc, EhcacheUpdater<T> updater) {
+  public <T> T getFromCache(Ehcache cache, String key, int refresh, 
+                                   Object lock, String desc, EhcacheUpdater<T> updater) {
+    Element e;
+    
+    // If we are inside a live transaction, don't lock on the cache as this could cause deadlock
+    if (otmSession!=null && otmSession.getTransaction()!=null) {
+      if (log.isInfoEnabled()) {
+        log.info("Attempted to access cache within a live OTM Transaction. Skipping synchronization on key '"+
+                 lock.toString()+"' for cache '"+cache.getName()+"' call description='"+desc+"'");
+      }
+      e = new Element(key, updater.lookup());
+      if (refresh > 0)
+        e.setTimeToLive(refresh);
+      // We can update the cache since we have the lock on the DB
+      cache.put(e);
+    }
+    
     synchronized (lock) {
-      Element e = cache.get(key);
+      e = cache.get(key);
 
       if (e == null) {
         if (updater == null)
@@ -83,9 +97,8 @@ public class CacheAdminHelper {
       } else if (log.isDebugEnabled()) {
           log.debug("cache hit: " + cache.getName() + "/" + key + "(" + desc + ")");
       }
-
-      return (T) e.getValue();
     }
+    return (T) e.getValue();
   }
 
   /** 
@@ -95,16 +108,32 @@ public class CacheAdminHelper {
    * @param cache   the cache to look up the value in
    * @param key     the key to use for the lookup
    * @param refresh the max-age of entries in the cache (in seconds), or -1 for indefinite
+   * @param otmSession the current otm session if any 
    * @param lock    the object to synchronized on
    * @param desc    a short description of the object being retrieved (for logging only)
    * @param updater the updater to call to get the value if not found in the cache; may be null
    * @return the value in the cache, or returned by the <var>updater</var> if not in the cache
    * @throws Throwable from look up.
    */
-  public static <T, E extends Throwable> T getFromCacheE(Ehcache cache, String key, int refresh,
+  public <T, E extends Throwable> T getFromCacheE(Ehcache cache, String key, int refresh,
           Object lock, String desc, EhcacheUpdaterE<T, E> updater) throws E {
+    Element e;
+    
+    // If we are inside a live transaction, don't lock on the cache as this could cause deadlock
+    if (otmSession!=null && otmSession.getTransaction()!=null) {
+      if (log.isInfoEnabled()) {
+        log.info("Attempted to access cache within a live OTM Transaction. Skipping synchronization on key '"+
+                 lock.toString()+"' for cache '"+cache.getName()+"' call description='"+desc+"'");
+      }
+      e = new Element(key, updater.lookup());
+      if (refresh > 0)
+        e.setTimeToLive(refresh);
+      // We can update the cache since we have the lock on the DB
+      cache.put(e);
+    }
+    
     synchronized (lock) {
-      Element e = cache.get(key);
+      e = cache.get(key);
 
       if (e == null) {
         if (updater == null)
@@ -128,9 +157,9 @@ public class CacheAdminHelper {
       } else if (log.isDebugEnabled()) {
           log.debug("cache hit: " + cache.getName() + "/" + key + "(" + desc + ")");
       }
-
-      return (T) e.getValue();
     }
+
+    return (T) e.getValue();
   }
 
   /**
@@ -152,5 +181,10 @@ public class CacheAdminHelper {
      * @throws Throwable from look up.
      */
     T lookup() throws E;
+  }
+  
+  @Required
+  public void setOtmSession(Session s) {
+    this.otmSession = s;
   }
 }

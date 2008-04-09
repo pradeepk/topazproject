@@ -72,6 +72,7 @@ public class ArticleOtmService {
   private Session        session;
   private JournalService jrnlSvc;
   private Ehcache        articleAnnotationCache;
+  private CacheAdminHelper cahelper;
 
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
 
@@ -550,7 +551,7 @@ public class ArticleOtmService {
 
     // do cache aware lookup
     final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern();  // lock @ Article
-    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+    return cahelper.getFromCacheE(articleAnnotationCache,
       FetchArticleService.ARTICLE_SECONDARY_KEY + article, -1, lock, "secondaryObjects",
       new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
         public SecondaryObject[] lookup() throws NoSuchArticleIdException {
@@ -591,7 +592,7 @@ public class ArticleOtmService {
 
     // do cache aware lookup
     final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern();  // lock @ Article
-    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+    return cahelper.getFromCacheE(articleAnnotationCache,
       FetchArticleService.ARTICLE_FIGURESTABLE_KEY + article, -1, lock, "figuresTables",
       new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
         public SecondaryObject[] lookup() throws NoSuchArticleIdException {
@@ -1011,5 +1012,15 @@ public class ArticleOtmService {
     while (iterator.hasNext()) {
       iterator.next();
     }
+  }
+
+  /**
+   * Spring injected method to set the CacheAdminHelper. 
+   * 
+   * @param cah - the Spring injected CacheAdminHelper
+   */
+  @Required
+  public void setCacheAdminHelper(CacheAdminHelper cah) {
+    this.cahelper = cah;
   }
 }

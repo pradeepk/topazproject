@@ -86,6 +86,8 @@ public class BrowseService {
   private       Ehcache        browseCache;
   private       JournalService journalService;
 
+  private CacheAdminHelper cahelper;
+
 
   /**
    * Create a new instance.
@@ -109,8 +111,8 @@ public class BrowseService {
     Object lock = (DATE_LIST_LOCK + jnlName).intern();
 
     return
-      CacheAdminHelper.getFromCache(browseCache, key, -1, lock, "article dates",
-                                    !load ? null : new CacheAdminHelper.EhcacheUpdater<Years>() {
+      cahelper.getFromCache(browseCache, key, -1, lock,
+                            "article dates", !load ? null : new CacheAdminHelper.EhcacheUpdater<Years>() {
         public Years lookup() {
           return loadArticleDates();
         }
@@ -172,8 +174,8 @@ public class BrowseService {
     int    ttl     = getSecsTillMidnight();
 
     List<URI> uris =
-      CacheAdminHelper.getFromCache(browseCache, key, ttl, lock, "articles by date",
-                                    new CacheAdminHelper.EhcacheUpdater<List<URI>>() {
+      cahelper.getFromCache(browseCache, key, ttl, lock,
+                                    "articles by date", new CacheAdminHelper.EhcacheUpdater<List<URI>>() {
         public List<URI> lookup() {
           return loadArticlesByDate(startDate, endDate);
         }
@@ -218,9 +220,9 @@ public class BrowseService {
 	 * @return the Issue information.
 	 */
 	public IssueInfo getIssueInfo(final URI doi) {
-	  return CacheAdminHelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
-          ISSUE_LOCK + doi, "issue " + doi,
-          new CacheAdminHelper.EhcacheUpdater<IssueInfo>() {
+	  return cahelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
+          ISSUE_LOCK + doi,
+          "issue " + doi, new CacheAdminHelper.EhcacheUpdater<IssueInfo>() {
             public IssueInfo lookup() {
               return getIssueInfo2(doi);
             }
@@ -373,8 +375,8 @@ public class BrowseService {
     
     String key = (VOL_INFOS_FOR_JOURNAL_KEY + (journal.getKey())).intern();
     
-    return CacheAdminHelper.getFromCache(browseCache, key, -1, key, "List of volumes for journal" + journal.getId(),
-                                         new CacheAdminHelper.EhcacheUpdater<List<VolumeInfo>>() {
+    return cahelper.getFromCache(browseCache, key, -1, key,
+                                         "List of volumes for journal" + journal.getId(), new CacheAdminHelper.EhcacheUpdater<List<VolumeInfo>>() {
        public List<VolumeInfo> lookup() {
          final List<URI> volumeDois = journal.getVolumes();
          List<VolumeInfo> volumeInfos = loadVolumeInfos(volumeDois);
@@ -446,25 +448,29 @@ public class BrowseService {
 
   private Object getCatInfo(String key, String desc, boolean load, String jnlName) {
     key += jnlName;
-
-    synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
-      Element e = browseCache.get(key);
-
-      if (e == null) {
-        if (!load)
-          return null;
-
-        if (log.isDebugEnabled())
-          log.debug("retrieving " + desc + " from db");
-
-        loadCategoryInfos(jnlName);
-        e = browseCache.get(key);
-      } else if (log.isDebugEnabled()) {
-        log.debug("retrieved " + desc + " from cache");
-      }
-
-      return e.getValue();
+    
+    if (session != null && session.getTransaction() != null) {
+      log.warn("WARNING: getCatInfo is in an active OTM transaction and was about to enter a synchronized " +
+      		"block for the entire journal that in turn calls OTM. This could have resulted in a deadlock" +
+      		"so it was removed!");
     }
+    
+    Element e = browseCache.get(key);
+    
+    if (e == null) {
+      if (!load)
+        return null;
+      
+      if (log.isDebugEnabled())
+        log.debug("retrieving " + desc + " from db");
+      
+      loadCategoryInfos(jnlName);
+      e = browseCache.get(key);
+    } else if (log.isDebugEnabled()) {
+      log.debug("retrieved " + desc + " from cache");
+    }
+    
+    return e.getValue();
   }
 
   private String getCurrentJournal() {
@@ -810,9 +816,9 @@ public class BrowseService {
     }
 
     return
-      CacheAdminHelper.getFromCache(browseCache, ARTICLE_KEY + id, -1, ARTICLE_LOCK + id,
-                                    "article " + id,
-                                    new CacheAdminHelper.EhcacheUpdater<ArticleInfo>() {
+      cahelper.getFromCache(browseCache, ARTICLE_KEY + id, -1,
+                                    ARTICLE_LOCK + id,
+                                    "article " + id, new CacheAdminHelper.EhcacheUpdater<ArticleInfo>() {
         public ArticleInfo lookup() {
           return loadArticleInfo(id);
         }
@@ -900,5 +906,15 @@ public class BrowseService {
 
     @Predicate(uri = Rdf.foaf + "name")
     public String realName;
+  }
+  
+  /**
+   * Spring injected method to set the CacheAdminHelper. 
+   * 
+   * @param cah - the Spring injected CacheAdminHelper
+   */
+  @Required
+  public void setCacheAdminHelper(CacheAdminHelper cah) {
+    this.cahelper = cah;
   }
 }

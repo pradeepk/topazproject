@@ -51,6 +51,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   private FetchArticleService fetchArticleService;
   private Ehcache articleAnnotationCache;
   private String citation;
+  private CacheAdminHelper cahelper;
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
@@ -93,8 +94,9 @@ public class ListReplyAction extends AnnotationActionSupport {
       // we're only showing annotation citations for formal corrections
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
+        // presuming that we can't be in an OTM transaction at this point so passing null for OTM session...
         final Object lock = (FetchArticleService.ARTICLE_LOCK + articleId).intern();
-        CitationInfo result = CacheAdminHelper.getFromCacheE(articleAnnotationCache,
+        CitationInfo result = cahelper.getFromCacheE(articleAnnotationCache,
                 CreateCitation.CITATION_KEY + articleId, -1, lock, "citation",
                 new CacheAdminHelper.EhcacheUpdaterE<CitationInfo, ApplicationException>() {
                   public CitationInfo lookup() throws ApplicationException {
@@ -206,4 +208,13 @@ public class ListReplyAction extends AnnotationActionSupport {
     this.citationService = citationService;
   }
 
+  /**
+   * Spring injected method to set the CacheAdminHelper. 
+   * 
+   * @param cah - the Spring injected CacheAdminHelper
+   */
+  @Required
+  public void setCacheAdminHelper(CacheAdminHelper cah) {
+    this.cahelper = cah;
+  }
 }
