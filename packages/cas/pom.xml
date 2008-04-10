@@ -14,8 +14,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.plos</groupId>
-      <artifactId>plos-registration-webapp</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-registration-webapp</artifactId>
       <version>${pom.version}</version>
       <type>war</type>
     </dependency>

@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>topaz-lucene-impl</artifactId>
+  <artifactId>ambra-lucene-impl</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>Fedoragsearch topaz search implementation</name>
+  <name>Ambra Fedoragsearch search implementation</name>
   
   <parent>
     <groupId>org.topazproject.ws</groupId>
@@ -34,7 +34,7 @@
       <artifactId>commons-logging</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
     <dependency>
@@ -46,7 +46,7 @@
       <artifactId>mulgara-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
     <dependency>

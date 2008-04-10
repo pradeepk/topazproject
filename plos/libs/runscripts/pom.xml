@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>plosone-runscripts</artifactId>
+  <artifactId>ambra-runscripts</artifactId>
   <packaging>jar</packaging>
-  <name>PLoS Script tools</name>
+  <name>Ambra Script tools</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone-libs</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra-libs</artifactId>
     <version>0.9-SNAPSHOT</version>
   </parent>
 
@@ -37,20 +37,20 @@
     </dependency>
 
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>otm-models</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-otm-models</artifactId>
       <version>${pom.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-util</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-util</artifactId>
       <version>${pom.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>article-util</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-article-util</artifactId>
       <version>${pom.version}</version>
     </dependency>
 
@@ -66,7 +66,7 @@
     </dependency>
     
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
     

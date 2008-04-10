@@ -4,11 +4,11 @@
   <artifactId>entity-resolver</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>Generic entity resolver</name>
+  <name>Ambra Generic entity resolver</name>
   
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone-libs</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra-libs</artifactId>
     <version>0.9-SNAPSHOT</version>
   </parent>
 

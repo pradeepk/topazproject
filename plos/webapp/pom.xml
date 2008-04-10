@@ -5,11 +5,11 @@
   <artifactId>${pom.parent.artifactId}-webapp</artifactId>
   <packaging>war</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>PLoS ONE Web Application</name>
+  <name>Ambra Web Application</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <relativePath>../pom.xml</relativePath>
     <version>0.9-SNAPSHOT</version>
   </parent>
@@ -22,13 +22,13 @@
     </dependency>
 
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>trackback-util</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
-      <artifactId>plosone-emailer</artifactId>
+      <artifactId>ambra-emailer</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
@@ -36,7 +36,7 @@
       <artifactId>ws-search-client-impl</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
     <dependency>
@@ -45,11 +45,11 @@
       <version>1.2-t1</version>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>dom-ranges-helper</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
 
@@ -267,14 +267,14 @@
     </dependency>
 
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>otm-models</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-otm-models</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>article-util</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-article-util</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
 
@@ -293,7 +293,7 @@
   </dependencies>
 
   <build>
-    <finalName>plosone</finalName>
+    <finalName>ambra</finalName>
     <plugins>
       <!--
         mvn clean jetty:run to run the webapp.
@@ -360,7 +360,7 @@
             <systemProperty>
               <!-- In case there is something in /etc, override here, not defaults-dev.xml -->
               <name>plosone.app-context</name>
-              <value>/plosone-webapp</value>
+              <value>/ambra-webapp</value>
             </systemProperty>
             <systemProperty>
               <name>org.apache.commons.logging.Log</name>

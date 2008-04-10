@@ -4,12 +4,12 @@
   <groupId>org.topazproject.ws</groupId>
   <artifactId>ws-search</artifactId>
   <packaging>pom</packaging>
-  <name>Search Webservice</name>
+  <name>Ambra Search Webservice</name>
   <version>0.9-SNAPSHOT</version>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <version>0.9-SNAPSHOT</version>
   </parent>
 

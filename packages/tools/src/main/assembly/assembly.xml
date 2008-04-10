@@ -46,7 +46,7 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.plosone:plosone-scripts:jar:scripts</include>
+        <include>org.topazproject:ambra-scripts:jar:scripts</include>
       </includes>
     </dependencySet>
   </dependencySets>

@@ -49,7 +49,7 @@ import org.apache.commons.logging.LogFactory;
  *   <li>org.plos.configuration.overrides - If set, this defines a named resource or URL
  *        of a resource that is added to the configuration tree - usually supplementing
  *        and overriding settings in /global-defaults.xml and /defaults.xml.
- *   <li>file:/etc/topaz/plosone.xml (or org.plos.configuration) - A set of user overrides
+ *   <li>file:/etc/topaz/ambra.xml (or org.plos.configuration) - A set of user overrides
  *        in /etc. The name of this file can be changed for webapps that use WebAppInitializer
  *        by changing web.xml or by setting the org.plos.configuraiton system property.
  *   <li>System properties
@@ -66,7 +66,7 @@ public class ConfigurationStore {
   /**
    * A property used to define the location of the master set of configuration overrides.
    * This is usually a xml or properties file in /etc somewhere. Note that this must be
-   * a URL. (For example: file:///etc/topaz/plosone.xml.)
+   * a URL. (For example: file:///etc/topaz/ambra.xml.)
    */
   public static final String CONFIG_URL = "org.plos.configuration";
 
@@ -80,7 +80,7 @@ public class ConfigurationStore {
   /**
    * Default configuration overrides in /etc
    */
-  public static final String DEFAULT_CONFIG_URL = "file:///etc/topaz/plosone.xml";
+  public static final String DEFAULT_CONFIG_URL = "file:///etc/topaz/ambra.xml";
 
   /**
    * Name of resource(s) that contain defaults in a given library or web application.<p>

@@ -1,23 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>plosone-util</artifactId>
+  <artifactId>ambra-util</artifactId>
   <packaging>jar</packaging>
-  <name>PLOSOne Utilities</name>
+  <name>Ambra Utilities</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <version>0.9-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>otm-models</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-otm-models</artifactId>
       <version>${pom.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
     <dependency>
@@ -25,7 +25,7 @@
       <artifactId>otm-extras</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
     <dependency>

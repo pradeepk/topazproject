@@ -52,7 +52,7 @@ WARNING: See overrides/defaults in parent common.xml (head/packages/src/main/ass
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>*:plosone-webapp:war</include>
+        <include>*:ambra-webapp:war</include>
       </includes>
     </dependencySet>
     <dependencySet>
@@ -64,7 +64,7 @@ WARNING: See overrides/defaults in parent common.xml (head/packages/src/main/ass
         <include>*:war</include>
       </includes>
       <excludes>
-        <exclude>*:plosone-webapp:war</exclude>
+        <exclude>*:ambra-webapp:war</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>

@@ -428,7 +428,7 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.plosone</groupId>
+        <groupId>org.topazproject</groupId>
         <artifactId>conf-helper</artifactId>
         <version>${pom.version}</version>
       </dependency>
@@ -458,12 +458,12 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.plosone</groupId>
+        <groupId>org.topazproject</groupId>
         <artifactId>dom-ranges-helper</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.plosone</groupId>
+        <groupId>org.topazproject</groupId>
         <artifactId>entity-resolver</artifactId>
         <version>${pom.version}</version>
       </dependency>
@@ -486,7 +486,7 @@
       </dependency>
       <dependency>
         <groupId>org.topazproject.ws</groupId>
-        <artifactId>topaz-lucene-impl</artifactId>
+        <artifactId>ambra-lucene-impl</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>

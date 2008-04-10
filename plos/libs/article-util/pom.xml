@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>article-util</artifactId>
+  <artifactId>ambra-article-util</artifactId>
   <packaging>jar</packaging>
-  <name>Article Utilities</name>
+  <name>Ambra Article Utilities</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone-libs</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra-libs</artifactId>
     <version>0.9-SNAPSHOT</version>
   </parent>
 
@@ -32,7 +32,7 @@
       <artifactId>saxon-dom</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
     <dependency>
@@ -48,17 +48,17 @@
       <artifactId>fedora-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>otm-models</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-otm-models</artifactId>
       <version>${version}</version>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-util</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-util</artifactId>
       <version>${version}</version>
     </dependency>
     <dependency>

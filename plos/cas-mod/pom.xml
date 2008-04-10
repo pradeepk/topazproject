@@ -5,18 +5,18 @@
   <artifactId>${pom.parent.artifactId}-cas-mod</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>PLoS module for ESUP CAS Quick Start</name>
+  <name>Ambra module for ESUP CAS Quick Start</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <relativePath>../pom.xml</relativePath>
     <version>0.9-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
 

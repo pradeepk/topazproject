@@ -19,7 +19,7 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>topaz-lucene-impl</artifactId>
+      <artifactId>ambra-lucene-impl</artifactId>
     </dependency>
   </dependencies>
 

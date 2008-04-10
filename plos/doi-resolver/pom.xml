@@ -5,11 +5,11 @@
   <artifactId>${pom.parent.artifactId}-doi-resolver</artifactId>
   <packaging>war</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>PLoS ONE DOI Resolver</name>
+  <name>AmbraDOI Resolver</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <version>0.9-SNAPSHOT</version>
   </parent>
 
@@ -25,7 +25,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.plosone</groupId>
+      <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
 

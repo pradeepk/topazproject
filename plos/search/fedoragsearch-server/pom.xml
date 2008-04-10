@@ -29,7 +29,7 @@
     </repository>
     <site>
       <id>topaz-docs</id>
-      <url>${topazproject.site.url}/plosone/ws-search/fedoragsearch-server</url>
+      <url>${topazproject.site.url}/ambra/ws-search/fedoragsearch-server</url>
     </site>
   </distributionManagement>
 

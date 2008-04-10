@@ -14,26 +14,26 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-runscripts</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-runscripts</artifactId>
       <version>${pom.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-scripts</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-scripts</artifactId>
       <version>${pom.version}</version>
       <type>jar</type>
       <classifier>scripts</classifier>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-util</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-util</artifactId>
       <version>${pom.version}</version>
       <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>article-util</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-article-util</artifactId>
       <version>${pom.version}</version>
     </dependency>
   </dependencies>

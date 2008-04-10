@@ -6,8 +6,8 @@
   <name>PLoS ONE Web Application Integration Tests</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <relativePath>../pom.xml</relativePath>
     <version>0.9-SNAPSHOT</version>
   </parent>
@@ -38,8 +38,8 @@
       <classifier>jdk15</classifier>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-it-data-basic</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-it-data-basic</artifactId>
       <version>0.81.5</version>
       <type>tbz</type>
       <scope>test</scope>
@@ -49,13 +49,13 @@
       <artifactId>ant-contrib</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-util</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-util</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>plosone-scripts</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-scripts</artifactId>
       <version>${pom.parent.version}</version>
       <classifier>scripts</classifier>
     </dependency>

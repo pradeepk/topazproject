@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>plosone-scripts</artifactId>
+  <artifactId>ambra-scripts</artifactId>
   <packaging>pom</packaging>
-  <name>PLOSOne Scripts</name>
+  <name>Ambra Scripts</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <version>0.9-SNAPSHOT</version>
   </parent>
 

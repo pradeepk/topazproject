@@ -2,14 +2,14 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>${pom.parent.groupId}</groupId>
-  <artifactId>${pom.parent.artifactId}-emailer</artifactId>
+  <artifactId>ambra-emailer</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>PLoS module for Email</name>
+  <name>Ambra module for Email</name>
 
   <parent>
-    <groupId>org.plosone</groupId>
-    <artifactId>plosone</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>ambra</artifactId>
     <relativePath>../pom.xml</relativePath>
     <version>0.9-SNAPSHOT</version>
   </parent>
