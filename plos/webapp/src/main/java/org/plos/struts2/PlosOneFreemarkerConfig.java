@@ -43,7 +43,7 @@ import java.util.Set;
 public class PlosOneFreemarkerConfig {
   private static final Log log = LogFactory.getLog(PlosOneFreemarkerConfig.class);
 
-  private static final String[] DEFAULT_CSS_FILES = {"/css/pone_iepc.css", "/css/pone_screen.css"};
+  private static final String[] DEFAULT_CSS_FILES = {"/css/iepc.css", "/css/screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
   private static final String DEFAULT_TITLE = "Journal";
 

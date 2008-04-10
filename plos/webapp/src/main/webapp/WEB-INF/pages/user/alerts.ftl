@@ -38,17 +38,17 @@
 
 <meta name="description" content="" />
 
-<link rel="shortcut icon" href="images/pone_favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 <link rel="home" title="home" href="http://www.plosone.org"></link>
 
 <link rel="alternate" type="application/rss+xml" title="PLoS Biology: New Articles" href="http://biology.plosjournals.org/perlserv/?request=get-rss&#38;issn=1545-7885&#38;type=new-articles" />
 <link rel="alternate" type="application/rss+xml" title="PLoS Biology: Table of Contents" href="http://biology.plosjournals.org/perlserv/?request=get-rss&#38;issn=1545-7885&#38;type=toc-articles" />
 <link rel="alternate" type="application/rss+xml" title="PLoS Biology: Top Articles" href="http://biology.plosjournals.org/perlserv/?request=get-rss&#38;issn=1545-7885&#38;type=top-articles" />
 			
-<style type="text/css" media="all"> @import "css/pone_screen.css";</style>
-<style type="text/css" media="all"> @import "css/pone_iepc.css";</style>
+<style type="text/css" media="all"> @import "css/screen.css";</style>
+<style type="text/css" media="all"> @import "css/iepc.css";</style>
 <style type="text/css" media="all"> 
-@import "css/pone_forms.css";
+@import "css/forms.css";
 </style>
 <!--
 <rdf:RDF xmlns="http://web.resource.org/cc/"
@@ -78,7 +78,7 @@
 	<!-- end : left banner slot -->
 	<!-- begin : right banner slot -->
 	<div class="right">
-		<img src="images/temp_pone_banner.gif" />
+		<img src="images/temp_banner.gif" />
 	</div>
 	<!-- end : right banner slot -->
 </div>
@@ -109,7 +109,7 @@
 		<legend>Search PLoS ONE</legend>
 			<label for="search">Search</label>
 			<div class="wrap"><input type="text" value="Search PLoS ONE..." onfocus="if(this.value=='Search PLoS ONE...')value='';" onblur="if(this.value=='')value='Search PLoS ONE...';" class="searchField" alt="Search PLoS ONE..." /></div>
-			<input src="images/pone_searchinput_btn.gif" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
+			<input src="images/searchinput_btn.gif" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
 		</fieldset>
 		</form>
 	</div>

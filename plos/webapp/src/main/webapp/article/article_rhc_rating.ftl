@@ -27,7 +27,7 @@
             <ol>
               <li>
               <#if isResearchArticle == true>
-                <ul class="star-rating pone_rating inline-rating-rhc" title="overall">
+                <ul class="star-rating rating inline-rating-rhc" title="overall">
                     <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
                     <li class="current-rating overall-rating pct${overallPct}">Currently ${overallRoundedAverage?string("0.#")}/5 Stars.</li>
                 </ul>
@@ -35,19 +35,19 @@
                 <fieldset id="ratingAverages">
                   <ol class="ratingAvgs">
                     <li><label for="insight">Insight</label>
-                      <ul class="star-rating pone_rating" title="insight">
+                      <ul class="star-rating rating" title="insight">
                         <#assign insightPct = (20 * insightRoundedAverage)?string("##0")>
                         <li class="current-rating average pct${insightPct}">Currently ${insightAverage?string("0.#")}/5 Stars.</li>
                       </ul>
                     </li>
                     <li><label for="reliability">Reliability</label>
-                      <ul class="star-rating pone_rating" title="reliability">
+                      <ul class="star-rating rating" title="reliability">
                         <#assign reliabilityPct = (20 * reliabilityRoundedAverage)?string("##0")>
                         <li class="current-rating average pct${reliabilityPct}">Currently ${reliabilityAverage?string("0.#")}/5 Stars.</li>
                       </ul>
                     </li>
                     <li><label for="style">Style</label>
-                      <ul class="star-rating pone_rating" title="style">
+                      <ul class="star-rating rating" title="style">
                         <#assign stylePct = (20 * styleRoundedAverage)?string("##0")>
                         <li class="current-rating average pct${stylePct}">Currently ${styleAverage?string("0.#")}/5 Stars.</li>
                       </ul>
@@ -55,7 +55,7 @@
                   </ol>
                 </fieldset>
                 <#else>
-                <ul class="star-rating pone_rating inline-rating-rhc" title="average">
+                <ul class="star-rating rating inline-rating-rhc" title="average">
                     <#assign averagePct = (20 * singleRatingRoundedAverage)?string("##0")>
                     <li class="current-rating single-rating pct${averagePct}">Currently ${singleRatingRoundedAverage?string("0.#")}/5 Stars.</li>
                 </ul>

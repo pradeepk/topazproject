@@ -131,7 +131,7 @@
     <feed>
       <title>Topaz Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
-      <icon>${webserver-url}images/pone_favicon.ico</icon>
+      <icon>${webserver-url}images/favicon.ico</icon>
       <id>info:doi/1371/feed.tpjo</id> <!-- Unique id. Should change for different criteria -->
       <extended> <!-- Configuration of extended atom feeds -->
         <prefix>plos</prefix> <!-- namespace prefix for custom elements -->
@@ -227,8 +227,8 @@
       <default>
         <title>Topaz : It's refreshing.</title>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -245,10 +245,10 @@
       <page>
         <name>/index.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_home.css</file>
-          <file>/css/pone_article_markup.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/home.css</file>
+          <file>/css/article_markup.css</file>
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>
@@ -266,9 +266,9 @@
         <title>CODE_ARTICLE_TITLE</title>
         <css>
           <file>/css/star_rating.css</file>
-          <file>/css/pone_rating.css</file>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
+          <file>/css/rating.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -292,8 +292,8 @@
       <page>
         <name>/article/browseIssue.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -314,8 +314,8 @@
       <page>
         <name>/article/browseVolume.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
           <file>/css/plostabs.css</file>
         </css>
         <javascript>
@@ -370,10 +370,10 @@
         <name>/rating/index.ftl</name>
         <css>
           <file>/css/star_rating.css</file>
-          <file>/css/pone_rating.css</file>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_article_markup.css</file>
+          <file>/css/rating.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/article_markup.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -393,7 +393,7 @@
       <page>
         <name>/article/imageWindow.ftl</name>
         <css>
-          <file>/css/pone_images.css</file>
+          <file>/css/images.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -411,7 +411,7 @@
       <page>
         <name>/article/imageWindowLarge.ftl</name>
         <css>
-          <file>/css/pone_images.css</file>
+          <file>/css/images.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -423,54 +423,54 @@
       <page>
         <name>/article/emailArticle.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
       </page>
       <page>
         <name>/article/emailSuccess.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
       </page>
       <page>
         <name>/article/browse.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_article_markup.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/article_markup.css</file>
         </css>
       </page>
       <page>
         <name>/feedback/feedbackEntry.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
       </page>
       <page>
         <name>/feedback/feedbackSuccess.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
       </page>
       <page>
         <name>/user/alerts.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -500,10 +500,10 @@
       <page>
         <name>/user/editPlosAlerts.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -521,10 +521,10 @@
       <page>
         <name>/user/editUser.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -544,9 +544,9 @@
       <page>
         <name>/static/about.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/static.css</file>
         </css>
       </page>
     </journal>
@@ -564,10 +564,10 @@
       <page>
         <name>/journals/virtual/index.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_home.css</file>
-          <file>/css/pone_article_markup.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/home.css</file>
+          <file>/css/article_markup.css</file>
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>
@@ -586,9 +586,9 @@
       <page>
         <name>/journals/virtual/static/about.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/static.css</file>
         </css>
       </page>
     </journal>

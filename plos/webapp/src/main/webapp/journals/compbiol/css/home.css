@@ -19,7 +19,7 @@
  */
 /*
 ----------------------------------------------------------
-Homepages Style Sheet for PLoS Genetics
+Homepages Style Sheet for PLoS Computational Biology
 Created on: August 22, 2006
 Created by: Margaret Shear
 Modified by: Sebastian Toomey
@@ -35,7 +35,7 @@ body		{ background-color: transparent;}
 /* Homepage : Elements
 ----------------------------------------------------------
 */
-#home			{ position: relative; background:  url(../images/pone_home_bg.gif) no-repeat 0 9px!important; margin: 0; margin-top: -30px; border:0;}/* removed border to fix 1px vertical alignment discrepency in IE7*/
+#home			{ position: relative; background:  url(../images/home_bg.gif) no-repeat 0 9px!important; margin: 0; margin-top: -30px; border:0;}/* removed border to fix 1px vertical alignment discrepency in IE7*/
 #home img,
 #home object		{ display: inline; position: relative;}
 #home a:hover 	{ text-decoration: underline; } /* apply a border in hover state */
@@ -85,7 +85,8 @@ All rights reserved.
 
 /* blocks in column 1, subcolumn 2 - i.e. the primary content area */
 #first .last .block { margin:20px 0; padding:0; border:1px solid #ccc; background:transparent; }
-#first .last .block h2 { margin:0; padding:8px 10px 6px 10px; border-bottom:1px dashed #ccc; background:#fdf2c4; }
+#first .last .block h2 { margin:0; padding:8px 10px 6px 10px; border-bottom:1px dashed #ccc; background:#c7d6ed; }
+/*#first .last .block p { margin:0; font-size:.9em; }*/
 
 /* contains columns 3 and column 4 */
 #second 					{ width: 402px; padding-top:27px;}
@@ -96,7 +97,7 @@ All rights reserved.
 #second p { font-size:.9em; }
 
 /* lower contains lower background image */
-#lower  { width:100%; margin:0; height:50px; padding-top:40px; clear:both; font-size:.9em; background:url(../images/pone_home_lower_bg.gif) no-repeat bottom center;}
+#lower  { width:100%; margin:0; height:50px; padding-top:40px; clear:both; font-size:.9em; background:url(../images/home_lower_bg.gif) no-repeat bottom center;}
 
 /* self clear floated parent containers This is critical for proper display in IE7 */
 #lower:after,
@@ -129,14 +130,14 @@ div.banner object			{ padding-top: 0; }
 
 /* partner icons */
 div.partner 				{ text-align: center; margin:0; padding:0; }
-div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/pone_home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
+div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
 div.partner img 			{ margin:0 20px; vertical-align:top;}
 
 /* blocks in right-hand column */
 div#second div.first div.block { margin-bottom:15px; }
 div#second div.first div.block  p { margin:0 0 5px 0; }
 div#second div.first div.block  ul { margin:0; padding:0; }
-div#second div.first div.block  ul li { background:transparent url(../images/pone_home_articles_li_bg.gif) no-repeat scroll 0pt 10px; font-size:0.9em; list-style-type:none; margin-left:10px; padding:3px 0pt 3px 10px; }
+div#second div.first div.block  ul li { background:transparent url(../images/home_articles_li_bg.gif) no-repeat scroll 0pt 10px; font-size:0.9em; list-style-type:none; margin-left:10px; padding:3px 0pt 3px 10px; }
 
 /* Stay Connected block - list styles */
 div#connect ul { margin-bottom:10px; padding:0; text-indent:0; }
@@ -154,6 +155,12 @@ div#issue h3 a:hover { text-decoration:underline; }
 div#issue img { margin:0; padding:0; line-height:0 }
 div#second div.first div#mission p { margin:5px 0 0 0; }
 
+/* ISCB block - comp biol only */
+/* Image replacement CSS based on the Shea Enhancement to the Gilder/Levin technique: http://www.mezzoblue.com/tests/revised-image-replacement */
+div#iscb { padding-bottom:10px; border:1px solid #ccc; background-color:#c7d6ed; }
+div#iscb h3 { margin:0; width:251px; height:60px; position:relative; border:0; }
+div#iscb h3 a { background: url(../images/iscb.gif) no-repeat; position:absolute; width:100%; height:100%; }
+
 /* subject contains and category styles the category list */
 div.subject		{ padding: 0; padding-top: 5px; border: none;}
 dl.category 		{ margin: 0;  padding: 0 0 20px 0; }
@@ -164,7 +171,7 @@ dl.category dd { line-height:1.5em; font-size:.9em; padding:0 0 5px 0;}
 dl.category dt a {padding-bottom: 0; margin-bottom: 2px;}
 dl.category dt a:hover {text-decoration: underline;}
 dl.category a.expand,
-dl.category a:visited.expand 	{ padding-left: 15px;  background: url(../images/pone_home_expand.gif) no-repeat 0 5px;}
+dl.category a:visited.expand 	{ padding-left: 15px;  background: url(../images/home_expand.gif) no-repeat 0 5px;}
 dl.category img	{display: inline; padding: 0; margin-left: 0;}
 
 /* outreach block styles, based on those from non-Topaz journals */ 
@@ -184,14 +191,6 @@ div.block.ad a span.body { font-size:.9em; display:block; }
 #home div.block.ad a strong,
 #home div.block.ad a span.body { margin-top:0; margin-left:70px; }
 #home div.block.ad a span.body:after { content:"."; display:block; height:0; clear:both; visibility:hidden; }
-	
-div.mainnav	{ margin: 30px 0 0 ; padding: 20px 0 10px 0;}
-.mainnav ul,			
-.mainnav ul li 		{ margin: 0; padding: 0; list-style-type: none; }
-.mainnav ul			{ text-indent: 10px; margin: 0; padding: 10px;position: relative; }
-.mainnav ul li a 	{ font-family: Georgia, "Times New Roman", Times, serif; font-size: 1.5em; letter-spacing: -.03em; line-height: 1.6em; margin-right: 10px;}
-.mainnav dl			{ margin: 10px 0; padding:0; text-indent: 0; }
-.mainnav dt			{ background-color: #D2F7FF; margin: 5px 0 0 0; padding-right: 5px; font-size: .85em;}			
 
 #home div.other div	{ padding:0; padding:0; }
 div.recent p		{ margin: 0 0 10px 0; }
@@ -199,7 +198,7 @@ div.recent p		{ margin: 0 0 10px 0; }
 #home div.other		{ padding-bottom: 0; /*margin-left: 0;*/ padding-left: 0;}
 #home div.other ul,
 #home div.other p { margin:5px 0 10px 0; padding: 0; text-indent: 0;}
-#home div.other li	{ background: url(../images/pone_home_new_bullet.gif) no-repeat 0 4px; padding: 0 0 5px 14px;margin:0; text-indent: 0; list-style-type: none;}
+#home div.other li	{ background: url(../images/home_new_bullet.gif) no-repeat 0 4px; padding: 0 0 5px 14px;margin:0; text-indent: 0; list-style-type: none;}
 #home div.other h3 { font-weight:bold; }
 #home div.other p a em { white-space:nowrap; } /* for journal names */
 
@@ -213,16 +212,16 @@ div#cta1 strong,
 div#cta2 strong	{ display:block; margin: 0 0 5px 0; font-size:1.2em; color:#444; font-family:Georgia,"Times New Roman",Times,serif; text-decoration:none; }
 
 /* browse widget */
-div#browseWidget { background: url(../images/pone_home_browse_bg.gif) no-repeat left center; }
+div#browseWidget { background: url(../images/home_browse_bg.gif) no-repeat left center; }
 div#browseWidget p { margin:0 0 0 30px; padding:0; font-weight:bold;}
 
 /* apply to all article lists on homepage */
 ul.articles,
 ul.articles li		{ margin: 0; padding: 0; list-style-type: none; }
 ul.articles			{ margin: 5px 4px 10px 0;  padding: 10px 10px 0 6px;}
-#home ul.articles li		{ font-size: .9em; margin-left:10px; padding: 3px 0 3px 10px; list-style:none; background: url(../images/pone_home_articles_li_bg.gif) no-repeat 0 10px;}
+#home ul.articles li		{ font-size: .9em; margin-left:10px; padding: 3px 0 3px 10px; list-style:none; background: url(../images/home_articles_li_bg.gif) no-repeat 0 10px;}
 
-/* NOTE: horizontal tab styles that I'd previously moved to pone_screen.css are now below. These styles are for the Homepage ONLY. Alex's new tab CSS for the Journal Archive page is now on it's own stylesheet: plostabs.css */
+/* NOTE: horizontal tab styles that I'd previously moved to screen.css are now below. These styles are for the Homepage ONLY. Alex's new tab CSS for the Journal Archive page is now on it's own stylesheet: plostabs.css */
 /* tabs and tabbed box */
 div.horizontalTabs	{ position:relative; border:0; margin:0 0 20px; padding:0; background:transparent; width:490px; }
 div.horizontalTabs:after  { content:"."; display: block; height:0; clear:both; visibility:hidden; }
@@ -233,7 +232,7 @@ ul#tabsContainer li span { display:block; float:left; background:url("../images/
 ul#tabsContainer li.active { background-position:0% -40px; }
 ul#tabsContainer li.active span { background-position:100% -40px; padding-bottom: 9px!important; }
 .horizontalTabs .contentwrap { float:left; width:488px; margin:0!important; padding:0!important; background:#ffffff;  border:1px solid #bababa; border-top:0; }
-.horizontalTabs ul {  border:0; /* suppresses "border-bottom:2px solid #acf1ff" from pone_screen.css, ln. #511 */ }
+.horizontalTabs ul {  border:0; /* suppresses "border-bottom:2px solid #acf1ff" from screen.css, ln. #511 */ }
 .horizontalTabs .contentwrap ul { list-style:none; margin:10px 10px 0 10px!important; padding:0!important; }
 .horizontalTabs .contentwrap li	{ display:list-item; background-image:none!important; list-style:none; margin:0!important; padding:0!important; padding-bottom:1em!important; line-height:1.5em; }
 .horizontalTabs .contentwrap li	a { font-weight:bold; }

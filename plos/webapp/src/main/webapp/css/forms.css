@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 /***********************************************/
-/* pone_forms.css                              */
+/* forms.css                              */
 /* - seanaquino@gmail.com for Plos One         */
 /* - created 10-1-2006                         */
 /* - modifed by Sebastian Toomey               */
@@ -37,15 +37,15 @@
 
 .pone-form fieldset {
 	position: relative;
-	border-top: 2px solid #f90;
-	border-bottom: 2px solid #f90;
+	border-top: 2px solid #55E912;
+	border-bottom: 2px solid #55E912;
 	border-right-width: 0px;
 	border-left-width: 0px;
 	border-right-style: none;
 	border-left-style: none;
 	margin: 15px 0;
 	padding: 0px 0px 15px;
-	background: #fcd3b8 url(../images/pone_forms_bg.gif) repeat-x left top;
+	background: #D2F7FF url(../images/forms_bg.gif) repeat-x left top;
 }
 .pone-form fieldset legend {
 	font-family: Georgia, "Times New Roman", Times, serif;
@@ -62,7 +62,7 @@
 	display: block;
 	padding-bottom: 10px;
 	padding-left: 10px;
-	border-bottom-color: #fdae7a;
+	border-bottom-color: #ACF1FF;
 	border-bottom-style: solid;
 	border-bottom-width: 2px;
 	background-color: transparent;
@@ -88,13 +88,13 @@
 }
 /************* general component styles *****************/
 .pone-form ol li label { font-weight: bold; display: block; }
-.pone-form ol li input { width: 200px; border: 1px solid #ccc; padding: 2px; }
+.pone-form ol li input { width: 200px; border: 1px solid #ACF1FF; padding: 2px; }
 .pone-form ol li input.radio { border-width: 0; }
 .pone-form ol li .long-input { width: 324px; } 
-.pone-form ol li select { width: 206px; border: 1px solid #ccc; padding: 2px; }
+.pone-form ol li select { width: 206px; border: 1px solid #ACF1FF; padding: 2px; }
 .pone-form ol li .radio { width: 14px;}
 .pone-form ol li .checkbox { width: 14px;}
-.pone-form textarea {width: 324px; border: 1px solid #ccc; }
+.pone-form textarea {width: 324px; border: 1px solid #ACF1FF; }
 .pone-form #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
 /***********************************************/
@@ -132,7 +132,7 @@
 /***********************************************/ 
 form.advSearch { font-family:verdana, sans-serif; }
 
-div.content form.advSearch ol { margin:0; padding:0.75em 0px; }
+div.content form.advSearch ol { margin:0; padding:0.75em 0px; width:100%; }
 
 div.content form.advSearch li,
 form#quickFind li { background-image:none; list-style: none; margin:.3em 0; margin:0.2em; padding:0; line-height:1.75em; vertical-align:middle; }
@@ -147,7 +147,7 @@ form.advSearch legend { font-family: Georgia, "Times New Roman", Times, serif; f
 * html form.advSearch legend { margin: 0 -7px; } /* IE6 */
 
 /* extra span in legend needed for full-width, underlined legends in Firefox. See http://www.tyssendesign.com.au/articles/css/legends-of-style */
-form.advSearch legend span { display:block; width:650px; padding-bottom:.1em; border-bottom: 1px solid #a25100; }
+form.advSearch legend span { display:block; width:650px; padding-bottom:.1em; border-bottom: 1px solid #069; }
 
 /* hides sub-labels for accessibility */
 form.advSearch span.hide { height:1px; left:-9999em;  overflow:hidden; position:absolute; top:0pt; width:1px; }
@@ -187,7 +187,7 @@ fieldset#subjCats li.options ul { float:left; width:290px; margin:0; padding:0 0
 fieldset#subjCats li.options li { margin:8px 0; padding:0; }
 
 /************* button bar *****************/
-form.advSearch div.btnwrap { margin:0; padding:5px 10px; background-color:#fcd3b8; vertical-align:middle; }
+form.advSearch div.btnwrap { margin:0; padding:5px 10px; background-color:#D2F7FF; vertical-align:middle; }
 form.advSearch div.btnwrap input { width:auto; display:inline; margin-left: 10px; padding:0 1em; font-weight:bold; }
 
 /************* general element styles *****************/

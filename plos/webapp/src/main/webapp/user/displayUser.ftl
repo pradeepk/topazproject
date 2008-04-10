@@ -89,7 +89,7 @@
 
 <div id="content" class="profile">
 
-<img src="${freemarker_config.context}/images/pone_avatar.png" />
+<img src="${freemarker_config.context}/images/avatar.png" />
 <h1>${pou.displayName}</h1>
 
 <ol>

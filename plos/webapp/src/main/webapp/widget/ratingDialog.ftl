@@ -39,7 +39,7 @@
               
 			<#if isResearchArticle == true>
 			<label for="insight">Insight</label>
-			<ul class="star-rating pone_rating edit" title="Rate insight" id="rateInsight">
+			<ul class="star-rating rating edit" title="Rate insight" id="rateInsight">
 				<li class="current-rating pct0"></li>
 				<li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'insight', 1);">1</a></li>
 				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'insight', 2);">2</a></li>
@@ -50,7 +50,7 @@
 	      	<input type="hidden" name="insight" title="insight" value="" />
             
             <label for="reliability">Reliability</label>
-			<ul class="star-rating pone_rating edit" title="Rate reliability" id="rateReliability">
+			<ul class="star-rating rating edit" title="Rate reliability" id="rateReliability">
 				<li class="current-rating pct0"></li>
 				<li><a href="javascript:void(0);" title="Tenuous" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'reliability', 1);">1</a></li>
 				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'reliability', 2);">2</a></li>
@@ -61,7 +61,7 @@
 	      	<input type="hidden" name="reliability" title="reliability" value="" />
             
             <label for="style">Style</label>
-        	<ul class="star-rating pone_rating edit" title="Rate style" id="rateStyle">
+        	<ul class="star-rating rating edit" title="Rate style" id="rateStyle">
 				<li class="current-rating pct0"></li>
 				<li><a href="javascript:void(0);" title="Crude" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'style', 1);">1</a></li>
 				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'style', 2);">2</a></li>
@@ -72,7 +72,7 @@
 	      	<input type="hidden" name="style" title="style" value="" />
 	        <#else>
 			<label for="singleRating">Rating</label>
-			<ul class="star-rating pone_rating edit" title="Rate single" id="rateSingleRating">
+			<ul class="star-rating rating edit" title="Rate single" id="rateSingleRating">
 				<li class="current-rating pct0"></li>
 				<li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 1);">1</a></li>
 				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 2);">2</a></li>

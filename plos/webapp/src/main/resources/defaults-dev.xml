@@ -69,8 +69,8 @@
       <default>
         <title>PLoS ONE : Publishing science\, accelerating research</title>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -154,9 +154,9 @@
         <name>/rating/index.ftl</name>
         <css>
           <file>/css/star_rating.css</file>
-          <file>/css/pone_rating.css</file>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
+          <file>/css/rating.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -177,7 +177,7 @@
       <page>
         <name>/article/imageWindow.ftl</name>
         <css>
-          <file>/css/pone_images.css</file>
+          <file>/css/images.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -195,7 +195,7 @@
       <page>
         <name>/article/imageWindowLarge.ftl</name>
         <css>
-          <file>/css/pone_images.css</file>
+          <file>/css/images.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -207,10 +207,10 @@
       <page>
         <name>/user/alerts.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -240,10 +240,10 @@
       <page>
         <name>/user/editPlosAlerts.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -261,10 +261,10 @@
       <page>
         <name>/user/editUser.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_forms.css</file>
-          <file>/css/pone_static.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/forms.css</file>
+          <file>/css/static.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
@@ -294,9 +294,9 @@
       <page>
         <name>/journals/clinicalTrials/index.ftl</name>
         <css>
-          <file>/css/pone_screen.css</file>
-          <file>/css/pone_iepc.css</file>
-          <file>/css/pone_home.css</file>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/home.css</file>
         </css>
         <javascript>
           <file>/javascript/dojo/dojo_home.js</file>

@@ -19,7 +19,7 @@
  */
 
 /***********************************************/
-/* pone_images.css                              */
+/* images.css                              */
 /* - seanaquino@gmail.com for Plos One         */
 /* - created 11-1-2006                         */
 /***********************************************/
@@ -38,7 +38,7 @@
 	border-bottom: 1px solid #069;
 	padding: 10px 10px 0px;
 	position: relative;
-	background: #8ec8de url(../images/pone_figure-header_bg.gif) repeat-x left -75px;
+	background: #8ec8de url(../images/figure-header_bg.gif) repeat-x left -75px;
 }
 .figure-description {
 	padding: 10px; background: #D2F7FF;
@@ -79,7 +79,7 @@ display: inline-block;
 .figure-popup-header {
 	border-bottom: 1px solid #069;
 	padding: 10px;
-	background: #D2F7FF url(../images/pone_figure-header_bg.gif) repeat-x left bottom;
+	background: #D2F7FF url(../images/figure-header_bg.gif) repeat-x left bottom;
 }
 .figure-popup-description { padding: 10px;}
 /***********************************************/
@@ -118,7 +118,7 @@ a:active	{ }
 }
 #figure-window-hdr {
 	padding: 10px 0px 10px 10px;
-	background: url(../images/pone_toolbar_bg.gif) repeat-x left center;
+	background: url(../images/toolbar_bg.gif) repeat-x left center;
 	text-align: center;
 }
 #figure-window-viewer {
@@ -178,13 +178,13 @@ div.close a:hover	{ background-color: #ddd; }
 a.close,
 a.return			{ font-family: Verdana, Arial, Helvetica, sans-serif; font-size: .8em; margin: 10px; display: block;}
 a.icon				{ padding: 2px 0 2px 20px; background-repeat: no-repeat; background-position: 0px 0px; font-size: .8em; }
-a.ppt				{ background-image: url(../images/pone_icon_ppt.gif); }
-a.image				{ background-image: url(../images/pone_icon_image.gif); }
-a.next				{ background: url(../images/pone_icon_next.gif) no-repeat right center; padding: 2px 20px 2px 0; }
-a.next.hidden { background-image: url(../images/pone_icon_next_off.gif); color: #ccc !important; cursor: default; font-weight: normal !important; }
-a.previous			{ background-image: url(../images/pone_icon_previous.gif); }
-a.previous.hidden { background-image: url(../images/pone_icon_previous_off.gif); color: #ccc !important; cursor: default; font-weight: normal !important; }
-a.larger			{ background-image: url(../images/pone_icon_larger.gif); }
+a.ppt				{ background-image: url(../images/icon_ppt.gif); }
+a.image				{ background-image: url(../images/icon_image.gif); }
+a.next				{ background: url(../images/icon_next.gif) no-repeat right center; padding: 2px 20px 2px 0; }
+a.next.hidden { background-image: url(../images/icon_next_off.gif); color: #ccc !important; cursor: default; font-weight: normal !important; }
+a.previous			{ background-image: url(../images/icon_previous.gif); }
+a.previous.hidden { background-image: url(../images/icon_previous_off.gif); color: #ccc !important; cursor: default; font-weight: normal !important; }
+a.larger			{ background-image: url(../images/icon_larger.gif); }
 div.figure-next		{ text-align: center; border-bottom: 1px solid #CCC; margin-right: 10px; margin-bottom: 5px; padding-bottom: 5px; position: relative; }
 div.figure-next a	{ font-weight: bold; text-decoration: none; font-size: .85em; text-transform: uppercase; }
 

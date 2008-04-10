@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 /***********************************************/
-/* pone_forms.css                              */
+/* forms.css                              */
 /* - seanaquino@gmail.com for Plos One         */
 /* - created 10-1-2006                         */
 /* - modifed by Sebastian Toomey               */
@@ -37,15 +37,15 @@
 
 .pone-form fieldset {
 	position: relative;
-	border-top: 2px solid #667893;
-	border-bottom: 2px solid #667893;
+	border-top: 2px solid #666;
+	border-bottom: 2px solid #666;
 	border-right-width: 0px;
 	border-left-width: 0px;
 	border-right-style: none;
 	border-left-style: none;
 	margin: 15px 0;
 	padding: 0px 0px 15px;
-	background: #c7d6ed url(../images/pone_forms_bg.gif) repeat-x left top;
+	background: #e8e8e8 url(../images/forms_bg.gif) repeat-x left top;
 }
 .pone-form fieldset legend {
 	font-family: Georgia, "Times New Roman", Times, serif;
@@ -62,7 +62,7 @@
 	display: block;
 	padding-bottom: 10px;
 	padding-left: 10px;
-	border-bottom-color: #aab8cd;
+	border-bottom-color: #ccc;
 	border-bottom-style: solid;
 	border-bottom-width: 2px;
 	background-color: transparent;
@@ -147,7 +147,7 @@ form.advSearch legend { font-family: Georgia, "Times New Roman", Times, serif; f
 * html form.advSearch legend { margin: 0 -7px; } /* IE6 */
 
 /* extra span in legend needed for full-width, underlined legends in Firefox. See http://www.tyssendesign.com.au/articles/css/legends-of-style */
-form.advSearch legend span { display:block; width:650px; padding-bottom:.1em; border-bottom: 1px solid #667893; }
+form.advSearch legend span { display:block; width:650px; padding-bottom:.1em; border-bottom: 1px solid #666; }
 
 /* hides sub-labels for accessibility */
 form.advSearch span.hide { height:1px; left:-9999em;  overflow:hidden; position:absolute; top:0pt; width:1px; }
@@ -187,7 +187,7 @@ fieldset#subjCats li.options ul { float:left; width:290px; margin:0; padding:0 0
 fieldset#subjCats li.options li { margin:8px 0; padding:0; }
 
 /************* button bar *****************/
-form.advSearch div.btnwrap { margin:0; padding:5px 10px; background-color:#c7d6ed; vertical-align:middle; }
+form.advSearch div.btnwrap { margin:0; padding:5px 10px; background-color:#ffbfbf; vertical-align:middle; }
 form.advSearch div.btnwrap input { width:auto; display:inline; margin-left: 10px; padding:0 1em; font-weight:bold; }
 
 /************* general element styles *****************/

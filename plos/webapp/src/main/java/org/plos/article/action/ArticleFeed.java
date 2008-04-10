@@ -192,7 +192,7 @@ public class ArticleFeed extends BaseActionSupport {
     final String FEED_TAGLINE = journalConfGetString(configuration, journal,
             "pub.feed.tagline", "Publishing science, accelerating research");
     final String FEED_ICON = journalConfGetString(configuration, journal,
-            "pub.feed.icon", PLOSONE_URI + "images/pone_favicon.ico");
+            "pub.feed.icon", PLOSONE_URI + "images/favicon.ico");
     final String FEED_ID = journalConfGetString(configuration, journal,
             "pub.feed.id", "info:doi/10.1371/feed.pone");
     final String FEED_EXTENDED_NS = journalConfGetString(configuration, journal,

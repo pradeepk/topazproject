@@ -27,7 +27,7 @@
         <#if isResearchArticle == true>
           <#if articleOverallRounded?exists>
             <span class="inline-rating inlineRatingEnd">
-              <ul class="star-rating pone_rating" title="overall">
+              <ul class="star-rating rating" title="overall">
                 <#assign overallPct = (20 * articleOverallRounded)?string("##0")>
                 <li class="current-rating pct${overallPct}">Currently ${articleOverallRounded?string("0.#")}/5 Stars.</li>
               </ul>
@@ -36,7 +36,7 @@
         <#else> 
           <#if articleSingleRatingRounded?exists>
             <span class="inline-rating inlineRatingEnd">
-              <ul class="star-rating pone_rating" title="single">
+              <ul class="star-rating rating" title="single">
                 <#assign overallPct = (20 * articleSingleRatingRounded)?string("##0")>
                 <li class="current-rating pct${overallPct}">Currently ${articleSingleRatingRounded?string("0.#")}/5 Stars.</li>
               </ul>
@@ -69,7 +69,7 @@
               <#if isResearchArticle == true>
                 <#if articleRatingSummary.insight?exists>
                   <li><label for="insight">Insight</label>
-                      <ul class="star-rating pone_rating" title="insight">
+                      <ul class="star-rating rating" title="insight">
                         <#assign insightPct = (20 * articleRatingSummary.insight)?string("##0")>
                         <li class="current-rating average pct${insightPct}">Currently ${articleRatingSummary.insight?string("0.#")}/5 Stars.</li>
                       </ul>
@@ -77,7 +77,7 @@
                 </#if>
                 <#if articleRatingSummary.reliability?exists>
                   <li><label for="reliability">Reliability</label>
-                    <ul class="star-rating pone_rating" title="reliability">
+                    <ul class="star-rating rating" title="reliability">
                       <#assign reliabilityPct = (20 * articleRatingSummary.reliability)?string("##0")>
                       <li class="current-rating average pct${reliabilityPct}">Currently ${articleRatingSummary.reliability?string("0.#")}/5 Stars.</li>
                     </ul>
@@ -85,7 +85,7 @@
                 </#if>
                 <#if articleRatingSummary.style?exists>
                   <li><label for="style">Style</label>
-                    <ul class="star-rating pone_rating" title="style">
+                    <ul class="star-rating rating" title="style">
                       <#assign stylePct = (20 * articleRatingSummary.style)?string("##0")>
                       <li class="current-rating average pct${stylePct}">Currently ${articleRatingSummary.style?string("0.#")}/5 Stars.</li>
                     </ul>
@@ -93,7 +93,7 @@
                 </#if>
                 <#if articleRatingSummary.overallRounded?exists>
                   <li><label for="overall">Overall</label>
-                    <ul class="star-rating pone_rating" title="overall">
+                    <ul class="star-rating rating" title="overall">
                       <#assign overallPct = (20 * articleRatingSummary.overallRounded)?string("##0")>
                       <li class="current-rating average pct${overallPct}">Currently ${articleRatingSummary.overallRounded?string("0.#")}/5 Stars.</li>
                     </ul>
@@ -101,7 +101,7 @@
                 </#if>
               <#else>
               	  <li><label for="singleRating">&nbsp;</label>
-                    <ul class="star-rating pone_rating" title="singleRating">
+                    <ul class="star-rating rating" title="singleRating">
                       <#assign singleRatingPct = (20 * articleRatingSummary.singleRating)?string("##0")>
                       <li class="current-rating average pct${singleRatingPct}">Currently ${articleRatingSummary.singleRating?string("0.#")}/5 Stars.</li>
                     </ul>

@@ -888,7 +888,7 @@ topaz.annotation = {
           					" Note " + 
           					(annotationConfig.isPublic ? "(Public)" : "(Private)");
   	var markerId     = annotationConfig.regionalDialogMarker;
-  	var noteImg   = _namespace + "/images/" + "pone_note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
+  	var noteImg   = _namespace + "/images/" + "note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
   	var noteImgClass = annotationConfig.annotationImgMarker;
     var contents = document.createDocumentFragment();
   	  
