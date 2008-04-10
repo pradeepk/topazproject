@@ -32,7 +32,7 @@
 
   <modules>
     <module>mulgara</module>
-    <module>plosone</module>
+    <module>ambra</module>
     <module>cas</module>
     <module>fedora</module>
     <module>tools</module>
