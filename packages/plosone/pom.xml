@@ -2,9 +2,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject.packages</groupId>
-  <artifactId>plosone</artifactId>
+  <artifactId>ambra</artifactId>
   <packaging>pom</packaging>
-  <name>plosone</name>
+  <name>ambra</name>
 
   <parent>
     <groupId>org.topazproject.packages</groupId>
@@ -87,25 +87,25 @@
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
-                  <directory>/var/spool/plosone</directory>
+                  <directory>/var/spool/ambra</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
-                  <directory>/var/spool/plosone/ingestion-queue</directory>
+                  <directory>/var/spool/ambra/ingestion-queue</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
-                  <directory>/var/spool/plosone/ingested</directory>
+                  <directory>/var/spool/ambra/ingested</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
-                  <directory>/var/cache/plosone</directory>
+                  <directory>/var/cache/ambra</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
@@ -137,7 +137,7 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>src/main/resources/plosone.xml</location>
+                      <location>src/main/resources/ambra.xml</location>
                     </source>
                   </sources>
                 </mapping>
@@ -174,7 +174,7 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/resources/plosone</location>
+                      <location>src/main/resources/ambra</location>
                     </source>
                   </sources>
                 </mapping>
@@ -185,7 +185,7 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/scripts/plosone</location>
+                      <location>src/main/scripts/ambra</location>
                     </source>
                   </sources>
                 </mapping>

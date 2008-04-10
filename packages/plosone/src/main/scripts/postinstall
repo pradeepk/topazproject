@@ -1,7 +1,7 @@
 # $HeadURL::                                                                   $
 # $Id$
 
-PKG=plosone
+PKG=ambra
 
 # Register the service
 /sbin/chkconfig --add $PKG
