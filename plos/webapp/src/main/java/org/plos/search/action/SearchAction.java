@@ -9,6 +9,7 @@
  */
 package org.plos.search.action;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,6 +39,8 @@ import org.plos.web.VirtualJournalContext;
 @SuppressWarnings("serial")
 public class SearchAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(SearchAction.class);
+  
+  private static final DateFormat luceneDateFormat = new SimpleDateFormat("yyyy-MM-dd");
   
   private String query;
   private int startPage = 0;
@@ -257,15 +260,13 @@ public class SearchAction extends BaseActionSupport {
         if (isDigit(startYear)&& isDigit(startMonth) && isDigit(startDay) && 
             isDigit(endYear) && isDigit(endMonth) && isDigit(endDay)) {
           StringBuffer buf = new StringBuffer("date:[");
-          buf.append(startYear).append(startMonth).append(startDay);
+          buf.append(padDatePart(startYear, true)).append('-').append(padDatePart(startMonth, false)).append('-').append(padDatePart(startDay, false));
           buf.append(" TO ");
-          buf.append(endYear).append(endMonth).append(endDay);
+          buf.append(padDatePart(endYear, true)).append('-').append(padDatePart(endMonth, false)).append('-').append(padDatePart(endDay, false));
           buf.append("]");
           fields.add(buf.toString());
         }
       } else {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String endDateStr = sdf.format(new Date());
         Calendar cal = new GregorianCalendar();
         if ("week".equals(dateTypeSelect)) {
           cal.add(Calendar.DATE, -7);
@@ -273,10 +274,15 @@ public class SearchAction extends BaseActionSupport {
         if ("month".equals(dateTypeSelect)) {
           cal.add(Calendar.MONTH, -1);
         }
-        if ("month".equals(dateTypeSelect)) {
+        if ("3months".equals(dateTypeSelect)) {
           cal.add(Calendar.MONTH, -3);
         }
-        String startDateStr = sdf.format(cal.getTime());
+        
+        String startDateStr, endDateStr; 
+        synchronized(luceneDateFormat) {
+          endDateStr = luceneDateFormat.format(new Date());
+          startDateStr = luceneDateFormat.format(cal.getTime());
+        }
         
         StringBuffer buf = new StringBuffer("date:[");
         buf.append(startDateStr).append(" TO ").append(endDateStr).append("]");
@@ -300,6 +306,16 @@ public class SearchAction extends BaseActionSupport {
       log.debug("Generated advanced search query: "+advSearchQueryStr);
     }
     return StringUtils.join(fields.iterator(), " AND ");
+  }
+  
+  private String padDatePart(String datePart, boolean isYear) {
+    assert datePart != null;
+    if(isYear) {
+      // presume we have a valid 4-digit year
+      return datePart;
+    }
+    // month or day date part: ensure left padding w/ 0 digit for lucene date format compliance
+    return StringUtils.leftPad(datePart, 2, '0');
   }
   
   /**
