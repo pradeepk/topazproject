@@ -452,7 +452,7 @@ public class TransactionTest extends AbstractTest {
     synchronized (changed) { }
     for (idx in 0..<changed.size)
       assertTrue("Not enough value transitions in reader ${idx}: ${changed[idx]}",
-                 changed[idx] > (iter/10))
+                 changed[idx] > Math.max(iter/20, 1))
 
     log.info "MRSW stress test completed"
   }
