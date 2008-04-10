@@ -31,6 +31,7 @@ import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.tree.OverrideCombiner;
 
 import org.apache.commons.logging.Log;
@@ -180,6 +181,10 @@ public class ConfigurationStore {
 
     // Add global-defaults.xml (presumably found in this jar)
     addResources(root, GLOBAL_DEFAULTS_RESOURCE);
+
+    if (log.isDebugEnabled())
+      log.debug("Configuration dump: " + System.getProperty("line.separator") 
+          + ConfigurationUtils.toString(root));
   }
 
   /**
