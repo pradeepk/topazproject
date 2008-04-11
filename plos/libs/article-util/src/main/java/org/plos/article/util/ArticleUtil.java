@@ -63,8 +63,8 @@ public class ArticleUtil {
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static final List          FGS_URLS  = CONF.getList("topaz.fedoragsearch.urls.url");
   private static final String        FGS_REPO  = CONF.getString("topaz.fedoragsearch.repository");
-  private static final String        queueDir    = CONF.getString("pub.spring.ingest.source", "/var/spool/plosone/ingestion-queue");
-  private static final String        ingestedDir = CONF.getString("pub.spring.ingest.destination", "/var/spool/plosone/ingested");
+  private static final String        queueDir    = CONF.getString("pub.spring.ingest.source", "/var/spool/ambra/ingestion-queue");
+  private static final String        ingestedDir = CONF.getString("pub.spring.ingest.destination", "/var/spool/ambra/ingested");
 
   private final Uploader   uploader;
   private final FedoraAPIM apim;
