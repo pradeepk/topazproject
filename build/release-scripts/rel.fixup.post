@@ -1,8 +1,8 @@
 #!/bin/sh
 
-pt="-t0080201_rc1"
-rt="-t0080202-SNAPSHOT"
-rel=SNAPSHOT
+pt="-t0080202_rc1"
+rt="-t0080202_rc2"
+rel="SNAPSHOT"
 
 for f in \
     pom.xml \
