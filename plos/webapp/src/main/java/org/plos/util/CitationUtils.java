@@ -59,9 +59,9 @@ public abstract class CitationUtils {
    * Appends to the given {@link StringBuffer} the article authors in a prescribed format.
    * @param ci CitationInfo
    * @param sb StringBuffer to which the authors String is appended
-   * @param initializeGivenNames
+   * @param correction Is this for an article correction citation?
    */
-  private static void handleAuthors(CitationInfo ci, StringBuffer sb, boolean initializeGivenNames) {
+  private static void handleAuthors(CitationInfo ci, StringBuffer sb, boolean correction) {
     // obtain a list of all author names
     Author[] authors = ci.getAuthors();
     if(authors != null) {
@@ -78,28 +78,20 @@ public abstract class CitationUtils {
         
         String gns = a.getGivenNames();
         if(gns != null) {
+          // for formal corrections, we want the initial of the last given name followed by a period (.)
+          // whereas for article citations, we want each the initial of each given name concatenated with no periods 
           String[] givenNames = gns.split(" ");
+          int gnc = 0;
           for(String gn :givenNames) {
-            if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
-              String[] sarr = gn.split("\\p{Pd}");
-              String fistGivenName  = sarr[0];
-              if(initializeGivenNames) {
-                sb.append(fistGivenName.charAt(0));
-                sb.append('.');
+            if((correction && gnc++ == givenNames.length - 1) || !correction) {
+              if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
+                String[] sarr = gn.split("\\p{Pd}");
+                sb.append(sarr[0].charAt(0));
               }
               else {
-                sb.append(fistGivenName);
-              }
-            }
-            else {
-              if(initializeGivenNames) {
                 sb.append(gn.charAt(0));
-                sb.append('.');
               }
-              else {
-                sb.append(gn);
-              }
-              break;
+              if(correction) sb.append('.');
             }
           }
         }
@@ -130,7 +122,7 @@ public abstract class CitationUtils {
     
     StringBuffer sb = new StringBuffer(1024);
     
-    handleAuthors(ci, sb, true);
+    handleAuthors(ci, sb, false);
     
     // publication date
     synchronized(dateFormat) {
