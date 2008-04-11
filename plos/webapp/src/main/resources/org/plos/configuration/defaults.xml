@@ -21,7 +21,7 @@
   This file contains most of the defaults for the plosone webapp. However, there may be additional
   defaults in the conf-helper library's global-defaults.xml. Additionally, if in dev mode, some
   of these values may be overridden by settings in defaults-dev.xml. Finally, look for overrides
-  in /etc/topaz/plosone.xml.
+  in /etc/topaz/ambra.xml.
 
   See also libs/conf-helper/src/main/resources/globa-defaults.xml
 -->
@@ -173,12 +173,12 @@
         <search>${topaz.fedoragsearch.urls.url}</search>
       </service>
       <ingest>
-        <source>/var/spool/plosone/ingestion-queue</source>
-        <destination>/var/spool/plosone/ingested</destination>
+        <source>/var/spool/ambra/ingestion-queue</source>
+        <destination>/var/spool/ambra/ingested</destination>
       </ingest>
       <itql><uri>rmi://${pub.spring.server.mulgara}/topazproject</uri></itql>
       <email><feedback>webmaster@plos.org</feedback></email>
-      <!-- Temporary default for /etc/topaz/plosone.xml -->
+      <!-- Temporary default for /etc/topaz/ambra.xml -->
       <hosts><mailhost>${network.hosts.default}</mailhost></hosts>
     </spring>
   </pub>
