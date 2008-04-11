@@ -31,7 +31,7 @@
            (or to webhead FQHN for multibox install) -->
       <cas>localhost</cas> <!-- could set <default> instead, but this is more specific -->
       <mailhost>localhost</mailhost>
-      <default>localhost</default> <!-- Address of webhead (or plosone if no webhead) -->
+      <default>localhost</default> <!-- Address of webhead (or ambra if no webhead) -->
     </hosts>
     <ports>
       <!-- There are 4 protocols that the publishing system uses:
@@ -66,7 +66,7 @@
   <registration>
     <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
     <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
-    <context>/plos-registration</context>          <!-- Directory of webapp -->
+    <context>/ambra-registration</context>          <!-- Directory of webapp -->
     <plosone> <!-- Location of publishing app so links in registration work -->
       <context></context> <!-- directory of publishing app -->
       <!-- URL of publicly accessible publishing app (webhead if there is one) -->

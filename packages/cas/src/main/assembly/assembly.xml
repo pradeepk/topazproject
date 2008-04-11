@@ -65,12 +65,12 @@
 
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/webapps/plos-registration</outputDirectory>
+      <outputDirectory>/webapps/ambra-registration</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.plos:plos-registration-webapp</include>
+        <include>org.topazproject:ambra-registration-webapp</include>
       </includes>
     </dependencySet>
     <dependencySet>
