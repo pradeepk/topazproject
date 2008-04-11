@@ -72,6 +72,10 @@
       <arg value="topazproject"/>
       <arg value="-a"/>
       <arg file="${topaz.mulgara.databaseDir}"/>
+      <arg value="-p"/>
+      <arg value="30857"/>
+      <arg value="-r"/>
+      <arg value="${port}"/>
       <syspropertyset>
         <propertyref prefix="topaz."/>
         <propertyref prefix="log4j."/>
