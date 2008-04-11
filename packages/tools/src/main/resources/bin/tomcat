@@ -29,7 +29,7 @@ usage: $1 [options] start|stop|restart|status|report|dump
 
 Options:
   -h, --help    Usage information (this message)
-  -b basename   The name of the program. i.e. cas, topaz, plosone
+  -b basename   The name of the program. i.e. cas, mulgara, fedora, ambra
   -n timeout    The number of seconds to wait after starting or stopping
                 (default=45)
   -f            If we can't stop in <timeout>, send TERM signal
@@ -76,16 +76,16 @@ JVM="server"
 verbose=
 
 # Overrides: basename_CATALINA_HOME, basename_TOMCAT_OPTS, basename_USER
-SERVERS="cas mulgara fedora plosone"
+SERVERS="cas mulgara fedora ambra"
 cas_CATALINA_HOME="$TOPAZ_LOCAL/cas"
 mulgara_CATALINA_HOME="$TOPAZ_LOCAL/mulgara"
-plosone_CATALINA_HOME="$TOPAZ_LOCAL/plosone"
+ambra_CATALINA_HOME="$TOPAZ_LOCAL/ambra"
 
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
 cas_PORT=7443
 mulgara_PORT=1099
-plosone_PORT=8080
+ambra_PORT=8080
 fedora_PORT=9090
 
 #
