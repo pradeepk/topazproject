@@ -54,6 +54,12 @@ import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.mapping.EmbeddedMapper;
+import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -61,8 +67,50 @@ import antlr.collections.AST;
 
 /**
  * This is an AST transformer for OQL that generates a Criteria definition for this query. Of
- * course this only works within certain limitations, such as only a single entry in the from
- * clause.
+ * course this only works within the limitations of what is supported by Criteria:
+ * <ul>
+ *   <li>only a single entry in the select clause</li>
+ *   <li>the projection expression in the select clause may only contain a variable or a
+ *       simple dereference of a variable; it may not contain a constant, a function, or
+ *       a wildcard projector.</li>
+ *   <li>in the select or where clauses, dereferences may not contain a cast, an immediate
+ *       url (x.&lt;foo:bar&gt;), or a predicate expression.</li>
+ *   <li>one side of equality comparisons ('=', '!=', 'lt()', 'le()', etc) must be a constant</li>
+ *   <li>if there are multiple constraints on an item (as represented by a variable) which are
+ *       'and'd or 'or'd together, then all of these that contain a dereference of the variable
+ *       which is an association must be 'and'd together and 'and'd with the rest of the constraints
+ *       on that item. I.e.
+ *       <pre>
+ *       ... $v.name = 'john' and $v.address.zip = '42' ...
+ *       ... $v.address.city = 'london' and $v.address.zip = '42' ...
+ *       ... ($v.name = 'john' or lt($v.age, 65)) and $v.address.zip = '42' ...
+ *       </pre>
+ *       are legal, but these are not:
+ *       <pre>
+ *       ... $v.name = 'john' or $v.address.zip = '42' ...
+ *       ... $v.address.city = 'london' or $v.address.zip = '42' ...
+ *       </pre>
+ *   </li>
+ * </ul>
+ *
+ * <p>Implemenation:
+ * <ol>
+ *   <li>The parsing catches unsupported structures such as cast, uri-ref, predicate expressions,
+ *       wildcard expressions, multiple projection expressions, subqueries, and constants in the
+ *       projection expression.</li>
+ *   <li>During parsing, the types for variables in the from clause are registered and all aliases
+ *       are registered.</li>
+ *   <li>Resolve the types of all variables; since variables from the 'from' clause already have
+ *       their types, this just involves the aliases.</li>
+ *   <li>Build the criteria for the first projection expression (the root of the criteria tree).</li>
+ *   <li>Build criteria for all aliases.</li>
+ *   <li>The criteria and criterion for all the expressions in the where clause are built</li>
+ * </ol>
+ * Note regarding the building of the criteria tree: the only two ways to define a variable in OQL
+ * are the 'from' clause and aliases. This means that once the types of the aliases are resolved we
+ * have enough information to determine the type of any expression we may encounter. And once we've
+ * created the criteria for the aliases, we have a criteria object to which we can attach the
+ * expression results (be they criteria and/or criterion).
  *
  * @author Ronald Tschalär 
  */
@@ -73,10 +121,17 @@ options {
 }
 
 {
-    private Session  sess;
-    private Criteria crit;
-    private String   topVar;
-    private Map<String, Criteria> critMap = new HashMap<String, Criteria>();
+    private static final Log log = LogFactory.getLog(CriteriaGenerator.class);
+
+    private Session                    sess;
+    private Criteria                   rootCrit;
+    private AST                        projExpr;
+    private List<Order>                orders = new ArrayList<Order>();
+    private int                        limit  = -1;
+    private int                        offset = -1;
+    private Map<String, AST>           aliasMap = new HashMap<String, AST>();
+    private Map<String, ClassMetadata> typeMap  = new HashMap<String, ClassMetadata>();
+    private Map<String, Criteria>      critMap  = new HashMap<String, Criteria>();
 
     /** 
      * Create a new translator instance.
@@ -92,12 +147,16 @@ options {
      * @return the generated criteria
      */
     public Criteria getCriteria() {
-      return crit;
+      return rootCrit;
     }
 
     private void buildCriteria(AST root) throws RecognitionException {
       assert root.getFirstChild().getNextSibling().getType() == WHERE;
       root = root.getFirstChild().getNextSibling().getFirstChild();
+
+      resolveAliasTypes();
+      createRootCriteria();
+      createAliasCriteria();
 
       if (root.getType() == AND)
         buildCriteria(root, new HashMap<String, AST>());
@@ -105,8 +164,136 @@ options {
         processCriterion(root, null, null, new HashMap<String, AST>());
     }
 
-    private void buildCriteria(AST root, Map<String, AST> vars)
-        throws RecognitionException {
+    private void resolveAliasTypes() throws RecognitionException {
+      Map<String, AST> aliases = new HashMap<String, AST>(aliasMap);
+
+      while (aliases.size() > 0)
+        resolveAliasType(aliases.keySet().iterator().next(), aliases);
+    }
+
+    private void resolveAliasType(String alias, Map<String, AST> aliases)
+          throws RecognitionException {
+      // get the rhs and mark that we've resolved this alias
+      AST factor = aliases.remove(alias);
+
+      if (log.isTraceEnabled())
+        log.trace("resolving type for alias '" + alias + "'");
+
+      // resolve
+      switch (factor.getType()) {
+        case REF:
+          AST    id  = factor.getFirstChild();
+          String var = id.getText();
+
+          // get the variable's type, resolving the rhs variable if necessary
+          if (!typeMap.containsKey(var) && aliases.containsKey(var))
+            resolveAliasType(var, aliases);
+          if (!typeMap.containsKey(var))
+            throw new RecognitionException("'" + var + "' is not defined anywhere");
+
+          ClassMetadata cm = typeMap.get(var);
+
+          // walk the references
+          while ((id = id.getNextSibling()) != null)
+             cm = getAssociationType(cm, id.getText());
+
+          //save the type
+          typeMap.put(alias, cm);
+          break;
+
+        case FUNC:
+          throw new RecognitionException("Function '" + factor.getFirstChild().getText() +
+                                         "' is not supported yet");
+
+        default:
+          typeMap.put(alias, null);
+          break;
+      }
+
+      if (log.isTraceEnabled())
+        log.trace("resolved type for alias '" + alias + "': " + typeMap.get(alias));
+    }
+
+    private void createAliasCriteria() throws RecognitionException {
+      Map<String, AST> aliases = new HashMap<String, AST>(aliasMap);
+
+      while (aliases.size() > 0)
+        createAliasCriteria(aliases.keySet().iterator().next(), aliases);
+    }
+
+    /* It is not possible currently to create a standalone criteria and then attach it to a
+     * parent later, i.e. child- and referrer-criteria must be created on their parent. This
+     * means that we have to really build the criteria tree from the root (criterion can be
+     * added at any time later). For aliases that result in child criteria this is easily
+     * achieved by recursively creating the criteria for the top variable on the rhs and then
+     * creating criteria for the dereferences. E.g. in
+     * <pre>
+     *   select o from X o where q := p.bar and p := o.foo and q.baz = '42'
+     * </pre>
+     * we resolve q by first (recursively) resolving the first variable ('p') and then
+     * creating a child criteria on p's criteria. This works because this algorithm will
+     * first walk to the top ('o') and then walk back down, creating criteria on the way.
+     *
+     * <p>For referrer criteria we need to traverse backwards. E.g. in
+     * <pre>
+     *   select p from X o where q := p.bar and p := o.foo and q.baz = '42'
+     * </pre>
+     * we need to realize when processing 'p' that we already have a criteria for it and
+     * that we must therefore create referrer-criteria up to 'o' instead of a child-criteria
+     * from 'o' down.
+     */
+    private void createAliasCriteria(String alias, Map<String, AST> aliases)
+          throws RecognitionException {
+      // get the rhs and mark that we've handled this alias
+      AST factor = aliases.remove(alias);
+
+      if (log.isTraceEnabled())
+        log.trace("creating criteria for alias '" + alias + "'");
+
+      // handle
+      switch (factor.getType()) {
+        case REF:
+          String var = factor.getFirstChild().getText();
+
+          if (critMap.containsKey(alias)) {     // we're walking up the tree from the projection
+            Criteria crit = critMap.get(alias);
+            critMap.put(var, makeParents(factor, crit));
+            assert typeMap.get(var) == critMap.get(var).getClassMetadata();
+
+          } else {                              // we're walking down the tree
+            Criteria crit;
+            if (!critMap.containsKey(var)) {
+              if (aliases.containsKey(var)) {
+                createAliasCriteria(var, aliases);
+              } else {
+                reportWarning("Unused alias definition for alias '" + alias + "'");
+                // This is just to simplify the rest of the logic, but in the end it gets tossed
+                crit = new Criteria(sess, null, null, false, typeMap.get(alias), null);
+                makeParents(factor, crit);
+              }
+            }
+            crit = makeChildren(factor, critMap.get(var), true);
+
+            critMap.put(alias, crit);
+            assert typeMap.get(alias) == critMap.get(alias).getClassMetadata();
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      if (log.isTraceEnabled())
+        log.trace("created criteria for alias '" + alias + "': " + critMap.get(alias));
+    }
+
+    /**
+     * Create a criteria object for the given ast.
+     *
+     * @param root the ast object to process
+     * @param vars the currently active variables (not including aliases)
+     */
+    private void buildCriteria(AST root, Map<String, AST> vars) throws RecognitionException {
       for (AST n = root.getFirstChild(); n != null; n = n.getNextSibling()) {
         switch (n.getType()) {
           case AND:
@@ -114,26 +301,23 @@ options {
             break;
 
           case OR:
+          case EQ:
+          case NE:
+          case FUNC:
+          case ASGN:
             processCriterion(n, null, null, vars);
             break;
 
-          case ASGN:
-            processAssign(n, vars);
-            break;
-
-          case EQ:
-          case NE:
-            processEquality(n, null, null, vars);
-            break;
-
-          case FUNC:
-            processFunc(n, null, null, vars);
-            break;
+          default:
+            throw new RecognitionException("Unexpected node type '" + n.getType() + "' in " +
+                                           root.toStringTree());
         }
       }
     }
 
     /** 
+     * Process what must be a criterion.
+     *
      * @param node   the node to process
      * @param parent the parent Criteria or Criterion object to which to add the parsed criterion;
      *               may be null to indicate unknown as of yet
@@ -160,10 +344,6 @@ options {
             pVar = processCriterion(n, c, pVar, new HashMap<String, AST>(vars));
           break;
 
-        case ASGN:
-          processAssign(node, vars);
-          break;
-
         case EQ:
         case NE:
           pVar = processEquality(node, parent, pVar, vars);
@@ -172,21 +352,26 @@ options {
         case FUNC:
           pVar = processFunc(node, parent, pVar, vars);
           break;
+
+        case ASGN:
+          break;
+
+        default:
+          throw new RecognitionException("Unexpected node type '" + node.getType() + "' in " +
+                                         node.toStringTree());
       }
 
-      if (parent == null)
-        parent = critMap.get(pVar);
-      if (c != null)
+      if (c != null) {
+        if (parent == null)
+          parent = critMap.get(pVar);
+        if (parent == null)
+          throw new RecognitionException("Unknown variable '" + pVar + "' in " +
+                                         node.toStringTree());
+
         addCriterion(parent, c);
+      }
 
       return pVar;
-    }
-
-    private void processAssign(AST node, Map<String, AST> vars) {
-      AST v = node.getFirstChild();
-      AST n = v.getNextSibling();
-      if (n.getType() != REF)
-        vars.put(v.getText(), n);
     }
 
     private void addCriterion(Object parent, Criterion c) throws RecognitionException {
@@ -213,8 +398,7 @@ options {
       }
 
       // validate and get criteria to attach to
-      if (l.getType() != REF || (r.getType() != QSTRING && r.getType() != URIREF &&
-          r.getType() != PARAM))
+      if (l.getType() != REF || !isConstant(r))
         throw new RecognitionException("equality comparisons must be between a reference and a " +
                                        "constant: " + node.toStringTree());
 
@@ -269,8 +453,7 @@ options {
       // validate and get criteria to attach to
       if (op.equals("lt") || op.equals("le") || op.equals("gt") || op.equals("ge")) {
         AST a2 = (args != null) ? args.getNextSibling() : null;
-        if (args == null || a2 == null || args.getType() != REF ||
-            (a2.getType() != QSTRING && a2.getType() != URIREF && a2.getType() != PARAM))
+        if (args == null || a2 == null || args.getType() != REF || !isConstant(a2))
           throw new RecognitionException("comparisons must be between a reference and a " +
                                          "constant: " + node.toStringTree());
       }
@@ -327,18 +510,22 @@ options {
       return pVar;
     }
 
-    /** Constant substitution */
+    /**
+     * Constant substitution. If the node refers to a variable or an alias which is a constant,
+     * then replace the node with the constant.
+     */
     private AST replaceVars(AST node, AST parent, Map<String, AST> vars)
         throws RecognitionException {
       if (node.getType() != REF)
         return node;
 
-      AST repl = vars.get(node.getFirstChild().getText());
-      if (repl == null)
-        return node;
+      AST id = node.getFirstChild();
 
-      if (node.getFirstChild().getNextSibling() != null)
-        throw new RecognitionException("Can't dereference a constant: " + node.toStringTree());
+      AST repl = vars.get(id.getText());
+      if (repl == null)
+        repl = aliasMap.get(id.getText());
+      if (repl == null || !isConstant(repl))
+        return node;
 
       repl = astFactory.dupList(repl);
       repl.setNextSibling(node.getNextSibling());
@@ -351,6 +538,11 @@ options {
       return repl;
     }
 
+    private static boolean isConstant(AST node) {
+      int type = node.getType();
+      return (type == QSTRING || type == URIREF || type == PARAM);
+    }
+
     private String checkSingleLevelRef(AST ref) throws RecognitionException {
       AST n = ref.getFirstChild().getNextSibling();
       if (n == null || n.getNextSibling() != null)
@@ -359,6 +551,14 @@ options {
       return ref.getFirstChild().getText();
     }
 
+    /**
+     * Create all the children criteria for the given ref.
+     *
+     * @param ref     the reference for which to create the child criteria
+     * @param p       the parent criteria to create the child criteria on
+     * @param incLast if false don't create a criteria for the last child
+     * @return the last child criteria created
+     */
     private Criteria makeChildren(AST ref, Criteria p, boolean incLast)
         throws RecognitionException {
       AST n = ref.getFirstChild();
@@ -373,6 +573,61 @@ options {
       return p;
     }
 
+    /**
+     * Create all the parent criteria for the given ref. I.e. this starts with the given criteria
+     * representing the last id in the ref and builds referrer criteria for the id's in reverse
+     * order.
+     *
+     * @param ref the reference representing the 
+     * @param p   the child criteria to create the referrer criteria on
+     * @return the last referrer criteria created (representing the first id of <var>ref</var>)
+     */
+    private Criteria makeParents(AST ref, Criteria p) throws RecognitionException {
+      AST id = ref.getFirstChild();
+      return makeParents(id, p, typeMap.get(id.getText()));
+    }
+
+    private Criteria makeParents(AST id, Criteria p, ClassMetadata cm) throws RecognitionException {
+      if (id.getNextSibling() != null) {
+        if (cm == null)
+          throw new RecognitionException("'" + id.getText() + "' is not a valid variable or is " +
+                                         "not an association");
+
+        id = id.getNextSibling();
+        String field = id.getText();
+        ClassMetadata at = cm;
+        while (at.getMapperByName(id.getText()) instanceof EmbeddedMapper) {
+          at = getAssociationType(at, id.getText());
+          id = id.getNextSibling();
+          field += "." + id.getText();
+        }
+        at = getAssociationType(at, id.getText());
+
+        Criteria c = makeParents(id, p, at);
+        p = c.createReferrerCriteria(cm.getName(), field);
+      }
+
+      return p;
+    }
+
+    private ClassMetadata getAssociationType(ClassMetadata cm, String field)
+          throws RecognitionException {
+      Mapper m = cm.getMapperByName(field);
+
+      if (m instanceof RdfMapper)
+        return sess.getSessionFactory().getClassMetadata(((RdfMapper) m).getAssociatedEntity());
+      if (m instanceof EmbeddedMapper)
+        return ((EmbeddedMapper) m).getEmbeddedClass();
+
+      throw new RecognitionException("'" + field + "' is not an association in '" + cm.getName() +
+                                     "'");
+    }
+
+    /**
+     * Create a value object for the given node; for uri's a URI, for literals the literal
+     * value, for parameters a parameter object, and for references the last id (i.e. 'z' in
+     * 'x.y.z').
+     */
     private Object toValueObject(AST v) throws RecognitionException {
       String t = v.getText();
 
@@ -416,28 +671,53 @@ options {
       return n;
     }
 
-    private void createRootCriteria(AST cls, AST var) throws RecognitionException {
+    private void createRootCriteria() throws RecognitionException {
+      assert projExpr.getType() == REF;
+      assert projExpr.getFirstChild().getType() == ID;
+
+      String var = projExpr.getFirstChild().getText();
+
+      ClassMetadata cm = typeMap.get(var);
+      if (cm == null)
+        throw new RecognitionException("projection variable '" + var + "' is not of type entity");
+
+      rootCrit = new Criteria(sess, null, null, false, cm, null);
+
+      critMap.put(var, makeParents(projExpr, rootCrit));
+      assert typeMap.get(var) == critMap.get(var).getClassMetadata();
+
+      for (Order o : orders)
+        rootCrit.addOrder(o);
+      if (limit >= 0)
+        rootCrit.setMaxResults(limit);
+      if (offset >= 0)
+        rootCrit.setFirstResult(offset);
+
+      if (log.isTraceEnabled())
+        log.trace("created root criteria for '" + var + "': " + rootCrit);
+    }
+
+    private void registerType(AST var, AST cls) throws RecognitionException {
       ClassMetadata cm = sess.getSessionFactory().getClassMetadata(cls.getText());
       if (cm == null)
         throw new RecognitionException("No metadata found for class '" + cls.getText() + "'");
 
-      crit   = new Criteria(sess, null, null, false, cm, null);
-      topVar = var.getText();
+      if (log.isTraceEnabled())
+        log.trace("registering type for variable '" + var.getText() + "': " + cm);
 
-      critMap.put(topVar, crit);
+      typeMap.put(var.getText(), cm);
     }
 
-    private void registerVar(AST var, AST factor) throws RecognitionException {
-      if (factor.getType() != REF)
-        return;
-
+    private void registerAlias(AST var, AST factor) throws RecognitionException {
       String v = var.getText();
-      if (critMap.containsKey(v))
+      if (aliasMap.containsKey(v))
         throw new RecognitionException("multiple assignments of same variable is not supported " +
                                        "by criteria: var = '" + v + "'");
 
-      Criteria c = critMap.get(factor.getFirstChild().getText());
-      critMap.put(v, makeChildren(factor, c, true));
+      if (log.isTraceEnabled())
+        log.trace("registering alias '" + v + "': " + factor.toStringTree());
+
+      aliasMap.put(v, factor);
     }
 }
 
@@ -450,27 +730,31 @@ query
 
 
 fclause
-    : #(COMMA fclause fclause) {
-        throw new RecognitionException("criteria supports only a single class in from clause");
-      }
-    | cls:ID var:ID  { createRootCriteria(#cls, #var); }
+    : #(COMMA fclause fclause)
+    | cls:ID var:ID  { registerType(#var, #cls); }
     ;
 
 
 sclause
     : #(COMMA sclause sclause) {
-        throw new RecognitionException("criteria supports only a single result in select clause");
+        if (true)
+          throw new RecognitionException("criteria supports only a single result in select clause");
       }
     | (ID)? pexpr
     ;
 
 pexpr
-    : (REF) => #(REF v:ID (x:ID)?) {
-        if (#x != null || !#v.getText().equals(topVar))
-          throw new RecognitionException("criteria doesn't support projections");
+    : #(SUBQ query) {
+        if (true)       // dummy for compiler
+          throw new RecognitionException("criteria doesn't support subqueries");
       }
-    | #(SUBQ query) { throw new RecognitionException("criteria doesn't support subqueries"); }
-    | factor { throw new RecognitionException("criteria doesn't support projections"); }
+    | factor {
+        if (#pexpr.getType() == REF)
+          projExpr = #pexpr;
+        else
+          throw new RecognitionException("only field references supported by criteria in " +
+                                         "projections: " + #pexpr.toStringTree());
+      }
     ;
 
 
@@ -481,7 +765,7 @@ wclause
 expr
     : #(AND (expr)+)
     | #(OR  (expr)+)
-    | #(ASGN v:ID f:factor) { registerVar(#v, #f); }
+    | #(ASGN v:ID f:factor) { registerAlias(#v, #f); }
     | #(EQ factor factor)
     | #(NE factor factor)
     | fcall
@@ -507,8 +791,9 @@ deref
     : #(REF (ID | cast) (ID | URIREF | #(EXPR ID (expr)?))* (STAR)?) {
         for (AST n = #deref.getFirstChild(); n != null; n = n.getNextSibling())
           if (n.getType() != ID)
-            throw new RecognitionException("only field references supported by criteria in " +
-                                           "constraint: " + #deref.toStringTree());
+            throw new RecognitionException("only field references are supported by criteria in " +
+                                           "constraints (no cast, uri-ref, or wildcards): " +
+                                           #deref.toStringTree());
       }
     ;
 
@@ -522,14 +807,14 @@ oclause
     ;
 
 oitem
-    : var:ID (ASC|d:DESC)? { crit.addOrder(new Order(#var.getText(), #d == null)); }
+    : var:ID (ASC|d:DESC)? { orders.add(new Order(#var.getText(), #d == null)); }
     ;
 
 lclause
-    : #(LIMIT n:NUM) { crit.setMaxResults(Integer.parseInt(#n.getText())); }
+    : #(LIMIT n:NUM) { limit = Integer.parseInt(#n.getText()); }
     ;
 
 tclause
-    : #(OFFSET n:NUM) { crit.setFirstResult(Integer.parseInt(#n.getText())); }
+    : #(OFFSET n:NUM) { offset = Integer.parseInt(#n.getText()); }
     ;
 

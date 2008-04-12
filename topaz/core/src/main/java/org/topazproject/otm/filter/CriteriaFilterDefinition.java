@@ -82,10 +82,14 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
 
     public GenericQueryImpl getQuery() throws OtmException {
       StringBuilder qry = new StringBuilder("select o from ");
-      qry.append(crit.getClassMetadata().getName()).append(" o where ");
-      toOql(qry, getCriteria(), "o", "v");
-      if (qry.substring(qry.length() - 7).equals(" where "))
-        qry.setLength(qry.length() - 7);
+      qry.append(crit.getClassMetadata().getName()).append(" o");
+
+      StringBuilder where = new StringBuilder(200);
+
+      toOql(where, qry, getCriteria(), "o", "v");
+
+      if (where.length() > 0)
+        qry.append(" where ").append(where);
       qry.append(";");
 
       GenericQueryImpl q = new GenericQueryImpl(qry.toString(), CriteriaFilterDefinition.log);
@@ -94,22 +98,28 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
       return q;
     }
 
-    private static void toOql(StringBuilder qry, Criteria criteria, String var, String pfx)
-                            throws OtmException{
+    private static void toOql(StringBuilder where, StringBuilder qry, Criteria criteria, String var,
+                              String pfx) throws OtmException{
       int idx = 0;
       for (Criterion c : criteria.getCriterionList())
-        qry.append('(').append(c.toOql(criteria, var, pfx + idx++)).append(") and ");
+        where.append('(').append(c.toOql(criteria, var, pfx + idx++)).append(") and ");
 
       for (Criteria c : criteria.getChildren()) {
+        String parent = var;
+        if (c.isReferrer()) {
+          parent = pfx + idx++;
+          qry.append(", ").append(c.getClassMetadata().getName()).append(" ").append(parent);
+        }
+
         String sbj = pfx + idx++;
-        qry.append('(').append(sbj).append(" := ").append(var).append('.').
-            append(c.getMapping().getName()).append(" and (");
-        toOql(qry, c, sbj, pfx + idx++);
-        qry.append(")) and ");
+        where.append('(').append(sbj).append(" := ").append(parent).append('.').
+              append(c.getMapping().getName()).append(" and (");
+        toOql(where, qry, c, sbj, pfx + idx++);
+        where.append(")) and ");
       }
 
-      if (qry.substring(qry.length() - 5).equals(" and "))
-        qry.setLength(qry.length() - 5);
+      if (where.substring(where.length() - 5).equals(" and "))
+        where.setLength(where.length() - 5);
     }
   }
 }

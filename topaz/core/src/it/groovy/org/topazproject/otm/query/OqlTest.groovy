@@ -1283,11 +1283,14 @@ public class OqlTest extends AbstractTest {
     }
 
     FilterDefinition ofd1 =
-        new OqlFilterDefinition('noBob', 'Test1', "o where o.info.name.givenName != 'Bob'")
+        new OqlFilterDefinition('noBob', 'Test1',
+                                "select o from Test1 o where o.info.name.givenName != 'Bob';")
     FilterDefinition ofd2 =
-        new OqlFilterDefinition('state', 'Test1', 'o where o.state != :state')
+        new OqlFilterDefinition('state', 'Test1',
+                                "select o from Test1 o where o.state != :state;")
     FilterDefinition ofd3 =
-        new OqlFilterDefinition('noJack', 'Name', "n where n.givenName != 'Jack'")
+        new OqlFilterDefinition('noJack', 'Name',
+                                "select n from Name n where n.givenName != 'Jack';")
 
     FilterDefinition cfd1 = new CriteriaFilterDefinition('noBob',
         new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
@@ -1484,7 +1487,8 @@ public class OqlTest extends AbstractTest {
     }
 
     FilterDefinition ofd4 =
-        new OqlFilterDefinition('noKeller', 'Test1', "o where o.info.name.surname != 'Keller'")
+        new OqlFilterDefinition('noKeller', 'Test1',
+                                "select o from Test1 o where o.info.name.surname != 'Keller';")
     FilterDefinition cfd4 = new CriteriaFilterDefinition('noKeller',
         new DetachedCriteria('Test1').createCriteria('info').createCriteria('name').
             add(Restrictions.ne('surname', 'Keller')).parent.parent)
@@ -1579,14 +1583,35 @@ public class OqlTest extends AbstractTest {
       FilterDefinition cfd = new CriteriaFilterDefinition("critF", dc);
       assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := o.parts and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := v1.nextObject and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
 
-      def qry = """o where
+      dc = new DetachedCriteria("Article")
+      dc.add(Restrictions.disjunction().
+                         add(Restrictions.eq("title", "foo")).
+                         add(Restrictions.eq("authors", new Parameter("auth")))).
+
+        createReferrerCriteria("ObjectInfo", "isPartOf").
+          add(Restrictions.ne("date", new Date("08 Jul 2007"))).
+          add(Restrictions.conjunction().
+                           add(Restrictions.le("state", 2)).
+                           add(Restrictions.gt("rights", "none"))).
+
+        createCriteria("nextObject").
+          add(Restrictions.eq("dc_type", new URI("dc:type"))).
+          add(Restrictions.eq("uri", new URI("foo:bar")))
+
+      assert dc.getParameterNames().size() == 1;
+      assert dc.getParameterNames().iterator().next() == "auth"
+
+      cfd = new CriteriaFilterDefinition("critFR", dc);
+      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o, ObjectInfo v1 where ((o.title = 'foo' or o.authors = 'blah')) and (v2 := v1.isPartOf and ((v2.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v2.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v2.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v32 := v2.nextObject and ((v32.dc_type = <dc:type>) and (v32.uri = <foo:bar>)))));"
+
+      def qry = """select o from Article o where
         (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
         o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and
-        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)))""";
+        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)));""";
       FilterDefinition ofd = new OqlFilterDefinition("oqlF", "Article", qry)
       Criteria c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria();
 
-      assert c.criterionList.size() == 1
+      assert c.criterionList.size() == 1                // o.title = 'foo' or o.authorts = :auth
       assert c.criterionList[0] instanceof Disjunction
       assert c.criterionList[0].criterions.size() == 2
       assert c.criterionList[0].criterions[0] instanceof EQCriterion
@@ -1613,7 +1638,7 @@ public class OqlTest extends AbstractTest {
       assert c.children[1].criterionList[0].value == 'foo:bar'.toURI()
       assert c.children[2].criterionList[0].fieldName == 'dc_type'
       assert c.children[2].criterionList[0].value == 'dc:type'.toURI()
-      c = c.children[0].children[0]
+      c = c.children[0].children[0]                     // 'q'
       assert c.mapping.name == 'nextObject'
       assert c.children.size() == 0
       assert c.criterionList.size() == 1
@@ -1633,6 +1658,72 @@ public class OqlTest extends AbstractTest {
       assert c.criterionList[0].criterions[1].criterions[1].arguments.length == 2
       assert c.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
       assert c.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
+
+      // note: this next query is not a valid filter query, but toCriteria() supports it
+      qry = """select n.nextObject from Article o where
+        (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
+        n := o.parts and q := n.nextObject and n.dc_type = <dc:type> and
+        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)));""";
+      ofd = new OqlFilterDefinition("oqlR", "ObjectInfo", qry)
+      c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria();
+
+      assert c.criterionList.size() == 0
+      assert c.children.size() == 1
+
+      c = c.children[0]                         // 'n'
+      assert c.mapping.name == 'nextObject'
+      assert c.isReferrer()
+
+      assert c.criterionList.size() == 1        // n.dc_type = <dc:type>
+      assert c.criterionList[0] instanceof EQCriterion
+      assert c.criterionList[0].fieldName == 'dc_type'
+      assert c.criterionList[0].value == 'dc:type'.toURI()
+
+      assert c.children.size() == 2             // n := o.parts, q := n.nextObject
+      assert c.children[0].mapping.name == 'parts'
+      assert c.children[1].mapping.name == 'nextObject'
+      assert c.children[0].isReferrer() == true
+      assert c.children[1].isReferrer() == false
+
+      Criteria ch = c.children[0]               // 'o'
+      assert ch.criterionList.size() == 1
+      assert ch.criterionList[0] instanceof Disjunction
+      assert ch.criterionList[0].criterions.size() == 2
+      assert ch.criterionList[0].criterions[0] instanceof EQCriterion
+      assert ch.criterionList[0].criterions[1] instanceof EQCriterion
+      assert ch.criterionList[0].criterions[0].fieldName == 'title'
+      assert ch.criterionList[0].criterions[0].value == 'foo'
+      assert ch.criterionList[0].criterions[1].fieldName == 'authors'
+      assert ch.criterionList[0].criterions[1].value instanceof Parameter
+      assert ch.criterionList[0].criterions[1].value.parameterName == 'auth'
+
+      assert ch.children.size() == 1
+      ch = ch.children[0]                       // o.nextObject
+      assert ch.children.size() == 0
+      assert ch.criterionList.size() == 1
+      assert ch.criterionList[0] instanceof EQCriterion
+      assert ch.criterionList[0].fieldName == 'uri'
+      assert ch.criterionList[0].value == 'foo:bar'.toURI()
+
+      ch = c.children[1]                        // 'q'
+      assert ch.children.size() == 0
+      assert ch.criterionList.size() == 1
+      assert ch.criterionList[0] instanceof Disjunction
+      assert ch.criterionList[0].criterions.size() == 2
+      assert ch.criterionList[0].criterions[0] instanceof EQCriterion
+      assert ch.criterionList[0].criterions[1] instanceof Conjunction
+      assert ch.criterionList[0].criterions[0].fieldName == 'date'
+      assert ch.criterionList[0].criterions[0].value == '2007'
+      assert ch.criterionList[0].criterions[1].criterions.size() == 2
+      assert ch.criterionList[0].criterions[1].criterions[0] instanceof EQCriterion
+      assert ch.criterionList[0].criterions[1].criterions[1] instanceof ProxyCriterion
+      assert ch.criterionList[0].criterions[1].criterions[0].fieldName == 'rights'
+      assert ch.criterionList[0].criterions[1].criterions[0].value instanceof Parameter
+      assert ch.criterionList[0].criterions[1].criterions[0].value.parameterName == 'x'
+      assert ch.criterionList[0].criterions[1].criterions[1].function == 'le'
+      assert ch.criterionList[0].criterions[1].criterions[1].arguments.length == 2
+      assert ch.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
+      assert ch.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
     }
   }
 }

@@ -53,14 +53,22 @@ public class ItqlFilter {
 
     AST from = parsedQuery.getFirstChild();
     assert from.getText().equals("from");
-    assert !from.getFirstChild().getText().equals("comma");
 
     AST where = from.getNextSibling();
     assert where.getText().equals("where");
 
+    AST select = where.getNextSibling();
+    assert select.getText().equals("projection");
+    assert !select.getFirstChild().getText().equals("comma");
+
     this.filterDef = where.getFirstChild();
-    this.classVar  = from.getFirstChild().getNextSibling().getText();
+    this.classVar  = getFirstProjExpr(select).getText();
     this.filters   = null;
+  }
+
+  private static AST getFirstProjExpr(AST select) {
+    AST ast = select.getFirstChild().getNextSibling();
+    return (ast.getNextSibling() != null) ? ast.getNextSibling() : ast;
   }
 
   /** 

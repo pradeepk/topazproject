@@ -49,11 +49,14 @@ public class FilterTest extends AbstractTest {
       }
 
       FilterDefinition fd1 =
-          new OqlFilterDefinition('noBob', cls.getName(), "o where o.info.name.givenName != 'Bob'")
+          new OqlFilterDefinition('noBob', cls.getName(),
+                          "select o from ${cls.getName()} o where o.info.name.givenName != 'Bob';")
       FilterDefinition fd2 =
-          new OqlFilterDefinition('state', cls.getName(), 'o where o.state != :state')
+          new OqlFilterDefinition('state', cls.getName(),
+                          "select o from ${cls.getName()} o where o.state != :state;")
       FilterDefinition fd3 =
-          new OqlFilterDefinition('noJack', 'Name', "n where n.givenName != 'Jack'")
+          new OqlFilterDefinition('noJack', 'Name',
+                          "select n from Name n where n.givenName != 'Jack';")
 
       rdf.sessFactory.addFilterDefinition(fd1);
       rdf.sessFactory.addFilterDefinition(fd2);
