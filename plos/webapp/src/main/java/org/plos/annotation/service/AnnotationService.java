@@ -118,9 +118,7 @@ public class AnnotationService {
         setAnnotationPublic(annotationId);
       }
       return annotationId;
-    } catch (RemoteException e) {
-      throw new ApplicationException(e);
-    } catch (UnsupportedEncodingException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -143,9 +141,7 @@ public class AnnotationService {
       String id = replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
       setReplyPublic(id);
       return id;
-    } catch (RemoteException e) {
-      throw new ApplicationException(e);
-    } catch (UnsupportedEncodingException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -212,7 +208,7 @@ public class AnnotationService {
   public void unflagAnnotation(final String annotationId) throws ApplicationException {
     try {
       annotationWebService.unflagAnnotation(annotationId);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -226,7 +222,7 @@ public class AnnotationService {
   public void unflagReply(final String replyId) throws ApplicationException {
     try {
       replyWebService.unflagReply(replyId);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -253,7 +249,7 @@ public class AnnotationService {
         throws ApplicationException {
     try {
       annotationWebService.deletePrivateAnnotation(annotationId, deletePreceding);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -268,7 +264,7 @@ public class AnnotationService {
     try {
       annotationWebService.deletePublicAnnotation(annotationId);
       //TODO: Set the access permissions for administrator only
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -283,7 +279,7 @@ public class AnnotationService {
   public void deleteReply(final String root, final String inReplyTo) throws ApplicationException {
     try {
       replyWebService.deleteReplies(root, inReplyTo);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -297,7 +293,7 @@ public class AnnotationService {
   public void deleteFlag(final String flagId) throws ApplicationException {
     try {
       annotationWebService.deleteFlag(flagId);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -311,7 +307,7 @@ public class AnnotationService {
   public void deleteReply(final String replyId) throws ApplicationException {
     try {
       replyWebService.deleteReply(replyId);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -378,8 +374,7 @@ public class AnnotationService {
     AnnotationInfo[] annotations;
     try {
       annotations = annotationWebService.listAnnotations(target, annotationTypeClasses);
-    } catch (RemoteException re){
-      log.error(re);
+    } catch (Exception re){
       throw new ApplicationException(re);
     }
     allAnnotations = converter.convert(annotations);
@@ -421,7 +416,7 @@ public class AnnotationService {
     try {
       final ReplyInfo[] replies = replyWebService.listReplies(root, inReplyTo);
       return converter.convert(replies);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -451,7 +446,7 @@ public class AnnotationService {
         throws ApplicationException {
     try {
       return replyWebService.listAllReplies(root, inReplyTo);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -470,7 +465,7 @@ public class AnnotationService {
     try {
       final ReplyInfo[] replies = replyWebService.listAllReplies(root, inReplyTo);
       return converter.convert(replies, com);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -486,7 +481,7 @@ public class AnnotationService {
     try {
       final AnnotationInfo annotation = annotationWebService.getAnnotation(annotationId);
       return converter.convert(annotation);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }
@@ -502,7 +497,7 @@ public class AnnotationService {
     try {
       final ReplyInfo reply = replyWebService.getReplyInfo(replyId);
       return converter.convert(reply);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       throw new ApplicationException(e);
     }
   }

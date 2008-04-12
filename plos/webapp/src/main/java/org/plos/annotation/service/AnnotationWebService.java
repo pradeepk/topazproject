@@ -22,17 +22,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.rmi.RemoteException;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,12 +40,8 @@ import org.plos.article.service.FetchArticleService;
 
 import org.plos.models.Annotation;
 import org.plos.models.AnnotationBlob;
-import org.plos.models.Annotea;
 import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;
-import org.plos.models.Correction;
-import org.plos.models.Trackback;
-import org.plos.models.TrackbackContent;
 
 import org.plos.permission.service.PermissionWebService;
 
@@ -61,6 +52,7 @@ import org.plos.util.CacheAdminHelper;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
@@ -73,23 +65,18 @@ public class AnnotationWebService extends BaseAnnotationService {
   public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
   public static final String ANNOTATION_KEY = "ArticleAnnotationCache-SingleAnnotation-";
   public static final String ANNOTATION_LOCK = "ArticleAnnotationCache-lock-";
-  private static final Log                               log                    =
-    LogFactory.getLog(AnnotationWebService.class);
-  private AnnotationsPEP                                 pep;
-  private Session                                        session;
-  private PermissionWebService                           permissionsWebService;
-  private FetchArticleService                            fetchArticleService;
-  private Ehcache                                        articleAnnotationCache;
-
   protected static final Set<Class<?extends Annotation>> ALL_ANNOTATION_CLASSES =
     new HashSet<Class<?extends Annotation>>();
+  private static final Log     log                    =
+    LogFactory.getLog(AnnotationWebService.class);
+  private final AnnotationsPEP       pep;
+  private Session              session;
+  private PermissionWebService permissionsWebService;
+  private FetchArticleService  fetchArticleService;
+  private Ehcache              articleAnnotationCache;
 
   static {
-    ALL_ANNOTATION_CLASSES.add(Comment.class);
-    ALL_ANNOTATION_CLASSES.add(Correction.class);
-
-    // ALL_ANNOTATION_CLASSES.add(FormalCorrection.class);
-    // ALL_ANNOTATION_CLASSES.add(MinorCorrection.class);
+    ALL_ANNOTATION_CLASSES.add(ArticleAnnotation.class);
   }
 
   /**
@@ -97,9 +84,9 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws IOException on a PEP creation error
    */
-  public AnnotationWebService() throws IOException, URISyntaxException, ServiceException {
+  public AnnotationWebService() throws IOException {
     try {
-      pep = new AnnotationsPEP();
+      pep                                             = new AnnotationsPEP();
     } catch (IOException e) {
       throw e;
     } catch (Exception e) {
@@ -110,44 +97,41 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
-   * Create a Flag Annotation
+   * Create a Flag Annotation.
    *
-   * @param mimeType
-   * @param target
-   * @param body
-   * @param reasonCode
+   * @param mimeType of the body content
+   * @param target the target of this annotation
+   * @param body the body string
+   * @param reasonCode the reason for flagging
    *
-   * @return
+   * @return the id of the flag annotation
    *
-   * @throws RemoteException
-   * @throws UnsupportedEncodingException
+   * @throws Exception on an error in create
    */
   public String createFlagAnnotation(final String mimeType, final String target, final String body,
                                      String reasonCode)
-                              throws RemoteException, UnsupportedEncodingException {
-    // TODO - eventually this should create a different type of annotation class and not call this method...
+                              throws Exception {
+    // TODO - eventually this should create a different type of annotation and not call this ...
     return createAnnotation(mimeType, target, null, null, null, body);
   }
 
   /**
    * Create a Comment annotation.
    *
-   * @param mimeType mimeType
-   * @param target target
-   * @param context context
+   * @param mimeType mimeType of the body content
+   * @param target target for this comment
+   * @param context the context within the target that is being commented upon
    * @param olderAnnotation olderAnnotation that the new one will supersede
-   * @param title title
-   * @param body body
+   * @param title title of this comment
+   * @param body body of this comment
    *
-   * @return a the new annotation id
+   * @return the new annotation id
    *
-   * @throws RemoteException RemoteException
-   * @throws UnsupportedEncodingException UnsupportedEncodingException
-   * @throws UnsupportedOperationException on an error
+   * @throws Exception on an error
    */
   public String createAnnotation(final String mimeType, final String target, final String context,
                                  final String olderAnnotation, final String title, final String body)
-                          throws RemoteException, UnsupportedEncodingException {
+                          throws Exception {
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
 
     final String contentType = getContentType(mimeType);
@@ -207,7 +191,8 @@ public class AnnotationWebService extends BaseAnnotationService {
       }
     }
 
-    // TODO - is it necessary to remove the article from the cache just because we changed an annotation?
+    // TODO - is it necessary to remove the article from the cache just because we changed 
+    // an annotation?
     fetchArticleService.removeFromArticleCache(new String[] { target });
     // Flush the annotation cache for this target and the annotation
     removeAnnotationFromCache(newComment);
@@ -223,27 +208,22 @@ public class AnnotationWebService extends BaseAnnotationService {
    * Create an annotation.
    *
    * @param annotationClass the class of annotation
-   * @param mimeType mimeType
-   * @param target target
-   * @param context context
+   * @param mimeType mimeType of the annotation body
+   * @param target target of this annotation
+   * @param context context the context within the target that this applies to
    * @param olderAnnotation olderAnnotation that the new one will supersede
-   * @param title title
-   * @param body body
+   * @param title title of this annotation
+   * @param body body of this annotation
    *
    * @return a the new annotation id
    *
-   * @throws RemoteException RemoteException
-   * @throws UnsupportedEncodingException UnsupportedEncodingException
-   * @throws InstantiationException
-   * @throws IllegalAccessException
-   * @throws UnsupportedOperationException on an error
+   * @throws Exception on an error
    */
   public String createArticleAnnotation(Class<ArticleAnnotation> annotationClass,
                                         final String mimeType, final String target,
                                         final String context, final String olderAnnotation,
                                         final String title, final String body)
-                                 throws RemoteException, UnsupportedEncodingException,
-                                        InstantiationException, IllegalAccessException {
+                                 throws Exception {
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
 
     final String contentType = getContentType(mimeType);
@@ -317,15 +297,15 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @param annotationId annotationId
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    */
   public void unflagAnnotation(final String annotationId)
-                        throws RemoteException {
+                        throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
     Annotation a = session.get(Annotation.class, annotationId);
     a.setState(a.getState() & ~FLAG_MASK);
-    session.saveOrUpdate(a);
   }
 
   /**
@@ -334,10 +314,11 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    */
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
-                               throws RemoteException {
+                               throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
     deleteAnnotation(annotationId);
   }
@@ -347,10 +328,11 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @param annotationId annotationId
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    */
   public void deletePublicAnnotation(final String annotationId)
-                              throws RemoteException {
+                              throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
     deleteAnnotation(annotationId);
   }
@@ -360,15 +342,16 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @param flagId flagId
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    */
-  public void deleteFlag(final String flagId) throws RemoteException {
+  public void deleteFlag(final String flagId) throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(flagId));
     deleteAnnotation(flagId);
   }
 
   private void deleteAnnotation(final String annotationId)
-                         throws RemoteException {
+                         throws OtmException {
     Annotation a = session.get(Annotation.class, annotationId);
 
     if (a != null) {
@@ -384,8 +367,11 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @param target the target
    *
    * @return the list
+   *
+   * @throws OtmException on an error
    */
-  public List<Annotation> listAnnotationsForTarget(String target) {
+  private List<Annotation> listAnnotationsForTarget(String target)
+                                             throws OtmException {
     return listAnnotationsForTarget(target, null);
   }
 
@@ -399,23 +385,26 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @param annotationClassTypes
    *
    * @return list of annotations
+   *
+   * @throws OtmException on an error
    */
-  public List<Annotation> listAnnotationsForTarget(final String target,
-                                      final Set<Class<?extends Annotation>> annotationClassTypes) {
+  private List<Annotation> listAnnotationsForTarget(final String target,
+                                                    final Set<Class<?extends Annotation>> annotationClassTypes)
+                                             throws OtmException {
     // lock @ Article level
     final Object     lock           = (FetchArticleService.ARTICLE_LOCK + target).intern();
     List<Annotation> allAnnotations =
-      CacheAdminHelper.getFromCache(articleAnnotationCache, ANNOTATED_KEY + target, -1, lock,
-                                    "annotation list",
-                                    new CacheAdminHelper.EhcacheUpdater<List<Annotation>>() {
-          public List<Annotation> lookup() {
+      CacheAdminHelper.getFromCacheE(articleAnnotationCache, ANNOTATED_KEY + target, -1, lock,
+                                     "annotation list",
+                                     new CacheAdminHelper.EhcacheUpdaterE<List<Annotation>, OtmException>() {
+          public List<Annotation> lookup() throws OtmException {
             return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
           }
         });
 
     /*
-     * TODO: Since we cache the set of all annotations, we can't query and cache a limited 
-     * set of annotations at this time, so we have to filter out the types here and query 
+     * TODO: Since we cache the set of all annotations, we can't query and cache a limited
+     * set of annotations at this time, so we have to filter out the types here and query
      * for all types above when populating the cache
      */
     if (annotationClassTypes != null) {
@@ -439,25 +428,14 @@ public class AnnotationWebService extends BaseAnnotationService {
 
   private List<Annotation> listAnnotations(final String target, final String mediator,
                                            final int state,
-                                           final Set<Class<?extends Annotation>> classTypes) {
-    if (target != null) {
-      pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
-    } else {
-      pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
-    }
-
+                                           final Set<Class<?extends Annotation>> classTypes)
+                                    throws OtmException {
     List<Annotation> combinedAnnotations = new ArrayList<Annotation>();
 
     for (Class anClass : classTypes) {
       Criteria c = session.createCriteria(anClass);
       setRestrictions(c, target, mediator, state);
       combinedAnnotations.addAll((List<Annotation>) c.list());
-    }
-
-    // TODO: touch all of the Annotation to force OTM to resolve references,
-    // needed for cache Serialization, avoid lazy loading issues in webapp usage.
-    for (Annotation annotation : combinedAnnotations) {
-      getAllAnnotationTypes(annotation);
     }
 
     List<org.plos.models.Annotation> allAnnotations = combinedAnnotations;
@@ -504,10 +482,10 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @return a list of annotations
    *
-   * @throws RemoteException
+   * @throws OtmException on an error
    */
   public AnnotationInfo[] listAnnotations(final String target)
-                                   throws RemoteException {
+                                   throws OtmException {
     return listAnnotations(target, null);
   }
 
@@ -523,38 +501,34 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @return a list of annotations
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    */
   public AnnotationInfo[] listAnnotations(final String target,
                                           Set<Class<?extends Annotation>> annotationClassTypes)
-                                   throws RemoteException {
-    List<Annotation> allAnnotations = listAnnotationsForTarget(target, annotationClassTypes);
+                                   throws OtmException, SecurityException {
+    pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
 
-    // List<Annotation> pepFilteredComments   = allArticleAnnotations;
-    // // Note that the PubApp does not currently support private annotations so this logic is not necessary
-    // // It is also not going to be possible to cache annotated article XML ones we do support it since the article
-    // // XML could appear differently to each user.
-    //    if (false) { // xxx: no point here because of the cache logic above
-    //      pepFilteredComments = new ArrayList(allArticleAnnotations);
-    //
-    //      for (ArticleAnnotation a : allArticleAnnotations) {
-    //        try {
-    //          pep.checkAccess(pep.GET_ANNOTATION_INFO, a.getId());
-    //        } catch (Throwable t) {
-    //          if (log.isDebugEnabled())
-    //            log.debug("no permission for viewing annotation " + a.getId()
-    //                      + " and therefore removed from list");
-    //
-    //          pepFilteredComments.remove(a);
-    //        }
-    //      }
-    //    }
-    AnnotationInfo[] annotations = new AnnotationInfo[allAnnotations.size()];
+    List<Annotation> all      = listAnnotationsForTarget(target, annotationClassTypes);
+    List<Annotation> filtered = new ArrayList(all.size());
+
+    for (Annotation a : all) {
+      try {
+        pep.checkAccess(pep.GET_ANNOTATION_INFO, a.getId());
+        filtered.add(a);
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("no permission for viewing annotation " + a.getId()
+                    + " and therefore removed from list");
+      }
+    }
+
+    AnnotationInfo[] annotations = new AnnotationInfo[filtered.size()];
     int              i           = 0;
 
     // TODO: Flags should not extend Comment (or Annotation). 
     // When this is fixed, they should not be stored in this cache!
-    for (Annotation a : allAnnotations) {
+    for (Annotation a : filtered) {
       if (a instanceof ArticleAnnotation) {
         annotations[i++] = new AnnotationInfo((ArticleAnnotation) a);
       } else {
@@ -574,11 +548,12 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @return an annotation
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    * @throws IllegalArgumentException if not an article annotation
    */
   public AnnotationInfo getAnnotation(final String annotationId)
-                               throws RemoteException {
+                               throws OtmException, SecurityException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
 
     final Object lock = (ANNOTATION_LOCK + annotationId).intern();
@@ -587,12 +562,7 @@ public class AnnotationWebService extends BaseAnnotationService {
                                     lock, "individual annotation",
                                     new CacheAdminHelper.EhcacheUpdater<Annotation>() {
           public Annotation lookup() {
-            Annotation annotation = session.get(Annotation.class, annotationId);
-            // TODO: touch all of the Annotation to force OTM to resolve references,
-            // needed for cache Serialization, avoid lazy loading issues in webapp usage.
-            getAllAnnotationTypes(annotation);
-
-            return annotation;
+            return session.get(Annotation.class, annotationId);
           }
         });
 
@@ -612,15 +582,15 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @param annotationDoi annotationDoi
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    */
-  public void setPublic(final String annotationDoi) throws RemoteException {
+  public void setPublic(final String annotationDoi) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
 
     Annotation a = session.get(Annotation.class, annotationDoi);
     a.setState(a.getState() | PUBLIC_MASK);
     removeAnnotationFromCache(a);
-    session.saveOrUpdate(a);
   }
 
   /**
@@ -628,15 +598,15 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @param annotationId annotationId
    *
-   * @throws RemoteException RemoteException
+   * @throws OtmException on an error
+   * @throws SecurityException if a security policy prevented this operation
    */
-  public void setFlagged(final String annotationId) throws RemoteException {
+  public void setFlagged(final String annotationId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
     Annotation a = session.get(Annotation.class, annotationId);
     a.setState(a.getState() | FLAG_MASK);
     removeAnnotationFromCache(a);
-    session.saveOrUpdate(a);
   }
 
   /**
@@ -649,10 +619,11 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @return an array of annotation metadata; if no matching annotations are found, an empty array
    *         is returned
    *
-   * @throws RemoteException if some error occurred
+   * @throws OtmException if some error occurred
    */
   public AnnotationInfo[] listAnnotations(final String mediator, final int state)
-                                   throws RemoteException {
+                                   throws OtmException {
+    pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
     List<Annotation> annotationList =
       listAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
     AnnotationInfo[] annotations    = new AnnotationInfo[annotationList.size()];
@@ -687,7 +658,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @return the id of the new annotation
    *
-   * @throws Exception
+   * @throws Exception on an error
    */
   public String convertArticleAnnotationToType(final String srcAnnotationId,
                                                final Class newAnnotationClassType)
@@ -800,97 +771,5 @@ public class AnnotationWebService extends BaseAnnotationService {
   @Required
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionsWebService = permissionWebService;
-  }
-
-  private static void getAllAnnotationTypes(Annotation annotation) {
-    if (annotation == null) {
-      return;
-    }
-
-    if (annotation instanceof Comment) {
-      getAllComment((Comment) annotation);
-    } else if (annotation instanceof Correction) {
-      getAllCorrection((Correction) annotation);
-    } else if (annotation instanceof Trackback) {
-      getAllTrackback((Trackback) annotation);
-    } else {
-      getAllAnnotation(annotation);
-    }
-  }
-
-  private static void getAllComment(Comment comment) {
-    if (comment == null) {
-      return;
-    }
-
-    comment.getBody();
-    // comment.getType();
-    getAllAnnotation((Annotation) comment);
-  }
-
-  private static void getAllCorrection(Correction correction) {
-    if (correction == null) {
-      return;
-    }
-
-    correction.getBody();
-
-    getAllAnnotation((Annotation) correction);
-  }
-
-  private static void getAllTrackback(Trackback trackback) {
-    if (trackback == null) {
-      return;
-    }
-
-    trackback.getBlog_name();
-    getAllTrackbackContent(trackback.getBody());
-    // trackback.getExcerpt();
-    // trackback.getTitle();
-    // trackback.getUrl();
-    getAllAnnotation((Annotation) trackback);
-  }
-
-  private static void getAllTrackbackContent(TrackbackContent trackbackContent) {
-    if (trackbackContent == null) {
-      return;
-    }
-
-    trackbackContent.getBlog_name();
-
-    // trackbackContent.getExcerpt();
-    // trackbackContent.getId();
-    // trackbackContent.getTitle();
-    // trackbackContent.getUrl();
-  }
-
-  private static void getAllAnnotation(Annotation annotation) {
-    if (annotation == null) {
-      return;
-    }
-
-    annotation.getAnnotates();
-    // annotation.getContext();
-    // annotation.getId();
-    getAllAnnotation(annotation.getSupersededBy());
-    getAllAnnotation(annotation.getSupersedes());
-
-    getAllAnnotea((Annotea) annotation);
-  }
-
-  private static void getAllAnnotea(Annotea annotea) {
-    if (annotea == null) {
-      return;
-    }
-
-    annotea.getAnonymousCreator();
-
-    // annotea.getCreated();
-    // annotea.getCreator();
-    // annotea.getId();
-    // annotea.getMediator();
-    // annotea.getState();
-    // annotea.getTitle();
-    // annotea.getType();
   }
 }
