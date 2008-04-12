@@ -18,9 +18,6 @@
  */
 package org.plos.annotation.service;
 
-import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
-import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
@@ -32,6 +29,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
+
+import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
+import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
+
 import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.annotation.Commentary;
@@ -54,7 +55,9 @@ import org.plos.util.FileUtils;
  * Provides the Create/Read/Delete annotation operations .
  */
 public class AnnotationService {
-  // TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the AnnotationWebService directly!
+  /* TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the
+   * AnnotationWebService directly!
+   */
   private AnnotationWebService annotationWebService;
   private ReplyWebService replyWebService;
   private RatingsService ratingsService;
@@ -68,8 +71,10 @@ public class AnnotationService {
   public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
   public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
   public static final String WEB_TYPE_REPLY = "Reply";
-  private static final Set<Class<? extends Annotation>> CORRECTION_SET = new HashSet<Class<? extends Annotation>>();
-  private static final Set<Class<? extends Annotation>> COMMENT_SET = new HashSet<Class<? extends Annotation>>();
+  private static final Set<Class<? extends Annotation>> CORRECTION_SET =
+                                                new HashSet<Class<? extends Annotation>>();
+  private static final Set<Class<? extends Annotation>> COMMENT_SET =
+                                                new HashSet<Class<? extends Annotation>>();
   static {
     CORRECTION_SET.add(Correction.class);
     COMMENT_SET.add(Comment.class);
@@ -77,6 +82,7 @@ public class AnnotationService {
 
   /**
    * Create an annotation.
+   *
    * @param target target that an annotation is being created for
    * @param context context
    * @param olderAnnotation olderAnnotation that the new one will supersede
@@ -87,24 +93,25 @@ public class AnnotationService {
    * @throws org.plos.ApplicationException ApplicationException
    * @return unique identifier for the newly created annotation
    */
-  public String createAnnotation(final String target, final String context, final String olderAnnotation,
-      final String title, final String mimeType, final String body, final boolean isPublic) throws ApplicationException {
+  public String createAnnotation(final String target, final String context,
+                                 final String olderAnnotation, final String title,
+                                 final String mimeType, final String body, final boolean isPublic)
+        throws ApplicationException {
 
     if (log.isDebugEnabled()) {
-      StringBuilder debugMsg = new StringBuilder("creating annotation for target: ");
-      debugMsg.append(target).append("; context: ").append(context).append("; supercedes: ");
-      debugMsg.append(olderAnnotation).append("; title: " ).append(title).append("; mimeType: ");
-      debugMsg.append(mimeType).append("; body: ").append(body).append("; isPublic: ").append(isPublic);
-      log.debug(debugMsg);
+      log.debug("creating annotation for target: " + target + "; context: " + context +
+                "; supercedes: " + olderAnnotation + "; title: " + title + "; mimeType: " +
+                mimeType + "; body: " + body + "; isPublic: " + isPublic);
     }
 
     try {
-      final String annotationId = annotationWebService.createAnnotation(mimeType, target, context, olderAnnotation, title, body);
+      String annotationId = annotationWebService.createAnnotation(mimeType, target, context,
+                                                                  olderAnnotation, title, body);
 
       if (log.isDebugEnabled()) {
         final PlosOneUser user = PlosOneUser.getCurrentUser();
-        log.debug("Annotation created with ID: " + annotationId + " for user: " + ((user == null) ? "null" : user.getUserId()) + " for IP: " +
-                  ServletActionContext.getRequest().getRemoteAddr());
+        log.debug("Annotation created with ID: " + annotationId + " for user: " + user +
+                  " for IP: " + ServletActionContext.getRequest().getRemoteAddr());
       }
 
       if (isPublic) {
@@ -120,6 +127,7 @@ public class AnnotationService {
 
   /**
    * Create a reply
+   *
    * @param root root
    * @param inReplyTo inReplyTo
    * @param title title
@@ -128,7 +136,9 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return unique identifier for the newly created reply
    */
-  public String createReply(final String root, final String inReplyTo, final String title, final String mimeType, final String body) throws ApplicationException {
+  public String createReply(final String root, final String inReplyTo, final String title,
+                            final String mimeType, final String body)
+        throws ApplicationException {
     try {
       String id = replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
       setReplyPublic(id);
@@ -142,6 +152,7 @@ public class AnnotationService {
 
   /**
    * Create a flag against an annotation or a reply
+   *
    * @param target target that a flag is being created for
    * @param reasonCode reasonCode
    * @param body body
@@ -150,10 +161,13 @@ public class AnnotationService {
    * @return unique identifier for the newly created flag
    * @throws org.plos.ApplicationException ApplicationException
    */
-  public String createFlag(final String target, final String reasonCode, final String body, final String mimeType, final boolean isAnnotation) throws ApplicationException {
+  public String createFlag(final String target, final String reasonCode, final String body,
+                           final String mimeType, final boolean isAnnotation)
+        throws ApplicationException {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-      final String flagId = annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
+      final String flagId =
+                annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
       if (isAnnotation) {
         annotationWebService.setFlagged(target);
       } else {
@@ -175,10 +189,13 @@ public class AnnotationService {
    * @return unique identifier for the newly created flag
    * @throws org.plos.ApplicationException
    */
-  public String createRatingFlag(final String target, final String reasonCode, final String body, final String mimeType) throws ApplicationException {
+  public String createRatingFlag(final String target, final String reasonCode, final String body,
+                                 final String mimeType)
+        throws ApplicationException {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-      final String flagId = annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
+      final String flagId =
+                  annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
       ratingsService.setFlagged(target);
       return flagId;
     } catch (Exception e) {
@@ -188,6 +205,7 @@ public class AnnotationService {
 
   /**
    * Unflag the given annotation
+   *
    * @param annotationId annotationId
    * @throws ApplicationException ApplicationException
    */
@@ -201,6 +219,7 @@ public class AnnotationService {
 
   /**
    * Unflag the given reply
+   *
    * @param replyId replyId
    * @throws ApplicationException ApplicationException
    */
@@ -225,11 +244,13 @@ public class AnnotationService {
 
   /**
    * Delete the given annotation along with/without the one it supercedes
+   *
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
    * @throws ApplicationException ApplicationException
    */
-  public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
+  public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
+        throws ApplicationException {
     try {
       annotationWebService.deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
@@ -239,6 +260,7 @@ public class AnnotationService {
 
   /**
    * Delete the given annotation along with/without the one it supercedes
+   *
    * @param annotationId annotationId
    * @throws ApplicationException ApplicationException
    */
@@ -253,6 +275,7 @@ public class AnnotationService {
 
   /**
    * Delete replies with a given root and base reply
+   *
    * @param root root
    * @param inReplyTo inReplyTo
    * @throws ApplicationException ApplicationException
@@ -267,6 +290,7 @@ public class AnnotationService {
 
   /**
    * Delete the given flag
+   *
    * @param flagId flagId
    * @throws org.plos.ApplicationException ApplicationException
    */
@@ -280,6 +304,7 @@ public class AnnotationService {
 
   /**
    * delete reply with id
+   *
    * @param replyId replyId of the reply
    * @throws ApplicationException ApplicationException
    */
@@ -292,6 +317,8 @@ public class AnnotationService {
   }
 
   /**
+   * Lists all annotations for the given target DOI. 
+   *
    * @param target target of the annotation
    * @throws ApplicationException ApplicationException
    * @return a list of annotations
@@ -299,7 +326,7 @@ public class AnnotationService {
   public WebAnnotation[] listAnnotations(String target)  throws ApplicationException {
     return listAnnotations(target, null);
   }
-  
+
   /**
    * Lists all correction annotations for the given target DOI. 
    * 
@@ -310,7 +337,7 @@ public class AnnotationService {
   public WebAnnotation[] listCorrections(String target) throws ApplicationException {
     return listAnnotations(target, CORRECTION_SET);
   }
-  
+
   /**
    * Lists all comment annotations for the given target DOI. 
    * 
@@ -321,28 +348,31 @@ public class AnnotationService {
   public WebAnnotation[] listComments(String target) throws ApplicationException {
     return listAnnotations(target, COMMENT_SET);
   }
-  
+
   /**
-   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If annotationClassTypes is null, then all 
-   * annotation types are retrieved. If annotationClassTypes is not null, only the Annotation class types in the 
-   * annotationClassTypes Set are returned. 
+   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If
+   * annotationClassTypes is null, then all annotation types are retrieved. If annotationClassTypes
+   * is not null, only the Annotation class types in the annotationClassTypes Set are returned. 
    * 
-   * Each Class in annotationClassTypes should extend Annotation. E.G. Comment.class or FormalCorrection.class
+   * Each Class in annotationClassTypes should extend Annotation. E.G. Comment.class or
+   * FormalCorrection.class
    *
    * @param target target doi that the listed annotations annotate
    * @param annotationClassTypes a set of Annotation class types to filter the results
-   *
    * @return a list of annotations
-   *
    * @throws RemoteException RemoteException
    */
-  public WebAnnotation[] listAnnotations(String target, Set<Class<? extends Annotation>> annotationTypeClasses) throws ApplicationException {
-    // TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the AnnotationWebService directly!
-    
-    /** Placing the caching here rather than in AnnotationWebService because this
-     *  produces the objects for the Commentary view.  The Article HTML is cached
-     *  which calls the AnnotationWebService listAnnotations directly, so that call
-     *  won't happen too much.
+  public WebAnnotation[] listAnnotations(String target,
+                                         Set<Class<? extends Annotation>> annotationTypeClasses)
+        throws ApplicationException {
+    /* TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the
+     * AnnotationWebService directly!
+     */
+
+    /* Placing the caching here rather than in AnnotationWebService because this
+     * produces the objects for the Commentary view.  The Article HTML is cached
+     * which calls the AnnotationWebService listAnnotations directly, so that call
+     * won't happen too much.
      */
     WebAnnotation[] allAnnotations;
     AnnotationInfo[] annotations;
@@ -357,6 +387,8 @@ public class AnnotationService {
   }
 
   /**
+   * List all the flags on all the undeleted annotations on the target.
+   *
    * @param target target of the annotation
    * @throws ApplicationException ApplicationException
    * @return a list of undeleted flags
@@ -378,12 +410,14 @@ public class AnnotationService {
 
   /**
    * List replies.
+   *
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
    * @throws ApplicationException ApplicationException
    * @return a list of replies
    */
-  public Reply[] listReplies(final String root, final String inReplyTo) throws ApplicationException {
+  public Reply[] listReplies(final String root, final String inReplyTo)
+        throws ApplicationException {
     try {
       final ReplyInfo[] replies = replyWebService.listReplies(root, inReplyTo);
       return converter.convert(replies);
@@ -394,23 +428,27 @@ public class AnnotationService {
 
   /**
    * Get a list of all replies
+   *
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
-  public Reply[] listAllReplies(final String root, final String inReplyTo)throws ApplicationException {
+  public Reply[] listAllReplies(final String root, final String inReplyTo)
+        throws ApplicationException {
     return listAllReplies(root, inReplyTo, null);
   }
 
   /**
    * Get a list of all replies in a flat array
+   *
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
-  public ReplyInfo[] listAllRepliesFlattened(final String root, final String inReplyTo)throws ApplicationException {
+  public ReplyInfo[] listAllRepliesFlattened(final String root, final String inReplyTo)
+        throws ApplicationException {
     try {
       return replyWebService.listAllReplies(root, inReplyTo);
     } catch (RemoteException e) {
@@ -420,6 +458,7 @@ public class AnnotationService {
 
   /**
    * Get a list of all replies
+   *
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
    * @param com commentary
@@ -437,6 +476,8 @@ public class AnnotationService {
   }
 
   /**
+   * Get the specified annotation.
+   *
    * @param annotationId annotationId
    * @throws ApplicationException ApplicationException
    * @return Annotation
@@ -451,7 +492,8 @@ public class AnnotationService {
   }
 
   /**
-   * Get reply
+   * Get the specified reply.
+   *
    * @param replyId replyId
    * @return the reply object
    * @throws ApplicationException ApplicationException
@@ -490,6 +532,7 @@ public class AnnotationService {
 
   /**
    * Get the bodyUrl of the annotation.
+   *
    * @param bodyUrl bodyUrl
    * @return content of the annotation
    * @throws ApplicationException ApplicationException
@@ -504,6 +547,7 @@ public class AnnotationService {
 
   /**
    * Set the annotation as public.
+   *
    * @param annotationDoi annotationDoi
    * @throws ApplicationException ApplicationException
    */
@@ -550,11 +594,6 @@ public class AnnotationService {
    * Set the PermissionWebService
    * @param permissionWebService permissionWebService
    */
-
-  /**
-   * Set the PermissionWebService
-   * @param permissionWebService permissionWebService
-   */
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionWebService = permissionWebService;
   }
@@ -568,8 +607,8 @@ public class AnnotationService {
    * @return
    * @throws Exception
    */
-  public String convertArticleAnnotationToType(String targetId, Class newAnnotationClassType) 
-  throws Exception {
+  public String convertArticleAnnotationToType(String targetId, Class newAnnotationClassType)
+        throws Exception {
     String newAnnotationId = annotationWebService.
       convertArticleAnnotationToType(targetId, newAnnotationClassType);
     setAnnotationPublic(newAnnotationId);
@@ -585,7 +624,7 @@ public class AnnotationService {
     if (ann == null || ann.getType() == null){
       return null;
     }
-    
+
     if (ann.getType().equals(MinorCorrection.RDF_TYPE)) {
       return AnnotationService.WEB_TYPE_MINOR_CORRECTION;
     }
@@ -605,8 +644,9 @@ public class AnnotationService {
         return AnnotationService.WEB_TYPE_COMMENT;
       }
     }
-    
-    log.error("Unable to determine annotation WEB_TYPE. Annotation ID='"+ann.getId()+"' ann.getType() = '"+ann.getType()+"'");
+
+    log.error("Unable to determine annotation WEB_TYPE. Annotation ID='" + ann.getId() +
+              "' ann.getType() = '" + ann.getType() + "'");
     return null;
   }
 }
