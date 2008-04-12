@@ -60,7 +60,7 @@ public class GenericQueryImpl extends QueryImplBase implements Cloneable {
     this.query = query;
     this.log   = log;
 
-    QueryLexer lexer  = new QueryLexer(new StringReader(GenericQueryImpl.this.query));
+    QueryLexer lexer  = new QueryLexer(new StringReader(query));
     parsedQuery = doStep("parsing query", new QueryParser(lexer), new QueryStep<QueryParser>() {
       public void run(QueryParser parser) throws Exception {
         parser.query();
