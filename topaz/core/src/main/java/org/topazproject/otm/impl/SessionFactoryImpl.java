@@ -74,6 +74,8 @@ import org.topazproject.otm.BlobStore;
 public class SessionFactoryImpl implements SessionFactory {
   private static final Log log = LogFactory.getLog(SessionFactory.class);
 
+  private static Jotm jotm;
+
   /**
    * definition name to definition map
    */
@@ -130,7 +132,6 @@ public class SessionFactoryImpl implements SessionFactory {
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
   private TripleStore                tripleStore;
   private BlobStore                  blobStore;
-  private Jotm                       jotm;
   private TransactionManager         txMgr;
   private CurrentSessionContext      currentSessionContext;
 
@@ -449,25 +450,35 @@ public class SessionFactoryImpl implements SessionFactory {
   }
 
   public void setTransactionManager(TransactionManager tm) {
-    if (jotm != null) {
-      jotm.stop();
-      jotm = null;
-    }
-
     this.txMgr = tm;
   }
 
   public TransactionManager getTransactionManager() throws OtmException {
     if (txMgr == null) {
       try {
-        jotm  = new Jotm(true, false);
-        txMgr = jotm.getTransactionManager();
+        txMgr = getJotm().getTransactionManager();
       } catch (NamingException ne) {
         throw new OtmException("Failed to create default transaction-manager", ne);
       }
     }
 
     return txMgr;
+  }
+
+  private static synchronized Jotm getJotm() throws NamingException {
+    if (jotm == null) {
+      jotm  = new Jotm(true, false) {
+        protected void finalize() throws Throwable {
+          try {
+            stop();
+          } finally {
+            super.finalize();
+          }
+        }
+      };
+    }
+
+    return jotm;
   }
 
   /*
@@ -562,17 +573,6 @@ public class SessionFactoryImpl implements SessionFactory {
     return uri;
   }
 
-
-  protected void finalize() throws Throwable {
-    try {
-      if (jotm != null) {
-        jotm.stop();
-        jotm = null;
-      }
-    } finally {
-      super.finalize();
-    }
-  }
 
   private class SFClassBindings extends ClassBindings {
     public SFClassBindings(ClassDefinition def) {
