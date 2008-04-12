@@ -138,7 +138,7 @@ public class AnnotationService {
                             final String mimeType, final String body)
         throws ApplicationException {
     try {
-      String id = replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
+      String id = replyWebService.createReply(mimeType, root, inReplyTo, title, body);
       setReplyPublic(id);
       return id;
     } catch (Exception e) {
