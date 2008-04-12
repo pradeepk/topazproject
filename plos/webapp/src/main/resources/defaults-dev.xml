@@ -51,6 +51,10 @@
         </pub>
       </PLoSClinicalTrials>
     </virtualJournals>
+    <spring>
+      <!-- must match the name of a bean in the applicationContext.xml -->
+      <blobStore>simpleBlobStore</blobStore>
+   </spring>
   </pub>
   <dummy>
     <sso>

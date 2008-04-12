@@ -46,6 +46,7 @@ import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
 import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 
 import org.plos.models.Annotation;
+import org.plos.models.AnnotationBlob;
 import org.plos.models.Annotea;
 import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;
@@ -73,7 +74,6 @@ public class AnnotationWebService extends BaseAnnotationService {
   private static final Log          log                      =
     LogFactory.getLog(AnnotationWebService.class);
   private AnnotationsPEP            pep;
-  private FedoraHelper              fedora;
   private Session                   session;
   private PermissionWebService      permissionsWebService;
   private FetchArticleService fetchArticleService;
@@ -104,9 +104,6 @@ public class AnnotationWebService extends BaseAnnotationService {
       ioe.initCause(e);
       throw ioe;
     }
-
-    if (fedora == null)
-      fedora = new FedoraHelper();
   }
 
   /**
@@ -156,12 +153,8 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String user      = PlosOneUser.getCurrentUser().getUserId();
-    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
-                                         "Annotation", "Annotation Body");
-
-    if (log.isDebugEnabled())
-      log.debug("created fedora object " + bodyUri + " for annotation ");
+    String user           = PlosOneUser.getCurrentUser().getUserId();
+    AnnotationBlob blob   = new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
 
     final Comment newComment = new Comment();
 
@@ -176,26 +169,26 @@ public class AnnotationWebService extends BaseAnnotationService {
     else
       newComment.setCreator(user);
 
-    newComment.setBody(URI.create(bodyUri));
+    newComment.setBody(blob);
     newComment.setCreated(new Date());
 
     String newId = session.saveOrUpdate(newComment);
 
     if (log.isDebugEnabled())
-      log.debug("created annotaion " + newId + " for " + target + " annotated by " + bodyUri);
+      log.debug("created annotaion " + newId + " for " + target + " with body in blob " + blob.getId());
 
     boolean propagated = false;
 
     try {
-      permissionsWebService.propagatePermissions(newId, new String[] { bodyUri });
+      permissionsWebService.propagatePermissions(newId, new String[] { blob.getId() });
       propagated = true;
 
       if (log.isDebugEnabled())
-        log.debug("propagated permissions for annotaion " + newId + " to " + bodyUri);
+        log.debug("propagated permissions for annotaion " + newId + " to " + blob.getId());
     } finally {
       if (!propagated) {
         if (log.isDebugEnabled())
-          log.debug("failed to propagate permissions for annotaion " + newId + " to " + bodyUri);
+          log.debug("failed to propagate permissions for annotaion " + newId + " to " + blob.getId());
 
         try {
           deleteAnnotation(newId);
@@ -250,12 +243,8 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String user      = PlosOneUser.getCurrentUser().getUserId();
-    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
-        "Annotation", "Annotation Body");
-
-    if (log.isDebugEnabled())
-      log.debug("created fedora object " + bodyUri + " for correction annotation ");
+    String user           = PlosOneUser.getCurrentUser().getUserId();
+    AnnotationBlob blob   = new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
 
     final ArticleAnnotation annotation = (ArticleAnnotation) annotationClass.newInstance();
 
@@ -270,26 +259,26 @@ public class AnnotationWebService extends BaseAnnotationService {
     else
       annotation.setCreator(user);
 
-    annotation.setBody(URI.create(bodyUri));
+    annotation.setBody(blob);
     annotation.setCreated(new Date());
 
     String newId = session.saveOrUpdate(annotation);
 
     if (log.isDebugEnabled())
-      log.debug("created annotaion " + newId + " for " + target + " annotated by " + bodyUri);
+      log.debug("created annotaion " + newId + " for " + target + " with body in blob " + blob.getId());
 
     boolean propagated = false;
 
     try {
-      permissionsWebService.propagatePermissions(newId, new String[] { bodyUri });
+      permissionsWebService.propagatePermissions(newId, new String[] { blob.getId() });
       propagated = true;
 
       if (log.isDebugEnabled())
-        log.debug("propagated permissions for annotaion " + newId + " to " + bodyUri);
+        log.debug("propagated permissions for annotaion " + newId + " to " + blob.getId());
     } finally {
       if (!propagated) {
         if (log.isDebugEnabled())
-          log.debug("failed to propagate permissions for annotaion " + newId + " to " + bodyUri);
+          log.debug("failed to propagate permissions for annotaion " + newId + " to " + blob.getId());
 
         try {
           deleteAnnotation(newId);
@@ -379,10 +368,6 @@ public class AnnotationWebService extends BaseAnnotationService {
       session.delete(a);
       fetchArticleService.removeFromArticleCache(new String[] {a.getAnnotates().toString()});
       removeAnnotationFromCache(a);
-      if (a instanceof ArticleAnnotation) {
-        ArticleAnnotation aa = (ArticleAnnotation)a;
-        fedora.purgeObjects(new String[] { FedoraHelper.uri2PID(aa.getBody().toString()) });
-      }
     }
   }
 
@@ -535,7 +520,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     // TODO: Flags should not extend Comment (or Annotation). When this is fixed, they should not be stored in this cache!
     for (Annotation a : allAnnotations) {
       if (a instanceof ArticleAnnotation) {
-        annotations[i++] = new AnnotationInfo((ArticleAnnotation)a, fedora);
+        annotations[i++] = new AnnotationInfo((ArticleAnnotation)a);
       } else {
         log.error("Code error! Annotation found in annotation cache that does not " +
         		"implement ArticleAnnotation. (id=" + a.getId() +
@@ -580,7 +565,7 @@ public class AnnotationWebService extends BaseAnnotationService {
       throw new IllegalArgumentException("Annotation (id="+annotationId+") not instanceof ArticleAnnotation.");
     }
 
-    return new AnnotationInfo((ArticleAnnotation)a, fedora);
+    return new AnnotationInfo((ArticleAnnotation)a);
   }
 
   /**
@@ -635,7 +620,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     int i = 0;
     for (Annotation a : annotationList) {
       if (a instanceof ArticleAnnotation) {
-        annotations[i++] = new AnnotationInfo((ArticleAnnotation) a, fedora);
+        annotations[i++] = new AnnotationInfo((ArticleAnnotation) a);
       } else {
         log.error("Code error! Annotation found in annotation cache that does not "
                 + "implement ArticleAnnotation. (id=" + a.getId()
@@ -686,9 +671,8 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     String newId = session.saveOrUpdate(newAn);
     URI newIdUri = new URI(newId);
-    session.flush();
     permissionsWebService.propagatePermissions(newId, new String[] { newAn
-        .getBody().toString() });
+        .getBody().getId() });
 
     // Find all Annotations that refer to the old Annotation and update their
     // target 'annotates'
@@ -697,9 +681,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     for (Annotation refAn : refAns) {
       refAn.setAnnotates(newIdUri);
       removeAnnotationFromCache(refAn);
-      session.saveOrUpdate(refAn);
     }
-    session.flush();
 
     // Delete the original annotation from mulgara. Note, we don't call
     // deleteAnnotation() here
@@ -707,6 +689,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     // referencing that from
     // the new annotation.
     removeAnnotationFromCache(srcAnnotation);
+    oldAn.setBody(null);
     session.delete(oldAn);
 
     // We must clear the annotated article from the article cache

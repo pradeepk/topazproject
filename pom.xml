@@ -469,6 +469,11 @@
         <artifactId>otm-extras</artifactId>
         <version>${pom.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.topazproject</groupId>
+        <artifactId>fedora-blobstore</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
 
       <!-- search -->
       <dependency>

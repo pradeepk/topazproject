@@ -37,8 +37,8 @@ public interface ArticleAnnotation {
   public URI getId();
   public void setId(URI newId);
 
-  public URI getBody();
-  public void setBody(URI body);
+  public AnnotationBlob getBody();
+  public void setBody(AnnotationBlob body);
 
   public String getType();
   public void setType(String type);

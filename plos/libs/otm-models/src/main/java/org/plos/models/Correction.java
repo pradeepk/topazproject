@@ -20,6 +20,7 @@ package org.plos.models;
 
 import java.net.URI;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -33,20 +34,18 @@ import org.topazproject.otm.annotations.Predicate;
 public class Correction extends Annotation implements ArticleAnnotation {
   private static final long serialVersionUID = -8174779804923945692L;
 
-  @Predicate(uri = Annotea.W3C_NS + "body")
-  private URI body;
+  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager) // XXX : lazy?
+  private AnnotationBlob body;
 
   /* (non-Javadoc)
-   * @see org.plos.models.ArticleAnnotation#getBody()
    */
-  public URI getBody() {
+  public AnnotationBlob getBody() {
     return body;
   }
 
   /* (non-Javadoc)
-   * @see org.plos.models.ArticleAnnotation#setBody(java.net.URI)
    */
-  public void setBody(URI body) {
+  public void setBody(AnnotationBlob body) {
     this.body = body;
   }
 

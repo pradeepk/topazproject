@@ -180,6 +180,8 @@
       <email><feedback>webmaster@plos.org</feedback></email>
       <!-- Temporary default for /etc/topaz/ambra.xml -->
       <hosts><mailhost>${network.hosts.default}</mailhost></hosts>
+      <!-- must match the name of a bean in the applicationContext.xml -->
+      <blobStore>fedoraBlobStore</blobStore>
     </spring>
   </pub>
 

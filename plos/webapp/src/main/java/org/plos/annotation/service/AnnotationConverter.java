@@ -32,7 +32,6 @@ import java.util.Map;
  * A kind of utility class to convert types between topaz and plosone types fro Annotations and Replies
  */
 public class AnnotationConverter {
-  private AnnotationLazyLoaderFactory lazyLoaderFactory;
   private UserService userService;
 
   /**
@@ -54,11 +53,13 @@ public class AnnotationConverter {
    * @throws ApplicationException
    */
   public WebAnnotation convert(final AnnotationInfo annotation) throws ApplicationException {
-    final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(annotation);
-
     return new WebAnnotation(annotation, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
-        return lazyLoader.getBody();
+        try {
+          return annotation.getBody().getText();
+        } catch (Exception e) {
+          throw new ApplicationException("Failed to load annotation body", e);
+        }
       }
     };
 
@@ -139,22 +140,17 @@ public class AnnotationConverter {
    * @throws ApplicationException ApplicationException
    */
   public Reply convert(final ReplyInfo reply) throws ApplicationException {
-    final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(reply);
 
     return new Reply(reply, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
-        return lazyLoader.getBody();
+        try {
+          return reply.getBody().getText();
+        } catch (Exception e) {
+          throw new ApplicationException("Failed to load reply body", e);
+        }
       }
 
     };
-  }
-
-  /**
-   * Set the lazy loader factory.
-   * @param lazyLoaderFactory lazyLoaderFactory
-   */
-  public void setLazyLoaderFactory(final AnnotationLazyLoaderFactory lazyLoaderFactory) {
-    this.lazyLoaderFactory = lazyLoaderFactory;
   }
 
   /**

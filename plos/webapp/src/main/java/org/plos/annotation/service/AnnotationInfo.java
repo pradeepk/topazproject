@@ -27,6 +27,7 @@ import java.util.SimpleTimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.models.Blob;
 import org.plos.models.Annotation;
 import org.plos.models.Annotea;
 import org.plos.models.ArticleAnnotation;
@@ -39,7 +40,6 @@ import org.plos.models.ArticleAnnotation;
 public class AnnotationInfo {
   private static final Log log = LogFactory.getLog(AnnotationInfo.class);
   private ArticleAnnotation ann;
-  private FedoraHelper fedora;
   private static SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   static {
@@ -49,9 +49,8 @@ public class AnnotationInfo {
 /**
    * Creates a new AnnotationInfo object.
    */
-  public AnnotationInfo(ArticleAnnotation ann, FedoraHelper fedora) {
+  public AnnotationInfo(ArticleAnnotation ann) {
     this.ann      = ann;
-    this.fedora   = fedora;
   }
 
   /**
@@ -110,10 +109,8 @@ public class AnnotationInfo {
    *
    * @return body as String.
    */
-  public String getBody() {
-    URI u = ann.getBody();
-
-    return (u == null) ? null : fedora.getBodyURL(u.toString());
+  public Blob getBody() {
+    return ann.getBody();
   }
 
   /**

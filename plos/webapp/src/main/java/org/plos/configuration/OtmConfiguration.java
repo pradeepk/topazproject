@@ -27,7 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.stores.ItqlStore;
+import org.topazproject.fedora.otm.FedoraBlobStore;
+import org.topazproject.fedora.otm.FedoraBlobFactory;
 
 /**
  * Convenience class to manage configuration of OTM Session Factory
@@ -44,8 +47,9 @@ public class OtmConfiguration {
    * Creates a new OtmConfiguration object.
    *
    * @param tripleStoreUrl the URL for the store
+   * @param blobStore the blob-store to use
    */
-  public OtmConfiguration(String tripleStoreUrl) {
+  public OtmConfiguration(String tripleStoreUrl, BlobStore blobStore) {
     factory = new SessionFactoryImpl();
 
     if (log.isDebugEnabled()) {
@@ -53,6 +57,11 @@ public class OtmConfiguration {
     }
 
     factory.setTripleStore(new ItqlStore(URI.create(tripleStoreUrl)));
+
+    if (log.isDebugEnabled())
+      log.debug("Added blobstore : " + blobStore.getClass());
+
+    factory.setBlobStore(blobStore);
   }
 
   /**
@@ -133,5 +142,21 @@ public class OtmConfiguration {
 
     for (Map.Entry<String, String> alias : aliases.entrySet())
       factory.addAlias(alias.getKey(), alias.getValue());
+  }
+
+  /**
+   * Configures the blob factoris used by the fedora blob-store.
+   *
+   * @param fbfs array of fedora blob factories to add
+   */
+  public void setFedoraBlobFactories(FedoraBlobFactory[] fbfs) {
+    if (factory.getBlobStore() instanceof FedoraBlobStore) {
+      FedoraBlobStore fbs = (FedoraBlobStore)factory.getBlobStore();
+      for (FedoraBlobFactory fbf : fbfs) {
+        fbs.addBlobFactory(fbf);
+        if (log.isDebugEnabled())
+          log.debug("Added BlobFactory for " + fbf.getSupportedUriPrefixes());
+      }
+    }
   }
 }

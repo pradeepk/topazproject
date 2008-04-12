@@ -39,6 +39,7 @@ import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
 import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
 import org.plos.models.Reply;
+import org.plos.models.ReplyBlob;
 import org.plos.models.ReplyThread;
 import org.plos.user.PlosOneUser;
 
@@ -56,7 +57,6 @@ import org.topazproject.otm.criterion.Restrictions;
 public class ReplyWebService extends BaseAnnotationService {
   private static final Log          log         = LogFactory.getLog(ReplyWebService.class);
   private final RepliesPEP          pep;
-  private final FedoraHelper        fedora;
   private Session                   session;
   private PermissionWebService      permissions;
 
@@ -77,8 +77,6 @@ public class ReplyWebService extends BaseAnnotationService {
       ioe.initCause(e);
       throw ioe;
     }
-
-    fedora = new FedoraHelper();
   }
 
   /**
@@ -107,11 +105,7 @@ public class ReplyWebService extends BaseAnnotationService {
 
     final String contentType = getContentType(mimeType);
     String user      = PlosOneUser.getCurrentUser().getUserId();
-    String bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()),
-                                                 "Reply", "Reply Body");
-
-    if (log.isDebugEnabled())
-      log.debug("created fedora object " + bodyUri + " for reply ");
+    ReplyBlob blob   = new ReplyBlob(contentType, body.getBytes(getEncodingCharset()));
 
     final Reply r = new ReplyThread();
     r.setMediator(getApplicationId());
@@ -125,7 +119,7 @@ public class ReplyWebService extends BaseAnnotationService {
     else
       r.setCreator(user);
 
-    r.setBody(URI.create(bodyUri));
+    r.setBody(blob);
     r.setCreated(new Date());
 
     String newId = session.saveOrUpdate(r);
@@ -133,19 +127,18 @@ public class ReplyWebService extends BaseAnnotationService {
     boolean propagated = false;
 
     try {
-      permissions.propagatePermissions(newId, new String[] { bodyUri });
+      permissions.propagatePermissions(newId, new String[] { blob.getId() });
       propagated = true;
 
       if (log.isDebugEnabled())
-        log.debug("propagated permissions for reply " + newId + " to " + bodyUri);
+        log.debug("propagated permissions for reply " + newId + " to " + blob.getId());
     } finally {
       if (!propagated) {
         if (log.isDebugEnabled())
-          log.debug("failed to propagate permissions for reply " + newId + " to " + bodyUri);
+          log.debug("failed to propagate permissions for reply " + newId + " to " + blob.getId());
 
         try {
           session.delete(r);
-          fedora.purgeObjects(new String[] { fedora.uri2PID(bodyUri) });
         } catch (Throwable t) {
           if (log.isDebugEnabled())
             log.debug("failed to delete partially created reply " + newId, t);
@@ -185,22 +178,17 @@ public class ReplyWebService extends BaseAnnotationService {
                               .add(Restrictions.eq("root", root))
                               .add(Restrictions.walk("replies", inReplyTo)).list();
 
-    List<String> pids     = new ArrayList(all.size());
-
     for (Reply r : all) {
       pep.checkAccess(pep.DELETE_REPLY, r.getId());
-      pids.add(fedora.uri2PID(r.getBody().toString()));
     }
 
     for (Reply r : all)
       session.delete(r);
 
-    fedora.purgeObjects((String[]) pids.toArray(new String[pids.size()]));
-
     for (Reply r : all) {
       try {
         permissions.cancelPropagatePermissions(r.getId().toString(),
-                                               new String[] { r.getBody().toString() });
+                                               new String[] { r.getBody().getId() });
       } catch (Throwable t) {
         if (log.isDebugEnabled())
           log.debug("Failed to cancel the propagated permissions on " + r.getId(), t);
@@ -221,17 +209,14 @@ public class ReplyWebService extends BaseAnnotationService {
     }
 
     final List<Reply>  all  = new ArrayList();
-    final List<String> pids = new ArrayList();
     final ReplyThread  root = session.get(ReplyThread.class, target);
     if (root != null)
-      add(all, pids, root);
+      add(all, root);
 
     for (Reply r : all)
       pep.checkAccess(pep.DELETE_REPLY, r.getId());
 
     session.delete(root); // ... and cascade
-
-    fedora.purgeObjects((String[]) pids.toArray(new String[pids.size()]));
 
     for (Reply r : all) {
       try {
@@ -244,12 +229,11 @@ public class ReplyWebService extends BaseAnnotationService {
     }
   }
 
-  private void add(List<Reply> all, List<String> pids, ReplyThread r) {
+  private void add(List<Reply> all, ReplyThread r) {
     all.add(r);
-    pids.add(fedora.uri2PID(r.getBody().toString()));
 
     for (ReplyThread t : r.getReplies())
-      add(all, pids, t);
+      add(all, t);
   }
 
   /**
@@ -269,7 +253,7 @@ public class ReplyWebService extends BaseAnnotationService {
     if (a == null)
       throw new IllegalArgumentException("invalid reply id: " + replyId);
 
-    return new ReplyInfo(a, fedora);
+    return new ReplyInfo(a);
   }
 
   /**
@@ -305,7 +289,7 @@ public class ReplyWebService extends BaseAnnotationService {
     int         i       = 0;
 
     for (Reply a : l)
-      replies[i++] = new ReplyInfo(a, fedora);
+      replies[i++] = new ReplyInfo(a);
 
     return replies;
   }
@@ -344,7 +328,7 @@ public class ReplyWebService extends BaseAnnotationService {
     int         i       = 0;
 
     for (Reply a : l)
-      replies[i++] = new ReplyInfo(a, fedora);
+      replies[i++] = new ReplyInfo(a);
 
     return replies;
   }
@@ -409,7 +393,7 @@ public class ReplyWebService extends BaseAnnotationService {
     int         i       = 0;
 
     for (Reply a : l)
-      replies[i++] = new ReplyInfo(a, fedora);
+      replies[i++] = new ReplyInfo(a);
 
     return replies;
   }

@@ -25,11 +25,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+
+import org.plos.models.support.fedora.AnnotationFedoraBlob;
+import org.plos.models.support.fedora.AnnotationFedoraBlobFactory;
+
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.fedora.otm.FedoraBlob;
+import org.topazproject.fedora.otm.FedoraBlobStore;
 
 /**
  * Test the model definitions.
@@ -47,7 +53,8 @@ public class ModelsTest {
                   License.class, Reply.class,
                   ReplyThread.class, UserAccount.class, UserPreference.class, UserPreferences.class,
                   UserProfile.class, UserRole.class, Journal.class, Issue.class, Aggregation.class,
-                  EditorialBoard.class
+                  EditorialBoard.class, Correction.class, FormalCorrection.class, Blob.class,
+                  ReplyBlob.class, AnnotationBlob.class
     };
 
   /**
@@ -59,8 +66,30 @@ public class ModelsTest {
   public void preloadTest() throws OtmException {
     for (Class c : classes)
       factory.preload(c);
+
+    FedoraBlobStore  blobStore =
+      new FedoraBlobStore("http://localhost:9090/fedora/services/management", "fedoraAdmin", "fedoraAdmin");
+    blobStore.addBlobFactory(new AnnotationFedoraBlobFactory());
+
+    FedoraBlob rb = blobStore.toBlob(factory.getClassMetadata(AnnotationBlob.class), 
+                                       "info:fedora/PLoS:42");
+    assert rb instanceof AnnotationFedoraBlob;
+    AnnotationFedoraBlob b = (AnnotationFedoraBlob) rb;
+    assert "text/plain;UTF-8".equals(b.getContentType());
+    assert "Annotation".equals(b.getContentModel());
+    assert "Annotation Body".equals(b.getDatastreamLabel());
+    assert "PLoS:42".equals(b.getPid());
+    assert "BODY".equals(b.getDsId());
+    rb = blobStore.toBlob(factory.getClassMetadata(ReplyBlob.class), "info:fedora/PLoS:42");
+    assert rb instanceof AnnotationFedoraBlob;
+    b = (AnnotationFedoraBlob) rb;
+    assert "text/plain;UTF-8".equals(b.getContentType());
+    assert "Reply".equals(b.getContentModel());
+    assert "Reply Body".equals(b.getDatastreamLabel());
+    assert "PLoS:42".equals(b.getPid());
+    assert "BODY".equals(b.getDsId());
   }
-  
+
   /**
    * Test if common models can be serialized, e.g. used in a serializable cache.
    *

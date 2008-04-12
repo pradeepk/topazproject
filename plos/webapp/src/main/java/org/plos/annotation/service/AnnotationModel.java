@@ -109,7 +109,7 @@ public class AnnotationModel {
     parent.appendChild(node);
 
     node = document.createElementNS(aNs, "a:body");
-    node.setAttributeNS(rNs, "r:resource", annotation.getBody());
+    node.setAttributeNS(rNs, "r:resource", annotation.getBody().getId());
     parent.appendChild(node);
 
     String supersedes = annotation.getSupersedes();

@@ -20,6 +20,7 @@ package org.plos.models;
 
 import java.net.URI;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -39,8 +40,8 @@ public class Comment extends Annotation implements ArticleAnnotation {
    */
   public static final String TYPE_NS = "http://www.w3.org/2000/10/annotationType#";
 
-  @Predicate(uri = Annotea.W3C_NS + "body")
-  private URI body;
+  @Predicate(uri = Annotea.W3C_NS + "body", fetch=FetchType.eager) // XXX: lazy?
+  private AnnotationBlob body;
 
   /**
    * Creates a new comment object.
@@ -51,14 +52,14 @@ public class Comment extends Annotation implements ArticleAnnotation {
   /**
    * @return Returns the body of the comment
    */
-  public URI getBody() {
+  public AnnotationBlob getBody() {
     return body;
   }
 
   /**
    * @param body The body of the comment to set
    */
-  public void setBody(URI body) {
+  public void setBody(AnnotationBlob body) {
     this.body = body;
   }
 

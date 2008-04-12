@@ -20,6 +20,7 @@ package org.plos.models;
 
 import java.net.URI;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -44,8 +45,8 @@ public class Reply extends Annotea {
   private URI                                                          id;
   private URI                                                          root;
   private URI                                                          inReplyTo;
-  @Predicate(uri = Annotea.W3C_NS + "body")
-  private URI                                                          body;
+  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager) // XXX: lazy?
+  private ReplyBlob                                                    body;
 
 /**
    * Creates a new Reply object.
@@ -104,7 +105,7 @@ public class Reply extends Annotea {
    *
    * @return Returns the body.
    */
-  public URI getBody() {
+  public ReplyBlob getBody() {
     return body;
   }
 
@@ -114,7 +115,7 @@ public class Reply extends Annotea {
    *
    * @param body The body to set.
    */
-  public void setBody(URI body) {
+  public void setBody(ReplyBlob body) {
     this.body = body;
   }
 
@@ -139,4 +140,5 @@ public class Reply extends Annotea {
   public String getType() {
     return RDF_TYPE;
   }
+
 }

@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.SimpleTimeZone;
 
+import org.plos.models.Blob;
 import org.plos.models.Reply;
 
 /**
@@ -34,7 +35,6 @@ import org.plos.models.Reply;
  */
 public class ReplyInfo {
   private Reply reply;
-  private FedoraHelper fedora;
   private static SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   static {
@@ -43,9 +43,8 @@ public class ReplyInfo {
   /**
    * Creates a new ReplyInfo object.
    */
-  public ReplyInfo(Reply reply, FedoraHelper fedora) {
+  public ReplyInfo(Reply reply) {
     this.reply      = reply;
-    this.fedora   = fedora;
   }
   /**
    * Get id.
@@ -121,10 +120,8 @@ public class ReplyInfo {
    *
    * @return body as String.
    */
-  public String getBody() {
-    URI u = reply.getBody();
-
-    return (u == null) ? null : fedora.getBodyURL(u.toString());
+  public Blob getBody() {
+    return reply.getBody();
   }
 
   /**
