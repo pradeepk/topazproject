@@ -263,7 +263,7 @@ public class ClassMetadata {
   /**
    * Gets the mappers for all predicates that this ClassMetadata maps. All
    * embedded class fields are flattened and made available as part of this
-   * list for convinience.
+   * list for convenience.
    *
    * @return collection of field mappers.
    */
