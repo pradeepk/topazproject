@@ -87,7 +87,7 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
     this(new File(root));
   }
 
-/**
+  /**
    * Creates a new SimpleBlobStore object.
    *
    * @param root 
