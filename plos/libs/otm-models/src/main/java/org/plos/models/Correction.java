@@ -31,31 +31,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Alex Worden
  */
 @Entity(type = Annotea.W3C_TYPE_NS + "Change")
-public class Correction extends Annotation implements ArticleAnnotation {
+public class Correction extends ArticleAnnotation {
   private static final long serialVersionUID = -8174779804923945692L;
-
-  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager) // XXX : lazy?
-  private AnnotationBlob body;
-
-  /* (non-Javadoc)
-   */
-  public AnnotationBlob getBody() {
-    return body;
-  }
-
-  /* (non-Javadoc)
-   */
-  public void setBody(AnnotationBlob body) {
-    this.body = body;
-  }
-
-  /**
-   * Human friendly string for display and debugging.
-   *
-   * @return String for human consumption.
-   */
-  public String toString() {
-    return "Correction: " + super.toString();
-  }
 }
 

@@ -20,49 +20,20 @@ package org.plos.models;
 
 import java.net.URI;
 
-import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Predicate;
 
 /**
- * Class that will represent comments by users persisted as comment annotations
- * by PlosOne.
+ * Class that will represent comments by users persisted as comment annotations by PlosOne.
  *
  * @author Pradeep Krishnan
  */
 @Entity(type = Comment.RDF_TYPE)
-public class Comment extends Annotation implements ArticleAnnotation {
-  private static final long serialVersionUID = 7759871310632000347L;
-
-  public static final String RDF_TYPE = Annotea.W3C_TYPE_NS + "Comment";
-  /**
-   * Annotation type Namespace URI
+public class Comment extends ArticleAnnotation {
+  private static final long  serialVersionUID = 7759871310632000347L;
+  public  static final String RDF_TYPE = Annotea.W3C_TYPE_NS + "Comment";
+  /*
+   * inherited javadoc
    */
-  public static final String TYPE_NS = "http://www.w3.org/2000/10/annotationType#";
-
-  @Predicate(uri = Annotea.W3C_NS + "body", fetch=FetchType.eager) // XXX: lazy?
-  private AnnotationBlob body;
-
-  /**
-   * Creates a new comment object.
-   */
-  public Comment() {
-  }
-
-  /**
-   * @return Returns the body of the comment
-   */
-  public AnnotationBlob getBody() {
-    return body;
-  }
-
-  /**
-   * @param body The body of the comment to set
-   */
-  public void setBody(AnnotationBlob body) {
-    this.body = body;
-  }
-
   public String getType() {
     return RDF_TYPE;
   }

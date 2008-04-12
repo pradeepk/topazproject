@@ -195,8 +195,10 @@ public abstract class Annotea implements Serializable {
    * @return String for human consumption.
    */
   public String toString() {
-    return "Annotea: {"
-            + "created: " + getCreated()
+    String name = getClass().getName();
+    return name.substring(1+name.lastIndexOf('.')) + ": {"
+            + "id: " + getId()
+            + ", created: " + getCreated()
             + ", creator: " + getCreator()
             + ", title: "   + getTitle() + "}";
   }

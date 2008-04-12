@@ -16,28 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.plos.models;
 
 import org.topazproject.otm.annotations.Entity;
 
+/**
+ * Represents a minor correction annotation.
+ *
+ * @author Alex Worden
+  */
 @Entity(type = MinorCorrection.RDF_TYPE)
-public class MinorCorrection extends Correction  implements ArticleAnnotation {
-  private static final long serialVersionUID = -5374711498322357045L;
+public class MinorCorrection extends Correction {
+  private static final long   serialVersionUID = -5374711498322357045L;
+  public  static final String RDF_TYPE         = Annotea.TOPAZ_TYPE_NS + "MinorCorrection";
 
-  public static final String RDF_TYPE = Annotea.TOPAZ_TYPE_NS + "MinorCorrection";
+  /*
+   * inherited javadoc
+   */
   public String getType() {
     return RDF_TYPE;
-  }
-
-  /**
-   * Human friendly string for display and debugging.
-   *
-   * @return String for human consumption.
-   */
-  public String toString() {
-    return "MinorCorrection: {"
-            + "type: " + getType()
-            + ", " + super.toString() + "}";
   }
 }
