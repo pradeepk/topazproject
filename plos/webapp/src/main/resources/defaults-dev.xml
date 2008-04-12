@@ -22,7 +22,7 @@
 -->
 <config>
   <pub>
-    <app-context>/plosone-webapp</app-context>
+    <app-context>/ambra-webapp</app-context>
     <!-- virtual journal config -->
     <virtualJournals>
       <!-- default values used if no virtual journal rules match -->
