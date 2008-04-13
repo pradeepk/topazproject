@@ -158,7 +158,7 @@ System.exit(0)
 private void resizeImage(img, imgNames, file) {
   name =  img.getName()
   baseName = name.substring(0, name.length()-4) + '.png'
-  newName = System.getProperty('java.io.tmpdir') + 'S_' + baseName
+  newName = System.getProperty('java.io.tmpdir') + File.separator + 'S_' + baseName
   if (VERBOSE) {
     println "Creating " + newName
   }
@@ -180,7 +180,7 @@ private void resizeImage(img, imgNames, file) {
     println "stdout:       ${ant.project.properties.cmdOut}"
   }
 
-  newName = System.getProperty('java.io.tmpdir') + 'L_' + baseName
+  newName = System.getProperty('java.io.tmpdir') + File.separator + 'L_' + baseName
   if (VERBOSE) {
       println "Creating " + newName
   }
@@ -233,7 +233,7 @@ private void resizeImage(img, imgNames, file) {
   else
     arg="600x>"
 
-  newName = System.getProperty('java.io.tmpdir') + 'M_' + baseName
+  newName = System.getProperty('java.io.tmpdir') + File.separator + 'M_' + baseName
 
   if (VERBOSE) {
     println "Creating " + newName
