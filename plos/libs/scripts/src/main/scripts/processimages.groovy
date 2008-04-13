@@ -26,7 +26,7 @@ import org.plos.util.ToolHelper
 
 args = ToolHelper.fixArgs(args)
 
-def cli = new CliBuilder(usage: 'processimages [-v] [-c config-overrides.xml] [-o output.zip] article.zip' , writer : new PrintWriter ( System.out ))
+def cli = new CliBuilder(usage: 'processimages [-v] [-c config-overrides.xml] [-o output.zip] article.zip' , writer : new PrintWriter( System.out ))
 cli.h(longOpt:'help', "help (this message)")
 cli.o(args:1, 'output.zip - new zip file containing resized images')
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz.xml')
@@ -45,7 +45,7 @@ def String articleFile = otherArgs[0]
 VERBOSE = opt.v
 
 if (VERBOSE) {
-  println ('Processing file: ' + articleFile)
+  println('Processing file: ' + articleFile)
 }
 
 CONF = ToolHelper.loadConfiguration(opt.c)
@@ -60,17 +60,17 @@ def ZipFile articleZip
 def ZipOutputStream newZip
 
 if (opt.o) {
-  outputFile = new File (opt.o)
-  articleZip = new ZipFile (articleFile)
-  inputFile  = new File (articleFile)
-  if (inputFile.getAbsolutePath().equals (outputFile.getAbsolutePath())) {
+  outputFile = new File(opt.o)
+  articleZip = new ZipFile(articleFile)
+  inputFile  = new File(articleFile)
+  if (inputFile.getAbsolutePath().equals(outputFile.getAbsolutePath())) {
     println 'Original file cannot be overwritten'
     return
   }
 } else {
-  outputFile = new File (articleFile)
-  outputFile = new File ('new_' + outputFile.getName())
-  articleZip = new ZipFile (articleFile)
+  outputFile = new File(articleFile)
+  outputFile = new File('new_' + outputFile.getName())
+  articleZip = new ZipFile(articleFile)
 }
 
 
@@ -84,7 +84,7 @@ try {
 
   for (entry in articleZip.entries()) {
     name = entry.getName()
-    newZip.putNextEntry(new ZipEntry (name))
+    newZip.putNextEntry(new ZipEntry(name))
     reader = articleZip.getInputStream(entry)
     isTif = entry.getName().toLowerCase().endsWith('.tif')
     int numBytes = 0
@@ -115,14 +115,12 @@ try {
     println 'Number of resized images: ' + imgNames.size()
   }
   for (newImg in imgNames) {
-    def File fileObj = new File (newImg)
+    def File fileObj = new File(newImg)
     def FileInputStream inputStream = new FileInputStream(fileObj)
     if (VERBOSE) {
-      println 'Adding to zip file: ' + newImg.substring(newImg.lastIndexOf(File.separator) + 1,
-                                                        newImg.length())
+      println 'Adding to zip file: ' + fileObj.name
     }
-    newZip.putNextEntry(new ZipEntry(newImg.substring(newImg.lastIndexOf(File.separator) + 1,
-                                                      newImg.length())))
+    newZip.putNextEntry(new ZipEntry(fileObj.name))
     int numBytes = 0
     byte[] a = new byte[4096]
     while ((numBytes = inputStream.read(a)) > 0) {
@@ -134,13 +132,13 @@ try {
   }
   completed = true;
 } catch (ZipException ze) {
-  println ("ZipException when processing file: " + articleFile)
+  println("ZipException when processing file: " + articleFile)
   ze.printStackTrace(System.out)
 } catch (IOException ioe) {
-  println ("IOException when processing file: " + articleFile)
+  println("IOException when processing file: " + articleFile)
   ioe.printStackTrace(System.out)
 } catch (IllegalStateException ise) {
-  println ("IllegalStateException when processing file: " + articleFile)
+  println("IllegalStateException when processing file: " + articleFile)
   ise.printStackTrace(System.out)
 } finally {
   try {
@@ -158,68 +156,16 @@ System.exit(0)
 private void resizeImage(img, imgNames, file) {
   name =  img.getName()
   baseName = name.substring(0, name.length()-4) + '.png'
-  newName = System.getProperty('java.io.tmpdir') + File.separator + 'S_' + baseName
-  if (VERBOSE) {
-    println "Creating " + newName
-  }
-  def ant = new AntBuilder()   // create an antbuilder
-  ant.exec(outputproperty:"cmdOut",
-           errorproperty: "cmdErr",
-           resultproperty:"cmdExit",
-           failonerror: "true",
-           executable: IM_CONVERT) {
-             arg(line:'"' + file.getCanonicalPath() + '" -resize "70x>" ' + newName)
-           }
-  if (ant.project.properties.cmdExit == '0') {
-    imgNames.add(newName)
-  }
 
-  if (VERBOSE) {
-    println "return code:  ${ant.project.properties.cmdExit}"
-    println "stderr:       ${ant.project.properties.cmdErr}"
-    println "stdout:       ${ant.project.properties.cmdOut}"
-  }
-
-  newName = System.getProperty('java.io.tmpdir') + File.separator + 'L_' + baseName
-  if (VERBOSE) {
-      println "Creating " + newName
-  }
-  ant = new AntBuilder()
-  ant.exec(outputproperty:"cmdOut",
-           errorproperty: "cmdErr",
-           resultproperty:"cmdExit",
-           failonerror: "true",
-           executable: IM_CONVERT) {
-             arg(line:'"' + file.getCanonicalPath() + '" ' + newName)
-           }
-
-  if (ant.project.properties.cmdExit == '0') {
-    imgNames.add(newName)
-  }
-  if (VERBOSE) {
-    println "return code:  ${ant.project.properties.cmdExit}"
-    println "stderr:       ${ant.project.properties.cmdErr}"
-    println "stdout:       ${ant.project.properties.cmdOut}"
-  }
+  doResize(file, 'S_' + baseName, "-resize \"70x>\"", imgNames)
+  doResize(file, 'L_' + baseName, "", imgNames)
 
   if (VERBOSE) {
     println "Sizing " + name
   }
-  ant = new AntBuilder()
-  ant.exec(outputproperty:"cmdOut",
-           errorproperty: "cmdErr",
-           resultproperty:"cmdExit",
-           failonerror: "true",
-           executable: IM_IDENTIFY) {
-             arg(line:'-quiet -format "%w %h" "' + file.getCanonicalPath() + '"')
-           }
-  if (VERBOSE) {
-    println "return code:  ${ant.project.properties.cmdExit}"
-    println "stderr:       ${ant.project.properties.cmdErr}"
-    println "stdout:       ${ant.project.properties.cmdOut}"
-  }
+  def props = antExec(IM_IDENTIFY, '-quiet -format "%w %h" "' + file.getCanonicalPath() + '"')
 
-  dim = ant.project.properties.cmdOut.split(" ")
+  dim = props.cmdOut.split(" ")
   height = dim[1]
   width = dim[0]
 
@@ -233,26 +179,38 @@ private void resizeImage(img, imgNames, file) {
   else
     arg="600x>"
 
-  newName = System.getProperty('java.io.tmpdir') + File.separator + 'M_' + baseName
+  doResize(file, 'M_' + baseName, "-resize \"${arg}\"", imgNames)
+}
+
+private void doResize(file, outName, args, imgNames) {
+  def newName = System.getProperty('java.io.tmpdir') + File.separator + outName
 
   if (VERBOSE) {
     println "Creating " + newName
   }
-  ant = new AntBuilder()   // create an antbuilder
+
+  def props = antExec(IM_CONVERT, '"' + file.getCanonicalPath() + '" ' + args + ' ' + newName)
+
+  if (props.cmdExit == '0') {
+    imgNames.add(newName)
+  }
+}
+
+private Properties antExec(exe, args) {
+  def ant = new AntBuilder()   // create an antbuilder
   ant.exec(outputproperty:"cmdOut",
            errorproperty: "cmdErr",
            resultproperty:"cmdExit",
            failonerror: "true",
-           executable: IM_CONVERT) {
-             arg(line:'"' + file.getCanonicalPath() + '" -resize "' + arg + '" ' + newName)
+           executable: exe) {
+             arg(line: args)
            }
-  if (ant.project.properties.cmdExit == '0') {
-    imgNames.add(newName)
-  }
 
   if (VERBOSE) {
     println "return code:  ${ant.project.properties.cmdExit}"
     println "stderr:       ${ant.project.properties.cmdErr}"
     println "stdout:       ${ant.project.properties.cmdOut}"
   }
+
+  return ant.project.properties
 }
