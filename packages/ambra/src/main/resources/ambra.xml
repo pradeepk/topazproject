@@ -569,7 +569,7 @@
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/annotation.js</file>
           <file>/javascript/topaz/corrections.js</file>
@@ -594,7 +594,7 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -616,7 +616,7 @@
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_article.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/annotation.js</file>
           <file>/javascript/topaz/formUtil.js</file>
@@ -634,7 +634,7 @@
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_discussion.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -650,7 +650,7 @@
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_discussion.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -673,7 +673,7 @@
         <javascript>
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_discussion.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/rating.js</file>
@@ -694,7 +694,7 @@
           <file>/javascript/browserDetection.js</file>
           <file>/javascript/config_slideshow.js</file>
           <file>/javascript/slideshowReference.ftl</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -710,7 +710,7 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/dojoRequire_slideshow.ftl</file>
         </javascript>
@@ -768,7 +768,7 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -788,7 +788,7 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -800,7 +800,7 @@
         <name>/user/createNewUser.ftl</name>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -821,7 +821,7 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
@@ -842,7 +842,7 @@
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>
-          <file>/javascript/dojo/dojo_plosone.js</file>
+          <file>/javascript/dojo/dojo_ambra.js</file>
           <file>/javascript/topaz/topaz.js</file>
           <file>/javascript/topaz/formUtil.js</file>
           <file>/javascript/topaz/domUtil.js</file>
