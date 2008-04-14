@@ -20,7 +20,10 @@ package org.plos.models;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+
 import java.util.Date;
+import java.util.SimpleTimeZone;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.UriPrefix;
@@ -60,6 +63,10 @@ public abstract class Annotea implements Serializable {
   private int                                               state;
 
   static final long serialVersionUID = 7228784439724175998L;
+  private static SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  static {
+    fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
+  }
 
   public abstract URI getId();
 
@@ -187,6 +194,19 @@ public abstract class Annotea implements Serializable {
    */
   public void setType(String type) {
     this.type = type;
+  }
+
+  /**
+   * Gets the created date as a formatted String in UTC.
+   *
+   * @retun created date as a string
+   */
+  public String getCreatedAsString() {
+    if (created == null)
+      return null;
+    synchronized(fmt) {
+      return fmt.format(created);
+    }
   }
 
   /**
