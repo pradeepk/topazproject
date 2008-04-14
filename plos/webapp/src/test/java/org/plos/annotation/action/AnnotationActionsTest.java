@@ -38,7 +38,7 @@ import org.plos.annotation.ContextFormatter;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationsPEP;
 import org.plos.annotation.service.Flag;
-import org.plos.annotation.service.Reply;
+import org.plos.annotation.service.WebReply;
 import org.plos.article.action.FetchArticleAction;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.permission.service.PermissionWebService;
@@ -145,7 +145,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(SUCCESS, deleteReplyAction.deleteReplyWithId());
     log.debug("annotation deleted with id:" + replyId);
 
-    final Reply reply = retrieveReply(replyId);
+    final WebReply reply = retrieveReply(replyId);
     assertTrue(reply.isDeleted());
 
     resetAnnotationPermissionsToDefault(annotationId, ANON_PRINCIPAL);
@@ -216,7 +216,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final GetReplyAction getReplyAction = getGetReplyAction();
     getReplyAction.setReplyId(replyId);
     assertEquals(SUCCESS, getReplyAction.execute());
-    final Reply savedReply = getAnnotationService().getReply(replyId);
+    final WebReply savedReply = getAnnotationService().getReply(replyId);
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
     assertEquals(title, savedReply.getCommentTitle());
@@ -237,7 +237,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyId);
       assertEquals(SUCCESS, getReplyAction.execute());
-      final Reply savedReply = getAnnotationService().getReply(replyId);
+      final WebReply savedReply = getAnnotationService().getReply(replyId);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(annotationId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getCommentTitle());
@@ -257,7 +257,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyToReplyId);
       assertEquals(SUCCESS, getReplyAction.execute());
-      final Reply savedReply = getAnnotationService().getReply(replyToReplyId);
+      final WebReply savedReply = getAnnotationService().getReply(replyToReplyId);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(replyId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getCommentTitle());
@@ -297,11 +297,11 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       listReplyAction.setInReplyTo(annotationId);
       assertEquals(SUCCESS, listReplyAction.listAllReplies());
 
-      final Reply[] replies = listReplyAction.getReplies();
+      final WebReply[] replies = listReplyAction.getReplies();
 
       final Collection<String> list = new ArrayList<String>();
       boolean codeRan = false;
-      for (final Reply reply : replies) {
+      for (final WebReply reply : replies) {
         final String testReplyId = reply.getId();
         list.add(testReplyId);
         if (testReplyId.equals(replyB)) {
@@ -324,11 +324,11 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       listReplyAction.setInReplyTo(replyA);
       assertEquals(SUCCESS, listReplyAction.listAllReplies());
   
-      final Reply[] replies = listReplyAction.getReplies();
+      final WebReply[] replies = listReplyAction.getReplies();
 
       final Collection<String> list = new ArrayList<String>();
       boolean codeRan = false;
-      for (final Reply reply : replies) {
+      for (final WebReply reply : replies) {
         final String testReplyId = reply.getId();
         list.add(testReplyId);
         if (testReplyId.equals(replyAA)) {
@@ -432,7 +432,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String id = createAnnotationAction.getReplyId();
 
-    final Reply savedReply = getAnnotationService().getReply(id);
+    final WebReply savedReply = getAnnotationService().getReply(id);
     assertEquals(declawedBody, savedReply.getComment());
   }
 
@@ -449,7 +449,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final GetReplyAction getAnnotationAction = getGetReplyAction();
     getAnnotationAction.setReplyId(replyId1);
     assertEquals(SUCCESS, getAnnotationAction.execute());
-    final Reply savedReply = getAnnotationAction.getReply();
+    final WebReply savedReply = getAnnotationAction.getReply();
     assertNotNull(savedReply);
     assertEquals(declawedTitle, savedReply.getCommentTitle());
   }
@@ -638,7 +638,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     }
   }
 
-  private Reply retrieveReply(final String replyId) throws Exception {
+  private WebReply retrieveReply(final String replyId) throws Exception {
     final GetReplyAction getReplyAction = getGetReplyAction();
     getReplyAction.setReplyId(replyId);
     assertEquals(SUCCESS, getReplyAction.execute());
@@ -853,7 +853,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final String replyId = createReplyAction.getReplyId();
 
       //Retrieve a reply
-      final Reply reply = retrieveReply(replyId);
+      final WebReply reply = retrieveReply(replyId);
       assertFalse(reply.isDeleted());
       assertFalse(reply.isFlagged());
 
@@ -864,7 +864,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       log.debug("Flag for reply created with id:" + flagAnnotationId);
 
       //Retrieve a flagged reply
-      final Reply flaggedReply = retrieveReply(replyId);
+      final WebReply flaggedReply = retrieveReply(replyId);
       assertEquals(annotationId, flaggedReply.getRoot());
       assertEquals(replyTitle, flaggedReply.getCommentTitle());
       assertEquals(replyComment, flaggedReply.getComment());
@@ -891,7 +891,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertTrue(deletedFlag.isDeleted());
 
       //Retrieve the previously flagged reply
-      final Reply flaggedReplyAfterFlagDeleted = retrieveReply(replyId);
+      final WebReply flaggedReplyAfterFlagDeleted = retrieveReply(replyId);
       assertEquals(annotationId, flaggedReplyAfterFlagDeleted.getRoot());
       assertTrue(flaggedReplyAfterFlagDeleted.isFlagged());
       assertFalse(flaggedReplyAfterFlagDeleted.isDeleted());
@@ -902,7 +902,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertEquals(SUCCESS, unflagAnnotationAction.unflagReply());
 
       //Retrieve an annotation
-      final Reply flaggedReplyAfterUnflagging = retrieveReply(replyId);
+      final WebReply flaggedReplyAfterUnflagging = retrieveReply(replyId);
       assertEquals(annotationId, flaggedReplyAfterUnflagging.getRoot());
       assertFalse(flaggedReplyAfterUnflagging.isFlagged());
       assertFalse(flaggedReplyAfterUnflagging.isDeleted());

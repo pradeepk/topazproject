@@ -22,7 +22,7 @@ package org.plos.annotation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.WebAnnotation;
-import org.plos.annotation.service.Reply;
+import org.plos.annotation.service.WebReply;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
 
@@ -40,7 +40,7 @@ public class Commentary implements Comparator<Commentary> {
   private WebAnnotation annotation;
   private int numReplies;
   private String lastModified;
-  private Reply[]replies;
+  private WebReply[]replies;
   private static final Log log = LogFactory.getLog(Commentary.class);
 
   public Commentary() {
@@ -63,14 +63,14 @@ public class Commentary implements Comparator<Commentary> {
   /**
    * @return Returns the replies.
    */
-  public Reply[] getReplies() {
+  public WebReply[] getReplies() {
     return replies;
   }
 
   /**
    * @param replies The replies to set.
    */
-  public void setReplies(Reply[] replies) {
+  public void setReplies(WebReply[] replies) {
     this.replies = replies;
   }
 

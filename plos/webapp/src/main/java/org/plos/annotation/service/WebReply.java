@@ -37,15 +37,15 @@ import java.util.Date;
  * - A way to escape title/body text when returning the result to the web layer
  * - a separation from any topaz changes
  */
-public abstract class Reply extends BaseAnnotation {
-  private static final Log log = LogFactory.getLog(Reply.class);
+public abstract class WebReply extends BaseAnnotation {
+  private static final Log log = LogFactory.getLog(WebReply.class);
 
   private final ReplyInfo reply;
-  private Collection<Reply> replies = new ArrayList<Reply>();
+  private Collection<WebReply> replies = new ArrayList<WebReply>();
   private String creatorName;
   private UserService userService;
 
-  public Reply(final ReplyInfo reply) {
+  public WebReply(final ReplyInfo reply) {
     this.reply = reply;
   }
 
@@ -56,7 +56,7 @@ public abstract class Reply extends BaseAnnotation {
    * @param reply
    * @param userSvc
    */
-  public Reply(final ReplyInfo reply, UserService userSvc) {
+  public WebReply(final ReplyInfo reply, UserService userSvc) {
     this.reply = reply;
     this.userService = userSvc;
   }
@@ -159,15 +159,15 @@ public abstract class Reply extends BaseAnnotation {
    * Add a (child) reply to this reply
    * @param reply reply
    */
-  public void addReply(final Reply reply) {
+  public void addReply(final WebReply reply) {
     replies.add(reply);
   }
 
   /**
    * @return the replies to this reply
    */
-  public Reply[] getReplies() {
-    return replies.toArray(new Reply[replies.size()]);
+  public WebReply[] getReplies() {
+    return replies.toArray(new WebReply[replies.size()]);
   }
 
   /** see BaseAnnotation#isPublic */

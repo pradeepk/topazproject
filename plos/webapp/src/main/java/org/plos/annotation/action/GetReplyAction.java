@@ -22,14 +22,14 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.annotation.service.Reply;
+import org.plos.annotation.service.WebReply;
 
 /**
  * Used to fetch a reply given an id.
  */
 public class GetReplyAction extends AnnotationActionSupport {
   private String replyId;
-  private Reply reply;
+  private WebReply reply;
 
   private static final Log log = LogFactory.getLog(GetReplyAction.class);
 
@@ -53,7 +53,7 @@ public class GetReplyAction extends AnnotationActionSupport {
     return replyId;
   }
 
-  public Reply getReply() {
+  public WebReply getReply() {
     return reply;
   }
 }

@@ -74,7 +74,7 @@ public class AnnotationConverter {
    * @return an array of Reply objects as required by the web layer
    * @throws org.plos.ApplicationException ApplicationException
    */
-  public Reply[] convert(final ReplyInfo[] replies) throws ApplicationException {
+  public WebReply[] convert(final ReplyInfo[] replies) throws ApplicationException {
     return convert (replies, null);
   }
 
@@ -87,9 +87,9 @@ public class AnnotationConverter {
    * @return the hierarchical replies
    * @throws ApplicationException
    */
-  public Reply[] convert(final ReplyInfo[] replies, Commentary com) throws ApplicationException {
-    final Collection<Reply> plosoneReplies = new ArrayList<Reply>();
-    final LinkedHashMap<String, Reply> repliesMap = new LinkedHashMap<String, Reply>(replies.length);
+  public WebReply[] convert(final ReplyInfo[] replies, Commentary com) throws ApplicationException {
+    final Collection<WebReply> plosoneReplies = new ArrayList<WebReply>();
+    final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
     int numReplies = replies.length;
     String latestReplyTime = null;
 
@@ -100,7 +100,7 @@ public class AnnotationConverter {
     }
 
     for (final ReplyInfo reply : replies) {
-      final Reply convertedObj = convert(reply);
+      final WebReply convertedObj = convert(reply);
       repliesMap.put(reply.getId(), convertedObj);
 
       final String replyTo = reply.getInReplyTo();
@@ -111,12 +111,12 @@ public class AnnotationConverter {
     }
 
     //Thread the replies in a parent/child structure
-    for (final Map.Entry<String, Reply> entry : repliesMap.entrySet()) {
-      final Reply savedReply = entry.getValue();
+    for (final Map.Entry<String, WebReply> entry : repliesMap.entrySet()) {
+      final WebReply savedReply = entry.getValue();
       final String inReplyToId = savedReply.getInReplyTo();
 
       if (!inReplyToId.equals(annotationId)) {
-        final Reply inReplyTo = repliesMap.get(inReplyToId);
+        final WebReply inReplyTo = repliesMap.get(inReplyToId);
         // If the replies are in reply to another reply and that reply isn't present
         // then just add them to the top. This only happens when the array passed in is a subtree
         if (null == inReplyTo) {
@@ -127,7 +127,7 @@ public class AnnotationConverter {
       }
     }
 
-    Reply[] returnArray = plosoneReplies.toArray(new Reply[plosoneReplies.size()]);
+    WebReply[] returnArray = plosoneReplies.toArray(new WebReply[plosoneReplies.size()]);
     if (com != null) {
       com.setReplies(returnArray);
       com.setLastModified(latestReplyTime);
@@ -141,9 +141,9 @@ public class AnnotationConverter {
    * @return the reply for the web layer
    * @throws ApplicationException ApplicationException
    */
-  public Reply convert(final ReplyInfo reply) throws ApplicationException {
+  public WebReply convert(final ReplyInfo reply) throws ApplicationException {
 
-    return new Reply(reply, userService) {
+    return new WebReply(reply, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
         try {
           return reply.getBody().getText();

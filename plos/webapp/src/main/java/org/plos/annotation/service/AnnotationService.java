@@ -412,7 +412,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of replies
    */
-  public Reply[] listReplies(final String root, final String inReplyTo)
+  public WebReply[] listReplies(final String root, final String inReplyTo)
         throws ApplicationException {
     try {
       final ReplyInfo[] replies = replyWebService.listReplies(root, inReplyTo);
@@ -430,7 +430,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
-  public Reply[] listAllReplies(final String root, final String inReplyTo)
+  public WebReply[] listAllReplies(final String root, final String inReplyTo)
         throws ApplicationException {
     return listAllReplies(root, inReplyTo, null);
   }
@@ -461,7 +461,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
-  public Reply[] listAllReplies(final String root, final String inReplyTo, final Commentary com)
+  public WebReply[] listAllReplies(final String root, final String inReplyTo, final Commentary com)
                                 throws ApplicationException {
     try {
       final ReplyInfo[] replies = replyWebService.listAllReplies(root, inReplyTo);
@@ -494,7 +494,7 @@ public class AnnotationService {
    * @return the reply object
    * @throws ApplicationException ApplicationException
    */
-  public Reply getReply(final String replyId) throws ApplicationException {
+  public WebReply getReply(final String replyId) throws ApplicationException {
     try {
       final ReplyInfo reply = replyWebService.getReplyInfo(replyId);
       return converter.convert(reply);

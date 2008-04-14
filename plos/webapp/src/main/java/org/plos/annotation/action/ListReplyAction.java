@@ -27,7 +27,7 @@ import net.sf.ehcache.Ehcache;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.annotation.service.Reply;
+import org.plos.annotation.service.WebReply;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.action.CreateCitation;
 import org.plos.article.service.CitationInfo;
@@ -51,7 +51,7 @@ public class ListReplyAction extends AnnotationActionSupport {
 
   private String root;
   private String inReplyTo;
-  private Reply[] replies;
+  private WebReply[] replies;
   private WebAnnotation baseAnnotation;
   private Article article;
   private ArticleXMLUtils citationService;
@@ -148,7 +148,7 @@ public class ListReplyAction extends AnnotationActionSupport {
     this.inReplyTo = inReplyTo;
   }
 
-  public Reply[] getReplies() {
+  public WebReply[] getReplies() {
     return replies;
   }
 
