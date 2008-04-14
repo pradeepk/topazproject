@@ -21,6 +21,7 @@ package org.plos.annotation.service;
 import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.user.service.UserService;
+import org.plos.models.ArticleAnnotation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,12 +40,13 @@ public class AnnotationConverter {
    * @return an array of Annotation objects as required by the web layer
    * @throws org.plos.ApplicationException
    */
-  public WebAnnotation[] convert(final AnnotationInfo[] annotations) throws ApplicationException {
-    final List<WebAnnotation> plosoneAnnotations = new ArrayList<WebAnnotation>();
-    for (final AnnotationInfo annotation : annotations) {
-      plosoneAnnotations.add(convert(annotation));
-    }
-    return plosoneAnnotations.toArray(new WebAnnotation[plosoneAnnotations.size()]);
+  public WebAnnotation[] convert(final ArticleAnnotation[] annotations) throws ApplicationException {
+    final WebAnnotation wa[]  = new WebAnnotation[annotations.length];
+
+    for (int i = 0; i < annotations.length; i++)
+      wa[i] = convert(annotations[i]);
+
+    return wa;
   }
 
   /**
@@ -52,7 +54,7 @@ public class AnnotationConverter {
    * @return the Annotation
    * @throws ApplicationException
    */
-  public WebAnnotation convert(final AnnotationInfo annotation) throws ApplicationException {
+  public WebAnnotation convert(final ArticleAnnotation annotation) throws ApplicationException {
     return new WebAnnotation(annotation, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
         try {

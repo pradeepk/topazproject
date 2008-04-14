@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
 import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
-import org.plos.annotation.service.AnnotationInfo;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Flag;
@@ -38,6 +37,7 @@ import org.plos.annotation.service.ReplyInfo;
 import org.plos.annotation.service.ReplyWebService;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
+import org.plos.models.Annotation;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -60,19 +60,19 @@ public class FlagManagementService {
 
   public Collection<FlaggedCommentRecord> getFlaggedComments() throws RemoteException, ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
-    AnnotationInfo[] annotationinfos;
+    Annotation[] annotations;
     ReplyInfo[] replyinfos;
     Flag flags[] = null;
     String creatorUserName;
 
     final RatingInfo[] ratingInfos = annotationService.listFlaggedRatings();
-    annotationinfos = annotationWebService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
+    annotations = annotationWebService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
     replyinfos = replyWebService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratingInfos.length + " ratings with flags");
-      log.debug("There are " + annotationinfos.length + " annotations with flags");
-      for (AnnotationInfo annotationInfo : annotationinfos) {
-        log.debug("\t"+ annotationInfo.toString());
+      log.debug("There are " + annotations.length + " annotations with flags");
+      for (Annotation annotation : annotations) {
+        log.debug("\t"+ annotation.toString());
       }
       log.debug("There are " + replyinfos.length + " replies with flags");
     }
@@ -137,8 +137,8 @@ public class FlagManagementService {
     /*
      * Add a FlaggedCommentRecord for each flag reported against each flagged annotation
      */
-    for (final AnnotationInfo flaggedAnnotation : annotationinfos) {
-      flags = annotationService.listFlags((String) flaggedAnnotation.getId());
+    for (final Annotation flaggedAnnotation : annotations) {
+      flags = annotationService.listFlags((String) flaggedAnnotation.getId().toString());
       if (log.isDebugEnabled())
         log.debug("There are " + flags.length + " flags on annotation: " + flaggedAnnotation.getId());
       for (Flag flag : flags) {
@@ -152,7 +152,7 @@ public class FlagManagementService {
         } catch (ApplicationException ae) { // Bug ?
           creatorUserName = "anonymous";
         }
-        
+
         FlaggedCommentRecord fcr =
           new FlaggedCommentRecord(
               flag.getId(),
@@ -164,7 +164,7 @@ public class FlagManagementService {
               flag.getCreator(),
               null,
               flag.getReasonCode(),
-              flaggedAnnotation.getWebType());
+              AnnotationService.getWebType(flaggedAnnotation));
         commentrecords.add(fcr);
       }
     }

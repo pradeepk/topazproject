@@ -21,9 +21,12 @@ package org.plos.annotation.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.Rdf;
+import org.plos.models.ArticleAnnotation;
+import org.plos.models.Annotation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
 
 import java.net.URI;
 
@@ -78,7 +81,7 @@ public class AnnotationModel {
    * @param parent the annotation node
    * @param annotation the annotation to append
    */
-  public static void appendToNode(final Node parent, final AnnotationInfo annotation) {
+  public static void appendToNode(final Node parent, final ArticleAnnotation annotation) {
     String   rNs     = r.toString();
     String   aNs     = a.toString();
     String   dNs     = d.toString();
@@ -93,7 +96,7 @@ public class AnnotationModel {
     parent.appendChild(node);
 
     node = document.createElementNS(aNs, "a:annotates");
-    node.setAttributeNS(rNs, "r:resource", annotation.getAnnotates());
+    node.setAttributeNS(rNs, "r:resource", "" + annotation.getAnnotates());
     parent.appendChild(node);
 
     node = document.createElementNS(aNs, "a:context");
@@ -105,26 +108,26 @@ public class AnnotationModel {
     parent.appendChild(node);
 
     node = document.createElementNS(aNs, "a:created");
-    node.appendChild(document.createTextNode(annotation.getCreated()));
+    node.appendChild(document.createTextNode(annotation.getCreatedAsString()));
     parent.appendChild(node);
 
     node = document.createElementNS(aNs, "a:body");
     node.setAttributeNS(rNs, "r:resource", annotation.getBody().getId());
     parent.appendChild(node);
 
-    String supersedes = annotation.getSupersedes();
+    Annotation supersedes = annotation.getSupersedes();
 
     if (supersedes != null) {
       node = document.createElementNS(dtNs, "dt:replaces");
-      node.setAttributeNS(rNs, "r:resource", supersedes);
+      node.setAttributeNS(rNs, "r:resource", supersedes.getId().toString());
       parent.appendChild(node);
     }
 
-    String supersededBy = annotation.getSupersededBy();
+    Annotation supersededBy = annotation.getSupersededBy();
 
     if (supersededBy != null) {
       node = document.createElementNS(dtNs, "dt:isReplacedBy");
-      node.setAttributeNS(rNs, "r:resource", supersededBy);
+      node.setAttributeNS(rNs, "r:resource", supersededBy.getId().toString());
       parent.appendChild(node);
     }
 

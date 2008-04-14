@@ -48,6 +48,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.dom.ranges.SelectionRange;
 import org.topazproject.dom.ranges.SelectionRangeList;
+import org.plos.models.ArticleAnnotation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -75,7 +76,7 @@ public class Annotator {
    *
    * @throws RemoteException on a failure
    */
-  public static DataHandler annotate(DataHandler content, AnnotationInfo[] annotations,
+  public static DataHandler annotate(DataHandler content, ArticleAnnotation[] annotations,
                                     final DocumentBuilder documentBuilder)
                               throws RemoteException {
     try {
@@ -95,7 +96,7 @@ public class Annotator {
    *
    * @throws RemoteException on a failure
    */
-  public static Document annotateAsDocument(DataHandler content, AnnotationInfo[] annotations,
+  public static Document annotateAsDocument(DataHandler content, ArticleAnnotation[] annotations,
                                             final DocumentBuilder documentBuilder)
                               throws RemoteException {
     try {
@@ -117,7 +118,7 @@ public class Annotator {
    * @throws TransformerException if at least one annotation context is an invalid xpointer
    *         expression
    */
-  private static Document annotate(Document document, AnnotationInfo[] annotations)
+  private static Document annotate(Document document, ArticleAnnotation[] annotations)
                            throws URISyntaxException, TransformerException {
     LocationList[] lists = evaluate(document, annotations);
 
@@ -135,13 +136,13 @@ public class Annotator {
     Element aRoot = document.createElementNS(AML_NS, "aml:annotations");
     AnnotationModel.appendNSAttr(aRoot);
 
-    AnnotationInfo annotation;
+    ArticleAnnotation annotation;
 
     for (int i = 0; i < annotations.length; i++) {
       annotation = annotations[i];
       if ((lists[i] != null) && (annotation.getContext() != null)) {
         Element a = document.createElementNS(AML_NS, "aml:annotation");
-        a.setAttributeNS(AML_NS, "aml:id", annotation.getId());
+        a.setAttributeNS(AML_NS, "aml:id", annotation.getId().toString());
         aRoot.appendChild(a);
         AnnotationModel.appendToNode(a, annotation);
       }
@@ -229,7 +230,7 @@ public class Annotator {
       });
   }
 
-  private static LocationList[] evaluate(Document document, AnnotationInfo[] annotations)
+  private static LocationList[] evaluate(Document document, ArticleAnnotation[] annotations)
                                   throws URISyntaxException, TransformerException {
     ArrayList<LocationList> lists = new ArrayList<LocationList>(annotations.length);
 
@@ -284,14 +285,14 @@ public class Annotator {
       this.document = document;
     }
 
-    public void addRegion(LocationList list, AnnotationInfo annotation) {
+    public void addRegion(LocationList list, ArticleAnnotation annotation) {
       int length = list.getLength();
 
       for (int i = 0; i < length; i++)
         addRegion(list.item(i), annotation);
     }
 
-    public void addRegion(Location location, AnnotationInfo annotation) {
+    public void addRegion(Location location, ArticleAnnotation annotation) {
       Range range;
 
       if (location.getType() == Location.RANGE)
@@ -325,9 +326,9 @@ public class Annotator {
         int  c = annotations.size();
 
         for (int j = 0; j < c; j++) {
-          AnnotationInfo a     = (AnnotationInfo) annotations.get(j);
+          ArticleAnnotation a     = (ArticleAnnotation) annotations.get(j);
           Element        aNode = document.createElementNS(nsUri, annotationsQName);
-          aNode.setAttributeNS(nsUri, idAttrQName, a.getId());
+          aNode.setAttributeNS(nsUri, idAttrQName, a.getId().toString());
           rNode.appendChild(aNode);
           
           assert a.getType() != null;

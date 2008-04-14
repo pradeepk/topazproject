@@ -38,6 +38,7 @@ import org.plos.Constants;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.FlagUtil;
 import org.plos.models.Annotation;
+import org.plos.models.ArticleAnnotation;
 import org.plos.models.Annotea;
 import org.plos.models.Comment;
 import org.plos.models.Correction;
@@ -71,10 +72,10 @@ public class AnnotationService {
   public static final String WEB_TYPE_FORMAL_CORRECTION = "FormalCorrection";
   public static final String WEB_TYPE_MINOR_CORRECTION = "MinorCorrection";
   public static final String WEB_TYPE_REPLY = "Reply";
-  private static final Set<Class<? extends Annotation>> CORRECTION_SET =
-                                                new HashSet<Class<? extends Annotation>>();
-  private static final Set<Class<? extends Annotation>> COMMENT_SET =
-                                                new HashSet<Class<? extends Annotation>>();
+  private static final Set<Class<? extends ArticleAnnotation>> CORRECTION_SET =
+                                                new HashSet<Class<? extends ArticleAnnotation>>();
+  private static final Set<Class<? extends ArticleAnnotation>> COMMENT_SET =
+                                                new HashSet<Class<? extends ArticleAnnotation>>();
   static {
     CORRECTION_SET.add(Correction.class);
     COMMENT_SET.add(Comment.class);
@@ -346,7 +347,7 @@ public class AnnotationService {
   }
 
   /**
-   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If
+   * Retrieve all Annotation instances that annotate the given target DOI. If
    * annotationClassTypes is null, then all annotation types are retrieved. If annotationClassTypes
    * is not null, only the Annotation class types in the annotationClassTypes Set are returned. 
    * 
@@ -359,7 +360,7 @@ public class AnnotationService {
    * @throws RemoteException RemoteException
    */
   public WebAnnotation[] listAnnotations(String target,
-                                         Set<Class<? extends Annotation>> annotationTypeClasses)
+                                         Set<Class<? extends ArticleAnnotation>> annotationTypeClasses)
         throws ApplicationException {
     /* TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the
      * AnnotationWebService directly!
@@ -371,7 +372,7 @@ public class AnnotationService {
      * won't happen too much.
      */
     WebAnnotation[] allAnnotations;
-    AnnotationInfo[] annotations;
+    ArticleAnnotation[] annotations;
     try {
       annotations = annotationWebService.listAnnotations(target, annotationTypeClasses);
     } catch (Exception re){
@@ -479,7 +480,7 @@ public class AnnotationService {
    */
   public WebAnnotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
-      final AnnotationInfo annotation = annotationWebService.getAnnotation(annotationId);
+      final ArticleAnnotation annotation = annotationWebService.getAnnotation(annotationId);
       return converter.convert(annotation);
     } catch (Exception e) {
       throw new ApplicationException(e);

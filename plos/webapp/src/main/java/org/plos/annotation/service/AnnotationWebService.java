@@ -65,8 +65,8 @@ public class AnnotationWebService extends BaseAnnotationService {
   public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
   public static final String ANNOTATION_KEY = "ArticleAnnotationCache-SingleAnnotation-";
   public static final String ANNOTATION_LOCK = "ArticleAnnotationCache-lock-";
-  protected static final Set<Class<?extends Annotation>> ALL_ANNOTATION_CLASSES =
-    new HashSet<Class<?extends Annotation>>();
+  protected static final Set<Class<?extends ArticleAnnotation>> ALL_ANNOTATION_CLASSES =
+    new HashSet<Class<?extends ArticleAnnotation>>();
   private static final Log     log                    =
     LogFactory.getLog(AnnotationWebService.class);
   private final AnnotationsPEP       pep;
@@ -304,7 +304,7 @@ public class AnnotationWebService extends BaseAnnotationService {
                         throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
-    Annotation a = session.get(Annotation.class, annotationId);
+    ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
     a.setState(a.getState() & ~FLAG_MASK);
   }
 
@@ -352,7 +352,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
   private void deleteAnnotation(final String annotationId)
                          throws OtmException {
-    Annotation a = session.get(Annotation.class, annotationId);
+    ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
 
     if (a != null) {
       session.delete(a);
@@ -370,7 +370,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    */
-  private List<Annotation> listAnnotationsForTarget(String target)
+  private List<ArticleAnnotation> listAnnotationsForTarget(String target)
                                              throws OtmException {
     return listAnnotationsForTarget(target, null);
   }
@@ -388,16 +388,16 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    */
-  private List<Annotation> listAnnotationsForTarget(final String target,
-                                                    final Set<Class<?extends Annotation>> annotationClassTypes)
+  private List<ArticleAnnotation> listAnnotationsForTarget(final String target,
+                                                    Set<Class<?extends ArticleAnnotation>> annotationClassTypes)
                                              throws OtmException {
     // lock @ Article level
     final Object     lock           = (FetchArticleService.ARTICLE_LOCK + target).intern();
-    List<Annotation> allAnnotations =
+    List<ArticleAnnotation> allAnnotations =
       CacheAdminHelper.getFromCacheE(articleAnnotationCache, ANNOTATED_KEY + target, -1, lock,
                                      "annotation list",
-                                     new CacheAdminHelper.EhcacheUpdaterE<List<Annotation>, OtmException>() {
-          public List<Annotation> lookup() throws OtmException {
+                                     new CacheAdminHelper.EhcacheUpdaterE<List<ArticleAnnotation>, OtmException>() {
+          public List<ArticleAnnotation> lookup() throws OtmException {
             return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
           }
         });
@@ -407,44 +407,41 @@ public class AnnotationWebService extends BaseAnnotationService {
      * set of annotations at this time, so we have to filter out the types here and query
      * for all types above when populating the cache
      */
-    if (annotationClassTypes != null) {
-      List<Annotation> filteredAnnotations = new ArrayList<Annotation>();
+    if (annotationClassTypes == null)
+      annotationClassTypes = ALL_ANNOTATION_CLASSES;
 
-      for (Annotation a : allAnnotations) {
-        for (Class classType : annotationClassTypes) {
-          if (classType.isInstance(a)) {
-            filteredAnnotations.add(a);
+    List<ArticleAnnotation> filteredAnnotations = new ArrayList<ArticleAnnotation>(allAnnotations.size());
 
-            break;
-          }
+    for (ArticleAnnotation a : allAnnotations) {
+      for (Class classType : annotationClassTypes) {
+        if (classType.isInstance(a)) {
+          filteredAnnotations.add(a);
+
+          break;
         }
       }
-
-      return filteredAnnotations;
     }
 
-    return allAnnotations;
+    return filteredAnnotations;
   }
 
-  private List<Annotation> listAnnotations(final String target, final String mediator,
+  private List<ArticleAnnotation> listAnnotations(final String target, final String mediator,
                                            final int state,
-                                           final Set<Class<?extends Annotation>> classTypes)
+                                           final Set<Class<?extends ArticleAnnotation>> classTypes)
                                     throws OtmException {
-    List<Annotation> combinedAnnotations = new ArrayList<Annotation>();
+    List<ArticleAnnotation> combinedAnnotations = new ArrayList<ArticleAnnotation>();
 
     for (Class anClass : classTypes) {
       Criteria c = session.createCriteria(anClass);
       setRestrictions(c, target, mediator, state);
-      combinedAnnotations.addAll((List<Annotation>) c.list());
+      combinedAnnotations.addAll((List<ArticleAnnotation>) c.list());
     }
-
-    List<org.plos.models.Annotation> allAnnotations = combinedAnnotations;
 
     if (log.isDebugEnabled()) {
       log.debug("retrieved annotation list from TOPAZ for target: " + target);
     }
 
-    return allAnnotations;
+    return combinedAnnotations;
   }
 
   /**
@@ -484,13 +481,13 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    */
-  public AnnotationInfo[] listAnnotations(final String target)
+  public ArticleAnnotation[] listAnnotations(final String target)
                                    throws OtmException {
     return listAnnotations(target, null);
   }
 
   /**
-   * Retrieve all AnnotationInfo instances that annotate the given target DOI. If
+   * Retrieve all Annotation instances that annotate the given target DOI. If
    * annotationClassTypes is null, then all annotation types are retrieved. If
    * annotationClassTypes is not null, only the Annotation class types in the annotationClassTypes
    * Set are returned. Each Class in annotationClassTypes should extend Annotation. E.G.
@@ -504,15 +501,16 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
-  public AnnotationInfo[] listAnnotations(final String target,
-                                          Set<Class<?extends Annotation>> annotationClassTypes)
+  public ArticleAnnotation[] listAnnotations(final String target,
+                                          Set<Class<?extends ArticleAnnotation>> annotationClassTypes)
                                    throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
 
-    List<Annotation> all      = listAnnotationsForTarget(target, annotationClassTypes);
-    List<Annotation> filtered = new ArrayList(all.size());
 
-    for (Annotation a : all) {
+    List<ArticleAnnotation> all      = listAnnotationsForTarget(target, annotationClassTypes);
+    List<ArticleAnnotation> filtered = new ArrayList(all.size());
+
+    for (ArticleAnnotation a : all) {
       try {
         pep.checkAccess(pep.GET_ANNOTATION_INFO, a.getId());
         filtered.add(a);
@@ -523,22 +521,7 @@ public class AnnotationWebService extends BaseAnnotationService {
       }
     }
 
-    AnnotationInfo[] annotations = new AnnotationInfo[filtered.size()];
-    int              i           = 0;
-
-    // TODO: Flags should not extend Comment (or Annotation). 
-    // When this is fixed, they should not be stored in this cache!
-    for (Annotation a : filtered) {
-      if (a instanceof ArticleAnnotation) {
-        annotations[i++] = new AnnotationInfo((ArticleAnnotation) a);
-      } else {
-        log.error("Code error! Annotation found in annotation cache that does not "
-                  + "implement ArticleAnnotation. (id=" + a.getId()
-                  + "). This type of annotation should be stored in a different cache.");
-      }
-    }
-
-    return annotations;
+    return filtered.toArray(new ArticleAnnotation[filtered.size()]);
   }
 
   /**
@@ -550,31 +533,25 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
-   * @throws IllegalArgumentException if not an article annotation
    */
-  public AnnotationInfo getAnnotation(final String annotationId)
+  public ArticleAnnotation getAnnotation(final String annotationId)
                                throws OtmException, SecurityException {
-    pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
-
     final Object lock = (ANNOTATION_LOCK + annotationId).intern();
-    Annotation   a    =
-      CacheAdminHelper.getFromCache(articleAnnotationCache, ANNOTATION_KEY + annotationId, -1,
+    ArticleAnnotation   a    =
+      CacheAdminHelper.getFromCacheE(articleAnnotationCache, ANNOTATION_KEY + annotationId, -1,
                                     lock, "individual annotation",
-                                    new CacheAdminHelper.EhcacheUpdater<Annotation>() {
-          public Annotation lookup() {
-            return session.get(Annotation.class, annotationId);
+                                    new CacheAdminHelper.EhcacheUpdaterE<ArticleAnnotation, OtmException>() {
+          public ArticleAnnotation lookup() throws OtmException {
+            return session.get(ArticleAnnotation.class, annotationId);
           }
         });
 
     if (a == null)
       throw new IllegalArgumentException("invalid annoation id: " + annotationId);
 
-    if (!(a instanceof ArticleAnnotation)) {
-      throw new IllegalArgumentException("Annotation (id=" + annotationId
-                                         + ") not instanceof ArticleAnnotation.");
-    }
 
-    return new AnnotationInfo((ArticleAnnotation) a);
+    pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
+    return a;
   }
 
   /**
@@ -588,7 +565,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void setPublic(final String annotationDoi) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
 
-    Annotation a = session.get(Annotation.class, annotationDoi);
+    ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationDoi);
     a.setState(a.getState() | PUBLIC_MASK);
     removeAnnotationFromCache(a);
   }
@@ -604,7 +581,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void setFlagged(final String annotationId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
-    Annotation a = session.get(Annotation.class, annotationId);
+    ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
     a.setState(a.getState() | FLAG_MASK);
     removeAnnotationFromCache(a);
   }
@@ -621,26 +598,13 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws OtmException if some error occurred
    */
-  public AnnotationInfo[] listAnnotations(final String mediator, final int state)
+  public ArticleAnnotation[] listAnnotations(final String mediator, final int state)
                                    throws OtmException {
     pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
-    List<Annotation> annotationList =
+    List<ArticleAnnotation> annotations =
       listAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
-    AnnotationInfo[] annotations    = new AnnotationInfo[annotationList.size()];
 
-    int              i              = 0;
-
-    for (Annotation a : annotationList) {
-      if (a instanceof ArticleAnnotation) {
-        annotations[i++] = new AnnotationInfo((ArticleAnnotation) a);
-      } else {
-        log.error("Code error! Annotation found in annotation cache that does not "
-                  + "implement ArticleAnnotation. (id=" + a.getId()
-                  + "). This type of annotation should be stored in a different cache.");
-      }
-    }
-
-    return annotations;
+    return annotations.toArray(new ArticleAnnotation[annotations.size()]);
   }
 
   /**
@@ -663,16 +627,10 @@ public class AnnotationWebService extends BaseAnnotationService {
   public String convertArticleAnnotationToType(final String srcAnnotationId,
                                                final Class newAnnotationClassType)
                                         throws Exception {
-    Annotation srcAnnotation = session.get(Annotation.class, srcAnnotationId);
+    ArticleAnnotation srcAnnotation = session.get(ArticleAnnotation.class, srcAnnotationId);
 
     if (srcAnnotation == null) {
       log.error("Annotation was null for id: " + srcAnnotationId);
-
-      return null;
-    }
-
-    if (!(srcAnnotation instanceof ArticleAnnotation)) {
-      log.error("Cannot convert Annotation to correction for id: " + srcAnnotationId);
 
       return null;
     }
@@ -694,9 +652,9 @@ public class AnnotationWebService extends BaseAnnotationService {
     // Find all Annotations that refer to the old Annotation and update their
     // target 'annotates'
     // property to point to the new Annotation.
-    List<Annotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
+    List<ArticleAnnotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
 
-    for (Annotation refAn : refAns) {
+    for (ArticleAnnotation refAn : refAns) {
       refAn.setAnnotates(newIdUri);
       removeAnnotationFromCache(refAn);
     }
@@ -727,7 +685,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @param a Annotation
    */
-  public void removeAnnotationFromCache(Annotation a) {
+  public void removeAnnotationFromCache(ArticleAnnotation a) {
     articleAnnotationCache.remove(ANNOTATION_KEY + a.getId().toString());
     articleAnnotationCache.remove(ANNOTATED_KEY + a.getAnnotates().toString());
   }

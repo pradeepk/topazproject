@@ -22,23 +22,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.user.service.UserService;
-import org.plos.util.DateParser;
-import org.plos.util.InvalidDateException;
+
+import org.plos.models.Annotation;
+import org.plos.models.ArticleAnnotation;
+import org.plos.models.Correction;
+import org.plos.models.FormalCorrection;
+import org.plos.models.MinorCorrection;
 
 import com.googlecode.jsonplugin.annotations.JSON;
 
+import java.net.URI;
 import java.util.Date;
 
 /**
- * Plosone wrapper around the AnnotationsInfo from topaz service. It provides
+ *  View level wrapper for Annotations. It provides
  * - A way to escape title/body text when returning the result to the web layer
- * - a separation from any topaz changes
+ * - a separation from any content model changes
  */
 public abstract class WebAnnotation extends BaseAnnotation {
-  private final AnnotationInfo annotation;
+  private final ArticleAnnotation annotation;
   private UserService userService;
   private String creatorName;
-  private Date creationDate;
 
   private static final Log log = LogFactory.getLog(WebAnnotation.class);
 
@@ -47,7 +51,8 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return target
    */
   public String getAnnotates() {
-    return annotation.getAnnotates();
+    URI u = annotation.getAnnotates();
+    return (u == null) ? null : u.toString();
   }
 
   /**
@@ -64,14 +69,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    */
   @JSON(serialize = false)
   public Date getCreatedAsDate() {
-    try {
-      if (creationDate == null)
-        creationDate = DateParser.parse(annotation.getCreated());
-    } catch (InvalidDateException ide) {
-      log.error("Could not parse date for reply: " + this.getId() +
-                "; dateString is: " + annotation.getCreated(), ide);
-    }
-    return creationDate;
+    return annotation.getCreated();
   }
 
   /**
@@ -79,18 +77,16 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return created as java.util.Date.
    */
   public long getCreatedAsMillis() {
-    if (getCreatedAsDate() != null) {
-      return creationDate.getTime();
-    }
-    return 0;
+    Date d = getCreatedAsDate();
+    return (d != null) ? d.getTime() : 0;
   }
-  
+
   /**
    * Get created.
    * @return created as String.
    */
   public String getCreated() {
-    return annotation.getCreated();
+    return annotation.getCreatedAsString();
   }
 
   /**
@@ -132,7 +128,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return id as String.
    */
   public String getId() {
-    return annotation.getId();
+    return annotation.getId().toString();
   }
 
   /**
@@ -157,7 +153,8 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return supersededBy as String.
    */
   public String getSupersededBy() {
-    return annotation.getSupersededBy();
+    Annotation a = annotation.getSupersededBy();
+    return (a == null) ? null : a.getId().toString();
   }
 
   /**
@@ -165,7 +162,8 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return supersedes as String.
    */
   public String getSupersedes() {
-    return annotation.getSupersedes();
+    Annotation a = annotation.getSupersedes();
+    return (a == null) ? null : a.getId().toString();
   }
 
  /**
@@ -195,18 +193,18 @@ public abstract class WebAnnotation extends BaseAnnotation {
   }
   
   public boolean isFormalCorrection() {
-    return AnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(annotation.getWebType());
+    return annotation instanceof FormalCorrection;
   }
   
   public boolean isMinorCorrection() {
-    return AnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(annotation.getWebType());
+    return annotation instanceof MinorCorrection;
   }
 
   public boolean isCorrection() {
-    return isFormalCorrection() || isMinorCorrection();
+    return annotation instanceof Correction;
   }
   
-  public WebAnnotation(final AnnotationInfo annotation) {
+  public WebAnnotation(final ArticleAnnotation annotation) {
     this.annotation = annotation;
   }
 
@@ -217,7 +215,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @param annotation
    * @param userSvc
    */
-  public WebAnnotation(final AnnotationInfo annotation, final UserService userSvc) {
+  public WebAnnotation(final ArticleAnnotation annotation, final UserService userSvc) {
     this.annotation = annotation;
     this.userService = userSvc;
   }

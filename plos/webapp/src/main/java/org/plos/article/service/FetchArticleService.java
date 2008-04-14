@@ -23,12 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
-import org.plos.annotation.service.AnnotationInfo;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Annotator;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.Article;
+import org.plos.models.ArticleAnnotation;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.TextUtils;
@@ -157,12 +157,12 @@ public class FetchArticleService {
                                          ex);
     }
 
-    final AnnotationInfo[] annotations = annotationWebService.listAnnotations(articleDOI);
+    final ArticleAnnotation[] annotations = annotationWebService.listAnnotations(articleDOI);
     return applyAnnotationsOnContentAsDocument (contentUrl, annotations);
   }
 
   private Document applyAnnotationsOnContentAsDocument (final String contentUrl,
-                                                        final AnnotationInfo[] annotations)
+                                                        final ArticleAnnotation[] annotations)
           throws IOException, ParserConfigurationException, ApplicationException {
     final DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     final DocumentBuilder builder = articleXmlUtils.createDocBuilder();
