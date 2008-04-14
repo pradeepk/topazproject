@@ -192,7 +192,7 @@
             </div>
             <!-- end : stay-connected block -->
  
-          <#include "/article/plosBlog.ftl">
+          <#include "/article/blog.ftl">
 		  
           </div><!-- end : subcol first -->
           <!-- end : col 3 -->
