@@ -264,7 +264,7 @@
           <file>/javascript/dojoRequire_profile.ftl</file>
           <file>/javascript/init_global.js</file>
           <file>/javascript/init_navigation.js</file>
-          <file>/javascript/init_plosAlerts.js</file>
+          <file>/javascript/init_ambraAlerts.js</file>
         </javascript>
       </page>
       <page>
