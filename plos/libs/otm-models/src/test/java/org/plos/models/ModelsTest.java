@@ -72,7 +72,7 @@ public class ModelsTest {
     blobStore.addBlobFactory(new AnnotationFedoraBlobFactory());
 
     FedoraBlob rb = blobStore.toBlob(factory.getClassMetadata(AnnotationBlob.class), 
-                                       "info:fedora/PLoS:42");
+                                       "info:fedora/PLoS:42", null, null);
     assert rb instanceof AnnotationFedoraBlob;
     AnnotationFedoraBlob b = (AnnotationFedoraBlob) rb;
     assert "text/plain;UTF-8".equals(b.getContentType());
@@ -80,7 +80,7 @@ public class ModelsTest {
     assert "Annotation Body".equals(b.getDatastreamLabel());
     assert "PLoS:42".equals(b.getPid());
     assert "BODY".equals(b.getDsId());
-    rb = blobStore.toBlob(factory.getClassMetadata(ReplyBlob.class), "info:fedora/PLoS:42");
+    rb = blobStore.toBlob(factory.getClassMetadata(ReplyBlob.class), "info:fedora/PLoS:42", null, null);
     assert rb instanceof AnnotationFedoraBlob;
     b = (AnnotationFedoraBlob) rb;
     assert "text/plain;UTF-8".equals(b.getContentType());

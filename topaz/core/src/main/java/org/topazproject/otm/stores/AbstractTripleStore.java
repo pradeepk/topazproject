@@ -19,7 +19,6 @@
 package org.topazproject.otm.stores;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,10 +71,7 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
                         throws OtmException {
     SessionFactory sf    = session.getSessionFactory();
 
-    if (instance == null)
-      instance = cm.getEntityBinder(session).newInstance();
-
-    cm.getIdField().getBinder(session).set(instance, Collections.singletonList(id));
+    instance = createOrUpdateInstance(session, cm, id, instance);
 
     // re-map values based on the rdf:type look ahead
     Map<RdfMapper, List<String>> mvalues = new HashMap();

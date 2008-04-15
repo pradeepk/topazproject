@@ -95,9 +95,6 @@ public class FedoraBlobTest {
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          FedoraConnection con = new FedoraConnection(blobStore, session);
-          assertEquals(blob1, blobStore.get(factory.getClassMetadata(Test1.class), t.id, con));
-
           Test1 t2 = session.get(Test1.class, t.id);
           assertNotNull(t2);
           assertEquals(t.id, t2.id);

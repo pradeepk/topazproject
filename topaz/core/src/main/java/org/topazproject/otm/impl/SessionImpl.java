@@ -438,8 +438,7 @@ public class SessionImpl extends AbstractSession {
                                                                                getEntityMode(), o);
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
-    Binder                bf            = (cm.getBlobField() == null) ? null
-                                           : cm.getBlobField().getBinder(getEntityMode());
+    boolean               bf            = (cm.getBlobField() != null);
     boolean               tp            = (cm.getRdfMappers().size() + cm.getTypes().size()) > 0;
 
     if (delete) {
@@ -447,8 +446,8 @@ public class SessionImpl extends AbstractSession {
         log.debug("deleting from store: " + id);
 
      states.remove(o);
-     if (bf != null)
-       bs.delete(cm, id.getId(), getBlobStoreCon());
+     if (bf)
+       bs.delete(cm, id.getId(), o, getBlobStoreCon());
      if (tp)
        store.delete(cm, cm.getRdfMappers(), id.getId(), o, getTripleStoreCon());
     } else if (isPristineProxy(id, o)) {
@@ -484,15 +483,15 @@ public class SessionImpl extends AbstractSession {
         store.delete(cm, fields, id.getId(), o, getTripleStoreCon());
         store.insert(cm, fields, id.getId(), o, getTripleStoreCon());
       }
-      if (bf != null) {
-        switch(states.digestUpdate(o, bf)) {
+      if (bf) {
+        switch(states.digestUpdate(o, cm, this)) {
         case delete:
-          bs.delete(cm, id.getId(), getBlobStoreCon());
+          bs.delete(cm, id.getId(), o, getBlobStoreCon());
           break;
         case update:
-          bs.delete(cm, id.getId(), getBlobStoreCon());
+          bs.delete(cm, id.getId(), o, getBlobStoreCon());
         case insert:
-          bs.insert(cm, id.getId(), (byte[]) bf.getRawValue(o, false), getBlobStoreCon());
+          bs.insert(cm, id.getId(), o, getBlobStoreCon());
           break;
         case noChange:
         default:
@@ -510,12 +509,15 @@ public class SessionImpl extends AbstractSession {
 
     if (cm.isView())
       instance = loadView(cm, id.getId(), instance);
-    else if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0)
-      instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
+    else {
+      if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0) {
+        instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj);
-    else if ((cm.getBlobField() != null) && (instance == null)) {
-      instance = cm.getEntityBinder(getEntityMode()).newInstance();
-      cm.getIdField().getBinder(getEntityMode()).set(instance, Collections.singletonList(id.getId()));
+        if (instance != null)
+          cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
+      }
+      if (cm.getBlobField() != null)
+        instance = sessionFactory.getBlobStore().get(cm, id.getId(), instance, getBlobStoreCon());
     }
 
     if (instance == null) {
@@ -523,13 +525,6 @@ public class SessionImpl extends AbstractSession {
         log.debug("Object not found in store: " + id.getId());
       return null;
     }
-
-    cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
-
-    Binder bf = (cm.getBlobField() == null) ? null : cm.getBlobField().getBinder(getEntityMode());
-    if (bf != null)
-      bf.setRawValue(instance,
-                     sessionFactory.getBlobStore().get(cm, id.getId(), getBlobStoreCon()));
 
     if (!cm.isView()) {
       for (RdfMapper m : cm.getRdfMappers())
@@ -546,8 +541,8 @@ public class SessionImpl extends AbstractSession {
 
     if (!cm.isView()) {
       states.insert(instance, cm, this);
-      if (bf != null)
-        states.digestUpdate(instance, bf);
+      if (cm.getBlobField() != null)
+        states.digestUpdate(instance, cm, this);
     }
 
     if (log.isDebugEnabled())

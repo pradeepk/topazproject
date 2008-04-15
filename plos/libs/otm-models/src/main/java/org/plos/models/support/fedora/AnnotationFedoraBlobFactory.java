@@ -41,22 +41,22 @@ public class AnnotationFedoraBlobFactory extends DefaultFedoraBlobFactory {
   /*
    * inherited javadoc
    */
-  public FedoraBlob createBlob(ClassMetadata cm, String id)
+  public FedoraBlob createBlob(ClassMetadata cm, String id, Object instance, FedoraConnection con)
                         throws OtmException {
-    return new AnnotationFedoraBlob(cm, id, getPid(cm, id), getDsId(cm, id));
+    return new AnnotationFedoraBlob(cm, id, getPid(cm, id, instance, con), getDsId(cm, id, instance, con));
   }
 
   /*
    * inherited javadoc
    */
-  protected String getPid(ClassMetadata cm, String id) {
-    return super.getPid(cm, id);
+  protected String getPid(ClassMetadata cm, String id, Object instance, FedoraConnection con) {
+    return super.getPid(cm, id, instance, con);
   }
 
   /*
    * inherited javadoc
    */
-  protected String getDsId(ClassMetadata cm, String id) {
+  protected String getDsId(ClassMetadata cm, String id, Object instance, FedoraConnection con) {
     return "BODY";
   }
 

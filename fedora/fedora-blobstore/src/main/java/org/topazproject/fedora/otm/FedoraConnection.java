@@ -96,47 +96,47 @@ public class FedoraConnection extends AbstractConnection {
   /*
    * inherited javadoc
    */
-  public void insert(ClassMetadata cm, String id, byte[] blob)
+  public void insert(ClassMetadata cm, String id, Object blob)
               throws OtmException {
     if (bs == null)
       throw new OtmException("Attempt to use a connection that is closed");
 
-    insertMap.put(id, bs.toBlob(cm, id));
+    insertMap.put(id, bs.toBlob(cm, id, blob, this));
     deleteMap.remove(id);
-    contentMap.put(id, blob);
+    contentMap.put(id, (byte[]) cm.getBlobField().getBinder(getSession()).getRawValue(blob, false));
   }
 
   /*
    * inherited javadoc
    */
-  public void delete(ClassMetadata cm, String id) throws OtmException {
+  public void delete(ClassMetadata cm, String id, Object blob) throws OtmException {
     if (bs == null)
       throw new OtmException("Attempt to use a connection that is closed");
 
-    deleteMap.put(id, bs.toBlob(cm, id));
+    deleteMap.put(id, bs.toBlob(cm, id, blob, this));
     insertMap.remove(id);
   }
 
   /*
    * inherited javadoc
    */
-  public byte[] get(ClassMetadata cm, String id) throws OtmException {
+  public byte[] get(ClassMetadata cm, String id, Object blob) throws OtmException {
     if (bs == null)
       throw new OtmException("Attempt to use a connection that is closed");
 
     if (deleteMap.get(id) != null)
       return null;
 
-    byte[] blob = contentMap.get(id);
+    byte[] b = contentMap.get(id);
 
-    if (blob == null) {
-      blob = bs.toBlob(cm, id).get(this);
+    if (b == null) {
+      b = bs.toBlob(cm, id, blob, this).get(this);
 
-      if (blob != null)
-        contentMap.put(id, blob);
+      if (b != null)
+        contentMap.put(id, b);
     }
 
-    return blob;
+    return b;
   }
 
   /**

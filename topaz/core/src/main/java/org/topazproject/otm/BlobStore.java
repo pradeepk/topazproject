@@ -34,30 +34,32 @@ public interface BlobStore extends Store {
    *
    * @throws OtmException on an error
    */
-  public void insert(ClassMetadata cm, String id, byte[] blob, Connection con) throws OtmException;
+  public void insert(ClassMetadata cm, String id, Object blob, Connection con) throws OtmException;
 
   /**
    * Removes an object from the blob store.
    *
    * @param cm the class metadata for the object
    * @param id the id for the blob
+   * @param blob the blob to delete
    * @param con the connection to use
    *
    * @throws OtmException on an error
    */
-  public void delete(ClassMetadata cm, String id, Connection con) throws OtmException;
+  public void delete(ClassMetadata cm, String id, Object blob, Connection con) throws OtmException;
 
   /**
    * Gets a blob from the blob store.
    *
    * @param cm the class metadata for the object
    * @param id the id for the blob
+   * @param blob the blob to refresh or null
    * @param con the connection to use
    *
    * @return the blob or null if it does not exist
    *
    * @throws OtmException on an error
    */
-  public byte[] get(ClassMetadata cm, String id, Connection con) throws OtmException;
+  public Object get(ClassMetadata cm, String id, Object blob, Connection con) throws OtmException;
 
 }

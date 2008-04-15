@@ -92,13 +92,14 @@ class StateCache {
    * Update a blob digest.
    *
    * @param o the object
-   * @param bf the blob field
+   * @param cm the class metadata
+   * @param sess the Session that is requesting the update
    *
    * @return a value indicating how the blob changed
    */
-  public BlobChange digestUpdate(Object o, Binder bf) throws OtmException {
+  public BlobChange digestUpdate(Object o, ClassMetadata cm, Session sess) throws OtmException {
     // expected to be called after update - so no expunge and no null check
-    return states.get(new ObjectReference(o)).digestUpdate(o, bf);
+    return states.get(new ObjectReference(o)).digestUpdate(o, cm.getBlobField().getBinder(sess));
   }
 
   /** 

@@ -45,9 +45,9 @@ public class DefaultFedoraBlobFactory implements FedoraBlobFactory {
   /*
    * inherited javadoc
    */
-  public FedoraBlob createBlob(ClassMetadata cm, String id)
+  public FedoraBlob createBlob(ClassMetadata cm, String id, Object blob, FedoraConnection con)
                         throws OtmException {
-    return new DefaultFedoraBlob(cm, id, getPid(cm, id), getDsId(cm, id));
+    return new DefaultFedoraBlob(cm, id, getPid(cm, id, blob, con), getDsId(cm, id, blob, con));
   }
 
   /**
@@ -56,10 +56,12 @@ public class DefaultFedoraBlobFactory implements FedoraBlobFactory {
    *
    * @param cm the ClassMetadata of the blob
    * @param id the id for the blob
+   * @param blob the blob instance
+   * @param con the connection handle to Fedora
    *
    * @return the Fedora PID
    */
-  protected String getPid(ClassMetadata cm, String id) {
+  protected String getPid(ClassMetadata cm, String id, Object blob, FedoraConnection con) {
     return id.substring(id.lastIndexOf('/') + 1);
   }
 
@@ -69,10 +71,12 @@ public class DefaultFedoraBlobFactory implements FedoraBlobFactory {
    *
    * @param cm the ClassMetadata of the blob
    * @param id the id for the blob
+   * @param blob the blob instance
+   * @param con the connection handle to Fedora
    *
    * @return the Datastream Id
    */
-  protected String getDsId(ClassMetadata cm, String id) {
+  protected String getDsId(ClassMetadata cm, String id, Object blob, FedoraConnection con) {
     return "BODY";
   }
 

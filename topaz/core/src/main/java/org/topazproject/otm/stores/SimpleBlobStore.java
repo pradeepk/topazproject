@@ -162,16 +162,18 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public void insert(ClassMetadata cm, String id, byte[] blob, Connection con)
+  public void insert(ClassMetadata cm, String id, Object blob, Connection con)
               throws OtmException {
     SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) con;
-    ebsc.insert(id, blob);
+    byte[] b = (byte[]) cm.getBlobField().getBinder(ebsc.getSession()).getRawValue(blob, false);
+    if (b != null)
+      ebsc.insert(id, b);
   }
 
   /*
    * inherited javadoc
    */
-  public void delete(ClassMetadata cm, String id, Connection con)
+  public void delete(ClassMetadata cm, String id, Object blob, Connection con)
               throws OtmException {
     SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) con;
     ebsc.delete(id);
@@ -180,11 +182,16 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
   /*
    * inherited javadoc
    */
-  public byte[] get(ClassMetadata cm, String id, Connection con)
+  public Object get(ClassMetadata cm, String id, Object blob, Connection con)
              throws OtmException {
     SimpleBlobStoreConnection ebsc = (SimpleBlobStoreConnection) con;
 
-    return ebsc.get(id);
+    byte[] b = ebsc.get(id);
+    if (b != null) {
+      blob = createOrUpdateInstance(ebsc.getSession(), cm, id, blob);
+      cm.getBlobField().getBinder(ebsc.getSession()).setRawValue(blob, b);
+    }
+    return blob;
   }
 
   public static class SimpleBlobStoreConnection extends AbstractConnection {

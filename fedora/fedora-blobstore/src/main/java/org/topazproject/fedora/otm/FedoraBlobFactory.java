@@ -42,12 +42,14 @@ public interface FedoraBlobFactory {
    *
    * @param cm The ClassMetadata of the blob
    * @param id The blod identifier URI
+   * @param blob The blob instance
+   * @param con the connection handle to Fedora
    *
    * @return the Blob object with the given
    *
    * @throws OtmException on an error
    */
-  public FedoraBlob createBlob(ClassMetadata cm, String id)
+  public FedoraBlob createBlob(ClassMetadata cm, String id, Object blob, FedoraConnection con)
                         throws OtmException;
 
   /**

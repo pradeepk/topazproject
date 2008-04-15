@@ -18,10 +18,32 @@
  */
 package org.topazproject.otm;
 
+import java.util.Collections;
+
 /**
  * A convenient base class for Stores.
  *
  * @author Pradeep Krishnan
  */
 public abstract class AbstractStore implements Store {
+  /**
+   * Create or update an entity instance.
+   *
+   * @param sess the current session
+   * @param cm the class metadata of the entity
+   * @param id the id of the instance
+   * @param instance the instance to update or null
+   *
+   * @return newly created entity instance
+   *
+   * @throws OtmException on an error
+   */
+  protected Object createOrUpdateInstance(Session sess, ClassMetadata cm, String id, Object instance)
+                                   throws OtmException {
+    if (instance == null)
+      instance = cm.getEntityBinder(sess).newInstance();
+    cm.getIdField().getBinder(sess).set(instance, Collections.singletonList(id));
+
+    return instance;
+  }
 }
