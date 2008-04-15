@@ -33,7 +33,7 @@ import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Flag;
-import org.plos.annotation.service.ReplyWebService;
+import org.plos.annotation.service.ReplyService;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
 import org.plos.models.Annotation;
@@ -55,7 +55,7 @@ public class FlagManagementService {
 
   private ArticleAnnotationService articleAnnotationService;
   private AnnotationService annotationService;
-  private ReplyWebService replyWebService;
+  private ReplyService replyService;
   private UserService userService;
 
   public Collection<FlaggedCommentRecord> getFlaggedComments() throws RemoteException, ApplicationException {
@@ -67,7 +67,7 @@ public class FlagManagementService {
 
     final RatingInfo[] ratingInfos = annotationService.listFlaggedRatings();
     annotations = articleAnnotationService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
-    replies = replyWebService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
+    replies = replyService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratingInfos.length + " ratings with flags");
       log.debug("There are " + annotations.length + " annotations with flags");
@@ -213,8 +213,8 @@ public class FlagManagementService {
     return articleAnnotationService;
   }
 
-  public void setReplyWebService(ReplyWebService replyWebService) {
-    this.replyWebService = replyWebService;
+  public void setReplyService(ReplyService replyService) {
+    this.replyService = replyService;
   }
 
   public void setAnnotationService(AnnotationService annotationService) {

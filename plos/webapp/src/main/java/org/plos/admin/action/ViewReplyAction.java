@@ -22,20 +22,20 @@ package org.plos.admin.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.ReplyWebService;
+import org.plos.annotation.service.ReplyService;
 import org.plos.models.Reply;
 
 public class ViewReplyAction extends BaseAdminActionSupport {
 
   private String replyId;
   private Reply reply;
-  private ReplyWebService replyWebService;
+  private ReplyService replyService;
 
   private static final Log log = LogFactory.getLog(ViewReplyAction.class);
 
 
   public String execute() throws Exception {
-    reply = replyWebService.getReply(replyId);
+    reply = replyService.getReply(replyId);
     return SUCCESS;
   }
 
@@ -47,7 +47,7 @@ public class ViewReplyAction extends BaseAdminActionSupport {
     this.replyId = annotationId;
   }
 
-  public void setReplyWebService(ReplyWebService replyWebService) {
-    this.replyWebService = replyWebService;
+  public void setReplyService(ReplyService replyService) {
+    this.replyService = replyService;
   }
 }

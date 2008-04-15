@@ -50,18 +50,18 @@ import org.topazproject.otm.criterion.Restrictions;
 /**
  * Wrapper over reply web service
  */
-public class ReplyWebService extends BaseAnnotationService {
-  private static final Log     log         = LogFactory.getLog(ReplyWebService.class);
+public class ReplyService extends BaseAnnotationService {
+  private static final Log     log         = LogFactory.getLog(ReplyService.class);
   private final RepliesPEP     pep;
   private Session              session;
   private PermissionWebService permissions;
 
   /**
-   * Create a new instance of ReplyWebService.
+   * Create a new instance of ReplyService.
    *
    * @throws IOException on an error in creating the PEP
    */
-  public ReplyWebService() throws IOException {
+  public ReplyService() throws IOException {
     try {
       pep                                  = new RepliesPEP();
     } catch (IOException e) {

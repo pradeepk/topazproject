@@ -61,7 +61,7 @@ public class AnnotationService {
    * ArticleAnnotationService directly!
    */
   private ArticleAnnotationService articleAnnotationService;
-  private ReplyWebService replyWebService;
+  private ReplyService replyService;
   private RatingsService ratingsService;
 
   private static final Log log = LogFactory.getLog(AnnotationService.class);
@@ -140,7 +140,7 @@ public class AnnotationService {
                             final String mimeType, final String body)
         throws ApplicationException {
     try {
-      String id = replyWebService.createReply(mimeType, root, inReplyTo, title, body);
+      String id = replyService.createReply(mimeType, root, inReplyTo, title, body);
       setReplyPublic(id);
       return id;
     } catch (Exception e) {
@@ -169,7 +169,7 @@ public class AnnotationService {
       if (isAnnotation) {
         articleAnnotationService.setFlagged(target);
       } else {
-        replyWebService.setFlagged(target);
+        replyService.setFlagged(target);
       }
       return flagId;
     } catch (Exception e) {
@@ -223,7 +223,7 @@ public class AnnotationService {
    */
   public void unflagReply(final String replyId) throws ApplicationException {
     try {
-      replyWebService.unflagReply(replyId);
+      replyService.unflagReply(replyId);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -280,7 +280,7 @@ public class AnnotationService {
    */
   public void deleteReply(final String root, final String inReplyTo) throws ApplicationException {
     try {
-      replyWebService.deleteReplies(root, inReplyTo);
+      replyService.deleteReplies(root, inReplyTo);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -308,7 +308,7 @@ public class AnnotationService {
    */
   public void deleteReply(final String replyId) throws ApplicationException {
     try {
-      replyWebService.deleteReply(replyId);
+      replyService.deleteReply(replyId);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -416,7 +416,7 @@ public class AnnotationService {
   public WebReply[] listReplies(final String root, final String inReplyTo)
         throws ApplicationException {
     try {
-      final Reply[] replies = replyWebService.listReplies(root, inReplyTo);
+      final Reply[] replies = replyService.listReplies(root, inReplyTo);
       return converter.convert(replies);
     } catch (Exception e) {
       throw new ApplicationException(e);
@@ -447,7 +447,7 @@ public class AnnotationService {
   public Reply[] listAllRepliesFlattened(final String root, final String inReplyTo)
         throws ApplicationException {
     try {
-      return replyWebService.listAllReplies(root, inReplyTo);
+      return replyService.listAllReplies(root, inReplyTo);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -465,7 +465,7 @@ public class AnnotationService {
   public WebReply[] listAllReplies(final String root, final String inReplyTo, final Commentary com)
                                 throws ApplicationException {
     try {
-      final Reply[] replies = replyWebService.listAllReplies(root, inReplyTo);
+      final Reply[] replies = replyService.listAllReplies(root, inReplyTo);
       return converter.convert(replies, com);
     } catch (Exception e) {
       throw new ApplicationException(e);
@@ -497,7 +497,7 @@ public class AnnotationService {
    */
   public WebReply getReply(final String replyId) throws ApplicationException {
     try {
-      final Reply reply = replyWebService.getReply(replyId);
+      final Reply reply = replyService.getReply(replyId);
       return converter.convert(reply);
     } catch (Exception e) {
       throw new ApplicationException(e);
@@ -519,8 +519,8 @@ public class AnnotationService {
     this.articleAnnotationService = articleAnnotationService;
   }
 
-  public void setReplyWebService(final ReplyWebService replyWebService) {
-    this.replyWebService = replyWebService;
+  public void setReplyService(final ReplyService replyService) {
+    this.replyService = replyService;
   }
 
   public void setRatingsService(final RatingsService ratingsService) {

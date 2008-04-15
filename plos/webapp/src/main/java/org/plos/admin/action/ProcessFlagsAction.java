@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.Flag;
-import org.plos.annotation.service.ReplyWebService;
+import org.plos.annotation.service.ReplyService;
 import org.plos.models.Comment;
 import org.plos.models.FormalCorrection;
 import org.plos.models.MinorCorrection;
@@ -43,7 +43,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   private String[] convertToNote;
   private AnnotationService annotationService;
   private RatingsService ratingsService;
-  private ReplyWebService replyWebService;
+  private ReplyService replyService;
 
 
   public void setAnnotationService(AnnotationService annotationService) {
@@ -255,7 +255,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     }
 
     if (targetType.equals(AnnotationService.WEB_TYPE_REPLY)) {
-      replyWebService.deleteReplies(target); // Bulk delete
+      replyService.deleteReplies(target); // Bulk delete
       //annotationService.deleteReply(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted reply: " + target);
@@ -265,7 +265,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         targetType.equals(AnnotationService.WEB_TYPE_NOTE) ||
         targetType.equals(AnnotationService.WEB_TYPE_MINOR_CORRECTION) ||
         targetType.equals(AnnotationService.WEB_TYPE_FORMAL_CORRECTION)) {
-      replyWebService.deleteReplies(target, target);
+      replyService.deleteReplies(target, target);
       annotationService.deletePublicAnnotation(target);
       if (log.isDebugEnabled()) {
         log.debug("Deleted annotation: " + target);
@@ -313,8 +313,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     }
   }
 
-  public void setReplyWebService(ReplyWebService replyWebService) {
-    this.replyWebService = replyWebService;
+  public void setReplyService(ReplyService replyService) {
+    this.replyService = replyService;
   }
 
 }
