@@ -39,7 +39,7 @@ import org.plos.article.action.FetchObjectAction;
 import org.plos.article.action.SecondaryObjectAction;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
-import org.plos.permission.service.PermissionWebService;
+import org.plos.permission.service.PermissionsService;
 import org.plos.search.action.SearchAction;
 import org.plos.user.action.AdminUserAlertsAction;
 import org.plos.user.action.AdminUserProfileAction;
@@ -82,7 +82,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private FetchArticleService fetchArticleService;
   private ProfanityCheckingService profanityCheckingService;
   private ArticleOtmService articleOtmService;
-  private PermissionWebService permissionWebService;
+  private PermissionsService permissionsService;
   private AnnotationService annotationService;
   private UserService userService;
   private DeleteFlagAction deleteFlagAction;
@@ -95,12 +95,12 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
     return new String[]{"nonWebApplicationContext.xml", "testApplicationContext.xml", "propertyConfigurer.xml", "countryList.xml", "profaneWords.xml"};
   }
 
-  protected PermissionWebService getPermissionWebService() {
-    return permissionWebService;
+  protected PermissionsService getPermissionsService() {
+    return permissionsService;
   }
 
-  public void setPermissionWebService(final PermissionWebService permissionWebService) {
-    this.permissionWebService = permissionWebService;
+  public void setPermissionsService(final PermissionsService permissionsService) {
+    this.permissionsService = permissionsService;
   }
 
   protected ArticleOtmService getArticleOtmService() throws MalformedURLException, ServiceException {

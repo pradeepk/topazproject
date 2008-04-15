@@ -19,7 +19,7 @@
 package org.plos.annotation.action;
 
 import org.plos.BasePlosoneTestCase;
-import org.plos.permission.service.PermissionWebService;
+import org.plos.permission.service.PermissionsService;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -33,10 +33,10 @@ public class PermissionsTest extends BasePlosoneTestCase {
   private String[]    revokes    = new String[] { "foo:list-all", "foo:purge" };
   private String[]    principals = new String[] { "user:viru" };
 
-  private PermissionWebService service;
+  private PermissionsService service;
 
   protected void onSetUp() throws MalformedURLException, ServiceException, RemoteException {
-    service = getPermissionWebService();
+    service = getPermissionsService();
     clearAll();
   }
 

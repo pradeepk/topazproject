@@ -112,7 +112,7 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" scope="session">
+  <bean id="permissionsService" class="org.plos.permission.service.PermissionsService" scope="session">
     <aop:scoped-proxy/>
   </bean>
 
@@ -124,7 +124,7 @@
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
-    <property name="permissionWebService" ref="permissionWebService"/>
+    <property name="permissionsService" ref="permissionsService"/>
     <aop:scoped-proxy/>
   </bean>
 
@@ -133,7 +133,7 @@
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Comment"/>
-    <property name="permissionWebService" ref="permissionWebService"/>
+    <property name="permissionsService" ref="permissionsService"/>
     <aop:scoped-proxy/>
   </bean>
 
@@ -146,13 +146,13 @@
   <bean id="annotationService" class="org.plos.annotation.service.AnnotationService" scope="session">
     <property name="converter" ref="annotationConverter"/>
     <property name="replyService" ref="replyService"/>
-    <property name="permissionWebService" ref="permissionWebService"/>
+    <property name="permissionsService" ref="permissionsService"/>
     <aop:scoped-proxy/>
   </bean>
 
   <bean id="userService" class="org.plos.user.service.UserService" scope="session">
     <property name="userContext" ref="userContext"/>
-    <property name="permissionWebService" ref="permissionWebService"/>
+    <property name="permissionsService" ref="permissionsService"/>
     <property name="userCache" ref="userCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="emailAddressUrl" value="https://${pub.spring.server.cas}/cas/email?guid="/>

@@ -41,7 +41,7 @@ import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.WebReply;
 import org.plos.article.action.FetchArticleAction;
 import org.plos.article.util.DuplicateArticleIdException;
-import org.plos.permission.service.PermissionWebService;
+import org.plos.permission.service.PermissionsService;
 
 import com.opensymphony.xwork2.Action;
 
@@ -472,33 +472,33 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertFalse(savedAnnotation.isFlagged());
 
     final AnnotationService annotationService = getAnnotationService();
-    final PermissionWebService permissionWebService = getPermissionWebService();
+    final PermissionsService permissionsService = getPermissionsService();
     annotationService.setAnnotationPublic(annotationId);
 
     final WebAnnotation annotation = retrieveAnnotation(annotationId);
     assertTrue(annotation.isPublic());
 
-    final List<String> grantsList = Arrays.asList(permissionWebService.listGrants(annotationId, Constants.Permission.ALL_PRINCIPALS));
+    final List<String> grantsList = Arrays.asList(permissionsService.listGrants(annotationId, Constants.Permission.ALL_PRINCIPALS));
     assertTrue(grantsList.contains(AnnotationsPEP.GET_ANNOTATION_INFO));
 
     final String currentUser = ANON_PRINCIPAL;
 
-    final List<String> revokesList = Arrays.asList(permissionWebService.listRevokes(annotationId, currentUser));
+    final List<String> revokesList = Arrays.asList(permissionsService.listRevokes(annotationId, currentUser));
     assertTrue(revokesList.contains(AnnotationsPEP.DELETE_ANNOTATION));
     assertTrue(revokesList.contains(AnnotationsPEP.SUPERSEDE));
     resetAnnotationPermissionsToDefault(annotationId, currentUser);
   }
 
   private void resetAnnotationPermissionsToDefault(final String annotationId, final String currentUser) throws RemoteException {
-    final PermissionWebService permissionWebService = getPermissionWebService();
+    final PermissionsService permissionsService = getPermissionsService();
     //Cleanup - Reset the permissions so that these annotations can be deleted by other unit tests
-    permissionWebService.cancelRevokes(
+    permissionsService.cancelRevokes(
             annotationId,
             new String[] {AnnotationsPEP.DELETE_ANNOTATION, AnnotationsPEP.SUPERSEDE},
             new String[] {currentUser}
     );
 
-    permissionWebService.cancelGrants(
+    permissionsService.cancelGrants(
             annotationId,
             new String[] {AnnotationsPEP.GET_ANNOTATION_INFO},
             new String[] {Constants.Permission.ALL_PRINCIPALS}

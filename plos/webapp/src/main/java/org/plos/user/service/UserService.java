@@ -42,7 +42,7 @@ import org.plos.models.AuthenticationId;
 import org.plos.models.UserAccount;
 import org.plos.models.UserPreferences;
 import org.plos.models.UserRole;
-import org.plos.permission.service.PermissionWebService;
+import org.plos.permission.service.PermissionsService;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
 import org.plos.user.UsersPEP;
@@ -76,7 +76,7 @@ public class UserService {
 
   private final UsersPEP pep;
 
-  private PermissionWebService permissionWebService;
+  private PermissionsService permissionsService;
   private Ehcache userCache;
 
   private String applicationId;
@@ -388,7 +388,7 @@ public class UserService {
       throws ApplicationException {
     try {
       final String[] publicGrants =
-          permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
+          permissionsService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
 
       final Collection<String> result = new ArrayList<String>(publicGrants.length);
       for (final String publicGrant : publicGrants) {
@@ -415,7 +415,7 @@ public class UserService {
       throws ApplicationException {
     try {
       final String[] publicGrants =
-          permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
+          permissionsService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
 
       final Collection<String> result = new ArrayList<String>();
       CollectionUtils.addAll(result, getAllUserProfileFieldGrants());
@@ -468,16 +468,16 @@ public class UserService {
       throws ApplicationException {
     if (grants.length > 0) {
       try {
-        final String[] publicGrants = permissionWebService.listGrants(topazId, ALL_PRINCIPALS[0]);
+        final String[] publicGrants = permissionsService.listGrants(topazId, ALL_PRINCIPALS[0]);
         if (log.isDebugEnabled()) {
           log.debug("TopazId:" + topazId);
           log.debug("Cancelling grants:" + publicGrants);
           log.debug("Adding grants:" + ArrayUtils.toString(grants));
         }
         //Cancel all previous grants first
-        permissionWebService.cancelGrants(topazId, publicGrants, ALL_PRINCIPALS);
+        permissionsService.cancelGrants(topazId, publicGrants, ALL_PRINCIPALS);
         //Now add the grants as requested
-        permissionWebService.grant(topazId, grants, ALL_PRINCIPALS);
+        permissionsService.grant(topazId, grants, ALL_PRINCIPALS);
       } catch (RemoteException e) {
         throw new ApplicationException("Failed to set the userProfilePermission on the profile fields", e);
       }
@@ -606,21 +606,21 @@ public class UserService {
   }
 
   /**
-   * Getter for property 'permissionWebService'.
+   * Getter for property 'permissionsService'.
    *
-   * @return Value for property 'permissionWebService'.
+   * @return Value for property 'permissionsService'.
    */
-  public PermissionWebService getPermissionWebService() {
-    return permissionWebService;
+  public PermissionsService getPermissionsService() {
+    return permissionsService;
   }
 
   /**
-   * Setter for property 'permissionWebService'.
+   * Setter for property 'permissionsService'.
    *
-   * @param permissionWebService Value to set for property 'permissionWebService'.
+   * @param permissionsService Value to set for property 'permissionsService'.
    */
-  public void setPermissionWebService(final PermissionWebService permissionWebService) {
-    this.permissionWebService = permissionWebService;
+  public void setPermissionsService(final PermissionsService permissionsService) {
+    this.permissionsService = permissionsService;
   }
 
   /**

@@ -32,10 +32,10 @@ import java.rmi.RemoteException;
 /**
  * Wrapper on the topaz permission web service.
  */
-public class PermissionWebService {
+public class PermissionsService {
   private Permissions permissionsService;
 
-  private static final Log      log    = LogFactory.getLog(PermissionWebService.class);
+  private static final Log      log    = LogFactory.getLog(PermissionsService.class);
   private static PermissionsPEP pep;
   private static Permissions    impl;
 
@@ -52,7 +52,7 @@ public class PermissionWebService {
     return impl;
   }
 
-  public PermissionWebService () throws IOException, URISyntaxException, ServiceException {
+  public PermissionsService () throws IOException, URISyntaxException, ServiceException {
     permissionsService = getImpl();
   }
 

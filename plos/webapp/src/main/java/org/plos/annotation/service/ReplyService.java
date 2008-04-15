@@ -13,7 +13,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the specific language governing permissionsService and
  * limitations under the License.
  */
 package org.plos.annotation.service;
@@ -36,7 +36,7 @@ import org.plos.models.Reply;
 import org.plos.models.ReplyBlob;
 import org.plos.models.ReplyThread;
 
-import org.plos.permission.service.PermissionWebService;
+import org.plos.permission.service.PermissionsService;
 
 import org.plos.user.PlosOneUser;
 
@@ -54,7 +54,7 @@ public class ReplyService extends BaseAnnotationService {
   private static final Log     log         = LogFactory.getLog(ReplyService.class);
   private final RepliesPEP     pep;
   private Session              session;
-  private PermissionWebService permissions;
+  private PermissionsService permissionsService;
 
   /**
    * Create a new instance of ReplyService.
@@ -118,15 +118,15 @@ public class ReplyService extends BaseAnnotationService {
     boolean propagated = false;
 
     try {
-      permissions.propagatePermissions(newId, new String[] { blob.getId() });
+      permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
       propagated = true;
 
       if (log.isDebugEnabled())
-        log.debug("propagated permissions for reply " + newId + " to " + blob.getId());
+        log.debug("propagated permissionsService for reply " + newId + " to " + blob.getId());
     } finally {
       if (!propagated) {
         if (log.isDebugEnabled())
-          log.debug("failed to propagate permissions for reply " + newId + " to " + blob.getId());
+          log.debug("failed to propagate permissionsService for reply " + newId + " to " + blob.getId());
 
         try {
           session.delete(r);
@@ -179,11 +179,11 @@ public class ReplyService extends BaseAnnotationService {
 
     for (Reply r : all) {
       try {
-        permissions.cancelPropagatePermissions(r.getId().toString(),
+        permissionsService.cancelPropagatePermissions(r.getId().toString(),
                                                new String[] { r.getBody().getId() });
       } catch (Throwable t) {
         if (log.isDebugEnabled())
-          log.debug("Failed to cancel the propagated permissions on " + r.getId(), t);
+          log.debug("Failed to cancel the propagated permissionsService on " + r.getId(), t);
       }
     }
   }
@@ -214,11 +214,11 @@ public class ReplyService extends BaseAnnotationService {
 
     for (Reply r : all) {
       try {
-        permissions.cancelPropagatePermissions(r.getId().toString(),
+        permissionsService.cancelPropagatePermissions(r.getId().toString(),
                                                new String[] { r.getBody().toString() });
       } catch (Throwable t) {
         if (log.isDebugEnabled())
-          log.debug("Failed to cancel the propagated permissions on " + r.getId(), t);
+          log.debug("Failed to cancel the propagated permissionsService on " + r.getId(), t);
       }
     }
   }
@@ -392,12 +392,12 @@ public class ReplyService extends BaseAnnotationService {
   }
 
   /**
-   * Set the PermissionWebService
+   * Set the PermissionsService
    *
-   * @param permissionWebService permissionWebService
+   * @param permissionsService permissionWebService
    */
   @Required
-  public void setPermissionWebService(final PermissionWebService permissionWebService) {
-    this.permissions = permissionWebService;
+  public void setPermissionsService(final PermissionsService permissionsService) {
+    this.permissionsService = permissionsService;
   }
 }

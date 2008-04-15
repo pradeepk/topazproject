@@ -43,7 +43,7 @@ import org.plos.models.AnnotationBlob;
 import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;
 
-import org.plos.permission.service.PermissionWebService;
+import org.plos.permission.service.PermissionsService;
 
 import org.plos.user.PlosOneUser;
 
@@ -71,7 +71,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     LogFactory.getLog(ArticleAnnotationService.class);
   private final AnnotationsPEP       pep;
   private Session              session;
-  private PermissionWebService permissionsWebService;
+  private PermissionsService permissionsService;
   private FetchArticleService  fetchArticleService;
   private Ehcache              articleAnnotationCache;
 
@@ -171,7 +171,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     boolean propagated = false;
 
     try {
-      permissionsWebService.propagatePermissions(newId, new String[] { blob.getId() });
+      permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
       propagated = true;
 
       if (log.isDebugEnabled())
@@ -263,7 +263,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     boolean propagated = false;
 
     try {
-      permissionsWebService.propagatePermissions(newId, new String[] { blob.getId() });
+      permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
       propagated = true;
 
       if (log.isDebugEnabled())
@@ -647,7 +647,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     String newId    = session.saveOrUpdate(newAn);
     URI    newIdUri = new URI(newId);
-    permissionsWebService.propagatePermissions(newId, new String[] { newAn.getBody().getId() });
+    permissionsService.propagatePermissions(newId, new String[] { newAn.getBody().getId() });
 
     // Find all Annotations that refer to the old Annotation and update their
     // target 'annotates'
@@ -722,12 +722,12 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Set the PermissionWebService
+   * Set the PermissionsService
    *
-   * @param permissionWebService permissionWebService
+   * @param permissionsService permissionWebService
    */
   @Required
-  public void setPermissionWebService(final PermissionWebService permissionWebService) {
-    this.permissionsWebService = permissionWebService;
+  public void setPermissionsService(final PermissionsService permissionsService) {
+    this.permissionsService = permissionsService;
   }
 }

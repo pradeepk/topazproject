@@ -46,7 +46,7 @@ import org.plos.models.FormalCorrection;
 import org.plos.models.MinorCorrection;
 import org.plos.models.Rating;
 import org.plos.models.Reply;
-import org.plos.permission.service.PermissionWebService;
+import org.plos.permission.service.PermissionsService;
 import org.plos.rating.service.RatingInfo;
 import org.plos.rating.service.RatingsService;
 import org.plos.user.PlosOneUser;
@@ -66,7 +66,7 @@ public class AnnotationService {
 
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
-  private PermissionWebService permissionWebService;
+  private PermissionsService permissionsService;
   public static final String WEB_TYPE_RATING = "Rating";
   public static final String WEB_TYPE_COMMENT = "Comment";
   public static final String WEB_TYPE_NOTE = "Note";
@@ -551,12 +551,12 @@ public class AnnotationService {
   public void setAnnotationPublic(final String annotationDoi) throws ApplicationException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
     try {
-      permissionWebService.grant(
+      permissionsService.grant(
               annotationDoi,
               new String[]{
                       AnnotationsPEP.GET_ANNOTATION_INFO}, everyone);
 
-      permissionWebService.revoke(
+      permissionsService.revoke(
               annotationDoi,
               new String[]{
                       AnnotationsPEP.DELETE_ANNOTATION,
@@ -572,12 +572,12 @@ public class AnnotationService {
   public void setReplyPublic(final String id) throws ApplicationException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
     try {
-      permissionWebService.grant(
+      permissionsService.grant(
               id,
               new String[]{
                       RepliesPEP.GET_REPLY_INFO}, everyone);
 
-      permissionWebService.revoke(
+      permissionsService.revoke(
               id,
               new String[]{
                       RepliesPEP.DELETE_REPLY});
@@ -588,11 +588,11 @@ public class AnnotationService {
   }
 
   /**
-   * Set the PermissionWebService
-   * @param permissionWebService permissionWebService
+   * Set the PermissionsService
+   * @param permissionsService permissionsService
    */
-  public void setPermissionWebService(final PermissionWebService permissionWebService) {
-    this.permissionWebService = permissionWebService;
+  public void setPermissionsService(final PermissionsService permissionsService) {
+    this.permissionsService = permissionsService;
   }
 
   /**
