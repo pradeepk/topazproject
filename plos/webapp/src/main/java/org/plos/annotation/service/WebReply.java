@@ -178,9 +178,12 @@ public abstract class WebReply extends BaseAnnotation {
   public String getCreatorName() {
     if (creatorName == null) {
       try {
-        log.debug("getting User Object for id: " + getCreator());
+        if (log.isDebugEnabled())
+          log.debug("getting User Object for id: " + getCreator());
         creatorName = userService.getUsernameByTopazId(getCreator());
-      } catch (ApplicationException ae) {
+      } catch (Exception ae) {
+        if (log.isDebugEnabled())
+          log.debug("Failed to lookup user name of the Reply creator.", ae);
         creatorName = getCreator();
       }
     }

@@ -114,9 +114,12 @@ public abstract class WebAnnotation extends BaseAnnotation {
     if (creatorName == null) {
       final String creator = getCreator();
       try {
-        log.debug("getting User Object for id: " + creator);
+        if (log.isDebugEnabled())
+          log.debug("getting User Object for id: " + creator);
         creatorName = userService.getUsernameByTopazId(creator);
-      } catch (ApplicationException ae) {
+      } catch (Exception ae) {
+        if (log.isDebugEnabled())
+          log.debug("Failed to lookup user name of the Annotation creator.", ae);
         creatorName = creator;
       }
     }
