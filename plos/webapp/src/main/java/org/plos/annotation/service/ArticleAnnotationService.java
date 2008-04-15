@@ -61,14 +61,14 @@ import net.sf.ehcache.Ehcache;
 /**
  * Wrapper over annotation(not the same as reply) web service
  */
-public class AnnotationWebService extends BaseAnnotationService {
+public class ArticleAnnotationService extends BaseAnnotationService {
   public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
   public static final String ANNOTATION_KEY = "ArticleAnnotationCache-SingleAnnotation-";
   public static final String ANNOTATION_LOCK = "ArticleAnnotationCache-lock-";
   protected static final Set<Class<?extends ArticleAnnotation>> ALL_ANNOTATION_CLASSES =
     new HashSet<Class<?extends ArticleAnnotation>>();
   private static final Log     log                    =
-    LogFactory.getLog(AnnotationWebService.class);
+    LogFactory.getLog(ArticleAnnotationService.class);
   private final AnnotationsPEP       pep;
   private Session              session;
   private PermissionWebService permissionsWebService;
@@ -80,11 +80,11 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
-   * Create an AnnotationWebService object.
+   * Create an ArticleAnnotationService object.
    *
    * @throws IOException on a PEP creation error
    */
-  public AnnotationWebService() throws IOException {
+  public ArticleAnnotationService() throws IOException {
     try {
       pep                                             = new AnnotationsPEP();
     } catch (IOException e) {

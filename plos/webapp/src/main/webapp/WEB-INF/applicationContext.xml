@@ -29,7 +29,7 @@
 
   <!--Plosone developer beans here -->
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" >
-    <property name="annotationWebService" ref="annotationWebService"/>
+    <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="articleXmlUtils" ref="articleXmlUtils"/>
   </bean>
@@ -128,7 +128,7 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" scope="session">
+  <bean id="articleAnnotationService" class="org.plos.annotation.service.ArticleAnnotationService" scope="session">
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>

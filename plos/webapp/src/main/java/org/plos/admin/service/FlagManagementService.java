@@ -31,7 +31,7 @@ import org.plos.ApplicationException;
 import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
 import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 import org.plos.annotation.service.AnnotationService;
-import org.plos.annotation.service.AnnotationWebService;
+import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyWebService;
 import org.plos.rating.service.RatingInfo;
@@ -53,7 +53,7 @@ public class FlagManagementService {
 
   private Session session;
 
-  private AnnotationWebService annotationWebService;
+  private ArticleAnnotationService articleAnnotationService;
   private AnnotationService annotationService;
   private ReplyWebService replyWebService;
   private UserService userService;
@@ -66,7 +66,7 @@ public class FlagManagementService {
     String creatorUserName;
 
     final RatingInfo[] ratingInfos = annotationService.listFlaggedRatings();
-    annotations = annotationWebService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
+    annotations = articleAnnotationService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
     replies = replyWebService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratingInfos.length + " ratings with flags");
@@ -204,13 +204,13 @@ public class FlagManagementService {
     return commentrecords;
   }
 
-  public void setAnnotationWebService(
-      AnnotationWebService annotationWebService) {
-    this.annotationWebService = annotationWebService;
+  public void setArticleAnnotationService(
+      ArticleAnnotationService articleAnnotationService) {
+    this.articleAnnotationService = articleAnnotationService;
   }
 
-  protected AnnotationWebService getAnnotationWebService() {
-    return annotationWebService;
+  protected ArticleAnnotationService getArticleAnnotationService() {
+    return articleAnnotationService;
   }
 
   public void setReplyWebService(ReplyWebService replyWebService) {

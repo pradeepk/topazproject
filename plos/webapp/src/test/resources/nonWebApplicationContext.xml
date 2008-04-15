@@ -39,7 +39,7 @@
     <property name="xslTemplate" value="webapp/src/main/resources/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleWebService"/>
-    <property name="annotationWebService" ref="annotationWebService"/>
+    <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="useTranslet" value="true"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>
@@ -116,7 +116,7 @@
     </property>
   </bean>
 
-  <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService">
+  <bean id="articleAnnotationService" class="org.plos.annotation.service.ArticleAnnotationService">
     <property name="userContext" ref="userContext"/>
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
@@ -133,7 +133,7 @@
   <bean id="annotationService" class="org.plos.annotation.service.AnnotationService">
     <property name="userContext" ref="userContext"/>
     <property name="converter" ref="annotationConverter"/>
-    <property name="annotationWebService" ref="annotationWebService"/>
+    <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="replyWebService" ref="replyWebService"/>
     <property name="permissionWebService" ref="permissionWebService"/>
   </bean>

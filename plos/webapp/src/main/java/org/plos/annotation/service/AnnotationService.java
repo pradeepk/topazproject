@@ -58,9 +58,9 @@ import org.plos.util.FileUtils;
  */
 public class AnnotationService {
   /* TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the
-   * AnnotationWebService directly!
+   * ArticleAnnotationService directly!
    */
-  private AnnotationWebService annotationWebService;
+  private ArticleAnnotationService articleAnnotationService;
   private ReplyWebService replyWebService;
   private RatingsService ratingsService;
 
@@ -107,7 +107,7 @@ public class AnnotationService {
     }
 
     try {
-      String annotationId = annotationWebService.createAnnotation(mimeType, target, context,
+      String annotationId = articleAnnotationService.createAnnotation(mimeType, target, context,
                                                                   olderAnnotation, title, body);
 
       if (log.isDebugEnabled()) {
@@ -165,9 +165,9 @@ public class AnnotationService {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
       final String flagId =
-                annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
+                articleAnnotationService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
       if (isAnnotation) {
-        annotationWebService.setFlagged(target);
+        articleAnnotationService.setFlagged(target);
       } else {
         replyWebService.setFlagged(target);
       }
@@ -193,7 +193,7 @@ public class AnnotationService {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
       final String flagId =
-                  annotationWebService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
+                  articleAnnotationService.createFlagAnnotation(mimeType, target, flagBody, reasonCode);
       ratingsService.setFlagged(target);
       return flagId;
     } catch (Exception e) {
@@ -209,7 +209,7 @@ public class AnnotationService {
    */
   public void unflagAnnotation(final String annotationId) throws ApplicationException {
     try {
-      annotationWebService.unflagAnnotation(annotationId);
+      articleAnnotationService.unflagAnnotation(annotationId);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -250,7 +250,7 @@ public class AnnotationService {
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
         throws ApplicationException {
     try {
-      annotationWebService.deletePrivateAnnotation(annotationId, deletePreceding);
+      articleAnnotationService.deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -264,7 +264,7 @@ public class AnnotationService {
    */
   public void deletePublicAnnotation(final String annotationId) throws ApplicationException {
     try {
-      annotationWebService.deletePublicAnnotation(annotationId);
+      articleAnnotationService.deletePublicAnnotation(annotationId);
       //TODO: Set the access permissions for administrator only
     } catch (Exception e) {
       throw new ApplicationException(e);
@@ -294,7 +294,7 @@ public class AnnotationService {
    */
   public void deleteFlag(final String flagId) throws ApplicationException {
     try {
-      annotationWebService.deleteFlag(flagId);
+      articleAnnotationService.deleteFlag(flagId);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
@@ -364,18 +364,18 @@ public class AnnotationService {
                                          Set<Class<? extends ArticleAnnotation>> annotationTypeClasses)
         throws ApplicationException {
     /* TODO: Remove this entire layer of WebAnnotation and AnnotationService and reference the
-     * AnnotationWebService directly!
+     * ArticleAnnotationService directly!
      */
 
-    /* Placing the caching here rather than in AnnotationWebService because this
+    /* Placing the caching here rather than in ArticleAnnotationService because this
      * produces the objects for the Commentary view.  The Article HTML is cached
-     * which calls the AnnotationWebService listAnnotations directly, so that call
+     * which calls the ArticleAnnotationService listAnnotations directly, so that call
      * won't happen too much.
      */
     WebAnnotation[] allAnnotations;
     ArticleAnnotation[] annotations;
     try {
-      annotations = annotationWebService.listAnnotations(target, annotationTypeClasses);
+      annotations = articleAnnotationService.listAnnotations(target, annotationTypeClasses);
     } catch (Exception re){
       throw new ApplicationException(re);
     }
@@ -481,7 +481,7 @@ public class AnnotationService {
    */
   public WebAnnotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
-      final ArticleAnnotation annotation = annotationWebService.getAnnotation(annotationId);
+      final ArticleAnnotation annotation = articleAnnotationService.getAnnotation(annotationId);
       return converter.convert(annotation);
     } catch (Exception e) {
       throw new ApplicationException(e);
@@ -515,8 +515,8 @@ public class AnnotationService {
     return ratingsService.listRatings(null, FLAG_MASK | PUBLIC_MASK);
   }
 
-  public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
-    this.annotationWebService = annotationWebService;
+  public void setArticleAnnotationService(final ArticleAnnotationService articleAnnotationService) {
+    this.articleAnnotationService = articleAnnotationService;
   }
 
   public void setReplyWebService(final ReplyWebService replyWebService) {
@@ -562,7 +562,7 @@ public class AnnotationService {
                       AnnotationsPEP.DELETE_ANNOTATION,
                       AnnotationsPEP.SUPERSEDE});
 
-      annotationWebService.setPublic(annotationDoi);
+      articleAnnotationService.setPublic(annotationDoi);
 
     } catch (final Exception e) {
       throw new ApplicationException(e);
@@ -606,7 +606,7 @@ public class AnnotationService {
    */
   public String convertArticleAnnotationToType(String targetId, Class newAnnotationClassType)
         throws Exception {
-    String newAnnotationId = annotationWebService.
+    String newAnnotationId = articleAnnotationService.
       convertArticleAnnotationToType(targetId, newAnnotationClassType);
     setAnnotationPublic(newAnnotationId);
     return newAnnotationId;

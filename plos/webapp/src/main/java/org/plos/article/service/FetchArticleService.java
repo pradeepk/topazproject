@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
-import org.plos.annotation.service.AnnotationWebService;
+import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Annotator;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
@@ -74,7 +74,7 @@ public class FetchArticleService {
   private ArticleXMLUtils articleXmlUtils;
 
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
-  private AnnotationWebService annotationWebService;
+  private ArticleAnnotationService articleAnnotationService;
 
   private Ehcache articleAnnotationCache;
   private Ehcache simplePageCachingFilter;
@@ -157,7 +157,7 @@ public class FetchArticleService {
                                          ex);
     }
 
-    final ArticleAnnotation[] annotations = annotationWebService.listAnnotations(articleDOI);
+    final ArticleAnnotation[] annotations = articleAnnotationService.listAnnotations(articleDOI);
     return applyAnnotationsOnContentAsDocument (contentUrl, annotations);
   }
 
@@ -180,21 +180,21 @@ public class FetchArticleService {
   }
 
   /**
-   * Getter for AnnotatationWebService
+   * Getter for ArticleAnnotationService
    * 
-   * @return the annotationWebService
+   * @return the articleAnnotationService
    */
-  public AnnotationWebService getAnnotationWebService() {
-    return annotationWebService;
+  public ArticleAnnotationService getArticleAnnotationService() {
+    return articleAnnotationService;
   }
 
   /**
-   * Setter for annotationWebService
+   * Setter for articleAnnotationService
    * 
-   * @param annotationWebService annotationWebService
+   * @param articleAnnotationService articleAnnotationService
    */
-  public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
-    this.annotationWebService = annotationWebService;
+  public void setArticleAnnotationService(final ArticleAnnotationService articleAnnotationService) {
+    this.articleAnnotationService = articleAnnotationService;
   }
 
   /**
@@ -280,7 +280,7 @@ public class FetchArticleService {
   /**
    * Remove objectUris from the articleAnnotationCache.
    *
-   * All (ARTICLE_KEY, ARTICLEINFO_KEY, AnnotationWebService.ANNOTATION_KEY,
+   * All (ARTICLE_KEY, ARTICLEINFO_KEY, ArticleAnnotationService.ANNOTATION_KEY,
    * CreateCitation.CITATION_KEY) + objectUri will be removed.
    * Removal is syncronized on ARTICLE_LOCK + objectUri.
    * Removal of Articles invalidates the SimplePageCachingFilter (action page results) cache.
@@ -298,7 +298,7 @@ public class FetchArticleService {
         articleAnnotationCache.remove(ARTICLEINFO_KEY + objectUri);
         articleAnnotationCache.remove(ARTICLE_SECONDARY_KEY + objectUri);
         articleAnnotationCache.remove(ARTICLE_FIGURESTABLE_KEY + objectUri);
-        articleAnnotationCache.remove(AnnotationWebService.ANNOTATED_KEY + objectUri);
+        articleAnnotationCache.remove(ArticleAnnotationService.ANNOTATED_KEY + objectUri);
         articleAnnotationCache.remove(CreateCitation.CITATION_KEY + objectUri);
       }
     }
