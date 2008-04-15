@@ -194,7 +194,8 @@ abstract class AbstractSession implements Session {
     if (rm.getAssociatedEntity() == null)
       throw new OtmException(path + " is not an association of " + cm);
 
-    if (referrer != null && !rm.getAssociatedEntity().equals(parent.getClassMetadata().getName()))
+    if (referrer != null &&
+        !checkClass(rm.getAssociatedEntity()).isAssignableFrom(parent.getClassMetadata()))
       throw new OtmException("'" + path + "' in " + cm + " does not point to '" +
                              parent.getClassMetadata().getName() + "'");
 

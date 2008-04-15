@@ -861,23 +861,23 @@ public class CriteriaTest extends AbstractOtmTest {
 
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          List l = session.createCriteria(Annotation.class)
+          List l = session.createCriteria(PublicAnnotation.class)
                           .createReferrerCriteria("AnnotationLink", "ann1")
                           .add(new SubjectCriterion(idl1.toString()))
                           .list();
           assertEquals(1, l.size());
 
-          Annotation a = (Annotation) l.get(0);
+          PublicAnnotation a = (PublicAnnotation) l.get(0);
           assertEquals(id1, a.getId());
 
-          l = session.createCriteria(Annotation.class)
+          l = session.createCriteria(PublicAnnotation.class)
                      .createReferrerCriteria("AnnotationLink", "ann2")
                      .createCriteria("ann1")
                      .add(Restrictions.eq("annotates", "bar:1"))
                      .list();
           assertEquals(1, l.size());
 
-          a = (Annotation) l.get(0);
+          a = (PublicAnnotation) l.get(0);
           assertEquals(id4, a.getId());
         }
       });
