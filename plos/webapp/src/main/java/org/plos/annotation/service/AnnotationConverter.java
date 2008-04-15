@@ -22,6 +22,7 @@ import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.user.service.UserService;
 import org.plos.models.ArticleAnnotation;
+import org.plos.models.Reply;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +75,7 @@ public class AnnotationConverter {
    * @return an array of Reply objects as required by the web layer
    * @throws org.plos.ApplicationException ApplicationException
    */
-  public WebReply[] convert(final ReplyInfo[] replies) throws ApplicationException {
+  public WebReply[] convert(final Reply[] replies) throws ApplicationException {
     return convert (replies, null);
   }
 
@@ -87,7 +88,7 @@ public class AnnotationConverter {
    * @return the hierarchical replies
    * @throws ApplicationException
    */
-  public WebReply[] convert(final ReplyInfo[] replies, Commentary com) throws ApplicationException {
+  public WebReply[] convert(final Reply[] replies, Commentary com) throws ApplicationException {
     final Collection<WebReply> plosoneReplies = new ArrayList<WebReply>();
     final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
     int numReplies = replies.length;
@@ -96,12 +97,12 @@ public class AnnotationConverter {
     String annotationId = null;
     if (numReplies > 0) {
       annotationId = replies[0].getRoot();
-      latestReplyTime = replies[numReplies -1].getCreated();
+      latestReplyTime = replies[numReplies -1].getCreatedAsString();
     }
 
-    for (final ReplyInfo reply : replies) {
+    for (final Reply reply : replies) {
       final WebReply convertedObj = convert(reply);
-      repliesMap.put(reply.getId(), convertedObj);
+      repliesMap.put(reply.getId().toString(), convertedObj);
 
       final String replyTo = reply.getInReplyTo();
       //Setup the top level replies
@@ -141,7 +142,7 @@ public class AnnotationConverter {
    * @return the reply for the web layer
    * @throws ApplicationException ApplicationException
    */
-  public WebReply convert(final ReplyInfo reply) throws ApplicationException {
+  public WebReply convert(final Reply reply) throws ApplicationException {
 
     return new WebReply(reply, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {

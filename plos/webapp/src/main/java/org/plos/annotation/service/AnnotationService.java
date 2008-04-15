@@ -45,6 +45,7 @@ import org.plos.models.Correction;
 import org.plos.models.FormalCorrection;
 import org.plos.models.MinorCorrection;
 import org.plos.models.Rating;
+import org.plos.models.Reply;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.rating.service.RatingInfo;
 import org.plos.rating.service.RatingsService;
@@ -415,7 +416,7 @@ public class AnnotationService {
   public WebReply[] listReplies(final String root, final String inReplyTo)
         throws ApplicationException {
     try {
-      final ReplyInfo[] replies = replyWebService.listReplies(root, inReplyTo);
+      final Reply[] replies = replyWebService.listReplies(root, inReplyTo);
       return converter.convert(replies);
     } catch (Exception e) {
       throw new ApplicationException(e);
@@ -443,7 +444,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
-  public ReplyInfo[] listAllRepliesFlattened(final String root, final String inReplyTo)
+  public Reply[] listAllRepliesFlattened(final String root, final String inReplyTo)
         throws ApplicationException {
     try {
       return replyWebService.listAllReplies(root, inReplyTo);
@@ -464,7 +465,7 @@ public class AnnotationService {
   public WebReply[] listAllReplies(final String root, final String inReplyTo, final Commentary com)
                                 throws ApplicationException {
     try {
-      final ReplyInfo[] replies = replyWebService.listAllReplies(root, inReplyTo);
+      final Reply[] replies = replyWebService.listAllReplies(root, inReplyTo);
       return converter.convert(replies, com);
     } catch (Exception e) {
       throw new ApplicationException(e);
@@ -496,7 +497,7 @@ public class AnnotationService {
    */
   public WebReply getReply(final String replyId) throws ApplicationException {
     try {
-      final ReplyInfo reply = replyWebService.getReplyInfo(replyId);
+      final Reply reply = replyWebService.getReply(replyId);
       return converter.convert(reply);
     } catch (Exception e) {
       throw new ApplicationException(e);

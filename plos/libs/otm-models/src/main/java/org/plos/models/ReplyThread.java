@@ -71,7 +71,7 @@ public class ReplyThread extends Reply {
    */
   public void addReply(ReplyThread r) {
     r.setRoot(getRoot());
-    r.setInReplyTo(getId());
+    r.setInReplyTo(getId().toString());
     replies.add(r);
   }
 }

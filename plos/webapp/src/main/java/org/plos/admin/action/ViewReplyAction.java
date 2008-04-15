@@ -23,24 +23,24 @@ package org.plos.admin.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.ReplyWebService;
-import org.plos.annotation.service.ReplyInfo;
+import org.plos.models.Reply;
 
 public class ViewReplyAction extends BaseAdminActionSupport {
 
   private String replyId;
-  private ReplyInfo replyInfo;
+  private Reply reply;
   private ReplyWebService replyWebService;
 
   private static final Log log = LogFactory.getLog(ViewReplyAction.class);
 
 
   public String execute() throws Exception {
-    replyInfo = replyWebService.getReplyInfo(replyId);
+    reply = replyWebService.getReply(replyId);
     return SUCCESS;
   }
 
-  public ReplyInfo getReplyInfo() {
-    return replyInfo;
+  public Reply getReply() {
+    return reply;
   }
 
   public void setReplyId(String annotationId) {

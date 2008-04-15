@@ -25,6 +25,7 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Predicate.PropType;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -42,9 +43,11 @@ public class Reply extends Annotea {
   public static final String NS = "http://www.w3.org/2001/03/thread#";
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/reply/")
-  private URI                                                          id;
-  private URI                                                          root;
-  private URI                                                          inReplyTo;
+  private URI                                                           id;
+  @Predicate(type=PropType.OBJECT)
+  private String                                                       root;
+  @Predicate(type=PropType.OBJECT)
+  private String                                                       inReplyTo;
   @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager) // XXX: lazy?
   private ReplyBlob                                                    body;
 
@@ -66,9 +69,9 @@ public class Reply extends Annotea {
   /**
    * Get root.
    *
-   * @return root as URI.
+   * @return root as String.
    */
-  public URI getRoot() {
+  public String getRoot() {
     return root;
   }
 
@@ -77,7 +80,7 @@ public class Reply extends Annotea {
    *
    * @param root the value to set.
    */
-  public void setRoot(URI root) {
+  public void setRoot(String root) {
     this.root = root;
   }
 
@@ -86,7 +89,7 @@ public class Reply extends Annotea {
    *
    * @return inReplyTo as URI.
    */
-  public URI getInReplyTo() {
+  public String getInReplyTo() {
     return inReplyTo;
   }
 
@@ -95,7 +98,7 @@ public class Reply extends Annotea {
    *
    * @param inReplyTo the value to set.
    */
-  public void setInReplyTo(URI inReplyTo) {
+  public void setInReplyTo(String inReplyTo) {
     this.inReplyTo = inReplyTo;
   }
 
@@ -122,7 +125,7 @@ public class Reply extends Annotea {
   /**
    * Get id.
    *
-   * @return id as URI.
+   * @return id as URI
    */
   public URI getId() {
     return id;

@@ -33,11 +33,11 @@ import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Flag;
-import org.plos.annotation.service.ReplyInfo;
 import org.plos.annotation.service.ReplyWebService;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
 import org.plos.models.Annotation;
+import org.plos.models.Reply;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -61,20 +61,20 @@ public class FlagManagementService {
   public Collection<FlaggedCommentRecord> getFlaggedComments() throws RemoteException, ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
     Annotation[] annotations;
-    ReplyInfo[] replyinfos;
+    Reply[] replies;
     Flag flags[] = null;
     String creatorUserName;
 
     final RatingInfo[] ratingInfos = annotationService.listFlaggedRatings();
     annotations = annotationWebService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
-    replyinfos = replyWebService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
+    replies = replyWebService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratingInfos.length + " ratings with flags");
       log.debug("There are " + annotations.length + " annotations with flags");
       for (Annotation annotation : annotations) {
         log.debug("\t"+ annotation.toString());
       }
-      log.debug("There are " + replyinfos.length + " replies with flags");
+      log.debug("There are " + replies.length + " replies with flags");
     }
 
     for (final RatingInfo ratingInfo : ratingInfos) {
@@ -169,10 +169,10 @@ public class FlagManagementService {
       }
     }
 
-    for (ReplyInfo replyinfo : replyinfos) {
-      flags = annotationService.listFlags((String) replyinfo.getId());
+    for (Reply reply : replies) {
+      flags = annotationService.listFlags(reply.getId().toString());
       if (log.isDebugEnabled())
-        log.debug("There are " + flags.length + " flags on reply: " + replyinfo.getId());
+        log.debug("There are " + flags.length + " flags on reply: " + reply.getId());
       for (Flag flag : flags) {
         if (flag.isDeleted()) {
           if (log.isDebugEnabled())
@@ -188,13 +188,13 @@ public class FlagManagementService {
         FlaggedCommentRecord fcr =
           new FlaggedCommentRecord(
               flag.getId(),
-              replyinfo.getId(),
-              replyinfo.getTitle(),
+              reply.getId().toString(),
+              reply.getTitle(),
               flag.getComment(),
               flag.getCreated(),
               creatorUserName,
               flag.getCreator(),
-              replyinfo.getRoot(),
+              reply.getRoot(),
               flag.getReasonCode(),
               AnnotationService.WEB_TYPE_REPLY);
         commentrecords.add(fcr);

@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
 
+import org.plos.models.Reply;
 import org.plos.user.service.UserService;
 
 import org.plos.util.DateParser;
@@ -33,30 +34,30 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * Plosone wrapper around the ReplyInfo from topaz service. It provides
+ * Plosone wrapper around the Reply from topaz service. It provides
  * - A way to escape title/body text when returning the result to the web layer
  * - a separation from any topaz changes
  */
 public abstract class WebReply extends BaseAnnotation {
   private static final Log log = LogFactory.getLog(WebReply.class);
 
-  private final ReplyInfo reply;
+  private final Reply reply;
   private Collection<WebReply> replies = new ArrayList<WebReply>();
   private String creatorName;
   private UserService userService;
 
-  public WebReply(final ReplyInfo reply) {
+  public WebReply(final Reply reply) {
     this.reply = reply;
   }
 
   /**
-   * Constructor that takes in a UserService object in addition to ReplyInfo in order
+   * Constructor that takes in a UserService object in addition to Reply in order
    * to retrieve the username.
    * 
    * @param reply
    * @param userSvc
    */
-  public WebReply(final ReplyInfo reply, UserService userSvc) {
+  public WebReply(final Reply reply, UserService userSvc) {
     this.reply = reply;
     this.userService = userSvc;
   }
@@ -66,11 +67,7 @@ public abstract class WebReply extends BaseAnnotation {
    * @return created as java.util.Date.
    */
   public Date getCreatedAsDate() {
-    try {
-      return DateParser.parse(reply.getCreated());
-    } catch (InvalidDateException ide) {
-    }
-    return null;
+    return reply.getCreated();
   }
 
   /**
@@ -79,7 +76,7 @@ public abstract class WebReply extends BaseAnnotation {
    * @return created as String.
    */
   public String getCreated() {
-    return reply.getCreated();
+    return reply.getCreatedAsString();
   }
 
 
@@ -98,7 +95,7 @@ public abstract class WebReply extends BaseAnnotation {
    * @return id as String.
    */
   public String getId() {
-    return reply.getId();
+    return reply.getId().toString();
   }
 
   /**

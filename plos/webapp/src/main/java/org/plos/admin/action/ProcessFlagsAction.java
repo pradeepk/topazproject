@@ -27,10 +27,10 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyWebService;
-import org.plos.annotation.service.ReplyInfo;
 import org.plos.models.Comment;
 import org.plos.models.FormalCorrection;
 import org.plos.models.MinorCorrection;
+import org.plos.models.Reply;
 import org.plos.rating.service.RatingsService;
 
 public class ProcessFlagsAction extends BaseAdminActionSupport {
@@ -208,7 +208,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    * @throws RemoteException
    */
   private void deleteTarget(String root, String target, String targetType) throws ApplicationException, RemoteException {
-    ReplyInfo[] replies;
+    Reply[] replies;
     Flag[] flags = annotationService.listFlags(target);
 
     if (log.isDebugEnabled()) {
@@ -236,21 +236,21 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       replies = annotationService.listAllRepliesFlattened(target, target);
     } else {
       // Flag type doesn't have Replies
-      replies = new ReplyInfo[0];
+      replies = new Reply[0];
     }
 
     if (log.isDebugEnabled()) {
       log.debug(target + " has " + replies.length + " replies. Removing their flags");
     }
-    for (ReplyInfo reply : replies) {
-      Flag[] replyFlags = annotationService.listFlags(reply.getId());
+    for (Reply reply : replies) {
+      Flag[] replyFlags = annotationService.listFlags(reply.getId().toString());
       if (log.isDebugEnabled()) {
         log.debug("Reply " + reply.getId() + " has " + replyFlags.length + " flags");
       }
       for (Flag flag: replyFlags) {
         if (flag.isDeleted())
           continue;
-        deleteFlag(reply.getId(), flag.getId(), AnnotationService.WEB_TYPE_REPLY);
+        deleteFlag(reply.getId().toString(), flag.getId().toString(), AnnotationService.WEB_TYPE_REPLY);
       }
     }
 

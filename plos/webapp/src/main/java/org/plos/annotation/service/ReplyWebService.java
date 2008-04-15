@@ -101,8 +101,8 @@ public class ReplyWebService extends BaseAnnotationService {
     final Reply  r           = new ReplyThread();
     r.setMediator(getApplicationId());
     r.setType(getDefaultType());
-    r.setRoot(URI.create(root));
-    r.setInReplyTo(URI.create(inReplyTo));
+    r.setRoot(root);
+    r.setInReplyTo(inReplyTo);
     r.setTitle(title);
 
     if (isAnonymous())
@@ -241,7 +241,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    * @throws IllegalArgumentException if the id does not correspond to a reply
    */
-  public ReplyInfo getReplyInfo(final String replyId)
+  public Reply getReply(final String replyId)
                          throws OtmException, SecurityException, IllegalArgumentException {
     pep.checkAccess(pep.GET_REPLY_INFO, URI.create(replyId));
 
@@ -250,7 +250,7 @@ public class ReplyWebService extends BaseAnnotationService {
     if (a == null)
       throw new IllegalArgumentException("invalid reply id: " + replyId);
 
-    return new ReplyInfo(a);
+    return a;
   }
 
   /**
@@ -264,7 +264,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
-  public ReplyInfo[] listReplies(final String root, final String inReplyTo)
+  public Reply[] listReplies(final String root, final String inReplyTo)
                           throws OtmException, SecurityException {
     List<Reply> all =
       session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
@@ -283,14 +283,7 @@ public class ReplyWebService extends BaseAnnotationService {
       }
     }
 
-    ReplyInfo[] replies = new ReplyInfo[l.size()];
-
-    int         i       = 0;
-
-    for (Reply a : l)
-      replies[i++] = new ReplyInfo(a);
-
-    return replies;
+    return l.toArray(new  Reply[l.size()]);
   }
 
   /**
@@ -305,7 +298,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
-  public ReplyInfo[] listAllReplies(final String root, final String inReplyTo)
+  public Reply[] listAllReplies(final String root, final String inReplyTo)
                              throws OtmException, SecurityException {
     List<Reply> all =
       session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
@@ -324,14 +317,7 @@ public class ReplyWebService extends BaseAnnotationService {
       }
     }
 
-    ReplyInfo[] replies = new ReplyInfo[l.size()];
-
-    int         i       = 0;
-
-    for (Reply a : l)
-      replies[i++] = new ReplyInfo(a);
-
-    return replies;
+    return l.toArray(new Reply[l.size()]);
   }
 
   /**
@@ -376,7 +362,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
-  public ReplyInfo[] listReplies(final String mediator, final int state)
+  public Reply[] listReplies(final String mediator, final int state)
                           throws OtmException, SecurityException {
     pep.checkAccess(pep.LIST_REPLIES_IN_STATE, pep.ANY_RESOURCE);
 
@@ -392,14 +378,7 @@ public class ReplyWebService extends BaseAnnotationService {
 
     List<Reply> l       = c.list();
 
-    ReplyInfo[] replies = new ReplyInfo[l.size()];
-
-    int         i       = 0;
-
-    for (Reply a : l)
-      replies[i++] = new ReplyInfo(a);
-
-    return replies;
+    return l.toArray(new Reply[l.size()]);
   }
 
   /**
