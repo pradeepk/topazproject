@@ -586,8 +586,9 @@ public class BrowseService {
     synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
       browseCache.remove(CAT_INFO_KEY + jnlName);
       browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
-      browseCache.remove(BrowseService.VOL_INFOS_FOR_JOURNAL_KEY + jnlName);
     }
+    
+    clearVolumeInfoCacheForJournal(jnlName);
 
     synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
       browseCache.remove(DATE_LIST_KEY + jnlName);
@@ -598,6 +599,20 @@ public class BrowseService {
         browseCache.remove(key);
       }
     }
+  }
+
+  /**
+   * Clears any currently cached list of VolumeInfo objects for this Journal. Note that we cache a
+   * list of the VolumeInfo objects since there are few of them. The VolumeInfo objects only contain
+   * a list of Issue DOI's for the issues they contain, so updates to an issue only require updating
+   * or removing cached issue. The issues themselves are cached individually based on their DOI's. 
+   * It is only necessary to clear the VolumeInfos from the cache for a Journal if a Volume
+   * is added or removed from a journal, or if an Issue within a Volume is added or removed from a Volume.
+   *  
+   * @param jnlName the name of the journal as returned by Journal.getKey()
+   */
+  public void clearVolumeInfoCacheForJournal(final String jnlName) {
+    browseCache.remove(BrowseService.VOL_INFOS_FOR_JOURNAL_KEY + jnlName);
   }
 
   /**
@@ -863,5 +878,14 @@ public class BrowseService {
 
     @Predicate(uri = Rdf.foaf + "name")
     public String realName;
+  }
+
+  /**
+   * Clear the issue with the given doi from the browseCache. 
+   * 
+   * @param issueDoi
+   */
+  public void clearIssueInfoCache(URI issueDoi) {
+    browseCache.remove(BrowseService.ISSUE_KEY + issueDoi);
   }
 }

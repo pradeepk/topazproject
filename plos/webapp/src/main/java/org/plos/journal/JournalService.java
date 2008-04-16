@@ -52,6 +52,7 @@ import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.java.ClassBinder;
 
+import org.plos.article.service.BrowseService;
 import org.plos.models.Aggregation;
 import org.plos.models.Journal;
 import org.plos.models.UserProfile;
@@ -89,6 +90,7 @@ public class JournalService {
 
   private       Session                  session;
   private       boolean                  isLocal;
+  private BrowseService browseService;
 
   /**
    * Create a new journal-service instance. One and only one of these should be created for evey
@@ -736,6 +738,8 @@ public class JournalService {
       }
     }
 
+    browseService.notifyJournalModified(j.getKey());
+    
     if (log.isDebugEnabled()) {
       log.debug("Journal was modified: " + j.getKey() + " (" + j.getEIssn() + ")");
     }
@@ -828,6 +832,10 @@ public class JournalService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+  
+  public void setBrowseService(BrowseService bs) {
+    this.browseService = bs;
   }
 
   /**

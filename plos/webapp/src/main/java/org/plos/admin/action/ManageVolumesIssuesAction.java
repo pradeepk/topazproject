@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.article.service.BrowseService;
@@ -64,7 +62,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   private Session session;
   private JournalService journalService;
-  private Ehcache browseCache;
+  private BrowseService browseService;
 
   private static final Log log = LogFactory.getLog(ManageVolumesIssuesAction.class);
 
@@ -189,13 +187,13 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private String updateVolume() {
     // the Volume to update
     Volume volume = session.get(Volume.class, doi.toString());
+    Journal currentJournal = journalService.getJournal();
 
     // delete the Volume?
     if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
       session.delete(volume);
       addActionMessage("Deleted Volume: " + volume);
       // update Journal?
-      Journal currentJournal = journalService.getJournal();
       List<URI> currentVolumes = currentJournal.getVolumes();
       if (currentVolumes.contains(doi)) {
         currentVolumes.remove(doi);
@@ -211,7 +209,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     volume.setImage(image);
 
     // process Issues
-    List<URI> volumeIssues = new ArrayList();
+    List<URI> volumeIssues = new ArrayList<URI>();
     if (aggregation != null && aggregation.length() != 0) {
       for (final String issueToAdd : aggregation.split(SEPARATORS)) {
         if (issueToAdd.length() == 0) { continue; }
@@ -223,6 +221,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     volume.setIssueList(volumeIssues);
 
     session.saveOrUpdate(volume);
+    browseService.clearVolumeInfoCacheForJournal(currentJournal.getKey());
 
     addActionMessage("Updated Volume: " + volume.toString());
 
@@ -251,7 +250,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
     // process Articles
     if (aggregation != null && aggregation.length() != 0) {
-      List<URI> articles = new ArrayList();
+      List<URI> articles = new ArrayList<URI>();
       for (final String articleToAdd : aggregation.split(SEPARATORS)) {
         if (articleToAdd.length() == 0) { continue; }
         articles.add(URI.create(articleToAdd.trim()));
@@ -312,7 +311,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     issue.setImage(image);
 
     // process Issues
-    List<URI> issueArticles = new ArrayList();
+    List<URI> issueArticles = new ArrayList<URI>();
     if (aggregation != null && aggregation.length() != 0) {
       for (final String articleToAdd : aggregation.split(SEPARATORS)) {
         if (articleToAdd.length() == 0) { continue; }
@@ -327,11 +326,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
     addActionMessage("Updated Issue: " + issue.toString());
 
-    // Flush the browse cache for this issue. Perhaps should synchronize
-    // here on ISSUE_LOCK+doi - but the only place where we write to the cache
-    // is inside transaction manager anyway so don't bother to avoid any risk
-    // of deadlock.
-    browseCache.remove(BrowseService.ISSUE_KEY + doi);
+    browseService.clearIssueInfoCache(doi);
     
     return SUCCESS;
   }
@@ -446,7 +441,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   }
 
   /**
-   * Set the OTM Session.
+   * Spring injected method to set the OTM Session.
    *
    * @param session The OTM Session to set.
    */
@@ -456,7 +451,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   }
 
   /**
-   * Sets the JournalService.
+   * Spring injected method to set the JournalService.
    *
    * @param journalService The JournalService to set.
    */
@@ -465,12 +460,12 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     this.journalService = journalService;
   }
   
-
   /**
-   * @param browseCache The browse-cache to use.
+   * Spring injected method to set the BrowseService
+   * @param bs
    */
   @Required
-  public void setBrowseCache(Ehcache browseCache) {
-    this.browseCache = browseCache;
+  public void setBrowseService(BrowseService bs) {
+    this.browseService = bs;
   }
 }
