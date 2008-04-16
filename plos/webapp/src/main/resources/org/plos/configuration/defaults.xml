@@ -318,7 +318,7 @@
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>
-          <file>/css/plostabs.css</file>
+          <file>/css/ambraTabs.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>

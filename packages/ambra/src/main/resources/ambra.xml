@@ -2,8 +2,8 @@
 <!--
   This file is a template. It contains many configuration parameters you may want to change.
   However, there are even more configuration parameters that can be tuned. To get a list of
-  all of these, see documentation. (Or, failing that, most defaults are configured in the
-  plosone webapp at WEB-INF/classes/defaults.xml. Though it is possible that there are
+  all of these, see documentation. (Or, failing that, most defaults are configured for the
+  Ambra webapp in WEB-INF/classes/defaults.xml. Though it is possible that there are
   even more - see ConfigurationStore documentation.)
 -->
 <config>
@@ -611,7 +611,7 @@
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>
-          <file>/css/plostabs.css</file>
+          <file>/css/ambraTabs.css</file>
         </css>
         <javascript>
           <file>/javascript/browserDetection.js</file>

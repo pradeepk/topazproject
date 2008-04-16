@@ -46,8 +46,8 @@
 
 <#if volumeInfos?exists>
     <h2>All Issues</h2>
-    <div class="plosTabsContainer">
-    <ul id="volumeTabs" class="plostabs">
+    <div class="ambraTabsContainer">
+    <ul id="volumeTabs" class="ambraTabs">
       <#assign volNum = 1/>
       <#list volumeInfos as volumeInfo>
         <li><a href="#" rel="Vol_${volNum}" >${volumeInfo.displayName}</a></li>
@@ -58,7 +58,7 @@
     <!-- <div style="border:1px solid gray; width:100%; margin-bottom: 1em; padding: 10px"> -->
     <#assign volNum = 1/>
     <#list volumeInfos as volumeInfo>
-      <div class="plosTabPane" id="Vol_${volNum}">
+      <div class="ambraTabPane" id="Vol_${volNum}">
         <#assign issueNum = 1/>
         <#list volumeInfo.issueInfos as issueInfo>
           <@s.url id="issueURL" action="browseIssue" namespace="/article"
@@ -79,7 +79,7 @@
       <#assign volNum = volNum +1/>
     </#list>
     </div> 
-    </div> <!-- end: plosTabsContainer -->
+    </div> <!-- end: ambraTabsContainer -->
 
 <div class="clearer">&nbsp;</div>
 

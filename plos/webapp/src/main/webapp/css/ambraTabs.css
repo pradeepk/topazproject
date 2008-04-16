@@ -20,11 +20,11 @@
 /**
  * CSS for the browseVolume.ftl. Based on tabbed browsing implementation from http://www.dynamicdrive.com/dynamicindex17/tabcontent.htm
  */
-.plosTabsContainer {
+.ambraTabsContainer {
 	margin-top: 30px;
 }
 
-.plostabs {
+.ambraTabs {
 	background:transparent url(../images/tab_bg.gif) repeat-x scroll center bottom;
 	float:left;
 	line-height:normal;
@@ -37,7 +37,7 @@
   list-style-type:none;
 }
 
-.plostabs li {
+.ambraTabs li {
   background:transparent url(../images/tab_left.gif) no-repeat scroll 0% 0%;
 color:#666666;
 cursor:pointer;
@@ -51,11 +51,11 @@ margin:0pt 2px;
 padding:0pt 0pt 0pt 8px;
 }
 
-.plostabs li.selected {
+.ambraTabs li.selected {
   background-position:0% -40px;
 }
 
-.plostabs li a {
+.ambraTabs li a {
 	background:transparent url(../images/tab_right.gif) no-repeat scroll 100% 0%;
   display:block;
   float:left;
@@ -63,21 +63,21 @@ padding:0pt 0pt 0pt 8px;
   text-decoration:none;
 }
 
-.plostabs li a:visited {
+.ambraTabs li a:visited {
 	color: #2d2b2b;
 }
 
-.plostabs li a:hover {
+.ambraTabs li a:hover {
 	text-decoration: underline;
 	color: #2d2b2b;
 }
 
-.plostabs li.selected a { 
+.ambraTabs li.selected a { 
   background-position:100% -40px;
   padding-bottom:9px !important;
 }
 
-.plostabs li.selected a:hover { /*selected main tab style */
+.ambraTabs li.selected a:hover { /*selected main tab style */
 	text-decoration: none;
 }
 
@@ -91,7 +91,7 @@ padding:0pt 0pt 0pt 8px;
 	}
 }
 
-.plosTabPane {
+.ambraTabPane {
 	padding:30px 0pt 20px 30px;
 	background:#FFFFFF none repeat scroll 0%;
   border:1px solid #bababa;
