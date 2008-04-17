@@ -40,8 +40,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.RdfUtil;
 
 /**
- * A FedoraBlob implementation. The default implementation assumes a one-to-one correspondence
- * between a PID and blobId.
+ * A FedoraBlob implementation where blobs are stored as data-streams associated with an object.
  *
  * @author Pradeep Krishnan
  */
@@ -116,25 +115,36 @@ public class DefaultFedoraBlob implements FedoraBlob {
     Uploader   upld   = con.getUploader();
     FedoraAPIM apim   = con.getAPIM();
     String     newPid = pid;
+    String     newDs  = dsId;
 
     try {
       String ref = upld.upload(blob);
 
-      if (exists(con))
-        apim.modifyDatastreamByReference(pid, dsId, null, getDatastreamLabel(), false,
+      if (existsDs(con))
+        apim.modifyDatastreamByReference(pid, dsId, new String[0], getDatastreamLabel(), false,
                                          getContentType(), null, ref, "A", "updated", false);
+      else if (existsPid(con))
+        newDs = apim.addDatastream(pid, dsId, new String[0], getDatastreamLabel(), false,
+                                   getContentType(), null, ref, "M", "A", "created");
       else
         newPid = apim.ingest(getFoxml(ref), "foxml1.0", "created");
     } catch (Exception e) {
-      throw new OtmException("Ingest failed", e);
+      if (e instanceof OtmException)
+        throw (OtmException) e;
+
+      throw new OtmException("Write to Fedora failed", e);
     }
 
     if (!pid.equals(newPid))
       throw new OtmException("PID mismatch in ingest. Expecting '" + pid + "', got '" + newPid
                              + "'");
 
+    if (!dsId.equals(newDs))
+      throw new OtmException("DS-ID mismatch in add-DS. Expecting '" + dsId + "', got '" + newDs
+                             + "'");
+
     if (log.isDebugEnabled())
-      log.debug("Ingested " + blobId + " as " + pid + "/" + dsId);
+      log.debug("Wrote " + blobId + " as " + pid + "/" + dsId);
   }
 
   /**
@@ -178,15 +188,15 @@ public class DefaultFedoraBlob implements FedoraBlob {
   }
 
   /**
-   * Checks the existence of this blob in Fedora.
+   * Checks the existence of this data-stream in Fedora.
    *
-   * @param con the Fedora APIM stub to use
+   * @param con the connection to Fedora
    *
    * @return true if it exists, false otherwise
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
-  protected boolean exists(FedoraConnection con) throws OtmException {
+  protected boolean existsDs(FedoraConnection con) throws OtmException {
     if (getDatastream(con) == null)
       return false;
 
@@ -199,6 +209,29 @@ public class DefaultFedoraBlob implements FedoraBlob {
       return true;
     } catch (Exception e) {
       return false;
+    }
+  }
+
+  /**
+   * Checks the existenece of this pid in Fedora.
+   *
+   * @param con the connection to Fedora
+   *
+   * @return true if it exists, false otherwise
+   *
+   * @throws OtmException on an error
+   */
+  protected boolean existsPid(FedoraConnection con) throws OtmException {
+    try {
+      Datastream[] streams = con.getAPIM().getDatastreams(pid, null, null);
+
+      return (streams != null) && (streams.length != 0);
+    } catch (Exception e) {
+      if ((e.getMessage().indexOf("Server.userException") < 0)
+           || (e.getMessage().indexOf("no path in db registry for") < 0))
+        return false;
+
+      throw new OtmException("Error while checking existence of pid: " + pid, e);
     }
   }
 
@@ -217,11 +250,48 @@ public class DefaultFedoraBlob implements FedoraBlob {
       return con.getAPIM().getDatastream(pid, dsId, null);
     } catch (Exception e) {
       if ((e.getMessage().indexOf("Server.userException") < 0)
-           && (e.getMessage().indexOf("no path in db registry for") < 0))
-        throw new OtmException("Error while getting the data-stream to " + pid + "/" + dsId, e);
+           || (e.getMessage().indexOf("no path in db registry for") < 0))
+        return null;
 
-      return null;
+      throw new OtmException("Error while getting the data-stream for " + pid + "/" + dsId, e);
     }
+  }
+
+  /**
+   * Checks if the Fedora object itself can be purged. In general an object can be
+   * purged if the remaining data-streams on it are not significant. Override it
+   * in sub-classes to handle app specific processing.
+   *
+   * @param con the connection handle
+   *
+   * @return true if it can be purged, false otherwise
+   *
+   * @throws OtmException on an error
+   */
+  protected boolean canPurgeObject(FedoraConnection con)
+                            throws OtmException {
+    try {
+      return canPurgeObject(con, con.getAPIM().getDatastreams(pid, null, null));
+    } catch (Exception e) {
+      throw new OtmException("Error in obtaining the list of data-streams on " + pid, e);
+    }
+  }
+
+  /**
+   * Checks if the data-streams on this object are significant enough so as not to
+   * purge this. In general, if the only data-stream remaining is the "DC", then the object
+   * can be purged. Override it in sub-classes to handle app specific processing.
+   *
+   * @param con the connection handle
+   * @param ds the current list of data-streams
+   *
+   * @return if the object can be purged, false otherwise
+   *
+   * @throws OtmException on an error
+   */
+  protected boolean canPurgeObject(FedoraConnection con, Datastream[] ds)
+                            throws OtmException {
+    return (ds == null) || (ds.length == 0) || ((ds.length == 1) && "DC".equals(ds[0].getID()));
   }
 
   /*
@@ -231,11 +301,18 @@ public class DefaultFedoraBlob implements FedoraBlob {
     FedoraAPIM apim = con.getAPIM();
 
     try {
-      if (exists(con)) {
-        apim.purgeObject(pid, "deleted", false);
+      if (existsDs(con)) {
+        apim.purgeDatastream(pid, dsId, null, "deleted", false);
 
         if (log.isDebugEnabled())
-          log.debug("Purged " + blobId + " at " + pid + "/" + dsId);
+          log.debug("Purged Datastream " + blobId + " at " + pid + "/" + dsId);
+
+        if (canPurgeObject(con)) {
+          apim.purgeObject(pid, "deleted", false);
+
+          if (log.isDebugEnabled())
+            log.debug("Purged Object " + blobId + " at " + pid + "/" + dsId);
+        }
       }
     } catch (Exception e) {
       throw new OtmException("Purge failed", e);
