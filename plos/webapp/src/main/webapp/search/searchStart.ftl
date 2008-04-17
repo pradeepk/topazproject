@@ -65,7 +65,7 @@
         <legend><span>Search by Author</span></legend>
         <ol id="as_ol_an">
           <li>
-	          <@s.url id="searchHelpURL" includeParams="none" namespace="/static" action="searchHelp" />
+            <@s.url id="searchHelpURL" includeParams="none" namespace="/static" action="searchHelp" />
             <label id="lblAuthorName" for="authorName">Author Name (<a href="${searchHelpURL}">help</a>): </label>
             <span id="as_anp"><input id="authorName" type="text" name="creator" size="35" value="${creatorStr}"/>
             <span class="controls"><span id="as_spn_ra" style="display:none;"><a id="as_a_ra" href="#" onclick="topaz.advsearch.onClickRmvAuthNameHandler(event); return false;">Remove</a><span id="as_a_spcr">&nbsp;|&nbsp;</span></span><a id="as_a_aa" href="#" onclick="topaz.advsearch.onClickAddAuthNameHandler(event); return false;">Add another author...</a></span></span>
@@ -155,7 +155,7 @@
       <fieldset id="subjCats">
         <legend><span>Subject Categories</span></legend>
         <ol>
-          <li><label><input id="subjectCatOpt_all" type="radio" name="subjectCatOpt" value="all" <@chkd tstr="all" str=(subjectCatOpt!"")/> /> Search all subject catogories</label></li>
+          <li><label><input id="subjectCatOpt_all" type="radio" checked="checked" name="subjectCatOpt" value="all" <@chkd tstr="all" str=(subjectCatOpt!"")/> /> Search all subject catogories</label></li>
           <li class="options">
             <fieldset id="fsSubjectCatOpt">
               <legend><label><input id="subjectCatOpt_slct" type="radio" name="subjectCatOpt" value="some" <@chkd tstr="some" str=(subjectCatOpt!"")/> /> Only search in the following subject categories:</label></legend>
@@ -166,8 +166,7 @@
 <#list categoryInfos?keys as category>
 <#if (category_index + 1) lte colSize>
 <#assign categoryId = category?replace("\\s|\'","","r")>
-<@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
-                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${categoryId}" type="checkbox" <@chkdlist tstr=categoryId strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
+                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${category}" type="checkbox" <@chkdlist tstr=category strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
 </#if>
 </#list>
               </ul>
@@ -175,8 +174,7 @@
 <#list categoryInfos?keys as category>
 <#if (category_index + 1) gt colSize>
 <#assign categoryId = category?replace("\\s|\'","","r")>
-<@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
-                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${categoryId}" type="checkbox" <@chkdlist tstr=categoryId strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
+                <li><input id="limitToCategory_${categoryId}" name="limitToCategory" value="${category}" type="checkbox" <@chkdlist tstr=category strlist=(limitToCategory![])/>/>&nbsp;<label for="limitToCategory_${categoryId}">${category} (${categoryInfos[category]})</label></li>
 </#if>
 </#list>
               </ul>
