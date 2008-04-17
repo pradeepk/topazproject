@@ -53,7 +53,7 @@
     </virtualJournals>
     <spring>
       <!-- must match the name of a bean in the applicationContext.xml -->
-      <blobStore>simpleBlobStore</blobStore>
+      <!-- blobStore>simpleBlobStore</blobStore -->
    </spring>
   </pub>
   <dummy>
