@@ -130,6 +130,19 @@ public class Ingester {
     tFactory = new TransformerFactoryImpl();
     tFactory.setURIResolver(new URLResolver());
     tFactory.setAttribute("http://saxon.sf.net/feature/version-warning", Boolean.FALSE);
+    tFactory.setErrorListener(new ErrorListener() {
+      public void warning(TransformerException te) {
+        log.warn("Warning received while processing a stylesheet", te);
+      }
+
+      public void error(TransformerException te) {
+        log.warn("Error received while processing a stylesheet", te);
+      }
+
+      public void fatalError(TransformerException te) {
+        log.warn("Fatal error received while processing a stylesheet", te);
+      }
+    });
   }
 
   /**

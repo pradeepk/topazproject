@@ -19,8 +19,10 @@
 package org.plos.article.service;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.plos.models.ObjectInfo;
+import org.plos.models.Representation;
 
 /**
  * Wrapper around topaz's ObjectInfo.
@@ -81,8 +83,8 @@ public class SecondaryObject implements Serializable {
   /**
    * @see ObjectInfo#getRepresentations()
    */
-  public RepresentationInfo[] getRepresentations() {
-    return RepresentationInfo.parseObjectInfo(objectInfo);
+  public Set<Representation> getRepresentations() {
+    return objectInfo.getRepresentations();
   }
 
   /**

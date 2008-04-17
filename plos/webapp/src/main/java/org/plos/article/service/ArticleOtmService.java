@@ -56,9 +56,11 @@ import org.plos.models.Citation;
 import org.plos.models.DublinCore;
 import org.plos.models.License;
 import org.plos.models.ObjectInfo;
+import org.plos.models.Representation;
 import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
 import org.plos.util.CacheAdminHelper;
+import org.plos.bootstrap.migration.Migrator;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -110,6 +112,10 @@ public class ArticleOtmService {
       new Zip.DataSourceZip(
         new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
                                           8192, "application/octet-stream", true)));
+
+    // XXX: Temporary hack till #439 is fixed
+    Migrator migrator = new Migrator();
+    migrator.migrateReps(session);
 
     // notify journal service of new article
     jrnlSvc.objectWasAdded(URI.create(ret));
@@ -639,8 +645,8 @@ public class ArticleOtmService {
    * @throws RemoteException if some other error occured
    * @throws NullPointerException if any of the parameters are null
    */
-  public void setRepresentation(final String objId, final String rep, final DataHandler content)
-      throws NoSuchObjectIdException, RemoteException {
+  public void setRepresentation(final String objId, final String rep, final byte[] content, 
+      String contentType) throws NoSuchObjectIdException, RemoteException {
     pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
 
     // get the object info
@@ -648,26 +654,18 @@ public class ArticleOtmService {
     if (obj == null)
       throw new NoSuchObjectIdException(objId);
 
-    String ct = content.getContentType();
-    if (ct == null)
-      ct = "application/octet-stream";
+    Representation r = obj.getRepresentation(rep);
+    if (r == null) {
+      r = new Representation(obj, rep);
+      obj.getRepresentations().add(r);
+    }
 
-    // update fedora
-    long len = ArticleUtil.setDatastream(obj.getPid(), rep, ct, content);
+    if (contentType == null)
+      contentType = "application/octet-stream";
 
-    // update the rdf
-    obj.getRepresentations().add(rep);
-
-    obj.getData().put("topaz:" + rep + "-contentType", toList(ct));
-    obj.getData().put("topaz:" + rep + "-objectSize", toList(Long.toString(len)));
-
-    session.saveOrUpdate(obj);
-  }
-
-  private static <T> List<T> toList(T item) {
-    List<T> res = new ArrayList<T>();
-    res.add(item);
-    return res;
+    r.setContentType(contentType);
+    r.setSize(content.length);
+    r.setBody(content);
   }
 
   /**

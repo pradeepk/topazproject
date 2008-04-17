@@ -21,12 +21,9 @@ package org.plos.admin.service;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -46,7 +43,6 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.servlet.ServletContext;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Source;
@@ -74,7 +70,7 @@ import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.plos.models.ObjectInfo;
-import org.plos.article.service.RepresentationInfo;
+import org.plos.models.Representation;
 import org.plos.article.util.ArticleDeleteException;
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.DuplicateArticleIdException;
@@ -416,10 +412,9 @@ public class DocumentManagementService {
   }
 
   private void resizeImages(String uri, ImageSetConfig imageSetConfig) throws NoSuchArticleIdException, NoSuchObjectIdException,
-                                               ImageResizeException, ImageStorageServiceException,
+                                               ImageResizeException,
                                                HttpException, IOException {
     ImageResizeService irs;
-    ImageStorageService iss;
 
     SecondaryObject[] objects = articleOtmService.listSecondaryObjects(uri);
     SecondaryObject object = null;
@@ -437,77 +432,72 @@ public class DocumentManagementService {
       String context = info.getContextElement();
       if (context != null) {
         context = context.trim();
-        iss = new ImageStorageService();
         if (context.equalsIgnoreCase("fig")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
+          Representation rep = object.getRepresentations().iterator().next();
 
           if (log.isDebugEnabled()) {
-            log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
+            log.debug("Found image to resize: " + rep.getId() + " repsize-" + rep.getSize());
           }
 
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
-              new PngDataSource(irs.getSmallScaledImage(originalBytes))));
+          final byte[] originalBytes = rep.getBody();
+          articleOtmService.setRepresentation(object.getUri(), "PNG_S", 
+              irs.getSmallScaledImage(originalBytes), "image/png");
           if (log.isDebugEnabled()) {
             log.debug("Set small image for " + object.getUri());
           }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
-              new PngDataSource(irs.getMediumScaledImage(originalBytes))));
+          articleOtmService.setRepresentation(object.getUri(), "PNG_M",
+              irs.getMediumScaledImage(originalBytes), "image/png");
           if (log.isDebugEnabled()) {
             log.debug("Set medium image for " + object.getUri());
           }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
+          articleOtmService.setRepresentation(object.getUri(), "PNG_L",
+              irs.getLargeScaledImage(originalBytes), "image/png");
           if (log.isDebugEnabled()) {
             log.debug("Set large image for " + object.getUri());
           }
         } else if (context.equalsIgnoreCase("table-wrap")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
+          Representation rep = object.getRepresentations().iterator().next();
 
           if (log.isDebugEnabled()) {
-            log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
+            log.debug("Found image to resize: " + rep.getId() + " repsize-" + rep.getSize());
           }
 
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
-              new PngDataSource(irs.getSmallScaledImage(originalBytes))));
+          final byte[] originalBytes = rep.getBody();
+          articleOtmService.setRepresentation(object.getUri(), "PNG_S", 
+              irs.getSmallScaledImage(originalBytes), "image/png");
           if (log.isDebugEnabled()) {
             log.debug("Set small image for " + object.getUri());
           }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
-              new PngDataSource(irs.getMediumScaledImage(originalBytes))));
+          articleOtmService.setRepresentation(object.getUri(), "PNG_M",
+              irs.getMediumScaledImage(originalBytes), "image/png");
           if (log.isDebugEnabled()) {
             log.debug("Set medium image for " + object.getUri());
           }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
+          articleOtmService.setRepresentation(object.getUri(), "PNG_L",
+              irs.getLargeScaledImage(originalBytes), "image/png");
           if (log.isDebugEnabled()) {
             log.debug("Set large image for " + object.getUri());
           }
         } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
+          Representation rep = object.getRepresentations().iterator().next();
 
           if (log.isDebugEnabled()) {
-            log.debug("Found image to resize for disp-forumla: " + rep.getURL());
+            log.debug("Found image to resize for disp-forumla: " + rep.getId());
           }
 
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
+          final byte[] originalBytes = rep.getBody();
+          articleOtmService.setRepresentation(object.getUri(), "PNG",
+              irs.getLargeScaledImage(originalBytes), "image/png");
         } else if (context.equals("inline-formula")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
+          Representation rep = object.getRepresentations().iterator().next();
 
           if (log.isDebugEnabled()) {
-            log.debug("Found image to resize for inline formula: " + rep.getURL());
+            log.debug("Found image to resize for inline formula: " + rep.getId());
           }
 
-          iss.captureImage(new URL(rep.getURL()));
-          final byte[] originalBytes = iss.getBytes();
-          articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
+          final byte[] originalBytes = rep.getBody();
+          articleOtmService.setRepresentation(object.getUri(), "PNG",
+              irs.getLargeScaledImage(originalBytes), "image/png");
         }
         // Don't continue trying to process images if one of them failed
         /*
@@ -689,40 +679,6 @@ public class DocumentManagementService {
     browseService.notifyArticlesAdded(uris);
 
     return msgs;
-  }
-
-  private static class PngDataSource implements DataSource {
-    private final byte[] src;
-
-    private final String ct;
-
-    public PngDataSource(byte[] content) {
-      this(content, "image/png");
-    }
-
-    public PngDataSource(byte[] content, String contType) {
-      src = content;
-      ct = contType;
-      if (log.isDebugEnabled()) {
-        log.debug("PngDataSource type=" + ct + " size=" + content.length);
-      }
-    }
-
-    public InputStream getInputStream() throws IOException {
-      return new ByteArrayInputStream(src);
-    }
-
-    public OutputStream getOutputStream() throws IOException {
-      throw new IOException("Not supported");
-    }
-
-    public String getContentType() {
-      return ct;
-    }
-
-    public String getName() {
-      return "png";
-    }
   }
 
   /**

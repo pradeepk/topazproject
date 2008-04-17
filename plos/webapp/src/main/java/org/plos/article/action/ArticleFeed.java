@@ -50,6 +50,7 @@ import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.models.Citation;
 import org.plos.models.DublinCore;
+import org.plos.models.Representation;
 import org.plos.models.UserProfile;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.FileUtils;
@@ -353,14 +354,14 @@ public class ArticleFeed extends BaseActionSupport {
       altLinks.add(entrySelf);
 
       // alternative representation links
-      Set<String> representations = article.getRepresentations();
+      Set<Representation> representations = article.getRepresentations();
       if (representations != null) {
-        for (String representation : representations) {
+        for (Representation representation : representations) {
           Link altLink = new Link();
-          altLink.setHref(xmlBase + fetchObjectAttachmentAction + "?uri=" + dc.getIdentifier() + "&representation=" + representation);
+          altLink.setHref(xmlBase + fetchObjectAttachmentAction + "?uri=" + dc.getIdentifier() + "&representation=" + representation.getName());
           altLink.setRel("related");
-          altLink.setTitle("(" + representation + ") " + dc.getTitle());
-          altLink.setType(FileUtils.getContentType(representation));
+          altLink.setTitle("(" + representation.getName() + ") " + dc.getTitle());
+          altLink.setType(FileUtils.getContentType(representation.getName()));
           altLinks.add(altLink);
         }
       }

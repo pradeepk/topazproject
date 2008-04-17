@@ -20,9 +20,6 @@ package org.plos.models;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -31,7 +28,6 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.PredicateMap;
 
 /**
  * Model for the generic PLoS object. This is the base class for any PLoS
@@ -65,7 +61,7 @@ public class ObjectInfo implements Serializable {
 
   // PDF, TIF, PNG_S, DOC, ....
   @Predicate(uri = Rdf.topaz + "hasRepresentation")
-  private Set<String> representations = new HashSet<String>();
+  private Set<Representation> representations = new HashSet<Representation>();
 
   @Predicate(uri = Rdf.topaz + "contextElement")
   private String contextElement;
@@ -74,18 +70,6 @@ public class ObjectInfo implements Serializable {
   private String eIssn;
 
   private static final long serialVersionUID = 4074534426473235595L;
-  /**
-   * There is a convention for two dynamic predicates:
-   * <ul>
-   *  <li>&lt;topaz:<em>content-type</em>-contentType&gt;
-   *  <li>&lt;topaz:<em>content-type</em>-objectSize&gt;
-   * </ul>
-   *
-   * So the data map should have two entries. One for the contentType and one
-   * for the objectSize.
-   */
-  @PredicateMap
-  private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
   /**
    * Return the context for the object
@@ -103,24 +87,6 @@ public class ObjectInfo implements Serializable {
    */
   public void setContextElement(String contextElement) {
     this.contextElement = contextElement;
-  }
-
-  /**
-   * Return the data
-   *
-   * @return the data
-   */
-  public Map<String, List<String>> getData() {
-    return data;
-  }
-
-  /**
-   * Set the data
-   *
-   * @param data the data to set
-   */
-  public void setData(Map<String, List<String>> data) {
-    this.data = data;
   }
 
   /**
@@ -196,7 +162,7 @@ public class ObjectInfo implements Serializable {
    *
    * @return the representations
    */
-  public Set<String> getRepresentations() {
+  public Set<Representation> getRepresentations() {
     return representations;
   }
 
@@ -205,8 +171,26 @@ public class ObjectInfo implements Serializable {
    *
    * @param representations the representations to set
    */
-  public void setRepresentations(Set<String> representations) {
+  public void setRepresentations(Set<Representation> representations) {
     this.representations = representations;
+  }
+
+  /**
+   * Gets the representation that matches the given name.
+   *
+   * @param name the name of this representation (PDF, XML, ...)
+   *
+   * @return matching representation or null
+   */
+  public Representation getRepresentation(String name) {
+    if (representations == null)
+      return null;
+
+    for (Representation rep : representations)
+      if (name.equals(rep.getName()))
+        return rep;
+
+    return null;
   }
 
   /**

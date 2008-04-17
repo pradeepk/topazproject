@@ -18,6 +18,8 @@
  */
 package org.plos.article.action;
 
+import java.util.Set;
+
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -25,14 +27,13 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.article.service.RepresentationInfo;
 import org.plos.models.ObjectInfo;
+import org.plos.models.Representation;
 import org.plos.util.FileUtils;
 
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * Fetch the object for a given uri
@@ -58,8 +59,21 @@ public class FetchObjectAction extends BaseActionSupport {
       return INPUT;
     }
 
-    final String objectURL = articleOtmService.getObjectURL(uri, representation);
-    setOutputStreamAndAttributes(objectURL);
+    final ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
+
+    if (null == objectInfo) {
+      addActionMessage("No object found for uri: " + uri);
+      return ERROR;
+    }
+
+    Representation rep = objectInfo.getRepresentation(representation);
+
+    if (null == rep) {
+      addActionMessage("No such representation '" + representation + "' for uri: " + uri);
+      return ERROR;
+    }
+
+    setOutputStreamAndAttributes(rep);
     return SUCCESS;
   }
 
@@ -71,25 +85,26 @@ public class FetchObjectAction extends BaseActionSupport {
   public String fetchFirstObject() throws Exception {
     final ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
 
-    if (null == objectInfo) return ERROR;
-
-    final RepresentationInfo[] representations = RepresentationInfo.parseObjectInfo(objectInfo);
-    if (representations.length == 0) {
-      addActionMessage("No representations found");
-      log.error("No representation found for the uri:" + uri);
+    if (null == objectInfo) {
+      addActionMessage("No object found for uri: " + uri);
       return ERROR;
     }
 
-    final RepresentationInfo firstRep = representations[0];
-    final String objectUrl = firstRep.getURL();
-    setOutputStreamAndAttributes(objectUrl);
+    final Set<Representation> representations = objectInfo.getRepresentations();
+    if ((representations == null) || representations.isEmpty()) {
+      addActionMessage("No representations found for uri: " + uri);
+      return ERROR;
+    }
+
+    setOutputStreamAndAttributes(representations.iterator().next());
     return SUCCESS;
   }
 
-  private void setOutputStreamAndAttributes(final String objectUrl) throws IOException {
-    final URLConnection urlConnection = new URL(objectUrl).openConnection();
-    inputStream = urlConnection.getInputStream();
-    contentType = urlConnection.getContentType();
+  private void setOutputStreamAndAttributes(final Representation rep) throws IOException {
+    inputStream = new ByteArrayInputStream(rep.getBody());
+    contentType = rep.getContentType();
+    if (contentType == null)
+      contentType = "application/octet-stream";
     final String fileExt = getFileExtension(contentType);
     contentDisposition = getContentDisposition(fileExt);
   }

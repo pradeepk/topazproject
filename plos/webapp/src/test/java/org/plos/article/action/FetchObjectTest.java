@@ -27,6 +27,7 @@ import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.SecondaryObject;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.models.ObjectInfo;
+import org.plos.models.Representation;
 
 import java.net.URL;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     deleteAndIngestArticle(resourceToIngest, uri);
 
     final ObjectInfo oi = service.getObjectInfo(uri);
-    final Set<String> ri = oi.getRepresentations();
+    final Set<Representation> ri = oi.getRepresentations();
     assertEquals(2, ri.size());
 
     final FetchObjectAction fetchObjectAction = getFetchObjectAction();
@@ -55,7 +56,7 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     final SecondaryObject[] so = service.listSecondaryObjects(uri);
     assertEquals(8, so.length);
 
-    final Set<String> riForG001 = service.getObjectInfo(uri + ".g001").getRepresentations();
+    final Set<Representation> riForG001 = service.getObjectInfo(uri + ".g001").getRepresentations();
     assertEquals(1, riForG001.size());
   }
 
