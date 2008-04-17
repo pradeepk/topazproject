@@ -18,6 +18,7 @@
  */
 package org.plos.search.action;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,7 +48,9 @@ import org.plos.web.VirtualJournalContext;
 @SuppressWarnings("serial")
 public class SearchAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(SearchAction.class);
-  
+
+  private static final DateFormat luceneDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
   private String query;
   private int startPage = 0;
   private int pageSize = 10;
@@ -57,12 +60,12 @@ public class SearchAction extends BaseActionSupport {
   private Collection<SearchHit> searchResults;
   private int totalNoOfResults;
   Map<String, Integer> categoryInfos = new HashMap<String, Integer>(); // empty map for non-null safety
-  
+
   /**
-   * Flag telling this action whether or not the search should be executed. 
+   * Flag telling this action whether or not the search should be executed.
    */
   private String noSearchFlag;
-  
+
   //private String title;
   //private String text;
   //private String description;
@@ -104,7 +107,7 @@ public class SearchAction extends BaseActionSupport {
     categoryInfos = browseService.getCategoryInfos();
     return INPUT;
   }
-  
+
   private String executeSearch(final String queryString) {
     try {
       if (StringUtils.isBlank(queryString)) {
@@ -112,7 +115,7 @@ public class SearchAction extends BaseActionSupport {
         categoryInfos = browseService.getCategoryInfos();
         return INPUT;
       }
-      
+
       // TODO: use real Filters for Journal filtering
       final VirtualJournalContext journalContext =
               (VirtualJournalContext)ServletActionContext.getRequest()
@@ -152,7 +155,7 @@ public class SearchAction extends BaseActionSupport {
     }
   }
   */
-  
+
   private String buildAdvancedQuery() {
     final Collection<String> fields = new ArrayList<String>();
 
@@ -181,9 +184,9 @@ public class SearchAction extends BaseActionSupport {
       buf.append(" ))");
       fields.add(buf.toString());
     }
-    
-    // Build Search Article Text section of advanced search. 
-    
+
+    // Build Search Article Text section of advanced search.
+
     String textSearchField = null;
     if (StringUtils.isNotBlank(textSearchOption)) {
       if ("abstract".equals(textSearchOption)) {
@@ -196,7 +199,7 @@ public class SearchAction extends BaseActionSupport {
         textSearchField = "title:";
       }
     }
-    // All words field should be in parenthesis with AND between each word. 
+    // All words field should be in parenthesis with AND between each word.
     if (StringUtils.isNotBlank(textSearchAll)) {
       String[] words = StringUtils.split(textSearchAll);
       StringBuffer buf = new StringBuffer();
@@ -213,7 +216,7 @@ public class SearchAction extends BaseActionSupport {
       buf.append(" )");
       fields.add(buf.toString());
     }
-    
+
     // Exact phrase should be placed in quotes
     if (StringUtils.isNotBlank(textSearchExactPhrase)) {
       StringBuffer buf = new StringBuffer();
@@ -225,7 +228,7 @@ public class SearchAction extends BaseActionSupport {
       buf.append("\")");
       fields.add(buf.toString());
     }
-    
+
     // At least one of should be placed in parenthesis separated by spaced (OR'ed)
     if (StringUtils.isNotBlank(textSearchAtLeastOne)) {
       StringBuffer buf = new StringBuffer();
@@ -237,11 +240,11 @@ public class SearchAction extends BaseActionSupport {
       buf.append(" )");
       fields.add(buf.toString());
     }
-    
+
     // Without the words - in parenthesis with NOT operator and AND'ed together
     // E.g. (-"the" AND -"fat" AND -"cat")
     if (StringUtils.isNotBlank(textSearchWithout)) {
-      // TODO - we might want to allow the entry of phrases to omit (entered using quotes?) 
+      // TODO - we might want to allow the entry of phrases to omit (entered using quotes?)
       // - in which case we have to be smarter about how we split...
       String[] words = StringUtils.split(textSearchWithout);
       StringBuffer buf = new StringBuffer();
@@ -260,37 +263,42 @@ public class SearchAction extends BaseActionSupport {
       buf.append(" )");
       fields.add(buf.toString());
     }
-    
+
     if (StringUtils.isNotBlank(dateTypeSelect)) {
       if ("range".equals(dateTypeSelect)) {
-        if (isDigit(startYear)&& isDigit(startMonth) && isDigit(startDay) && 
+        if (isDigit(startYear)&& isDigit(startMonth) && isDigit(startDay) &&
             isDigit(endYear) && isDigit(endMonth) && isDigit(endDay)) {
           StringBuffer buf = new StringBuffer("date:[");
-          buf.append(startYear).append(startMonth).append(startDay);
+          buf.append(padDatePart(startYear, true)).append('-').append(padDatePart(startMonth, false)).append('-').append(padDatePart(startDay, false));
           buf.append(" TO ");
-          buf.append(endYear).append(endMonth).append(endDay);
+          buf.append(padDatePart(endYear, true)).append('-').append(padDatePart(endMonth, false)).append('-').append(padDatePart(endDay, false));
           buf.append("]");
           fields.add(buf.toString());
         }
       } else {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        String endDateStr = sdf.format(new Date());
         Calendar cal = new GregorianCalendar();
         if ("week".equals(dateTypeSelect)) {
           cal.add(Calendar.DATE, -7);
-        } else if ("month".equals(dateTypeSelect)) {
+        }
+        if ("month".equals(dateTypeSelect)) {
           cal.add(Calendar.MONTH, -1);
-        } else if ("3months".equals(dateTypeSelect)) {
+        }
+        if ("3months".equals(dateTypeSelect)) {
           cal.add(Calendar.MONTH, -3);
         }
-        String startDateStr = sdf.format(cal.getTime());
-        
+
+        String startDateStr, endDateStr;
+        synchronized(luceneDateFormat) {
+          endDateStr = luceneDateFormat.format(new Date());
+          startDateStr = luceneDateFormat.format(cal.getTime());
+        }
+
         StringBuffer buf = new StringBuffer("date:[");
         buf.append(startDateStr).append(" TO ").append(endDateStr).append("]");
         fields.add(buf.toString());
       }
     }
-    
+
     if ("some".equals(subjectCatOpt)) {
       if ((limitToCategory != null) && (limitToCategory.length > 0)) {
         StringBuffer buf = new StringBuffer("subject:( " );
@@ -301,14 +309,24 @@ public class SearchAction extends BaseActionSupport {
         fields.add(buf.toString());
       }
     }
-    
+
     String advSearchQueryStr = StringUtils.join(fields.iterator(), " AND ");
     if (log.isDebugEnabled()) {
       log.debug("Generated advanced search query: "+advSearchQueryStr);
     }
     return StringUtils.join(fields.iterator(), " AND ");
   }
-  
+
+  private String padDatePart(String datePart, boolean isYear) {
+    assert datePart != null;
+    if(isYear) {
+      // presume we have a valid 4-digit year
+      return datePart;
+    }
+    // month or day date part: ensure left padding w/ 0 digit for lucene date format compliance
+    return StringUtils.leftPad(datePart, 2, '0');
+  }
+
   /**
    * Static helper method to escape special characters in a Lucene search string with a \
    */
@@ -323,7 +341,7 @@ public class SearchAction extends BaseActionSupport {
     }
     return buf.toString();
   }
-  
+
   protected boolean isDigit(String str) {
     if (str == null) return false;
     for (int i=0; i < str.length(); i++) {
@@ -333,7 +351,7 @@ public class SearchAction extends BaseActionSupport {
     }
     return true;
   }
-  
+
   /**
    * Set the simple query
    * @param query query
@@ -373,7 +391,7 @@ public class SearchAction extends BaseActionSupport {
   public void setBrowseService(final BrowseService browseService) {
     this.browseService = browseService;
   }
-  
+
   /**
    * @return the search results.
    */
@@ -529,7 +547,7 @@ public class SearchAction extends BaseActionSupport {
   public String[] getCreator() {
     return creator;
   }
-  
+
   /**
    * @return The {@link #creator} array as a single comma delimited String.
    */
@@ -542,12 +560,12 @@ public class SearchAction extends BaseActionSupport {
     }
     return sb.toString().substring(1);
   }
-  
+
   /**
-   * Converts a String array whose first element may be a comma delimited String 
+   * Converts a String array whose first element may be a comma delimited String
    * into a new String array whose elements are the split comma delimited elements.
    * @param arr String array that may contain one or more elements having a comma delimited String.
-   * @return Rectified String[] array or 
+   * @return Rectified String[] array or
    *         <code>null</code> when the given String array is <code>null</code>.
    */
   private String[] rectify(String[] arr) {
