@@ -47,7 +47,7 @@ import org.plos.article.service.CitationInfo;
   ${author.surname} <#if author.suffix?exists>${author.suffix}</#if> <#list allNames as n>${n[0]}</#list><#if author_has_next>,</#if>
 </#list>
 <#if gt5>et al.</#if>
-(${citation.publicationDate?string("yyyy")}) ${citation.articleTitle}. ${citation.journalTitle} 
+(${citation.publicationDate?string("yyyy")}) ${citation.articleTitle}. ${citation.journalTitle}
 ${citation.volume}(${citation.issue}): ${citation.startPage} doi:${citation.DOI}
 */
 
@@ -56,78 +56,70 @@ ${citation.volume}(${citation.issue}): ${citation.startPage} doi:${citation.DOI}
  * @author jkirton
  */
 public abstract class CitationUtils {
-  
+
   private static final int MAX_AUTHORS_TO_DISPLAY = 5;
 
   /**
    * Date format used in citation strings.
    */
   private static final DateFormat dateFormat = new SimpleDateFormat("yyyy");
-  
+
   /**
    * Appends to the given {@link StringBuffer} the article authors in a prescribed format.
    * @param ci CitationInfo
    * @param sb StringBuffer to which the authors String is appended
-   * @param initializeGivenNames
+   * @param correction Is this for an article correction citation?
    */
-  private static void handleAuthors(CitationInfo ci, StringBuffer sb, boolean initializeGivenNames) {
+  private static void handleAuthors(CitationInfo ci, StringBuffer sb, boolean correction) {
     // obtain a list of all author names
     Author[] authors = ci.getAuthors();
     if(authors != null) {
       int i = 0;
       for(Author a : authors) {
-        
+
         sb.append(a.getSurname());
         sb.append(' ');
-        
+
         if(a.getSuffix() != null) {
           sb.append(a.getSuffix());
           sb.append(' ');
         }
-        
+
         String gns = a.getGivenNames();
         if(gns != null) {
+          // for formal corrections, we want the initial of the last given name followed by a period (.)
+          // whereas for article citations, we want each the initial of each given name concatenated with no periods
           String[] givenNames = gns.split(" ");
+          int gnc = 0;
           for(String gn :givenNames) {
-            if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
-              String[] sarr = gn.split("\\p{Pd}");
-              String fistGivenName  = sarr[0];
-              if(initializeGivenNames) {
-                sb.append(fistGivenName.charAt(0));
-                sb.append('.');
+            if((correction && gnc++ == givenNames.length - 1) || !correction) {
+              if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
+                String[] sarr = gn.split("\\p{Pd}");
+                sb.append(sarr[0].charAt(0));
               }
               else {
-                sb.append(fistGivenName);
-              }
-            }
-            else {
-              if(initializeGivenNames) {
                 sb.append(gn.charAt(0));
-                sb.append('.');
               }
-              else {
-                sb.append(gn);
-              }
-              break;
+              if(correction) sb.append('.');
             }
           }
         }
-      
+
         if(i < authors.length - 1) sb.append(", ");
-        
+
         if(++i == MAX_AUTHORS_TO_DISPLAY) {
           break;
         }
-        
+
       }//authors
-      
+
       if(authors.length > MAX_AUTHORS_TO_DISPLAY) {
         sb.append(" et al.");
       }
       sb.append(' ');
     }
   }
-  
+
   /**
    * Generates the citation string.
    * @param ci The {@link CitationInfo}
@@ -136,42 +128,42 @@ public abstract class CitationUtils {
    */
   public static String generateArticleCitationString(CitationInfo ci) {
     if(ci == null) return null;
-    
+
     StringBuffer sb = new StringBuffer(1024);
-    
-    handleAuthors(ci, sb, true);
-    
+
+    handleAuthors(ci, sb, false);
+
     // publication date
     synchronized(dateFormat) {
       sb.append(dateFormat.format(ci.getPublicationDate()));
     }
     sb.append(' ');
-    
+
     // article title
     sb.append(ci.getArticleTitle());
     sb.append(". ");
-    
+
     // journal title
     sb.append(ci.getJournalTitle());
     sb.append(" ");
-    
+
     // volume
     sb.append(ci.getVolume());
-    
+
     // issue
     sb.append('(');
     sb.append(ci.getIssue());
     sb.append(')');
-    
+
     // start page
     sb.append(": ");
     sb.append(ci.getStartPage());
     sb.append(' ');
-    
+
     // doi
     sb.append("doi:");
     sb.append(ci.getDOI());
-    
+
     return sb.toString();
   }
 
@@ -184,7 +176,7 @@ public abstract class CitationUtils {
    * {first five authors of the article}, et al. (<Year the annotation was
    * created>) Correction: {article title}. {journal abbreviated name}
    * {annotation URL}
-   * 
+   *
    * @param ci The {@link CitationInfo} pertaining to the article.
    * @param wa The {@link WebAnnotation}.
    * @return A newly created article annotation citation String.
@@ -196,7 +188,7 @@ public abstract class CitationUtils {
     assert wa != null;
 
     StringBuffer sb = new StringBuffer(1024);
-    
+
     // authors
     handleAuthors(ci, sb, true);
 
@@ -216,7 +208,7 @@ public abstract class CitationUtils {
     // journal title
     sb.append(ci.getJournalTitle());
     sb.append(": ");
-    
+
     // annotation URI
     sb.append("http://dx.plos.org");
     sb.append(StringUtils.replace(wa.getId(), "info:doi", ""));
