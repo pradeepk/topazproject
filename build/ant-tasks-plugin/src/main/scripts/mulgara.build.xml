@@ -55,11 +55,16 @@
       <isfalse value="${SPAWN}"/>
     </condition>
 
+    <condition property="logging" value="-l '${log4j.conf}'" else="">
+      <isset property="log4j.conf"/>
+    </condition>
+
     <echo message="Starting Mulgara..."/>
     <echo message="Using home    = ${home}"/>
     <echo message="Using jar     = ${mulgara-jar}"/>
     <echo message="Using port    = ${port}"/>
     <echo message="Using dbdir   = ${topaz.mulgara.databaseDir}"/>
+    <echo message="Using logging = ${logging}"/>
     <echo message="Use -Dtopaz.mulgara.databaseDir to specify specific DB"/>
     <echo message="Use -Dlog4j.configuration=file:///..location.. to specify log4j config"/>
 
@@ -76,6 +81,7 @@
       <arg value="30857"/>
       <arg value="-r"/>
       <arg value="${port}"/>
+      <arg line="${logging}"/>
       <syspropertyset>
         <propertyref prefix="topaz."/>
         <propertyref prefix="log4j."/>

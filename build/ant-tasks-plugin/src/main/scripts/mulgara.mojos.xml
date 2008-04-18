@@ -117,6 +117,14 @@
           <description>The jvm arguments to pass to java.</description>
         </parameter>
 
+        <parameter>
+          <name>log4j.conf</name>
+          <property>log4j.conf</property>
+          <required>false</required>
+          <expression>${log4j.configuration}</expression>
+          <description>The log4j configuration file to use.</description>
+        </parameter>
+
       </parameters>
     </mojo>
 
