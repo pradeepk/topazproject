@@ -287,7 +287,7 @@ public class AnnotationClassMetaFactory {
       int     mod      = field.getModifiers();
       boolean readOnly = cd instanceof ViewDefinition;
 
-      if (Modifier.isStatic(mod) || (!readOnly && Modifier.isTransient(mod)))
+      if (Modifier.isStatic(mod) || Modifier.isTransient(mod))
         return null;
 
       return new FieldInfo(cd, field);
