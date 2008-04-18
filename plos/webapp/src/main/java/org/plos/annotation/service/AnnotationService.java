@@ -47,7 +47,6 @@ import org.plos.models.MinorCorrection;
 import org.plos.models.Rating;
 import org.plos.models.Reply;
 import org.plos.permission.service.PermissionsService;
-import org.plos.rating.service.RatingInfo;
 import org.plos.rating.service.RatingsService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
@@ -236,7 +235,6 @@ public class AnnotationService {
    * @throws ApplicationException
    */
   public void unflagRating(final String ratingId) throws ApplicationException {
-
     ratingsService.unflagRating(ratingId);
   }
 
@@ -510,8 +508,7 @@ public class AnnotationService {
    * @return a list of flagged ratings
    * @throws ApplicationException
    */
-  public RatingInfo[] listFlaggedRatings() throws ApplicationException {
-
+  public Rating[] listFlaggedRatings() throws ApplicationException {
     return ratingsService.listRatings(null, FLAG_MASK | PUBLIC_MASK);
   }
 

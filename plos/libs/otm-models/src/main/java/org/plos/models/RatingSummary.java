@@ -18,6 +18,7 @@
  */
 package org.plos.models;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -31,7 +32,7 @@ import org.topazproject.otm.annotations.Predicate;
 public class RatingSummary extends Annotation {
   private static final long serialVersionUID = -8110763767878695617L;
 
-  @Predicate(uri = Annotea.W3C_NS + "body")
+  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager)
   private RatingSummaryContent body;
 
   /**

@@ -334,7 +334,7 @@ public class RatingsService {
    * @return an array of rating metadata; if no matching annotations are found, an empty array
    *         is returned
    */
-  public RatingInfo[] listRatings(final String mediator,final int state) {
+  public Rating[] listRatings(final String mediator,final int state) {
     Criteria c = session.createCriteria(Rating.class);
 
     if (mediator != null)
@@ -346,21 +346,7 @@ public class RatingsService {
       c.add(Restrictions.eq("state", "" + state));
     }
 
-    List<Rating> ratings = c.list();
-
-    // force a load of RatingContent while in a transaction,
-    // e.g. avoid lazy load OTM Exception downstream
-    final RatingInfo[] ratingInfos = new RatingInfo[ratings.size()];
-    int position = 0;
-    for (Rating rating : ratings) {
-      String title =rating.getBody().getCommentTitle();  // touch
-      ratingInfos[position++] = new RatingInfo(rating);
-      if (log.isDebugEnabled()) {
-        log.debug("adding to RatingInfo[]: " + rating.getBody().getCommentTitle());
-      }
-    }
-
-    return ratingInfos;
+    return (Rating[]) c.list().toArray(new Rating[0]);
   }
 
   /**

@@ -18,6 +18,7 @@
  */
 package org.plos.models;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -43,7 +44,7 @@ public class Rating extends Annotation {
   /** Single Rating */
   public static final String SINGLE_RATING_TYPE = Rdf.topaz + "SingleRating";
 
-  @Predicate(uri = Annotea.W3C_NS + "body")
+  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager)
   private RatingContent body;
 
   /**

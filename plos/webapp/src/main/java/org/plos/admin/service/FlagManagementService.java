@@ -34,10 +34,10 @@ import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyService;
-import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
 import org.plos.models.Annotation;
 import org.plos.models.Reply;
+import org.plos.models.Rating;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -65,11 +65,11 @@ public class FlagManagementService {
     Flag flags[] = null;
     String creatorUserName;
 
-    final RatingInfo[] ratingInfos = annotationService.listFlaggedRatings();
+    final Rating[] ratings = annotationService.listFlaggedRatings();
     annotations = articleAnnotationService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
     replies = replyService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
     if (log.isDebugEnabled()) {
-      log.debug("There are " + ratingInfos.length + " ratings with flags");
+      log.debug("There are " + ratings.length + " ratings with flags");
       log.debug("There are " + annotations.length + " annotations with flags");
       for (Annotation annotation : annotations) {
         log.debug("\t"+ annotation.toString());
@@ -77,22 +77,22 @@ public class FlagManagementService {
       log.debug("There are " + replies.length + " replies with flags");
     }
 
-    for (final RatingInfo ratingInfo : ratingInfos) {
-      flags = annotationService.listFlags(ratingInfo.getId());
+    for (final Rating rating : ratings) {
+      flags = annotationService.listFlags(rating.getId().toString());
       if (log.isDebugEnabled()) {
-        log.debug("There are " + flags.length + " flags on rating: " + ratingInfo.getId());
+        log.debug("There are " + flags.length + " flags on rating: " + rating.getId());
       }
 
       // if Rating is marked as flagged, and no flag Comments could be found, data issue?
       if (flags.length == 0) {
-        log.error("Rating " + ratingInfo.getId() + " is marked as flagged and no flag Comments exist.");
+        log.error("Rating " + rating.getId() + " is marked as flagged and no flag Comments exist.");
 
         // create a "dummy" record so it appears in admin interface
         FlaggedCommentRecord fcr =
           new FlaggedCommentRecord(
               "", // flag.getId(),
-              ratingInfo.getId(),
-              ratingInfo.getTitle(),
+              rating.getId().toString(),
+              rating.getBody().getCommentTitle(),
               "no Flag Comment exists, Rating indicates it is flagged, data issue?",
               "",
               "",
@@ -102,7 +102,7 @@ public class FlagManagementService {
               AnnotationService.WEB_TYPE_RATING);
         commentrecords.add(fcr);
 
-        // continue w/next RatingInfo
+        // continue w/next Rating
         continue;
       }
 
@@ -122,7 +122,7 @@ public class FlagManagementService {
           new FlaggedCommentRecord(
               flag.getId(),
               flag.getAnnotates(),
-              ratingInfo.getTitle(),
+              rating.getBody().getCommentTitle(),
               flag.getComment(),
               flag.getCreated(),
               creatorUserName,
