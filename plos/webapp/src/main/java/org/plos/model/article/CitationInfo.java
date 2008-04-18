@@ -1,5 +1,5 @@
 /* $HeadURL$
- * $Id$ 
+ * $Id$
  *
  * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
@@ -18,39 +18,26 @@
  */
 package org.plos.model.article;
 
-import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.plos.article.service.BrowseService;
+import org.plos.model.UserProfileInfo;
+import org.plos.models.PLoS;
+import org.topazproject.otm.CollectionType;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Projection;
-import org.topazproject.otm.annotations.SubView;
+import org.topazproject.otm.annotations.Predicate;
 
-@SubView()
-public class RelatedArticleInfo implements Serializable {
-  @Projection("rid")
-  public URI    uri;
-  @Projection("rtitle")
-  public String title;
+/**
+ * Just the list of authors.
+ */
+@Entity(type = PLoS.bibtex + "Entry", model = "ri")
+public class CitationInfo {
+  @Id
+  public URI id;
 
-  /**
-   * Get the article uri.
-   *
-   * @return the article uri.
-   */
-  public URI getUri() {
-    return uri;
-  }
-
-  /**
-   * Get the title.
-   *
-   * @return the title.
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  public String toString() {
-    return "RelatedArticleInfo[uri='" + uri + "', title='" + title + "']";
-  }
+  @Predicate(uri = PLoS.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
+  public List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();
 }

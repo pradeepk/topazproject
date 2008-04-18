@@ -1,5 +1,5 @@
 /* $HeadURL$
- * $Id$ 
+ * $Id$
  *
  * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
@@ -16,41 +16,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.model.article;
+package org.plos.model;
 
-import java.io.Serializable;
 import java.net.URI;
 
+import org.topazproject.otm.Rdf;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Projection;
-import org.topazproject.otm.annotations.SubView;
+import org.topazproject.otm.annotations.Predicate;
 
-@SubView()
-public class RelatedArticleInfo implements Serializable {
-  @Projection("rid")
-  public URI    uri;
-  @Projection("rtitle")
-  public String title;
+/**
+ * Just the full name.
+ */
+@Entity(type = Rdf.foaf + "Person", model = "profiles")
+public class UserProfileInfo {
+  @Id
+  public URI id;
 
-  /**
-   * Get the article uri.
-   *
-   * @return the article uri.
-   */
-  public URI getUri() {
-    return uri;
-  }
-
-  /**
-   * Get the title.
-   *
-   * @return the title.
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  public String toString() {
-    return "RelatedArticleInfo[uri='" + uri + "', title='" + title + "']";
-  }
+  @Predicate(uri = Rdf.foaf + "name")
+  public String realName;
 }

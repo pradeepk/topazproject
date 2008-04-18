@@ -42,25 +42,21 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
+import org.plos.model.UserProfileInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleType;
+import org.plos.model.article.CitationInfo;
 import org.plos.model.article.RelatedArticleInfo;
 import org.plos.model.article.Years;
 import org.plos.models.Article;
 import org.plos.models.Issue;
 import org.plos.models.Journal;
-import org.plos.models.PLoS;
 import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
 import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -654,39 +650,9 @@ public class BrowseService {
   }
 
   private ArticleInfo loadArticleInfo(final URI id) {
-    Results r = session.createQuery(
-        "select a.id, dc.date, dc.title, ci, " +
-        "(select a.articleType from Article aa), " +
-        "(select aa2.id, aa2.dublinCore.title from Article aa2 " +
-        "   where aa2 = a.relatedArticles.article) " +
-        "from Article a, BrowseService$CitationInfo ci " +
-        "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;").
-        setParameter("id", id).execute();
-
-    r.beforeFirst();
-    if (!r.next()) {
+    ArticleInfo ai =  session.get(ArticleInfo.class, id.toString());
+    if (ai == null)
       return null;
-    }
-
-    ArticleInfo ai = new ArticleInfo();
-    ai.setId(id);
-    ai.setDate(r.getLiteralAs(1, Date.class));
-    ai.setTitle(r.getString(2));
-
-    for (UserProfileInfo upi : ((CitationInfo) r.get(3)).authors) {
-      upi.hashCode(); // force load
-      ai.addAuthor(upi.realName);
-    }
-
-    Results sr = r.getSubQueryResults(4);
-    while (sr.next()) {
-      ai.getArticleTypes().add(ArticleType.getArticleTypeForURI(sr.getURI(0), true));
-    }
-
-    sr = r.getSubQueryResults(5);
-    while (sr.next()) {
-      ai.addRelatedArticle(new RelatedArticleInfo(sr.getURI(0), sr.getString(1)));
-    }
 
     if (log.isDebugEnabled()) {
       log.debug("loaded ArticleInfo: id='" + ai.getId() +
@@ -854,30 +820,6 @@ public class BrowseService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
-  }
-
-  /**
-   * Just the list of authors.
-   */
-  @Entity(type = PLoS.bibtex + "Entry", model = "ri")
-  public static class CitationInfo {
-    @Id
-    public URI id;
-
-    @Predicate(uri = PLoS.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
-    public List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();
-  }
-
-  /**
-   * Just the full name.
-   */
-  @Entity(type = Rdf.foaf + "Person", model = "profiles")
-  public static class UserProfileInfo {
-    @Id
-    public URI id;
-
-    @Predicate(uri = Rdf.foaf + "name")
-    public String realName;
   }
 
   /**

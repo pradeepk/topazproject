@@ -26,18 +26,38 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.plos.model.UserProfileInfo;
+
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Projection;
+import org.topazproject.otm.annotations.View;
 
 /**
  * The info about a single article that the UI needs.
  */
+@View(query=
+        "select a.id id, dc.date date, dc.title title, ci, " +
+        "(select a.articleType from Article aa) at, " +
+        "(select aa2.id rid, aa2.dublinCore.title rtitle from Article aa2 " +
+        "   where aa2 = a.relatedArticles.article) relatedArticles " +
+        "from Article a, CitationInfo ci " +
+        "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;")
 public class ArticleInfo implements Serializable {
+  @Id
   public URI                     id;
-  public Set<ArticleType>        articleTypes = new HashSet<ArticleType>();
+  @Projection("date")
   public Date                    date;
+  @Projection("title")
   private String                 title;
-  public List<String>            authors = new ArrayList<String>();
+  @Projection("ci")
+  private CitationInfo           ci;
+  @Projection("at")
+  private Set<URI>               at;
+  @Projection("relatedArticles")
   public Set<RelatedArticleInfo> relatedArticles = new HashSet<RelatedArticleInfo>();
-  private String unformattedTitle;
+  public List<String>            authors = new ArrayList<String>();
+  public Set<ArticleType>        articleTypes = new HashSet<ArticleType>();
+  private transient String unformattedTitle;
 
   /**
    * Set the ID of this Article. This is the Article DOI. 
@@ -47,7 +67,7 @@ public class ArticleInfo implements Serializable {
   public void setId(URI id) {
     this.id = id;
   }
-  
+
   /**
    * Get the id.
    *
@@ -67,15 +87,6 @@ public class ArticleInfo implements Serializable {
   }
 
   /**
-   * Add an ArticleType corresponding to this article. 
-   * 
-   * @param at
-   */
-  public void addArticleType(ArticleType at) {
-    articleTypes.add(at);
-  }
-  
-  /**
    * Get the date that this article was published.
    *
    * @return the date.
@@ -83,7 +94,7 @@ public class ArticleInfo implements Serializable {
   public Date getDate() {
     return date;
   }
-  
+
   /**
    * Set the Date that this article was published
    * @param date
@@ -100,7 +111,7 @@ public class ArticleInfo implements Serializable {
   public String getTitle() {
     return title;
   }
-  
+
   /**
    * Set the title of this Article.
    *  
@@ -110,7 +121,7 @@ public class ArticleInfo implements Serializable {
     title = articleTitle;
     unformattedTitle = null;
   }
-  
+
   /**
    * Get an unformatted version of the Article Title. 
    * @return
@@ -130,15 +141,6 @@ public class ArticleInfo implements Serializable {
   public List<String> getAuthors() {
     return authors;
   }
-  
-  /**
-   * Add an author's name to the list of authors of this Article
-   * 
-   * @param authorName
-   */
-  public void addAuthor(String authorName) {
-    authors.add(authorName);
-  }
 
   /**
    * Get the related articles.
@@ -148,13 +150,20 @@ public class ArticleInfo implements Serializable {
   public Set<RelatedArticleInfo> getRelatedArticles() {
     return relatedArticles;
   }
-  
-  /**
-   * Add a RelatedArticleInfo to the set of related articles. 
-   * 
-   * @param rai
-   */
-  public void addRelatedArticle(RelatedArticleInfo rai) {
-    relatedArticles.add(rai);
+
+  public void setCi(CitationInfo ci) {
+    this.ci = ci;
+    authors.clear();
+    for (UserProfileInfo upi : ci.authors) {
+      upi.hashCode(); // force load
+      authors.add(upi.realName);
+    }
+  }
+
+  public void setAt(Set<URI> at) {
+    this.at = at;
+    articleTypes.clear();
+    for (URI a : at)
+      articleTypes.add(ArticleType.getArticleTypeForURI(a, true));
   }
 }
