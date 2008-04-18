@@ -38,7 +38,7 @@ public class Representation extends Blob {
   private String                                                           contentType;
   @Predicate(uri = Rdf.topaz + "representation/objectSize")
   private long                                                             size;
-  @Predicate(uri = Rdf.topaz + "representation/doi")
+  @Predicate(uri = Rdf.topaz + "hasRepresentation", inverse=true)
   private ObjectInfo                                                       object;
 
   /**

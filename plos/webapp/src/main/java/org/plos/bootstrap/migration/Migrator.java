@@ -212,7 +212,6 @@ public class Migrator implements ServletContextListener {
         b.append("<" + id + "> <" + Rdf.topaz + "hasRepresentation> <" + rid + "> ");
         b.append("<" + rid + "> <rdf:type> <" + Rdf.topaz + "Representation> ");
         b.append("<" + rid + "> <" + Rdf.topaz + "representation/name> '" + rep.name + "' ");
-        b.append("<" + rid + "> <" + Rdf.topaz + "representation/doi> <" + id + "> ");
 
         if (rep.contentType != null) {
           b.append("<" + rid + "> <" + Rdf.topaz + "representation/contentType> '"
