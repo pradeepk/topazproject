@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,8 +81,8 @@ public class MultipleRequestFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest)request;
     HttpSession session = httpRequest.getSession();
 
-    HashSet<String> requestedUrlSet = getRequestHashSet(session);
-    StringBuffer buf = new StringBuffer();
+    Set<String> requestedUrlSet = getRequestSet(session);
+    StringBuilder buf = new StringBuilder();
     buf.append(httpRequest.getRequestURI());
     String queryString = httpRequest.getQueryString();
     if ((queryString != null) && (queryString.length() > 0)) {
@@ -132,7 +133,7 @@ public class MultipleRequestFilter implements Filter {
     try {
       chain.doFilter(request, response);
     } finally {
-      // Upon completion of this request, remove the urlKey from the requestHashSet, then 
+      // Upon completion of this request, remove the urlKey from the requestSet, then 
       // wake any threads that are waiting on the key. 
       synchronized (urlKey) {
         requestedUrlSet.remove(urlKey);
@@ -160,10 +161,10 @@ public class MultipleRequestFilter implements Filter {
   }
 
   @SuppressWarnings("unchecked")
-  private HashSet<String> getRequestHashSet(HttpSession session) {
-    HashSet<String> map;
+  private Set<String> getRequestSet(HttpSession session) {
+    Set<String> map;
     synchronized (session) {
-      if ((map = (HashSet<String>) session.getAttribute(REQUEST_MAP)) == null) {
+      if ((map = (Set<String>) session.getAttribute(REQUEST_MAP)) == null) {
         map = new HashSet<String>();
         session.setAttribute(REQUEST_MAP, map);
       }
