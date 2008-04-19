@@ -62,8 +62,9 @@ public class MultipleRequestFilter implements Filter {
   }
 
   public void init(FilterConfig config) throws ServletException {
-    // parse all of the initialization parameters, collecting the exclude
-    // patterns and the max wait parameters
+    /* parse all of the initialization parameters, collecting the exclude
+     * patterns and the max wait parameters
+     */
     Enumeration<String> paramNames = config.getInitParameterNames();
     includePatterns = new LinkedList<Pattern>();
     while (paramNames.hasMoreElements()) {
@@ -134,8 +135,9 @@ public class MultipleRequestFilter implements Filter {
     try {
       chain.doFilter(request, response);
     } finally {
-      // Upon completion of this request, remove the urlKey from the requestSet, then 
-      // wake any threads that are waiting on the key. 
+      /* Upon completion of this request, remove the urlKey from the requestSet, then 
+       * wake any threads that are waiting on the key. 
+       */
       synchronized (urlKey) {
         requestedUrlSet.remove(urlKey);
         urlKey.notifyAll();
@@ -150,8 +152,9 @@ public class MultipleRequestFilter implements Filter {
    * @return
    */
   private boolean isFilteredRequest(String path) {
-    // iterate through the exclude patterns.  If one matches this path,
-    // then the request is excluded.
+    /* iterate through the exclude patterns. If one matches this path, then the request is
+     * excluded.
+     */
     for (Pattern p : includePatterns) {
       Matcher m = p.matcher(path);
       if (m.matches()) {
