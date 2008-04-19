@@ -181,7 +181,7 @@ abstract class AbstractSession implements Session {
   /*
    * inherited javadoc
    */
-  public Criteria createCriteria(Criteria parent, String referrer, String path)
+  public Criteria createCriteria(Criteria parent, String referrer, String path, String assocType)
                           throws OtmException {
     ClassMetadata cm = checkClass(referrer != null ? referrer :
                                                      parent.getClassMetadata().getName());
@@ -191,16 +191,19 @@ abstract class AbstractSession implements Session {
       throw new OtmException(path + " is not a valid field name for " + cm);
     RdfMapper rm = (RdfMapper) m;
 
-    if (rm.getAssociatedEntity() == null)
-      throw new OtmException(path + " is not an association of " + cm);
+    if (assocType == null) {
+      assocType = rm.getAssociatedEntity();
+      if (assocType == null)
+        throw new OtmException(path + " is not an association of " + cm);
+    }
 
     if (referrer != null &&
-        !checkClass(rm.getAssociatedEntity()).isAssignableFrom(parent.getClassMetadata()))
+        !checkClass(assocType).isAssignableFrom(parent.getClassMetadata()))
       throw new OtmException("'" + path + "' in " + cm + " does not point to '" +
                              parent.getClassMetadata().getName() + "'");
 
     return new Criteria(this, parent, rm, referrer != null,
-                        checkClass(referrer != null ? referrer : rm.getAssociatedEntity()),
+                        checkClass(referrer != null ? referrer : assocType),
                         new ArrayList<Filter>(filters.values()));
   }
 

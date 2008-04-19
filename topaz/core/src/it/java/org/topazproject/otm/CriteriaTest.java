@@ -107,6 +107,7 @@ public class CriteriaTest extends AbstractOtmTest {
           a3.setCreator("cc");
           a4.setCreator("dd");
 
+          ((PublicAnnotation) a2).note = "jade";
           a3.setCreated(new Date());
 
           a1.setSupersededBy(a2);
@@ -709,6 +710,7 @@ public class CriteriaTest extends AbstractOtmTest {
     log.info("Testing child criteria ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
+          // regular
           List l =
                 session.createCriteria(Annotation.class).addOrder(Order.desc("annotates"))
                         .createCriteria("supersedes").add(Restrictions.eq("annotates", "foo:1"))
@@ -719,6 +721,29 @@ public class CriteriaTest extends AbstractOtmTest {
           Annotation a2 = (Annotation) l.get(1);
           assertEquals(id2, a1.getId());
           assertEquals(id3, a2.getId());
+
+
+          // cast
+          l = session.createCriteria(Annotation.class).addOrder(Order.desc("annotates"))
+                     .createCriteria("supersedes", "PublicAnnotation")
+                     .add(Restrictions.eq("note", "jade"))
+                     .list();
+          assertEquals(1, l.size());
+
+          a1 = (Annotation) l.get(0);
+          assertEquals(id3, a1.getId());
+
+          boolean gotE = false;
+          try {
+            l = session.createCriteria(Annotation.class).addOrder(Order.desc("annotates"))
+                       .createCriteria("supersedes")
+                       .add(Restrictions.eq("note", "jade"))
+                       .list();
+          } catch (OtmException oe) {
+            gotE = true;
+            log.debug("Got expected exception", oe);
+          }
+          assertTrue(gotE);
         }
       });
   }
@@ -827,6 +852,7 @@ public class CriteriaTest extends AbstractOtmTest {
     public URI        id;
     public Annotation ann1;
     public Annotation ann2;
+    public URI        annU;
     @Predicate(inverse = true)
     public Annotation annR;
   }
@@ -851,8 +877,10 @@ public class CriteriaTest extends AbstractOtmTest {
 
           l1.ann1 = session.get(Annotation.class, id1.toString());
           l1.ann2 = session.get(Annotation.class, id2.toString());
+          l1.annU = id3;
           l2.ann1 = session.get(Annotation.class, id3.toString());
           l2.ann2 = session.get(Annotation.class, id4.toString());
+          l2.annU = id1;
 
           session.saveOrUpdate(l1);
           session.saveOrUpdate(l2);
@@ -879,6 +907,30 @@ public class CriteriaTest extends AbstractOtmTest {
 
           a = (PublicAnnotation) l.get(0);
           assertEquals(id4, a.getId());
+
+          // "cast"
+          l = session.createCriteria(PublicAnnotation.class)
+                     .createReferrerCriteria("AnnotationLink", "annU", true)
+                     .createCriteria("ann1")
+                     .add(Restrictions.eq("annotates", "bar:1"))
+                     .list();
+          assertEquals(1, l.size());
+
+          a = (PublicAnnotation) l.get(0);
+          assertEquals(id1, a.getId());
+
+          boolean gotE = false;
+          try {
+            l = session.createCriteria(PublicAnnotation.class)
+                       .createReferrerCriteria("AnnotationLink", "annU", false)
+                       .createCriteria("ann1")
+                       .add(Restrictions.eq("annotates", "bar:1"))
+                       .list();
+          } catch (OtmException oe) {
+            gotE = true;
+            log.debug("Got expected exception", oe);
+          }
+          assertTrue(gotE);
         }
       });
   }

@@ -73,29 +73,43 @@ import antlr.collections.AST;
  *   <li>the projection expression in the select clause may only contain a variable or a
  *       simple dereference of a variable; it may not contain a constant, a function, or
  *       a wildcard projector.</li>
- *   <li>in the select or where clauses, dereferences may not contain a cast, an immediate
- *       url (x.&lt;foo:bar&gt;), or a predicate expression.</li>
- *   <li>one side of equality comparisons ('=', '!=', 'lt()', 'le()', etc) must be a constant</li>
- *   <li>if there are multiple constraints on an item (as represented by a variable) which are
- *       'and'd or 'or'd together, then all of these that contain a dereference of the variable
- *       which is an association must be 'and'd together and 'and'd with the rest of the constraints
- *       on that item. I.e.
+ *   <li>in the select or where clauses, dereferences may not contain an immediate url
+ *       (x.&lt;foo:bar&gt;) or a predicate expression.</li>
+ *   <li>one side of equality comparisons ('=', '!=', 'lt()', 'le()', etc) must be a constant;
+ *       the other side must have at least one dereference, and the last dereference may not
+ *       be cast. E.g.
  *       <pre>
- *       ... $v.name = 'john' and $v.address.zip = '42' ...
- *       ... $v.address.city = 'london' and $v.address.zip = '42' ...
- *       ... ($v.name = 'john' or lt($v.age, 65)) and $v.address.zip = '42' ...
+ *       ... v.name = 'john' ...
+ *       ... v.address.city = 'london' ...
+ *       ... cast(v.item, Article).label = 'foo' ...
  *       </pre>
  *       are legal, but these are not:
  *       <pre>
- *       ... $v.name = 'john' or $v.address.zip = '42' ...
- *       ... $v.address.city = 'london' or $v.address.zip = '42' ...
+ *       ... v = 'john' ...
+ *       ... cast(v.item, Article) = 'foo' ...
+ *       ... v.name = n ...
+ *       </pre>
+ *   </li>
+ *   <li>if there are multiple constraints on an item (as represented by a variable) which are
+ *       'and'd or 'or'd together, then all of these that contain a dereference of the variable
+ *       which is an association must be 'and'd together and 'and'd with the rest of the constraints
+ *       on that item. E.g.
+ *       <pre>
+ *       ... v.name = 'john' and v.address.zip = '42' ...
+ *       ... v.address.city = 'london' and v.address.zip = '42' ...
+ *       ... (v.name = 'john' or lt(v.age, 65)) and v.address.zip = '42' ...
+ *       </pre>
+ *       are legal, but these are not:
+ *       <pre>
+ *       ... v.name = 'john' or v.address.zip = '42' ...
+ *       ... v.address.city = 'london' or v.address.zip = '42' ...
  *       </pre>
  *   </li>
  * </ul>
  *
  * <p>Implemenation:
  * <ol>
- *   <li>The parsing catches unsupported structures such as cast, uri-ref, predicate expressions,
+ *   <li>The parsing catches unsupported structures such as uri-ref, predicate expressions,
  *       wildcard expressions, multiple projection expressions, subqueries, and constants in the
  *       projection expression.</li>
  *   <li>During parsing, the types for variables in the from clause are registered and all aliases
@@ -151,8 +165,9 @@ options {
     }
 
     private void buildCriteria(AST root) throws RecognitionException {
-      assert root.getFirstChild().getNextSibling().getType() == WHERE;
-      root = root.getFirstChild().getNextSibling().getFirstChild();
+      root = root.getFirstChild().getNextSibling();
+      assert root.getType() == WHERE : "Unexpected type: " + root.getType();
+      root = root.getFirstChild();
 
       resolveAliasTypes();
       createRootCriteria();
@@ -182,16 +197,26 @@ options {
       // resolve
       switch (factor.getType()) {
         case REF:
-          AST    id  = factor.getFirstChild();
-          String var = id.getText();
+          AST id = factor.getFirstChild();
+          ClassMetadata cm;
 
-          // get the variable's type, resolving the rhs variable if necessary
-          if (!typeMap.containsKey(var) && aliases.containsKey(var))
-            resolveAliasType(var, aliases);
-          if (!typeMap.containsKey(var))
-            throw new RecognitionException("'" + var + "' is not defined anywhere");
+          if (id.getType() == ID) {
+            String var = id.getText();
+            // get the variable's type, resolving the rhs variable if necessary
+            if (!typeMap.containsKey(var) && aliases.containsKey(var))
+              resolveAliasType(var, aliases);
+            if (!typeMap.containsKey(var))
+              throw new RecognitionException("'" + var + "' is not defined anywhere");
 
-          ClassMetadata cm = typeMap.get(var);
+            cm = typeMap.get(var);
+          } else {
+            assert id.getType() == CAST : "Unexpected type: " + id.getType();
+            String type = id.getFirstChild().getNextSibling().getText();
+
+            cm = sess.getSessionFactory().getClassMetadata(type);
+            if (cm == null)
+              throw new RecognitionException("No metadata found for class '" + type + "'");
+          }
 
           // walk the references
           while ((id = id.getNextSibling()) != null)
@@ -253,12 +278,14 @@ options {
       // handle
       switch (factor.getType()) {
         case REF:
-          String var = factor.getFirstChild().getText();
+          String var = getTopVar(factor).getText();
 
           if (critMap.containsKey(alias)) {     // we're walking up the tree from the projection
             Criteria crit = critMap.get(alias);
             critMap.put(var, makeParents(factor, crit));
-            assert typeMap.get(var) == critMap.get(var).getClassMetadata();
+            assert typeMap.get(var) == critMap.get(var).getClassMetadata() :
+                   "Internal type mismatch for '" + var + "': typeMap=" + typeMap.get(var) +
+                   ", critMap=" + critMap.get(var).getClassMetadata();
 
           } else {                              // we're walking down the tree
             Criteria crit;
@@ -275,7 +302,9 @@ options {
             crit = makeChildren(factor, critMap.get(var), true);
 
             critMap.put(alias, crit);
-            assert typeMap.get(alias) == critMap.get(alias).getClassMetadata();
+            assert typeMap.get(alias) == critMap.get(alias).getClassMetadata() :
+                   "Internal type mismatch for '" + alias + "': typeMap=" + typeMap.get(alias) +
+                   ", critMap=" + critMap.get(alias).getClassMetadata();
           }
           break;
 
@@ -384,6 +413,20 @@ options {
                                        parent.getClass().getName() + "'");
     }
 
+    /**
+     * Create the Criterion for an equality expression. For discussion below, the rhs is assumed
+     * to the constant and the lhs the dereference.
+     *
+     * @param node   the equality node with two children representing the lhs and rhs
+     * @param parent if non-null then this is the Criteria or Criterion to which to attach the
+     *               resulting Criterion; in this case the lhs must be of the form 'a.b', i.e.
+     *               exactly one dereference and 'a' must be the same as <var>pVar</var> if that
+     *               is non-null.
+     * @param pVar   if non-null, then this must match the top-level item in the lhs; only non-null
+     *               if <var>parent</var> is non-null.
+     * @param vars   the currently active variables (not including aliases)
+     * @return the top variable in the lhs; this will be <var>pVar</var> if that was non-null
+     */
     private String processEquality(AST node, Object parent, String pVar, Map<String, AST> vars)
         throws RecognitionException {
       // get the two factors
@@ -403,14 +446,14 @@ options {
                                        "constant: " + node.toStringTree());
 
       if (parent == null) {
-        pVar   = l.getFirstChild().getText();
+        pVar   = checkFullDeref(l);
         parent = critMap.get(pVar);
         if (parent == null)
           throw new RecognitionException("unknown variable '" + pVar + "': " + node.toStringTree());
 
         parent = makeChildren(l, (Criteria) parent, false);
       } else {
-        String p = checkSingleLevelRef(l);
+        String p = checkSimpleDeref(l);
         if (pVar != null && !p.equals(pVar))
           throw new RecognitionException("criterion must all have same parent; found '" + pVar +
                                          "' and '" + p + "' in " + node.toStringTree());
@@ -418,7 +461,7 @@ options {
       }
 
       // generate criterion
-      String f = getLastChild(l).getText();
+      String f = getLastField(l).getText();
       Object val = toValueObject(r);
       Criterion c = (node.getType() == EQ) ? Restrictions.eq(f, val) : Restrictions.ne(f, val);
       addCriterion(parent, c);
@@ -465,13 +508,12 @@ options {
           continue;
 
         ref = n;
-        AST top = n.getFirstChild();
-        AST f   = top.getNextSibling();
+        AST top = getTopVar(ref);
 
-        if (f == null)
-          throw new RecognitionException("need at least one level of dereferencing: " +
-                                         node.toStringTree());
-        if (f.getNextSibling() != null) {
+        if (ref.getFirstChild().getNextSibling() == null)
+          throw new RecognitionException("A trailing (non-casted) dereference is required by " +
+                                         "criteria at this point: " + node.toStringTree());
+        if (countDeref(ref) > 1) {
           if (haveMulti)
             throw new RecognitionException("can't handle multiple multi-level dereferencings: " +
                                            node.toStringTree());
@@ -543,12 +585,39 @@ options {
       return (type == QSTRING || type == URIREF || type == PARAM);
     }
 
-    private String checkSingleLevelRef(AST ref) throws RecognitionException {
-      AST n = ref.getFirstChild().getNextSibling();
+    private String checkFullDeref(AST ref) throws RecognitionException {
+      if (ref.getFirstChild().getNextSibling() == null)
+        throw new RecognitionException("A trailing (non-casted) dereference is required by " +
+                                       "criteria at this point: " + ref.toStringTree());
+
+      return getTopVar(ref).getText();
+    }
+
+    private String checkSimpleDeref(AST ref) throws RecognitionException {
+      AST n = ref.getFirstChild();
+      if (n.getType() == CAST)
+        throw new RecognitionException("Cast is not supported by criteria at this point: " +
+                                       ref.toStringTree());
+
+      n = n.getNextSibling();
       if (n == null || n.getNextSibling() != null)
-        throw new RecognitionException("Only single level reference supported by criteria at " +
+        throw new RecognitionException("Exactly one dereference is required by criteria at " +
                                        "this point: " + ref.toStringTree());
+
       return ref.getFirstChild().getText();
+    }
+
+    private int countDeref(AST ref) throws RecognitionException {
+      AST n   = ref.getFirstChild();
+      int cnt = 0;
+
+      for (; n.getNextSibling() != null; n = n.getNextSibling())
+        cnt++;
+
+      if (n.getType() == CAST)
+        cnt += countDeref(n.getFirstChild());
+
+      return cnt;
     }
 
     /**
@@ -561,10 +630,21 @@ options {
      */
     private Criteria makeChildren(AST ref, Criteria p, boolean incLast)
         throws RecognitionException {
+      return makeChildren(ref, p, null, incLast);
+    }
+
+    private Criteria makeChildren(AST ref, Criteria p, String type, boolean incLast)
+        throws RecognitionException {
       AST n = ref.getFirstChild();
+
+      if (n.getType() == CAST) {
+        p = makeChildren(n.getFirstChild(), p, n.getFirstChild().getNextSibling().getText(),
+                         incLast || n.getNextSibling() != null);
+      }
+
       try {
         while ((n = n.getNextSibling()) != null && (incLast || n.getNextSibling() != null))
-          p = p.createCriteria(n.getText());
+          p = p.createCriteria(n.getText(), (n.getNextSibling() == null) ? type : null);
       } catch (OtmException oe) {
         throw (RecognitionException)
             new RecognitionException("no field '" + n.getText() + "' in " + p.getClassMetadata() +
@@ -588,6 +668,12 @@ options {
     }
 
     private Criteria makeParents(AST id, Criteria p, ClassMetadata cm) throws RecognitionException {
+      if (id.getType() == CAST) {
+        AST ref = id.getFirstChild();
+        p =  makeParents(ref.getFirstChild(), p, 
+                         sess.getSessionFactory().getClassMetadata(ref.getNextSibling().getText()));
+      }
+
       if (id.getNextSibling() != null) {
         if (cm == null)
           throw new RecognitionException("'" + id.getText() + "' is not a valid variable or is " +
@@ -654,14 +740,24 @@ options {
       }
 
       if (v.getType() == REF) {
-        return getLastChild(v).getText();
+        return getLastField(v).getText();
       }
 
       throw new RecognitionException("Internal error: unexpected value node '" + v.getType() + "'");
     }
 
-    private static AST getLastChild(AST n) {
-      return getPreceedingChild(n, null);
+    private static AST getLastField(AST ref) {
+      AST fc = ref.getFirstChild();
+
+      if (fc.getNextSibling() != null)
+        return getPreceedingChild(ref, null);
+      if (fc.getType() == ID)
+        return fc;
+      if (fc.getType() == CAST)
+        return getLastField(fc.getFirstChild());
+
+      assert false : "Unexpected type found: " + fc.getType();
+      return null;      // not reached - just here to satisfy compiler
     }
 
     private static AST getPreceedingChild(AST parent, AST child) {
@@ -671,11 +767,19 @@ options {
       return n;
     }
 
-    private void createRootCriteria() throws RecognitionException {
-      assert projExpr.getType() == REF;
-      assert projExpr.getFirstChild().getType() == ID;
+    private static AST getTopVar(AST ref) {
+      AST n = ref.getFirstChild();
+      while (n.getType() == CAST)
+        n = n.getFirstChild().getFirstChild();
+      return n;
+    }
 
-      String var = projExpr.getFirstChild().getText();
+    private void createRootCriteria() throws RecognitionException {
+      assert projExpr.getType() == REF : "Projection-expr type is not REF: " + projExpr.getType();
+      assert projExpr.getFirstChild().getType() == ID || projExpr.getFirstChild().getType() == CAST:
+             "Projection-expr child is not ID or CAST: " + projExpr.getFirstChild().getType();
+
+      String var = getTopVar(projExpr).getText();
 
       ClassMetadata cm = typeMap.get(var);
       if (cm == null)
@@ -684,7 +788,9 @@ options {
       rootCrit = new Criteria(sess, null, null, false, cm, null);
 
       critMap.put(var, makeParents(projExpr, rootCrit));
-      assert typeMap.get(var) == critMap.get(var).getClassMetadata();
+      assert typeMap.get(var) == critMap.get(var).getClassMetadata() :
+             "Internal type mismatch for '" + var + "': typeMap=" + typeMap.get(var) +
+             ", critMap=" + critMap.get(var).getClassMetadata();
 
       for (Order o : orders)
         rootCrit.addOrder(o);
@@ -790,15 +896,20 @@ fcall
 deref
     : #(REF (ID | cast) (ID | URIREF | #(EXPR ID (expr)?))* (STAR)?) {
         for (AST n = #deref.getFirstChild(); n != null; n = n.getNextSibling())
-          if (n.getType() != ID)
+          if (n.getType() != ID && n.getType() != CAST)
             throw new RecognitionException("only field references are supported by criteria in " +
-                                           "constraints (no cast, uri-ref, or wildcards): " +
+                                           "constraints (no uri-ref or wildcards): " +
                                            #deref.toStringTree());
       }
     ;
 
 cast
-    : #(CAST factor ID) { throw new RecognitionException("criteria doesn't support casts"); }
+    : #(CAST factor ID) {
+        if (#cast.getFirstChild().getType() != REF)
+          throw new RecognitionException("only field references are supported by criteria in " +
+                                         "constraints (no constants or function calls): " +
+                                         #cast.toStringTree());
+      }
     ;
 
 

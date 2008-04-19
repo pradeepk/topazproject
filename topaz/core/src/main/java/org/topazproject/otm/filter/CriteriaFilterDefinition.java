@@ -105,15 +105,26 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
         where.append('(').append(c.toOql(criteria, var, pfx + idx++)).append(") and ");
 
       for (Criteria c : criteria.getChildren()) {
-        String parent = var;
+        String sbj   = pfx + idx++;
+        String field = c.getMapping().getName();
+        String lhs, top, type, op;
+
         if (c.isReferrer()) {
-          parent = pfx + idx++;
-          qry.append(", ").append(c.getClassMetadata().getName()).append(" ").append(parent);
+          lhs  = var;
+          top  = sbj;
+          type = criteria.getClassMetadata().getName();
+          op   = "=";
+
+          qry.append(", ").append(c.getClassMetadata().getName()).append(" ").append(sbj);
+        } else {
+          lhs  = sbj;
+          top  = var;
+          type = c.getClassMetadata().getName();
+          op   = ":=";
         }
 
-        String sbj = pfx + idx++;
-        where.append('(').append(sbj).append(" := ").append(parent).append('.').
-              append(c.getMapping().getName()).append(" and (");
+        where.append('(').append(lhs).append(" ").append(op).append(" cast(").
+              append(top).append('.').append(field).append(", ").append(type).append(") and (");
         toOql(where, qry, c, sbj, pfx + idx++);
         where.append(")) and ");
       }

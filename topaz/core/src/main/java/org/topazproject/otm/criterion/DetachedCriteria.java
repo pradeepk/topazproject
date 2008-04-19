@@ -65,7 +65,9 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   private static final String     NL                = System.getProperty("line.separator");
 
   private String                  alias;
+  private String                  type;
   private String                  referrer;
+  private boolean                 forceType;
   private DetachedCriteria        parent;
   private Integer                 maxResults;
   private Integer                 firstResult;
@@ -107,21 +109,34 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * class name. 
    */
   public DetachedCriteria(String entity) {
-    this.alias    = entity;
-    this.parent   = null;
-    this.referrer = null;
+    this.alias     = entity;
+    this.parent    = null;
+    this.type      = null;
+    this.referrer  = null;
+    this.forceType = false;
   }
 
-  private DetachedCriteria(DetachedCriteria parent, String path) {
-    this.alias    = path;
-    this.parent   = parent;
-    this.referrer = null;
+  /**
+   * Create a child DetachedCriteria.
+   */
+  private DetachedCriteria(DetachedCriteria parent, String path, String entity) {
+    this.alias     = path;
+    this.parent    = parent;
+    this.type      = entity;
+    this.referrer  = null;
+    this.forceType = false;
   }
 
-  private DetachedCriteria(DetachedCriteria parent, String referrer, String path) {
-    this.alias    = path;
-    this.parent   = parent;
-    this.referrer = referrer;
+  /**
+   * Create a referrer DetachedCriteria.
+   */
+  private DetachedCriteria(DetachedCriteria parent, String referrer, String path,
+                           boolean forceType) {
+    this.alias     = path;
+    this.parent    = parent;
+    this.type      = null;
+    this.referrer  = referrer;
+    this.forceType = forceType;
   }
 
   /**
@@ -168,8 +183,8 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
 
     for (DetachedCriteria dc : childCriteriaList)
       dc.copyTo(dc.getReferrer() != null ?
-                        c.createReferrerCriteria(dc.getReferrer(), dc.getAlias()) :
-                        c.createCriteria(dc.getAlias()));
+                      c.createReferrerCriteria(dc.getReferrer(), dc.getAlias(), dc.getForceType()) :
+                      c.createCriteria(dc.getAlias(), dc.getType()));
   }
 
   /**
@@ -182,7 +197,23 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * @throws OtmException on an error
    */
   public DetachedCriteria createCriteria(String path) throws OtmException {
-    DetachedCriteria c = new DetachedCriteria(this, path);
+    return createCriteria(path, null);
+  }
+
+  /**
+   * Creates a new sub-criteria with an explicit given type for an association. This is the same
+   * as {@link #createCriteria(java.lang.String)} except that the type of the child is explicitly
+   * forced instead of determined from the association metadata.
+   *
+   * @param path      to the association
+   * @param childType the entity type of the child criteria
+   *
+   * @return the newly created sub-criteria
+   *
+   * @throws OtmException on an error
+   */
+  public DetachedCriteria createCriteria(String path, String childType) throws OtmException {
+    DetachedCriteria c = new DetachedCriteria(this, path, childType);
     childCriteriaList.add(c);
 
     return c;
@@ -190,8 +221,9 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
 
   /**
    * Creates a new sub-criteria for an association from another object to the current object.
-   * Whereas {@link #createCriteria} allows one to walk down associations to other objects, this
-   * allows one to walk up an assocation from another object.
+   * This is the same as invoking {@link
+   * #createReferrerCriteria(java.lang.String, java.lang.String, boolean)
+   * createReferrerCriteria(referrer, path, false)}.
    *
    * @param referrer the entity whose association points to us
    * @param path     to the association (in <var>entity</var>); this must point to this criteria's
@@ -200,7 +232,26 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * @throws OtmException on an error
    */
   public DetachedCriteria createReferrerCriteria(String referrer, String path) throws OtmException {
-    DetachedCriteria c = new DetachedCriteria(this, referrer, path);
+    return createReferrerCriteria(referrer, path, false);
+  }
+
+  /**
+   * Creates a new sub-criteria for an association from another object to the current object.
+   * Whereas {@link #createCriteria} allows one to walk down associations to other objects, this
+   * allows one to walk up an assocation from another object.
+   *
+   * @param referrer  the entity whose association points to us
+   * @param path      to the association (in <var>entity</var>); this must point to this criteria's
+   *                  entity
+   * @param forceType if true, force the type of our association end to be the same as this
+   *                  criteria's type; if false, this criteria's type must be a subtype of the
+   *                  assocation end's type.
+   * @return the newly created sub-criteria
+   * @throws OtmException on an error
+   */
+  public DetachedCriteria createReferrerCriteria(String referrer, String path, boolean forceType)
+      throws OtmException {
+    DetachedCriteria c = new DetachedCriteria(this, referrer, path, forceType);
     childCriteriaList.add(c);
 
     return c;
@@ -553,6 +604,47 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    */
   public void setReferrer(String referrer) {
     this.referrer = referrer;
+  }
+
+  /**
+   * Get this criteria's type. Only valid for non-referrer criteria.
+   *
+   * @return the type, or null
+   */
+  public String getType() {
+    return type;
+  }
+
+  /**
+   * Set the type. For use by persistence. Only valid for non-referrer criteria.
+   *
+   * DO NOT USE DIRECTLY. Use {@link #createCriteria} instead on the parent.
+   *
+   * @param type the value to set.
+   */
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  /**
+   * Whether to check the association end's type against the parents type. Only valid for referrer
+   * criteria.
+   *
+   * @return false if the types should be checked, true if not
+   */
+  public boolean getForceType() {
+    return forceType;
+  }
+
+  /**
+   * Set the force-type flag. For use by persistence. Only valid for referrer criteria.
+   *
+   * DO NOT USE DIRECTLY. Use {@link #createCriteria} instead on the parent.
+   *
+   * @param force false if the types should be checked, true if not
+   */
+  public void setForceType(boolean force) {
+    this.forceType = force;
   }
 
   /**

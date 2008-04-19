@@ -1562,6 +1562,7 @@ public class OqlTest extends AbstractTest {
 
   void testFilterDefs() {
     doInTx { s ->
+      // normal criteria -> oql
       DetachedCriteria dc = new DetachedCriteria("Article")
       dc.add(Restrictions.disjunction().
                          add(Restrictions.eq("title", "foo")).
@@ -1581,8 +1582,9 @@ public class OqlTest extends AbstractTest {
       assert dc.getParameterNames().iterator().next() == "auth"
 
       FilterDefinition cfd = new CriteriaFilterDefinition("critF", dc);
-      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := o.parts and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := v1.nextObject and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
+      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := cast(o.parts, ObjectInfo) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
 
+      // referrer criteria -> oql
       dc = new DetachedCriteria("Article")
       dc.add(Restrictions.disjunction().
                          add(Restrictions.eq("title", "foo")).
@@ -1602,8 +1604,27 @@ public class OqlTest extends AbstractTest {
       assert dc.getParameterNames().iterator().next() == "auth"
 
       cfd = new CriteriaFilterDefinition("critFR", dc);
-      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o, ObjectInfo v1 where ((o.title = 'foo' or o.authors = 'blah')) and (v2 := v1.isPartOf and ((v2.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v2.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v2.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v32 := v2.nextObject and ((v32.dc_type = <dc:type>) and (v32.uri = <foo:bar>)))));"
+      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o, ObjectInfo v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.isPartOf, Article) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
 
+      // cast criteria -> oql
+      dc = new DetachedCriteria("Article")
+      dc.add(Restrictions.disjunction().
+                         add(Restrictions.eq("title", "foo")).
+                         add(Restrictions.eq("authors", new Parameter("auth")))).
+
+        createReferrerCriteria("Annotation", "annotates", true).
+          add(Restrictions.ne("created", new Date("08 Jul 2007"))).
+
+        createCriteria("supersedes", "PublicAnnotation").
+          add(Restrictions.eq("note", "a dog"))
+
+      assert dc.getParameterNames().size() == 1;
+      assert dc.getParameterNames().iterator().next() == "auth"
+
+      cfd = new CriteriaFilterDefinition("critFC", dc);
+      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o, Annotation v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.annotates, Article) and ((v1.created != '2007-07-08T07:00:00.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>) and (v21 := cast(v1.supersedes, PublicAnnotation) and ((v21.note = 'a dog')))));"
+
+      // oql -> criteria
       def qry = """select o from Article o where
         (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
         o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and
@@ -1626,6 +1647,9 @@ public class OqlTest extends AbstractTest {
       assert c.children[0].mapping.name == 'parts'
       assert c.children[1].mapping.name == 'nextObject'
       assert c.children[2].mapping.name == 'nextObject'
+      assert c.children[0].classMetadata.name == 'ObjectInfo'
+      assert c.children[1].classMetadata.name == 'ObjectInfo'
+      assert c.children[2].classMetadata.name == 'ObjectInfo'
       assert c.children[0].children.size() == 1
       assert c.children[1].children.size() == 0
       assert c.children[2].children.size() == 0
@@ -1640,6 +1664,7 @@ public class OqlTest extends AbstractTest {
       assert c.children[2].criterionList[0].value == 'dc:type'.toURI()
       c = c.children[0].children[0]                     // 'q'
       assert c.mapping.name == 'nextObject'
+      assert c.classMetadata.name == 'ObjectInfo'
       assert c.children.size() == 0
       assert c.criterionList.size() == 1
       assert c.criterionList[0] instanceof Disjunction
@@ -1659,7 +1684,9 @@ public class OqlTest extends AbstractTest {
       assert c.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
       assert c.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
 
-      // note: this next query is not a valid filter query, but toCriteria() supports it
+      /* oql w/ deref in proj -> referrer criteria 
+       * note: this next query is not a valid filter query, but toCriteria() supports it
+       */
       qry = """select n.nextObject from Article o where
         (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
         n := o.parts and q := n.nextObject and n.dc_type = <dc:type> and
@@ -1672,6 +1699,7 @@ public class OqlTest extends AbstractTest {
 
       c = c.children[0]                         // 'n'
       assert c.mapping.name == 'nextObject'
+      assert c.classMetadata.name == 'ObjectInfo'
       assert c.isReferrer()
 
       assert c.criterionList.size() == 1        // n.dc_type = <dc:type>
@@ -1682,6 +1710,8 @@ public class OqlTest extends AbstractTest {
       assert c.children.size() == 2             // n := o.parts, q := n.nextObject
       assert c.children[0].mapping.name == 'parts'
       assert c.children[1].mapping.name == 'nextObject'
+      assert c.children[0].classMetadata.name == 'Article'
+      assert c.children[1].classMetadata.name == 'ObjectInfo'
       assert c.children[0].isReferrer() == true
       assert c.children[1].isReferrer() == false
 
@@ -1724,6 +1754,110 @@ public class OqlTest extends AbstractTest {
       assert ch.criterionList[0].criterions[1].criterions[1].arguments.length == 2
       assert ch.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
       assert ch.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
+
+      // oql with casts -> criteria
+      qry = """select o from Article o where o.title = 'foo' and
+        cast(o.nextObject, Article).categories = 'foo' and
+        cast(cast(o, ObjectInfo).nextObject, Article).dc_type = <dc:type> and
+        p := cast(o.parts, Article) and q := cast(p, ObjectInfo).nextObject and
+        (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));""";
+      ofd = new OqlFilterDefinition("oqlFC", "Article", qry)
+      c = ofd.createFilter(s).getCriteria();
+
+      assert c.criterionList.size() == 1                // o.title = 'foo'
+      assert c.criterionList[0] instanceof EQCriterion
+      assert c.criterionList[0].fieldName == 'title'
+      assert c.criterionList[0].value == 'foo'
+
+      assert c.children.size() == 3
+      assert c.children[0].mapping.name == 'parts'
+      assert c.children[1].mapping.name == 'nextObject'
+      assert c.children[2].mapping.name == 'nextObject'
+      assert c.children[0].classMetadata.name == 'Article'
+      assert c.children[1].classMetadata.name == 'Article'
+      assert c.children[2].classMetadata.name == 'Article'
+      assert c.children[0].children.size() == 1
+      assert c.children[1].children.size() == 0
+      assert c.children[2].children.size() == 0
+      assert c.children[0].criterionList.size() == 0
+      assert c.children[1].criterionList.size() == 1
+      assert c.children[2].criterionList.size() == 1
+      assert c.children[1].criterionList[0] instanceof EQCriterion
+      assert c.children[2].criterionList[0] instanceof EQCriterion
+      assert c.children[1].criterionList[0].fieldName == 'categories'
+      assert c.children[1].criterionList[0].value == 'foo'
+      assert c.children[2].criterionList[0].fieldName == 'dc_type'
+      assert c.children[2].criterionList[0].value == 'dc:type'.toURI()
+
+      c = c.children[0].children[0]                     // 'q'
+      assert c.mapping.name == 'nextObject'
+      assert c.classMetadata.name == 'ObjectInfo'
+      assert c.children.size() == 0
+      assert c.criterionList.size() == 1
+      assert c.criterionList[0] instanceof Disjunction
+      assert c.criterionList[0].criterions.size() == 2
+      assert c.criterionList[0].criterions[0] instanceof EQCriterion
+      assert c.criterionList[0].criterions[1] instanceof ProxyCriterion
+      assert c.criterionList[0].criterions[0].fieldName == 'date'
+      assert c.criterionList[0].criterions[0].value == '2007'
+      assert c.criterionList[0].criterions[1].function == 'le'
+      assert c.criterionList[0].criterions[1].arguments.length == 2
+      assert c.criterionList[0].criterions[1].arguments[0] == 'dc_type'
+      assert c.criterionList[0].criterions[1].arguments[1] == 'x:y'.toURI()
+
+      // oql w/ casts -> referrer criteria 
+      qry = """select n from Article o where o.title = 'foo' and
+        cast(cast(o, ObjectInfo).nextObject, Article).uri = <foo:bar> and
+        n := cast(o.parts, Article) and q := cast(n.nextObject, Article)
+        and n.dc_type = <dc:type> and
+        (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));""";
+      ofd = new OqlFilterDefinition("oqlRC", "Article", qry)
+      c = ofd.createFilter(s).getCriteria();
+
+      assert c.classMetadata.name == 'Article'
+      assert c.criterionList.size() == 1        // n.dc_type = <dc:type>
+      assert c.criterionList[0] instanceof EQCriterion
+      assert c.criterionList[0].fieldName == 'dc_type'
+      assert c.criterionList[0].value == 'dc:type'.toURI()
+
+      assert c.children.size() == 2             // n := o.parts, q := n.nextObject
+      assert c.children[0].mapping.name == 'parts'
+      assert c.children[1].mapping.name == 'nextObject'
+      assert c.children[0].classMetadata.name == 'Article'
+      assert c.children[1].classMetadata.name == 'Article'
+      assert c.children[0].isReferrer() == true
+      assert c.children[1].isReferrer() == false
+
+      ch = c.children[0]                        // 'o'
+      assert ch.criterionList.size() == 1
+      assert ch.criterionList[0] instanceof EQCriterion
+      assert ch.criterionList[0].fieldName == 'title'
+      assert ch.criterionList[0].value == 'foo'
+
+      assert ch.children.size() == 1
+      ch = ch.children[0]                       // o.nextObject
+      assert ch.mapping.name == 'nextObject'
+      assert ch.classMetadata.name == 'Article'
+      assert ch.isReferrer() == false
+      assert ch.children.size() == 0
+      assert ch.criterionList.size() == 1
+      assert ch.criterionList[0] instanceof EQCriterion
+      assert ch.criterionList[0].fieldName == 'uri'
+      assert ch.criterionList[0].value == 'foo:bar'.toURI()
+
+      ch = c.children[1]                        // 'q'
+      assert ch.children.size() == 0
+      assert ch.criterionList.size() == 1
+      assert ch.criterionList[0] instanceof Disjunction
+      assert ch.criterionList[0].criterions.size() == 2
+      assert ch.criterionList[0].criterions[0] instanceof EQCriterion
+      assert ch.criterionList[0].criterions[1] instanceof ProxyCriterion
+      assert ch.criterionList[0].criterions[0].fieldName == 'date'
+      assert ch.criterionList[0].criterions[0].value == '2007'
+      assert ch.criterionList[0].criterions[1].function == 'le'
+      assert ch.criterionList[0].criterions[1].arguments.length == 2
+      assert ch.criterionList[0].criterions[1].arguments[0] == 'dc_type'
+      assert ch.criterionList[0].criterions[1].arguments[1] == 'x:y'.toURI()
     }
   }
 }

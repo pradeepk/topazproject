@@ -122,7 +122,23 @@ public class Criteria implements Parameterizable<Criteria> {
    * @throws OtmException on an error
    */
   public Criteria createCriteria(String path) throws OtmException {
-    Criteria c = session.createCriteria(this, null, path);
+    return createCriteria(path, null);
+  }
+
+  /**
+   * Creates a new sub-criteria with an explicit given type for an association. This is the same
+   * as {@link #createCriteria(java.lang.String)} except that the type of the child is explicitly
+   * forced instead of determined from the association metadata.
+   *
+   * @param path      to the association
+   * @param childType the entity type of the child criteria
+   *
+   * @return the newly created sub-criteria
+   *
+   * @throws OtmException on an error
+   */
+  public Criteria createCriteria(String path, String childType) throws OtmException {
+    Criteria c = session.createCriteria(this, null, path, childType);
     children.add(c);
 
     return c;
@@ -130,8 +146,9 @@ public class Criteria implements Parameterizable<Criteria> {
 
   /**
    * Creates a new sub-criteria for an association from another object to the current object.
-   * Whereas {@link #createCriteria} allows one to walk down associations to other objects, this
-   * allows one to walk up an assocation from another object.
+   * This is the same as invoking {@link
+   * #createReferrerCriteria(java.lang.String, java.lang.String, boolean)
+   * createReferrerCriteria(referrer, path, false)}.
    *
    * @param referrer the entity whose association points to us
    * @param path     to the association (in <var>entity</var>); this must point to this criteria's
@@ -140,7 +157,27 @@ public class Criteria implements Parameterizable<Criteria> {
    * @throws OtmException on an error
    */
   public Criteria createReferrerCriteria(String referrer, String path) throws OtmException {
-    Criteria c = session.createCriteria(this, referrer, path);
+    return createReferrerCriteria(referrer, path, false);
+  }
+
+  /**
+   * Creates a new sub-criteria for an association from another object to the current object.
+   * Whereas {@link #createCriteria} allows one to walk down associations to other objects, this
+   * allows one to walk up an assocation from another object.
+   *
+   * @param referrer  the entity whose association points to us
+   * @param path      to the association (in <var>entity</var>); this must point to this criteria's
+   *                  entity
+   * @param forceType if true, force the type of our association end to be the same as this
+   *                  criteria's type; if false, this criteria's type must be a subtype of the
+   *                  assocation end's type.
+   * @return the newly created sub-criteria
+   * @throws OtmException on an error
+   */
+  public Criteria createReferrerCriteria(String referrer, String path, boolean forceType)
+      throws OtmException {
+    Criteria c =
+      session.createCriteria(this, referrer, path, forceType ? getClassMetadata().getName() : null);
     children.add(c);
 
     return c;

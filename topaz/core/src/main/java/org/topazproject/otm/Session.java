@@ -335,17 +335,24 @@ public interface Session {
    * class. Usually called by {@link
    * org.topazproject.otm.Criteria#createCriteria(java.lang.String) Criteria#createCriteria}
    *
-   * @param parent   the parent criteria of the sub-criteria to create
-   * @param referrer if null, then path is a field in the parent's entity; if not null, then
-   *                 path is a field in this entity and this is the newly created criteria's
-   *                 entity.
-   * @param path     path to the association field
+   * @param parent    the parent criteria of the sub-criteria to create
+   * @param referrer  if null, then <var>path</var> is a field in the parent's entity; if not null,
+   *                  then <var>path</var> is a field in this entity and this is the newly created
+   *                  criteria's entity.
+   * @param path      path to the association field
+   * @param assocType if not null then it overrides the type of other end of the association; i.e.
+   *                  this can be viewed as a cast. If <var>referrer</var> is not null then this
+   *                  type must be assignment compatible with <var>parent</var>'s type (i.e. the
+   *                  <var>parent</var>'s type is a subtype of <var>assocType</var>), but it is
+   *                  otherwise ignored; if <var>referrer</var> is null then this is the created
+   *                  child criteria's type.
    *
    * @return a newly created Criteria.
    *
    * @throws OtmException on an error
    */
-  public Criteria createCriteria(Criteria parent, String referrer, String path) throws OtmException;
+  public Criteria createCriteria(Criteria parent, String referrer, String path, String assocType)
+      throws OtmException;
 
   /**
    * Gets a list of objects based on a criteria.
