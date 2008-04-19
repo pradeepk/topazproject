@@ -1613,7 +1613,7 @@ public class OqlTest extends AbstractTest {
                          add(Restrictions.eq("authors", new Parameter("auth")))).
 
         createReferrerCriteria("Annotation", "annotates", true).
-          add(Restrictions.ne("created", new Date("08 Jul 2007"))).
+          add(Restrictions.ne("created", new Date("08 Jul 2007 GMT"))).
 
         createCriteria("supersedes", "PublicAnnotation").
           add(Restrictions.eq("note", "a dog"))
@@ -1622,7 +1622,7 @@ public class OqlTest extends AbstractTest {
       assertEquals("auth", dc.getParameterNames().iterator().next())
 
       cfd = new CriteriaFilterDefinition("critFC", dc)
-      assertEquals("select o from Article o, Annotation v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.annotates, Article) and ((v1.created != '2007-07-08T07:00:00.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>) and (v21 := cast(v1.supersedes, PublicAnnotation) and ((v21.note = 'a dog')))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
+      assertEquals("select o from Article o, Annotation v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.annotates, Article) and ((v1.created != '2007-07-08T00:00:00.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>) and (v21 := cast(v1.supersedes, PublicAnnotation) and ((v21.note = 'a dog')))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
       // oql -> criteria
       def qry = """select o from Article o where
