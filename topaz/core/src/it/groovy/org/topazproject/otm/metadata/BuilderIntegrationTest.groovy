@@ -71,15 +71,15 @@ public class BuilderIntegrationTest extends GroovyTestCase {
                             goals:['one', 'two'])
 
     doInTx { s -> s.saveOrUpdate(i1) }
-    doInTx { s -> assert s.get(t1, "foo:1") == i1 }
+    doInTx { s -> assertEquals(i1, s.get(t1, "foo:1")) }
 
     i1 = t1.newInstance(uri:'foo:1', state:1, name:[id:'foo:n1'.toURI()], goals:['one', 'two'])
 
     doInTx { s -> s.saveOrUpdate(i1) }
-    doInTx { s -> assert s.get(t1, "foo:1") == i1 }
+    doInTx { s -> assertEquals(i1, s.get(t1, "foo:1")) }
 
     doInTx { s -> s.delete(i1) }
-    doInTx { s -> assert s.get(t1, "foo:1") == null }
+    doInTx { s -> assertNull(s.get(t1, "foo:1")) }
   }
 
   void testDatatypes() {
@@ -149,11 +149,11 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     def obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'.toURI()
+    assertEquals('foo:1'.toURI(), obj.id)
 
     obj = cls.newInstance(state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id != null
+    assertNotNull(obj.id)
 
     // explicit gen
     cls = rdf.class('Test2', idGenerator:'GUID') {
@@ -162,11 +162,11 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'.toURI()
+    assertEquals('foo:1'.toURI(), obj.id)
 
     obj = cls.newInstance(state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id != null
+    assertNotNull(obj.id)
 
     // no gen
     cls = rdf.class('Test3', idGenerator:null) {
@@ -175,7 +175,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'.toURI()
+    assertEquals('foo:1'.toURI(), obj.id)
 
     obj = cls.newInstance(state:42)
     shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })
@@ -190,7 +190,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'.toURI()
+    assertEquals('foo:1'.toURI(), obj.id)
 
     obj = cls.newInstance(state:42)
     shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })
@@ -219,38 +219,38 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     def obj = cls.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1')
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1', bar1:[])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1', bar1:[bar2:[]])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1', bar1:[bar2:[foo3:'f3']])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     // predicate stored with parent model
     Class bcl2 = rdf.class('Bar22', model:'m3') {
@@ -267,38 +267,38 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     obj = cls.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1')
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1', bar1:[])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1', bar1:[bar2:[]])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
 
     obj = cls.newInstance(foo1:'f1', bar1:[bar2:[foo3:'f3']])
     doInTx { s -> s.saveOrUpdate(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+    doInTx { s -> assertEquals(obj, s.get(cls, obj.id.toString())) }
 
     doInTx { s -> s.delete(obj) }
-    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+    doInTx { s -> assertNull(s.get(cls, obj.id.toString())) }
   }
 
   void testCollTypeLookAhead() {
@@ -328,15 +328,15 @@ public class BuilderIntegrationTest extends GroovyTestCase {
          assertNotNull o
          assertNotNull c
          assertNotNull l
-         assert o.label.equals('obj')
-         assert c.label.equals('col')
-         assert l.label.equals('lis')
+         assertEquals('obj', o.label)
+         assertEquals('col', c.label)
+         assertEquals('lis', l.label)
          assertNotNull o.col
-         assert o.col.size() == 1
-         assert o.col[0] == c
+         assertEquals(1, o.col.size())
+         assertEquals(c, o.col[0])
          assertNotNull o.lis
-         assert o.lis.size() == 1
-         assert o.lis[0] == l
+         assertEquals(1, o.lis.size())
+         assertEquals(l, o.lis[0])
          s.delete(o)
          assertNull s.get(cls, 'foo:obj')
          assertNull s.get(cls, 'foo:col')
@@ -441,7 +441,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     assertNotNull obj
     sel = obj.sel
     assertNotNull sel
-    assert sel.sel == obj
+    assertEquals(obj, sel.sel)
   }
 
 

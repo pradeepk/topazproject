@@ -34,6 +34,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.AfterClass;
+import static org.testng.AssertJUnit.*;
 
 import org.topazproject.otm.samples.PublicAnnotation;
 
@@ -152,7 +153,7 @@ public class IdGenTest {
     String id = "http://www.topazproject.org/Kontrol";
     k.id = id;
     session.saveOrUpdate(k);
-    assert k.id.equals(id);
+    assertEquals(id, k.id);
   }
 
   @Test
@@ -170,7 +171,7 @@ public class IdGenTest {
     // Ensure it is a uri
     URI uri = URI.create(a.id);
 
-    assert a.id.startsWith(Rdf.topaz + "A#");
+    assert a.id.startsWith(Rdf.topaz + "A#") : a.id;
   }
 
   @Test
@@ -192,7 +193,7 @@ public class IdGenTest {
     D d = new D();
     session.saveOrUpdate(d);
     assert d.uri != null;
-    assert d.uri.toString().startsWith(Rdf.topaz + D.class.getName() + "/uri#");
+    assert d.uri.toString().startsWith(Rdf.topaz + D.class.getName() + "/uri#") : d.uri;
   }
 
   @Test(groups = { "tx" })
@@ -200,6 +201,6 @@ public class IdGenTest {
     factory.preload(E.class);
     E e = new E();
     session.saveOrUpdate(e);
-    assert e.id.startsWith(Rdf.topaz + E.class.getName() + "/id#");
+    assert e.id.startsWith(Rdf.topaz + E.class.getName() + "/id#") : e.id;
   }
 }

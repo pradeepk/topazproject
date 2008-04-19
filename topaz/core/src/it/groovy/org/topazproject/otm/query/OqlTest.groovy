@@ -1102,7 +1102,7 @@ public class OqlTest extends AbstractTest {
     doInTx { s ->
       // plain literal
       Query q = s.createQuery("select obj from Test1 obj where obj.info.name.givenName = :name;")
-      assert q.getParameterNames() == ['name'] as Set
+      assertEquals(['name'] as Set, q.getParameterNames())
 
       Results r = q.setParameter("name", "Jack").execute()
       checker.verify(r) {
@@ -1128,7 +1128,7 @@ public class OqlTest extends AbstractTest {
 
       // typed literal
       q = s.createQuery("select obj from Test1 obj where obj.state = :state;")
-      assert q.getParameterNames() == ['state'] as Set
+      assertEquals(['state'] as Set, q.getParameterNames())
 
       r = q.setParameter("state", 1).execute()
       checker.verify(r) {
@@ -1154,7 +1154,7 @@ public class OqlTest extends AbstractTest {
 
       // uri
       q = s.createQuery("select obj from Test1 obj where obj.blog = :blog;")
-      assert q.getParameterNames() == ['blog'] as Set
+      assertEquals(['blog'] as Set, q.getParameterNames())
 
       r = q.setParameter("blog", "http://www.bar.com/").execute()
       checker.verify(r) {
@@ -1185,7 +1185,7 @@ public class OqlTest extends AbstractTest {
 
       // class
       q = s.createQuery("select obj from Test1 obj where obj.info = :info;")
-      assert q.getParameterNames() == ['info'] as Set
+      assertEquals(['info'] as Set, q.getParameterNames())
 
       r = q.setParameter("info", o2.info.id).execute()
       checker.verify(r, warnings:true) {
@@ -1193,7 +1193,7 @@ public class OqlTest extends AbstractTest {
       }
 
       q = s.createQuery("select obj from Test1 obj where obj.info.id = :info;")
-      assert q.getParameterNames() == ['info'] as Set
+      assertEquals(['info'] as Set, q.getParameterNames())
 
       r = q.setParameter("info", o2.info.id).execute()
       checker.verify(r) {
@@ -1202,7 +1202,7 @@ public class OqlTest extends AbstractTest {
 
       // no type
       q = s.createQuery("select obj from Test1 obj where obj.<topaz:info> = :info;")
-      assert q.getParameterNames() == ['info'] as Set
+      assertEquals(['info'] as Set, q.getParameterNames())
 
       assert shouldFail(QueryException, {
         r = q.setParameter("info", o2.info.id.toString()).execute()
@@ -1230,7 +1230,7 @@ public class OqlTest extends AbstractTest {
           select obj from Test1 obj where
             obj.info.name.givenName = :name or obj.info.name.surname = :name order by obj;
           """)
-      assert q.getParameterNames() == ['name'] as Set
+      assertEquals(['name'] as Set, q.getParameterNames())
 
       r = q.setParameter("name", "Bob").execute()
       checker.verify(r) {
@@ -1243,7 +1243,7 @@ public class OqlTest extends AbstractTest {
           select obj from Test1 obj
             where obj.info.name.givenName = :gname or obj.info.name.surname = :sname order by obj;
           """)
-      assert q.getParameterNames() == ['gname', 'sname'] as Set
+      assertEquals(['gname', 'sname'] as Set, q.getParameterNames())
 
       r = q.setParameter("gname", "Bob").setParameter("sname", "Keller").execute()
       checker.verify(r) {
@@ -1351,7 +1351,7 @@ public class OqlTest extends AbstractTest {
 
         // filter on non-root class
         s.disableFilter('state');
-        assert s.enableFilter('noJack') != null;
+        assertNotNull(s.enableFilter('noJack'))
         r = s.createQuery("select obj from Test1 obj order by obj;").execute()
         checker.verify(r) {
           row { object (class:cls, id:o2.id) }
@@ -1417,7 +1417,7 @@ public class OqlTest extends AbstractTest {
 
         // filter on non-root class
         s.disableFilter('state');
-        assert s.enableFilter('noJack') != null;
+        assertNotNull(s.enableFilter('noJack'))
         r = s.createCriteria(cls).addOrder(Order.asc('state')).list()
         assertEquals([o2, o3], r)
 
@@ -1578,11 +1578,11 @@ public class OqlTest extends AbstractTest {
           add(Restrictions.eq("dc_type", new URI("dc:type"))).
           add(Restrictions.eq("uri", new URI("foo:bar")))
 
-      assert dc.getParameterNames().size() == 1;
-      assert dc.getParameterNames().iterator().next() == "auth"
+      assertEquals(1, dc.getParameterNames().size())
+      assertEquals("auth", dc.getParameterNames().iterator().next())
 
       FilterDefinition cfd = new CriteriaFilterDefinition("critF", dc);
-      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := cast(o.parts, ObjectInfo) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
+      assertEquals("select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := cast(o.parts, ObjectInfo) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
       // referrer criteria -> oql
       dc = new DetachedCriteria("Article")
@@ -1600,11 +1600,11 @@ public class OqlTest extends AbstractTest {
           add(Restrictions.eq("dc_type", new URI("dc:type"))).
           add(Restrictions.eq("uri", new URI("foo:bar")))
 
-      assert dc.getParameterNames().size() == 1;
-      assert dc.getParameterNames().iterator().next() == "auth"
+      assertEquals(1, dc.getParameterNames().size())
+      assertEquals("auth", dc.getParameterNames().iterator().next())
 
-      cfd = new CriteriaFilterDefinition("critFR", dc);
-      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o, ObjectInfo v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.isPartOf, Article) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
+      cfd = new CriteriaFilterDefinition("critFR", dc)
+      assertEquals("select o from Article o, ObjectInfo v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.isPartOf, Article) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
       // cast criteria -> oql
       dc = new DetachedCriteria("Article")
@@ -1618,71 +1618,72 @@ public class OqlTest extends AbstractTest {
         createCriteria("supersedes", "PublicAnnotation").
           add(Restrictions.eq("note", "a dog"))
 
-      assert dc.getParameterNames().size() == 1;
-      assert dc.getParameterNames().iterator().next() == "auth"
+      assertEquals(1, dc.getParameterNames().size())
+      assertEquals("auth", dc.getParameterNames().iterator().next())
 
-      cfd = new CriteriaFilterDefinition("critFC", dc);
-      assert cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString() == "select o from Article o, Annotation v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.annotates, Article) and ((v1.created != '2007-07-08T07:00:00.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>) and (v21 := cast(v1.supersedes, PublicAnnotation) and ((v21.note = 'a dog')))));"
+      cfd = new CriteriaFilterDefinition("critFC", dc)
+      assertEquals("select o from Article o, Annotation v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.annotates, Article) and ((v1.created != '2007-07-08T07:00:00.000Z'^^<http://www.w3.org/2001/XMLSchema#dateTime>) and (v21 := cast(v1.supersedes, PublicAnnotation) and ((v21.note = 'a dog')))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
       // oql -> criteria
       def qry = """select o from Article o where
         (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
         o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and
-        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)));""";
+        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)));"""
       FilterDefinition ofd = new OqlFilterDefinition("oqlF", "Article", qry)
-      Criteria c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria();
+      Criteria c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria()
 
-      assert c.criterionList.size() == 1                // o.title = 'foo' or o.authorts = :auth
-      assert c.criterionList[0] instanceof Disjunction
-      assert c.criterionList[0].criterions.size() == 2
-      assert c.criterionList[0].criterions[0] instanceof EQCriterion
-      assert c.criterionList[0].criterions[1] instanceof EQCriterion
-      assert c.criterionList[0].criterions[0].fieldName == 'title'
-      assert c.criterionList[0].criterions[0].value == 'foo'
-      assert c.criterionList[0].criterions[1].fieldName == 'authors'
-      assert c.criterionList[0].criterions[1].value instanceof Parameter
-      assert c.criterionList[0].criterions[1].value.parameterName == 'auth'
+      assertEquals(1, c.criterionList.size())           // o.title = 'foo' or o.authorts = :auth
+      assertInstanceOf(Disjunction, c.criterionList[0])
+      assertEquals(2, c.criterionList[0].criterions.size())
+      assertInstanceOf(EQCriterion, c.criterionList[0].criterions[0])
+      assertInstanceOf(EQCriterion, c.criterionList[0].criterions[1])
+      assertEquals('title', c.criterionList[0].criterions[0].fieldName)
+      assertEquals('foo', c.criterionList[0].criterions[0].value)
+      assertEquals('authors', c.criterionList[0].criterions[1].fieldName)
+      assertInstanceOf(Parameter, c.criterionList[0].criterions[1].value)
+      assertEquals('auth', c.criterionList[0].criterions[1].value.parameterName)
 
-      assert c.children.size() == 3
-      assert c.children[0].mapping.name == 'parts'
-      assert c.children[1].mapping.name == 'nextObject'
-      assert c.children[2].mapping.name == 'nextObject'
-      assert c.children[0].classMetadata.name == 'ObjectInfo'
-      assert c.children[1].classMetadata.name == 'ObjectInfo'
-      assert c.children[2].classMetadata.name == 'ObjectInfo'
-      assert c.children[0].children.size() == 1
-      assert c.children[1].children.size() == 0
-      assert c.children[2].children.size() == 0
-      assert c.children[0].criterionList.size() == 0
-      assert c.children[1].criterionList.size() == 1
-      assert c.children[2].criterionList.size() == 1
-      assert c.children[1].criterionList[0] instanceof EQCriterion
-      assert c.children[2].criterionList[0] instanceof EQCriterion
-      assert c.children[1].criterionList[0].fieldName == 'uri'
-      assert c.children[1].criterionList[0].value == 'foo:bar'.toURI()
-      assert c.children[2].criterionList[0].fieldName == 'dc_type'
-      assert c.children[2].criterionList[0].value == 'dc:type'.toURI()
+      assertEquals(3, c.children.size())
+      assertEquals('parts', c.children[0].mapping.name)
+      assertEquals('nextObject', c.children[1].mapping.name)
+      assertEquals('nextObject', c.children[2].mapping.name)
+      assertEquals('ObjectInfo', c.children[0].classMetadata.name)
+      assertEquals('ObjectInfo', c.children[1].classMetadata.name)
+      assertEquals('ObjectInfo', c.children[2].classMetadata.name)
+      assertEquals(1, c.children[0].children.size())
+      assertEquals(0, c.children[1].children.size())
+      assertEquals(0, c.children[2].children.size())
+      assertEquals(0, c.children[0].criterionList.size())
+      assertEquals(1, c.children[1].criterionList.size())
+      assertEquals(1, c.children[2].criterionList.size())
+      assertInstanceOf(EQCriterion, c.children[1].criterionList[0])
+      assertInstanceOf(EQCriterion, c.children[2].criterionList[0])
+      assertEquals('uri', c.children[1].criterionList[0].fieldName)
+      assertEquals('foo:bar'.toURI(), c.children[1].criterionList[0].value)
+      assertEquals('dc_type', c.children[2].criterionList[0].fieldName)
+      assertEquals('dc:type'.toURI(), c.children[2].criterionList[0].value)
+
       c = c.children[0].children[0]                     // 'q'
-      assert c.mapping.name == 'nextObject'
-      assert c.classMetadata.name == 'ObjectInfo'
-      assert c.children.size() == 0
-      assert c.criterionList.size() == 1
-      assert c.criterionList[0] instanceof Disjunction
-      assert c.criterionList[0].criterions.size() == 2
-      assert c.criterionList[0].criterions[0] instanceof EQCriterion
-      assert c.criterionList[0].criterions[1] instanceof Conjunction
-      assert c.criterionList[0].criterions[0].fieldName == 'date'
-      assert c.criterionList[0].criterions[0].value == '2007'
-      assert c.criterionList[0].criterions[1].criterions.size() == 2
-      assert c.criterionList[0].criterions[1].criterions[0] instanceof EQCriterion
-      assert c.criterionList[0].criterions[1].criterions[1] instanceof ProxyCriterion
-      assert c.criterionList[0].criterions[1].criterions[0].fieldName == 'rights'
-      assert c.criterionList[0].criterions[1].criterions[0].value instanceof Parameter
-      assert c.criterionList[0].criterions[1].criterions[0].value.parameterName == 'x'
-      assert c.criterionList[0].criterions[1].criterions[1].function == 'le'
-      assert c.criterionList[0].criterions[1].criterions[1].arguments.length == 2
-      assert c.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
-      assert c.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
+      assertEquals('nextObject', c.mapping.name)
+      assertEquals('ObjectInfo', c.classMetadata.name)
+      assertEquals(0, c.children.size())
+      assertEquals(1, c.criterionList.size())
+      assertInstanceOf(Disjunction, c.criterionList[0])
+      assertEquals(2, c.criterionList[0].criterions.size())
+      assertInstanceOf(EQCriterion, c.criterionList[0].criterions[0])
+      assertInstanceOf(Conjunction, c.criterionList[0].criterions[1])
+      assertEquals('date', c.criterionList[0].criterions[0].fieldName)
+      assertEquals('2007', c.criterionList[0].criterions[0].value)
+      assertEquals(2, c.criterionList[0].criterions[1].criterions.size())
+      assertInstanceOf(EQCriterion, c.criterionList[0].criterions[1].criterions[0])
+      assertInstanceOf(ProxyCriterion, c.criterionList[0].criterions[1].criterions[1])
+      assertEquals('rights', c.criterionList[0].criterions[1].criterions[0].fieldName)
+      assertInstanceOf(Parameter, c.criterionList[0].criterions[1].criterions[0].value)
+      assertEquals('x', c.criterionList[0].criterions[1].criterions[0].value.parameterName)
+      assertEquals('le', c.criterionList[0].criterions[1].criterions[1].function)
+      assertEquals(2, c.criterionList[0].criterions[1].criterions[1].arguments.length)
+      assertEquals('dc_type', c.criterionList[0].criterions[1].criterions[1].arguments[0])
+      assertEquals('x:y'.toURI(), c.criterionList[0].criterions[1].criterions[1].arguments[1])
 
       /* oql w/ deref in proj -> referrer criteria 
        * note: this next query is not a valid filter query, but toCriteria() supports it
@@ -1690,175 +1691,179 @@ public class OqlTest extends AbstractTest {
       qry = """select n.nextObject from Article o where
         (o.title = 'foo' or o.authors = :auth) and o.nextObject.uri = <foo:bar> and
         n := o.parts and q := n.nextObject and n.dc_type = <dc:type> and
-        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)));""";
+        (x := :x and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)));"""
       ofd = new OqlFilterDefinition("oqlR", "ObjectInfo", qry)
-      c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria();
+      c = ofd.createFilter(s).setParameter('auth', 'blah').getCriteria()
 
-      assert c.criterionList.size() == 0
-      assert c.children.size() == 1
+      assertEquals(0, c.criterionList.size())
+      assertEquals(1, c.children.size())
 
       c = c.children[0]                         // 'n'
-      assert c.mapping.name == 'nextObject'
-      assert c.classMetadata.name == 'ObjectInfo'
+      assertEquals('nextObject', c.mapping.name)
+      assertEquals('ObjectInfo', c.classMetadata.name)
       assert c.isReferrer()
 
-      assert c.criterionList.size() == 1        // n.dc_type = <dc:type>
-      assert c.criterionList[0] instanceof EQCriterion
-      assert c.criterionList[0].fieldName == 'dc_type'
-      assert c.criterionList[0].value == 'dc:type'.toURI()
+      assertEquals(1, c.criterionList.size())   // n.dc_type = <dc:type>
+      assertInstanceOf(EQCriterion, c.criterionList[0])
+      assertEquals('dc_type', c.criterionList[0].fieldName)
+      assertEquals('dc:type'.toURI(), c.criterionList[0].value)
 
-      assert c.children.size() == 2             // n := o.parts, q := n.nextObject
-      assert c.children[0].mapping.name == 'parts'
-      assert c.children[1].mapping.name == 'nextObject'
-      assert c.children[0].classMetadata.name == 'Article'
-      assert c.children[1].classMetadata.name == 'ObjectInfo'
-      assert c.children[0].isReferrer() == true
-      assert c.children[1].isReferrer() == false
+      assertEquals(2, c.children.size())        // n := o.parts, q := n.nextObject
+      assertEquals('parts', c.children[0].mapping.name)
+      assertEquals('nextObject', c.children[1].mapping.name)
+      assertEquals('Article', c.children[0].classMetadata.name)
+      assertEquals('ObjectInfo', c.children[1].classMetadata.name)
+      assertEquals(true, c.children[0].isReferrer())
+      assertEquals(false, c.children[1].isReferrer())
 
       Criteria ch = c.children[0]               // 'o'
-      assert ch.criterionList.size() == 1
-      assert ch.criterionList[0] instanceof Disjunction
-      assert ch.criterionList[0].criterions.size() == 2
-      assert ch.criterionList[0].criterions[0] instanceof EQCriterion
-      assert ch.criterionList[0].criterions[1] instanceof EQCriterion
-      assert ch.criterionList[0].criterions[0].fieldName == 'title'
-      assert ch.criterionList[0].criterions[0].value == 'foo'
-      assert ch.criterionList[0].criterions[1].fieldName == 'authors'
-      assert ch.criterionList[0].criterions[1].value instanceof Parameter
-      assert ch.criterionList[0].criterions[1].value.parameterName == 'auth'
+      assertEquals(1, ch.criterionList.size())
+      assertInstanceOf(Disjunction, ch.criterionList[0])
+      assertEquals(2, ch.criterionList[0].criterions.size())
+      assertInstanceOf(EQCriterion, ch.criterionList[0].criterions[0])
+      assertInstanceOf(EQCriterion, ch.criterionList[0].criterions[1])
+      assertEquals('title', ch.criterionList[0].criterions[0].fieldName)
+      assertEquals('foo', ch.criterionList[0].criterions[0].value)
+      assertEquals('authors', ch.criterionList[0].criterions[1].fieldName)
+      assertInstanceOf(Parameter, ch.criterionList[0].criterions[1].value)
+      assertEquals('auth', ch.criterionList[0].criterions[1].value.parameterName)
 
-      assert ch.children.size() == 1
+      assertEquals(1, ch.children.size())
       ch = ch.children[0]                       // o.nextObject
-      assert ch.children.size() == 0
-      assert ch.criterionList.size() == 1
-      assert ch.criterionList[0] instanceof EQCriterion
-      assert ch.criterionList[0].fieldName == 'uri'
-      assert ch.criterionList[0].value == 'foo:bar'.toURI()
+      assertEquals(0, ch.children.size())
+      assertEquals(1, ch.criterionList.size())
+      assertInstanceOf(EQCriterion, ch.criterionList[0])
+      assertEquals('uri', ch.criterionList[0].fieldName)
+      assertEquals('foo:bar'.toURI(), ch.criterionList[0].value)
 
       ch = c.children[1]                        // 'q'
-      assert ch.children.size() == 0
-      assert ch.criterionList.size() == 1
-      assert ch.criterionList[0] instanceof Disjunction
-      assert ch.criterionList[0].criterions.size() == 2
-      assert ch.criterionList[0].criterions[0] instanceof EQCriterion
-      assert ch.criterionList[0].criterions[1] instanceof Conjunction
-      assert ch.criterionList[0].criterions[0].fieldName == 'date'
-      assert ch.criterionList[0].criterions[0].value == '2007'
-      assert ch.criterionList[0].criterions[1].criterions.size() == 2
-      assert ch.criterionList[0].criterions[1].criterions[0] instanceof EQCriterion
-      assert ch.criterionList[0].criterions[1].criterions[1] instanceof ProxyCriterion
-      assert ch.criterionList[0].criterions[1].criterions[0].fieldName == 'rights'
-      assert ch.criterionList[0].criterions[1].criterions[0].value instanceof Parameter
-      assert ch.criterionList[0].criterions[1].criterions[0].value.parameterName == 'x'
-      assert ch.criterionList[0].criterions[1].criterions[1].function == 'le'
-      assert ch.criterionList[0].criterions[1].criterions[1].arguments.length == 2
-      assert ch.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
-      assert ch.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
+      assertEquals(0, ch.children.size())
+      assertEquals(1, ch.criterionList.size())
+      assertInstanceOf(Disjunction, ch.criterionList[0])
+      assertEquals(2, ch.criterionList[0].criterions.size())
+      assertInstanceOf(EQCriterion, ch.criterionList[0].criterions[0])
+      assertInstanceOf(Conjunction, ch.criterionList[0].criterions[1])
+      assertEquals('date', ch.criterionList[0].criterions[0].fieldName)
+      assertEquals('2007', ch.criterionList[0].criterions[0].value)
+      assertEquals(2, ch.criterionList[0].criterions[1].criterions.size())
+      assertInstanceOf(EQCriterion, ch.criterionList[0].criterions[1].criterions[0])
+      assertInstanceOf(ProxyCriterion, ch.criterionList[0].criterions[1].criterions[1])
+      assertEquals('rights', ch.criterionList[0].criterions[1].criterions[0].fieldName)
+      assertInstanceOf(Parameter, ch.criterionList[0].criterions[1].criterions[0].value)
+      assertEquals('x', ch.criterionList[0].criterions[1].criterions[0].value.parameterName)
+      assertEquals('le', ch.criterionList[0].criterions[1].criterions[1].function)
+      assertEquals(2, ch.criterionList[0].criterions[1].criterions[1].arguments.length)
+      assertEquals('dc_type', ch.criterionList[0].criterions[1].criterions[1].arguments[0])
+      assertEquals('x:y'.toURI(), ch.criterionList[0].criterions[1].criterions[1].arguments[1])
 
       // oql with casts -> criteria
       qry = """select o from Article o where o.title = 'foo' and
         cast(o.nextObject, Article).categories = 'foo' and
         cast(cast(o, ObjectInfo).nextObject, Article).dc_type = <dc:type> and
         p := cast(o.parts, Article) and q := cast(p, ObjectInfo).nextObject and
-        (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));""";
+        (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));"""
       ofd = new OqlFilterDefinition("oqlFC", "Article", qry)
-      c = ofd.createFilter(s).getCriteria();
+      c = ofd.createFilter(s).getCriteria()
 
-      assert c.criterionList.size() == 1                // o.title = 'foo'
-      assert c.criterionList[0] instanceof EQCriterion
-      assert c.criterionList[0].fieldName == 'title'
-      assert c.criterionList[0].value == 'foo'
+      assertEquals(1, c.criterionList.size())           // o.title = 'foo'
+      assertInstanceOf(EQCriterion, c.criterionList[0])
+      assertEquals('title', c.criterionList[0].fieldName)
+      assertEquals('foo', c.criterionList[0].value)
 
-      assert c.children.size() == 3
-      assert c.children[0].mapping.name == 'parts'
-      assert c.children[1].mapping.name == 'nextObject'
-      assert c.children[2].mapping.name == 'nextObject'
-      assert c.children[0].classMetadata.name == 'Article'
-      assert c.children[1].classMetadata.name == 'Article'
-      assert c.children[2].classMetadata.name == 'Article'
-      assert c.children[0].children.size() == 1
-      assert c.children[1].children.size() == 0
-      assert c.children[2].children.size() == 0
-      assert c.children[0].criterionList.size() == 0
-      assert c.children[1].criterionList.size() == 1
-      assert c.children[2].criterionList.size() == 1
-      assert c.children[1].criterionList[0] instanceof EQCriterion
-      assert c.children[2].criterionList[0] instanceof EQCriterion
-      assert c.children[1].criterionList[0].fieldName == 'categories'
-      assert c.children[1].criterionList[0].value == 'foo'
-      assert c.children[2].criterionList[0].fieldName == 'dc_type'
-      assert c.children[2].criterionList[0].value == 'dc:type'.toURI()
+      assertEquals(3, c.children.size())
+      assertEquals('parts', c.children[0].mapping.name)
+      assertEquals('nextObject', c.children[1].mapping.name)
+      assertEquals('nextObject', c.children[2].mapping.name)
+      assertEquals('Article', c.children[0].classMetadata.name)
+      assertEquals('Article', c.children[1].classMetadata.name)
+      assertEquals('Article', c.children[2].classMetadata.name)
+      assertEquals(1, c.children[0].children.size())
+      assertEquals(0, c.children[1].children.size())
+      assertEquals(0, c.children[2].children.size())
+      assertEquals(0, c.children[0].criterionList.size())
+      assertEquals(1, c.children[1].criterionList.size())
+      assertEquals(1, c.children[2].criterionList.size())
+      assertInstanceOf(EQCriterion, c.children[1].criterionList[0])
+      assertInstanceOf(EQCriterion, c.children[2].criterionList[0])
+      assertEquals('categories', c.children[1].criterionList[0].fieldName)
+      assertEquals('foo', c.children[1].criterionList[0].value)
+      assertEquals('dc_type', c.children[2].criterionList[0].fieldName)
+      assertEquals('dc:type'.toURI(), c.children[2].criterionList[0].value)
 
       c = c.children[0].children[0]                     // 'q'
-      assert c.mapping.name == 'nextObject'
-      assert c.classMetadata.name == 'ObjectInfo'
-      assert c.children.size() == 0
-      assert c.criterionList.size() == 1
-      assert c.criterionList[0] instanceof Disjunction
-      assert c.criterionList[0].criterions.size() == 2
-      assert c.criterionList[0].criterions[0] instanceof EQCriterion
-      assert c.criterionList[0].criterions[1] instanceof ProxyCriterion
-      assert c.criterionList[0].criterions[0].fieldName == 'date'
-      assert c.criterionList[0].criterions[0].value == '2007'
-      assert c.criterionList[0].criterions[1].function == 'le'
-      assert c.criterionList[0].criterions[1].arguments.length == 2
-      assert c.criterionList[0].criterions[1].arguments[0] == 'dc_type'
-      assert c.criterionList[0].criterions[1].arguments[1] == 'x:y'.toURI()
+      assertEquals('nextObject', c.mapping.name)
+      assertEquals('ObjectInfo', c.classMetadata.name)
+      assertEquals(0, c.children.size())
+      assertEquals(1, c.criterionList.size())
+      assertInstanceOf(Disjunction, c.criterionList[0])
+      assertEquals(2, c.criterionList[0].criterions.size())
+      assertInstanceOf(EQCriterion, c.criterionList[0].criterions[0])
+      assertInstanceOf(ProxyCriterion, c.criterionList[0].criterions[1])
+      assertEquals('date', c.criterionList[0].criterions[0].fieldName)
+      assertEquals('2007', c.criterionList[0].criterions[0].value)
+      assertEquals('le', c.criterionList[0].criterions[1].function)
+      assertEquals(2, c.criterionList[0].criterions[1].arguments.length)
+      assertEquals('dc_type', c.criterionList[0].criterions[1].arguments[0])
+      assertEquals('x:y'.toURI(), c.criterionList[0].criterions[1].arguments[1])
 
       // oql w/ casts -> referrer criteria 
       qry = """select n from Article o where o.title = 'foo' and
         cast(cast(o, ObjectInfo).nextObject, Article).uri = <foo:bar> and
         n := cast(o.parts, Article) and q := cast(n.nextObject, Article)
         and n.dc_type = <dc:type> and
-        (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));""";
+        (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));"""
       ofd = new OqlFilterDefinition("oqlRC", "Article", qry)
-      c = ofd.createFilter(s).getCriteria();
+      c = ofd.createFilter(s).getCriteria()
 
-      assert c.classMetadata.name == 'Article'
-      assert c.criterionList.size() == 1        // n.dc_type = <dc:type>
-      assert c.criterionList[0] instanceof EQCriterion
-      assert c.criterionList[0].fieldName == 'dc_type'
-      assert c.criterionList[0].value == 'dc:type'.toURI()
+      assertEquals('Article', c.classMetadata.name)
+      assertEquals(1, c.criterionList.size())   // n.dc_type = <dc:type>
+      assertInstanceOf(EQCriterion, c.criterionList[0])
+      assertEquals('dc_type', c.criterionList[0].fieldName)
+      assertEquals('dc:type'.toURI(), c.criterionList[0].value)
 
-      assert c.children.size() == 2             // n := o.parts, q := n.nextObject
-      assert c.children[0].mapping.name == 'parts'
-      assert c.children[1].mapping.name == 'nextObject'
-      assert c.children[0].classMetadata.name == 'Article'
-      assert c.children[1].classMetadata.name == 'Article'
-      assert c.children[0].isReferrer() == true
-      assert c.children[1].isReferrer() == false
+      assertEquals(2, c.children.size())        // n := o.parts, q := n.nextObject 
+      assertEquals('parts', c.children[0].mapping.name)
+      assertEquals('nextObject', c.children[1].mapping.name)
+      assertEquals('Article', c.children[0].classMetadata.name)
+      assertEquals('Article', c.children[1].classMetadata.name)
+      assertEquals(true, c.children[0].isReferrer())
+      assertEquals(false, c.children[1].isReferrer())
 
       ch = c.children[0]                        // 'o'
-      assert ch.criterionList.size() == 1
-      assert ch.criterionList[0] instanceof EQCriterion
-      assert ch.criterionList[0].fieldName == 'title'
-      assert ch.criterionList[0].value == 'foo'
+      assertEquals(1, ch.criterionList.size())
+      assertInstanceOf(EQCriterion, ch.criterionList[0])
+      assertEquals('title', ch.criterionList[0].fieldName)
+      assertEquals('foo', ch.criterionList[0].value)
 
-      assert ch.children.size() == 1
+      assertEquals(1, ch.children.size())
       ch = ch.children[0]                       // o.nextObject
-      assert ch.mapping.name == 'nextObject'
-      assert ch.classMetadata.name == 'Article'
-      assert ch.isReferrer() == false
-      assert ch.children.size() == 0
-      assert ch.criterionList.size() == 1
-      assert ch.criterionList[0] instanceof EQCriterion
-      assert ch.criterionList[0].fieldName == 'uri'
-      assert ch.criterionList[0].value == 'foo:bar'.toURI()
+      assertEquals('nextObject', ch.mapping.name)
+      assertEquals('Article', ch.classMetadata.name)
+      assertEquals(false, ch.isReferrer())
+      assertEquals(0, ch.children.size())
+      assertEquals(1, ch.criterionList.size())
+      assertInstanceOf(EQCriterion, ch.criterionList[0])
+      assertEquals('uri', ch.criterionList[0].fieldName)
+      assertEquals('foo:bar'.toURI(), ch.criterionList[0].value)
 
       ch = c.children[1]                        // 'q'
-      assert ch.children.size() == 0
-      assert ch.criterionList.size() == 1
-      assert ch.criterionList[0] instanceof Disjunction
-      assert ch.criterionList[0].criterions.size() == 2
-      assert ch.criterionList[0].criterions[0] instanceof EQCriterion
-      assert ch.criterionList[0].criterions[1] instanceof ProxyCriterion
-      assert ch.criterionList[0].criterions[0].fieldName == 'date'
-      assert ch.criterionList[0].criterions[0].value == '2007'
-      assert ch.criterionList[0].criterions[1].function == 'le'
-      assert ch.criterionList[0].criterions[1].arguments.length == 2
-      assert ch.criterionList[0].criterions[1].arguments[0] == 'dc_type'
-      assert ch.criterionList[0].criterions[1].arguments[1] == 'x:y'.toURI()
+      assertEquals(0, ch.children.size())
+      assertEquals(1, ch.criterionList.size())
+      assertInstanceOf(Disjunction, ch.criterionList[0])
+      assertEquals(2, ch.criterionList[0].criterions.size())
+      assertInstanceOf(EQCriterion, ch.criterionList[0].criterions[0])
+      assertInstanceOf(ProxyCriterion, ch.criterionList[0].criterions[1])
+      assertEquals('date', ch.criterionList[0].criterions[0].fieldName)
+      assertEquals('2007', ch.criterionList[0].criterions[0].value)
+      assertEquals('le', ch.criterionList[0].criterions[1].function)
+      assertEquals(2, ch.criterionList[0].criterions[1].arguments.length)
+      assertEquals('dc_type', ch.criterionList[0].criterions[1].arguments[0])
+      assertEquals('x:y'.toURI(), ch.criterionList[0].criterions[1].arguments[1])
     }
+  }
+
+  private void assertInstanceOf(Class cls, Object obj) {
+    assert cls.isInstance(obj) : "${obj} is not an instance of ${cls}"
   }
 }
 

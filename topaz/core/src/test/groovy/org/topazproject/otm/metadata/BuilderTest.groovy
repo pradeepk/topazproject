@@ -54,7 +54,7 @@ public class BuilderTest extends GroovyTestCase {
 
     obj = cls.newInstance(uri:'foo:1', state:1, name:[id:'foo:n1'.toURI()],
                           goals:['one', 'two'] as Set)
-    assert obj.name == obj.name.class.newInstance(id:'foo:n1'.toURI(), givenName:'Peter')
+    assertEquals(obj.name.class.newInstance(id:'foo:n1'.toURI(), givenName:'Peter'), obj.name)
 
     assert shouldFail(OtmException, {
       rdf.class() {
@@ -76,18 +76,18 @@ public class BuilderTest extends GroovyTestCase {
     }
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test1'
-    assert cm.model         == 'ri'
-    assert cm.rdfMappers.size() == 1
+    assertEquals('http://rdf.topazproject.org/RDF/Test1', cm.type)
+    assertEquals('ri', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     def m = cm.rdfMappers.iterator().next()
     def l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == String.class
-    assert m.dataType == null
-    assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('state', m.name)
+    assertEquals(String.class, l.type)
+    assertNull(m.dataType)
+    assertEquals('http://rdf.topazproject.org/RDF/state', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     // relative-uri overrides, typed literal
     cls = rdf.class('Test2', type:'Test2', model:'m2') {
@@ -95,18 +95,18 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
-    assert cm.model         == 'm2'
-    assert cm.rdfMappers.size() == 1
+    assertEquals('http://rdf.topazproject.org/RDF/Test2', cm.type)
+    assertEquals('m2', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == Integer.TYPE
-    assert m.dataType == 'http://www.w3.org/2001/XMLSchema#int'
-    assert m.uri      == 'http://rdf.topazproject.org/RDF/p2'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('state', m.name)
+    assertEquals(Integer.TYPE, l.type)
+    assertEquals('http://www.w3.org/2001/XMLSchema#int', m.dataType)
+    assertEquals('http://rdf.topazproject.org/RDF/p2', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     // absolute-uri overrides, class type
     Class cls2 = cls
@@ -115,18 +115,18 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'foo:Test3'
-    assert cm.model         == 'm3'
-    assert cm.rdfMappers.size() == 1
+    assertEquals('foo:Test3', cm.type)
+    assertEquals('m3', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == cls2
-    assert m.dataType == null
-    assert m.uri      == 'foo:p3'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('state', m.name)
+    assertEquals(cls2, l.type)
+    assertEquals(null, m.dataType)
+    assertEquals('foo:p3', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     // nested class type
     cls = rdf.class('Test4', type:'foo:Test4', model:'m4') {
@@ -139,60 +139,60 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'foo:Test4'
-    assert cm.model         == 'm4'
-    assert cm.rdfMappers.size() == 1
+    assertEquals('foo:Test4', cm.type)
+    assertEquals('m4', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == rdf.sessFactory.getClassMetadata('State')
-                                 .getEntityBinder(EntityMode.POJO).sourceClass
-    assert m.dataType == null
-    assert m.uri      == 'foo:p4'
-    assert !m.hasInverseUri()
-    assert m.model    == 'm41'
+    assertEquals('state', m.name)
+    assertEquals(rdf.sessFactory.getClassMetadata('State').getEntityBinder(EntityMode.POJO).
+                 sourceClass, l.type)
+    assertNull(m.dataType)
+    assertEquals('foo:p4', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertEquals('m41', m.model)
 
     cm = rdf.sessFactory.getClassMetadata('State')
 
-    assert cm.type          == 'bar4:State'
-    assert cm.model         == 'm41'
-    assert cm.rdfMappers.size() == 2
+    assertEquals('bar4:State', cm.type)
+    assertEquals('m41', cm.model)
+    assertEquals(2, cm.rdfMappers.size())
 
     m = cm.rdfMappers.asList()[0]
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'value'
-    assert l.type     == String.class
-    assert m.dataType == null
-    assert m.uri      == 'bar4:value'
-    assert !m.hasInverseUri()
-    assert m.model    == 'm42'
+    assertEquals('value', m.name)
+    assertEquals(String.class, l.type)
+    assertNull(m.dataType)
+    assertEquals('bar4:value', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertEquals('m42', m.model)
 
     m = cm.rdfMappers.asList()[1]
     l = m.getBinder(EntityMode.POJO)
-    assert m.name          == 'history'
-    assert l.type          == List.class
-    assert l.componentType == rdf.sessFactory.getClassMetadata('History')
-                                      .getEntityBinder(EntityMode.POJO).sourceClass
-    assert m.dataType      == null
-    assert m.uri           == 'bar4:history'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('history', m.name)
+    assertEquals(List.class, l.type)
+    assertEquals(rdf.sessFactory.getClassMetadata('History').getEntityBinder(EntityMode.POJO).
+                 sourceClass, l.componentType)
+    assertNull(m.dataType)
+    assertEquals('bar4:history', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     cm = rdf.sessFactory.getClassMetadata('History')
 
-    assert cm.type          == 'bar4:History'
-    assert cm.model         == 'm41'
-    assert cm.rdfMappers.size() == 1
+    assertEquals('bar4:History', cm.type)
+    assertEquals('m41', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.asList()[0]
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'value'
-    assert l.type     == String.class
-    assert m.dataType == null
-    assert m.uri      == 'bar4:value'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('value', m.name)
+    assertEquals(String.class, l.type)
+    assertNull(m.dataType)
+    assertEquals('bar4:value', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     // uri type
     cls = rdf.class('Test5', type:'foo:Test5', model:'m5') {
@@ -200,18 +200,18 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'foo:Test5'
-    assert cm.model         == 'm5'
-    assert cm.rdfMappers.size() == 1
+    assertEquals('foo:Test5', cm.type)
+    assertEquals('m5', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == URI.class
-    assert m.typeIsUri ()
-    assert m.uri      == 'foo:p5'
-    assert m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('state', m.name)
+    assertEquals(URI.class, l.type)
+    assertTrue(m.typeIsUri())
+    assertEquals('foo:p5', m.uri)
+    assertTrue(m.hasInverseUri())
+    assertNull(m.model)
 
     // no default prefix defined
     rdf.defUriPrefix = null
@@ -220,18 +220,18 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'p6:Test6'
-    assert cm.model         == 'ri'
-    assert cm.rdfMappers.size() == 1
+    assertEquals('p6:Test6', cm.type)
+    assertEquals('ri', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == URI.class
-    assert m.dataType == Rdf.xsd + 'anyURI'
-    assert m.uri      == 'p6:state'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('state', m.name)
+    assertEquals(URI.class, l.type)
+    assertEquals(Rdf.xsd + 'anyURI', m.dataType)
+    assertEquals('p6:state', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     // no prefix defined, default type
     assert shouldFail(OtmException, {
@@ -269,18 +269,18 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == null
-    assert cm.model         == 'ri'
-    assert cm.rdfMappers.size() == 1
+    assertNull(cm.type)
+    assertEquals('ri', cm.model)
+    assertEquals(1, cm.rdfMappers.size())
 
     m = cm.rdfMappers.iterator().next()
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == String.class
-    assert m.dataType == null
-    assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('state', m.name)
+    assertEquals(String.class, l.type)
+    assertNull(m.dataType)
+    assertEquals('http://rdf.topazproject.org/RDF/state', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     Class sup = rdf.class('Test12') {
       state ()
@@ -290,27 +290,27 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == null
-    assert cm.model         == 'ri'
-    assert cm.rdfMappers.size() == 2
+    assertNull(cm.type)
+    assertEquals('ri', cm.model)
+    assertEquals(2, cm.rdfMappers.size())
 
     m = cm.rdfMappers.asList()[0]
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'blah'
-    assert l.type     == String.class
-    assert m.dataType == null
-    assert m.uri      == 'http://rdf.topazproject.org/RDF/blah'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('blah', m.name)
+    assertEquals(String.class, l.type)
+    assertNull(m.dataType)
+    assertEquals('http://rdf.topazproject.org/RDF/blah', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
 
     m = cm.rdfMappers.asList()[1]
     l = m.getBinder(EntityMode.POJO)
-    assert m.name     == 'state'
-    assert l.type     == String.class
-    assert m.dataType == null
-    assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
-    assert !m.hasInverseUri()
-    assert m.model    == null
+    assertEquals('state', m.name)
+    assertEquals(String.class, l.type)
+    assertNull(m.dataType)
+    assertEquals('http://rdf.topazproject.org/RDF/state', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
   }
 
   void testDatatypes() {
@@ -449,35 +449,35 @@ public class BuilderTest extends GroovyTestCase {
     }
 
     def obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'] as Set)
-    assert obj.goals instanceof Set
+    assert obj.goals instanceof Set : obj.goals
 
     // List, RdfSeq
     cls = rdf.class('Test2') {
       goals (maxCard:-1, colType:'List', colMapping:'RdfSeq')
     }
     obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'])
-    assert obj.goals instanceof List
+    assert obj.goals instanceof List : obj.goals
 
     // List, RdfList
     cls = rdf.class('Test3') {
       goals (maxCard:-1, colType:'List', colMapping:'RdfList')
     }
     obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'])
-    assert obj.goals instanceof List
+    assert obj.goals instanceof List : obj.goals
 
     // String[], RdfAlt
     cls = rdf.class('Test4') {
       goals (maxCard:-1, colType:'Array', colMapping:'RdfAlt')
     }
     obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'])
-    assert obj.goals instanceof String[]
+    assert obj.goals instanceof String[] : obj.goals
 
     // int[], predicate
     cls = rdf.class('Test5') {
       goals (maxCard:-1, colType:'Array', type:'xsd:int', colMapping:'Predicate')
     }
     obj = cls.newInstance(id:'foo:1'.toURI(), goals:[1, 2])
-    assert obj.goals instanceof int[]
+    assert obj.goals instanceof int[] : obj.goals
 
     // illegal collection type
     assert shouldFail(OtmException.class, {
@@ -609,14 +609,14 @@ public class BuilderTest extends GroovyTestCase {
     shouldFail(NoSuchFieldException, { base.getDeclaredField('id') })
 
     def obj  = ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue')
-    assert obj != null
-    assert !obj.equals(null)
-    assert obj == ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue')
-    assert obj != ext.newInstance(id:'foo:2'.toURI(), state:42, color:'blue')
-    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:43, color:'blue')
-    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:42, color:'red')
+    assertNotNull(obj)
+    assertFalse(obj.equals(null))
+    assertEquals(ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue'), obj)
+    assert obj != ext.newInstance(id:'foo:2'.toURI(), state:42, color:'blue') : obj
+    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:43, color:'blue') : obj
+    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:42, color:'red') : obj
 
-    assert obj.hashCode() == 'foo:1'.toURI().hashCode()
+    assertEquals('foo:1'.toURI().hashCode(), obj.hashCode())
 
     // id inheritance
     base = rdf.class('Base2', isAbstract:true) {
@@ -630,7 +630,7 @@ public class BuilderTest extends GroovyTestCase {
 
     obj = ext.newInstance(uri:'foo:1', state:42, color:'blue')
     shouldFail(MissingPropertyException, { obj.id })
-    assert obj.hashCode() == 'foo:1'.hashCode()
+    assertEquals('foo:1'.hashCode(), obj.hashCode())
 
     // non-abstract base
     base = rdf.class('Base3') {
@@ -644,7 +644,7 @@ public class BuilderTest extends GroovyTestCase {
 
     obj = ext.newInstance(uri:'foo:1', state:42, color:'blue')
     shouldFail(MissingPropertyException, { obj.id })
-    assert obj.hashCode() == 'foo:1'.hashCode()
+    assertEquals('foo:1'.hashCode(), obj.hashCode())
   }
 
   void testEmbeddedClass() {
@@ -658,10 +658,10 @@ public class BuilderTest extends GroovyTestCase {
     }
 
     def mappers = rdf.sessFactory.getClassMetadata(cls).rdfMappers
-    assert mappers.size() == 3
+    assertEquals(3, mappers.size())
     for (Mapper m : mappers)
-      assert m.getBinder(EntityMode.POJO).serializer != null
-    assert mappers.name.sort() == [ 'name.givenName', 'name.surname', 'state' ]
+      assertNotNull(m.getBinder(EntityMode.POJO).serializer)
+    assertEquals([ 'name.givenName', 'name.surname', 'state' ], mappers.name.sort())
 
     // nested embeddings
     cls = rdf.class('Test2') {
@@ -677,11 +677,11 @@ public class BuilderTest extends GroovyTestCase {
     }
 
     mappers = rdf.sessFactory.getClassMetadata(cls).rdfMappers
-    assert mappers.size() == 3
+    assertEquals(3, mappers.size())
     for (Mapper m : mappers)
-      assert m.getBinder(EntityMode.POJO).serializer != null
-    assert mappers.name.sort() ==
-                      [ 'info.personal.name.givenName', 'info.personal.name.surname', 'state' ]
+      assertNotNull(m.getBinder(EntityMode.POJO).serializer)
+    assertEquals([ 'info.personal.name.givenName', 'info.personal.name.surname', 'state' ],
+                 mappers.name.sort())
 
     // embedded with max-card > 1
     assert shouldFail(OtmException, {
@@ -747,18 +747,18 @@ public class BuilderTest extends GroovyTestCase {
     }
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cls.name         == 'org.foo.Test1'
-    assert cm.type          == 'http://rdf.topazproject.org/RDF/org.foo.Test1'
+    assertEquals('org.foo.Test1', cls.name)
+    assertEquals('http://rdf.topazproject.org/RDF/org.foo.Test1', cm.type)
 
     cm = rdf.sessFactory.getClassMetadata('Test1')
 
-    assert cls.name         == 'org.foo.Test1'
-    assert cm.type          == 'http://rdf.topazproject.org/RDF/org.foo.Test1'
+    assertEquals('org.foo.Test1', cls.name)
+    assertEquals('http://rdf.topazproject.org/RDF/org.foo.Test1', cm.type)
 
     cm = rdf.sessFactory.getClassMetadata('org.foo.Test1')
 
-    assert cls.name         == 'org.foo.Test1'
-    assert cm.type          == 'http://rdf.topazproject.org/RDF/org.foo.Test1'
+    assertEquals('org.foo.Test1', cls.name)
+    assertEquals('http://rdf.topazproject.org/RDF/org.foo.Test1', cm.type)
 
     // default package
     cls = rdf.class('Test2') {
@@ -766,13 +766,13 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cls.name         == 'Test2'
-    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
+    assertEquals('Test2', cls.name)
+    assertEquals('http://rdf.topazproject.org/RDF/Test2', cm.type)
 
     cm = rdf.sessFactory.getClassMetadata('Test2')
 
-    assert cls.name         == 'Test2'
-    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
+    assertEquals('Test2', cls.name)
+    assertEquals('http://rdf.topazproject.org/RDF/Test2', cm.type)
   }
 
   void testErrorHandling() {
@@ -824,81 +824,81 @@ public class BuilderTest extends GroovyTestCase {
     ClassMetadata wrong = rdf.sessFactory.getClassMetadata(wrongc);
     ClassMetadata right = rdf.sessFactory.getClassMetadata(rightc);
 
-    assert nt.isAssignableFrom(base)
-    assert nt.isAssignableFrom(right)
-    assert nt.isAssignableFrom(wrong)
-    assert base.isAssignableFrom(base)
-    assert base.isAssignableFrom(right)
-    assert base.isAssignableFrom(wrong)
-    assert right.isAssignableFrom(right)
-    assert !right.isAssignableFrom(wrong)
-    assert !right.isAssignableFrom(base)
-    assert wrong.isAssignableFrom(wrong)
-    assert !wrong.isAssignableFrom(right)
-    assert !wrong.isAssignableFrom(base)
+    assertTrue(nt.isAssignableFrom(base))
+    assertTrue(nt.isAssignableFrom(right))
+    assertTrue(nt.isAssignableFrom(wrong))
+    assertTrue(base.isAssignableFrom(base))
+    assertTrue(base.isAssignableFrom(right))
+    assertTrue(base.isAssignableFrom(wrong))
+    assertTrue(right.isAssignableFrom(right))
+    assertFalse(right.isAssignableFrom(wrong))
+    assertFalse(right.isAssignableFrom(base))
+    assertTrue(wrong.isAssignableFrom(wrong))
+    assertFalse(wrong.isAssignableFrom(right))
+    assertFalse(wrong.isAssignableFrom(base))
 
     ClassMetadata p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, ['base:type', 'sub:type'])
-    assert right == p
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, ['sub:type', 'base:type'])
-    assert right == p
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['base:type', 'sub:type'])
-    assert wrong == p;
+    assertEquals(wrong, p)
 
     p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['sub:type', 'base:type'])
-    assert wrong == p;
+    assertEquals(wrong, p)
 
     p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['base:type', 'sub:type'])
-    assert right == p;
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['sub:type', 'base:type'])
-    assert right == p;
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['base:type'])
-    assert wrong == p;
+    assertEquals(wrong, p)
 
     p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['base:type'])
-    assert null == p;
+    assertNull(p)
 
     p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, ['base:type'])
-    assert wrong == p;
+    assertEquals(wrong, p)
 
     p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, ['sub:type'])
-    assert right == p;
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(right, EntityMode.POJO, ['sub:type'])
-    assert right == p;
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(wrong, EntityMode.POJO, ['sub:type'])
-    assert null == p;
+    assertNull(p)
 
     p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, ['junk:type'])
-    assert null == p;
+    assertNull(p)
 
     p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, ['junk:type'])
-    assert nt == p;
+    assertEquals(nt, p)
 
     p = rdf.sessFactory.getSubClassMetadata(nt, EntityMode.POJO, [])
-    assert nt == p;
+    assertEquals(nt, p)
 
     //p = rdf.sessFactory.getSubClassMetadata(null, EntityMode.POJO, [])
-    //assert nt == p;
+    //assertEquals(nt, p)
 
     p = rdf.sessFactory.getSubClassMetadata(base, EntityMode.POJO, [])
-    assert null == p;
+    assertNull(p)
 
     p = rdf.sessFactory.getSubClassMetadata(null, EntityMode.POJO, ['sub:type'])
-    assert right == p;
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(null, EntityMode.POJO, ['base:type'])
-    assert (right == p) || (wrong == p);
+    assert (right == p) || (wrong == p) : p
 
     p = rdf.sessFactory.getSubClassMetadata(null, EntityMode.POJO, ['base:type', 'sub:type'])
-    assert right == p;
+    assertEquals(right, p)
 
     p = rdf.sessFactory.getSubClassMetadata(null, EntityMode.POJO, ['sub:type', 'base:type'])
-    assert right == p;
+    assertEquals(right, p)
   }
 
   void testCascadeType() {
@@ -909,47 +909,47 @@ public class BuilderTest extends GroovyTestCase {
     }
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'foo:Test1'
-    assert cm.model         == 'm1'
-    assert cm.rdfMappers.size() == 3
+    assertEquals('foo:Test1', cm.type)
+    assertEquals('m1', cm.model)
+    assertEquals(3, cm.rdfMappers.size())
 
     Mapper m = cm.rdfMappers.asList()[0]
     FieldBinder l = (FieldBinder)m.getBinder(EntityMode.POJO)
-    assert m.name     == 'sel'
-    assert l.type     == cls
-    assert m.dataType == null
-    assert m.uri      == 'foo:p1'
-    assert !m.hasInverseUri()
-    assert m.model    == null
-    assert m.isCascadable(CascadeType.delete)
-    assert m.isCascadable(CascadeType.saveOrUpdate)
-    assert !m.isCascadable(CascadeType.merge)
-    assert !m.isCascadable(CascadeType.refresh)
+    assertEquals('sel', m.name)
+    assertEquals(cls, l.type)
+    assertNull(m.dataType)
+    assertEquals('foo:p1', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
+    assertTrue(m.isCascadable(CascadeType.delete))
+    assertTrue(m.isCascadable(CascadeType.saveOrUpdate))
+    assertFalse(m.isCascadable(CascadeType.merge))
+    assertFalse(m.isCascadable(CascadeType.refresh))
 
     m = cm.rdfMappers.asList()[1]
     l = (FieldBinder)m.getBinder(EntityMode.POJO)
-    assert m.name     == 'all'
-    assert l.type     == cls
-    assert m.dataType == null
-    assert m.uri      == 'foo:p2'
-    assert !m.hasInverseUri()
-    assert m.model    == null
-    assert m.isCascadable(CascadeType.delete)
-    assert m.isCascadable(CascadeType.saveOrUpdate)
-    assert m.isCascadable(CascadeType.merge)
-    assert m.isCascadable(CascadeType.refresh)
+    assertEquals('all', m.name)
+    assertEquals(cls, l.type)
+    assertNull(m.dataType)
+    assertEquals('foo:p2', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
+    assertTrue(m.isCascadable(CascadeType.delete))
+    assertTrue(m.isCascadable(CascadeType.saveOrUpdate))
+    assertTrue(m.isCascadable(CascadeType.merge))
+    assertTrue(m.isCascadable(CascadeType.refresh))
 
     m = cm.rdfMappers.asList()[2]
     l = (FieldBinder)m.getBinder(EntityMode.POJO)
-    assert m.name     == 'none'
-    assert l.type     == cls
-    assert m.dataType == null
-    assert m.uri      == 'foo:p3'
-    assert !m.hasInverseUri()
-    assert m.model    == null
-    assert !m.isCascadable(CascadeType.delete)
-    assert !m.isCascadable(CascadeType.saveOrUpdate)
-    assert !m.isCascadable(CascadeType.merge)
-    assert !m.isCascadable(CascadeType.refresh)
+    assertEquals('none', m.name)
+    assertEquals(cls, l.type)
+    assertNull(m.dataType)
+    assertEquals('foo:p3', m.uri)
+    assertFalse(m.hasInverseUri())
+    assertNull(m.model)
+    assertFalse(m.isCascadable(CascadeType.delete))
+    assertFalse(m.isCascadable(CascadeType.saveOrUpdate))
+    assertFalse(m.isCascadable(CascadeType.merge))
+    assertFalse(m.isCascadable(CascadeType.refresh))
   }
 }
