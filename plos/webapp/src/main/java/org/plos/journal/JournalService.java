@@ -47,6 +47,7 @@ import org.topazproject.otm.filter.ConjunctiveFilterDefinition;
 import org.topazproject.otm.filter.CriteriaFilterDefinition;
 import org.topazproject.otm.filter.DisjunctiveFilterDefinition;
 import org.topazproject.otm.filter.FilterDefinition;
+import org.topazproject.otm.filter.OqlFilterDefinition;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.mapping.EntityBinder;
@@ -393,12 +394,8 @@ public class JournalService {
 
     Map<String, FilterDefinition> smartFilterDefs = combineFilterDefs(sfd, pfx + "-af-");
 
-    List<URI> uris = new ArrayList<URI>(a.getSimpleCollection());
-    /*
-    if (addSelf)
-      uris.add(a.getId());
-    */
-    Map<String, FilterDefinition> staticFilterDefs = buildStaticFilters(uris, pfx + "-sf-", s);
+    Map<String, FilterDefinition> staticFilterDefs =
+                                                buildSimpleCollFilters(a, pfx + "-sf-", s, addSelf);
 
     Map<String, FilterDefinition> afds =
         mergeFilterDefs(smartFilterDefs, staticFilterDefs, pfx + "-of-");
@@ -453,39 +450,30 @@ public class JournalService {
   }
 
   /**
-   * Build the set of filter-definitions for the statically-defined list of objects.
+   * Build the set of filter-definitions for the aggregation's simple collection.
    *
-   * <p>Ideally this would create filter-definitions based on something like the following OQL
-   * query:
+   * <p>This creates the following filter-definition:
    * <pre>
-   *  select o from java.lang.Object o, Journal j where j.id = :jid and o = j.simpleCollection;
+   *  select o from Aggregation a where a.id = :jid and o := a.simpleCollection;
    * </pre>
-   * Unfortunately, however, this cannot be turned into a Criteria which currently is needed in
-   * order to apply the filter to Criteria-based queries. So instead it creates an explicit list
-   * of or'd id's.
    *
-   * @param uris the list of id's of the objects
-   * @param pfx  the prefix to use for filter-names
-   * @param s    the otm session to use
+   * @param a       the aggregation
+   * @param pfx     the prefix to use for filter-names
+   * @param s       the otm session to use
+   * @param addSelf whether or not the filters should select the aggregation object itself too
    * @return the set of filter-defs
    */
-  private Map<String, FilterDefinition> buildStaticFilters(List<URI> uris, String pfx, Session s) {
-    if (uris.size() == 0)
-      return Collections.EMPTY_MAP;
+  private Map<String, FilterDefinition> buildSimpleCollFilters(Aggregation a, String pfx, Session s,
+                                                               boolean addSelf) {
+    // FIXME: handle 'addSelf'
 
-    // get all the rdf:type's for each object
-    StringBuilder typeQry = new StringBuilder(110 + uris.size() * 70);
-    // Note to the unwary: this may look Article specific, but it isn't.
-    typeQry.append("select id, (select o.<rdf:type> from Object x) from Object o ").
-            append("where id := cast(o, Article).id and (");
+    /* get all the rdf:type's for each object.
+     * Note to the unwary: this may look Article specific, but it isn't.
+     */
+    String typeQry = "select id, (select o.<rdf:type> from Object x) from Object o, Aggregation a "+
+                     "  where id := cast(o, Article).id and a.id = :a and o = a.simpleCollection;";
 
-    for (URI uri : uris)
-      typeQry.append("id = <").append(uri).append("> or ");
-
-    typeQry.setLength(typeQry.length() - 4);
-    typeQry.append(");");
-
-    Results r = s.createQuery(typeQry.toString()).execute();
+    Results r = s.createQuery(typeQry.toString()).setParameter("a", a.getId()).execute();
 
     // build a map of uri's keyed by class
     Map<Class, Set<String>> idsByClass = new HashMap<Class, Set<String>>();
@@ -510,21 +498,16 @@ public class JournalService {
         continue;
       }
 
-      put(idsByClass, ((ClassBinder)c.getEntityBinder(EntityMode.POJO)).getSourceClass(), id);
+      put(idsByClass, ((ClassBinder) c.getEntityBinder(EntityMode.POJO)).getSourceClass(), id);
     }
 
     // create a filter-definition for each class
     Map<String, FilterDefinition> fds = new HashMap<String, FilterDefinition>();
     for (Class c : idsByClass.keySet()) {
       String cname = normalize(c.getName(), sf);
-      DetachedCriteria dc = new DetachedCriteria(cname);
-      Disjunction or = Restrictions.disjunction();
-      dc.add(or);
-
-      for (String id : idsByClass.get(c))
-        or.add(new SubjectCriterion(id));
-
-      fds.put(cname, new CriteriaFilterDefinition(pfx + c.getName(), dc));
+      String qry   = "select o from Aggregation a where o := cast(a.simpleCollection, " + cname +
+                     ") and a.id = <" + a.getId() + ">;";
+      fds.put(cname, new OqlFilterDefinition(pfx + c.getName(), cname, qry));
     }
 
     return fds;
