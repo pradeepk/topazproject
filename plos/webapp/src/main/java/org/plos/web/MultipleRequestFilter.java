@@ -19,6 +19,7 @@
 package org.plos.web;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -165,7 +166,7 @@ public class MultipleRequestFilter implements Filter {
     Set<String> map;
     synchronized (session) {
       if ((map = (Set<String>) session.getAttribute(REQUEST_MAP)) == null) {
-        map = new HashSet<String>();
+        map = Collections.synchronizedSet(new HashSet<String>());
         session.setAttribute(REQUEST_MAP, map);
       }
     }
