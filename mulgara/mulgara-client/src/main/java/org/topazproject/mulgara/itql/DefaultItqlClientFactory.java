@@ -20,6 +20,7 @@
 package org.topazproject.mulgara.itql;
 
 import java.net.URI;
+import java.net.URL;
 
 /**
  * The default implementation {@link ItqlClientFactory ItqlClientFactory}.
@@ -27,8 +28,8 @@ import java.net.URI;
  * @author Ronald Tschalär
  */
 public class DefaultItqlClientFactory implements ItqlClientFactory {
-  private static final String MEM_CONF = "mulgara-mem-config.xml";
-  private static final String DSK_CONF = "mulgara-emb-config.xml";
+  private static final String DEF_MEM_CONF = "mulgara-mem-config.xml";
+  private static final String DEF_DSK_CONF = "mulgara-emb-config.xml";
 
   private String dbDir = null;
 
@@ -60,9 +61,9 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
     if (scheme.equals("soap"))
       return new SoapClient(new URI("http", uri.getSchemeSpecificPart(), uri.getFragment()));
     if (scheme.equals("local"))
-      return new EmbeddedClient(uri, getDbDir(uri), getClass().getResource(DSK_CONF), this);
+      return new EmbeddedClient(uri, getDbDir(uri), getLocalConf(uri), this);
     if (scheme.equals("mem"))
-      return new EmbeddedClient(uri, getDbDir(uri), getClass().getResource(MEM_CONF), this);
+      return new EmbeddedClient(uri, getDbDir(uri), getMemoryConf(uri), this);
 
     throw new IllegalArgumentException("Unsupported scheme '" + scheme + "' from '" + uri + "'");
   }
@@ -88,5 +89,25 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
    */
   public String getDbDir(URI uri) {
     return dbDir;
+  }
+
+  /** 
+   * Get the mulgara-config to use for a disk-based embedded instance.
+   * 
+   * @param uri the uri of the database
+   * @return the URL of the config to use.
+   */
+  public URL getLocalConf(URI uri) {
+    return DefaultItqlClientFactory.class.getResource(DEF_DSK_CONF);
+  }
+
+  /** 
+   * Get the mulgara-config to use for an in-memory embedded instance.
+   * 
+   * @param uri the uri of the database
+   * @return the URL of the config to use.
+   */
+  public URL getMemoryConf(URI uri) {
+    return DefaultItqlClientFactory.class.getResource(DEF_MEM_CONF);
   }
 }
