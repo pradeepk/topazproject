@@ -23,7 +23,6 @@ import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,8 +30,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import static org.plos.annotation.service.WebAnnotation.FLAG_MASK;
-import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
@@ -70,17 +67,17 @@ public class RatingsService {
    * @param articleURIStr the URI of the article to be rated.
    * @param values        the values with which to initialize the rating
    *                      whether it is new or to be updated.
-   * @throws RatingsServiceException
+   * @throws ApplicationException
    */
   public void saveOrUpdateRating(final PlosOneUser user,
                                  final String articleURIStr,
-                                 final Rating values) throws RatingsServiceException {
+                                 final Rating values) throws ApplicationException {
     final URI articleURI;
 
     try {
       articleURI = new URI(articleURIStr);
     } catch (URISyntaxException e) {
-      throw new RatingsServiceException("", e);
+      throw new ApplicationException("", e);
     }
 
     final Date now = Calendar.getInstance().getTime();
@@ -114,11 +111,8 @@ public class RatingsService {
       if (ratingsList.size() == 1) {
         articleRating = ratingsList.get(0);
       } else {
-        final String errorMessage = "Multiple Ratings for Article " + articleURIStr +
-                                    " and user: " + user.getUserId();
-        final Exception e = new RuntimeException(errorMessage);
-        log.error(errorMessage);
-        throw new RatingsServiceException(e);
+        throw new ApplicationException("Multiple Ratings for Article " + articleURIStr +
+                                    " and user: " + user.getUserId());
       }
     }
 
@@ -142,20 +136,14 @@ public class RatingsService {
       if (summaryList.size() == 1) {
         articleRatingSummary = summaryList.get(0);
       } else {
-        final String errorMessage = "Multiple RatingsSummary for Article " + articleURIStr +
-                                    " and user: " + user.getUserId();
-        final Exception e = new RuntimeException(errorMessage);
-        log.error(errorMessage);
-        throw new RatingsServiceException(e);
+        throw new ApplicationException("Multiple RatingsSummary for Article " + articleURIStr +
+                                    " and user: " + user.getUserId());
       }
     }
 
     if (!newRating && newRatingSummary) {
-      final String errorMessage = "No RatingsSummary exists for extant rating: " +
-                                  "(Article: " + articleURIStr + ",User: " + user.getUserId();
-      final Exception e = new RuntimeException(errorMessage);
-      log.error(errorMessage);
-      throw new RatingsServiceException(e);
+      throw new ApplicationException("No RatingsSummary exists for extant rating: " +
+                                  "(Article: " + articleURIStr + ",User: " + user.getUserId());
     }
 
     if (newRating) {
@@ -224,7 +212,7 @@ public class RatingsService {
    * Delete the Rating identified by ratingId and update the RatingSummary.
    *
    * @param ratingId the identifier of the Rating object to be deleted
-   * @throws RatingsServiceException
+   * @throws ApplicationException
    */
   public void deleteRating(final String ratingId)
                          throws ApplicationException {
@@ -232,9 +220,7 @@ public class RatingsService {
 
     final Rating articleRating = session.get(Rating.class, ratingId);
     if (articleRating == null) {
-      final String errorMessage= "Failed to get Rating to delete: "+ ratingId;
-      log.error(errorMessage);
-      throw new ApplicationException(errorMessage);
+      throw new ApplicationException("Failed to get Rating to delete: "+ ratingId);
     }
 
     final URI articleURI = articleRating.getAnnotates();
@@ -244,15 +230,11 @@ public class RatingsService {
       .list();
 
     if (summaryList.size() <= 0) {
-      final String errorMessage = "No RatingSummary object found for article " + articleURI.toString();
-      log.error(errorMessage);
-      throw new ApplicationException(errorMessage);
+      throw new ApplicationException("No RatingSummary object found for article " + articleURI.toString());
     }
     if (summaryList.size() > 1) {
-      final String errorMessage = "Multiple RatingSummary objects found found " +
-                                  "for article " + articleURI.toString();
-      log.error(errorMessage);
-      throw new ApplicationException(errorMessage);
+      throw new ApplicationException("Multiple RatingSummary objects found found " +
+                                  "for article " + articleURI.toString());
     }
 
     final RatingSummary articleRatingSummary = summaryList.get(0);
@@ -296,9 +278,9 @@ public class RatingsService {
    * Set the rating as flagged.
    *
    * @param ratingId the id of rating object
-   * @throws RatingsServiceException
+   * @throws ApplicationException
    */
-  public void setFlagged(final String ratingId) throws RatingsServiceException {
+  public void setFlagged(final String ratingId) throws ApplicationException {
     Rating r = session.get(Rating.class,ratingId);
     r.setState(PUBLIC_MASK | FLAG_MASK);
     session.saveOrUpdate(r);
@@ -310,10 +292,8 @@ public class RatingsService {
    * @param ratingId Rating Id
    *
    * @return Rating
-   *
-   * @throws RemoteException RemoteException
    */
-  public Rating getRating(final String ratingId) throws RemoteException {
+  public Rating getRating(final String ratingId) {
     Rating rating = session.get(Rating.class, ratingId);
 
     // the PEP check is against what is rated,
