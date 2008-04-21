@@ -20,8 +20,6 @@ package org.plos.annotation.service;
 
 import java.io.IOException;
 
-import java.util.Set;
-
 import org.plos.xacml.XacmlUtil;
 import org.plos.xacml.AbstractSimplePEP;
 
@@ -101,15 +99,15 @@ public class AnnotationsPEP extends AbstractSimplePEP {
    *
    */
   public AnnotationsPEP() throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("topaz.annotations.pdpName"), XacmlUtil.createSubjAttrs());
+    this(XacmlUtil.lookupPDP("topaz.annotations.pdpName"));
   }
 
   /*
    *     inherited javadoc
    *
    */
-  protected AnnotationsPEP(PDP pdp, Set subjAttrs)
+  protected AnnotationsPEP(PDP pdp)
                     throws IOException, ParsingException, UnknownIdentifierException {
-    super(pdp, subjAttrs);
+    super(pdp);
   }
 }

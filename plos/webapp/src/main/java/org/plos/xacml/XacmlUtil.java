@@ -45,21 +45,6 @@ public class XacmlUtil extends Util {
    * Example config entry:<pre>  topaz.annotations.pdpName={@value}</pre>
    */
   public static final String SN_DEFAULT_PDP = "_default_";
-  private static Attribute dummyAttr     =
-    new Attribute(URI.create("plos:xacml:dummy"), null, null, new StringAttribute("dummy"));
-  private static Set       dummySubjAttr =
-    Collections.singleton(new Subject(URI.create("plos:xacml:dummy"),
-                                      Collections.singleton(dummyAttr)));
-
-  /**
-   * Creates the set of subject attributes used in the xacml evaluation request from the
-   * given web-server context.
-   *
-   * @return the subject attributes
-   */
-  public static Set createSubjAttrs() {
-    return dummySubjAttr;
-  }
 
   /**
    * Look up the PDP for the given service.

@@ -20,8 +20,6 @@ package org.plos.permission.service;
 
 import java.io.IOException;
 
-import java.util.Set;
-
 import org.plos.xacml.AbstractSimplePEP;
 
 import com.sun.xacml.PDP;
@@ -55,9 +53,9 @@ public abstract class PermissionsPEP extends AbstractSimplePEP
    * inherited javadoc
    *
    */
-  protected PermissionsPEP(PDP pdp, Set subjAttrs)
+  protected PermissionsPEP(PDP pdp)
                     throws IOException, ParsingException, UnknownIdentifierException {
-    super(pdp, subjAttrs);
+    super(pdp);
   }
 
   /*

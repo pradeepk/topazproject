@@ -175,7 +175,7 @@ public class UsersPEP extends AbstractSimplePEP {
    * @throws IOException if an error occurred trying to get the PDP
    */
   public UsersPEP() throws IOException {
-    super(getPDP(), XacmlUtil.createSubjAttrs());
+    super(getPDP());
   }
 
   private static final PDP getPDP() throws IOException {

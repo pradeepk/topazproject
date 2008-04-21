@@ -20,7 +20,6 @@ package org.plos.article.service;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Set;
 
 import org.plos.xacml.AbstractSimplePEP;
 import org.plos.xacml.XacmlUtil;
@@ -89,7 +88,7 @@ public class ArticlePEP extends AbstractSimplePEP {
   }
 
   public ArticlePEP() throws IOException {
-    this(getPDP(), XacmlUtil.createSubjAttrs());
+    this(getPDP());
   }
 
   private static final PDP getPDP() throws IOException {
@@ -102,7 +101,7 @@ public class ArticlePEP extends AbstractSimplePEP {
     }
   }
 
-  protected ArticlePEP(PDP pdp, Set subjAttrs) {
-    super(pdp, subjAttrs);
+  protected ArticlePEP(PDP pdp) {
+    super(pdp);
   }
 }

@@ -95,15 +95,15 @@ public class RepliesPEP extends AbstractSimplePEP {
    *
    */
   public RepliesPEP() throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("topaz.replies.pdpName"), XacmlUtil.createSubjAttrs());
+    this(XacmlUtil.lookupPDP("topaz.replies.pdpName"));
   }
 
   /*
    *     inherited javadoc
    *
    */
-  protected RepliesPEP(PDP pdp, Set subjAttrs)
+  protected RepliesPEP(PDP pdp)
                 throws IOException, ParsingException, UnknownIdentifierException {
-    super(pdp, subjAttrs);
+    super(pdp);
   }
 }

@@ -27,8 +27,10 @@ import java.util.Set;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.attr.AnyURIAttribute;
+import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.RequestCtx;
+import com.sun.xacml.ctx.Subject;
 
 /**
  * A superclass for simple XACML PEP's.
@@ -50,7 +52,16 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
   private static Map         actionAttrsMap      = new HashMap();
   private static Map         knownObligationsMap = new HashMap();
 
-  protected final Set subjectAttrs;
+  /**
+   * The real subject attributes are provided to the PDP via the attribute finders. However
+   * the sun xacml api expects a non-empty set of subject attributes to be present in the PEP
+   * Request. So we dummy up one here.
+   */
+  private static Attribute dummyAttr =
+    new Attribute(URI.create("ambra:xacml:dummy"), null, null, new StringAttribute("dummy"));
+  private static Set dummySubjAttrs =
+    Collections.singleton(new Subject(URI.create("ambra:xacml:dummy"),
+                                      Collections.singleton(dummyAttr)));
 
   /** 
    * Initialize the list of supported actions and their obligations. 
@@ -108,11 +119,9 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
    * Creates a new PEP object.
    *
    * @param  pdp       The pdp to use for evaluating requests
-   * @param  subjAttrs The subject attributes 
    */
-  protected AbstractSimplePEP(PDP pdp, Set subjAttrs) {
+  protected AbstractSimplePEP(PDP pdp) {
     super(pdp);
-    subjectAttrs = subjAttrs;
   }
 
   /**
@@ -122,7 +131,6 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
    */
   protected AbstractSimplePEP(AbstractSimplePEP pep) {
     super(pep.getPdp());
-    this.subjectAttrs = pep.subjectAttrs;
   }
 
   /** 
@@ -138,7 +146,7 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
     if (actionAttrs == null)
       throw new SecurityException("Unknown action '" + action + "' for PEP");
 
-    return evaluate(new RequestCtx(subjectAttrs, resourceAttrs, actionAttrs, envAttrs(getClass())),
+    return evaluate(new RequestCtx(dummySubjAttrs, resourceAttrs, actionAttrs, envAttrs(getClass())),
                     (Set) knownObligations(getClass()).get(action));
   }
 

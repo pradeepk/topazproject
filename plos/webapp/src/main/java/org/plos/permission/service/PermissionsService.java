@@ -213,8 +213,7 @@ public class PermissionsService {
 
     public WSPermissionsPEP()
                      throws Exception {
-      super(XacmlUtil.lookupPDP("topaz.permissions.pdpName"),
-            XacmlUtil.createSubjAttrs());
+      super(XacmlUtil.lookupPDP("topaz.permissions.pdpName"));
     }
   }
 }

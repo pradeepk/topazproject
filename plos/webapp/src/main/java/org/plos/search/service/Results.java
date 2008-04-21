@@ -31,7 +31,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -202,12 +201,12 @@ public class Results {
     }
 
     public SearchPEP() throws IOException, ParsingException, UnknownIdentifierException {
-      this(XacmlUtil.lookupPDP("topaz.search.pdpName"), XacmlUtil.createSubjAttrs());
+      this(XacmlUtil.lookupPDP("topaz.search.pdpName"));
     }
 
-    protected SearchPEP(PDP pdp, Set subjAttrs)
+    protected SearchPEP(PDP pdp)
         throws IOException, ParsingException, UnknownIdentifierException {
-      super(pdp, subjAttrs);
+      super(pdp);
     }
   }
 

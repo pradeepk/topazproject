@@ -78,13 +78,12 @@ public class RatingsPEP extends AbstractSimplePEP {
 
   public RatingsPEP()
       throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("topaz.ratings.pdpName"),
-            XacmlUtil.createSubjAttrs());
+    this(XacmlUtil.lookupPDP("topaz.ratings.pdpName"));
   }
 
-  protected RatingsPEP(PDP pdp, Set subjAttrs)
+  protected RatingsPEP(PDP pdp)
       throws IOException, ParsingException, UnknownIdentifierException {
-    super(pdp, subjAttrs);
+    super(pdp);
   }
 
   /**
