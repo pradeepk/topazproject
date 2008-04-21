@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
@@ -65,26 +64,6 @@ import org.xml.sax.SAXException;
 public class Annotator {
   private static final Log log    = LogFactory.getLog(Annotator.class);
   private static String    AML_NS = "http://topazproject.org/aml/";
-
-  /**
-   * Creates an annotated document as a DataHandler.
-   *
-   * @param content the source document
-   * @param annotations the list of annotations to apply
-   * @param documentBuilder documentBuilder that provides it's own entity resolver
-   * @return the annotated document as DataHandler
-   *
-   * @throws RemoteException on a failure
-   */
-  public static DataHandler annotate(DataHandler content, ArticleAnnotation[] annotations,
-                                    final DocumentBuilder documentBuilder)
-                              throws RemoteException {
-    try {
-      return serialize(annotate(parse(content, documentBuilder), annotations));
-    } catch (Exception e) {
-      throw new RemoteException("", e);
-    }
-  }
 
   /**
    * Creates an annotated document and returns it as Document.
@@ -176,41 +155,6 @@ public class Annotator {
   private static Document parse(final DataHandler content, final DocumentBuilder builder)
                         throws SAXException, ParserConfigurationException, IOException {
     return builder.parse(content.getInputStream());
-  }
-
-  /**
-   * Serializes a DOM document.
-   *
-   * @param document the document to serialize
-   *
-   * @return the serialized
-   *
-   * @throws TransformerException on an error in serialize
-   * @throws IOException on an error in writing
-   */
-  private static DataHandler serialize(Document document)
-                               throws TransformerException, IOException {
-    TransformerFactory xformFactory = TransformerFactory.newInstance();
-    Transformer        idTransform = xformFactory.newTransformer();
-    Source             input       = new DOMSource(document);
-    final File         tmp         = File.createTempFile("annotated", ".xml");
-    tmp.deleteOnExit();
-
-    Result output = new StreamResult(tmp);
-    idTransform.transform(input, output);
-
-    return new DataHandler(new FileDataSource(tmp) {
-        @Override
-        protected void finalize() throws Throwable {
-          super.finalize();
-
-          try {
-            tmp.delete();
-          } catch (Throwable t) {
-            log.warn("Failed to delete temporary file " + tmp);
-          }
-        }
-      });
   }
 
   private static LocationList[] evaluate(Document document, ArticleAnnotation[] annotations)
