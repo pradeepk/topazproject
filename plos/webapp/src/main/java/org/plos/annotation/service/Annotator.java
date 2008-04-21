@@ -147,7 +147,6 @@ public class Annotator {
         AnnotationModel.appendToNode(a, annotation);
       }
     }
-    
     return assembleResultDoc(document, rRoot, aRoot);
   }
 
@@ -160,13 +159,6 @@ public class Annotator {
     source.appendChild(regions);
     source.appendChild(annotations);
 
-    // debug
-    try {
-      serialize(document);
-    } catch (Throwable t) {
-    }
-    // END debug
-    
     return document;
   }
 
@@ -183,16 +175,7 @@ public class Annotator {
    */
   private static Document parse(final DataHandler content, final DocumentBuilder builder)
                         throws SAXException, ParserConfigurationException, IOException {
-    Document doc = builder.parse(content.getInputStream());
-    
-    // debug
-    try {
-      serialize(doc);
-    } catch (Throwable t) {
-    }
-    // END debug
-    
-    return doc;
+    return builder.parse(content.getInputStream());
   }
 
   /**
@@ -222,7 +205,7 @@ public class Annotator {
           super.finalize();
 
           try {
-            //tmp.delete();
+            tmp.delete();
           } catch (Throwable t) {
             log.warn("Failed to delete temporary file " + tmp);
           }
