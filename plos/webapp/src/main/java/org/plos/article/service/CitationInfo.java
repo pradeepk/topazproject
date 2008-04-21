@@ -27,7 +27,7 @@ import java.sql.Date;
 /**
  * Simple class that represents the citation information necesssary to generate most citation file types.
  * Used to deserialize the XML into an object which can be cached.
- * 
+ *
  * @author Stephen Cheng
  *
  */
@@ -35,7 +35,7 @@ public class CitationInfo implements Serializable {
   private static final long serialVersionUID = 2798808464271769990L;
   private String articleTitle;
   private Date publicationDate;
-  private String journalName; 
+  private String journalName;
   private String journalTitle;
   private String publisherName;
   private Author[] authors;

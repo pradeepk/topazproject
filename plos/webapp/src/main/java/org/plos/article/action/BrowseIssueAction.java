@@ -40,9 +40,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Session;
 
 /**
- * BrowseIssueAction retrieves data for presentation of an issue and a table of contents. Articles 
- * contained in the issue are grouped into article types. 
- * 
+ * BrowseIssueAction retrieves data for presentation of an issue and a table of contents. Articles
+ * contained in the issue are grouped into article types.
+ *
  * @author Alex Worden
  *
  */
@@ -60,7 +60,7 @@ public class BrowseIssueAction extends BaseActionSupport{
   private ArticleXMLUtils articleXmlUtils;
 
   private VolumeInfo volumeInfo;
-  
+
   @Override
   public String execute() {
 
@@ -68,7 +68,7 @@ public class BrowseIssueAction extends BaseActionSupport{
     if (issue == null || issue.length() == 0) {
       // JournalService, OTM usage wants to be in a Transaction
       Journal currentJournal = journalService.getCurrentJournal(session);
-      
+
       if (currentJournal != null) {
         URI currentIssueUri = currentJournal.getCurrentIssue();
         if (currentIssueUri != null) {
@@ -76,9 +76,9 @@ public class BrowseIssueAction extends BaseActionSupport{
         } else {
           /* Current Issue has not been set for the Journal - It should have
            * been configured via the admin console. Try to find the latest issue
-           * from the latest volume. If no issue exists in the latest volume - 
+           * from the latest volume. If no issue exists in the latest volume -
            * look at the previous volume and so on.
-           */ 
+           */
           List<VolumeInfo> vols = browseService.getVolumeInfosForJournal(currentJournal);
           if (vols.size() > 0) {
             for (VolumeInfo volInfo : vols) {
@@ -110,11 +110,11 @@ public class BrowseIssueAction extends BaseActionSupport{
     issueInfo = browseService.getIssueInfo(URI.create(issue));
     if (issueInfo == null) {
       log.error("Failed to retrieve IssueInfo for issue id='"+issue+"'");
-      return ERROR; 
+      return ERROR;
     }
 
     volumeInfo  = browseService.getVolumeInfo(issueInfo.getParentVolume());
-    
+
     // Translate the currentIssue description to HTML
     if (issueInfo.getDescription() != null) {
       try {
@@ -127,7 +127,7 @@ public class BrowseIssueAction extends BaseActionSupport{
       log.error("The currentIssue description was null. Issue DOI='"+issueInfo.getId()+"'");
       issueDescription = "No description found for this issue";
     }
-    
+
     // clear out the articleGroups and rebuild the list with one TOCArticleGroup
     // for each ArticleType to be displayed in the order defined by
     // ArticleType.getOrderedListForDisplay()
@@ -156,7 +156,7 @@ public class BrowseIssueAction extends BaseActionSupport{
           }
         }
       }
-      
+
       if (log.isErrorEnabled() && !articleAddedToAtLeastOneGroup) {
         StringBuffer buf = new StringBuffer("| ");
         Iterator<ArticleType> it = ai.getArticleTypes().iterator();
@@ -171,9 +171,9 @@ public class BrowseIssueAction extends BaseActionSupport{
                 + "against the article types found for this Article: " + buf);
       }
     }
-    
-    // Remove all empty TOCArticleGroups (avoid ConcurrentModificationException by 
-    // building a new ArrayList of non-empty article groups). 
+
+    // Remove all empty TOCArticleGroups (avoid ConcurrentModificationException by
+    // building a new ArrayList of non-empty article groups).
     int i = 1;
     ArrayList<TOCArticleGroup> newArticleGroups = new ArrayList<TOCArticleGroup>();
     for (TOCArticleGroup grp : articleGroups) {
@@ -185,13 +185,13 @@ public class BrowseIssueAction extends BaseActionSupport{
       }
     }
     articleGroups = newArticleGroups;
-    
+
     return SUCCESS;
   }
 
 
   /**
-   * Used by the view to retrieve the IssueInfo from the struts value stack. 
+   * Used by the view to retrieve the IssueInfo from the struts value stack.
    * @return the IssueInfo.
    */
   public IssueInfo getIssueInfo() {
@@ -199,24 +199,24 @@ public class BrowseIssueAction extends BaseActionSupport{
   }
 
   /**
-   * Used by the view to retrieve an ordered list of TOCArticleGroup objects. Each TOCArticleGroup 
-   * represents a collection of article types that are defined in defaults.xml. 
-   * The groups are listed by the view in the order returned here with links to the articles in that group category. 
-   * @return ordered list of TOCArticleGroup(s) 
+   * Used by the view to retrieve an ordered list of TOCArticleGroup objects. Each TOCArticleGroup
+   * represents a collection of article types that are defined in defaults.xml.
+   * The groups are listed by the view in the order returned here with links to the articles in that group category.
+   * @return ordered list of TOCArticleGroup(s)
    */
   public ArrayList<TOCArticleGroup> getArticleGroups() {
     return articleGroups;
   }
-  
+
   /**
-   * If the request parameter 'issue' is specified, stuts will call this method. The action will 
-   * return a BrowseIssue page for this specific issue doi. 
+   * If the request parameter 'issue' is specified, stuts will call this method. The action will
+   * return a BrowseIssue page for this specific issue doi.
    * @param issue The issue for ToC view.
    */
   public void setIssue(String issue) {
     this.issue = issue;
   }
-  
+
   /**
    * Spring injected method sets the JournalService.
    *
@@ -236,19 +236,19 @@ public class BrowseIssueAction extends BaseActionSupport{
   public void setOtmSession(Session session) {
     this.session = session;
   }
-  
+
   /**
-   * Spring injected 
-   * 
+   * Spring injected
+   *
    * @param axu
    */
   @Required
   public void setArticleXmlUtils(ArticleXMLUtils axu) {
     articleXmlUtils = axu;
   }
-  
+
   /**
-   * Spring injected method sets the browseService. 
+   * Spring injected method sets the browseService.
    * @param browseService The browseService to set.
    */
   @Required

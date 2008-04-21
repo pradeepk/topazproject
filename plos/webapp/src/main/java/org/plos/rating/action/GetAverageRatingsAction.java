@@ -143,8 +143,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
     return SUCCESS;
   }
 
-  /** 
-	 * Set the fetch article service
+  /**
+   * Set the fetch article service
    * @param fetchArticleService fetchArticleService
    */
   @Required
@@ -171,9 +171,9 @@ public class GetAverageRatingsAction extends BaseActionSupport {
       return;
     }
     this.articleURI = articleURI;
-    
+
     // resolve article type and supported properties
-    Article artInfo = fetchArticleService.getArticleInfo(articleURI); 
+    Article artInfo = fetchArticleService.getArticleInfo(articleURI);
     assert artInfo != null : "artInfo is null (Should have already been cached.  Is the articleURI correct?)";
     ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
     assert articleType != null;

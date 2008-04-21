@@ -77,7 +77,7 @@ public class RateAction extends BaseActionSupport {
     }
     return pep;
   }
-  
+
   /**
    * @param fetchArticleService the fetchArticleService to set
    */
@@ -326,9 +326,9 @@ public class RateAction extends BaseActionSupport {
       return;
     }
     this.articleURI = articleURI;
-    
+
     // resolve article type and supported properties
-    Article artInfo = fetchArticleService.getArticleInfo(articleURI); 
+    Article artInfo = fetchArticleService.getArticleInfo(articleURI);
     assert artInfo != null : "artInfo is null (Should have already been cached.)  Is the articleURI correct?)";
     ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
     assert articleType != null;

@@ -83,7 +83,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
           log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
         }
         if ("correction".equals(noteType)) {
-          getAnnotationService().createFlag(annotationId, "Create Correction", 
+          getAnnotationService().createFlag(annotationId, "Create Correction",
               "Note created and flagged as a correction", mimeType, true);
         }
       } else {
@@ -113,7 +113,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     }
     return invalid;
   }
-  
+
   /**
    * Set the target that it annotates.
    * @param target target

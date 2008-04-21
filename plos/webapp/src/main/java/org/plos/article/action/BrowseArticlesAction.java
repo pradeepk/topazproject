@@ -84,15 +84,15 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
   private String browseCategory () {
     categoryInfos = browseService.getCategoryInfos();
-    
+
     // if the catName is unspecified, use the first catName in the categoryInfos list
     if ((catName == null) && (categoryInfos != null) && (categoryInfos.size()>0)) {
-    	catName = categoryInfos.firstKey();
+        catName = categoryInfos.firstKey();
     }
-    
+
     if (catName != null) {
       int[] numArt = new int[1];
-    	articleList = browseService.getArticlesByCategory(catName, startPage, pageSize, numArt);
+      articleList = browseService.getArticlesByCategory(catName, startPage, pageSize, numArt);
       Collections.sort(articleList, new ArticleInfoMostRecentDateComparator());
       totalArticles = numArt[0];
     } else {
@@ -112,7 +112,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
 
     Calendar endDate;
 
-    if (((startDateParam != null) && startDateParam.length() > 0) || 
+    if (((startDateParam != null) && startDateParam.length() > 0) ||
         ((endDateParam != null) && endDateParam.length() > 0) ) {
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
       try {
@@ -134,22 +134,22 @@ public class BrowseArticlesAction extends BaseActionSupport {
         startDate.set(getYear(), getMonth() - 1, getDay());
         endDate = (Calendar) startDate.clone();
         endDate.add(Calendar.DATE, 1);
-  
+
       } else if (getYear() > UNSET && getMonth() > UNSET) {
         startDate.set(getYear(), getMonth() - 1, 1);
         endDate = (Calendar) startDate.clone();
         endDate.add(Calendar.MONTH, 1);
-  
+
       } else if (getMonth() == PAST_MONTH) {
         endDate = (Calendar) startDate.clone();
         startDate.add(Calendar.MONTH, -1);
         endDate.add(Calendar.DATE, 1);
-  
+
       } else if (getMonth() == PAST_3MON) {
         endDate = (Calendar) startDate.clone();
         startDate.add(Calendar.MONTH, -3);
         endDate.add(Calendar.DATE, 1);
-  
+
       } else {
         endDate = (Calendar) startDate.clone();
         startDate.add(Calendar.DATE, -7);
@@ -166,7 +166,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
     return SUCCESS;
   }
 
-  
+
   /**
    * @return Returns the field.
    */

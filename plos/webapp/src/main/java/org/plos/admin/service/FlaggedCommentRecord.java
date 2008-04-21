@@ -75,12 +75,12 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   public boolean isTargetType(String testType) {
     return targetType.equals(testType);
   }
-  
+
   public boolean isCorrection() {
-    return (AnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(targetType) || 
+    return (AnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(targetType) ||
         AnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(targetType));
   }
-  
+
   public boolean isFormalCorrection() {
     return (AnnotationService.WEB_TYPE_FORMAL_CORRECTION.equals(getTargetType()));
   }
@@ -88,15 +88,15 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   public boolean isMinorCorrection() {
     return (AnnotationService.WEB_TYPE_MINOR_CORRECTION.equals(getTargetType()));
   }
-  
+
   /**
    * Is this a Flag for an Annotation?  (Actually a Comment.)
    *
    * @return true if Flag for an Annotation, else false.
    */
   public boolean getIsAnnotation() {
-    if (AnnotationService.WEB_TYPE_COMMENT.equals(targetType) || 
-        AnnotationService.WEB_TYPE_NOTE.equals(targetType) || 
+    if (AnnotationService.WEB_TYPE_COMMENT.equals(targetType) ||
+        AnnotationService.WEB_TYPE_NOTE.equals(targetType) ||
         isCorrection()) {
       return true;
     }

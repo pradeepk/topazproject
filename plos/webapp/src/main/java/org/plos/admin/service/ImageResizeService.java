@@ -44,10 +44,10 @@ import org.plos.configuration.ConfigurationStore;
 
 /**
  * ImageResizeService resizes images and converts them to PNG format for articles
- * based on the ArticleType. The ArticleType supplies configuration parameters for 
+ * based on the ArticleType. The ArticleType supplies configuration parameters for
  * small, medium, and large images. An ImageResizeService object should be instantiated
  * for each operation and an ArticleType passed to the constructor. The ImageResizeService
- * provides a limited set of public methods for producing converted images. 
+ * provides a limited set of public methods for producing converted images.
  *
  * @author Alex Worden, stevec
  */
@@ -84,21 +84,21 @@ public class ImageResizeService {
   }
 
   /**
-   * Set a working directory on the file system to be used for temporary image storage. 
-   * The JVM must have read and write privileges to this existing directory. 
+   * Set a working directory on the file system to be used for temporary image storage.
+   * The JVM must have read and write privileges to this existing directory.
    *
    * @param directory - the path to this directory
    */
   public void setWorkingDirectory(String directory) throws ImageResizeException {
     location = new File(directory);
-    
+
     // Try to create the directory if it doesn't exist
     if (!location.exists()) {
       try {
         location.mkdirs();
       } catch (Exception se) {
         throw new ImageResizeException("Failed to create working directory " +
-        		"at location: '"+directory+"'", se);
+                                       "at location: '"+directory+"'", se);
       }
     } else {
       if (!location.isDirectory()) {
@@ -116,15 +116,15 @@ public class ImageResizeService {
   }
 
   /**
-   * Get the working directory configured for temporary image storage. 
+   * Get the working directory configured for temporary image storage.
    * @return
    * @throws ImageResizeException
    */
   public File getWorkingDirectory() throws ImageResizeException {
-    
+
     return location;
   }
-  
+
   /**
    * Initialize members inputImageFile, outputImageFile, width and height as follows:
    *
@@ -152,7 +152,7 @@ public class ImageResizeService {
 
       if (outputImageFile.exists()) {
         throw new ImageResizeException("Temporary file: '" +
-                                       outputImageFile.getCanonicalPath() + 
+                                       outputImageFile.getCanonicalPath() +
                                        "' already exists");
       }
 
@@ -306,7 +306,7 @@ public class ImageResizeService {
       newWidth = this.width;
     }
 
-    
+
     createScaledImage(newWidth,newHeight, quality);
 
     return getPNGByteArray(outputImageFile);

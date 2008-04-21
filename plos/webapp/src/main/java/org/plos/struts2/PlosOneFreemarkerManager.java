@@ -30,7 +30,7 @@ import com.opensymphony.xwork2.util.ValueStack;
 /**
  * Custom Freemarker Manager to load up the configuration files for css, javascript, and titles of
  * pages
- * 
+ *
  * @author Stephen Cheng
  */
 public class PlosOneFreemarkerManager extends FreemarkerManager {
@@ -38,7 +38,7 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
 
   /**
    * Sets the custom configuration object via Spring injection
-   * 
+   *
    * @param fmConfig
    */
   public PlosOneFreemarkerManager(PlosOneFreemarkerConfig fmConfig) {
@@ -47,11 +47,11 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
 
   /**
    * Subclass from parent to add the freemarker configuratio object globally
-   * 
+   *
    * @see org.apache.struts2.views.freemarker.FreemarkerManager
    */
 
-  protected void populateContext(ScopesHashModel model, ValueStack stack, Object action, 
+  protected void populateContext(ScopesHashModel model, ValueStack stack, Object action,
                                  HttpServletRequest request, HttpServletResponse response) {
     super.populateContext(model, stack, action, request, response);
     model.put("freemarker_config", fmConfig);

@@ -31,10 +31,10 @@ public class DeleteArticleAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(DeleteArticleAction.class);
   private Session session;
   private String article;
-  
+
   public String execute() throws Exception {
     boolean error = false;
-    
+
     try {
       ArticleUtil.delete(article, session);
     } catch (ArticleDeleteException ade) {
@@ -42,18 +42,18 @@ public class DeleteArticleAction extends BaseAdminActionSupport {
       log.error("Failed to successfully delete article: "+article, ade);
       error = true;
     }
-    
+
     if (!error) {
       addActionMessage("Successfully deleted article: "+article);
     }
-    
+
     return base();
   }
-  
+
   public void setArticle(String a) {
     article = a;
   }
-  
+
   /**
    * Set the OTM session. Called by spring's bean wiring.
    *

@@ -215,29 +215,29 @@ public class BrowseService {
   }
 
   /**
-	 * Get Issue information.
-	 *
-	 * @param issue
-	 *          DOI of Issue.
-	 * @return the Issue information.
-	 */
-	public IssueInfo getIssueInfo(final URI doi) {
-	  return CacheAdminHelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
-          ISSUE_LOCK + doi, "issue " + doi,
-          new CacheAdminHelper.EhcacheUpdater<IssueInfo>() {
-            public IssueInfo lookup() {
-              return getIssueInfo2(doi);
-            }
-          });
-    }
+   * Get Issue information.
+   *
+   * @param issue
+   *          DOI of Issue.
+   * @return the Issue information.
+   */
+  public IssueInfo getIssueInfo(final URI doi) {
+    return CacheAdminHelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
+        ISSUE_LOCK + doi, "issue " + doi,
+        new CacheAdminHelper.EhcacheUpdater<IssueInfo>() {
+          public IssueInfo lookup() {
+            return getIssueInfo2(doi);
+          }
+        });
+  }
 
   /**
-	 * Get Issue information inside of a Transaction.
-	 *
-	 * @param issue
-	 *          DOI of Issue.
-	 * @return the Issue information.
-	 */
+   * Get Issue information inside of a Transaction.
+   *
+   * @param issue
+   *          DOI of Issue.
+   * @return the Issue information.
+   */
   private IssueInfo getIssueInfo2(final URI issueDOI) {
 
     // get the Issue

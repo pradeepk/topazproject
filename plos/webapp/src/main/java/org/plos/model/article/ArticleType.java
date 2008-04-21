@@ -1,5 +1,5 @@
 /* $HeadURL$
- * $Id$ 
+ * $Id$
  *
  * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
@@ -69,9 +69,9 @@ public class ArticleType implements Serializable {
 
   /**
    * Returns an ArticleType object for the given URI. If one does not exist for that URI and
-   * createIfAbsent is true, a new ArticleType shall be created and added to a list of types 
-   * (although shall not be recognized as an official ArticleType by getKnownArticleTypeForURI). 
-   * If createIfAbsent is false, an ArticleType shall not be created and null shall be returned. 
+   * createIfAbsent is true, a new ArticleType shall be created and added to a list of types
+   * (although shall not be recognized as an official ArticleType by getKnownArticleTypeForURI).
+   * If createIfAbsent is false, an ArticleType shall not be created and null shall be returned.
    * @param uri
    * @param createIfAbsent
    * @return The ArticleType for the given URI
@@ -96,11 +96,11 @@ public class ArticleType implements Serializable {
     }
     return at;
   }
-  
+
   /**
-   * Ensures that the same object instance is used for identical URIs. 
+   * Ensures that the same object instance is used for identical URIs.
    * The readResolve() method is called when deserializing an object. ArticleType objects
-   * are serialized and deserialized when propagated over the ehcache from one VM to another. 
+   * are serialized and deserialized when propagated over the ehcache from one VM to another.
    * @return
    * @throws java.io.ObjectStreamException
    */
@@ -129,8 +129,8 @@ public class ArticleType implements Serializable {
 
   /**
    * Returns an unmodifiable ordered list of known ArticleTypes as read in order from the configuration
-   * in configureArticleTypes(). 
-   * 
+   * in configureArticleTypes().
+   *
    * @return Collection of ArticleType(s)
    */
   public static List<ArticleType> getOrderedListForDisplay() {
@@ -138,17 +138,17 @@ public class ArticleType implements Serializable {
   }
 
   /**
-	 * Read in the ArticleTypes from the pubApp configuration (hint: normally defined in defauls.xml) 
-	 * and add them to the list of known ArticleType(s). The order of article types found in the 
-	 * configuration is significant and is returned in a Collection from getOrderedListForDisplay(). 
-	 * The defaultArticleType is set to the first article type defined unless configured explicitly. 
-	 */
-	public static void configureArticleTypes(Configuration myConfig) {
+   * Read in the ArticleTypes from the pubApp configuration (hint: normally defined in defauls.xml)
+   * and add them to the list of known ArticleType(s). The order of article types found in the
+   * configuration is significant and is returned in a Collection from getOrderedListForDisplay().
+   * The defaultArticleType is set to the first article type defined unless configured explicitly.
+   */
+  public static void configureArticleTypes(Configuration myConfig) {
     int count = 0;
     String basePath = "pub.articleTypeList.articleType";
     String uriStr;
     String headingStr;
-    // Iterate through the defined article types. This is ugly since the index needs 
+    // Iterate through the defined article types. This is ugly since the index needs
     // to be given in xpath format to access the element, so we calculate a base string
     // like: pub.articleTypeList.articleType(x) and check if it's non-null for typeUri
     do {
@@ -158,20 +158,20 @@ public class ArticleType implements Serializable {
       headingStr = myConfig.getString(baseString + "typeHeading");
       if ((uriStr != null) && (headingStr != null)) {
         ArticleType at = addArticleType(URI.create(uriStr), headingStr);
-        if (("true".equalsIgnoreCase(myConfig.getString(baseString + "default"))) || 
+        if (("true".equalsIgnoreCase(myConfig.getString(baseString + "default"))) ||
             (theDefaultArticleType == null)) {
           theDefaultArticleType = at;
         }
         at.setImageSetConfigName(myConfig.getString(baseString + "imageSetConfigName"));
       }
-    	count++;
+      count++;
     } while (uriStr != null);
-	}
-
-	public void setImageSetConfigName(String imgConfigName) {
-	  this.imageConfigName = imgConfigName;
   }
-	
+
+  public void setImageSetConfigName(String imgConfigName) {
+    this.imageConfigName = imgConfigName;
+  }
+
   public String getImageSetConfigName() {
     return imageConfigName;
   }
@@ -179,7 +179,7 @@ public class ArticleType implements Serializable {
   public static ArticleType getDefaultArticleType() {
     return theDefaultArticleType;
   }
-  
+
   /**
    * Is the given {@link ArticleType} research related?
    * @param articleType
@@ -194,7 +194,7 @@ public class ArticleType implements Serializable {
    * <p>
    * This method returns <code>true</code> when one occurrence of {@link ArticleType#ARTICLE_TYPE_HEADING_RESEARCH}
    * is encountered.
-   * 
+   *
    * @param articleTypeURIs
    * @return true/false
    */
@@ -208,10 +208,10 @@ public class ArticleType implements Serializable {
   }
 
   /**
-   * Override equals() to verify if the the compared ArticleType is equal to this instance. 
+   * Override equals() to verify if the the compared ArticleType is equal to this instance.
    * If super.equals() returns false, we compare the uri. Note that readResolve() is implemented
    * above so that the super.equals() object-identity comparison should succeed if this
-   * object was deserialized. This implementation is a safety net in case that fails. 
+   * object was deserialized. This implementation is a safety net in case that fails.
    */
   @Override
   public boolean equals(Object obj) {
@@ -225,7 +225,7 @@ public class ArticleType implements Serializable {
     }
     return false;
   }
-  
+
   @Override
   public int hashCode() {
     return new HashCodeBuilder().append(getUri()).hashCode();

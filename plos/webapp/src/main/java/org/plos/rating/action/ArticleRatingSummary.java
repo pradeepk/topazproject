@@ -91,7 +91,7 @@ public class ArticleRatingSummary {
     return articleTitle;
   }
 
-	public void setCreated(Date created) {
+  public void setCreated(Date created) {
     this.created = created;
   }
   public Date getCreated() {
