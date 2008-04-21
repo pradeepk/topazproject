@@ -26,9 +26,9 @@ import org.plos.models.RatingContent;
 import org.plos.util.TextUtils;
 
 /**
- * Article ratings & comments by user.
+ * Article ratings &amp; comments by user.
  *
- * Data structures used by display & browse for the ratings & comments for an Article by user.
+ * Data structures used by display &amp; browse for the ratings &amp; comments for an Article by user.
  */
 public class ArticleRatingSummary {
 
