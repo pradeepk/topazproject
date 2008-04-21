@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
+import org.plos.model.article.NewArtInfo;
 import org.plos.model.article.Years;
 import org.plos.models.Article;
 import org.plos.models.Issue;
@@ -763,33 +765,23 @@ public class BrowseService {
   }
 
   private List<NewArtInfo> getNewArticleInfos(final Set<String> uris) {
-    String query =
-            "select cat, a.id articleId, a.dublinCore.date date from Article a " +
-            "where cat := a.categories.mainCategory and (";
-        for (String uri : uris) {
-          query += "a.id = <" + uri + "> or ";
-        }
-        query = query.substring(0, query.length() - 4) + ") order by date desc, articleId;";
+    List<NewArtInfo> res = new ArrayList<NewArtInfo>(uris.size());
 
-    Results r = session.createQuery(query).execute();
-
-    List<NewArtInfo> res = new ArrayList<NewArtInfo>();
-    r.beforeFirst();
-    while (r.next()) {
-      NewArtInfo nai = new NewArtInfo();
-      nai.category = r.getString(0);
-      nai.id       = r.getURI(1);
-      nai.date     = r.getLiteralAs(2, Date.class);
-      res.add(nai);
+    for (String uri : uris) {
+      NewArtInfo nai = session.get(NewArtInfo.class, uri);
+      if (nai != null)
+        res.add(nai);
     }
 
-    return res;
-  }
+    // order by desc date, asc id
+    Collections.sort(res, new Comparator<NewArtInfo>() {
+      public int compare(NewArtInfo o1, NewArtInfo o2) {
+        int res = (o2.date != null) ? o2.date.compareTo(o1.date) : ((o1.date != null) ? -1 : 0);
+        return (res == 0) ? o1.id.compareTo(o2.id) : res;
+      }
+    });
 
-  private static class NewArtInfo {
-    public URI          id;
-    public Date         date;
-    public String       category;
+    return res;
   }
 
   /**
