@@ -56,7 +56,8 @@ public class OtmConfiguration {
       log.debug("Creating new triplestore: " + tripleStoreUrl);
     }
 
-    factory.setTripleStore(new ItqlStore(URI.create(tripleStoreUrl)));
+    factory.setTripleStore(new ItqlStore(URI.create(tripleStoreUrl),
+      new WebappItqlClientFactory()));
 
     if (log.isDebugEnabled())
       log.debug("Added blobstore : " + blobStore.getClass());

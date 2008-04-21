@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
+import org.plos.configuration.WebappItqlClientFactory;
 
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.stores.ItqlStore;
@@ -64,7 +65,7 @@ public class WebAppListenerInitModels implements ServletContextListener {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("topaz.services.itql-admin.uri"));
 
-      ItqlStore     store   = new ItqlStore(service);
+      ItqlStore     store   = new ItqlStore(service, new WebappItqlClientFactory());
 
       conf                  = conf.subset("topaz.models");
 

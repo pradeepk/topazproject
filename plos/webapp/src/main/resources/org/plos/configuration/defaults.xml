@@ -176,7 +176,7 @@
         <source>/var/spool/ambra/ingestion-queue</source>
         <destination>/var/spool/ambra/ingested</destination>
       </ingest>
-      <itql><uri>rmi://${pub.spring.server.mulgara}/topazproject</uri></itql>
+      <itql><uri>${topaz.mulgara.baseuri}</uri></itql>
       <email><feedback>webmaster@plos.org</feedback></email>
       <!-- Temporary default for /etc/topaz/ambra.xml -->
       <hosts><mailhost>${network.hosts.default}</mailhost></hosts>

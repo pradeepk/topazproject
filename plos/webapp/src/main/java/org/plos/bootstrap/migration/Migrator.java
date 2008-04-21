@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
+import org.plos.configuration.WebappItqlClientFactory;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
@@ -79,7 +80,7 @@ public class Migrator implements ServletContextListener {
       RI                    = conf.getString("topaz.models.ri");
 
       SessionFactory factory = new SessionFactoryImpl();
-      factory.setTripleStore(new ItqlStore(service));
+      factory.setTripleStore(new ItqlStore(service, new WebappItqlClientFactory()));
 
       sess = factory.openSession();
 
