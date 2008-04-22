@@ -108,9 +108,7 @@
     <constructor-arg value="topaz-plosone"/>
   </bean>
 
-  <bean id="userContext" class="org.plos.web.UserContext" scope="session">
-    <aop:scoped-proxy/>
-  </bean>
+  <bean id="userContext" class="org.plos.web.UserContext"/>
 
   <bean id="permissionsService" class="org.plos.permission.service.PermissionsService"/>
 
