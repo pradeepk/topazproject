@@ -37,8 +37,7 @@ public abstract class License implements Serializable {
   /**
    * Creates a new license object.
    */
-  public License(URI id) {
-    this.id = id;
+  protected License() {
   }
 
   /**
