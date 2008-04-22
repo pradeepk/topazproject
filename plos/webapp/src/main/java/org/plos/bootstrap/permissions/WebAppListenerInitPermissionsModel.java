@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
 import org.plos.configuration.WebappItqlClientFactory;
-import org.plos.permission.service.PermissionsImpl;
+import org.plos.permission.service.PermissionsService;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -71,7 +71,7 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
       sess = factory.openSession();
       TransactionHelper.doInTx(sess, new TransactionHelper.Action<Void>() {
         public Void run(Transaction tx) {
-          PermissionsImpl.initializeModel(tx.getSession());
+          PermissionsService.initializeModel(tx.getSession());
           return null;
         }
       });

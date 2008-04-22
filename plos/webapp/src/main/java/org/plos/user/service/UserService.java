@@ -20,7 +20,6 @@ package org.plos.user.service;
 
 import java.io.IOException;
 import java.net.URI;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,7 +28,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.ehcache.Ehcache;
-
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -398,8 +396,7 @@ public class UserService {
       }
 
       return UserProfileGrant.getProfileGrantsForGrants(result.toArray(new String[result.size()]));
-
-    } catch (RemoteException ex) {
+    } catch (Exception ex) {
       throw new ApplicationException("Unable to fetch the access rights on the profile fields", ex);
     }
   }
@@ -425,7 +422,7 @@ public class UserService {
 
       return UserProfileGrant.getProfileGrantsForGrants(result.toArray(new String[result.size()]));
 
-    } catch (RemoteException ex) {
+    } catch (Exception ex) {
       throw new ApplicationException("Unable to fetch the access rights on the profile fields", ex);
     }
   }
@@ -478,7 +475,7 @@ public class UserService {
         permissionsService.cancelGrants(topazId, publicGrants, ALL_PRINCIPALS);
         //Now add the grants as requested
         permissionsService.grant(topazId, grants, ALL_PRINCIPALS);
-      } catch (RemoteException e) {
+      } catch (Exception e) {
         throw new ApplicationException("Failed to set the userProfilePermission on the profile fields", e);
       }
     }

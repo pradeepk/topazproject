@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.permission.service.Permissions;
-import org.plos.permission.service.PermissionsImpl;
+import org.plos.permission.service.PermissionsService;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.BooleanAttribute;
@@ -95,7 +95,7 @@ public abstract class PermissionFunction implements Function {
   private static List processingErrList = null;
 
   // The singleton permissions-impl to use
-  private static final PermissionsImpl permissions = new PermissionsImpl(null);
+  private static final Permissions permissions = new PermissionsService(null);
 
   /**
    * Creates a new PermissionFunction object.

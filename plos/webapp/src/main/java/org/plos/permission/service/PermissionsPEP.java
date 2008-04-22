@@ -18,21 +18,15 @@
  */
 package org.plos.permission.service;
 
-import java.io.IOException;
-
 import org.plos.xacml.AbstractSimplePEP;
-
-import com.sun.xacml.PDP;
-import com.sun.xacml.ParsingException;
-import com.sun.xacml.UnknownIdentifierException;
+import org.plos.xacml.XacmlUtil;
 
 /**
  * The XACML PEP for the permission accounts manager.
  *
  * @author Pradeep Krishnan
  */
-public abstract class PermissionsPEP extends AbstractSimplePEP
-  implements Permissions.ServicePermissions {
+public class PermissionsPEP extends AbstractSimplePEP implements Permissions.ServicePermissions {
   /**
    * The list of all supported actions
    */
@@ -49,33 +43,16 @@ public abstract class PermissionsPEP extends AbstractSimplePEP
   protected static final String[][] SUPPORTED_OBLIGATIONS =
     new String[][] { null, null, null, null, null, null, null, null, null, null, null, null };
 
-  /*
-   * inherited javadoc
-   *
-   */
-  protected PermissionsPEP(PDP pdp)
-                    throws IOException, ParsingException, UnknownIdentifierException {
-    super(pdp);
-  }
-
-  /*
-   * inherited javadoc
-   *
-   */
-  protected PermissionsPEP(AbstractSimplePEP pep) {
-    super(pep);
+  static {
+    init(PermissionsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
   /**
-   * A PermissionsPEP that inherits its pdp and subject attrs from another.
+   * Creates a new PermissionsPEP object.
+   *
+   * @throws Exception on an error
    */
-  public static class Proxy extends PermissionsPEP {
-    static {
-      init(Proxy.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
-    }
-
-    public Proxy(AbstractSimplePEP pep) {
-      super(pep);
-    }
+  public PermissionsPEP() throws Exception {
+    super(XacmlUtil.lookupPDP("topaz.permissions.pdpName"));
   }
 }

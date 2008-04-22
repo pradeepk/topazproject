@@ -112,9 +112,7 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <bean id="permissionsService" class="org.plos.permission.service.PermissionsService" scope="session">
-    <aop:scoped-proxy/>
-  </bean>
+  <bean id="permissionsService" class="org.plos.permission.service.PermissionsService"/>
 
   <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter" scope="session">
     <aop:scoped-proxy/>
