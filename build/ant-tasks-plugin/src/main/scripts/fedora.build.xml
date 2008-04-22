@@ -41,14 +41,6 @@
       <os family="windows"/>
     </condition>
     <property name="ext" value=""/>
-    <!-- Now find an extension for ant/mvn -->
-    <condition property="antext" value="">
-      <os family="unix"/>
-    </condition>
-    <condition property="antext" value=".bat">
-      <os family="windows"/>
-    </condition>
-    <property name="antext" value=""/>
   </target>
 
   <target name="fedora-install" depends="exec-ext">
