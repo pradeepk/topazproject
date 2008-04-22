@@ -557,7 +557,7 @@ public class AnnotationService {
               annotationDoi,
               new String[]{
                       AnnotationsPEP.DELETE_ANNOTATION,
-                      AnnotationsPEP.SUPERSEDE});
+                      AnnotationsPEP.SUPERSEDE}, everyone);
 
       articleAnnotationService.setPublic(annotationDoi);
 
@@ -577,7 +577,7 @@ public class AnnotationService {
       permissionsService.revoke(
               id,
               new String[]{
-                      RepliesPEP.DELETE_REPLY});
+                      RepliesPEP.DELETE_REPLY}, everyone);
 
     } catch (final Exception e) {
       throw new ApplicationException(e);
