@@ -29,7 +29,7 @@
       <default>
         <journal>PLoSONE</journal>
         <description>PLoSONE</description>
-        <mappingPrefix></mappingPrefix>
+        <mappingPrefix>/journals/plosone</mappingPrefix>
         <url>http://plosone...</url>
       </default>
       <!-- entries to config each virtual journal -->
@@ -89,7 +89,7 @@
         </javascript>
       </default>
       <page>
-        <name>/index.ftl</name>
+        <name>/journals/plosone/index.ftl</name>
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>
