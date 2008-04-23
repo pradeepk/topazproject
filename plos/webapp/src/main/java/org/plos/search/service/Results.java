@@ -48,7 +48,7 @@ import org.plos.xacml.XacmlUtil;
 
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionStatus;
-
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 /**
  * Store the progress of a search. That is, when a search is done, we get the first N results
  * and don't get more until more are requested.
@@ -59,6 +59,7 @@ import org.springframework.transaction.support.DefaultTransactionStatus;
 public class Results {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log           log  = LogFactory.getLog(Results.class);
+  private static final DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
   private SearchPEP                  pep;
   private SearchWebService           service;
   private FetchArticleService        fetchArticleService;
@@ -97,8 +98,8 @@ public class Results {
    *         It likely wraps a RemoteException (talking to the search webapp) or an IOException
    *         parsing the results.
    */
-  public SearchResultPage getPage(int startPage, int pageSize) {
-
+  public SearchResultPage getPage(int startPage, int pageSize, OtmTransactionManager txManager) {
+    this.txManager = txManager;
     ArrayList<SearchHit> hits = new ArrayList<SearchHit>(pageSize);
     int                  cnt  = 0; // Actual number of hits retrieved
 
@@ -123,8 +124,8 @@ public class Results {
    * @return The total number of records lucene thinks we have. This may be inaccurate if
    *         XACML filters any out.
    */
-  public int getTotalHits() {
-
+  public int getTotalHits(OtmTransactionManager txManager) {
+    this.txManager = txManager;
     cache.hasNext(); // Read at least one record to populate totalHits instance variable
     return totalHits;
   }
@@ -168,7 +169,7 @@ public class Results {
           // It is possible we could throw a RemoteException or IOException
           throw new UndeclaredThrowableException(e, "Error talking to search service");
         } finally {
-          txManager.doBegin(txManager.doGetTransaction(), null);
+          txManager.doBegin(txManager.doGetTransaction(), txnDef);
         }
       }
 
