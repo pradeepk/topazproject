@@ -84,8 +84,7 @@ abstract class TIClient implements ItqlClient {
         else if (o instanceof String)
           res.add(new AnswerAnswer((String) o));
         else
-          throw new Error("Unexpected object received in result to query '" + itql + "': class=" +
-                          o.getClass().getName());
+          res.add(new AnswerAnswer(o.toString()));
       }
 
       return res;
