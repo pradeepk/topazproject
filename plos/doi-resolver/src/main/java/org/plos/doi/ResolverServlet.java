@@ -39,39 +39,41 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 /**
- * The ResolverServlet attempts to translate the DOI in the incoming request into a URI on the
- * plosone server that will display the DOI correctly. Thus far, it handles Article and Annotation
- * DOIs. It makes a call to the semantic DB to determine the type(s) of the given DOI. Depending
- * on the type of the resource described by the DOI, the servlet matches the doi to regular
- * expressions for each known journal (defined in  /etc/topaz/plosone.xml or the hierarchy of
- * config files). Each regular expression maps to a URI on the plosone server that will display
- * the resource described by the given DOI.   In the case of annotation DOIs, they do not contain
- * a reference to the journal, so the annotated root article  must be found first in order to
- * calculate the correct journal base URL.   TODO: This should be re-implemented to be more
- * generic so it can be more easily configured to support more types of DOIs. Assumptions should
- * not be made about the DOI format  containing a reference to the journal. The known journals
- * should be better defined. Better still, the DOI Resolver should simply check for the existence
- * of the DOI in the plosone server and if so, forward to the plosone server.  In turn, plosone
- * server should know how to display the appropriate result for any given DOI.
+ * The ResolverServlet attempts to translate the DOI in the incoming request into a URI on the ambra
+ * server that will display the DOI correctly. Thus far, it handles Article and Annotation DOIs. It
+ * makes a call to the semantic DB to determine the type(s) of the given DOI. Depending on the type
+ * of the resource described by the DOI, the servlet matches the doi to regular expressions for each
+ * known journal (defined in  /etc/topaz/ambra.xml or the hierarchy of config files). Each regular
+ * expression maps to a URI on the ambra server that will display the resource described by the
+ * given DOI.   In the case of annotation DOIs, they do not contain a reference to the journal, so
+ * the annotated root article  must be found first in order to calculate the correct journal base
+ * URL.
  *
- * @author Stephen Cheng, Alex Worden
+ * TODO: This should be re-implemented to be more generic so it can be more easily configured to
+ * support more types of DOIs. Assumptions should not be made about the DOI format  containing a
+ * reference to the journal. The known journals should be better defined. Better still, the DOI
+ * Resolver should simply check for the existence of the DOI in the ambra server and if so, forward
+ * to the ambra server.  In turn, ambra server should know how to display the appropriate result for
+ * any given DOI.
+ *
+ * @author Stephen Cheng
+ * @author Alex Worden
  */
 public class ResolverServlet extends HttpServlet {
-  private static final Log           log      = LogFactory.getLog(ResolverServlet.class);
-  private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
+  private static final Log             log      = LogFactory.getLog(ResolverServlet.class);
+  private static final Configuration   myConfig = ConfigurationStore.getInstance().getConfiguration();
 
-  /*private static final Pattern journalRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}");
-     private static final Pattern figureRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}\\.[gt]\\d{3}");*/
-  private static final String RDF_TYPE_ARTICLE = "http://rdf.topazproject.org/RDF/Article";
+  private static final String          RDF_TYPE_ARTICLE = "http://rdf.topazproject.org/RDF/Article";
   private static final String          RDF_TYPE_ANNOTATION =
-    "http://www.w3.org/2000/10/annotation-ns#Annotation";
+                                               "http://www.w3.org/2000/10/annotation-ns#Annotation";
+
   private static final Pattern[]       journalRegExs;
   private static final Pattern[]       figureRegExs;
   private static final String[]        urls;
   private static final int             numJournals;
   private static final String          errorPage;
   private static final DOITypeResolver resolver;
-  private static final String          INFO_DOI_PREFIX     = "info:doi";
+  private static final String          INFO_DOI_PREFIX = "info:doi";
 
   static {
     numJournals     = myConfig.getList("pub.doi-journals.journal.url").size();
@@ -111,11 +113,11 @@ public class ResolverServlet extends HttpServlet {
   }
 
   /**
-   * Tries to resolve a PLoS ONE doi from CrossRef into an application specific URL First,
-   * tries to make sure the DOI looks like it is properly formed.  If it looks like an article
-   * DOI, will attempt to do a type lookup in mulgara.  If it looks like a figure or a table, will
-   * attempt to construct an article DOI and do that lookup. Otherwise, will fail and send to PLoS
-   * ONE Page not Found error page.
+   * Tries to resolve a Ambra doi from CrossRef into an application specific URL First, tries to
+   * make sure the DOI looks like it is properly formed.  If it looks like an article DOI, will
+   * attempt to do a type lookup in mulgara.  If it looks like a figure or a table, will attempt to
+   * construct an article DOI and do that lookup. Otherwise, will fail and send to Ambra Page not
+   * Found error page.
    *
    * @param req the servlet request
    * @param resp the servlet response
@@ -154,7 +156,7 @@ public class ResolverServlet extends HttpServlet {
   }
 
   /**
-   * Just forwards to the PLoS ONE Page Not Found error page
+   * Just forwards to the Ambra Page Not Found error page
    *
    * @param req the servlet request
    * @param resp the servlet response
@@ -184,7 +186,7 @@ public class ResolverServlet extends HttpServlet {
   }
 
   private String constructURL(String doi) {
-    StringBuilder redirectURL; //= new StringBuilder(myConfig.getString("pub.webserver-url"));
+    StringBuilder redirectURL;
     Set<String>   rdfTypes;
 
     Pattern       journalRegEx;
