@@ -37,16 +37,6 @@
     </classpath>
   </taskdef>
 
-  <target name="exec-ext">
-    <condition property="ext" value="">
-      <os family="unix"/>
-    </condition>
-    <condition property="ext" value=".bat">
-      <os family="windows"/>
-    </condition>
-    <property name="ext" value=""/>
-  </target>
-
   <target name="patch-keytool">
     <condition property="patch-keytool-string"
      value="jakarta-tomcat.keytool.path=${env.JAVA_HOME}/bin/keytool">
@@ -122,10 +112,9 @@
       excludes="jakarta-tomcat-5.0.28/common/endorsed/*.jar"/>
 
     <delete dir="${DEST_DIR}/${ROOT}/packages/tmp"/>
-    
   </target>
   
-  <target name="ecqs-install" depends="exec-ext">
+  <target name="ecqs-install">
     <artifact:dependencies filesetId="ecqs.fileset" useScope="runtime">
       <dependency groupId="${ecqs-groupId}" artifactId="${ecqs-artifactId}"
                   version="${ecqs-version}" type="jar"/>
@@ -134,9 +123,9 @@
 
     <unjar src="${SRC_JAR}" dest="${ECQS_INSTALL_DIR}"/>
     
-    <exec dir="${ECQS_INSTALL_DIR}/${ROOT}" executable="ant${ext}">
-      <arg line="install"/>
-    </exec>
+    <ant dir="${ECQS_INSTALL_DIR}/${ROOT}" target="install" inheritAll="false">
+      <property name="build.compiler" value="extJavac"/>
+    </ant>
   </target>
 
   <target name="ecqs-uninstall">
@@ -145,18 +134,15 @@
 
   <target name="ecqs-start">
     <echo>Starting CAS (spawn=${SPAWN})</echo>
-    <java classname="org.apache.tools.ant.Main"
-      dir="${ECQS_HOME}"
-          fork="true" spawn="${SPAWN}">
+    <java classname="org.apache.tools.ant.Main" dir="${ECQS_HOME}" fork="true" spawn="${SPAWN}">
       <classpath refid="dependency.classpath" />
-      <arg line="-f ${ECQS_HOME}/build.xml tomcat-start"/>
+      <arg value="-f"/>
+      <arg file="${ECQS_HOME}/build.xml"/>
+      <arg value="tomcat-start"/>
     </java>
   </target>
 
-  <target name="ecqs-stop" depends="exec-ext">
-    <exec dir="${ECQS_HOME}" executable="ant${ext}">
-      <arg line="tomcat-stop"/>
-    </exec>
+  <target name="ecqs-stop">
+    <ant dir="${ECQS_HOME}" target="tomcat-stop" inheritAll="false"/>
   </target>
-    
 </project>
