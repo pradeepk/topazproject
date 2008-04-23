@@ -63,7 +63,7 @@ ol.alpha-upper {list-style-type: upper-alpha; margin: 20px; position: relative; 
 dt			{ font-weight: bold; }
 dd			{ margin: 0; }
 table		{ margin: 20px; border: none;}
-th			{ padding: 6px; background-color: #98ff7c; border: 4px solid #FFF; border-width: 0 3px 3px 0; font-weight: bold;}
+th			{ padding: 6px; background-color: #fdae7a; border: 4px solid #FFF; border-width: 0 3px 3px 0; font-weight: bold;}
 td			{ padding: 6px; background-color: #fcd3b8; border: 4px solid #FFF; border-width: 0 3px 3px 0; }
 /* Default Headings */
 h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; color: #333; /*position: relative; Note: this was causing links in floated articleMenu to be covered up and unclickable in Firefox2 */ }
