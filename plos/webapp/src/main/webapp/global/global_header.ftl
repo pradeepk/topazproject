@@ -94,6 +94,8 @@
      <#include "/journals/ntd/global/global_navigation.ftl">
   <#elseif journalContext = "PLoSPathogens"> 
      <#include "/journals/pathogens/global/global_navigation.ftl">
+  <#elseif journalContext = "PLoSONE" >
+    <#include "/journals/plosone/global/global_navigation.ftl">
   <#else>
      <#include "../global/global_navigation.ftl">
   </#if>

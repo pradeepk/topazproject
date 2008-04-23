@@ -44,10 +44,12 @@
     <#include "/journals/compbiol/global/global_topbanner.ftl">
   <#elseif journalContext = "PLoSGenetics" >
     <#include "/journals/genetics/global/global_topbanner.ftl">
-  <#elseif journalContext = "PLoSPathogens" >
-    <#include "/journals/pathogens/global/global_topbanner.ftl">
   <#elseif journalContext = "PLoSNTD" >
     <#include "/journals/ntd/global/global_topbanner.ftl">
+  <#elseif journalContext = "PLoSPathogens" >
+    <#include "/journals/pathogens/global/global_topbanner.ftl">
+  <#elseif journalContext = "PLoSONE" >
+    <#include "/journals/plosone/global/global_topbanner.ftl">
   <#else>
     <#include "global_topbanner.ftl">
   </#if>

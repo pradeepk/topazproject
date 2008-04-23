@@ -77,7 +77,7 @@
       <default>
         <journal>PLoSONE</journal>
         <description>PLoS ONE</description> <!-- should be == to article xml <journal-title> -->
-        <mappingPrefix></mappingPrefix>
+        <mappingPrefix>/journals/plosone</mappingPrefix>
         <url>http://plosone...</url>
       </default>
       <!-- entries to config each virtual journal -->
@@ -540,6 +540,25 @@
       </default>
       <page>
         <name>/index.ftl</name>
+        <css>
+          <file>/css/screen.css</file>
+          <file>/css/iepc.css</file>
+          <file>/css/home.css</file>
+          <file>/css/article_markup.css</file>
+        </css>
+        <javascript>
+          <file>/javascript/dojo/dojo_home.js</file>
+          <file>/javascript/topaz/topaz.js</file>
+          <file>/javascript/topaz/domUtil.js</file>
+          <file>/javascript/topaz/htmlUtil.js</file>
+          <file>/javascript/dojoRequire_default.ftl</file>
+          <file>/javascript/config_home.js</file>
+          <file>/javascript/init_global.js</file>
+          <file>/javascript/init_navigation.js</file>
+        </javascript>
+      </page>
+      <page>
+        <name>/journals/plosone/index.ftl</name>
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>

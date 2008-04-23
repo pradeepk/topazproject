@@ -244,30 +244,6 @@
   </package>
 
   <package name="static" extends="default" namespace="/static">
-    <action name="about" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/about.ftl</param>
-      </result>
-    </action>
-
-    <action name="authors" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/authors.ftl</param>
-      </result>
-    </action>
-
-    <action name="browse" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/browse.ftl</param>
-      </result>
-    </action>
-
-    <action name="checklist" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/checklist.ftl</param>
-      </result>
-    </action>
-
     <action name="commentGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/commentGuidelines.ftl</param>
@@ -280,57 +256,15 @@
       </result>
     </action>
 
-    <action name="contact" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/contact.ftl</param>
-      </result>
-    </action>
-
-    <action name="edboard" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/edboard.ftl</param>
-      </result>
-    </action>
-
-    <action name="faq" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/faq.ftl</param>
-      </result>
-    </action>
-
     <action name="figureGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/figure_guidelines.ftl</param>
       </result>
     </action>
 
-    <action name="guidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/guidelines.ftl</param>
-      </result>
-    </action>
-
     <action name="help" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/help.ftl</param>
-      </result>
-    </action>
-
-    <action name="information" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/information.ftl</param>
-      </result>
-    </action>
-
-    <action name="journalClub" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/journalClub.ftl</param>
-      </result>
-    </action>
-
-    <action name="latex" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/latex.ftl</param>
       </result>
     </action>
 
@@ -343,18 +277,6 @@
     <action name="license" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/license.ftl</param>
-      </result>
-    </action>
-
-    <action name="media" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/media.ftl</param>
-      </result>
-    </action>
-
-    <action name="policies" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/policies.ftl</param>
       </result>
     </action>
 
@@ -372,22 +294,10 @@
 
     <action name="releaseNotes" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/releaseNotes.ftl</param>
+        <param name="templateFile">/journals/plosone/static/releaseNotes.ftl</param>
       </result>
     </action>
     
-    <action name="reviewerGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/reviewer_guidelines.ftl</param>
-      </result>
-    </action>
-
-    <action name="rssFeeds" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/rss_feeds.ftl</param>
-      </result>
-    </action>
-
     <action name="rssInfo" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/rssInfo.ftl</param>
@@ -406,21 +316,9 @@
       </result>
     </action>
 
-    <action name="sitemap" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/sitemap.ftl</param>
-      </result>
-    </action>
-
     <action name="terms" class="org.plos.action.NoOpAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/terms.ftl</param>
-      </result>
-    </action>
-
-    <action name="users" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/users.ftl</param>
       </result>
     </action>
 
@@ -429,13 +327,6 @@
         <param name="templateFile">/static/userFaq.ftl</param>
       </result>
     </action>
-
-    <action name="whypublish" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/static/whypublish.ftl</param>
-      </result>
-    </action>
-
   </package>
 
   <package name="rate" extends="default" namespace="/rate">
@@ -1149,4 +1040,5 @@
   <include file="struts-genetics.xml" />
   <include file="struts-ntd.xml" />
   <include file="struts-pathogens.xml" />
+  <include file="struts-plosone.xml" />
 </struts>
