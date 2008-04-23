@@ -69,30 +69,30 @@
     <virtualJournals>
       <!-- default values used if no virtual journal rules match -->
       <default>
-        <journal>TopazJournal</journal>
-        <description>Topaz Journal</description>
-        <mappingPrefix></mappingPrefix>
-        <url>http://www.topazproject.org</url>
+        <journal>AmbraJournal</journal>
+        <description>Ambra Journal</description>
+        <mappingPrefix>/journals/ambraJournal</mappingPrefix>
+        <url>http://ambra.topazproject.org</url>
       </default>
       <!-- entries to config each virtual journal -->
       <!-- comma separated list of virtual journal names -->
-      <journals>VirtualJournal</journals>
-      <VirtualJournal>
-        <description>Virtual Journal</description>
-        <mappingPrefix>/journals/virtualJournal</mappingPrefix>
+      <journals>OverlayJournal</journals>
+      <OverlayJournal>
+        <description>Overlay Journal</description>
+        <mappingPrefix>/journals/overlayJournal</mappingPrefix>
         <rules>
-          <host>virtual\..*</host>
-          <plosJournal>VirtualJournal</plosJournal>
+          <host>.*overlay.*</host>
+          <plosJournal>OverlayJournal</plosJournal>
         </rules>
-        <url>http://virtual.topazproject.org</url>
+        <url>http://overlay.topazproject.org</url>
         <!-- Atom feed overrides -->
         <pub>
           <feed>
-            <title>Virtual Journal</title>
+            <title>Overlay Journal</title>
             <id>info:doi/10.1371/feed.tpvj</id>
           </feed>
         </pub>
-      </VirtualJournal>
+      </OverlayJournal>
       <!-- virtual journal config entry
       <${journalName}>
         <description>${display for Admin, etc.}</description>
@@ -129,10 +129,10 @@
 
     <!-- defaults for generating an Atom Feed -->
     <feed>
-      <title>Topaz Journal</title>
+      <title>Ambra Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
       <icon>${webserver-url}images/favicon.ico</icon>
-      <id>info:doi/1371/feed.tpjo</id> <!-- Unique id. Should change for different criteria -->
+      <id>info:doi/1371/feed.ambr</id> <!-- Unique id. Should change for different criteria -->
       <extended> <!-- Configuration of extended atom feeds -->
         <prefix>plos</prefix> <!-- namespace prefix for custom elements -->
         <namespace>http://www.plos.org/atom/ns#plos</namespace> <!-- custom element namespace -->
@@ -186,7 +186,7 @@
   </pub>
 
   <plos-registration>
-    <app-context>/plos-registration</app-context> <!-- app context for registration -->
+    <app-context>/ambra-registration</app-context> <!-- app context for registration -->
     <url>
       <base>https://${network.hosts.cas}:${network.ports.cas-ssl}${plos-registration.app-context}</base>
       <!-- properties below are used by pub app to determine where to send the user for certain actions -->
@@ -219,15 +219,15 @@
    -->
 
   <freemarker>
-    <default-journal-name>TopazJournal</default-journal-name>
+    <default-journal-name>AmbraJournal</default-journal-name>
     <journal>
-      <name>Topaz Journal</name>
-      <metaKeywords>Topaz\, RDF\, Ronald Tschalär</metaKeywords>
-      <metaDescription>Topaz is a new Open Source software applications development project to create an innovative, end-to-end electronic publishing system that will become a powerful driver of the Open Access movement.</metaDescription>
-      <articleTitlePrefix>Topaz Journal: </articleTitlePrefix>
-      <displayName>Topaz Journal</displayName>
+      <name>AmbraJournal</name>
+      <metaKeywords>Ambra\, RDF\, Ronald Tschalär</metaKeywords>
+      <metaDescription>Ambra is a new Open Source software applications development project to create an innovative, end-to-end electronic publishing system that will become a powerful driver of the Open Access movement.</metaDescription>
+      <articleTitlePrefix>Ambra Journal: </articleTitlePrefix>
+      <displayName>Ambra Journal</displayName>
       <default>
-        <title>Topaz : It's refreshing.</title>
+        <title>Ambra : It's refreshing.</title>
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>
@@ -245,7 +245,7 @@
         </javascript>
       </default>
       <page>
-        <name>/index.ftl</name>
+        <name>/journals/ambraJournal/index.ftl</name>
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>
@@ -553,18 +553,18 @@
       </page>
     </journal>
 
-    <!-- Virtual Journal. Anything you want to override must be listed here -->
+    <!-- Overlay Journal. Anything you want to override must be listed here -->
     <journal>
-      <name>Virtual Journal</name>
-      <metaKeywords>Virtual Journal\, Secondary\, Generic\, Default</metaKeywords>
-      <metaDescription>This is an example second journal on Topaz.</metaDescription>
-      <articleTitlePrefix>Virtual Journal:  </articleTitlePrefix>
-      <displayName>Virtual Journal</displayName>
+      <name>OverlayJournal</name>
+      <metaKeywords>Overlay Journal\, Secondary\, Generic\, Default</metaKeywords>
+      <metaDescription>This is an example second journal on Ambra.</metaDescription>
+      <articleTitlePrefix>Overlay Journal:  </articleTitlePrefix>
+      <displayName>Overlay Journal</displayName>
       <default>
-        <title>Virtual Journal: Serving as an Example for the Topaz Configuration community</title>
+        <title>Overlay Journal: Serving as an Example for the Ambra Configuration community</title>
       </default>
       <page>
-        <name>/journals/virtual/index.ftl</name>
+        <name>/journals/overlayJournal/index.ftl</name>
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>
@@ -586,7 +586,7 @@
         <title>CODE_ARTICLE_TITLE</title>
       </page>
       <page>
-        <name>/journals/virtual/static/about.ftl</name>
+        <name>/journals/overlayJournal/static/about.ftl</name>
         <css>
           <file>/css/screen.css</file>
           <file>/css/iepc.css</file>
