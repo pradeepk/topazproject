@@ -24,6 +24,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
+import java.io.Serializable;
+
 import java.util.AbstractList;
 import java.util.AbstractSequentialList;
 import java.util.AbstractSet;
@@ -209,6 +211,8 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
           loaded = true;
           session.delayedLoadComplete(instance, mapper);
         }
+        if (method.getName().equals("writeReplace") && ((args == null) || (args.length == 0)))
+          return real;
         return method.invoke(real, args);
       }
       public boolean isLoaded() {
@@ -216,8 +220,8 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
       }
     };
 
-    Collection value = (Collection) Proxy.newProxyInstance(t.getClassLoader(), 
-          new Class[] {t}, handler);
+    Collection value = (Collection) Proxy.newProxyInstance(getClass().getClassLoader(), 
+          new Class[] {t, ClassBinder.WriteReplace.class}, handler);
     assert t.isInstance(value) : "expecting " + t + ", got " + value.getClass();
     return value;
   }

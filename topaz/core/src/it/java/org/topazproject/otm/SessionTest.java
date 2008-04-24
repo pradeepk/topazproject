@@ -41,6 +41,7 @@ import org.testng.annotations.Test;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
@@ -118,9 +119,11 @@ public class SessionTest extends AbstractOtmTest {
           s1.id = "foo:id/l1";
           s1.s1 = "Loop1";
           s1.ch = new Serial();
+          s1.foo.add(s1.ch);
           s1.ch.id = "foo:id/l2";
           s1.ch.s1 = "Loop2";
           s1.ch.ch = s1;
+          s1.ch.foo.add(s1);
           session.saveOrUpdate(s1);
         }
       });
@@ -315,6 +318,8 @@ public class SessionTest extends AbstractOtmTest {
             assertEquals(s1.ch.s1, l1.ch.s1);
             assertEquals(s1.ch.ch.id, l1.ch.ch.id);
             assertEquals(s1.ch.ch.s1, l1.ch.ch.s1);
+            assertEquals(s1.foo.get(0).id, l1.foo.get(0).id);
+            assertEquals(s1.ch.foo.get(0).id, l1.ch.foo.get(0).id);
           } catch (OtmException oe) {
             throw oe;
           } catch (RuntimeException re) {
@@ -333,5 +338,7 @@ public class SessionTest extends AbstractOtmTest {
     public String id;
     public String s1;
     public Serial ch;
+    @Predicate(fetch=FetchType.lazy)
+    public List<Serial> foo = new ArrayList<Serial>();
   }
 }
