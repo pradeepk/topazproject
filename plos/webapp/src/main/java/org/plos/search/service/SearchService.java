@@ -20,6 +20,9 @@ package org.plos.search.service;
 
 import java.util.concurrent.TimeUnit;
 
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+
 import org.plos.ApplicationException;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
@@ -45,8 +48,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class SearchService {
   private static final Log           log   = LogFactory.getLog(SearchService.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private static TemporaryCache      cache = new TemporaryCache(
-                                              CONF.getLong("pub.search.cacheDuration", 600000L));
+  private Ehcache      cache;
 
   private SearchWebService           searchWebService;
   private FetchArticleService        fetchArticleService;
@@ -67,15 +69,15 @@ public class SearchService {
       PlosOneUser   user     = PlosOneUser.getCurrentUser();
       final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
 
-      Results results  = null;
+      Results results;
       synchronized(cache) {
-        results = (Results) cache.get(cacheKey);
-        if (results == null) {
-          results = new Results(query, searchWebService, fetchArticleService);
-          cache.put(cacheKey, results);
+        Element e = cache.get(cacheKey);
+        if (e == null) {
+          cache.put(e = new Element(cacheKey, new Results(query, searchWebService, fetchArticleService)));
           if (log.isDebugEnabled())
             log.debug("Created search cache for '" + cacheKey + "'");
         }
+        results = (Results)e.getObjectValue();
       }
 
       // Results are shared, but not concurrently.
@@ -116,5 +118,10 @@ public class SearchService {
   @Required
   public void setTxManager(OtmTransactionManager txManager) {
     this.txManager = txManager;
+  }
+
+  @Required
+  public void setSearchCache(Ehcache cache) {
+    this.cache = cache;
   }
 }

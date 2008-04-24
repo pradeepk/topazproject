@@ -192,6 +192,7 @@
 
   <bean id="searchService" class="org.plos.search.service.SearchService">
     <property name="searchWebService" ref="searchWebService"/>
+    <property name="searchCache" ref="searchCache"/>
   </bean>
 
   <bean id="searchWebService" class="org.plos.search.service.SearchWebService"/>
@@ -448,6 +449,10 @@
 
   <bean id="feedCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="FeedCache"/>
+  </bean>
+
+  <bean id="searchCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName" value="SearchCache"/>
   </bean>
 
   <bean id="virtualJournalMappingFilterCache"

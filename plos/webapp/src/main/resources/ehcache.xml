@@ -603,4 +603,14 @@
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
+    <!--
+    Article Search results cache.
+    -->
+    <cache name="SearchCache"
+           maxElementsInMemory="10000"
+           eternal="false"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="600"
+           overflowToDisk="false">
+    </cache>
 </ehcache>
