@@ -31,6 +31,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -67,6 +69,7 @@ public class Results {
   private String                     query;
   private int                        totalHits = 0;
   private OtmTransactionManager      txManager;
+  private Lock                       lock = new ReentrantLock();
 
   /**
    * Construct a search Results object.
@@ -128,6 +131,10 @@ public class Results {
     this.txManager = txManager;
     cache.hasNext(); // Read at least one record to populate totalHits instance variable
     return totalHits;
+  }
+
+  public Lock getLock() {
+    return lock;
   }
 
   /**

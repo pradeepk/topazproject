@@ -18,6 +18,8 @@
  */
 package org.plos.search.service;
 
+import java.util.concurrent.TimeUnit;
+
 import org.plos.ApplicationException;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
@@ -65,16 +67,30 @@ public class SearchService {
       PlosOneUser   user     = PlosOneUser.getCurrentUser();
       final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
 
-      Results results  = (Results) cache.get(cacheKey);
-      if (results == null) {
-        results = new Results(query, searchWebService, fetchArticleService);
-        cache.put(cacheKey, results);
-        if (log.isDebugEnabled())
-          log.debug("Created search cache for '" + cacheKey + "' of " +
-                    results.getTotalHits(txManager));
+      Results results  = null;
+      synchronized(cache) {
+        results = (Results) cache.get(cacheKey);
+        if (results == null) {
+          results = new Results(query, searchWebService, fetchArticleService);
+          cache.put(cacheKey, results);
+          if (log.isDebugEnabled())
+            log.debug("Created search cache for '" + cacheKey + "'");
+        }
       }
 
-      return results.getPage(startPage, pageSize, txManager);
+      // Results are shared, but not concurrently.
+      if (!results.getLock().tryLock(10L, TimeUnit.SECONDS)) { // XXX: tune
+        log.warn("Failed to acquire lock for cache entry with '" + cacheKey 
+            + "'. Creating a temporary uncached instance.");
+        results = new Results(query, searchWebService, fetchArticleService);
+        results.getLock().lock();
+      }
+
+      try {
+        return results.getPage(startPage, pageSize, txManager);
+      } finally {
+        results.getLock().unlock();
+      }
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
