@@ -369,6 +369,7 @@ public class UserService {
     }
 
     UserAccount ua = getUserAccount(inUser.getUserId());
+    session.evict(ua.getProfile());
     ua.setProfile(inUser.getUserProfile());
     session.saveOrUpdate(ua);
 
