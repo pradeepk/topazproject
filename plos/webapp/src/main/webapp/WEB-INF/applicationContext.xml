@@ -28,27 +28,27 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <!--Plosone developer beans here -->
-  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" >
+  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService">
     <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="articleXmlUtils" ref="articleXmlUtils"/>
   </bean>
 
-  <bean id="articleXmlUtils" class="org.plos.util.ArticleXMLUtils" scope="singleton" init-method="init">
+  <bean id="articleXmlUtils" class="org.plos.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
   </bean>
 
-  <bean id="citationService" class="org.plos.util.ArticleXMLUtils" scope="singleton" init-method="init">
+  <bean id="citationService" class="org.plos.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/citation.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
   </bean>
 
-  <bean id="secondaryObjectService" class="org.plos.util.ArticleXMLUtils" scope="singleton" init-method="init">
+  <bean id="secondaryObjectService" class="org.plos.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/objInfo.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
@@ -66,7 +66,7 @@
   </util:map>
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
-  <bean id="articleOtmService" class="org.plos.article.service.ArticleOtmService" scope="session">
+  <bean id="articleOtmService" class="org.plos.article.service.ArticleOtmService">
  <!--   <property name="smallImageRep" value="TIF"/>
     <property name="mediumImageRep" value="TIF"/>
     <property name="largeImageRep" value="TIF"/>
@@ -74,7 +74,6 @@
     <property name="smallImageRep" value="PNG_S"/>
     <property name="mediumImageRep" value="PNG_M"/>
     <property name="largeImageRep" value="PNG_L"/>
-    <aop:scoped-proxy/>
    </bean>
 
    <bean id="crossRefPosterService" class="org.plos.admin.service.CrossRefPosterService">
@@ -86,9 +85,9 @@
     <property name="doiXrefUrl" value="${pub.spring.crossref.post.url}"/>
   </bean>
 
-  <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService" scope="session" />
+  <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService"/>
 
-  <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService" scope="session">
+  <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService">
     <!-- These pathnames are absolute -->
     <property name="documentDirectory" value="${pub.spring.ingest.source}"/>
     <property name="ingestedDocumentDirectory" value="${pub.spring.ingest.destination}"/>
@@ -97,7 +96,6 @@
     <property name="plosDoiUrl" value="${pub.spring.crossref.plos.doiurl}"/>
     <property name="plosEmail" value="${pub.spring.crossref.plos.email}"/>
     <property name="sendToXref" value="${pub.spring.crossref.sendToXref}"/>
-    <aop:scoped-proxy/>
   </bean>
 
   <bean id="defaultEncodingCharset" class="java.lang.String">
@@ -112,41 +110,34 @@
 
   <bean id="permissionsService" class="org.plos.permission.service.PermissionsService"/>
 
-  <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter" scope="session">
-    <aop:scoped-proxy/>
-  </bean>
+  <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter"/>
 
-  <bean id="replyService" class="org.plos.annotation.service.ReplyService" scope="session">
+  <bean id="replyService" class="org.plos.annotation.service.ReplyService">
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="permissionsService" ref="permissionsService"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="articleAnnotationService" class="org.plos.annotation.service.ArticleAnnotationService" scope="session">
+  <bean id="articleAnnotationService" class="org.plos.annotation.service.ArticleAnnotationService">
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Comment"/>
     <property name="permissionsService" ref="permissionsService"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="ratingsService"
-        class="org.plos.rating.service.RatingsService" scope="session">
+  <bean id="ratingsService" class="org.plos.rating.service.RatingsService">
     <property name="applicationId" ref="applicationId"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="annotationService" class="org.plos.annotation.service.AnnotationService" scope="session">
+  <bean id="annotationService" class="org.plos.annotation.service.AnnotationService">
     <property name="converter" ref="annotationConverter"/>
     <property name="replyService" ref="replyService"/>
     <property name="permissionsService" ref="permissionsService"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="userService" class="org.plos.user.service.UserService" scope="session">
+  <bean id="userService" class="org.plos.user.service.UserService">
     <property name="userContext" ref="userContext"/>
     <property name="permissionsService" ref="permissionsService"/>
     <property name="userCache" ref="userCache"/>
@@ -188,7 +179,6 @@
         <entry key="plosone" value="PLoS ONE"/>
       </map>
     </property>
-    <aop:scoped-proxy/>
   </bean>
 
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
@@ -200,18 +190,13 @@
     <entry key="countries" value-ref="countries"/>
   </util:map>
 
-  <!-- Search is most appropriately scoped @ session, e.g. moving between results pages should
-       reuse the (session cached) search results.  -->
-  <bean id="searchService" class="org.plos.search.service.SearchService" scope="session">
+  <bean id="searchService" class="org.plos.search.service.SearchService">
     <property name="searchWebService" ref="searchWebService"/>
-    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="searchWebService" class="org.plos.search.service.SearchWebService" scope="session">
-    <aop:scoped-proxy/>
-  </bean>
+  <bean id="searchWebService" class="org.plos.search.service.SearchWebService"/>
 
-  <bean id="journalService" class="org.plos.journal.JournalService" scope="singleton">
+  <bean id="journalService" class="org.plos.journal.JournalService">
     <constructor-arg index="0">
       <ref bean="otmSessionFactory"/>
     </constructor-arg>
@@ -232,7 +217,7 @@
   <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore">
     <constructor-arg index="0" value="${java.io.tmpdir}/blob-store"/>
   </bean>
-  <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration" scope="singleton">
+  <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration">
     <constructor-arg index="0" value="${pub.spring.itql.uri}" />
     <constructor-arg index="1">
      <!-- must be one of fedoraBlobStore or simpleBlobStore -->
@@ -383,12 +368,11 @@
     </property>
   </bean>
 
-  <bean id="otmSessionFactory" factory-bean="otmFactory" factory-method="getFactory"
-      scope="singleton"/>
+  <bean id="otmSessionFactory" factory-bean="otmFactory" factory-method="getFactory"/>
 
   <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
       destroy-method="close" scope="request">
-    <aop:scoped-proxy/>
+    <aop:scoped-proxy proxy-target-class="false"/>
   </bean>
 
   <!-- Set up Transaction-Manager stuff -->
@@ -398,9 +382,7 @@
 
   <tx:annotation-driven transaction-manager="txManager"/>
 
-  <bean id="browseService" class="org.plos.article.service.BrowseService" scope="request">
-    <aop:scoped-proxy/>
-  </bean>
+  <bean id="browseService" class="org.plos.article.service.BrowseService"/>
 
   <tx:advice id="txAdvice" transaction-manager="txManager">
     <tx:attributes>
