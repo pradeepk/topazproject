@@ -246,7 +246,7 @@
     -->
     <freemarker>
       <journal>
-        <name>Ambra Journal</name>
+        <name>AmbraJournal</name>
         <metaKeywords>Ambra\, RDF</metaKeywords>
         <metaDescription>
           Ambra is a new Open Source software applications development project to create an
@@ -584,7 +584,7 @@
 
       <!-- Overlay Journal. Anything you want to override must be listed here -->
       <journal>
-        <name>Overlay Journal</name>
+        <name>OverlayJournal</name>
         <metaKeywords>Overlay Journal\, Secondary\, Generic\, Default</metaKeywords>
         <metaDescription>This is an example second journal on Topaz.</metaDescription>
         <articleTitlePrefix>Overlay Journal:</articleTitlePrefix>
