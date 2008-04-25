@@ -41,7 +41,7 @@ public class WebAppListener implements ServletContextListener {
   /**
    * Destroy the configuration singleton since this web application is getting un-deployed.
    *
-   * @param event the destryed event
+   * @param event the destroyed event
    */
   public void contextDestroyed(ServletContextEvent event) {
     ConfigurationStore.getInstance().unloadConfiguration();
@@ -51,7 +51,7 @@ public class WebAppListener implements ServletContextListener {
    * Initialize the configuration singleton since this web application is getting deployed.<p>
    *
    * By default, WebAppListener uses the default ConfigurationStore initialization. This
-   * usually means using /etc/.../plosone.xml. This can be overridden by setting the
+   * usually means using /etc/.../ambra.xml. This can be overridden by setting the
    * org.plos.configuration system property or webapp context variable to a URL or a name
    * resolvable as a resource.
    *
