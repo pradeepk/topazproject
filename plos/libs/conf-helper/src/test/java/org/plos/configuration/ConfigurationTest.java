@@ -38,7 +38,7 @@ public class ConfigurationTest extends TestCase {
      * at the end (last place looked).
      */
     ConfigurationStore.addResources((CombinedConfiguration)conf, 
-        "/org/plos/configuration/global-defaults-test.xml");
+        "/ambra/configuration/global-defaults-test.xml");
   }
 
   protected void tearDown() {
