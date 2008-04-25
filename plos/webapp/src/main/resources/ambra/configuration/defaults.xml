@@ -46,7 +46,7 @@
 
       <appContext></appContext><!-- web application context; leave empty if deployed in root directory  -->
       <resourceSubDir></resourceSubDir><!-- used only if web resources like images/css are deployed in a separate directory; rarely used  -->
-
+      <defaultJournalName>AmbraJournal</defaultJournalName>      
       <!-- Action for retrieving an article where doi is appended to this string -->
       <articleAction>article/</articleAction>
 
