@@ -61,7 +61,7 @@ import org.apache.commons.logging.LogFactory;
 public class ConfigurationStore {
   private static final Log                log       = LogFactory.getLog(ConfigurationStore.class);
   private static final ConfigurationStore instance  = new ConfigurationStore();
-  private CombinedConfiguration          root = null;
+  private CombinedConfiguration           root = null;
 
   /**
    * A property used to define the location of the master set of configuration overrides.
@@ -151,8 +151,6 @@ public class ConfigurationStore {
 
     // System properties override everything
     root.addConfiguration(new SystemConfiguration());
-    
-    // log.debug("Configuration dump after adding SystemConfiguration:\n"+ConfigurationUtils.toString(root));
 
     // Load from ambra.configuration -- /etc/... (optional)
     if (configURL != null) {
@@ -164,8 +162,6 @@ public class ConfigurationStore {
           throw ce;
         log.info("Unable to open '" + configURL + "'");
       }
-
-      // log.debug("Configuration dump after adding configURL="+configURL+":\n"+ConfigurationUtils.toString(root));
     }
 
     // Add ambra.configuration.overrides (if defined)
@@ -178,7 +174,6 @@ public class ConfigurationStore {
         // Must not be a URL, so it must be a resource
         addResources(root, overrides);
       }
-      // log.debug("Configuration dump after adding overridesURL="+overrides+":\n"+ConfigurationUtils.toString(root));
     }
 
     // Add defaults.xml found in classpath
