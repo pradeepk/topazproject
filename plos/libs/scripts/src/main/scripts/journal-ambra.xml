@@ -22,10 +22,10 @@
 
 <!-- This is a dummy journal used to show an example journal configuration file -->
 <journal>
-  <key>Ambra</key>
+  <key>AmbraJournal</key>
   <eIssn>1111-2222</eIssn>
   <dublinCore>
-    <title>Ambra</title>
+    <title>Ambra Journal</title>
   </dublinCore>
   <!-- seed Journal with these initial Articles
   <simpleCollection>
