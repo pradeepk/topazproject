@@ -100,7 +100,7 @@ public class ConfigurationStore {
    * It is assumed there is only one of these in the classpath. If somebody defines
    * a second copy of this, the results are undefined. (TODO: Detect this.)
    */
-  public static final String GLOBAL_DEFAULTS_RESOURCE = "ambra/configuration/global-defaults.xml";
+  public static final String GLOBAL_DEFAULTS_RESOURCE = "/ambra/configuration/global-defaults.xml";
 
   /**
    * Create the singleton instance.
