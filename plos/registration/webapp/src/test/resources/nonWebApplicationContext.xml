@@ -29,7 +29,7 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-  <!--Plosone developer beans here -->
+  <!--Ambra developer beans here -->
   <bean id="serviceFactory" class="org.plos.service.ServiceFactory">
     <property name="persistenceService" ref="persistenceService"/>
     <property name="registrationService" ref="registrationService"/>

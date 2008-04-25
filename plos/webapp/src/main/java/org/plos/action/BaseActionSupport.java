@@ -42,9 +42,9 @@ public abstract class BaseActionSupport extends ActionSupport {
   private static final Log           log  = LogFactory.getLog(BaseActionSupport.class);
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
-  protected static final String feedBasePath    = CONF.getString("pub.feed.basePath", "/article/");
-  private   static final String feedDefaultFile = CONF.getString("pub.feed.defaultFile", "feed");
-  private   static final String feedDefaultName = CONF.getString("pub.feed.defaultName", "New Articles");
+  protected static final String feedBasePath    = CONF.getString("ambra.services.feed.basePath", "/article/");
+  private   static final String feedDefaultFile = CONF.getString("ambra.services.feed.defaultFile", "feed");
+  private   static final String feedDefaultName = CONF.getString("ambra.services.feed.defaultName", "New Articles");
 
   /**
    * This overrides the deprecated super inplementation and returns an empty implementation as we

@@ -59,7 +59,7 @@ if (opt.h) { cli.usage(); return }
 def CONF = ToolHelper.loadConfiguration(opt.c)
 println "configuration loaded (w/-config-overrides.xml: ${opt.c}): $CONF"
 
-def fgsRepository = CONF.getString('topaz.fedoragsearch.repository', 'Topaz')
+def fgsRepository = CONF.getString('ambra.services.topaz.fedoraGSearch.repository', 'Topaz')
 def fgsAction     = 'fromPid'
 
 // let ArticleUtil use standard methods to get fedoragsearch operations
@@ -84,8 +84,8 @@ if (opt.o) {
 // get a list of Article dois
 // Setup OTM
 def factory = new SessionFactory();
-def itql = new ItqlStore(URI.create(CONF.getString('topaz.services.itql.uri')))
-def ri = new ModelConfig('ri', URI.create(CONF.getString('topaz.models.articles')), null);
+def itql = new ItqlStore(URI.create(CONF.getString('ambra.services.topaz.itql.uri')))
+def ri = new ModelConfig('ri', URI.create(CONF.getString('ambra.services.topaz.models.articles')), null);
 factory.setTripleStore(itql)
 factory.addModel(ri)
 factory.preload(Article.class)

@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
-import org.plos.configuration.ConfigurationStore;
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
@@ -39,8 +38,6 @@ import org.topazproject.otm.Session;
 
 public class BrowseVolumeAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(BrowseArticlesAction.class);
-  private static final Configuration CONF = ConfigurationStore.getInstance()
-      .getConfiguration();
   private BrowseService browseService;
   private JournalService journalService;
   private IssueInfo currentIssue;

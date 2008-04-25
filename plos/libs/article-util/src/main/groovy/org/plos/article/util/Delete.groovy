@@ -48,9 +48,9 @@ def opt = cli.parse(args); if (opt.h) { cli.usage(); return }
 CONF = ToolHelper.loadConfiguration(opt.c)
 
 def factory = new SessionFactoryImpl();
-def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
-def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null)
-def p = new ModelConfig("profiles", URI.create(CONF.getString("topaz.models.profiles")), null)
+def itql = new ItqlStore(URI.create(CONF.getString("ambra.services.topaz.itql.uri")))
+def ri = new ModelConfig("ri", URI.create(CONF.getString("ambra.services.topaz.models.articles")), null)
+def p = new ModelConfig("profiles", URI.create(CONF.getString("ambra.services.topaz.models.profiles")), null)
 factory.setTripleStore(itql)
 factory.addModel(ri)
 factory.addModel(p)
@@ -70,8 +70,8 @@ def process(c) {
 }
 
 // Get directories zip files are stashed in
-def queueDir    = CONF.getString('pub.spring.ingest.source', '/var/spool/plosone/ingestion-queue')
-def ingestedDir = CONF.getString('pub.spring.ingest.destination', '/var/spool/plosone/ingested')
+def queueDir    = CONF.getString('ambra.services.documentManagement.ingestSourceDir', '/var/spool/plosone/ingestion-queue')
+def ingestedDir = CONF.getString('ambra.services.documentManagement.ingestDestinationDir', '/var/spool/plosone/ingested')
 
 opt.arguments().each() { uri ->
   // Call ArticleUtil.delete() to remove from mulgara, fedora & lucene

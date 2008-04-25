@@ -63,7 +63,7 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
     Session sess = null;
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
-      URI           service = new URI(conf.getString("topaz.services.itql-admin.uri"));
+      URI           service = new URI(conf.getString("ambra.services.topaz.itql-admin.uri"));
 
       SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, new WebappItqlClientFactory()));

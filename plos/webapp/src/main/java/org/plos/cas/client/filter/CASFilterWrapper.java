@@ -54,9 +54,9 @@ public class CASFilterWrapper extends CASFilter {
 
     final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
-    final String plosServerHost = configuration.getString("pub.host");
-    final String casProxyValidateUrl = configuration.getString("cas.url.proxy-validate");
-    final String casLoginUrl = configuration.getString("cas.url.login");
+    final String plosServerHost = configuration.getString("ambra.platform.host");
+    final String casProxyValidateUrl = configuration.getString("ambra.services.cas.url.proxy-validate");
+    final String casLoginUrl = configuration.getString("ambra.services.cas.url.login");
 
     ConfigWrapperUtil.setInitParamValue(CASFilter.LOGIN_INIT_PARAM,
             casLoginUrl, initParamProvider, params);

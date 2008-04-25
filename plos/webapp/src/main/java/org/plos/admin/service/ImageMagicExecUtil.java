@@ -37,6 +37,7 @@ import org.plos.configuration.ConfigurationStore;
 
 public class ImageMagicExecUtil {
   private static Log log = LogFactory.getLog(ImageMagicExecUtil.class);
+  public static final String EXECUTABLE_PATH_CONFIG_KEY = ImageResizeService.BASE_CONFIG_KEY + ".executablePath";
 
   private String pathToProgram;
 
@@ -47,12 +48,11 @@ public class ImageMagicExecUtil {
       throw new ImageResizeException("ERROR: configuration has no property values");
     }
 
-    final String pathToProgramKey = "topaz.utilities.image-magick.executable-path";
-    final String pathToProgram = configuration.getString(pathToProgramKey);
+    final String pathToProgram = configuration.getString(EXECUTABLE_PATH_CONFIG_KEY);
 
     if (pathToProgram == null) {
       throw new ImageResizeException("ERROR: configuration failed to associate a value with " +
-                                     pathToProgramKey);
+                                     EXECUTABLE_PATH_CONFIG_KEY);
     }
 
     setPathToProgram(pathToProgram);

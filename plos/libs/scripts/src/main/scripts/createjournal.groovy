@@ -74,10 +74,10 @@ println "parsed journal definition input: " + journalDefinition
 
 // Setup OTM
 def factory = new SessionFactoryImpl();
-def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
-def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null);
-def p = new ModelConfig("profiles", URI.create(CONF.getString("topaz.models.profiles")), null);
-def cModel = new ModelConfig("criteria", URI.create(CONF.getString("topaz.models.criteria")), null);
+def itql = new ItqlStore(URI.create(CONF.getString("ambra.services.topaz.itql.uri")))
+def ri = new ModelConfig("ri", URI.create(CONF.getString("ambra.services.topaz.models.articles")), null);
+def p = new ModelConfig("profiles", URI.create(CONF.getString("ambra.services.topaz.models.profiles")), null);
+def cModel = new ModelConfig("criteria", URI.create(CONF.getString("ambra.services.topaz.models.criteria")), null);
 factory.setTripleStore(itql)
 factory.addModel(ri);
 factory.addModel(p);

@@ -50,8 +50,8 @@ if (VERBOSE) {
 
 CONF = ToolHelper.loadConfiguration(opt.c)
 
-IM_CONVERT = CONF.getString("topaz.utilities.image-magick.executable-path")
-IM_IDENTIFY = CONF.getString("topaz.utilities.image-magick.identify-path")
+IM_CONVERT = CONF.getString("ambra.services.documentManagement.imageMagick.executablePath")
+IM_IDENTIFY = CONF.getString("ambra.services.documentManagement.imageMagick.identify-path")
 
 def File outputFile
 def File inputFile = null

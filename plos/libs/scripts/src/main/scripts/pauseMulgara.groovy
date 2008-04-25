@@ -39,7 +39,7 @@ def opt = cli.parse(args); if (opt.h) { cli.usage(); return }
 // Load configuration
 CONF = ToolHelper.loadConfiguration(opt.c)
 
-def mulgaraUri = CONF.getString("topaz.services.itql.uri")
+def mulgaraUri = CONF.getString("ambra.services.topaz.itql.uri")
 def operation = '';
 
 println "Mulgara URI: $mulgaraUri"

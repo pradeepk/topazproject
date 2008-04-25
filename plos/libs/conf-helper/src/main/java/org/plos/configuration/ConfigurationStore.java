@@ -49,9 +49,9 @@ import org.apache.commons.logging.LogFactory;
  *   <li>org.plos.configuration.overrides - If set, this defines a named resource or URL
  *        of a resource that is added to the configuration tree - usually supplementing
  *        and overriding settings in /global-defaults.xml and /defaults.xml.
- *   <li>file:/etc/topaz/ambra.xml (or org.plos.configuration) - A set of user overrides
+ *   <li>file:/etc/topaz/ambra.xml (or ambra.configuration) - A set of user overrides
  *        in /etc. The name of this file can be changed for webapps that use WebAppInitializer
- *        by changing web.xml or by setting the org.plos.configuraiton system property.
+ *        by changing web.xml or by setting the ambra.configuraiton system property.
  *   <li>System properties
  * </ul>
  *
@@ -68,14 +68,14 @@ public class ConfigurationStore {
    * This is usually a xml or properties file in /etc somewhere. Note that this must be
    * a URL. (For example: file:///etc/topaz/ambra.xml.)
    */
-  public static final String CONFIG_URL = "org.plos.configuration";
+  public static final String CONFIG_URL = "ambra.configuration";
 
   /**
    * A property used to define overrides. This is primarily to support something like
    * a development mode. If a valid URL, the resource is found from the URL. If not a
    * URL, it is treated as the name of a resource.
    */
-  public static final String OVERRIDES_URL = "org.plos.configuration.overrides";
+  public static final String OVERRIDES_URL = "ambra.configuration.overrides";
 
   /**
    * Default configuration overrides in /etc
@@ -92,7 +92,7 @@ public class ConfigurationStore {
    * Also note that this does not begin with a / as ClassLoader.getResources() does
    * not want this to begin with a /.
    */
-  public static final String DEFAULTS_RESOURCE = "org/plos/configuration/defaults.xml";
+  public static final String DEFAULTS_RESOURCE = "ambra/configuration/defaults.xml";
 
   /**
    * The name of the global defaults that exist in this library.<p>
@@ -100,7 +100,7 @@ public class ConfigurationStore {
    * It is assumed there is only one of these in the classpath. If somebody defines
    * a second copy of this, the results are undefined. (TODO: Detect this.)
    */
-  public static final String GLOBAL_DEFAULTS_RESOURCE = "/org/plos/configuration/global-defaults.xml";
+  public static final String GLOBAL_DEFAULTS_RESOURCE = "ambra/configuration/global-defaults.xml";
 
   /**
    * Create the singleton instance.
@@ -151,8 +151,10 @@ public class ConfigurationStore {
 
     // System properties override everything
     root.addConfiguration(new SystemConfiguration());
+    
+    // log.debug("Configuration dump after adding SystemConfiguration:\n"+ConfigurationUtils.toString(root));
 
-    // Load from org.plos.configuration -- /etc/... (optional)
+    // Load from ambra.configuration -- /etc/... (optional)
     if (configURL != null) {
       try {
         root.addConfiguration(getConfigurationFromUrl(configURL));
@@ -162,9 +164,11 @@ public class ConfigurationStore {
           throw ce;
         log.info("Unable to open '" + configURL + "'");
       }
+
+      // log.debug("Configuration dump after adding configURL="+configURL+":\n"+ConfigurationUtils.toString(root));
     }
 
-    // Add org.plos.configuration.overrides (if defined)
+    // Add ambra.configuration.overrides (if defined)
     String overrides = System.getProperty(OVERRIDES_URL);
     if (overrides != null) {
       try {
@@ -174,6 +178,7 @@ public class ConfigurationStore {
         // Must not be a URL, so it must be a resource
         addResources(root, overrides);
       }
+      // log.debug("Configuration dump after adding overridesURL="+overrides+":\n"+ConfigurationUtils.toString(root));
     }
 
     // Add defaults.xml found in classpath

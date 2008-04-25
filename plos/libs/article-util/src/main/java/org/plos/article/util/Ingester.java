@@ -105,7 +105,7 @@ public class Ingester {
   private static final String RDF_MDL_A    = "model";
 
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private static final String FGS_REPO     = CONF.getString("topaz.fedoragsearch.repository");
+  private static final String FGS_REPO     = CONF.getString("ambra.services.search.fedoraGSearch.repository");
 
   private final TransformerFactory tFactory;
   private final Session            sess;
@@ -511,7 +511,7 @@ public class Ingester {
         log.debug("Indexed '" + pid + "':\n" + result);
     } catch (RemoteException re) {
       log.info("Error ingesting to fgs server " + i + " unwinding ingests to servers 0-" + i +
-               " (topaz.xml:<fedoragsearch><urls><url>)");
+               " (topaz.xml:<ambra><services><search><fedoraGSearch><urls><url>)");
       for (int j = 0; j < i; j++) {
         try {
           result = fgs[j].updateIndex("deletePid", pid, FGS_REPO, null, null, null);
@@ -519,7 +519,7 @@ public class Ingester {
         } catch (RemoteException re2) {
           log.warn("Unable to delete pid '" + pid + "' from fgs server " + j +
                    " after indexing failed on server " + i +
-                   " (topaz.xml:<fedoragsearch><urls><url>)", re2);
+                   " (topaz.xml:<ambra><services><search><fedoraGSearch><urls><url>)", re2);
         }
       }
       throw re;
@@ -587,7 +587,7 @@ public class Ingester {
           } catch (Exception e) {
             log.error("Error while rolling back failed ingest: fgs deletePid failed for pid '" +
                       pid + "' on repo '" + FGS_REPO + "' on server " + i +
-                      " (topaz.xml:<fedoragsearch><urls><url>)", e);
+                      " (topaz.xml:<ambra><services><search><fedoraGSearch><urls><url>)", e);
           }
         }
       }

@@ -180,7 +180,7 @@ public class UsersPEP extends AbstractSimplePEP {
 
   private static final PDP getPDP() throws IOException {
     try {
-      return XacmlUtil.lookupPDP("topaz.users.pdpName");
+      return XacmlUtil.lookupPDP("ambra.services.xacml.users.pdpName");
     } catch (ParsingException pe) {
       throw (IOException) new IOException("Error creating users-pep").initCause(pe);
     } catch (UnknownIdentifierException uie) {

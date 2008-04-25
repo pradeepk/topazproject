@@ -32,8 +32,8 @@
     </hosts>
     <ports>
       <!-- If using port 80, set default to empty (not 80) -->
-      <default>${network.ports.plosone}</default>
-      <plosone>8080</plosone>
+      <default>${network.ports.ambra}</default>
+      <ambra>8080</ambra>
     </ports>
 
     <app-context></app-context> <!-- web application context; leave empty if deployed in root directory  -->

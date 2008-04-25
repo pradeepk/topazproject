@@ -51,14 +51,14 @@ import org.plos.configuration.ConfigurationStore;
  */
 public class VirtualJournalContextFilter implements Filter {
 
-  public static final String CONF_VIRTUALJOURNALS          = "pub.virtualJournals";
+  public static final String CONF_VIRTUALJOURNALS          = "ambra.virtualJournals";
   public static final String CONF_VIRTUALJOURNALS_DEFAULT  = CONF_VIRTUALJOURNALS + ".default";
   public static final String CONF_VIRTUALJOURNALS_JOURNALS = CONF_VIRTUALJOURNALS + ".journals";
 
   /** Allow setting/overriding the virtual journal as a URI param. */
-  public static final String URI_PARAM_VIRTUALJOURNAL = "virtualJournal";
+  // public static final String URI_PARAM_VIRTUALJOURNAL = "virtualJournal";
   /** Allow setting/overriding the mapping prefix as a URI param. */
-  public static final String URI_PARAM_MAPPINGPREFIX = "mappingPrefix";
+  // public static final String URI_PARAM_MAPPINGPREFIX = "mappingPrefix";
 
   private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
@@ -94,21 +94,21 @@ public class VirtualJournalContextFilter implements Filter {
 
     final Collection<String> virtualJournals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
 
-    String virtualJournal = null;
+    String journalName = null;
     String description    = null;
     String mappingPrefix  = null;
 
     // need to do <rule> based processing?
-    if (virtualJournal == null) {
+    if (journalName == null) {
       final VirtualJournalContext ruleValues = processVirtualJournalRules(
         configuration, (HttpServletRequest) request);
       if (ruleValues != null) {
-        virtualJournal = ruleValues.getJournal();
+        journalName = ruleValues.getJournal();
         description    = ruleValues.getDescription();
         mappingPrefix  = ruleValues.getMappingPrefix();
-        if (virtualJournal != null) {
+        if (journalName != null) {
           if (log.isDebugEnabled()) {
-            log.debug("virtual journal from rules: journal = \"" + virtualJournal + "\""
+            log.debug("virtual journal from rules: journal = \"" + journalName + "\""
               + ", mappingPrefix = \"" + mappingPrefix + "\"");
           }
         }
@@ -116,52 +116,52 @@ public class VirtualJournalContextFilter implements Filter {
     }
 
     // was a simple config <default> specified?
-    if (virtualJournal == null) {
-      virtualJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
+    if (journalName == null) {
+      journalName = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
       description    = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".description");
       mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
 
       if (log.isDebugEnabled()) {
-        log.debug("virtual journal from defaults: journal = \"" + virtualJournal + "\""
+        log.debug("virtual journal from defaults: journal = \"" + journalName + "\""
           + ", mappingPrefix = \"" + mappingPrefix + "\"");
       }
     }
 
     // use system default if not set
-    if (virtualJournal == null) {
-      virtualJournal = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL;
+    if (journalName == null) {
+      journalName = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL;
       description    = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_DESCRIPTION;
       mappingPrefix  = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX;
 
       if (log.isDebugEnabled()) {
-        log.debug("setting virtual journal = \"" + virtualJournal + "\""
+        log.debug("setting virtual journal = \"" + journalName + "\""
           + ", mappingPrefix = \"" + mappingPrefix + "\""
           + ", no <default> specified, no <rule>s match");
       }
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("setting virtual journal context to: journal = \"" + virtualJournal + "\""
+      log.debug("setting virtual journal context to: journal = \"" + journalName + "\""
         + ", mappingPrefix = \"" + mappingPrefix + "\"");
     }
 
     // put virtualJournal context in the ServletRequest for webapp to use
     request.setAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT,
-      new VirtualJournalContext(virtualJournal, description, mappingPrefix, request.getScheme(),
+      new VirtualJournalContext(journalName, description, mappingPrefix, request.getScheme(),
         request.getServerPort(), request.getServerName(),
         ((HttpServletRequest) request).getContextPath(), virtualJournals));
 
     // establish a "Nested Diagnostic Context" for logging, e.g. prefix log entries w/journal name
     // http://logging.apache.org/log4j/docs/api/org/apache/log4j/NDC.html
-    if (virtualJournal != null) {
-      NDC.push(virtualJournal);
+    if (journalName != null) {
+      NDC.push(journalName);
     }
 
     // continue the Filter chain ...
     filterChain.doFilter(request, response);
 
     // cleanup "Nested Diagnostic Context" for logging
-    if (virtualJournal != null) {
+    if (journalName != null) {
       NDC.pop();
       NDC.remove(); // TODO: appropriate place to cleanup for Thread?
     }

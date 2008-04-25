@@ -99,7 +99,6 @@ public class ArticleFeed extends BaseActionSupport {
 
   private static final String ATOM_NS = "http://www.w3.org/2005/Atom"; // Tmp hack for categories
 
-  final int DEFAULT_FEED_DURATION = configuration.getInteger("pub.feed.defaultDuration", 3);
   private ArticleXMLUtils articleXmlUtils;
 
   /**
@@ -125,12 +124,20 @@ public class ArticleFeed extends BaseActionSupport {
       uri = URI.create(pathInfo);
 
     }
+    
+    int feedDuration = 3; 
+    try {
+      feedDuration = Integer.valueOf(journalConfGetString(configuration, getCurrentJournal(),
+                                                          "ambra.services.feed.defaultDuration", "3"));
+    } catch (NumberFormatException nfe) {
+      log.error("NumberFormatException occurred parsing ambra.services.feed.defaultDuration from configuration", nfe);
+    }
 
     // Compute startDate default as it is needed to compute cache-key (its default is tricky)
     if (startDate == null) {
         // default is to go back <= N months
         GregorianCalendar monthsAgo = new GregorianCalendar();
-        monthsAgo.add(Calendar.MONTH, -DEFAULT_FEED_DURATION);
+        monthsAgo.add(Calendar.MONTH, -feedDuration);
         monthsAgo.set(Calendar.HOUR_OF_DAY, 0);
         monthsAgo.set(Calendar.MINUTE, 0);
         monthsAgo.set(Calendar.SECOND, 0);
@@ -176,30 +183,30 @@ public class ArticleFeed extends BaseActionSupport {
     // get default values from config file
     final String journal = getCurrentJournal();
     // must end w/trailing slash
-    String PLOSONE_URI  = configuration.getString("pub.virtualJournals." + journal + ".url",
-      configuration.getString("pub.webserver-url", "http://plosone.org/"));
-    if (!PLOSONE_URI.endsWith("/")) {
-        PLOSONE_URI += "/";
+    String JOURNAL_URI  = configuration.getString("ambra.virtualJournals." + journal + ".url",
+      configuration.getString("ambra.platform.webserver-url", "http://plosone.org/"));
+    if (!JOURNAL_URI.endsWith("/")) {
+        JOURNAL_URI += "/";
     }
-    final String PLOSONE_NAME = journalConfGetString(configuration, journal,
-            "pub.name", "Public Library of Science");
-    final String PLOSONE_EMAIL_GENERAL = journalConfGetString(configuration, journal,
-            "pub.email.general", "webmaster@plos.org");
-    final String PLOSONE_COPYRIGHT = journalConfGetString(configuration, journal,
-            "pub.copyright",
+    final String JOURNAL_NAME = journalConfGetString(configuration, journal,
+            "ambra.platform.name", "Public Library of Science");
+    final String JOURNAL_EMAIL_GENERAL = journalConfGetString(configuration, journal,
+            "ambra.platform.email.general", "webmaster@plos.org");
+    final String JOURNAL_COPYRIGHT = journalConfGetString(configuration, journal,
+            "ambra.platform.copyright",
             "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
     final String FEED_TITLE = journalConfGetString(configuration, journal,
-            "pub.feed.title", "PLoS ONE");
+            "ambra.services.feed.title", "PLoS ONE");
     final String FEED_TAGLINE = journalConfGetString(configuration, journal,
-            "pub.feed.tagline", "Publishing science, accelerating research");
+            "ambra.services.feed.tagline", "Publishing science, accelerating research");
     final String FEED_ICON = journalConfGetString(configuration, journal,
-            "pub.feed.icon", PLOSONE_URI + "images/favicon.ico");
+            "ambra.services.feed.icon", JOURNAL_URI + "images/favicon.ico");
     final String FEED_ID = journalConfGetString(configuration, journal,
-            "pub.feed.id", "info:doi/10.1371/feed.pone");
+            "ambra.services.feed.id", "info:doi/10.1371/feed.pone");
     final String FEED_EXTENDED_NS = journalConfGetString(configuration, journal,
-            "pub.feed.extended.namespace", "http://www.plos.org/atom/ns#plos");
+            "ambra.services.feed.extended.namespace", "http://www.plos.org/atom/ns#plos");
     final String FEED_EXTENDED_PREFIX = journalConfGetString(configuration, journal,
-            "pub.feed.extended.prefix", "plos");
+            "ambra.services.feed.extended.prefix", "plos");
 
     // use WebWorks to get Action URIs
     // TODO: WebWorks ActionMapper is broken, hand-code URIs
@@ -209,14 +216,14 @@ public class ArticleFeed extends BaseActionSupport {
     Feed feed = new Feed("atom_1.0");
 
     feed.setEncoding("UTF-8");
-    feed.setXmlBase(PLOSONE_URI);
+    feed.setXmlBase(JOURNAL_URI);
 
-    String xmlBase = (relativeLinks ? "" : PLOSONE_URI);
+    String xmlBase = (relativeLinks ? "" : JOURNAL_URI);
     if (selfLink == null || selfLink.equals("")) {
       if (uri.toString().startsWith("/")) {
-        selfLink = PLOSONE_URI.substring(0, PLOSONE_URI.length() - 1) + uri;
+        selfLink = JOURNAL_URI.substring(0, JOURNAL_URI.length() - 1) + uri;
       } else {
-        selfLink = PLOSONE_URI + uri;
+        selfLink = JOURNAL_URI + uri;
       }
     }
 
@@ -254,13 +261,13 @@ public class ArticleFeed extends BaseActionSupport {
     // TODO: bug in Rome ignores icon/logo :(
     feed.setIcon(FEED_ICON);
     feed.setLogo(FEED_ICON);
-    feed.setCopyright(PLOSONE_COPYRIGHT);
+    feed.setCopyright(JOURNAL_COPYRIGHT);
 
     // make PLoS the author of the feed
     Person plos = new Person();
-    plos.setEmail(PLOSONE_EMAIL_GENERAL);
-    plos.setName(PLOSONE_NAME);
-    plos.setUri(PLOSONE_URI);
+    plos.setEmail(JOURNAL_EMAIL_GENERAL);
+    plos.setName(JOURNAL_NAME);
+    plos.setUri(JOURNAL_URI);
     List<Person> feedAuthors = new ArrayList();
     feedAuthors.add(plos);
     feed.setAuthors(feedAuthors);
@@ -331,7 +338,7 @@ public class ArticleFeed extends BaseActionSupport {
         entry.setRights(rights);
       } else {
         // default is CC BY SA 3.0
-        entry.setRights(PLOSONE_COPYRIGHT);
+        entry.setRights(JOURNAL_COPYRIGHT);
       }
 
       entry.setTitle(dc.getTitle());
@@ -617,7 +624,7 @@ public class ArticleFeed extends BaseActionSupport {
    */
   private String journalConfGetString(Configuration configuration, String journal, String key,
           String defaultValue) {
-    return configuration.getString("pub.virtualJournals." + journal + "." + key,
+    return configuration.getString("ambra.virtualJournals." + journal + "." + key,
             configuration.getString(key, defaultValue));
   }
 

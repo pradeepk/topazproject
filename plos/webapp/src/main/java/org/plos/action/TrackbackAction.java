@@ -359,7 +359,7 @@ public class TrackbackAction extends BaseActionSupport {
       escapedURI = articleURI;
     }
     
-    StringBuilder url = new StringBuilder(baseURL).append("/").append (myConfig.getString("pub.article-action"))
+    StringBuilder url = new StringBuilder(baseURL).append("/").append (myConfig.getString("ambra.platform.articleAction"))
     .append(escapedURI);
     
     if (log.isDebugEnabled()) {

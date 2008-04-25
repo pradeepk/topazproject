@@ -53,6 +53,6 @@ public class PermissionsPEP extends AbstractSimplePEP implements Permissions.Ser
    * @throws Exception on an error
    */
   public PermissionsPEP() throws Exception {
-    super(XacmlUtil.lookupPDP("topaz.permissions.pdpName"));
+    super(XacmlUtil.lookupPDP("ambra.services.xacml.permissions.pdpName"));
   }
 }

@@ -53,15 +53,15 @@ CONF = ToolHelper.loadConfiguration(opt.c)
 TEST = opt.t
 
 // Setup fedora
-def fedoraSvc = new PasswordProtectedService(CONF.getString("topaz.services.fedora.uri"),
-                                             CONF.getString("topaz.services.fedora.userName"),
-                                             CONF.getString("topaz.services.fedora.password"))
+def fedoraSvc = new PasswordProtectedService(CONF.getString("ambra.services.topaz.fedora.uri"),
+                                             CONF.getString("ambra.services.topaz.fedora.userName"),
+                                             CONF.getString("ambra.services.topaz.fedora.password"))
 def apim = APIMStubFactory.create(fedoraSvc)
 
 // Setup OTM
 def factory = new SessionFactoryImpl();
-def itql = new ItqlStore(URI.create(CONF.getString("topaz.services.itql.uri")))
-def ri = new ModelConfig("ri", URI.create(CONF.getString("topaz.models.articles")), null);
+def itql = new ItqlStore(URI.create(CONF.getString("ambra.services.topaz.itql.uri")))
+def ri = new ModelConfig("ri", URI.create(CONF.getString("ambra.services.topaz.models.articles")), null);
 factory.setTripleStore(itql)
 factory.addModel(ri)
 factory.preload(Comment.class)

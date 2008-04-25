@@ -41,7 +41,7 @@ import java.util.Collection;
 public class VirtualJournalContext {
 
   /** ServletRequest attribute for the virtual journal context. */
-  public static final String PUB_VIRTUALJOURNAL_CONTEXT = "pub.virtualjournal.context";
+  public static final String PUB_VIRTUALJOURNAL_CONTEXT = "ambra.virtualjournal.context";
 
   /** Default virtual journal name. */
   public static final String PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL = "";

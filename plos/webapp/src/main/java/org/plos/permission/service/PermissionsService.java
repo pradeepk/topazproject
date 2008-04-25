@@ -64,16 +64,16 @@ public class PermissionsService implements Permissions {
 
   //
   private static final String GRANTS_MODEL       =
-    "<" + CONF.getString("topaz.models.grants") + ">";
+    "<" + CONF.getString("ambra.services.topaz.models.grants") + ">";
   private static final String REVOKES_MODEL      =
-    "<" + CONF.getString("topaz.models.revokes") + ">";
-  private static final String PP_MODEL           = "<" + CONF.getString("topaz.models.pp") + ">";
+    "<" + CONF.getString("ambra.services.topaz.models.revokes") + ">";
+  private static final String PP_MODEL           = "<" + CONF.getString("ambra.services.topaz.models.pp") + ">";
   private static final String GRANTS_MODEL_TYPE  =
-    "<" + CONF.getString("topaz.models.grants[@type]", "mulgara:Model") + ">";
+    "<" + CONF.getString("ambra.services.topaz.models.grants[@type]", "mulgara:Model") + ">";
   private static final String REVOKES_MODEL_TYPE =
-    "<" + CONF.getString("topaz.models.revokes[@type]", "mulgara:Model") + ">";
+    "<" + CONF.getString("ambra.services.topaz.models.revokes[@type]", "mulgara:Model") + ">";
   private static final String PP_MODEL_TYPE      =
-    "<" + CONF.getString("topaz.models.pp[@type]", "mulgara:Model") + ">";
+    "<" + CONF.getString("ambra.services.topaz.models.pp[@type]", "mulgara:Model") + ">";
 
   //
   private static final String IMPLIES    = Rdf.topaz + "implies";
@@ -152,7 +152,7 @@ public class PermissionsService implements Permissions {
     ts.createModel(new ModelConfig("revokes", toURI(REVOKES_MODEL), toURI(REVOKES_MODEL_TYPE)));
     ts.createModel(new ModelConfig("pp",      toURI(PP_MODEL),      toURI(PP_MODEL_TYPE)));
 
-    Configuration conf        = CONF.subset("topaz.permissions.impliedPermissions");
+    Configuration conf        = CONF.subset("ambra.services.topaz.permissions.impliedPermissions");
 
     StringBuffer  sb          = new StringBuffer();
     List          permissions = conf.getList("permission[@uri]");

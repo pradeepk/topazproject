@@ -86,33 +86,23 @@ import org.springframework.beans.factory.annotation.Required;
  * @author alan Manage documents on server. Ingest and access ingested documents.
  */
 public class DocumentManagementService {
-
+  public static final String BASE_CONFIG_KEY = "ambra.services.documentManagement";
   private static final Log log = LogFactory.getLog(DocumentManagementService.class);
-
   private ArticleOtmService articleOtmService;
-
   private FetchArticleService fetchArticleService;
-
   private String documentDirectory;
-
   private String ingestedDocumentDirectory;
-
   private CrossRefPosterService crossRefPosterService;
-
   private File xslTemplate;
-
   private BrowseService browseService;
-
   private JournalService journalService;
-
   private Session session;
-
   private String plosDoiUrl;
-
   private String plosEmail;
-
   private boolean sendToXref;
-
+  
+  
+  
   public DocumentManagementService() {
   }
 

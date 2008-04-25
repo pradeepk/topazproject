@@ -48,6 +48,15 @@ import org.plos.configuration.ConfigurationStore;
  * given DOI.   In the case of annotation DOIs, they do not contain a reference to the journal, so
  * the annotated root article  must be found first in order to calculate the correct journal base
  * URL.
+ * The ResolverServlet attempts to translate the DOI in the incoming request into a URI on the ambra
+ * server that will display the DOI correctly. Thus far, it handles Article and Annotation DOIs. It
+ * makes a call to the semantic DB to determine the type(s) of the given DOI. Depending on the type
+ * of the resource described by the DOI, the servlet matches the doi to regular expressions for each
+ * known journal (defined in  /etc/topaz/ambra.xml or the hierarchy of config files). Each regular
+ * expression maps to a URI on the ambra server that will display the resource described by the
+ * given DOI.   In the case of annotation DOIs, they do not contain a reference to the journal, so
+ * the annotated root article  must be found first in order to calculate the correct journal base
+ * URL.
  *
  * TODO: This should be re-implemented to be more generic so it can be more easily configured to
  * support more types of DOIs. Assumptions should not be made about the DOI format  containing a
@@ -76,22 +85,22 @@ public class ResolverServlet extends HttpServlet {
   private static final String          INFO_DOI_PREFIX = "info:doi";
 
   static {
-    numJournals     = myConfig.getList("pub.doi-journals.journal.url").size();
+    numJournals     = myConfig.getList("ambra.services.doiResolver.mappings.journalMapping.url").size();
     urls            = new String[numJournals];
     figureRegExs    = new Pattern[numJournals];
     journalRegExs   = new Pattern[numJournals];
 
     for (int i = 0; i < numJournals; i++) {
-      urls[i] = myConfig.getString("pub.doi-journals.journal(" + i + ").url");
+      urls[i] = myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i + ").url");
 
       StringBuilder pat =
-        new StringBuilder("/").append(myConfig.getString("pub.doi-journals.journal(" + i
+        new StringBuilder("/").append(myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i
                                                          + ").regex"));
       journalRegExs[i]   = Pattern.compile(pat.toString());
       figureRegExs[i]    = Pattern.compile(pat.append("\\.[gt]\\d{3}").toString());
     }
 
-    errorPage = myConfig.getString("pub.webserver-url") + myConfig.getString("pub.error-page");
+    errorPage = myConfig.getString("ambra.platform.webserverUrl") + myConfig.getString("ambra.platform.errorPage");
 
     if (log.isTraceEnabled()) {
       for (int i = 0; i < numJournals; i++) {
@@ -103,11 +112,11 @@ public class ResolverServlet extends HttpServlet {
     }
 
     try {
-      resolver = new DOITypeResolver(new URI(myConfig.getString("topaz.services.itql.uri")));
-      log.trace("Created resolver, server='" + myConfig.getString("topaz.services.itql.uri") + "'");
+      resolver = new DOITypeResolver(new URI(myConfig.getString("ambra.services.topaz.itql.uri")));
+      log.trace("Created resolver, server='" + myConfig.getString("ambra.services.topaz.itql.uri") + "'");
     } catch (Exception e) {
       log.error("Error creating doi-type-resolver, server='"
-                + myConfig.getString("topaz.services.itql.uri") + "'", e);
+                + myConfig.getString("ambra.services.topaz.itql.uri") + "'", e);
       throw new RuntimeException("Error creating doi-type-resolver", e);
     }
   }
@@ -203,7 +212,7 @@ public class ResolverServlet extends HttpServlet {
           redirectURL = new StringBuilder(urls[i]);
 
           try {
-            redirectURL.append(myConfig.getString("pub.article-action"))
+            redirectURL.append(myConfig.getString("ambra.platform.articleAction"))
               .append(URLEncoder.encode(INFO_DOI_PREFIX, "UTF-8"))
               .append(URLEncoder.encode(doi, "UTF-8"));
           } catch (UnsupportedEncodingException uee) {
@@ -211,7 +220,7 @@ public class ResolverServlet extends HttpServlet {
               log.debug("Couldn't encode URL with UTF-8 encoding", uee);
             }
 
-            redirectURL.append(myConfig.getString("pub.article-action"))
+            redirectURL.append(myConfig.getString("ambra.platform.articleAction"))
               .append(URLEncoder.encode(INFO_DOI_PREFIX)).append(URLEncoder.encode(doi));
           }
 
@@ -229,8 +238,8 @@ public class ResolverServlet extends HttpServlet {
 
         if ((rdfTypes != null) && rdfTypes.contains(RDF_TYPE_ARTICLE)) {
           redirectURL = new StringBuilder(urls[i]);
-          redirectURL.append(myConfig.getString("pub.figure-action1")).append(INFO_DOI_PREFIX)
-            .append(possibleArticleDOI).append(myConfig.getString("pub.figure-action2"))
+          redirectURL.append(myConfig.getString("ambra.platform.figureAction1")).append(INFO_DOI_PREFIX)
+            .append(possibleArticleDOI).append(myConfig.getString("ambra.platform.figureAction2"))
             .append(INFO_DOI_PREFIX).append(doi);
 
           if (log.isDebugEnabled()) {
@@ -253,7 +262,7 @@ public class ResolverServlet extends HttpServlet {
 
         if (rootUri != null) {
           StringBuilder urlBuf = new StringBuilder(rootUri);
-          urlBuf.append(myConfig.getString("pub.annotation-action"))
+          urlBuf.append(myConfig.getString("ambra.platform.annotationAction"))
                  .append(URLEncoder.encode(doiUriStr, "UTF-8"));
 
           return urlBuf.toString();

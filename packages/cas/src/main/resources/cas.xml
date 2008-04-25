@@ -46,7 +46,7 @@
       -->
       <!-- If using port 443, set cas-ssl to empty -->
       <cas-ssl>7443</cas-ssl>
-      <!-- If 80, set default to empty (and/or update registration.plosone.url below) -->
+      <!-- If 80, set default to empty (and/or update registration.ambra.url below) -->
       <default>8080</default>
     </ports>
   </network>
@@ -67,10 +67,10 @@
     <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
     <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
     <context>/ambra-registration</context>          <!-- Directory of webapp -->
-    <plosone> <!-- Location of publishing app so links in registration work -->
+    <ambra> <!-- Location of publishing app so links in registration work -->
       <context></context> <!-- directory of publishing app -->
       <!-- URL of publicly accessible publishing app (webhead if there is one) -->
       <url>http://${network.hosts.default}:${network.ports.default}</url>
-    </plosone>
+    </ambra>
   </registration>
 </config>

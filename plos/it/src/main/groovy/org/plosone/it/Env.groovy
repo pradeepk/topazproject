@@ -80,11 +80,11 @@ public class Env {
 
     pubApp = new PubApp(Env.path(install, '/plosone-webapp'))
     pubApp.sysProperties.'log4j.configuration'           = Env.pathUrl(install, '/plosoneLog4j.xml')
-    pubApp.sysProperties.'org.plos.configuration.overrides' = 'defaults-dev.xml'
-    pubApp.sysProperties.'pub.spring.ingest.source'      = Env.path(install, '/data/ingestion-queue')
-    pubApp.sysProperties.'pub.spring.ingest.destination' = Env.path(install, '/data/ingested')
-    pubApp.sysProperties.'topaz.search.indexpath'        = Env.path(install, '/data/lucene')
-    pubApp.sysProperties.'topaz.search.defaultfields'    = 'description,title,body,creator'
+    pubApp.sysProperties.'ambra.configuration.overrides' = 'defaults-dev.xml'
+    pubApp.sysProperties.'ambra.services.documentManagement.ingestSourceDir'      = Env.path(install, '/data/ingestion-queue')
+    pubApp.sysProperties.'ambra.services.documentManagement.ingestDestinationDir' = Env.path(install, '/data/ingested')
+    pubApp.sysProperties.'ambra.services.search.indexPath'        = Env.path(install, '/data/lucene')
+    pubApp.sysProperties.'ambra.services.search.defaultFields'    = 'description,title,body,creator'
     pubApp.sysProperties.'org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH' = 'true'
   }
 

@@ -78,7 +78,7 @@ public class RatingsPEP extends AbstractSimplePEP {
 
   public RatingsPEP()
       throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("topaz.ratings.pdpName"));
+    this(XacmlUtil.lookupPDP("ambra.services.xacml.ratings.pdpName"));
   }
 
   protected RatingsPEP(PDP pdp)

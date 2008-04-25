@@ -34,9 +34,9 @@
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <!--<value>file:/etc/plosone/plosone.properties</value>-->
-        <!--<value>file:D:/etc/plosone/plosone.properties</value>-->
-        <value>classpath:plosone.properties</value>
+        <!--<value>file:/etc/ambra/ambra.properties</value>-->
+        <!--<value>file:D:/etc/ambra/ambra.properties</value>-->
+        <value>classpath:ambra.properties</value>
       </list>
     </property>
   </bean>

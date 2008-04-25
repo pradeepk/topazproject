@@ -99,7 +99,7 @@ public class AnnotationsPEP extends AbstractSimplePEP {
    *
    */
   public AnnotationsPEP() throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("topaz.annotations.pdpName"));
+    this(XacmlUtil.lookupPDP("ambra.services.xacml.annotations.pdpName"));
   }
 
   /*

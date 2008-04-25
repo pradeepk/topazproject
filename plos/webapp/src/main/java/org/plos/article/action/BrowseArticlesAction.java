@@ -49,7 +49,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   private static final String feedCategoryPrefix =
-                                      CONF.getString("pub.feed.categoryPrefix", "feed?category=");
+                                      CONF.getString("ambra.services.feed.categoryPrefix", "feed?category=");
 
   private static final int    PAGE_SIZE    = 10;
   private static final String DATE_FIELD   = "date";

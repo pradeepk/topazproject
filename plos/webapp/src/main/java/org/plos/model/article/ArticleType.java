@@ -145,12 +145,12 @@ public class ArticleType implements Serializable {
    */
   public static void configureArticleTypes(Configuration myConfig) {
     int count = 0;
-    String basePath = "pub.articleTypeList.articleType";
+    String basePath = "ambra.articleTypeList.articleType";
     String uriStr;
     String headingStr;
     // Iterate through the defined article types. This is ugly since the index needs
     // to be given in xpath format to access the element, so we calculate a base string
-    // like: pub.articleTypeList.articleType(x) and check if it's non-null for typeUri
+    // like: ambra.articleTypeList.articleType(x) and check if it's non-null for typeUri
     do {
       String baseString = (new StringBuffer(basePath).append("(").append(count)
           .append(").")).toString();

@@ -50,7 +50,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
   /** Pub Configuration */
   private static final org.apache.commons.configuration.Configuration PUB_CONFIG =
     ConfigurationStore.getInstance().getConfiguration();
-  private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("pub.app-context", "");
+  private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("ambra.platform.appContext", "");
 
   private static final Log log = LogFactory.getLog(PlosOneActionMapper.class);
 

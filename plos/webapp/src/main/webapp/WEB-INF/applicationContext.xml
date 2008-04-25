@@ -27,7 +27,7 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-  <!--Plosone developer beans here -->
+  <!--Ambra developer beans here -->
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService">
     <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -82,20 +82,20 @@
         * login_id=crossref user name
         * login_passwd=crossref user password
     -->
-    <property name="doiXrefUrl" value="${pub.spring.crossref.post.url}"/>
+    <property name="doiXrefUrl" value="${ambra.services.crossref.post.url}"/>
   </bean>
 
   <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService"/>
 
   <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService">
     <!-- These pathnames are absolute -->
-    <property name="documentDirectory" value="${pub.spring.ingest.source}"/>
-    <property name="ingestedDocumentDirectory" value="${pub.spring.ingest.destination}"/>
+    <property name="documentDirectory" value="${ambra.services.documentManagement.ingestSourceDir}"/>
+    <property name="ingestedDocumentDirectory" value="${ambra.services.documentManagement.ingestDestinationDir}"/>
     <!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>
-    <property name="plosDoiUrl" value="${pub.spring.crossref.plos.doiurl}"/>
-    <property name="plosEmail" value="${pub.spring.crossref.plos.email}"/>
-    <property name="sendToXref" value="${pub.spring.crossref.sendToXref}"/>
+    <property name="plosDoiUrl" value="${ambra.services.crossref.plos.doiurl}"/>
+    <property name="plosEmail" value="${ambra.services.crossref.plos.email}"/>
+    <property name="sendToXref" value="${ambra.services.crossref.sendToXref}"/>
   </bean>
 
   <bean id="defaultEncodingCharset" class="java.lang.String">
@@ -103,7 +103,7 @@
   </bean>
 
   <bean id="applicationId" class="java.lang.String">
-    <constructor-arg value="topaz-plosone"/>
+    <constructor-arg value="topaz-ambra"/>
   </bean>
 
   <bean id="userContext" class="org.plos.web.UserContext"/>
@@ -142,7 +142,7 @@
     <property name="permissionsService" ref="permissionsService"/>
     <property name="userCache" ref="userCache"/>
     <property name="applicationId" ref="applicationId"/>
-    <property name="emailAddressUrl" value="https://${pub.spring.server.cas}/cas/email?guid="/>
+    <property name="emailAddressUrl" value="https://${ambra.services.cas.url.base}/email?guid="/>
     <property name="weeklyCategories">
       <list>
         <value>biology</value>
@@ -211,18 +211,18 @@
 
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore">
-    <constructor-arg index="0" value="${topaz.services.fedora.uri}"/>
-    <constructor-arg index="1" value="${topaz.services.fedora.userName}"/>
-    <constructor-arg index="2" value="${topaz.services.fedora.password}"/>
+    <constructor-arg index="0" value="${ambra.services.topaz.fedora.uri}"/>
+    <constructor-arg index="1" value="${ambra.services.topaz.fedora.userName}"/>
+    <constructor-arg index="2" value="${ambra.services.topaz.fedora.password}"/>
   </bean>
   <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore">
     <constructor-arg index="0" value="${java.io.tmpdir}/blob-store"/>
   </bean>
   <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration">
-    <constructor-arg index="0" value="${pub.spring.itql.uri}" />
+    <constructor-arg index="0" value="${ambra.services.topaz.itql.uri}" />
     <constructor-arg index="1">
      <!-- must be one of fedoraBlobStore or simpleBlobStore -->
-       <ref bean="${pub.spring.blobStore}"/>
+       <ref bean="${ambra.services.topaz.blobStore}"/>
     </constructor-arg>
     <property name="fedoraBlobFactories">
       <list>
@@ -236,67 +236,67 @@
       <list>
         <bean name="riModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="ri" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=ri"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=ri"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="annotationsModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="annotations" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=ri"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=ri"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="usersModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="users" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=users"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=users"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="grantsModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="grants" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=grants"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=grants"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="revokesModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="revokes" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=revokes"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=revokes"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="ppModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="pp" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=pp"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=pp"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="preferencesModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="preferences" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=preferences"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=preferences"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="profilesModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="profiles" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=profiles"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=profiles"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="alertsModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="alerts" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=alerts"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=alerts"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="criteriaModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="criteria" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#filter:model=criteria"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#filter:model=criteria"/>
           <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
         </bean>
         <bean name="strModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="str" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#str"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#str"/>
           <constructor-arg index="2" value="http://topazproject.org/models#StringCompare"/>
         </bean>
         <bean name="xsdModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="xsd" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#xsd"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#xsd"/>
           <constructor-arg index="2" value="http://mulgara.org/mulgara#XMLSchemaModel"/>
         </bean>
         <bean name="prefixModel" class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="prefix" />
-          <constructor-arg index="1" value="${pub.spring.itql.uri}#prefix"/>
+          <constructor-arg index="1" value="${ambra.services.topaz.itql.uri}#prefix"/>
           <constructor-arg index="2" value="http://mulgara.org/mulgara#PrefixModel"/>
         </bean>
       </list>
@@ -490,7 +490,7 @@
 
   <!-- email configuration -->
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="${pub.spring.mailhost}"/>
+    <property name="host" value="${network.hosts.mailhost}"/>
   </bean>
 
   <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
@@ -507,14 +507,14 @@
         <entry key="text" value="feedback-text.ftl"/>
         <entry key="html" value="feedback-html.ftl"/>
         <entry key="subject" value="My feedback for PLoS ONE"/>
-        <entry key="toEmailAddress" value="${pub.spring.email.feedback}"/>
+        <entry key="toEmailAddress" value="${ambra.platform.email.feedback}"/>
       </map>
     </property>
     <property name="emailThisArticleMap">
       <map>
         <entry key="text" value="emailThisArticle-text.ftl"/>
         <entry key="html" value="emailThisArticle-html.ftl"/>
-        <entry key="url" value="${pub.spring.crossref.plos.doiurl}"/>
+        <entry key="url" value="${ambra.services.crossref.plos.doiurl}"/>
         <entry key="subject" value="An Article from "/>
       </map>
     </property>

@@ -36,7 +36,7 @@
   -->
 
   <properties>
-    <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>
+    <!-- <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir> -->
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>

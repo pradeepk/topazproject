@@ -155,11 +155,11 @@ public class Results {
 
         try {
           String xml = service.find(query, position,
-                                    CONF.getInt("pub.search.fetchSize", 10),
-                                    CONF.getInt("pub.search.snippetsMax", 3),
-                                    CONF.getInt("pub.search.fieldMaxLength", 50),
-                                    CONF.getString("pub.search.index", "TopazIndex"),
-                                    CONF.getString("pub.search.resultPage", "copyXml"));
+                                    CONF.getInt("ambra.services.search.fetchSize", 10),
+                                    CONF.getInt("ambra.services.search.snippetsMax", 3),
+                                    CONF.getInt("ambra.services.search.fieldMaxLength", 50),
+                                    CONF.getString("ambra.services.search.index", "TopazIndex"),
+                                    CONF.getString("ambra.services.search.resultPage", "copyXml"));
 
           if (log.isDebugEnabled())
             log.debug("HitIterator: Got results: " + xml);
@@ -209,7 +209,7 @@ public class Results {
     }
 
     public SearchPEP() throws IOException, ParsingException, UnknownIdentifierException {
-      this(XacmlUtil.lookupPDP("topaz.search.pdpName"));
+      this(XacmlUtil.lookupPDP("ambra.services.xacml.search.pdpName"));
     }
 
     protected SearchPEP(PDP pdp)

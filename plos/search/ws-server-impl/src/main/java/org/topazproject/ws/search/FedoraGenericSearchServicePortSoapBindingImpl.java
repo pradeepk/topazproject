@@ -39,6 +39,8 @@ public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations
   private static final Log log =
       LogFactory.getLog(FedoraGenericSearchServicePortSoapBindingImpl.class);
 
+  public static final String FEDORA_G_SEARCH_CONFIG_KEY = "ambra.services.search.fedoraGSearch";
+
   private Operations   impl;
 
   public void init(Object context) throws ServiceException {
@@ -48,7 +50,7 @@ public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations
     try {
       // override fgs' config from our commons-config stuff
       Configuration tcfg = ConfigurationStore.getInstance().getConfiguration();
-      tcfg = tcfg.subset("topaz.fedoragsearch");
+      tcfg = tcfg.subset(FEDORA_G_SEARCH_CONFIG_KEY);
       Properties scfg = Config.getCurrentConfig().getRepositoryProps(tcfg.getString("repository"));
       for (Iterator iter = tcfg.getKeys("fgsrepository."); iter.hasNext(); ) {
         String key = (String) iter.next();

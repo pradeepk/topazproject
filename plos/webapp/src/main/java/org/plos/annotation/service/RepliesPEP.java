@@ -95,7 +95,7 @@ public class RepliesPEP extends AbstractSimplePEP {
    *
    */
   public RepliesPEP() throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("topaz.replies.pdpName"));
+    this(XacmlUtil.lookupPDP("ambra.services.xacml.replies.pdpName"));
   }
 
   /*

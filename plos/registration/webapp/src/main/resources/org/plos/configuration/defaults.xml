@@ -18,10 +18,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 
-  This file contains most of the defaults for the plosone webapp. However, there may be additional
+  This file contains most of the defaults for the ambra webapp. However, there may be additional
   defaults in the conf-helper library's global-defaults.xml. Additionally, if in dev mode, some
   of these values may be overridden by settings in defaults-dev.xml. Finally, look for overrides
-  in /etc/topaz/plosone.xml.
+  in /etc/topaz/ambra.xml.
 
   See also libs/conf-helper/src/main/resources/globa-defaults.xml
 -->
@@ -33,10 +33,10 @@
     <context>/plos-registration</context>          <!-- Directory of webapp -->
     <!-- Full URL of registration webapp - Shouldn't need to be exposed -->
     <url>https://${network.hosts.registration}:${network.ports.registration-ssl}${registration.context}</url>
-    <plosone> <!-- Location of publishing app so links in registration work -->
+    <ambra> <!-- Location of publishing app so links in registration work -->
       <context></context> <!-- directory of publishing app -->
       <!-- URL of publicly accessible publishing app (webhead if there is one) -->
       <url>http://${network.hosts.default}:${network.ports.default}</url>
-    </plosone>
+    </ambra>
   </registration>
 </config>

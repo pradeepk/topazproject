@@ -18,5 +18,5 @@
   limitations under the License.
 -->
 <#assign context="${config.getString('registration.context')}">
-<#assign plosOneUrl="${config.getString('registration.plosone.url')}">
-<#assign plosOneContext="${config.getString('registration.plosone.context')}">
+<#assign plosOneUrl="${config.getString('registration.url')}">
+<#assign plosOneContext="${config.getString('registration.context')}">

@@ -359,7 +359,7 @@
             </systemProperty>
             <systemProperty>
               <!-- In case there is something in /etc, override here, not defaults-dev.xml -->
-              <name>plosone.app-context</name>
+              <name>ambra.platform.appContext</name>
               <value>/ambra-webapp</value>
             </systemProperty>
             <systemProperty>

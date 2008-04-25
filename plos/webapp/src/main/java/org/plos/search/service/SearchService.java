@@ -23,21 +23,16 @@ import java.util.concurrent.TimeUnit;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
-import org.plos.ApplicationException;
-import org.plos.search.SearchResultPage;
-import org.plos.user.PlosOneUser;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.spring.OtmTransactionManager;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.spring.OtmTransactionManager;
 
 /**
  * Service to provide search capabilities for the application
@@ -48,7 +43,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class SearchService {
   private static final Log           log   = LogFactory.getLog(SearchService.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private Ehcache      cache;
+  private Ehcache cache;
 
   private SearchWebService           searchWebService;
   private FetchArticleService        fetchArticleService;

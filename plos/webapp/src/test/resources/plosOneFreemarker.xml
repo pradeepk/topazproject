@@ -20,7 +20,7 @@
 -->
 <pages>
   <!-- Don't think these are used -->
-  <webapp-dir>/plosone-webapp</webapp-dir>
+  <webapp-dir>/ambra-webapp</webapp-dir>
   <webapp-subdir></webapp-subdir>
   <!-- EB -->
 

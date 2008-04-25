@@ -23,7 +23,7 @@
   <!-- Allow command-line overrides etc. (eg. -Dtopaz.services.fedora.uri=xxx) -->
   <system/>
   <!-- Allow administrator overrides -->
-  <xml fileName="file:///etc/plosone/plosOneFreeMarker.xml" optional="true"/>
+  <xml fileName="file:///etc/ambra/plosOneFreeMarker.xml" optional="true"/>
   <!-- Shared defaults if no admin overrides -->
   <xml fileName="plosOneFreemarker.xml"/>
 </configuration>

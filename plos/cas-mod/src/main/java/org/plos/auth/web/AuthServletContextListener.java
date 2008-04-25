@@ -50,28 +50,28 @@ public class AuthServletContextListener implements ServletContextListener {
     final ServletContext context = event.getServletContext();
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-    String url = conf.getString("cas.db.url");
+    String url = conf.getString("ambra.services.cas.db.url");
 
     final Properties dbProperties = new Properties();
     dbProperties.setProperty("url", url);
-    dbProperties.setProperty("user", conf.getString("cas.db.user"));
-    dbProperties.setProperty("password", conf.getString("cas.db.password"));
+    dbProperties.setProperty("user", conf.getString("ambra.services.cas.db.user"));
+    dbProperties.setProperty("password", conf.getString("ambra.services.cas.db.password"));
 
     try {
       dbContext = DatabaseContext.createDatabaseContext(
-              conf.getString("cas.db.driver"),
+              conf.getString("ambra.services.cas.db.driver"),
               dbProperties,
-              conf.getInt("cas.db.initialSize"),
-              conf.getInt("cas.db.maxActive"),
-              conf.getString("cas.db.connectionValidationQuery"));
+              conf.getInt("ambra.services.cas.db.initialSize"),
+              conf.getInt("ambra.services.cas.db.maxActive"),
+              conf.getString("ambra.services.cas.db.connectionValidationQuery"));
     } catch (final DatabaseException ex) {
       throw new Error("Failed to initialize the database context to '" + url + "'", ex);
     }
 
     final UserService userService = new UserService(
                                           dbContext,
-                                          conf.getString("cas.db.usernameToGuidSql"),
-                                          conf.getString("cas.db.guidToUsernameSql"));
+                                          conf.getString("ambra.services.cas.db.usernameToGuidSql"),
+                                          conf.getString("ambra.services.cas.db.guidToUsernameSql"));
 
     context.setAttribute(AuthConstants.USER_SERVICE, userService);
   }

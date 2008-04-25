@@ -43,7 +43,7 @@ public class SearchWebService {
    * @throws java.net.URISyntaxException URISyntaxException
    */
   public SearchWebService() throws IOException, URISyntaxException, ServiceException {
-    String uri = ConfigurationStore.getInstance().getConfiguration().getString("pub.spring.service.search");
+    String uri = ConfigurationStore.getInstance().getConfiguration().getString("ambra.spring.service.search");
     fgsOperations = SearchClientFactory.create(uri);
   }
 

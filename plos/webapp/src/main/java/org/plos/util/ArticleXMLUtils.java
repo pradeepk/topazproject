@@ -72,7 +72,7 @@ import org.xml.sax.SAXException;
 public class ArticleXMLUtils {
   /** Pub Configuration */
   private static final Configuration PUB_CONFIG = ConfigurationStore.getInstance().getConfiguration();
-  private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("pub.app-context", "");
+  private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("ambra.platform.appContext", "");
 
   private static final Log log = LogFactory.getLog(ArticleXMLUtils.class);
 

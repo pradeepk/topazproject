@@ -93,7 +93,7 @@ public class ArticlePEP extends AbstractSimplePEP {
 
   private static final PDP getPDP() throws IOException {
     try {
-      return XacmlUtil.lookupPDP("topaz.articles.pdpName");
+      return XacmlUtil.lookupPDP("ambra.services.xacml.articles.pdpName");
     } catch (ParsingException pe) {
       throw (IOException) new IOException("Error creating articles-pep").initCause(pe);
     } catch (UnknownIdentifierException uie) {

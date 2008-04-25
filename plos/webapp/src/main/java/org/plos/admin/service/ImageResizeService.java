@@ -52,8 +52,8 @@ import org.plos.configuration.ConfigurationStore;
  * @author Alex Worden, stevec
  */
 public class ImageResizeService {
+  public static final String BASE_CONFIG_KEY = DocumentManagementService.BASE_CONFIG_KEY + ".imageMagick";
   private static final Log log = LogFactory.getLog(ImageResizeService.class);
-
   private int height;
   private int width;
   private String inputImageFileName;
@@ -70,7 +70,7 @@ public class ImageResizeService {
     if (configuration.isEmpty()) {
       log.warn("Configuration has no property values");
     } else {
-      String directory = configuration.getString("topaz.utilities.image-magick.temp-directory");
+      String directory = configuration.getString(BASE_CONFIG_KEY + ".tempDir");
       if (directory == null) {
         log.warn("Property topaz.utilities.image-magick.temp-directory not configured");
       } else {

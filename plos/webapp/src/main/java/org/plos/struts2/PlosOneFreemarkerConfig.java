@@ -69,15 +69,15 @@ public class PlosOneFreemarkerConfig {
     if (log.isDebugEnabled()) {
       log.debug("Reading FreeMarker configuration");
     }
-    dirPrefix = myConfig.getString("pub.app-context");
-    subdirPrefix = myConfig.getString("pub.resource-sub-dir");
-    plosOneHost = myConfig.getString("pub.host");
-    casLoginURL = myConfig.getString("cas.url.login");
-    casLogoutURL = myConfig.getString("cas.url.logout");
-    registrationURL = myConfig.getString("plos-registration.url.registration");
-    changePasswordURL = myConfig.getString("plos-registration.url.change-password");
-    changeEmailURL = myConfig.getString("plos-registration.url.change-email");
-    defaultJournalName = myConfig.getString("freemarker.default-journal-name");
+    dirPrefix = myConfig.getString("ambra.platform.appContext");
+    subdirPrefix = myConfig.getString("ambra.platform.resourceSubDir");
+    plosOneHost = myConfig.getString("ambra.platform.host");
+    casLoginURL = myConfig.getString("ambra.services.cas.url.login");
+    casLogoutURL = myConfig.getString("ambra.services.cas.url.logout");
+    registrationURL = myConfig.getString("ambra.services.registration.url.registration");
+    changePasswordURL = myConfig.getString("ambra.services.registration.url.change-password");
+    changeEmailURL = myConfig.getString("ambra.services.registration.url.change-email");
+    defaultJournalName = myConfig.getString("ambra.platform.defaultJournalName");
     journals = new HashMap<String, JournalConfig>();
 
     int numConfigs = 1;
@@ -91,9 +91,9 @@ public class PlosOneFreemarkerConfig {
       } else {
         oneConfig = myConfig;
       }
-      int numJournals = oneConfig.getList("freemarker.journal.name").size();
+      int numJournals = oneConfig.getList("ambra.freemarker.journal.name").size();
       for (int k = 0; k < numJournals; k++) {
-        final String journal = "freemarker.journal(" + k + ")";
+        final String journal = "ambra.freemarker.journal(" + k + ")";
         final String journalName = oneConfig.getString(journal + ".name");
         if (log.isDebugEnabled()) {
           log.debug("reading journal name: " + journalName);

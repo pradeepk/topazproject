@@ -61,16 +61,18 @@ import org.topazproject.otm.stores.ItqlStore;
 public class ArticleUtil {
   private static final Log           log   = LogFactory.getLog(ArticleUtil.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private static final List          FGS_URLS  = CONF.getList("topaz.fedoragsearch.urls.url");
-  private static final String        FGS_REPO  = CONF.getString("topaz.fedoragsearch.repository");
-  private static final String        queueDir    = CONF.getString("pub.spring.ingest.source", "/var/spool/ambra/ingestion-queue");
-  private static final String        ingestedDir = CONF.getString("pub.spring.ingest.destination", "/var/spool/ambra/ingested");
+  private static final List          FGS_URLS  = CONF.getList("ambra.services.search.fedoraGSearch.urls.url");
+  private static final String        FGS_REPO  = CONF.getString("ambra.services.search.fedoraGSearch.repository");
+  private static final String        queueDir    = CONF.getString("ambra.services.documentManagement.ingestSourceDir", 
+                                                                  "/var/spool/ambra/ingestion-queue");
+  private static final String        ingestedDir = CONF.getString("ambra.services.documentManagement.ingestDestinationDir", 
+                                                                  "/var/spool/ambra/ingested");
 
   private final Uploader   uploader;
   private final FedoraAPIM apim;
   private final FgsOperations[] fgs;
   private final Ingester   ingester;
-  private static final URI        fedoraServer = getFedoraBaseUri();
+  private static final URI fedoraServer = getFedoraBaseUri();
 
   /**
    * Create article utilities from default configuration values.<p>
@@ -85,7 +87,7 @@ public class ArticleUtil {
 
   private static Session createSession() throws URISyntaxException {
     SessionFactory factory = new SessionFactoryImpl();
-    ItqlStore      itql    = new ItqlStore(new URI(CONF.getString("topaz.services.itql.uri")));
+    ItqlStore      itql    = new ItqlStore(new URI(CONF.getString("ambra.services.topaz.itql.uri")));
     factory.setTripleStore(itql);
     return factory.openSession();
   }
@@ -93,12 +95,12 @@ public class ArticleUtil {
   public ArticleUtil(Session sess)
       throws MalformedURLException, ServiceException, RemoteException {
 
-    this(CONF.getString("topaz.services.fedora.uri"),
-         CONF.getString("topaz.services.fedora.userName"),
-         CONF.getString("topaz.services.fedora.password"),
-         CONF.getString("topaz.services.fedoraUploader.uri"),
-         CONF.getString("topaz.services.fedoraUploader.userName"),
-         CONF.getString("topaz.services.fedoraUploader.password"),
+    this(CONF.getString("ambra.services.topaz.fedora.uri"),
+         CONF.getString("ambra.services.topaz.fedora.userName"),
+         CONF.getString("ambra.services.topaz.fedora.password"),
+         CONF.getString("ambra.services.topaz.fedoraUploader.uri"),
+         CONF.getString("ambra.services.topaz.fedoraUploader.userName"),
+         CONF.getString("ambra.services.topaz.fedoraUploader.password"),
          sess);
   }
 
@@ -142,13 +144,13 @@ public class ArticleUtil {
       throws NoSuchObjectIdException, RemoteException {
     try {
       FedoraAPIM apim = APIMStubFactory.create(
-                                      CONF.getString("topaz.services.fedora.uri"),
-                                      CONF.getString("topaz.services.fedora.userName"),
-                                      CONF.getString("topaz.services.fedora.password"));
+                                      CONF.getString("ambra.services.topaz.fedora.uri"),
+                                      CONF.getString("ambra.services.topaz.fedora.userName"),
+                                      CONF.getString("ambra.services.topaz.fedora.password"));
       Uploader upld = new Uploader(
-         CONF.getString("topaz.services.fedoraUploader.uri"),
-         CONF.getString("topaz.services.fedoraUploader.userName"),
-         CONF.getString("topaz.services.fedoraUploader.password"));
+         CONF.getString("ambra.services.topaz.fedoraUploader.uri"),
+         CONF.getString("ambra.services.topaz.fedoraUploader.userName"),
+         CONF.getString("ambra.services.topaz.fedoraUploader.password"));
 
       if (content != null) {
         CountingInputStream cis = new CountingInputStream(content.getInputStream());
@@ -223,9 +225,9 @@ public class ArticleUtil {
     try {
       log.debug("Deleting '" + article + "'");
       delete(article, session, APIMStubFactory.create(
-                                      CONF.getString("topaz.services.fedora.uri"),
-                                      CONF.getString("topaz.services.fedora.userName"),
-                                      CONF.getString("topaz.services.fedora.password")),
+                                      CONF.getString("ambra.services.topaz.fedora.uri"),
+                                      CONF.getString("ambra.services.topaz.fedora.userName"),
+                                      CONF.getString("ambra.services.topaz.fedora.password")),
                             getFgsOperations());
 
       // Clean up spool directories
@@ -348,17 +350,18 @@ public class ArticleUtil {
   }
 
   private static URI getFedoraBaseUri() {
-    String fedoraBase = CONF.getString("topaz.services.fedora.uri");
-    URI uri = RdfUtil.validateUri(fedoraBase, "topaz.services.fedora.uri");
+    String fedoraBase = CONF.getString("ambra.services.topaz.fedora.uri");
+    URI uri = RdfUtil.validateUri(fedoraBase, "ambra.services.topaz.fedora.uri");
+    /* Removing this code since is seems unnecessary and there's no explanation for it. 
     if (uri.getHost().equals("localhost")) {
       try {
-        String serverName = CONF.getString("topaz.server.hostname");
+        String serverName = CONF.getString("ambra.services.topaz.server.hostname");
         uri = new URI(uri.getScheme(), null, serverName, uri.getPort(), uri.getPath(), null, null);
       } catch (URISyntaxException use) {
         throw new Error(use); // Can't happen
       }
     }
-
+    */
     return uri;
   }
 }

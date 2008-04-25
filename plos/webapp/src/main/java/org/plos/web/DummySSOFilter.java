@@ -54,6 +54,7 @@ import edu.yale.its.tp.cas.client.CASReceipt;
  */
 public class DummySSOFilter implements Filter {
   private static final Log log = LogFactory.getLog(DummySSOFilter.class);
+  public static final String DUMMY_SSO_CONFIG_KEY = "ambra.platform.dummySsoEnabled";
   private static final String login  = "login";
   private static final String logout = "logout";
 
@@ -73,7 +74,7 @@ public class DummySSOFilter implements Filter {
 
     // look up any overrides in the plos configuration
     Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
-    String casBaseUrl = configuration.getString("cas.url.base");
+    String casBaseUrl = configuration.getString("ambra.services.cas.url.base");
     if (casBaseUrl != null)
       casUrl = casBaseUrl;
 
@@ -81,12 +82,12 @@ public class DummySSOFilter implements Filter {
     if (ssoUrl == null)
       ssoUrl = "/dummy/";
 
-    enabled = configuration.getBoolean("dummy.sso.enabled", false);
+    enabled = configuration.getBoolean(DUMMY_SSO_CONFIG_KEY, false);
 
     if (enabled)
       log.info("dummy sso enabled");
     else
-      log.info("dummy sso disabled (use -Ddummy.sso.enabled=true to enable)");
+      log.info("dummy sso disabled (use -D"+DUMMY_SSO_CONFIG_KEY+"=true to enable)");
   }
 
   /*
