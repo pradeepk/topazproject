@@ -2,9 +2,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject.packages</groupId>
-  <artifactId>fedora</artifactId>
+  <artifactId>topaz-fedora</artifactId>
   <packaging>pom</packaging>
-  <name>fedora</name>
+  <name>topaz-fedora</name>
 
   <parent>
     <groupId>org.topazproject.packages</groupId>
@@ -22,7 +22,7 @@
 
   <properties>
     <!-- The following is tied to <id> and <format> in assembly.xml and to the fedora <version> -->
-    <fedora.home>${project.build.directory}/${project.build.finalName}-fedora.dir/${artifactId}-${version}/fedora-2.1.1</fedora.home>
+    <fedora.home>${project.build.directory}/${project.build.finalName}-topaz-fedora.dir/${artifactId}-${version}/fedora-2.1.1</fedora.home>
   </properties>
 
   <build>

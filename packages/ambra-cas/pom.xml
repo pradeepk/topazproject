@@ -2,9 +2,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject.packages</groupId>
-  <artifactId>topaz-mulgara</artifactId>
+  <artifactId>ambra-cas</artifactId>
   <packaging>pom</packaging>
-  <name>mulgara</name>
+  <name>ambra-cas</name>
 
   <parent>
     <groupId>org.topazproject.packages</groupId>
@@ -15,11 +15,62 @@
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-service</artifactId>
+      <artifactId>ambra-registration-webapp</artifactId>
+      <version>${pom.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ecqs</artifactId>
       <version>${pom.version}</version>
       <type>jar</type>
     </dependency>
+
+    <dependency>
+      <groupId>org.topazproject.packages</groupId>
+      <artifactId>packages</artifactId>
+      <version>${pom.version}</version>
+      <type>tar.gz</type>
+      <classifier>tomcat-common</classifier>
+    </dependency>
   </dependencies>
+
+  <properties>
+    <!-- the ecqs tomcat. cas web-app is extracted from here -->
+    <ecqs-tomcat>esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28</ecqs-tomcat>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>ant-tasks</artifactId>
+        <configuration>
+          <ECQS_INSTALL_DIR>${project.build.directory}</ECQS_INSTALL_DIR>
+          <ecqs-version>${pom.version}</ecqs-version>
+        </configuration>
+
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>ecqs-install</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
   <profiles>
     <profile>
@@ -54,34 +105,16 @@
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
-                  <directory>/usr/local/topaz/${project.build.finalName}</directory>
+                  <directory>/usr/local/topaz/${project.build.finalName}-tomcat</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
-                  <dependency/>
                   <sources>
                     <source>
-                      <location>src/main/resources/log4j.xml</location>
+                      <!-- The following is tied to <id> and <format> in assembly.xml -->
+                      <location>${project.build.directory}/${project.build.finalName}-tomcat.dir</location>
                     </source>
                   </sources>
-                </mapping>
-                <mapping>
-                  <directory>/var/lib/topaz</directory>
-                  <filemode>755</filemode>
-                  <username>topaz</username>
-                  <groupname>topaz</groupname>
-                </mapping>
-                <mapping>
-                  <directory>/var/lib/topaz/data</directory>
-                  <filemode>755</filemode>
-                  <username>topaz</username>
-                  <groupname>topaz</groupname>
-                </mapping>
-                <mapping>
-                  <directory>/var/log/topaz</directory>
-                  <filemode>755</filemode>
-                  <username>topaz</username>
-                  <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
                   <directory>/usr/share/doc/topaz</directory>
@@ -98,13 +131,20 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>src/main/resources/mulgara.xml</location>
+                      <location>src/main/resources/cas.xml</location>
                     </source>
                   </sources>
                 </mapping>
+                <!-- warn: this should be after the file mapping -->
                 <mapping>
                   <directory>/etc/topaz</directory>
                   <configuration>true</configuration>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                </mapping>
+                <mapping>
+                  <directory>/var/log/topaz</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
@@ -116,19 +156,7 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/scripts/mulgara</location>
-                    </source>
-                  </sources>
-                </mapping>
-                <mapping>
-                  <directory>/etc/sysconfig/</directory>
-                  <configuration>true</configuration>
-                  <filemode>644</filemode>
-                  <username>root</username>
-                  <groupname>root</groupname>
-                  <sources>
-                    <source>
-                      <location>src/main/resources/mulgara</location>
+                      <location>src/main/scripts/cas</location>
                     </source>
                   </sources>
                 </mapping>
@@ -146,6 +174,7 @@
             </configuration>
           </plugin>
         </plugins>
+
       </build>
     </profile>
   </profiles>

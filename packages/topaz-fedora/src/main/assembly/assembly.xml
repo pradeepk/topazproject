@@ -18,10 +18,9 @@
   limitations under the License.
 -->
 <assembly>
-  <id>fedora</id>
+  <id>topaz-fedora</id>
   <formats>
     <format>dir</format>
-    <!-- <format>tar.gz</format> -->
   </formats>
 
   <dependencySets>

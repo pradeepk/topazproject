@@ -2,9 +2,9 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject.packages</groupId>
-  <artifactId>topaz-tools</artifactId>
+  <artifactId>ambra-tools</artifactId>
   <packaging>pom</packaging>
-  <name>topaztools</name>
+  <name>ambra-tools</name>
 
   <parent>
     <groupId>org.topazproject.packages</groupId>
@@ -97,7 +97,7 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>${project.build.directory}/${project.build.finalName}-tools.dir/bin</location>
+                      <location>${project.build.directory}/${project.build.finalName}-ambra-tools.dir/bin</location>
                     </source>
                   </sources>
                 </mapping>
@@ -108,7 +108,7 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>${project.build.directory}/${project.build.finalName}-tools.dir/lib</location>
+                      <location>${project.build.directory}/${project.build.finalName}-ambra-tools.dir/lib</location>
                     </source>
                   </sources>
                 </mapping>
@@ -119,7 +119,7 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>${project.build.directory}/${project.build.finalName}-tools.dir/scripts</location>
+                      <location>${project.build.directory}/${project.build.finalName}-ambra-tools.dir/scripts</location>
                     </source>
                   </sources>
                 </mapping>

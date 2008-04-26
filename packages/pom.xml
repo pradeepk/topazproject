@@ -31,11 +31,11 @@
   </properties>
 
   <modules>
-    <module>mulgara</module>
     <module>ambra</module>
-    <module>cas</module>
-    <module>fedora</module>
-    <module>tools</module>
+    <module>ambra-tools</module>
+    <module>ambra-cas</module>
+    <module>topaz-mulgara</module>
+    <module>topaz-fedora</module>
   </modules>
 
   <build>
