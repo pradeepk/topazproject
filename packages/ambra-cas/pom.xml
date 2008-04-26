@@ -156,14 +156,14 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/scripts/ambra-cas</location>
+                      <location>src/main/scripts/ambra_cas</location>
                     </source>
                   </sources>
                 </mapping>
               </mappings>
 
               <requires>
-                <require>topaz-tools</require>
+                <require>ambra-tools</require>
               </requires>
 
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>

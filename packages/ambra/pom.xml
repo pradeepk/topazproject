@@ -192,7 +192,7 @@
               </mappings>
 
               <requires>
-                <require>topaz-tools</require>
+                <require>ambra-tools</require>
               </requires>
 
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>

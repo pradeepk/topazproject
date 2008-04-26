@@ -7,7 +7,7 @@ DATABASE_DIR="/var/lib/topaz/data/mulgara"
 SERVERNAME="topazproject"
 
 # Which log configuration file to use.
-LOG4J_CONFIG="/usr/local/topaz/mulgara/log4j.xml"
+LOG4J_CONFIG="/usr/local/topaz/topaz-mulgara/log4j.xml"
 
 # Arbitrary other parameters to pass to mulgara.
 #OPTIONS="--serverhost 10.0.1.42"

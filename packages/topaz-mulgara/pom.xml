@@ -116,7 +116,7 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/scripts/topaz-mulgara</location>
+                      <location>src/main/scripts/topaz_mulgara</location>
                     </source>
                   </sources>
                 </mapping>
@@ -128,14 +128,14 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/resources/mulgara</location>
+                      <location>src/main/resources/topaz-mulgara</location>
                     </source>
                   </sources>
                 </mapping>
               </mappings>
 
               <requires>
-                <require>topaz-tools</require>
+                <require>ambra-tools</require>
               </requires>
 
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>

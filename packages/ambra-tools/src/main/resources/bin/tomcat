@@ -76,17 +76,17 @@ JVM="server"
 verbose=
 
 # Overrides: basename_CATALINA_HOME, basename_TOMCAT_OPTS, basename_USER
-SERVERS="cas mulgara fedora ambra"
-cas_CATALINA_HOME="$TOPAZ_LOCAL/cas"
-mulgara_CATALINA_HOME="$TOPAZ_LOCAL/mulgara"
+SERVERS="ambra_cas topaz_mulgara topaz_fedora ambra"
+ambra_cas_CATALINA_HOME="$TOPAZ_LOCAL/ambra-cas"
+topaz_mulgara_CATALINA_HOME="$TOPAZ_LOCAL/topaz-mulgara"
 ambra_CATALINA_HOME="$TOPAZ_LOCAL/ambra"
 
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
-cas_PORT=7443
-mulgara_PORT=1099
+ambra_cas_PORT=7443
+topaz_mulgara_PORT=1099
 ambra_PORT=8080
-fedora_PORT=9090
+topaz_fedora_PORT=9090
 
 #
 # Should not need to modify stuff below here

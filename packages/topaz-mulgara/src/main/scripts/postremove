@@ -2,7 +2,8 @@
 # $Id$
 
 # Remove/recreate symbolic link in /usr/local/topaz
-PKG=mulgara
+PKG=topaz-mulgara
+
 LINK=/usr/local/topaz/$PKG
 # Remove it if it points to nowhere
 [ ! -e $LINK ] && [ -L $LINK ] && rm -f $LINK

@@ -26,7 +26,7 @@
 
 # Read our configuration from sysconfig (a redhat convention)
 [ -e /etc/sysconfig/topaz-common ] && . /etc/sysconfig/topaz-common
-[ -e /etc/sysconfig/cas ] && . /etc/sysconfig/cas
+[ -e /etc/sysconfig/ambra-cas ] && . /etc/sysconfig/ambra-cas
 
 # If our system is setup incorrectly somehow, minimal attempt to clean up
 [ -n "$JAVA_HOME" ] && [ ! -d "$JAVA_HOME" ] && \

@@ -152,7 +152,7 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/scripts/topaz-fedora</location>
+                      <location>src/main/scripts/topaz_fedora</location>
                     </source>
                   </sources>
                 </mapping>
@@ -196,7 +196,7 @@
               </mappings>
 
               <requires>
-                <require>topaz-tools</require>
+                <require>ambra-tools</require>
               </requires>
               
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>

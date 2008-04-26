@@ -29,7 +29,7 @@
 
 # Read our configuration from sysconfig (a redhat convention)
 [ -e /etc/sysconfig/topaz-common ] && . /etc/sysconfig/topaz-common
-[ -e /etc/sysconfig/mulgara ] && . /etc/sysconfig/mulgara
+[ -e /etc/sysconfig/topaz-mulgara ] && . /etc/sysconfig/topaz-mulgara
 
 # If our system is setup incorrectly somehow, minimal attempt to clean up
 [ -n "$JAVA_HOME" ] && [ ! -d "$JAVA_HOME" ] && \
@@ -42,7 +42,7 @@ export JAVA_HOME
 # Start multicast for ehcache
 /usr/local/topaz/bin/multicast
 
-# Start/stop/etc mulgara
+# Start/stop/etc topaz-mulgara
 
 usage() {
 cat <<EOF; exit 1
@@ -87,12 +87,12 @@ JSVC="jsvc"
 JVM="server"
 verbose=
 
-MULGARA_HOME="$TOPAZ_LOCAL/mulgara"
+MULGARA_HOME="$TOPAZ_LOCAL/topaz-mulgara"
 MULGARA_JAR="`ls \"$MULGARA_HOME\"/mulgara-service-*.jar`"
 
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
-mulgara_PORT=1099
+topaz_mulgara_PORT=1099
 
 #
 # Should not need to modify stuff below here
