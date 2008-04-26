@@ -116,7 +116,7 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/scripts/mulgara</location>
+                      <location>src/main/scripts/topaz-mulgara</location>
                     </source>
                   </sources>
                 </mapping>

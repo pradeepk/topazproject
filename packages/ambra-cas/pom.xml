@@ -156,7 +156,7 @@
                   <groupname>root</groupname>
                   <sources>
                     <source>
-                      <location>src/main/scripts/cas</location>
+                      <location>src/main/scripts/ambra-cas</location>
                     </source>
                   </sources>
                 </mapping>
