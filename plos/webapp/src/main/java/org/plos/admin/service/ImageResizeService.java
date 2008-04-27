@@ -70,7 +70,7 @@ public class ImageResizeService {
     if (configuration.isEmpty()) {
       log.warn("Configuration has no property values");
     } else {
-      String directory = configuration.getString(BASE_CONFIG_KEY + ".tempDir");
+      String directory = configuration.getString(BASE_CONFIG_KEY + ".tempDirectory");
       if (directory == null) {
         log.warn("Property topaz.utilities.image-magick.temp-directory not configured");
       } else {

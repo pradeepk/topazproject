@@ -142,7 +142,7 @@
     <property name="permissionsService" ref="permissionsService"/>
     <property name="userCache" ref="userCache"/>
     <property name="applicationId" ref="applicationId"/>
-    <property name="emailAddressUrl" value="https://${ambra.services.cas.url.base}/email?guid="/>
+    <property name="emailAddressUrl" value="${ambra.services.cas.url.base}/email?guid="/>
     <property name="weeklyCategories">
       <list>
         <value>biology</value>

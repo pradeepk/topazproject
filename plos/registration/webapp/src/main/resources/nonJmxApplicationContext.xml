@@ -86,14 +86,14 @@
 
   <bean id="registrationVerificationMailer" class="org.plos.service.RegistrationMailer">
     <property name="mailSender" ref="mailSender"/>
-    <property name="fromEmailAddress" value="${registration.from-email}"/>
-    <property name="fromEmailName" value="${registration.from-name}"/>
+    <property name="fromEmailAddress" value="${ambra.services.registration.from-email}"/>
+    <property name="fromEmailName" value="${ambra.services.registration.from-name}"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
     <property name="changeEmailMap">
       <map>
         <entry key="text" value="verifyChangeEmail-text.ftl"/>
         <entry key="html" value="verifyChangeEmail-html.ftl"/>
-        <entry key="url" value="${registration.url}/changeEmailVerification.action"/>
+        <entry key="url" value="${ambra.services.registration.url}/changeEmailVerification.action"/>
         <entry key="subject" value="Please verify your request to change your PLoS login"/>
       </map>
     </property>
@@ -101,7 +101,7 @@
       <map>
         <entry key="text" value="verifyEmail-text.ftl"/>
         <entry key="html" value="verifyEmail-html.ftl"/>
-        <entry key="url" value="${registration.url}/emailVerification.action"/>
+        <entry key="url" value="${ambra.services.registration.url}/emailVerification.action"/>
         <entry key="subject" value="Please verify your PLoS registration"/>
       </map>
     </property>
@@ -109,7 +109,7 @@
       <map>
         <entry key="text" value="forgotPasswordVerificationEmailTemplate-text.ftl"/>
         <entry key="html" value="forgotPasswordVerificationEmailTemplate-html.ftl"/>
-        <entry key="url" value="${registration.url}/forgotPasswordVerify.action"/>
+        <entry key="url" value="${ambra.services.registration.url}/forgotPasswordVerify.action"/>
         <entry key="subject" value="PLoS Password Reset Request"/>
       </map>
     </property>
@@ -124,10 +124,10 @@
 
   <!-- Postgres datasource -->
   <bean id="registrationDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <property name="driverClassName" value="${cas.db.driver}"/>
-    <property name="url" value="${cas.db.url}"/>
-    <property name="username" value="${cas.db.user}"/>
-    <property name="password" value="${cas.db.password}"/>
+    <property name="driverClassName" value="${ambra.services.cas.db.driver}"/>
+    <property name="url" value="${ambra.services.cas.db.url}"/>
+    <property name="username" value="${ambra.services.cas.db.user}"/>
+    <property name="password" value="${ambra.services.cas.db.password}"/>
   </bean>
 
   <!-- Useful link:

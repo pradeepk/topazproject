@@ -13,7 +13,7 @@
 
     <!-- Use /etc/topaz/cas.xml instead of /etc/topaz/ambra.xml -->
     <context-param>
-      <param-name>org.plos.configuration</param-name>
+      <param-name>ambra.configuration</param-name>
       <param-value>file:/etc/topaz/cas.xml</param-value>
     </context-param>
 

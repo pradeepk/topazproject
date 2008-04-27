@@ -26,17 +26,21 @@
   See also libs/conf-helper/src/main/resources/globa-defaults.xml
 -->
 <config>
-  <cas></cas>
-  <registration>
-    <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
-    <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
-    <context>/plos-registration</context>          <!-- Directory of webapp -->
-    <!-- Full URL of registration webapp - Shouldn't need to be exposed -->
-    <url>https://${network.hosts.registration}:${network.ports.registration-ssl}${registration.context}</url>
-    <ambra> <!-- Location of publishing app so links in registration work -->
-      <context></context> <!-- directory of publishing app -->
-      <!-- URL of publicly accessible publishing app (webhead if there is one) -->
-      <url>http://${network.hosts.default}:${network.ports.default}</url>
-    </ambra>
-  </registration>
+  <ambra>
+    <services>
+      <cas></cas>
+      <registration>
+        <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
+        <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
+        <context>/plos-registration</context>          <!-- Directory of webapp -->
+        <!-- Full URL of registration webapp - Shouldn't need to be exposed -->
+        <url>https://${network.hosts.registration}:${network.ports.registration-ssl}${ambra.services.registration.context}</url>
+        <ambra> <!-- Location of publishing app so links in registration work -->
+          <context></context> <!-- directory of publishing app -->
+          <!-- URL of publicly accessible publishing app (webhead if there is one) -->
+          <url>http://${network.hosts.default}:${network.ports.default}</url>
+        </ambra>
+      </registration>
+    </services>
+  </ambra>
 </config>
