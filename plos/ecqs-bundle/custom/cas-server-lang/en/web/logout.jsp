@@ -101,8 +101,8 @@
 	You have been logged out successfully.
 
         <ul class="links">
-          <li><a href="/plos-registration/forgotPassword.action" title="Click here if you forgot your password" tabindex="11">Forgotten Password?</a></li>
-          <li><a href="/plos-registration/register.action" tabindex="12"><strong>Register for a New Account</strong></a></li>
+          <li><a href="/ambra-registration/forgotPassword.action" title="Click here if you forgot your password" tabindex="11">Forgotten Password?</a></li>
+          <li><a href="/ambra-registration/register.action" tabindex="12"><strong>Register for a New Account</strong></a></li>
         </ul> 
       </div>
 

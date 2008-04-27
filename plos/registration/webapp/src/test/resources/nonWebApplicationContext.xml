@@ -88,7 +88,7 @@
       <map>
         <entry key="text" value="verifyEmail-text.ftl"/>
         <entry key="html" value="verifyEmail-html.ftl"/>
-        <entry key="url" value="http://localhost:8080/plos-registration-webapp/emailVerification.action"/>
+        <entry key="url" value="http://localhost:8080/ambra-registration/emailVerification.action"/>
         <entry key="subject" value="Please verify your PLoS registration"/>
       </map>
     </property>
@@ -96,7 +96,7 @@
       <map>
         <entry key="text" value="forgotPasswordVerificationEmailTemplate-text.ftl"/>
         <entry key="html" value="forgotPasswordVerificationEmailTemplate-html.ftl"/>
-        <entry key="url" value="http://localhost:8080/plos-registration-webapp/forgotPasswordVerify.action"/>
+        <entry key="url" value="http://localhost:8080/ambra-registration/forgotPasswordVerify.action"/>
         <entry key="subject" value="PLoS Password Reset Request"/>
       </map>
     </property>
