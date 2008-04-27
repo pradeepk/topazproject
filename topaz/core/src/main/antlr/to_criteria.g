@@ -150,7 +150,7 @@ options {
     /** 
      * Create a new translator instance.
      *
-     * @param sessionFactory the session-factory to use to look up class-metatdata, models, etc
+     * @param sessionFactory the session-factory to use to look up entity-metadata, models, etc
      */
     public CriteriaGenerator(Session session) {
       this();
@@ -215,7 +215,7 @@ options {
 
             cm = sess.getSessionFactory().getClassMetadata(type);
             if (cm == null)
-              throw new RecognitionException("No metadata found for class '" + type + "'");
+              throw new RecognitionException("No metadata found for entity '" + type + "'");
           }
 
           // walk the references
@@ -638,8 +638,13 @@ options {
       AST n = ref.getFirstChild();
 
       if (n.getType() == CAST) {
-        p = makeChildren(n.getFirstChild(), p, n.getFirstChild().getNextSibling().getText(),
-                         incLast || n.getNextSibling() != null);
+        String t = n.getFirstChild().getNextSibling().getText();
+        p = makeChildren(n.getFirstChild(), p, t, incLast || n.getNextSibling() != null);
+        if (!p.getClassMetadata().getName().equals(normalizeType(t)))
+          throw new RecognitionException("Found two different types for '" +
+                                         n.getFirstChild().toStringTree() + "'; first type = '" +
+                                         p.getClassMetadata().getName() + ", second type = '" + t +
+                                         "'");
       }
 
       try {
@@ -651,6 +656,10 @@ options {
                                      ": " + ref.toStringTree()).initCause(oe);
       }
       return p;
+    }
+
+    private String normalizeType(String entity) {
+      return sess.getSessionFactory().getClassMetadata(entity).getName();
     }
 
     /**
@@ -667,11 +676,23 @@ options {
       return makeParents(id, p, typeMap.get(id.getText()));
     }
 
+    /**
+     * @param id  the node up to which to create the parents (ID or CAST)
+     * @param p   the child criteria to create the referrer criteria on
+     * @param cm  the type of <var>id</var>
+     * @return the last referrer criteria created (representing the first id of <var>ref</var>)
+     */
     private Criteria makeParents(AST id, Criteria p, ClassMetadata cm) throws RecognitionException {
+      // assert parent(id).getType() == REF
+
       if (id.getType() == CAST) {
-        AST ref = id.getFirstChild();
-        p =  makeParents(ref.getFirstChild(), p, 
-                         sess.getSessionFactory().getClassMetadata(ref.getNextSibling().getText()));
+        String type = id.getFirstChild().getNextSibling().getText();
+        if (cm == null)
+          cm = sess.getSessionFactory().getClassMetadata(type);
+        else if (!cm.getName().equals(normalizeType(type)))
+          throw new RecognitionException("Found two different types for '" +
+                                         id.getFirstChild().toStringTree() + "'; first type = '" +
+                                         cm.getName() + ", second type = '" + type + "'");
       }
 
       if (id.getNextSibling() != null) {
@@ -679,18 +700,23 @@ options {
           throw new RecognitionException("'" + id.getText() + "' is not a valid variable or is " +
                                          "not an association");
 
-        id = id.getNextSibling();
-        String field = id.getText();
+        AST f = id.getNextSibling();
+        String field = f.getText();
         ClassMetadata at = cm;
-        while (at.getMapperByName(id.getText()) instanceof EmbeddedMapper) {
-          at = getAssociationType(at, id.getText());
-          id = id.getNextSibling();
-          field += "." + id.getText();
+        while (at.getMapperByName(f.getText()) instanceof EmbeddedMapper) {
+          at     = getAssociationType(at, f.getText());
+          f      = f.getNextSibling();
+          field += "." + f.getText();
         }
-        at = getAssociationType(at, id.getText());
+        at = getAssociationType(at, f.getText());
 
-        Criteria c = makeParents(id, p, at);
-        p = c.createReferrerCriteria(cm.getName(), field);
+        Criteria c = makeParents(f, p, at);
+        p = c.createReferrerCriteria(cm.getName(), field, true);
+      }
+
+      if (id.getType() == CAST) {
+        AST ref = id.getFirstChild();
+        p = makeParents(ref.getFirstChild(), p, getIdType(ref.getFirstChild()));
       }
 
       return p;
@@ -707,6 +733,25 @@ options {
 
       throw new RecognitionException("'" + field + "' is not an association in '" + cm.getName() +
                                      "'");
+    }
+
+    private ClassMetadata getIdType(AST id) throws RecognitionException {
+      ClassMetadata cm;
+
+      if (id.getType() == ID) {
+        String var = id.getText();
+        cm = typeMap.get(var);
+        if (cm == null)
+          throw new RecognitionException("No type found for variable '" + var + "'");
+      } else {
+        assert id.getType() == CAST : "Unexpected type: " + id.getType();
+        String type = id.getFirstChild().getNextSibling().getText();
+        cm = sess.getSessionFactory().getClassMetadata(type);
+        if (cm == null)
+          throw new RecognitionException("No metadata found for entity '" + type + "'");
+      }
+
+      return cm;
     }
 
     /**
@@ -806,7 +851,7 @@ options {
     private void registerType(AST var, AST cls) throws RecognitionException {
       ClassMetadata cm = sess.getSessionFactory().getClassMetadata(cls.getText());
       if (cm == null)
-        throw new RecognitionException("No metadata found for class '" + cls.getText() + "'");
+        throw new RecognitionException("No metadata found for entity '" + cls.getText() + "'");
 
       if (log.isTraceEnabled())
         log.trace("registering type for variable '" + var.getText() + "': " + cm);

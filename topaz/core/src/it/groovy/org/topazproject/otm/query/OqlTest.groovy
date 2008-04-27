@@ -44,6 +44,7 @@ import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.PublicAnnotation;
+import org.topazproject.otm.samples.Reply;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,6 +65,7 @@ public class OqlTest extends AbstractTest {
     rdf.sessFactory.preload(Annotation.class);
     rdf.sessFactory.preload(Article.class);
     rdf.sessFactory.preload(PublicAnnotation.class);
+    rdf.sessFactory.preload(Reply.class);
   }
 
   void testBasic() {
@@ -1644,6 +1646,7 @@ public class OqlTest extends AbstractTest {
       assertEquals('auth', c.criterionList[0].criterions[1].value.parameterName)
 
       assertEquals(3, c.children.size())
+      sortChildren(c, ['parts', 'nextObject', 'nextObject'])
       assertEquals('parts', c.children[0].mapping.name)
       assertEquals('nextObject', c.children[1].mapping.name)
       assertEquals('nextObject', c.children[2].mapping.name)
@@ -1658,10 +1661,10 @@ public class OqlTest extends AbstractTest {
       assertEquals(1, c.children[2].criterionList.size())
       assertInstanceOf(EQCriterion, c.children[1].criterionList[0])
       assertInstanceOf(EQCriterion, c.children[2].criterionList[0])
-      assertEquals('uri', c.children[1].criterionList[0].fieldName)
-      assertEquals('foo:bar'.toURI(), c.children[1].criterionList[0].value)
-      assertEquals('dc_type', c.children[2].criterionList[0].fieldName)
-      assertEquals('dc:type'.toURI(), c.children[2].criterionList[0].value)
+      assertEquals('dc_type', c.children[1].criterionList[0].fieldName)
+      assertEquals('dc:type'.toURI(), c.children[1].criterionList[0].value)
+      assertEquals('uri', c.children[2].criterionList[0].fieldName)
+      assertEquals('foo:bar'.toURI(), c.children[2].criterionList[0].value)
 
       c = c.children[0].children[0]                     // 'q'
       assertEquals('nextObject', c.mapping.name)
@@ -1709,6 +1712,7 @@ public class OqlTest extends AbstractTest {
       assertEquals('dc:type'.toURI(), c.criterionList[0].value)
 
       assertEquals(2, c.children.size())        // n := o.parts, q := n.nextObject
+      sortChildren(c, ['parts', 'nextObject'])
       assertEquals('parts', c.children[0].mapping.name)
       assertEquals('nextObject', c.children[1].mapping.name)
       assertEquals('Article', c.children[0].classMetadata.name)
@@ -1759,9 +1763,9 @@ public class OqlTest extends AbstractTest {
       // oql with casts -> criteria
       qry = """select o from Article o where o.title = 'foo' and
         cast(o.nextObject, Article).categories = 'foo' and
-        cast(cast(o, ObjectInfo).nextObject, Article).dc_type = <dc:type> and
-        p := cast(o.parts, Article) and q := cast(p, ObjectInfo).nextObject and
-        (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));"""
+        cast(cast(o.dc_type, Annotation).annotates, Article).dc_type = <dc:type> and
+        p := cast(o.parts, Annotation) and q := cast(p.annotates, ObjectInfo) and
+        (q.date = '2007' or le(q.dc_type, <x:y>));"""
       ofd = new OqlFilterDefinition("oqlFC", "Article", qry)
       c = ofd.createFilter(s).getCriteria()
 
@@ -1771,27 +1775,30 @@ public class OqlTest extends AbstractTest {
       assertEquals('foo', c.criterionList[0].value)
 
       assertEquals(3, c.children.size())
-      assertEquals('parts', c.children[0].mapping.name)
+      sortChildren(c, ['parts', 'nextObject', 'dc_type'])
+      assertEquals('parts',      c.children[0].mapping.name)
       assertEquals('nextObject', c.children[1].mapping.name)
-      assertEquals('nextObject', c.children[2].mapping.name)
-      assertEquals('Article', c.children[0].classMetadata.name)
-      assertEquals('Article', c.children[1].classMetadata.name)
-      assertEquals('Article', c.children[2].classMetadata.name)
+      assertEquals('dc_type',    c.children[2].mapping.name)
+      assertEquals('Annotation', c.children[0].classMetadata.name)
+      assertEquals('Article',    c.children[1].classMetadata.name)
+      assertEquals('Annotation', c.children[2].classMetadata.name)
       assertEquals(1, c.children[0].children.size())
       assertEquals(0, c.children[1].children.size())
-      assertEquals(0, c.children[2].children.size())
+      assertEquals(1, c.children[2].children.size())
       assertEquals(0, c.children[0].criterionList.size())
       assertEquals(1, c.children[1].criterionList.size())
-      assertEquals(1, c.children[2].criterionList.size())
+      assertEquals(0, c.children[2].criterionList.size())
       assertInstanceOf(EQCriterion, c.children[1].criterionList[0])
-      assertInstanceOf(EQCriterion, c.children[2].criterionList[0])
       assertEquals('categories', c.children[1].criterionList[0].fieldName)
       assertEquals('foo', c.children[1].criterionList[0].value)
-      assertEquals('dc_type', c.children[2].criterionList[0].fieldName)
-      assertEquals('dc:type'.toURI(), c.children[2].criterionList[0].value)
+      assertEquals(0, c.children[2].children[0].children.size())
+      assertEquals(1, c.children[2].children[0].criterionList.size())
+      assertInstanceOf(EQCriterion, c.children[2].children[0].criterionList[0])
+      assertEquals('dc_type', c.children[2].children[0].criterionList[0].fieldName)
+      assertEquals('dc:type'.toURI(), c.children[2].children[0].criterionList[0].value)
 
       c = c.children[0].children[0]                     // 'q'
-      assertEquals('nextObject', c.mapping.name)
+      assertEquals('annotates', c.mapping.name)
       assertEquals('ObjectInfo', c.classMetadata.name)
       assertEquals(0, c.children.size())
       assertEquals(1, c.criterionList.size())
@@ -1807,9 +1814,9 @@ public class OqlTest extends AbstractTest {
       assertEquals('x:y'.toURI(), c.criterionList[0].criterions[1].arguments[1])
 
       // oql w/ casts -> referrer criteria 
-      qry = """select n from Article o where o.title = 'foo' and
-        cast(cast(o, ObjectInfo).nextObject, Article).uri = <foo:bar> and
-        n := cast(o.parts, Article) and q := cast(n.nextObject, Article)
+      qry = """select n from Article a where a.title = 'foo' and
+        b := cast(cast(a.nextObject, Annotation).annotates, Reply) and
+        n := cast(b.root, Article) and q := cast(n.nextObject, Article)
         and n.dc_type = <dc:type> and
         (q.date = '2007' or le(cast(q, Article).dc_type, <x:y>));"""
       ofd = new OqlFilterDefinition("oqlRC", "Article", qry)
@@ -1821,30 +1828,31 @@ public class OqlTest extends AbstractTest {
       assertEquals('dc_type', c.criterionList[0].fieldName)
       assertEquals('dc:type'.toURI(), c.criterionList[0].value)
 
-      assertEquals(2, c.children.size())        // n := o.parts, q := n.nextObject 
-      assertEquals('parts', c.children[0].mapping.name)
+      assertEquals(2, c.children.size())        // n := b.root, q := n.nextObject 
+      sortChildren(c, ['root', 'nextObject'])
+      assertEquals('root',       c.children[0].mapping.name)
       assertEquals('nextObject', c.children[1].mapping.name)
-      assertEquals('Article', c.children[0].classMetadata.name)
-      assertEquals('Article', c.children[1].classMetadata.name)
-      assertEquals(true, c.children[0].isReferrer())
+      assertEquals('Reply',      c.children[0].classMetadata.name)
+      assertEquals('Article',    c.children[1].classMetadata.name)
+      assertEquals(true,  c.children[0].isReferrer())
       assertEquals(false, c.children[1].isReferrer())
 
-      ch = c.children[0]                        // 'o'
-      assertEquals(1, ch.criterionList.size())
+      ch = c.children[0]                        // 'b := cast(a.nextObject, Annotation).annotates'
+      assertEquals(1, ch.children.size())
+      ch = ch.children[0]
+      assertEquals('annotates',  ch.mapping.name)
+      assertEquals('Annotation', ch.classMetadata.name)
+      assertEquals(true,         ch.isReferrer())
+      ch = ch.children[0]
+      assertEquals('nextObject', ch.mapping.name)
+      assertEquals('Article',    ch.classMetadata.name)
+      assertEquals(true,         ch.isReferrer())
+
+      assertEquals(0, ch.children.size())
+      assertEquals(1, ch.criterionList.size())  // a.title
       assertInstanceOf(EQCriterion, ch.criterionList[0])
       assertEquals('title', ch.criterionList[0].fieldName)
       assertEquals('foo', ch.criterionList[0].value)
-
-      assertEquals(1, ch.children.size())
-      ch = ch.children[0]                       // o.nextObject
-      assertEquals('nextObject', ch.mapping.name)
-      assertEquals('Article', ch.classMetadata.name)
-      assertEquals(false, ch.isReferrer())
-      assertEquals(0, ch.children.size())
-      assertEquals(1, ch.criterionList.size())
-      assertInstanceOf(EQCriterion, ch.criterionList[0])
-      assertEquals('uri', ch.criterionList[0].fieldName)
-      assertEquals('foo:bar'.toURI(), ch.criterionList[0].value)
 
       ch = c.children[1]                        // 'q'
       assertEquals(0, ch.children.size())
@@ -1859,6 +1867,39 @@ public class OqlTest extends AbstractTest {
       assertEquals(2, ch.criterionList[0].criterions[1].arguments.length)
       assertEquals('dc_type', ch.criterionList[0].criterions[1].arguments[0])
       assertEquals('x:y'.toURI(), ch.criterionList[0].criterions[1].arguments[1])
+
+      // two types for the same criteria
+      qry = """select n from Article a where a.title = 'foo' and
+               n := cast(a, Annotation).annotates;"""
+      ofd = new OqlFilterDefinition("oqlT1", "Article", qry)
+      assert shouldFail(QueryException, {
+        c = ofd.createFilter(s).getCriteria()
+      })
+
+      qry = """select o from Article o where o.title = 'foo' and
+        cast(cast(o, Annotation).annotates, Article).dc_type = <dc:type>;"""
+      ofd = new OqlFilterDefinition("oqlT2", "Article", qry)
+      assert shouldFail(QueryException, {
+        c = ofd.createFilter(s).getCriteria()
+      })
+
+      qry = """select o from Article o where o.title = 'foo' and
+        p := cast(o.parts, Annotation) and q := cast(p, ObjectInfo).nextObject;"""
+      ofd = new OqlFilterDefinition("oqlT3", "Article", qry)
+      assert shouldFail(QueryException, {
+        c = ofd.createFilter(s).getCriteria()
+      })
+    }
+  }
+
+  private void sortChildren(Criteria parent, List memberOrder) {
+    for (int idx = 0; idx < memberOrder.size() -1 ; idx++) {
+      int pos = parent.children.findIndexOf(idx + 1) { it.mapping.name == memberOrder[idx] }
+      if (pos > idx) {
+        Criteria tmp = parent.children[idx]
+        parent.children[idx] = parent.children[pos]
+        parent.children[pos] = tmp
+      }
     }
   }
 
