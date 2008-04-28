@@ -135,6 +135,227 @@
       </PLoSPathogens>
     </virtualJournals>
 
+    <articleTypeList>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/1</typeUri>
+        <typeHeading>Unclassified</typeHeading>
+        <default>true</default>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20the%20Founders</typeUri>
+        <typeHeading>Message from the Founders</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>
+          http://rdf.plos.org/RDF/articleType/Message%20from%20the%20PLoS%20Founders
+        </typeUri>
+        <typeHeading>Message from the PLoS Founders</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20PLoS</typeUri>
+        <typeHeading>Message from PLoS</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Editorial</typeUri>
+        <typeHeading>Editorial</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Online%20Only:%20Editorial</typeUri>
+        <typeHeading>Online Only: Editorial</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20ISCB</typeUri>
+        <typeHeading>Message from ISCB</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Synopsis</typeUri>
+        <typeHeading>Synopsis</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Education</typeUri>
+        <typeHeading>Education</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Interview</typeUri>
+        <typeHeading>Interview</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Debate</typeUri>
+        <typeHeading>Debate</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/The%20PLoS%20Medicine%20Debate</typeUri>
+        <typeHeading>The PLoS Medicine Debate</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Viewpoint</typeUri>
+        <typeHeading>Viewpoint</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Expert%20Commentary</typeUri>
+        <typeHeading>Expert Commentary</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Essay</typeUri>
+        <typeHeading>Essay</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Feature</typeUri>
+        <typeHeading>Feature</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Unsolved%20Mystery</typeUri>
+        <typeHeading>Unsolved Mystery</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Neglected%20Diseases</typeUri>
+        <typeHeading>Neglected Diseases</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Special%20Report</typeUri>
+        <typeHeading>Special Report</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Opinion</typeUri>
+        <typeHeading>Opinion</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Perspective</typeUri>
+        <typeHeading>Perspective</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review</typeUri>
+        <typeHeading>Book Review</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>
+          http://rdf.plos.org/RDF/articleType/Book%20Review/Science%20in%20the%20Media
+        </typeUri>
+        <typeHeading>Book Review/Science in the Media</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Obituary</typeUri>
+        <typeHeading>Obituary</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Journal%20Club</typeUri>
+        <typeHeading>Journal Club</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Primer</typeUri>
+        <typeHeading>Primer</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Community%20Page</typeUri>
+        <typeHeading>Community Page</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Health%20in%20Action</typeUri>
+        <typeHeading>Health in Action</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Policy%20Platform</typeUri>
+        <typeHeading>Policy Platform</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Policy%20Forum</typeUri>
+        <typeHeading>Policy Forum</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Guidelines%20and%20Guidance</typeUri>
+        <typeHeading>Guidelines and Guidance</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>
+          http://rdf.plos.org/RDF/articleType/Historical%20Profiles%20and%20Perspectives
+        </typeUri>
+        <typeHeading>Historical Profiles and Perspectives</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/From%20Innovation%20to%20Application</typeUri>
+        <typeHeading>From Innovation to Application</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Research%20in%20Translation</typeUri>
+        <typeHeading>Research in Translation</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Best%20Practice</typeUri>
+        <typeHeading>Best Practice</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Student%20Forum</typeUri>
+        <typeHeading>Student Forum</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Symposium</typeUri>
+        <typeHeading>Symposium</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Learning%20Forum</typeUri>
+        <typeHeading>Learning Forum</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Case%20Report</typeUri>
+        <typeHeading>Case Report</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Review</typeUri>
+        <typeHeading>Review</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Technical%20Report</typeUri>
+        <typeHeading>Technical Report</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</typeUri>
+        <typeHeading>Research Article</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Correspondence</typeUri>
+        <typeHeading>Correspondence</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>
+          http://rdf.plos.org/RDF/articleType/Correspondence%20and%20Other%20Communications
+        </typeUri>
+        <typeHeading>Correspondence and Other Communications</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Reader%20Poll</typeUri>
+        <typeHeading>Reader Poll</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Quiz</typeUri>
+        <typeHeading>Quiz</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Correction</typeUri>
+        <typeHeading>Correction</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Retraction</typeUri>
+        <typeHeading>Retraction</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/History/Profile</typeUri>
+        <typeHeading>History/Profile</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Retrospective</typeUri>
+        <typeHeading>Retrospective</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Medical%20Image</typeUri>
+        <typeHeading>Medical Image</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Issue%20Image</typeUri>
+        <typeHeading>Issue Image</typeHeading>
+        <imageSetConfigName>issueImage</imageSetConfigName>
+      </articleType>
+    </articleTypeList>
+
     <services>
       <topaz>
         <fedora>
@@ -255,7 +476,7 @@
           </javascript>
         </default>
         <page>
-          <name>/index.ftl</name>
+          <name>/journals/plosone/index.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -571,39 +792,8 @@
             <file>/javascript/init_profile.js</file>
           </javascript>
         </page>
-        <page>
-          <name>/static/about.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/authors.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/browse.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-            <file>/css/article_markup.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/checklist.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
+
+        <!-- globally shared static pages -->
         <page>
           <name>/static/commentGuidelines.ftl</name>
           <css>
@@ -621,30 +811,6 @@
           </css>
         </page>
         <page>
-          <name>/static/contact.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/edboard.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/faq.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
           <name>/static/figure_guidelines.ftl</name>
           <css>
             <file>/css/screen.css</file>
@@ -652,32 +818,9 @@
             <file>/css/static.css</file>
           </css>
         </page>
-        <page>
-          <name>/static/guidelines.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
+
         <page>
           <name>/static/help.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/information.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/latex.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -702,14 +845,6 @@
         </page>
         <page>
           <name>/static/media.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/policies.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -749,22 +884,6 @@
           </css>
         </page>
         <page>
-          <name>/static/reviewer_guidelines.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/rss_feeds.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
           <name>/static/rssInfo.ftl</name>
           <css>
             <file>/css/screen.css</file>
@@ -789,14 +908,6 @@
           </css>
         </page>
         <page>
-          <name>/static/sitemap.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
           <name>/static/terms.ftl</name>
           <css>
             <file>/css/screen.css</file>
@@ -804,8 +915,10 @@
             <file>/css/static.css</file>
           </css>
         </page>
+
+        <!-- plosone specific -->
         <page>
-          <name>/static/users.ftl</name>
+          <name>/journals/plosone/static/about.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -813,7 +926,128 @@
           </css>
         </page>
         <page>
-          <name>/static/whypublish.ftl</name>
+          <name>/journals/plosone/static/authors.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/browse.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+            <file>/css/article_markup.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/checklist.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/contact.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/edboard.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/faq.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/guidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/information.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/journalClub.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/latex.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/policies.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/reviewer_guidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/rss_feeds.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/users.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/sitemap.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/whypublish.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -1691,227 +1925,6 @@
         </page>
       </journal>
     </freemarker>
-
-    <articleTypeList>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/1</typeUri>
-        <typeHeading>Unclassified</typeHeading>
-        <default>true</default>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20the%20Founders</typeUri>
-        <typeHeading>Message from the Founders</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Message%20from%20the%20PLoS%20Founders
-        </typeUri>
-        <typeHeading>Message from the PLoS Founders</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20PLoS</typeUri>
-        <typeHeading>Message from PLoS</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Editorial</typeUri>
-        <typeHeading>Editorial</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Online%20Only:%20Editorial</typeUri>
-        <typeHeading>Online Only: Editorial</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20ISCB</typeUri>
-        <typeHeading>Message from ISCB</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Synopsis</typeUri>
-        <typeHeading>Synopsis</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Education</typeUri>
-        <typeHeading>Education</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Interview</typeUri>
-        <typeHeading>Interview</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Debate</typeUri>
-        <typeHeading>Debate</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/The%20PLoS%20Medicine%20Debate</typeUri>
-        <typeHeading>The PLoS Medicine Debate</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Viewpoint</typeUri>
-        <typeHeading>Viewpoint</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Expert%20Commentary</typeUri>
-        <typeHeading>Expert Commentary</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Essay</typeUri>
-        <typeHeading>Essay</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Feature</typeUri>
-        <typeHeading>Feature</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Unsolved%20Mystery</typeUri>
-        <typeHeading>Unsolved Mystery</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Neglected%20Diseases</typeUri>
-        <typeHeading>Neglected Diseases</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Special%20Report</typeUri>
-        <typeHeading>Special Report</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Opinion</typeUri>
-        <typeHeading>Opinion</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Perspective</typeUri>
-        <typeHeading>Perspective</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review</typeUri>
-        <typeHeading>Book Review</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Book%20Review/Science%20in%20the%20Media
-        </typeUri>
-        <typeHeading>Book Review/Science in the Media</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Obituary</typeUri>
-        <typeHeading>Obituary</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Journal%20Club</typeUri>
-        <typeHeading>Journal Club</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Primer</typeUri>
-        <typeHeading>Primer</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Community%20Page</typeUri>
-        <typeHeading>Community Page</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Health%20in%20Action</typeUri>
-        <typeHeading>Health in Action</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Policy%20Platform</typeUri>
-        <typeHeading>Policy Platform</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Policy%20Forum</typeUri>
-        <typeHeading>Policy Forum</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Guidelines%20and%20Guidance</typeUri>
-        <typeHeading>Guidelines and Guidance</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Historical%20Profiles%20and%20Perspectives
-        </typeUri>
-        <typeHeading>Historical Profiles and Perspectives</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/From%20Innovation%20to%20Application</typeUri>
-        <typeHeading>From Innovation to Application</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Research%20in%20Translation</typeUri>
-        <typeHeading>Research in Translation</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Best%20Practice</typeUri>
-        <typeHeading>Best Practice</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Student%20Forum</typeUri>
-        <typeHeading>Student Forum</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Symposium</typeUri>
-        <typeHeading>Symposium</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Learning%20Forum</typeUri>
-        <typeHeading>Learning Forum</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Case%20Report</typeUri>
-        <typeHeading>Case Report</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Review</typeUri>
-        <typeHeading>Review</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Technical%20Report</typeUri>
-        <typeHeading>Technical Report</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Research%20Article</typeUri>
-        <typeHeading>Research Article</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Correspondence</typeUri>
-        <typeHeading>Correspondence</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Correspondence%20and%20Other%20Communications
-        </typeUri>
-        <typeHeading>Correspondence and Other Communications</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Reader%20Poll</typeUri>
-        <typeHeading>Reader Poll</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Quiz</typeUri>
-        <typeHeading>Quiz</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Correction</typeUri>
-        <typeHeading>Correction</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Retraction</typeUri>
-        <typeHeading>Retraction</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/History/Profile</typeUri>
-        <typeHeading>History/Profile</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Retrospective</typeUri>
-        <typeHeading>Retrospective</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Medical%20Image</typeUri>
-        <typeHeading>Medical Image</typeHeading>
-      </articleType>
-      <articleType>
-        <typeUri>http://rdf.plos.org/RDF/articleType/Issue%20Image</typeUri>
-        <typeHeading>Issue Image</typeHeading>
-        <imageSetConfigName>issueImage</imageSetConfigName>
-      </articleType>
-    </articleTypeList>
   </ambra>
 
   <!-- See the PlosStruts2Filter dispatcher on how struts constants are configured -->
