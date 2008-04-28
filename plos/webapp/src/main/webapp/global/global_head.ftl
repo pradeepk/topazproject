@@ -17,11 +17,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#if Request[freemarker_config.journalContextAttributeKey]?exists>
-  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
-<#else>
-  <#assign journalContext = "">
-</#if>
 <#assign pgTitleOrig = freemarker_config.getTitle(templateFile, journalContext)>
 <#assign pgTitle = pgTitleOrig>
 <#if pgTitleOrig = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->

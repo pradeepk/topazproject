@@ -81,25 +81,4 @@
     <a id="advSearch" href="#" onclick="if(document.searchForm.query.value!='Search articles...')document.gasf.textSearchAll.value=document.searchForm.query.value;document.gasf.submit();return false;">Advanced Search</a>
   </div>
   <!-- end : dashboard -->
-  <!-- begin : navigation -->
 
-  <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-  <#if journalContext = "PLoSClinicalTrials" >
-    <#include "/journals/clinicalTrials/global/global_navigation.ftl">
-  <#elseif journalContext = "PLoSCompBiol"> 
-     <#include "/journals/compbiol/global/global_navigation.ftl">
-  <#elseif journalContext = "PLoSGenetics"> 
-     <#include "/journals/genetics/global/global_navigation.ftl">
-  <#elseif journalContext = "PLoSNTD"> 
-     <#include "/journals/ntd/global/global_navigation.ftl">
-  <#elseif journalContext = "PLoSPathogens"> 
-     <#include "/journals/pathogens/global/global_navigation.ftl">
-  <#elseif journalContext = "PLoSONE" >
-    <#include "/journals/plosone/global/global_navigation.ftl">
-  <#else>
-     <#include "../global/global_navigation.ftl">
-  </#if>
-  <#-- END HACK -->
-
-
-  <!-- end : navigation -->

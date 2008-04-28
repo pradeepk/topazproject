@@ -21,9 +21,14 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<#include "global_head.ftl">
+<#include "/global/global_head.ftl">
 </head>
 <body>
+
+<!-- begin : biocompare -->
+<script src='http://comparenetworks.com/partnerAds/swfobject.js' type='text/javascript'></script>
+<script language="javascript" type="text/javascript" src="http://comparenetworks.com/partnerAds/adSetup.js"></script>
+<!-- end : biocompare -->
 
 <!-- begin : container -->
 <div id="container">
@@ -40,7 +45,8 @@
   <!-- begin : header -->
   <div id="hdr" class="login">
   </#if>
-  <#include "global_header.ftl">
+
+  <#include "/global/global_header.ftl">
   <!-- begin : navigation -->
   <#include "global_navigation.ftl">
   <!-- end : navigation -->

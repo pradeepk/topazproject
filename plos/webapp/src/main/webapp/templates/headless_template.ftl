@@ -17,6 +17,12 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#if Request[freemarker_config.journalContextAttributeKey]?exists>
+  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
+<#else>
+  <#assign journalContext = "">
+</#if>
+
 <#include "/global/global_config.ftl">
 <#include "/global/global_top_headerless.ftl">
 
@@ -24,4 +30,20 @@
 <#include "${templateFile}">
 <!-- end : main contents -->
 
-<#include "/global/global_bottom_footerless.ftl">
+<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
+<#if journalContext = "PLoSClinicalTrials" >
+  <#include "/journals/clinicalTrials/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSCompBiol" >
+  <#include "/journals/compbiol/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSGenetics" >
+  <#include "/journals/genetics/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSNTD" >
+  <#include "/journals/ntd/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSONE" >
+  <#include "/journals/plosone/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSPathogens" >
+  <#include "/journals/pathogens/global/global_bottom.ftl">
+<#else>
+  <#include "/global/global_bottom.ftl">
+</#if>
+<#-- END MAJOR HACK -->
