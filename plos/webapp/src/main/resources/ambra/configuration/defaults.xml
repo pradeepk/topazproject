@@ -60,23 +60,31 @@
         This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License,
         http://creativecommons.org/licenses/by-sa/3.0/
       </copyright>
-
       <webserverUrl>http://${network.hosts.default}:${network.ports.default}${ambra.platform.appContext}/</webserverUrl>
     </platform>
 
 
     <!-- virtual journal config -->
     <virtualJournals>
-      <!-- default values used if no virtual journal rules match -->
-      <default>
-        <journal>AmbraJournal</journal>
-        <description>Ambra Journal</description>
-        <mappingPrefix>/journals/ambraJournal</mappingPrefix>
-        <url>http://ambra.topazproject.org</url>
-      </default>
       <!-- entries to config each virtual journal -->
       <!-- comma separated list of virtual journal names -->
-      <journals>OverlayJournal</journals>
+      <journals>AmbraJournal,OverlayJournal</journals>
+      <AmbraJournal>
+        <description>Ambra Journal</description>
+        <mappingPrefix>/journals/ambraJournal</mappingPrefix>
+        <rules>
+          <host>.*ambra.*</host>
+          <plosJournal>AmbraJournal</plosJournal>
+        </rules>
+        <url>http://ambra.topazproject.org</url>
+        <!-- Atom feed overrides -->
+        <platform>
+          <feed>
+            <title>Overlay Journal</title>
+            <id>info:doi/10.1371/feed.ambj</id>
+          </feed>
+        </platform>
+      </AmbraJournal>
       <OverlayJournal>
         <description>Overlay Journal</description>
         <mappingPrefix>/journals/overlayJournal</mappingPrefix>
@@ -89,7 +97,7 @@
         <platform>
           <feed>
             <title>Overlay Journal</title>
-            <id>info:doi/10.1371/feed.tpvj</id>
+            <id>info:doi/10.1371/feed.ovlj</id>
           </feed>
         </platform>
       </OverlayJournal>

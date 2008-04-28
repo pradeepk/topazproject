@@ -30,7 +30,7 @@
     </platform>
 
     <virtualJournals>
-      <journals>PLoSClinicalTrials,PLoSNTD,PLoSPathogens,PLoSGenetics,PLoSCompBiol</journals>
+      <journals>PLoSClinicalTrials,PloSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
       <PLoSClinicalTrials>
         <journal>PLoSClinicalTrials</journal>
         <description>PloS Clinical Trials</description>
@@ -99,6 +99,23 @@
           </services>
         </ambra>
       </PLoSNTD>
+      <PLoSONE>
+        <journal>PLoSONE</journal>
+        <description>PloS ONE</description>
+        <mappingPrefix>/journals/plosone</mappingPrefix>
+        <rules>
+          <host>plosone.*</host>
+        </rules>
+        <url>http://plosone...</url>
+        <ambra>
+          <services>
+            <feed>
+              <title>PLoS ONE</title>
+              <id>info:doi/10.1371/feed.pone</id>
+            </feed>
+          </services>
+        </ambra>
+      </PLoSONE>
       <PLoSPathogens>
         <journal>PLoSPathogens</journal>
         <description>PloS Pathogens</description>
