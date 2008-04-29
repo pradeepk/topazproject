@@ -269,7 +269,7 @@
 
   <!-- email configuration -->
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="${network.hosts.mailhost}"/>
+    <property name="host" value="${ambra.network.hosts.mailhost}"/>
   </bean>
 
   <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
@@ -293,7 +293,7 @@
       <map>
         <entry key="text" value="emailThisArticle-text.ftl"/>
         <entry key="html" value="emailThisArticle-html.ftl"/>
-        <entry key="url" value="http://${network.hosts.ambra}:${network.ports.ambra}/${ambra.platform.appContext}/article/fetchArticle.action?articleURI"/>
+        <entry key="url" value="http://${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}/${ambra.platform.appContext}/article/fetchArticle.action?articleURI"/>
         <entry key="subject" value="An Article from PLoS ONE"/>
       </map>
     </property>

@@ -7,72 +7,72 @@
   even more - see ConfigurationStore documentation.)
 -->
 <config>
-  <network>
-    <!-- This network section defines the hosts and ports used to talk to the services
-      the publishing system uses.
-      
-      Note to developers: Please do not use anything from the network section directly
-      in code. Instead define something in your own namespace and reference that. Doing
-      so allows more flexibility if re-factoring the network topology later.
-      
-      With the exception of the "webhead", most services run as web-applications within
-      a J2EE container (usually tomcat). Multiple containers can run on the same host
-      by listening on different ports. In fact, the default configuration is to run
-      each container on different ports regardless so that additional configuration
-      change is not required when running containers separately or on the same host.
-      The publishing system uses the following web-applications:
-      * cas          - Handles user authentication for the publishing system
-      * registration - Registers and logs in users (usually runs in the same
-      container that cas runs in.
-      * fedora       - The blob store used to store ingested articles
-      * mulgara      - The tripple store. (Currently uses axis over http, but will
-      change to run as a stand-alone rmi server in the future)
-      * ambra      - The publishing system
-      * search       - The lucene full-text search engine. (No configuration in the
-      network section yet. Shares the ambra container.)
-      * doi-resolver - Resolves DOIs. (Also no configuration here yet. Shares
-      ambra container.)
-      * default      - This is the webhead that runs apache. See wiki for more info.
-      * mailhost     - The machine to send mail via. Usually just localhost if a
-      mail server is running.
-    -->
-    <hosts>
-      <!-- Set hosts.default to FQHN (not localhost) if installing all components on one host
-        (or to webhead FQHN for multiple host installation) -->
-      <default>localhost</default>
-      <mailhost>localhost</mailhost>
-      <!-- For multibox install, change the following entires to the appropriate FQHNs -->
-      <cas>${network.hosts.default}</cas>
-      <registration>${network.hosts.cas}</registration>
-      <fedora>${network.hosts.default}</fedora>
-      <mulgara>${network.hosts.default}</mulgara>
-      <ambra>${network.hosts.default}</ambra>
-      <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
-    </hosts>
-    <ports>
-      <!-- There are 4 protocols that the publishing system uses:
-        * http    - The default protocol
-        * TLS/SSL - When communication needs to be secure
-        * RMI     - An java specific RPC protocol (to be uses soon)
-        * mail    - The SMTP protocol
-        
-        Ports are defined as either "host-protocol" or just "host" if the protocol is http.
-        If defining a port that is http, if the value would be 80, leave it blank.
-        If defining a port that is https, if the value would be 443, leave it blank.
-      -->
-      <!-- If using port 80, set default to empty (not 80) -->
-      <default>${network.ports.ambra}</default>
-      <!-- If using port 443, set cas-ssl to empty -->
-      <cas-ssl>7443</cas-ssl>
-    </ports>
-  </network>
-
   <ambra>
+    <network>
+      <!-- This network section defines the hosts and ports used to talk to the services
+        the publishing system uses.
+        
+        Note to developers: Please do not use anything from the network section directly
+        in code. Instead define something in your own namespace and reference that. Doing
+        so allows more flexibility if re-factoring the network topology later.
+        
+        With the exception of the "webhead", most services run as web-applications within
+        a J2EE container (usually tomcat). Multiple containers can run on the same host
+        by listening on different ports. In fact, the default configuration is to run
+        each container on different ports regardless so that additional configuration
+        change is not required when running containers separately or on the same host.
+        The publishing system uses the following web-applications:
+        * cas          - Handles user authentication for the publishing system
+        * registration - Registers and logs in users (usually runs in the same
+        container that cas runs in.
+        * fedora       - The blob store used to store ingested articles
+        * mulgara      - The tripple store. (Currently uses axis over http, but will
+        change to run as a stand-alone rmi server in the future)
+        * ambra      - The publishing system
+        * search       - The lucene full-text search engine. (No configuration in the
+        network section yet. Shares the ambra container.)
+        * doi-resolver - Resolves DOIs. (Also no configuration here yet. Shares
+        ambra container.)
+        * default      - This is the webhead that runs apache. See wiki for more info.
+        * mailhost     - The machine to send mail via. Usually just localhost if a
+        mail server is running.
+      -->
+      <hosts>
+        <!-- Set hosts.default to FQHN (not localhost) if installing all components on one host
+          (or to webhead FQHN for multiple host installation) -->
+        <default>localhost</default>
+        <mailhost>localhost</mailhost>
+        <!-- For multibox install, change the following entires to the appropriate FQHNs -->
+        <cas>${ambra.network.hosts.default}</cas>
+        <registration>${ambra.network.hosts.cas}</registration>
+        <fedora>${ambra.network.hosts.default}</fedora>
+        <mulgara>${ambra.network.hosts.default}</mulgara>
+        <ambra>${ambra.network.hosts.default}</ambra>
+        <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
+      </hosts>
+      <ports>
+        <!-- There are 4 protocols that the publishing system uses:
+          * http    - The default protocol
+          * TLS/SSL - When communication needs to be secure
+          * RMI     - An java specific RPC protocol (to be uses soon)
+          * mail    - The SMTP protocol
+          
+          Ports are defined as either "host-protocol" or just "host" if the protocol is http.
+          If defining a port that is http, if the value would be 80, leave it blank.
+          If defining a port that is https, if the value would be 443, leave it blank.
+        -->
+        <!-- If using port 80, set default to empty (not 80) -->
+        <default>${ambra.network.ports.ambra}</default>
+        <!-- If using port 443, set cas-ssl to empty -->
+        <cas-ssl>7443</cas-ssl>
+      </ports>
+    </network>
+
     <platform>
       <appContext></appContext>
       <resourceSubDir></resourceSubDir>
       <webserverUrl>
-        http://${network.hosts.default}:${network.ports.default}${ambra.platform.appContext}/
+        http://${ambra.network.hosts.default}:${ambra.network.ports.default}${ambra.platform.appContext}/
       </webserverUrl>
       <!-- common display constants -->
       <name>Public Library of Science</name>
@@ -415,34 +415,42 @@
         <!-- 
           This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
           The rules are applied sequentially from top to bottom and the first matching one will execute.
-          If an error is encountered, or the article is not found, it will use the network.hosts.default,
-          network.ports.default, and ambra.platform.appContext to construct the page not found url.
+          If an error is encountered, or the article is not found, it will use the ambra.network.hosts.default,
+          ambra.network.ports.default, and ambra.platform.appContext to construct the page not found url.
         -->
         <mappings>
           <journalMapping>
-            <url>http://plosone...:${network.ports.default}${ambra.platform.appContext}/</url>
+            <url>http://plosone...:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
             <regex>10\.1371/journal\.pone\.\d{7}</regex>
           </journalMapping>
           <journalMapping>
             <url>
-              http://clinicaltrials...:${network.ports.default}${ambra.platform.appContext}/
+              http://clinicaltrials...:${ambra.network.ports.default}${ambra.platform.appContext}/
             </url>
             <regex>10\.1371/journal\.pctr\.\d{7}</regex>
           </journalMapping>
           <journalMapping>
-            <url>http://ploscompbiol...:${network.ports.default}${ambra.platform.appContext}/</url>
+            <url>
+              http://ploscompbiol...:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
             <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
           </journalMapping>
           <journalMapping>
-            <url>http://plosgenetics...:${network.ports.default}${ambra.platform.appContext}/</url>
+            <url>
+              http://plosgenetics...:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
             <regex>10\.1371/journal\.pgen\.\d{7}</regex>
           </journalMapping>
           <journalMapping>
-            <url>http://plosntds...:${network.ports.default}${ambra.platform.appContext}/</url>
+            <url>
+              http://plosntds...:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
             <regex>10\.1371/journal\.pntd\.\d{7}</regex>
           </journalMapping>
           <journalMapping>
-            <url>http://plospathogens...:${network.ports.default}${ambra.platform.appContext}/</url>
+            <url>
+              http://plospathogens...:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
             <regex>10\.1371/journal\.ppat\.\d{7}</regex>
           </journalMapping>
         </mappings>
@@ -497,7 +505,9 @@
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
         <plos>
-          <doiurl>http://${network.hosts.default}:${network.ports.default}/doi-resolver/</doiurl>
+          <doiurl>
+            http://${ambra.network.hosts.default}:${ambra.network.ports.default}/doi-resolver/
+          </doiurl>
           <!-- URL where your URIs can be found -->
           <email>your@email.address</email><!-- email address to send info to -->
         </plos>
@@ -506,9 +516,9 @@
         <area>test</area>
         <sendToXref>false</sendToXref><!-- Set to true to turn on crossref posting -->
       </crossref>
-      
+
     </services>
-    
+
 
     <freemarker>
       <!--

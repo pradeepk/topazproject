@@ -23,16 +23,18 @@
     <def>override</def>
   </plosconf>
   <defaults>value</defaults>
-  <network>
-    <hosts>
-      <default>test1</default>
-    </hosts>
-  </network>
+  <ambra>
+    <network>
+      <hosts>
+        <default>test1</default>
+      </hosts>
+    </network>
+  </ambra>
   <exptest>
     <overrides>
-      <item>http://${network.hosts.ambra}:${network.ports.ambra}/</item>
-      <item>http://test2:${network.ports.ambra}/</item>
-      <item>http://${network.hosts.default}:${network.ports.ambra}/</item>
+      <item>http://${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}/</item>
+      <item>http://test2:${ambra.network.ports.ambra}/</item>
+      <item>http://${ambra.network.hosts.default}:${ambra.network.ports.ambra}/</item>
     </overrides>
   </exptest>
 </config>

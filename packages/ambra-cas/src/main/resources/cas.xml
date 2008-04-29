@@ -72,7 +72,7 @@
         <ambra> <!-- Location of publishing app so links in registration work -->
           <context></context> <!-- directory of publishing app -->
           <!-- URL of publicly accessible publishing app (webhead if there is one) -->
-          <url>http://${network.hosts.default}:${network.ports.default}</url>
+          <url>http://${ambra.network.hosts.default}:${ambra.network.ports.default}</url>
         </ambra>
       </registration>
     </services>

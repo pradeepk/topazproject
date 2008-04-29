@@ -490,7 +490,7 @@
 
   <!-- email configuration -->
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="${network.hosts.mailhost}"/>
+    <property name="host" value="${ambra.network.hosts.mailhost}"/>
   </bean>
 
   <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">

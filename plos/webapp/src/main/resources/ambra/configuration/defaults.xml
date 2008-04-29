@@ -26,22 +26,22 @@
   See also libs/conf-helper/src/main/resources/globa-defaults.xml
 -->
 <config>
-  <network>
-    <hosts>
-      <!-- For multibox install, change the following entires to the appropriate FQHNs -->
-      <cas>${network.hosts.default}</cas>
-      <registration>${network.hosts.cas}</registration>
-      <fedora>${network.hosts.default}</fedora>
-      <mulgara>${network.hosts.default}</mulgara>
-      <ambra>${network.hosts.default}</ambra>
-    </hosts>
-  </network>
   <ambra>
+    <network>
+      <hosts>
+        <!-- For multibox install, change the following entires to the appropriate FQHNs -->
+        <cas>${ambra.network.hosts.default}</cas>
+        <registration>${ambra.network.hosts.cas}</registration>
+        <fedora>${ambra.network.hosts.default}</fedora>
+        <mulgara>${ambra.network.hosts.default}</mulgara>
+        <ambra>${ambra.network.hosts.default}</ambra>
+      </hosts>
+    </network>
     <platform>
-      <host>${network.hosts.default}:${network.ports.default}</host>
+      <host>${ambra.network.hosts.default}:${ambra.network.ports.default}</host>
       <port>
-        <http>${network.ports.default}</http>
-        <https>${network.ports.ambra-ssl}</https>
+        <http>${ambra.network.ports.default}</http>
+        <https>${ambra.network.ports.ambra-ssl}</https>
       </port>
 
       <appContext></appContext><!-- web application context; leave empty if deployed in root directory  -->
@@ -60,7 +60,7 @@
         This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License,
         http://creativecommons.org/licenses/by-sa/3.0/
       </copyright>
-      <webserverUrl>http://${network.hosts.default}:${network.ports.default}${ambra.platform.appContext}/</webserverUrl>
+      <webserverUrl>http://${ambra.network.hosts.default}:${ambra.network.ports.default}${ambra.platform.appContext}/</webserverUrl>
     </platform>
 
 
@@ -145,7 +145,7 @@
       -->
       <cas>
         <url>
-          <base>https://${network.hosts.cas}:${network.ports.cas-ssl}/cas</base>
+          <base>https://${ambra.network.hosts.cas}:${ambra.network.ports.cas-ssl}/cas</base>
           <login>${ambra.services.cas.url.base}/login</login>
           <logout>${ambra.services.cas.url.base}/logout</logout>
           <proxy-receptor>${ambra.services.cas.url.base}/proxy</proxy-receptor>
@@ -174,7 +174,7 @@
         <appContext>/ambra-registration</appContext><!-- app context for registration -->
         <url>
           <base>
-            https://${network.hosts.cas}:${network.ports.cas-ssl}${ambra.services.registration.appContext}
+            https://${ambra.network.hosts.cas}:${ambra.network.ports.cas-ssl}${ambra.services.registration.appContext}
           </base>
           <!-- properties below are used by pub app to determine where to send the user for certain actions -->
           <registration>${ambra.services.registration.url.base}/register.action</registration>
@@ -214,11 +214,11 @@
     <!-- Define defaults for spring - must be redone soon -->
     <spring>
       <server>
-        <ambra>${network.hosts.ambra}:${network.ports.ambra}</ambra>
-        <search>${network.hosts.ambra}:${network.ports.ambra}</search>
-        <mulgara>${network.hosts.mulgara}</mulgara>
+        <ambra>${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}</ambra>
+        <search>${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}</search>
+        <mulgara>${ambra.network.hosts.mulgara}</mulgara>
       </server>
-      <homesite>${network.hosts.default}</homesite>
+      <homesite>${ambra.network.hosts.default}</homesite>
       <service>
         <!-- This may need to be mucked with to be just one -->
         <search>${ambra.services.topaz.fedoraGSearch.urls.url}</search>
