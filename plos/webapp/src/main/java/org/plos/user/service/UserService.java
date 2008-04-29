@@ -53,6 +53,7 @@ import org.topazproject.otm.spring.OtmTransactionManager;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.plos.util.CacheAdminHelper;
 
 /**
@@ -65,6 +66,7 @@ import org.plos.util.CacheAdminHelper;
 public class UserService {
   private static final Log      log = LogFactory.getLog(UserService.class);
   private static final String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
+  private static final DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
 
   private Session               session;
   private OtmTransactionManager txManager;
@@ -108,7 +110,7 @@ public class UserService {
     // check for duplicate. Tx hack alert!!!
     txManager.doCommit(
         (DefaultTransactionStatus) TransactionAspectSupport.currentTransactionStatus());
-    txManager.doBegin(txManager.doGetTransaction(), null);
+    txManager.doBegin(txManager.doGetTransaction(), txnDef);
 
     Results r = session.
         createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
@@ -119,7 +121,7 @@ public class UserService {
     session.delete(ua);
     txManager.doCommit(
         (DefaultTransactionStatus) TransactionAspectSupport.currentTransactionStatus());
-    txManager.doBegin(txManager.doGetTransaction(), null);
+    txManager.doBegin(txManager.doGetTransaction(), txnDef);
 
     throw new ApplicationException("AuthId '" + authId + "' is already in use");
   }
@@ -369,7 +371,8 @@ public class UserService {
     }
 
     UserAccount ua = getUserAccount(inUser.getUserId());
-    session.evict(ua.getProfile());
+    if (ua.getProfile() != null)
+      session.evict(ua.getProfile());
     ua.setProfile(inUser.getUserProfile());
     session.saveOrUpdate(ua);
 
