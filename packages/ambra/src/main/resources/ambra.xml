@@ -23,8 +23,7 @@
         * registration - Registers and logs in users (usually runs in the same
         container that cas runs in.
         * fedora       - The blob store used to store ingested articles
-        * mulgara      - The tripple store. (Currently uses axis over http, but will
-        change to run as a stand-alone rmi server in the future)
+        * mulgara      - The triple store.
         * ambra      - The publishing system
         * search       - The lucene full-text search engine. (No configuration in the
         network section yet. Shares the ambra container.)
@@ -67,7 +66,6 @@
 
     <platform>
       <appContext></appContext>
-      <resourceSubDir></resourceSubDir>
       <!-- common display constants -->
       <name>Public Library of Science</name>
       <email>
@@ -81,15 +79,19 @@
 
     <!-- virtual journal config -->
     <virtualJournals>
-      <journals>PLoSClinicalTrials,PLoSNTD,PLoSPathogens,PLoSGenetics,PLoSCompBiol</journals>
+      <default>
+        <journal>PLoSONE</journal>
+        <mappingPrefix>/journals/plosone</mappingPrefix>
+      </default>
+      <journals>PLoSClinicalTrials,PLoSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
       <PLoSClinicalTrials>
         <journal>PLoSClinicalTrials</journal>
         <description>PloS Clinical Trials</description>
         <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
         <rules>
-          <host>clinicaltrials.*</host>
+          <host>.*clinicaltrials.*</host>
         </rules>
-        <url>http://clinicaltrials...</url>
+        <url>http://clinicaltrials.ploshubs.org</url>
         <ambra>
           <services>
             <feed>
@@ -104,9 +106,9 @@
         <description>PloS Computational Biology</description>
         <mappingPrefix>/journals/compbiol</mappingPrefix>
         <rules>
-          <host>ploscompbiol.*</host>
+          <host>.*ploscompbiol.*</host>
         </rules>
-        <url>http://ploscompbiol...</url>
+        <url>http://www.ploscompbiol.org</url>
         <ambra>
           <services>
             <feed>
@@ -121,9 +123,9 @@
         <description>PloS Genetics</description>
         <mappingPrefix>/journals/genetics</mappingPrefix>
         <rules>
-          <host>plosgenetics.*</host>
+          <host>.*plosgenetics.*</host>
         </rules>
-        <url>http://plosgenetics...</url>
+        <url>http://www.plosgenetics.org</url>
         <ambra>
           <services>
             <feed>
@@ -138,9 +140,9 @@
         <description>PloS Neglected Tropical Diseases</description>
         <mappingPrefix>/journals/ntd</mappingPrefix>
         <rules>
-          <host>plosntds.*</host>
+          <host>.*plosntds.*</host>
         </rules>
-        <url>http://plosntds...</url>
+        <url>http://www.plosntds.org</url>
         <ambra>
           <services>
             <feed>
@@ -150,14 +152,31 @@
           </services>
         </ambra>
       </PLoSNTD>
+      <PLoSONE>
+        <journal>PLoSONE</journal>
+        <description>PloS ONE</description>
+        <mappingPrefix>/journals/plosone</mappingPrefix>
+        <rules>
+          <host>.*plosone.*</host>
+        </rules>
+        <url>http://www.plosone.org</url>
+        <ambra>
+          <services>
+            <feed>
+              <title>PLoS ONE</title>
+              <id>info:doi/10.1371/feed.pone</id>
+            </feed>
+          </services>
+        </ambra>
+      </PLoSONE>
       <PLoSPathogens>
         <journal>PLoSPathogens</journal>
         <description>PloS Pathogens</description>
         <mappingPrefix>/journals/pathogens</mappingPrefix>
         <rules>
-          <host>plospathogens.*</host>
+          <host>.*plospathogens.*</host>
         </rules>
-        <url>http://plospathogens...</url>
+        <url>http://www.plospathogens.org</url>
         <ambra>
           <services>
             <feed>
@@ -168,6 +187,129 @@
         </ambra>
       </PLoSPathogens>
     </virtualJournals>
+
+    <services>
+      <topaz>
+        <!-- Configuration to talk to Fedora -->
+        <fedora>
+          <auth-method>BASIC</auth-method>
+          <userName>fedoraAdmin</userName>
+          <password>fedoraAdmin</password>
+        </fedora>
+      </topaz>
+
+      <search>
+        <!-- Path where lucene search index is stored -->
+        <indexpath>/var/lib/topaz/data/lucene</indexpath>
+        <!-- Fields of lucene meta data that are searched by default -->
+        <defaultfields>description,title,body,creator</defaultfields>
+        <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->
+        <fieldMaxLength>50</fieldMaxLength><!-- Max chars per indexed field? -->
+        <cacheDuration>600000</cacheDuration><!-- Milliseconds to cache search results -->
+        <pageSize>10</pageSize><!-- Number of results per page -->
+        <fetchSize>10</fetchSize><!-- Number of results to fetch at a time -->
+      </search>
+
+      <registration>
+        <!-- It is assumed plos-registartion webapp is running on cas. However that can be changed
+          by changing the following settings. -->
+        <appContext>/ambra-registration</appContext><!-- Name of expanded webapp -->
+      </registration>
+
+      <doiResolver>
+        <!-- 
+          This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
+          The rules are applied sequentially from top to bottom and the first matching one will execute.
+          If an error is encountered, or the article is not found, it will use the ambra.network.hosts.default,
+          ambra.network.ports.default, and ambra.platform.appContext to construct the page not found url.
+        -->
+        <mappings>
+          <journalMapping>
+            <url>http://www.plosone.org:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1371/journal\.pone\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>
+              http://clinicaltrials.ploshubs.org:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
+            <regex>10\.1371/journal\.pctr\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>
+              http://www.ploscompbiol.org:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
+            <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>
+              http://www.plosgenetics.org:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
+            <regex>10\.1371/journal\.pgen\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>
+              http://www.plosntds.org:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
+            <regex>10\.1371/journal\.pntd\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>
+              http://www.plospathogens.org:${ambra.network.ports.default}${ambra.platform.appContext}/
+            </url>
+            <regex>10\.1371/journal\.ppat\.\d{7}</regex>
+          </journalMapping>
+        </mappings>
+      </doiResolver>
+
+      <!-- defaults for generating an Atom Feed -->
+      <feed>
+        <title>PLoS ONE</title>
+        <tagline>Publishing science, accelerating research</tagline>
+        <icon>${webserver-url}images/favicon.ico</icon>
+        <id>info:doi/1371/feed.pone</id><!-- Unique id. Should change for different criteria -->
+        <extended><!-- Configuration of extended atom feeds -->
+          <prefix>plos</prefix><!-- namespace prefix for custom elements -->
+          <namespace>http://www.plos.org/atom/ns#plos</namespace><!-- custom element namespace -->
+        </extended>
+        <basePath>/article/</basePath><!-- Path to rss feeds after journal context -->
+        <defaultFile>feed</defaultFile><!-- Default rss feed if none other specified -->
+        <categoryPrefix>feed?category=</categoryPrefix><!-- File prefix for a specific category -->
+        <defaultName>New Articles</defaultName><!-- Name of default feed (prefixed by journal) -->
+        <defaultDuration>3</defaultDuration><!-- Default duration in months -->
+      </feed>
+
+      <documentManagement>
+        <imageMagick>
+          <executablePath>/usr/bin/convert</executablePath>
+          <tempDirectory>/tmp</tempDirectory>
+          <imageSetConfigs>
+            <imageSet name="#default">
+              <small width="70" quality="80" />
+              <medium maxDimension="600" quality="80" />
+              <large quality="80" />
+            </imageSet>
+            <imageSet name="issueImage">
+              <small width="120" />
+            </imageSet>
+          </imageSetConfigs>
+        </imageMagick>
+      </documentManagement>
+
+      <!-- crossref information - set parameters and sendToXref to true to turn on -->
+      <crossref>
+        <plos>
+          <doiurl>
+            http://${ambra.network.hosts.default}:${ambra.network.ports.default}/doi-resolver/
+          </doiurl>
+          <!-- URL where your URIs can be found -->
+          <email>webmaster@example.org</email><!-- email address to send info to -->
+        </plos>
+        <login>crossref-username</login><!-- crossref login -->
+        <password>your-password</password><!-- crossref password -->
+        <area>test</area>
+        <sendToXref>false</sendToXref><!-- Set to true to turn on crossref posting -->
+      </crossref>
+    </services>
 
     <articleTypeList>
       <articleType>
@@ -389,131 +531,6 @@
         <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>
-
-    <services>
-      <topaz>
-        <!-- Configuration to talk to Fedora -->
-        <fedora>
-          <auth-method>BASIC</auth-method>
-          <userName>fedoraAdmin</userName>
-          <password>fedoraAdmin</password>
-        </fedora>
-      </topaz>
-
-      <registration>
-        <!-- It is assumed plos-registartion webapp is running on cas. However that can be changed
-          by changing the following settings. -->
-        <appContext>/ambra-registration</appContext><!-- Name of expanded webapp -->
-      </registration>
-
-      <doiResolver>
-        <!-- 
-          This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
-          The rules are applied sequentially from top to bottom and the first matching one will execute.
-          If an error is encountered, or the article is not found, it will use the ambra.network.hosts.default,
-          ambra.network.ports.default, and ambra.platform.appContext to construct the page not found url.
-        -->
-        <mappings>
-          <journalMapping>
-            <url>http://plosone...:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1371/journal\.pone\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://clinicaltrials...:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pctr\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://ploscompbiol...:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://plosgenetics...:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pgen\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://plosntds...:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pntd\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://plospathogens...:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.ppat\.\d{7}</regex>
-          </journalMapping>
-        </mappings>
-      </doiResolver>
-
-      <search>
-        <!-- Path where lucene search index is stored -->
-        <indexpath>/var/lib/topaz/data/lucene</indexpath>
-        <!-- Fields of lucene meta data that are searched by default -->
-        <defaultfields>description,title,body,creator</defaultfields>
-        <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->
-        <fieldMaxLength>50</fieldMaxLength><!-- Max chars per indexed field? -->
-        <cacheDuration>600000</cacheDuration><!-- Milliseconds to cache search results -->
-        <pageSize>10</pageSize><!-- Number of results per page -->
-        <fetchSize>10</fetchSize><!-- Number of results to fetch at a time -->
-      </search>
-
-      <documentManagement>
-        <imageMagick>
-          <executablePath>/usr/bin/convert</executablePath>
-          <tempDirectory>/tmp</tempDirectory>
-          <imageSetConfigs>
-            <imageSet name="#default">
-              <small width="70" quality="80" />
-              <medium maxDimension="600" quality="80" />
-              <large quality="80" />
-            </imageSet>
-            <imageSet name="issueImage">
-              <small width="120" />
-            </imageSet>
-          </imageSetConfigs>
-        </imageMagick>
-      </documentManagement>
-
-      <!-- defaults for generating an Atom Feed -->
-      <feed>
-        <title>PLoS ONE</title>
-        <tagline>Publishing science, accelerating research</tagline>
-        <icon>${webserver-url}images/favicon.ico</icon>
-        <id>info:doi/1371/feed.pone</id><!-- Unique id. Should change for different criteria -->
-        <extended><!-- Configuration of extended atom feeds -->
-          <prefix>plos</prefix><!-- namespace prefix for custom elements -->
-          <namespace>http://www.plos.org/atom/ns#plos</namespace><!-- custom element namespace -->
-        </extended>
-        <basePath>/article/</basePath><!-- Path to rss feeds after journal context -->
-        <defaultFile>feed</defaultFile><!-- Default rss feed if none other specified -->
-        <categoryPrefix>feed?category=</categoryPrefix><!-- File prefix for a specific category -->
-        <defaultName>New Articles</defaultName><!-- Name of default feed (prefixed by journal) -->
-        <defaultDuration>3</defaultDuration><!-- Default duration in months -->
-      </feed>
-
-      <!-- crossref information - set parameters and sendToXref to true to turn on -->
-      <crossref>
-        <plos>
-          <doiurl>
-            http://${ambra.network.hosts.default}:${ambra.network.ports.default}/doi-resolver/
-          </doiurl>
-          <!-- URL where your URIs can be found -->
-          <email>your@email.address</email><!-- email address to send info to -->
-        </plos>
-        <login>crossref-username</login><!-- crossref login -->
-        <password>your-password</password><!-- crossref password -->
-        <area>test</area>
-        <sendToXref>false</sendToXref><!-- Set to true to turn on crossref posting -->
-      </crossref>
-
-    </services>
-
 
     <freemarker>
       <!--

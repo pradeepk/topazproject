@@ -43,18 +43,17 @@
         <http>${ambra.network.ports.default}</http>
         <https>${ambra.network.ports.ambra-ssl}</https>
       </port>
-
-      <appContext></appContext><!-- web application context; leave empty if deployed in root directory  -->
+      <appContext>/ambra-webapp</appContext><!-- web application context; leave empty if deployed in root directory  -->
       <resourceSubDir></resourceSubDir><!-- used only if web resources like images/css are deployed in a separate directory; rarely used  -->
       <defaultJournalName>AmbraJournal</defaultJournalName>      
       <!-- Action for retrieving an article where doi is appended to this string -->
       <articleAction>article/</articleAction>
 
       <!-- common display constants -->
-      <name>Public Library of Science</name>
+      <name>Ambra</name>
       <email>
-        <general>webmaster@plos.org</general>
-        <feedback>webmaster@plos.org</feedback>
+        <general>webmaster@example.org</general>
+        <feedback>webmaster@example.org</feedback>
       </email>
       <copyright>
         This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License,
@@ -63,12 +62,16 @@
       <webserverUrl>http://${ambra.network.hosts.default}:${ambra.network.ports.default}${ambra.platform.appContext}/</webserverUrl>
     </platform>
 
-
     <!-- virtual journal config -->
     <virtualJournals>
-      <!-- entries to config each virtual journal -->
+      <!-- redundant config for default journal -->
+      <default>
+        <journal>AmbraJournal</journal>
+        <mappingPrefix>/journals/ambraJournal</mappingPrefix>
+      </default>
       <!-- comma separated list of virtual journal names -->
       <journals>AmbraJournal,OverlayJournal</journals>
+      <!-- entries to config each virtual journal -->
       <AmbraJournal>
         <description>Ambra Journal</description>
         <mappingPrefix>/journals/ambraJournal</mappingPrefix>
@@ -76,7 +79,7 @@
           <host>.*ambra.*</host>
           <plosJournal>AmbraJournal</plosJournal>
         </rules>
-        <url>http://ambra.topazproject.org</url>
+        <url>http://ambra.example.org</url>
         <!-- Atom feed overrides -->
         <platform>
           <feed>
@@ -92,41 +95,23 @@
           <host>.*overlay.*</host>
           <plosJournal>OverlayJournal</plosJournal>
         </rules>
-        <url>http://overlay.topazproject.org</url>
+        <url>http://overlay.example.org</url>
         <!-- Atom feed overrides -->
         <platform>
           <feed>
             <title>Overlay Journal</title>
-            <id>info:doi/10.1371/feed.ovlj</id>
+            <id>info:doi/10.1371/feed.ovrj</id>
           </feed>
         </platform>
       </OverlayJournal>
-      <!-- virtual journal config entry
-        <${journalName}>
-        <description>${display for Admin, etc.}</description>
-        <mappingPrefix>${URI path prefix for virtual journal resources}</mappingPrefix>
-        <rules>
-        <${httpHeader}>${regex to match against HTTP Header value}</${httpHeader}>
-        <${httpHeader}>${regex to match against HTTP Header value}</${httpHeader}>
-        </rules>
-        <platform>
-        <feed>
-        <title>${journalName}</title>
-        <id>info:doi/10.1371/feed.${journalCode}</id>
-        </feed>
-        </platform>
-        </${journalName}>
-      -->
     </virtualJournals>
     
     <services>
       <topaz>
         <!-- must match the name of a bean in the applicationContext.xml -->
         <blobStore>fedoraBlobStore</blobStore>
-        <itql>
-          <uri>rmi://${ambra.spring.server.mulgara}/topazproject</uri>
-        </itql>
       </topaz>
+
       <search>
         <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->
         <fieldMaxLength>50</fieldMaxLength><!-- Max chars per indexed field? -->
@@ -155,7 +140,7 @@
 
       <!-- defaults for generating an Atom Feed -->
       <feed>
-        <title>Overlay Journal</title>
+        <title>Ambra Journal</title>
         <tagline>Publishing science, accelerating research</tagline>
         <icon>${webserver-url}images/favicon.ico</icon>
         <id>info:doi/1371/feed.ambr</id><!-- Unique id. Should change for different criteria -->
@@ -183,6 +168,25 @@
         </url>
       </registration>
       
+      <doiResolver>
+        <!-- 
+          This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
+          The rules are applied sequentially from top to bottom and the first matching one will execute.
+          If an error is encountered, or the article is not found, it will use the ambra.network.hosts.default,
+          ambra.network.ports.default, and ambra.platform.appContext to construct the page not found url.
+        -->
+        <mappings>
+          <journalMapping>
+            <url>http://${ambra.network.hosts.default}:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1234/journal\.ambr\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>http://overly.example.org:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1234/journal\.ovrj\.\d{7}</regex>
+          </journalMapping>
+        </mappings>
+      </doiResolver>
+
       <documentManagement>
         <ingestSourceDir>
           /var/spool/ambra/ingestion-queue
@@ -190,16 +194,24 @@
         <ingestDestinationDir>
           /var/spool/ambra/ingested
         </ingestDestinationDir>
+        <imageMagick>
+          <imageSetConfigs>
+            <!-- set up an alternet imageSet. name must match an articleType configured below -->
+            <imageSet name="issueImage">
+              <small width="120" />
+            </imageSet>
+          </imageSetConfigs>
+        </imageMagick>
       </documentManagement>>
       
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
         <plos>
-          <doiurl>http://...</doiurl><!-- URL where your URIs can be found -->
-          <email>webmaster@your-org</email><!-- email address to send info to -->
+          <doiurl>http://${ambra.network.hosts.default}:${ambra.network.ports.default}/ambra-doi-resolver/</doiurl><!-- URL where your URIs can be found -->
+          <email>webmaster@example.org</email><!-- email address to send info to -->
         </plos>
         <login>crossref-username</login><!-- crossref login -->
-        <password>your-password</password><!-- crossref password -->
+        <password>crossref-password</password><!-- crossref password -->
         <area>test</area><!-- set to "live" to activate, "test" for dev -->
         <sendToXref>false</sendToXref><!-- Set to true to turn on crossref posting -->
         <post>
@@ -208,7 +220,6 @@
           </url>
         </post>
       </crossref>
-      
     </services>
 
     <!-- Define defaults for spring - must be redone soon -->

@@ -23,13 +23,16 @@
 <config>
   <ambra>
     <platform>
-      <appContext>/ambra-webapp</appContext>
       <dummySsoEnabled>true</dummySsoEnabled>
       <defaultJournalName>PLoSONE</defaultJournalName>
-      <!-- virtual journal config -->
     </platform>
-
+    
+    <!-- virtual journal config -->
     <virtualJournals>
+      <default>
+        <journal>PLoSONE</journal>
+        <mappingPrefix>/journals/plosone</mappingPrefix>
+      </default>
       <journals>PLoSClinicalTrials,PloSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
       <PLoSClinicalTrials>
         <journal>PLoSClinicalTrials</journal>
@@ -38,7 +41,7 @@
         <rules>
           <host>clinicaltrials.*</host>
         </rules>
-        <url>http://clinicaltrials...</url>
+        <url>http://clinicaltrials-localhost</url>
         <ambra>
           <services>
             <feed>
@@ -55,7 +58,7 @@
         <rules>
           <host>ploscompbiol.*</host>
         </rules>
-        <url>http://ploscompbiol...</url>
+        <url>http://ploscompbiol-localhost.</url>
         <ambra>
           <services>
             <feed>
@@ -72,7 +75,7 @@
         <rules>
           <host>plosgenetics.*</host>
         </rules>
-        <url>http://plosgenetics...</url>
+        <url>http://plosgenetics-localhost</url>
         <ambra>
           <services>
             <feed>
@@ -89,7 +92,7 @@
         <rules>
           <host>plosntds.*</host>
         </rules>
-        <url>http://plosntds...</url>
+        <url>http://plosntds-localhost</url>
         <ambra>
           <services>
             <feed>
@@ -106,7 +109,7 @@
         <rules>
           <host>plosone.*</host>
         </rules>
-        <url>http://plosone...</url>
+        <url>http://plosone-localhost</url>
         <ambra>
           <services>
             <feed>
@@ -123,7 +126,7 @@
         <rules>
           <host>plospathogens.*</host>
         </rules>
-        <url>http://plospathogens...</url>
+        <url>http://plospathogens-localhost</url>
         <ambra>
           <services>
             <feed>
@@ -134,6 +137,43 @@
         </ambra>
       </PLoSPathogens>
     </virtualJournals>
+
+    <services>
+      <doiResolver>
+        <!-- 
+          This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
+          The rules are applied sequentially from top to bottom and the first matching one will execute.
+          If an error is encountered, or the article is not found, it will use the ambra.network.hosts.default,
+          ambra.network.ports.default, and ambra.platform.appContext to construct the page not found url.
+        -->
+        <mappings>
+          <journalMapping>
+            <url>http://plosone-localhost:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1371/journal\.pone\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>http://clinicaltrials-localhost:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1371/journal\.pctr\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>http://ploscompbiol-localhost:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>http://plosgenetics-localhost${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1371/journal\.pgen\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>http://plosntds-localhost:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1371/journal\.pntd\.\d{7}</regex>
+          </journalMapping>
+          <journalMapping>
+            <url>http://plospathogens-localhost:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
+            <regex>10\.1371/journal\.ppat\.\d{7}</regex>
+          </journalMapping>
+        </mappings>
+      </doiResolver>
+    </services>
 
     <articleTypeList>
       <articleType>
@@ -355,91 +395,6 @@
         <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>
-
-    <services>
-      <topaz>
-        <fedora>
-          <auth-method>BASIC</auth-method>
-          <userName>fedoraAdmin</userName>
-          <password>fedoraAdmin</password>
-        </fedora>
-        <!-- must match the name of a bean in the applicationContext.xml -->
-        <!-- <blobStore>simpleBlobStore</blobStore> -->
-      </topaz>
-
-      <doiResolver>
-        <!-- 
-          This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
-          The rules are applied sequentially from top to bottom and the first matching one will execute.
-          If an error is encountered, or the article is not found, it will use the ambra.network.hosts.default,
-          ambra.network.ports.default, and ambra.platform.appContext to construct the page not found url.
-        -->
-        <mappings>
-          <journalMapping>
-            <url>http://plosone...:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1371/journal\.pone\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://clinicaltrials...:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pctr\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>http://ploscompbiol...:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>http://plosgenetics...:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1371/journal\.pgen\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>http://plosntds...:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1371/journal\.pntd\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>http://plospathogens...:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1371/journal\.ppat\.\d{7}</regex>
-          </journalMapping>
-        </mappings>
-      </doiResolver>
-
-      <registration>
-        <!-- It is assumed that the registartion webapp is running on cas. However that can be changed
-          by changing the following settings. -->
-        <app-context>/ambra-registration</app-context><!-- Name of expanded webapp -->
-      </registration>
-
-      <documentManagement>
-        <imageMagick>
-          <executablePath>Override this with path to ImageMagic convert executable</executablePath>
-          <tempDirectory>Override this with path to temp read/writable directory</tempDirectory>
-          <imageSetConfigs>
-            <imageSet name="#default">
-              <small width="70" quality="80" />
-              <medium maxDimension="600" quality="80" />
-              <large quality="80" />
-            </imageSet>
-            <imageSet name="issueImage">
-              <small width="120" />
-            </imageSet>
-          </imageSetConfigs>
-        </imageMagick>
-      </documentManagement>
-
-      <!-- crossref information - set parameters and sendToXref to true to turn on -->
-      <crossref>
-        <plos>
-          <doiurl>http://${ambra.network.hosts.default}:${ambra.network.ports.default}/doi-resolver/</doiurl>
-          <!-- URL where your URIs can be found -->
-          <email>your@email.address</email><!-- email address to send info to -->
-        </plos>
-        <login>crossref-username</login><!-- crossref login -->
-        <password>your-password</password><!-- crossref password -->
-        <area>test</area>
-        <sendToXref>false</sendToXref><!-- Set to true to turn on crossref posting -->
-      </crossref>
-    </services>
 
     <freemarker>
       <!--PLoSONE-->
@@ -1931,5 +1886,4 @@
   <struts>
     <devMode>true</devMode>
   </struts>
-
 </config>

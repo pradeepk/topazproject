@@ -46,9 +46,8 @@
         * registration - Registers and logs in users (usually runs in the same
         container that cas runs in.
         * fedora       - The blob store used to store ingested articles
-        * mulgara      - The tripple store. (Currently uses axis over http, but will
-        change to run as a stand-alone rmi server in the future)
-        * ambra      - The publishing system
+        * mulgara      - The triple store.
+        * ambra        - The publishing system
         * search       - The lucene full-text search engine. (No configuration in the
         network section yet. Shares the ambra container.)
         * doi-resolver - Resolves DOIs. (Also no configuration here yet. Shares
@@ -70,6 +69,7 @@
         <ambra>${ambra.network.hosts.default}</ambra>
         <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
       </hosts>
+
       <ports>
         <!-- There are 4 protocols that the publishing system uses:
           * http    - The default protocol
@@ -85,12 +85,9 @@
         <default>${ambra.network.ports.ambra}</default>
         <!-- If using port 443, set cas-ssl to empty -->
         <cas-ssl>7443</cas-ssl>
-  
         <ambra>8080</ambra>
         <ambra-ssl>10443</ambra-ssl>
         <fedora>9090</fedora>
-        <mulgara>9091</mulgara>
-  
         <registration-ssl>${ambra.network.ports.cas-ssl}</registration-ssl>
       </ports>
     </network>
@@ -104,23 +101,6 @@
       <errorPage>static/pageNotFound.action</errorPage> <!-- error page to redirect to in pub app if article not found -->
     </platform>
     <services>
-      <cas>
-        <!-- The following entries defnine how the java webapp talk to the database.
-          For example, talking to postgresql, you need the database name at the end of the url
-          The user and password are for the database as well. -->
-        <db>
-          <user>casuser</user>
-          <password>caspass</password>
-          <url>jdbc:postgresql://localhost/casdb</url>
-          <driver>org.postgresql.Driver</driver>
-        </db>
-        <!-- NOTE: Cannot find any reference to these config parameters... -->
-        <!-- Configuration to talk to CAS -->
-        <cas-server>
-          <base-url>https://${ambra.network.hosts.cas}:${ambra.network.ports.cas-ssl}/cas</base-url>
-        </cas-server>
-      </cas>
-
       <topaz>
         <mulgara>
           <!-- The base uri of all the models that we create in mulgara.-->
@@ -170,6 +150,7 @@
           </str>
           <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">${ambra.services.topaz.mulgara.baseuri}#xsd</xsd>
         </models>
+
         <!-- Configuration to talk to Fedora -->
         <fedora>
           <base-url>http://${ambra.network.hosts.fedora}:${ambra.network.ports.fedora}/fedora/</base-url>
@@ -178,6 +159,7 @@
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
         </fedora>
+        
         <fedoraUploader>
           <uri>${ambra.services.topaz.fedora.base-url}management/upload</uri>
           <auth-method>${ambra.services.topaz.fedora.auth-method}</auth-method>
@@ -194,7 +176,6 @@
           <uri>${ambra.services.topaz.itql.uri}</uri>
           <auth-method>NONE</auth-method>
         </itql-admin>
-
 
         <fedoraGSearch>
           <urls>
@@ -214,6 +195,23 @@
         </fedoraGSearch>
       </topaz>
 
+      <cas>
+        <!-- The following entries defnine how the java webapp talk to the database.
+          For example, talking to postgresql, you need the database name at the end of the url
+          The user and password are for the database as well. -->
+        <db>
+          <user>casuser</user>
+          <password>caspass</password>
+          <url>jdbc:postgresql://localhost/casdb</url>
+          <driver>org.postgresql.Driver</driver>
+        </db>
+        <!-- NOTE: Cannot find any reference to these config parameters... -->
+        <!-- Configuration to talk to CAS -->
+        <cas-server>
+          <base-url>https://${ambra.network.hosts.cas}:${ambra.network.ports.cas-ssl}/cas</base-url>
+        </cas-server>
+      </cas>
+
       <documentManagement>
         <imageMagick>
           <executablePath>/usr/bin/convert</executablePath>
@@ -224,9 +222,6 @@
               <small width="70" quality="80" />
               <medium maxDimension="600" quality="80" />
               <large quality="80" />
-            </imageSet>
-            <imageSet name="issueImage">
-              <small width="120" />
             </imageSet>
           </imageSetConfigs>
         </imageMagick>
@@ -282,7 +277,5 @@
       <hostname>${ambra.network.hosts.ambra}</hostname>
       <https-port>${ambra.network.ports.ambra-ssl}</https-port>
     </server>
-
-
   </ambra>
 </config>
