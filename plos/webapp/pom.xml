@@ -354,7 +354,7 @@
             </systemProperty>
             <systemProperty>
               <!-- Turn on dev mode configuration -->
-              <name>org.plos.configuration.overrides</name>
+              <name>ambra.configuration.overrides</name>
               <value>defaults-dev.xml</value>
             </systemProperty>
             <systemProperty>
