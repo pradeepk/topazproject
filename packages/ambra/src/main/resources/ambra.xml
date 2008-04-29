@@ -413,36 +413,36 @@
           This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
           The rules are applied sequentially from top to bottom and the first matching one will execute.
           If an error is encountered, or the article is not found, it will use the network.hosts.default,
-          network.ports.default, and pub.app-context to construct the page not found url.
+          network.ports.default, and ambra.platform.appContext to construct the page not found url.
         -->
-        <doi-journals>
-          <journal>
+        <mappings>
+          <journalMapping>
             <url>http://plosone...:${network.ports.default}${ambra.platform.appContext}/</url>
             <regex>10\.1371/journal\.pone\.\d{7}</regex>
-          </journal>
-          <journal>
+          </journalMapping>
+          <journalMapping>
             <url>
               http://clinicaltrials...:${network.ports.default}${ambra.platform.appContext}/
             </url>
             <regex>10\.1371/journal\.pctr\.\d{7}</regex>
-          </journal>
-          <journal>
+          </journalMapping>
+          <journalMapping>
             <url>http://ploscompbiol...:${network.ports.default}${ambra.platform.appContext}/</url>
             <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
-          </journal>
-          <journal>
+          </journalMapping>
+          <journalMapping>
             <url>http://plosgenetics...:${network.ports.default}${ambra.platform.appContext}/</url>
             <regex>10\.1371/journal\.pgen\.\d{7}</regex>
-          </journal>
-          <journal>
+          </journalMapping>
+          <journalMapping>
             <url>http://plosntds...:${network.ports.default}${ambra.platform.appContext}/</url>
             <regex>10\.1371/journal\.pntd\.\d{7}</regex>
-          </journal>
-          <journal>
+          </journalMapping>
+          <journalMapping>
             <url>http://plospathogens...:${network.ports.default}${ambra.platform.appContext}/</url>
             <regex>10\.1371/journal\.ppat\.\d{7}</regex>
-          </journal>
-        </doi-journals>
+          </journalMapping>
+        </mappings>
       </doiResolver>
 
       <search>
