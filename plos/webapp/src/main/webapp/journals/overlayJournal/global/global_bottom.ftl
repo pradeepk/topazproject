@@ -22,11 +22,7 @@
 
 <!-- begin : footer -->
 <div id="ftr">
-<#if journalContext = "AmbraJournal" >
-    <#include "/journals/ambra/global/global_footer.ftl">
-<#else>
-    <#include "global_footer.ftl">
-</#if>
+<#include "/global/global_footer.ftl">
 </div>
 <!-- end : footer -->
 </body>

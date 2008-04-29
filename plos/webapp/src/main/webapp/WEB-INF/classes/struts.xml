@@ -1041,4 +1041,6 @@
   <include file="struts-ntd.xml" />
   <include file="struts-pathogens.xml" />
   <include file="struts-plosone.xml" />
+  <include file="struts-ambra.xml" />
+  <include file="struts-overlay.xml" />
 </struts>

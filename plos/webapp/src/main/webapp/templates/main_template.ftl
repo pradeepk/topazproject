@@ -38,6 +38,10 @@
   <#include "/journals/plosone/global/global_top.ftl">
 <#elseif journalContext = "PLoSPathogens" >
   <#include "/journals/pathogens/global/global_top.ftl">
+<#elseif journalContext = "AmbraJournal" >
+    <#include "/journals/ambra/global/global_top.ftl">
+<#elseif journalContext = "OverlayJournal" >
+    <#include "/journals/overlayJournal/global/global_top.ftl">
 <#else>
   <#include "/global/global_top.ftl">
 </#if>
@@ -60,6 +64,10 @@
   <#include "/journals/plosone/global/global_bottom.ftl">
 <#elseif journalContext = "PLoSPathogens" >
   <#include "/journals/pathogens/global/global_bottom.ftl">
+<#elseif journalContext = "AmbraJournal" >
+  <#include "/journals/ambra/global/global_bottom.ftl">
+<#elseif journalContext = "OverlayJournal" >
+  <#include "/journals/overlayJournal/global/global_bottom.ftl">
 <#else>
   <#include "/global/global_bottom.ftl">
 </#if>
