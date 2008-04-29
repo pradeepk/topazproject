@@ -46,6 +46,7 @@ public class PlosOneFreemarkerConfig {
   private static final String[] DEFAULT_CSS_FILES = {"/css/iepc.css", "/css/screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
   private static final String DEFAULT_TITLE = "Journal";
+  private static String DEFAULT_JOURNAL_NAME_CONFIG_KEY = "ambra.platform.defaultJournalName";
 
   private HashMap<String, JournalConfig> journals;
   private String dirPrefix;
@@ -77,7 +78,7 @@ public class PlosOneFreemarkerConfig {
     registrationURL = myConfig.getString("ambra.services.registration.url.registration");
     changePasswordURL = myConfig.getString("ambra.services.registration.url.change-password");
     changeEmailURL = myConfig.getString("ambra.services.registration.url.change-email");
-    defaultJournalName = myConfig.getString("ambra.platform.defaultJournalName");
+    defaultJournalName = myConfig.getString(DEFAULT_JOURNAL_NAME_CONFIG_KEY);
     journals = new HashMap<String, JournalConfig>();
 
     int numConfigs = 1;
@@ -348,20 +349,32 @@ public class PlosOneFreemarkerConfig {
     JournalConfig jc = journals.get(journalName);
     boolean usingDefault = false;
     if (jc == null) {
+      if (log.isDebugEnabled()) {
+        log.debug("Failed to get journal for given journalName '"+journalName+
+                  "'. Attempting to load default journal '"+defaultJournalName+"'");
+      }
       usingDefault = true;
       jc = journals.get(defaultJournalName);
-    }
-    String retVal = jc.getTitles().get(templateName);
-    if (retVal == null) {
-      retVal = jc.getDefaultTitle();
-      if ((retVal == null) && !usingDefault) {
-        jc = journals.get(defaultJournalName);
-        retVal = jc.getTitles().get(templateName);
-        if (retVal == null) {
-          retVal = jc.getDefaultTitle();
-        }
+      if (jc == null) {
+        log.error("Failed to get Journal. defaultJournalName '"+defaultJournalName+
+                  "'. Attempted to get default Journal when given journal name parameter '"+
+                  journalName+"' also returned null. Check your configuration for '"+
+                  DEFAULT_JOURNAL_NAME_CONFIG_KEY+"'");
+        return DEFAULT_TITLE;
       }
     }
+    String retVal = jc.getTitles().get(templateName);
+      if (retVal == null) {
+        retVal = jc.getDefaultTitle();
+        if ((retVal == null) && !usingDefault) {
+          jc = journals.get(defaultJournalName);
+          retVal = jc.getTitles().get(templateName);
+          if (retVal == null) {
+            retVal = jc.getDefaultTitle();
+          }
+        }
+    }
+    
     return retVal != null ? retVal : DEFAULT_TITLE;
   }
 
