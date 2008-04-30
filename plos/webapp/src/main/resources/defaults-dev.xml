@@ -39,7 +39,7 @@
         <description>PloS Clinical Trials</description>
         <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
         <rules>
-          <host>clinicaltrials.*</host>
+          <host>.*clinicaltrials.*</host>
         </rules>
         <url>http://clinicaltrials-localhost</url>
         <ambra>
@@ -56,7 +56,7 @@
         <description>PloS Computational Biology</description>
         <mappingPrefix>/journals/compbiol</mappingPrefix>
         <rules>
-          <host>ploscompbiol.*</host>
+          <host>.*ploscompbiol.*</host>
         </rules>
         <url>http://ploscompbiol-localhost.</url>
         <ambra>
@@ -73,7 +73,7 @@
         <description>PloS Genetics</description>
         <mappingPrefix>/journals/genetics</mappingPrefix>
         <rules>
-          <host>plosgenetics.*</host>
+          <host>.*plosgenetics.*</host>
         </rules>
         <url>http://plosgenetics-localhost</url>
         <ambra>
@@ -90,7 +90,7 @@
         <description>PloS Neglected Tropical Diseases</description>
         <mappingPrefix>/journals/ntd</mappingPrefix>
         <rules>
-          <host>plosntds.*</host>
+          <host>.*plosntds.*</host>
         </rules>
         <url>http://plosntds-localhost</url>
         <ambra>
@@ -107,7 +107,7 @@
         <description>PloS ONE</description>
         <mappingPrefix>/journals/plosone</mappingPrefix>
         <rules>
-          <host>plosone.*</host>
+          <host>.*plosone.*</host>
         </rules>
         <url>http://plosone-localhost</url>
         <ambra>
@@ -124,7 +124,7 @@
         <description>PloS Pathogens</description>
         <mappingPrefix>/journals/pathogens</mappingPrefix>
         <rules>
-          <host>plospathogens.*</host>
+          <host>.*plospathogens.*</host>
         </rules>
         <url>http://plospathogens-localhost</url>
         <ambra>

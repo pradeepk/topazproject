@@ -3,7 +3,6 @@
   This file is the Ambra template for the Public Library of Science site. 
 -->
 <config>
-
   <ambra>
     <network>
       <!-- This network section defines the hosts and ports used to talk to the services
@@ -581,25 +580,6 @@
           </javascript>
         </default>
         <page>
-          <name>/index.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/home.css</file>
-            <file>/css/article_markup.css</file>
-          </css>
-          <javascript>
-            <file>/javascript/dojo/dojo_home.js</file>
-            <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/htmlUtil.js</file>
-            <file>/javascript/dojoRequire_default.ftl</file>
-            <file>/javascript/config_home.js</file>
-            <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
-          </javascript>
-        </page>
-        <page>
           <name>/journals/plosone/index.ftl</name>
           <css>
             <file>/css/screen.css</file>
@@ -916,39 +896,8 @@
             <file>/javascript/init_profile.js</file>
           </javascript>
         </page>
-        <page>
-          <name>/static/about.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/authors.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/browse.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-            <file>/css/article_markup.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/checklist.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
+
+        <!-- globally shared static pages -->
         <page>
           <name>/static/commentGuidelines.ftl</name>
           <css>
@@ -966,30 +915,6 @@
           </css>
         </page>
         <page>
-          <name>/static/contact.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/edboard.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/faq.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
           <name>/static/figure_guidelines.ftl</name>
           <css>
             <file>/css/screen.css</file>
@@ -997,32 +922,9 @@
             <file>/css/static.css</file>
           </css>
         </page>
-        <page>
-          <name>/static/guidelines.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
+
         <page>
           <name>/static/help.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/information.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/latex.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -1047,14 +949,6 @@
         </page>
         <page>
           <name>/static/media.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/policies.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -1094,22 +988,6 @@
           </css>
         </page>
         <page>
-          <name>/static/reviewer_guidelines.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
-          <name>/static/rss_feeds.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
           <name>/static/rssInfo.ftl</name>
           <css>
             <file>/css/screen.css</file>
@@ -1134,14 +1012,6 @@
           </css>
         </page>
         <page>
-          <name>/static/sitemap.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
-        <page>
           <name>/static/terms.ftl</name>
           <css>
             <file>/css/screen.css</file>
@@ -1149,8 +1019,10 @@
             <file>/css/static.css</file>
           </css>
         </page>
+
+        <!-- plosone specific -->
         <page>
-          <name>/static/users.ftl</name>
+          <name>/journals/plosone/static/about.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -1158,7 +1030,128 @@
           </css>
         </page>
         <page>
-          <name>/static/whypublish.ftl</name>
+          <name>/journals/plosone/static/authors.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/browse.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+            <file>/css/article_markup.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/checklist.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/contact.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/edboard.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/faq.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/guidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/information.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/journalClub.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/latex.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/policies.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/reviewer_guidelines.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/rss_feeds.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/users.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/sitemap.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+        </page>
+        <page>
+          <name>/journals/plosone/static/whypublish.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>

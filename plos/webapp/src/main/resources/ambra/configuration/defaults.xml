@@ -29,6 +29,10 @@
   <ambra>
     <network>
       <hosts>
+        <!-- Set hosts.default to FQHN (not localhost) if installing all components on one host
+          (or to webhead FQHN for multiple host installation) -->
+        <default>localhost</default>
+        <mailhost>localhost</mailhost>
         <!-- For multibox install, change the following entires to the appropriate FQHNs -->
         <cas>${ambra.network.hosts.default}</cas>
         <registration>${ambra.network.hosts.cas}</registration>
@@ -326,6 +330,7 @@
             <file>/javascript/dojo/dojo_ambra.js</file>
             <file>/javascript/topaz/topaz.js</file>
             <file>/javascript/topaz/annotation.js</file>
+            <file>/javascript/topaz/corrections.js</file>
             <file>/javascript/topaz/displayComment.js</file>
             <file>/javascript/topaz/rating.js</file>
             <file>/javascript/topaz/formUtil.js</file>
@@ -347,10 +352,8 @@
           </css>
           <javascript>
             <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_article.js</file>
             <file>/javascript/dojo/dojo_ambra.js</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/annotation.js</file>
             <file>/javascript/topaz/formUtil.js</file>
             <file>/javascript/topaz/domUtil.js</file>
             <file>/javascript/topaz/floatingMenu.js</file>
@@ -358,7 +361,7 @@
             <file>/javascript/dojoRequire_article.ftl</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
-            <file>/javascript/init_article.js</file>
+            <file>/javascript/init_float.js</file>
           </javascript>
         </page>
         <page>
@@ -513,6 +516,25 @@
             <file>/css/forms.css</file>
             <file>/css/static.css</file>
           </css>
+        </page>
+        <page>
+          <name>/search/searchStart.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/static.css</file>
+          </css>
+          <javascript>
+            <file>/javascript/browserDetection.js</file>
+            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/topaz/topaz.js</file>
+            <file>/javascript/topaz/formUtil.js</file>
+            <file>/javascript/topaz/domUtil.js</file>
+            <file>/javascript/prototype.js</file>
+            <file>/javascript/topaz/advsearch.js</file>
+            <file>/javascript/init_global.js</file>
+            <file>/javascript/init_navigation.js</file>
+          </javascript>
         </page>
         <page>
           <name>/user/alerts.ftl</name>
