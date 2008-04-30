@@ -17,25 +17,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#if Request[freemarker_config.journalContextAttributeKey]?exists>
-  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
-<#else>
-  <#assign journalContext = "">
-</#if>
-
-<#include "/global/global_config.ftl">
-<#include "/global/global_top_headerless.ftl">
+<#include "journal_include.ftl">
+<#include "/static/cj_shared_blocks.ftl">
 
 <!-- begin : main content -->
-<#include "${templateFile}">
-<!-- end : main contents -->
+<div id="content" class="static">
+  <h1>RSS Feeds</h1>
+  <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssURL"/>
+  
+  <p>
+    <em>${journal_name}</em> provides the following <@s.a href="${rssURL}">RSS feeds</@s.a> which are updated as new articles are posted:
+  </p>
 
-<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-<#if journalContext = "AmbraJournal" >
-  <#include "/journals/ambraJournal/global/global_bottom.ftl">
-<#elseif journalContext = "OverlayJournal" >
-  <#include "/journals/overlayJournal/global/global_bottom.ftl">
-<#else>
-  <#include "/global/global_bottom.ftl">
-</#if>
-<#-- END MAJOR HACK -->
+  <ul>
+    <li><a href="/article/feed">New Articles</a></li>
+  </ul>
+   
+</div>
+<!-- end : main contents -->

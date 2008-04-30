@@ -87,7 +87,7 @@
         <!-- Atom feed overrides -->
         <platform>
           <feed>
-            <title>Overlay Journal</title>
+            <title>Ambra Journal</title>
             <id>info:doi/10.1371/feed.ambj</id>
           </feed>
         </platform>
@@ -311,8 +311,10 @@
             <file>/javascript/topaz/htmlUtil.js</file>
             <file>/javascript/dojoRequire_default.ftl</file>
             <file>/javascript/config_home.js</file>
+            <file>/javascript/topaz/horizontalTabs.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
+            <file>/javascript/init_home.js</file>
           </javascript>
         </page>
         <page>
@@ -619,12 +621,12 @@
       <journal>
         <name>OverlayJournal</name>
         <metaKeywords>Overlay Journal\, Secondary\, Generic\, Default</metaKeywords>
-        <metaDescription>This is an example second journal on Topaz.</metaDescription>
+        <metaDescription>This is an example second journal on Ambra.</metaDescription>
         <articleTitlePrefix>Overlay Journal:</articleTitlePrefix>
         <displayName>Overlay Journal</displayName>
         <default>
           <title>
-            Overlay Journal: Serving as an Example for the Topaz Configuration community
+            Overlay Journal: Serving as an Example for the Ambra Configuration community
           </title>
         </default>
         <page>

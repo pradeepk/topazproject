@@ -28,7 +28,7 @@
 
 <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
 <#if journalContext = "AmbraJournal" >
-    <#include "/journals/ambra/global/global_top.ftl">
+    <#include "/journals/ambraJournal/global/global_top.ftl">
 <#elseif journalContext = "OverlayJournal" >
     <#include "/journals/overlayJournal/global/global_top.ftl">
 <#else>
@@ -42,7 +42,7 @@
 
 <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
 <#if journalContext = "AmbraJournal" >
-  <#include "/journals/ambra/global/global_bottom.ftl">
+  <#include "/journals/ambraJournal/global/global_bottom.ftl">
 <#elseif journalContext = "OverlayJournal" >
   <#include "/journals/overlayJournal/global/global_bottom.ftl">
 <#else>

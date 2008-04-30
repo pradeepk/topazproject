@@ -22,13 +22,8 @@
     <@s.url action="browse" namespace="/static" includeParams="none" id="browseURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubjectURL"/>
     <@s.url action="browse" namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
-    <@s.url action="browseIssue" namespace="/article" field="issue"  includeParams="none" id="browseIssueURL"/>
-    <@s.url action="browseVolume" namespace="/article" field="volume" includeParams="none" id="archiveURL"/>
-    <@s.url action="toc" namespace="/static" includeParams="none" id="tocStatic"/> <!-- This is a temporary action to link to th static toc page -->
     <li><a href="${browseURL}" tabindex="102">Browse Articles</a>
         <ul>
-          <li><a href="${browseIssueURL}">Current Issue</a></li> <!-- Assuming dynamic TOC is in place -->
-          <li><a href="${archiveURL}">Journal Archive</a></li>
           <li><a href="${browseDateURL}">By Publication Date</a></li>
           <li><a href="${browseSubjectURL}">By Subject</a></li>
         </ul>

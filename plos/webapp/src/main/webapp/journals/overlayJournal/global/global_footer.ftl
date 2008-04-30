@@ -17,13 +17,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-</div>
-<!-- end : container -->	
-
-<!-- begin : footer -->
-<div id="ftr">
-<#include "global_footer.ftl">
-</div>
-<!-- end : footer -->
-</body>
-</html>
+	<p><span>Copyright (c) 2007-2008 by <a href="http://topazproject.org" title="Topaz, Inc." tabindex="200">Topaz, Inc.</a>, licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0" title="Apache License, Version 2.0" tabindex="300">Apache License, Version 2.0</a>.</span></p>
+	<ul>
+		<@s.url namespace="/static" action="sitemap" includeParams="none" id="siteMapURL" />
+		<li><a href="${siteMapURL}" title="Site Map" tabindex="506">Site Map</a></li>
+	</ul>
+	<div class="powered">
+	<ul>
+		<li><a href="${freemarker_config.context}/static/releaseNotes.action" title="Topaz | Release Notes &amp; Site Credits">Release Notes &amp; Site Credits</a></li>
+	</ul>
+	</div>
