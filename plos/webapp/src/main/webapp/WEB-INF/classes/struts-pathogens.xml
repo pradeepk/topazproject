@@ -21,25 +21,28 @@
 <struts>
 
   <package name="default-pathogens" extends="default" namespace="/journals/pathogens">
-
     <action name="home" class="org.plos.action.HomePageAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/pathogens/index.ftl</param>
       </result>
     </action>
-    
     <action name="recentArticles" class="org.plos.action.HomePageAction">
       <result name="success">/journals/pathogens/article/recentArticles.ftl</result>
     </action>
-
     <action name="mostCommented" class="org.plos.action.HomePageAction">
       <result name="success">/journals/pathogens/article/mostCommented.ftl</result>
     </action>
+  </package>
 
+  <package name="article-pathogens" extends="article" namespace="/journals/pathogens/article">
+    <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/journals/pathogens/article/browse.ftl</param>
+      </result>
+    </action>
   </package>
 
   <package name="static-pathogens" extends="default-pathogens" namespace="/journals/pathogens/static">
-
     <action name="about" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/pathogens/static/about.ftl</param>

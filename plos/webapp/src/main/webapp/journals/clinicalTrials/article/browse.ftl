@@ -47,15 +47,43 @@
 
 <div id="content" class="browse static">
   <!-- begin : banner -->
+  
+  <#-- set banner codes per journal/page -->
+  
+	<#assign source = 'PHUBCT'>
+ 	<#if field == "date">
+  	<#assign skyscraper = 217>
+	<#else>
+		<#assign skyscraper = 218>
+	</#if>
+  
   <div id="bannerRight">
+    <script language='JavaScript' type='text/javascript'src='http://ads.plos.org/adx.js'></script>
+    <script language='JavaScript' type='text/javascript'>
+      <!--
+        if (!document.phpAds_used) document.phpAds_used = ',';
+        phpAds_random = new String (Math.random());
+        phpAds_random = phpAds_random.substring(2,11);
+
+        document.write ("<" + "script language='JavaScript'   type='text/javascript' src='");
+        document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+        document.write ("&amp;what=zone:${skyscraper}&amp;source=${source}&amp;withText=1&amp;block=1");
+        document.write ("&amp;exclude=" + document.phpAds_used);
+        if (document.referrer)
+          document.write ("&amp;referer=" + escape(document.referrer));
+        document.write ("'><" + "/script>");
+      //-->
+    </script>
+    <noscript>
+      <a href='http://ads.plos.org/adclick.php?n=a98abd23' target='_blank'><img src='http://ads.plos.org/adview.php?what=zone:${skyscraper}&amp;source=${source}&amp;n=a98abd23' border='0' alt='' /></a>
+    </noscript>
   </div>
   <!-- end : banner -->
-
   <h1>Browse Articles</h1>
   <#if field == "date">
-    <#include "browseNavDate.ftl">
+    <#include "/article/browseNavDate.ftl">
   <#else>
-    <#include "browseNavSubject.ftl">
+    <#include "/article/browseNavSubject.ftl">
   </#if>
 
   <#assign startPgIndex = startPage * pageSize>

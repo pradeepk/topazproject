@@ -21,25 +21,28 @@
 <struts>
 
   <package name="default-compbiol" extends="default" namespace="/journals/compbiol">
-
     <action name="home" class="org.plos.action.HomePageAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/compbiol/index.ftl</param>
       </result>
     </action>
-    
     <action name="recentArticles" class="org.plos.action.HomePageAction">
       <result name="success">/journals/compbiol/article/recentArticles.ftl</result>
     </action>
-
     <action name="mostCommented" class="org.plos.action.HomePageAction">
       <result name="success">/journals/compbiol/article/mostCommented.ftl</result>
     </action>
-
   </package>
 
+  <package name="article-compbiol" extends="article" namespace="/journals/compbiol/article">
+    <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/journals/compbiol/article/browse.ftl</param>
+      </result>
+    </action>
+  </package>  
+  
   <package name="static-compbiol" extends="default-compbiol" namespace="/journals/compbiol/static">
-
     <action name="about" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/compbiol/static/about.ftl</param>

@@ -21,29 +21,31 @@
 <struts>
 
   <package name="default-genetics" extends="default" namespace="/journals/genetics">
-
     <action name="home" class="org.plos.action.HomePageAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/genetics/index.ftl</param>
       </result>
     </action>
-    
     <action name="recentArticles" class="org.plos.action.HomePageAction">
       <result name="success">/journals/genetics/article/recentArticles.ftl</result>
     </action>
-
     <action name="mostCommented" class="org.plos.action.HomePageAction">
       <result name="success">/journals/genetics/article/mostCommented.ftl</result>
     </action>
-
     <action name="mostViewed" class="org.plos.action.HomePageAction">
       <result name="success">/journals/genetics/article/mostViewed.ftl</result>
     </action>
+  </package>
 
-    </package>
+  <package name="article-genetics" extends="article" namespace="/journals/genetics/article">
+    <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/journals/genetics/article/browse.ftl</param>
+      </result>
+    </action>
+  </package>
 
   <package name="static-genetics" extends="default-genetics" namespace="/journals/genetics/static">
-
     <action name="about" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/genetics/static/about.ftl</param>

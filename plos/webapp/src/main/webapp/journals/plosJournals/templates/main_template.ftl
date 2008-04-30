@@ -23,6 +23,8 @@
   <#assign journalContext = "">
 </#if>
 
+<#assign orgName = "PLoS">
+
 <#include "/global/global_config.ftl">
 
 <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->

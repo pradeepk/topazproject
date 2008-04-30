@@ -21,13 +21,19 @@
 <struts>
 
   <package name="default-clinicalTrials" extends="default" namespace="/journals/clinicalTrials">
-
     <action name="home" class="org.plos.action.HomePageAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/clinicalTrials/index.ftl</param>
       </result>
     </action>
+  </package>
 
+  <package name="article-clinicalTrials" extends="article" namespace="/journals/clinicalTrials/article">
+    <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
+      <result name="success" type="ambraFreemarker">
+        <param name="templateFile">/journals/clinicalTrials/article/browse.ftl</param>
+      </result>
+    </action>
   </package>
 
   <package name="static-clinicalTrials" extends="default" namespace="/journals/clinicalTrials/static">
