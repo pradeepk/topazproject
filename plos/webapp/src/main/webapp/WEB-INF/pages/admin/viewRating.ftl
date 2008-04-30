@@ -29,10 +29,10 @@
 </#if>
 <html>
   <head>
-    <title>PLoS ONE: Administration: Rating Details</title>
+    <title>Ambra: Administration: Rating Details</title>
   </head>
   <body>
-    <h1 style="text-align: center">PLoS ONE: Administration: Rating Details</h1>
+    <h1 style="text-align: center">Ambra: Administration: Rating Details</h1>
 
     <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
     <p style="text-align: right">

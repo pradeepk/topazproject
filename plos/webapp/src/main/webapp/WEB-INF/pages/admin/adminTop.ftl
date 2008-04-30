@@ -19,7 +19,7 @@
 -->
 <html>
   <head>
-    <title>PLoS ONE: Administration</title>
+    <title>Ambra: Administration</title>
     <script type="text/javascript">
       /**
        * js in support of admin UI.
@@ -48,7 +48,7 @@
     </script>
   </head>
   <body>
-    <h1 style="text-align: center">PLoS ONE: Administration</h1>
+    <h1 style="text-align: center">Ambra: Administration</h1>
 
     <@s.url id="editAnnotation" namespace="/admin" action="editAnnotation"/>
     <@s.url id="manageUsersURL" namespace="/admin" action="findUser" />

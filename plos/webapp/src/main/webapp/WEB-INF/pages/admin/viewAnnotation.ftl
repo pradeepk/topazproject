@@ -19,10 +19,10 @@
 -->
 <html>
   <head>
-    <title>PLoS ONE: Administration: Annotation Details</title>
+    <title>Ambra: Administration: Annotation Details</title>
   </head>
   <body>
-    <h1 style="text-align: center">PLoS ONE: Administration: Annotation Details</h1>
+    <h1 style="text-align: center">Ambra: Administration: Annotation Details</h1>
 
     <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
     <p style="text-align: right">

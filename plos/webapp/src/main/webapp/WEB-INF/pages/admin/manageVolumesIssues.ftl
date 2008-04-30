@@ -32,10 +32,10 @@
 </#macro>
 <html>
   <head>
-    <title>PLoS ONE: Administration: Manage Virtual Journals : Volumes / Issues</title>
+    <title>Ambra: Administration: Manage Virtual Journals : Volumes / Issues</title>
   </head>
   <body>
-    <h1 style="text-align: center">PLoS ONE: Administration: Manage Virtual Journals : Volumes / Issues</h1>
+    <h1 style="text-align: center">Ambra: Administration: Manage Virtual Journals : Volumes / Issues</h1>
 
     <@s.url id="adminTop" namespace="/admin" action="adminTop"/>
     <@s.url id="manageVirtualJournals" namespace="/admin" action="manageVirtualJournals"/>
