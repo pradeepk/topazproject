@@ -18,7 +18,7 @@
   limitations under the License.
 -->
 <#include "journal_include.ftl">
-<#include "/static/cj_shared_blocks.ftl">
+<#include "/journals/plosJournals/static/cj_shared_blocks.ftl">
 
 <!-- LAST UPDATE: 10/12/2007 -->
 <!-- begin : main content -->
@@ -253,7 +253,7 @@ Athens, GA, USA</dd>
 	 Hanover, NH, USA</dd>
 	 
 	 <dt>Jenifer Coburn</dt>
-	  <dd>Tufts University – New England Medical Center<br />
+	  <dd>Tufts University ï¿½ New England Medical Center<br />
 	    Boston, MA, USA</dd>
 	
 	<dt>Pascale Cossart</dt>

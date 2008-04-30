@@ -613,14 +613,6 @@
             <file>/javascript/init_profile.js</file>
           </javascript>
         </page>
-        <page>
-          <name>/static/about.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
-        </page>
       </journal>
 
       <!-- Overlay Journal. Anything you want to override must be listed here -->

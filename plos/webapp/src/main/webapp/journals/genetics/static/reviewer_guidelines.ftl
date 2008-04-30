@@ -18,7 +18,7 @@
   limitations under the License.
 -->
 <#include "journal_include.ftl">
-<#include "/static/cj_shared_blocks.ftl">
+<#include "/journals/plosJournals/static/cj_shared_blocks.ftl">
 
 
 

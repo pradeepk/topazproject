@@ -249,49 +249,49 @@
   <package name="static" extends="default" namespace="/static">
     <action name="commentGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/commentGuidelines.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/commentGuidelines.ftl</param>
       </result>
     </action>
 
     <action name="competing" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/competing.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/competing.ftl</param>
       </result>
     </action>
 
     <action name="figureGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/figure_guidelines.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/figure_guidelines.ftl</param>
       </result>
     </action>
 
     <action name="help" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/help.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/help.ftl</param>
       </result>
     </action>
 
     <action name="latexGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/latexGuidelines.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/latexGuidelines.ftl</param>
       </result>
     </action>
 
     <action name="license" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/license.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/license.ftl</param>
       </result>
     </action>
 
     <action name="privacy" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/privacy.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/privacy.ftl</param>
       </result>
     </action>
     
     <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/ratingGuidelines.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/ratingGuidelines.ftl</param>
       </result>
     </action>
 
@@ -303,31 +303,31 @@
     
     <action name="rssInfo" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/rssInfo.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/rssInfo.ftl</param>
       </result>
     </action>
 
     <action name="searchHelp" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/searchHelp.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/searchHelp.ftl</param>
       </result>
     </action>
 
     <action name="error" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/serverError.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/serverError.ftl</param>
       </result>
     </action>
 
     <action name="terms" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/terms.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/terms.ftl</param>
       </result>
     </action>
 
     <action name="userFaq" class="org.plos.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/userFaq.ftl</param>
+        <param name="templateFile">/journals/plosJournals/static/userFaq.ftl</param>
       </result>
     </action>
   </package>

@@ -169,7 +169,7 @@
               </ul>
             </div>
             <!-- end : stay-connected block -->
-                  <#include "/article/blog.ftl">
+                  <#include "/journals/plosJournals/blog.ftl">
           </div><!-- end : subcol first -->
           <!-- end : col 3 -->
           <!-- begin : col 4 -->
