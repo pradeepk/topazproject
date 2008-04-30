@@ -17,25 +17,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#if Request[freemarker_config.journalContextAttributeKey]?exists>
-  <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
-<#else>
-  <#assign journalContext = "">
-</#if>
-
-<#include "/global/global_config.ftl">
-<#include "/global/global_top_headerless.ftl">
+<#include "/global/user_top.ftl">
 
 <!-- begin : main content -->
 <#include "${templateFile}">
 <!-- end : main contents -->
 
-<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-<#if journalContext = "AmbraJournal" >
-  <#include "/journals/ambra/global/global_bottom.ftl">
-<#elseif journalContext = "OverlayJournal" >
-  <#include "/journals/overlayJournal/global/global_bottom.ftl">
-<#else>
-  <#include "/global/global_bottom.ftl">
-</#if>
-<#-- END MAJOR HACK -->
+<#include "/global/user_bottom.ftl">

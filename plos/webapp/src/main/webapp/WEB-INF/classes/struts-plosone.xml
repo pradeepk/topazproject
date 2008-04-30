@@ -23,7 +23,7 @@
   <package name="default-plosone" extends="default" namespace="/journals/plosone">
 
     <action name="home" class="org.plos.action.HomePageAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/index.ftl</param>
       </result>
     </action>
@@ -40,103 +40,103 @@
 
   <package name="static-plosone" extends="default-plosone" namespace="/journals/plosone/static">
     <action name="about" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/about.ftl</param>
       </result>
     </action>
 
     <action name="authors" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/authors.ftl</param>
       </result>
     </action>
 
     <action name="browse" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/browse.ftl</param>
       </result>
     </action>
 
     <action name="checklist" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/checklist.ftl</param>
       </result>
     </action>
 
     <action name="contact" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/contact.ftl</param>
       </result>
     </action>
 
     <action name="edboard" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/edboard.ftl</param>
       </result>
     </action>
 
     <action name="faq" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/faq.ftl</param>
       </result>
     </action>
 
     <action name="guidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/guidelines.ftl</param>
       </result>
     </action>
 
     <action name="information" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/information.ftl</param>
       </result>
     </action>
 
     <action name="journalClub" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/journalClub.ftl</param>
       </result>
     </action>
 
     <action name="latex" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/latex.ftl</param>
       </result>
     </action>
 
     <action name="policies" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/policies.ftl</param>
       </result>
     </action>
 
     <action name="reviewerGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/reviewer_guidelines.ftl</param>
       </result>
     </action>
 
     <action name="rssFeeds" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/rss_feeds.ftl</param>
       </result>
     </action>
 
     <action name="sitemap" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/sitemap.ftl</param>
       </result>
     </action>
 
     <action name="users" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/users.ftl</param>
       </result>
     </action>
 
     <action name="whypublish" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/whypublish.ftl</param>
       </result>
     </action>

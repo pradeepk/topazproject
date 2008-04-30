@@ -31,7 +31,19 @@
 <!-- end : main contents -->
 
 <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-<#if journalContext = "AmbraJournal" >
+<#if journalContext = "PLoSClinicalTrials" >
+  <#include "/journals/clinicalTrials/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSCompBiol" >
+  <#include "/journals/compbiol/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSGenetics" >
+  <#include "/journals/genetics/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSNTD" >
+  <#include "/journals/ntd/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSONE" >
+  <#include "/journals/plosone/global/global_bottom.ftl">
+<#elseif journalContext = "PLoSPathogens" >
+  <#include "/journals/pathogens/global/global_bottom.ftl">
+<#elseif journalContext = "AmbraJournal" >
   <#include "/journals/ambra/global/global_bottom.ftl">
 <#elseif journalContext = "OverlayJournal" >
   <#include "/journals/overlayJournal/global/global_bottom.ftl">

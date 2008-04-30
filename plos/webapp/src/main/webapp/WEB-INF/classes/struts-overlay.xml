@@ -23,7 +23,7 @@
   <package name="default-overlay" extends="default" namespace="/journals/overlayJournal">
 
     <action name="home" class="org.plos.action.HomePageAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/index.ftl</param>
       </result>
     </action>
@@ -40,7 +40,7 @@
 
   <package name="static-overlay" extends="default-overlay" namespace="/journals/overlayJournal/static">
     <action name="about" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/about.ftl</param>
       </result>
     </action>

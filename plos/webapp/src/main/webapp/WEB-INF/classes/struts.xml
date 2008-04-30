@@ -42,11 +42,14 @@
       <result-type name="freemarker"
         class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true">
       </result-type>
-      <result-type name="plosOneFreemarker" class="org.plos.struts2.PlosOneFreemarkerResult">
-        <param name="location">/templates/main_template.ftl</param>
+      <result-type name="ambraFreemarker" class="org.plos.struts2.PlosOneFreemarkerResult">
+        <param name="location">/journals/plosJournals/templates/main_template.ftl</param>
       </result-type>
-      <result-type name="plosJournals" class="org.plos.struts2.PlosOneFreemarkerResult">
-        <param name="location">/templates/plos_journals_template.ftl</param>
+      <result-type name="headless" class="org.plos.struts2.PlosOneFreemarkerResult">
+        <param name="location">/journals/plosJournals/templates/headless_template.ftl</param>
+      </result-type>
+      <result-type name="user" class="org.plos.struts2.PlosOneFreemarkerResult">
+        <param name="location">/journals/plosJournals/templates/user_shared_template.ftl</param>
       </result-type>
       <result-type name="plosStream" class="org.plos.struts2.PlosStreamResult" />
       <result-type name="json" class="org.plos.struts2.JsonResult">
@@ -129,10 +132,10 @@
         <param name="location">${startingUrl}</param>
         <param name="prependServletContext">false</param>
       </result>
-      <result name="role-insufficient" type="plosOneFreemarker">
+      <result name="role-insufficient" type="ambraFreemarker">
         <param name="templateFile">/user/inSufficientRole.ftl</param>
       </result>
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="templateFile">/static/serverError.ftl</param>
       </result>
     </global-results>
@@ -169,13 +172,13 @@
 
     <action name="pageNotFound" class="org.plos.action.PageNotFoundAction">
       <interceptor-ref name="strutsBaseStack"/>
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/pageNotFound.ftl</param>
       </result>
     </action>
     
     <action name="home" class="org.plos.action.HomePageAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/index.ftl</param>
       </result>
     </action>
@@ -190,25 +193,25 @@
 
 
     <action name="testFreemarker">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/WEB-INF/pages/include.ftl</param>
       </result>
     </action>
 
     <action name="feedbackCreate" class="org.plos.action.FeedbackAction" method="executeRender">
-      <result type="plosOneFreemarker">
+      <result type="ambraFreemarker">
         <param name="templateFile">/feedback/feedbackEntry.ftl</param>
       </result>
     </action>
 
     <action name="feedback" class="org.plos.action.FeedbackAction" method="executeSend">
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="templateFile">/feedback/feedbackEntry.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/feedback/feedbackEntry.ftl</param>
       </result>
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/feedback/feedbackSuccess.ftl</param>
       </result>
     </action>
@@ -219,25 +222,25 @@
 
   <package name="search" extends="default" namespace="/search">
     <action name="searchStart" class="org.plos.action.NoOpAction">
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
       </result>
     </action>
 
     <action name="simpleSearch" class="org.plos.search.action.SearchAction" method="executeSimpleSearch">
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
       </result>
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
       </result>
     </action>
 
     <action name="advancedSearch" class="org.plos.search.action.SearchAction" method="executeAdvancedSearch">
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/search/searchStart.ftl</param>
       </result>
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
       </result>
     </action>
@@ -245,85 +248,85 @@
 
   <package name="static" extends="default" namespace="/static">
     <action name="commentGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/commentGuidelines.ftl</param>
       </result>
     </action>
 
     <action name="competing" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/competing.ftl</param>
       </result>
     </action>
 
     <action name="figureGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/figure_guidelines.ftl</param>
       </result>
     </action>
 
     <action name="help" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/help.ftl</param>
       </result>
     </action>
 
     <action name="latexGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/latexGuidelines.ftl</param>
       </result>
     </action>
 
     <action name="license" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/license.ftl</param>
       </result>
     </action>
 
     <action name="privacy" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/privacy.ftl</param>
       </result>
     </action>
     
     <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/ratingGuidelines.ftl</param>
       </result>
     </action>
 
     <action name="releaseNotes" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosone/static/releaseNotes.ftl</param>
       </result>
     </action>
     
     <action name="rssInfo" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/rssInfo.ftl</param>
       </result>
     </action>
 
     <action name="searchHelp" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/searchHelp.ftl</param>
       </result>
     </action>
 
     <action name="error" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/serverError.ftl</param>
       </result>
     </action>
 
     <action name="terms" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/terms.ftl</param>
       </result>
     </action>
 
     <action name="userFaq" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/userFaq.ftl</param>
       </result>
     </action>
@@ -335,7 +338,7 @@
         <param name="excludes">targetSource, callbacks, exposeProxy</param>
       </interceptor-ref>
       <interceptor-ref name="plosUserStack"/>
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/article_body.ftl</param>
         <param name="noCache">true</param>
       </result>
@@ -345,13 +348,13 @@
       <result name="error">/WEB-INF/pages/article/articleRatings.ftl</result>
     </action>
     <action name="getUpdatedRatings" class="org.plos.rating.action.GetAverageRatingsAction">
-     <result name="success" type="plosOneFreemarker">
+     <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_rhc_rating.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
     <action name="getArticleRatings" class="org.plos.rating.action.GetArticleRatingsAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/rating/index.ftl</param>
       </result>
     </action>
@@ -379,7 +382,7 @@
 
   <package name="article" extends="default" namespace="/article">
     <action name="listTrackbacks" class="org.plos.action.TrackbackAction" method="getTrackbacksForArticle">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/trackbackList.ftl</param>
       </result>
     </action>
@@ -389,13 +392,13 @@
     </action>
 
     <action name="emailArticle" class="org.plos.article.action.EmailArticleAction" method="executeRender">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/emailArticle.ftl</param>
       </result>
     </action>
 
     <action name="findArticle" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/findArticle.ftl</param>
       </result>
     </action>
@@ -405,10 +408,10 @@
     </action>
 
     <action name="emailThisArticleSubmit" class="org.plos.article.action.EmailArticleAction" method="executeSend">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/emailSuccess.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/article/emailArticle.ftl</param>
       </result>
     </action>
@@ -436,15 +439,13 @@
     </action>
 
     <action name="slideshow" class="org.plos.article.action.SecondaryObjectAction" method="listFiguresAndTables">
-      <result name="success" type="plosOneFreemarker">
-        <param name="location">/templates/headless_template.ftl</param>
+      <result name="success" type="headless">
         <param name="templateFile">/article/imageWindow.ftl</param>
       </result>
     </action>
 
     <action name="showImageLarge" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="location">/templates/headless_template.ftl</param>
+      <result name="success" type="headless">
         <param name="templateFile">/article/imageWindowLarge.ftl</param>
       </result>
     </action>
@@ -472,39 +473,39 @@
     </action>
 
     <action name="fetchBody" class="org.plos.article.action.FetchArticleAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_content.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="fetchArticleRhc" class="org.plos.article.action.FetchArticleAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_rhc_count.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/browse.ftl</param>
       </result>
     </action>
 
     <action name="browseIssue" class="org.plos.article.action.BrowseIssueAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/browseIssue.ftl</param>
       </result>
     </action>
 
     <action name="browseVolume" class="org.plos.article.action.BrowseVolumeAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/browseVolume.ftl</param>
       </result>
     </action>
 
     <action name="citationList" class="org.plos.article.action.CreateCitation">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/citationList.ftl</param>
       </result>
     </action>
@@ -566,28 +567,28 @@
     </action>
 
     <action name="listThread" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/discussion.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="getCommentary" class="org.plos.annotation.action.GetCommentaryAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/commentary.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="getCorrectionsCommentary" class="org.plos.annotation.action.GetCorrectionsCommentaryAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/corrections.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="listThreadRefresh" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/discussion/threaded_replies.ftl</param>
         <param name="noCache">true</param>
       </result>
@@ -612,7 +613,7 @@
     </action>
 
     <action name="startDiscussion" class="org.plos.annotation.action.GetCommentaryAction" method="getArticleMetaInfo">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/startDiscussion.ftl</param>
       </result>
     </action>
@@ -697,24 +698,24 @@
     </action>
 
     <action name="editAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
-      <result name="success" type="plosJournals">
+      <result name="success" type="user">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
-      <result name="input" type="plosJournals">
+      <result name="input" type="user">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
     </action>
 
     <action name="editAjaxAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
-      <result name="success"  type="plosOneFreemarker">
+      <result name="success"  type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
       </result>
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
       </result>
@@ -727,24 +728,24 @@
     </action>
 
     <action name="saveAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="saveAlerts">
-      <result name="success" type="plosJournals">
+      <result name="success" type="user">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
-      <result name="input" type="plosJournals">
+      <result name="input" type="user">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
     </action>
 
     <action name="saveAjaxAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="saveAlerts">
-      <result name="success"  type="plosOneFreemarker">
+      <result name="success"  type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
       </result>
-      <result name="input">type="plosOneFreemarker">
+      <result name="input">type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
       </result>
-      <result name="error">type="plosOneFreemarker">
+      <result name="error">type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
       </result>
@@ -752,33 +753,33 @@
 
 
     <action name="editProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success" type="plosJournals">
+      <result name="success" type="user">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
-      <result name="input" type="plosJournals">
+      <result name="input" type="user">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
 
     <action name="editPrefsAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
-      <result name="success" type="plosJournals">
+      <result name="success" type="user">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
-      <result name="input" type="plosJournals">
+      <result name="input" type="user">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
 
     <action name="editAjaxProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
@@ -786,11 +787,11 @@
 
     <action name="saveAjaxProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect-action">editAjaxProfile.action</result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
       </result>
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/static/serverError.ftl</param>
         <param name="noCache">true</param>
       </result>
@@ -798,23 +799,23 @@
 
     <action name="saveProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
-      <result name="input" type="plosJournals">
+      <result name="input" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
 
     <action name="retrieveUserProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success" type="plosJournals">
+      <result name="success" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="input">/user/newUser.ftl</result>
-      <result name="error" type="plosJournals">
+      <result name="error" type="user">
         <param name="templateFile">/user/newUser.ftl</param>
       </result>
     </action>
 
     <action name="profile" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/profile.ftl</param>
       </result>
     </action>
@@ -824,10 +825,10 @@
     <default-interceptor-ref name="plosBaseStack" />
 
     <action name="prePopulateNewUser" class="org.plos.user.action.MemberUserProfileAction" method="prePopulateUserDetails">
-      <result name="new-profile" type="plosJournals">
+      <result name="new-profile" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
-      <result name="update-profile" type="plosJournals">
+      <result name="update-profile" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="success" type="redirect">/</result>
@@ -835,7 +836,7 @@
 
     <action name="createNewUser" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/editPrefsAlerts.action?tabId=alerts</result>
-      <result name="input" type="plosJournals">
+      <result name="input" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
@@ -849,7 +850,7 @@
     </action>
 
     <action name="showUser" class="org.plos.user.action.DisplayUserAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/displayUser.ftl</param>
       </result>
     </action>
@@ -869,60 +870,60 @@
     </action>
 
     <action name="adminTop" class="org.plos.admin.action.AdminTopAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="deleteArticle" class="org.plos.admin.action.DeleteArticleAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="publishArchives" class="org.plos.admin.action.PublishArchivesAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
     <action name="processFlags" class="org.plos.admin.action.ProcessFlagsAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
       <!-- stay in adminTop even on error -->
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
       </result>
@@ -960,10 +961,10 @@
     </action>
 
     <action name="editProfileByAdmin" class="org.plos.user.action.AdminUserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/user.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/user/user.ftl</param>
       </result>
     </action>
@@ -972,16 +973,16 @@
       <result name="success" type="chain">
         <param name="actionName">editProfileByAdmin</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/user/user.ftl</param>
       </result>
     </action>
 
     <action name="retrieveUserAlertsByAdmin" class="org.plos.user.action.AdminUserAlertsAction" method="retrieveAlerts">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/alerts.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/user/alerts.ftl</param>
       </result>
     </action>
@@ -990,41 +991,41 @@
       <result name="success" type="chain">
         <param name="actionName">retrieveUserAlertsByAdmin</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/user/alerts.ftl</param>
       </result>
     </action>
 
     <action name="editAnnotation" class="org.plos.admin.action.EditAnnotationAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
     <action name="editAnnotationLoad" class="org.plos.admin.action.EditAnnotationAction"
       method="loadAnnotation">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
     <action name="editAnnotationSave" class="org.plos.admin.action.EditAnnotationAction"
       method="saveAnnotation">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
     <action name="manageVirtualJournals" class="org.plos.admin.action.ManageVirtualJournalsAction">
       <result name="success">/WEB-INF/pages/admin/manageVirtualJournals.ftl</result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/WEB-INF/pages/admin/manageVirtualJournals.ftl</param>
       </result>
     </action>
 
     <action name="manageVolumesIssues" class="org.plos.admin.action.ManageVolumesIssuesAction">
       <result name="success">/WEB-INF/pages/admin/manageVolumesIssues.ftl</result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="ambraFreemarker">
         <param name="templateFile">/WEB-INF/pages/admin/manageVolumesIssues.ftl</param>
       </result>
     </action>
@@ -1035,12 +1036,12 @@
   </package>
 
   <!-- make virtual journal Actions and configs available  -->
+  <include file="struts-ambra.xml" />
+  <include file="struts-overlay.xml" />
   <include file="struts-clinicalTrials.xml" />
   <include file="struts-compbiol.xml" />
   <include file="struts-genetics.xml" />
   <include file="struts-ntd.xml" />
   <include file="struts-pathogens.xml" />
   <include file="struts-plosone.xml" />
-  <include file="struts-ambra.xml" />
-  <include file="struts-overlay.xml" />
 </struts>

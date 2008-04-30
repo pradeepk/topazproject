@@ -23,7 +23,7 @@
   <package name="default-ambra" extends="default" namespace="/journals/ambraJournal">
 
     <action name="home" class="org.plos.action.HomePageAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/index.ftl</param>
       </result>
     </action>
@@ -45,49 +45,49 @@
   <package name="static-ambra" extends="default-ambra" namespace="/journals/ambraJournal/static">
   
     <action name="browse" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/browse.ftl</param>
       </result>
     </action>
     
     <action name="users" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/users.ftl</param>
       </result>
     </action>
     
     <action name="commentGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/commentGuidelines.ftl</param>
       </result>
     </action>
     
     <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/ratingGuidelines.ftl</param>
       </result>
     </action>
     
     <action name="help" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/help.ftl</param>
       </result>
     </action>
     
     <action name="sitemap" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/sitemap.ftl</param>
       </result>
     </action>
     
     <action name="rssInfo" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/rssInfo.ftl</param>
       </result>
     </action>
     
     <action name="releaseNotes" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/static/releaseNotes.ftl</param>
       </result>
     </action>
@@ -96,7 +96,7 @@
   
   <package name="article-ambra" extends="default-ambra" namespace="/journals/ambraJournal/article">
     <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/ambraJournal/article/browse.ftl</param>
       </result>
     </action>
