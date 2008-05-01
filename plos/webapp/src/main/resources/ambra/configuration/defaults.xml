@@ -300,7 +300,7 @@
           </javascript>
         </default>
         <page>
-          <name>/journals/ambraJournal/index.ftl</name>
+          <name>/index.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
