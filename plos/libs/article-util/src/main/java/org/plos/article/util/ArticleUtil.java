@@ -31,7 +31,6 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.CountingInputStream;
@@ -41,12 +40,8 @@ import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.models.ObjectInfo;
-import org.topazproject.fedora.client.APIAStubFactory;
 import org.topazproject.fedora.client.APIMStubFactory;
-import org.topazproject.fedora.client.FedoraAPIA;
 import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.fedora.client.FieldSearchResult;
-import org.topazproject.fedora.client.ObjectFields;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
@@ -229,33 +224,31 @@ public class ArticleUtil {
       throws NoSuchArticleIdException, RemoteException, IOException, ArticleDeleteException {
     try {
       log.debug("Deleting '" + article + "'");
-      delete(article, session, 
-             APIMStubFactory.create(CONF.getString("ambra.services.topaz.fedora.uri"),
-                                    CONF.getString("ambra.services.topaz.fedora.userName"),
-                                    CONF.getString("ambra.services.topaz.fedora.password")),
-             APIAStubFactory.create(CONF.getString("ambra.services.topaz.fedora.uri")),
-             getFgsOperations());
+      delete(article, session, APIMStubFactory.create(
+                                      CONF.getString("ambra.services.topaz.fedora.uri"),
+                                      CONF.getString("ambra.services.topaz.fedora.userName"),
+                                      CONF.getString("ambra.services.topaz.fedora.password")),
+                            getFgsOperations());
 
-      // Clean up ingested article directory
-      File ingestedXmlFile = null;
+      // Clean up spool directories
+      File ingestedXmlFile = new File(ingestedDir, article.replaceAll("[:/.]", "_") + ".xml");
+      log.debug("Deleting '" + ingestedXmlFile + "'");
       try {
-        ingestedXmlFile = new File(ingestedDir, article.replaceAll("[:/.]", "_") + ".xml");
-        log.debug("Deleting '" + ingestedXmlFile + "'");
         FileUtils.forceDelete(ingestedXmlFile);
       } catch (FileNotFoundException fnfe) {
         log.info("'" + ingestedXmlFile + "' does not exist - cannot delete: " + fnfe);
       }
-      
-      // Copy the ingested zip file back to the ingestion-queue directory (if not the same directory)
       if (!queueDir.equals(ingestedDir)) {
         String fname = article.substring(25) + ".zip";
         File fromFile = new File(ingestedDir, fname);
         File toFile   = new File(queueDir,    fname);
-        log.debug("Moving '" + fromFile + "' to '" + toFile + "'");
+        log.debug("Copying '" + fromFile + "' to '" + toFile + "'");
         try {
-          fromFile.renameTo(toFile);
-        } catch (Exception e) {
-          log.info("Failed to rename/move '" + fromFile + "' to '" + toFile + "'", e);
+          FileUtils.copyFile(fromFile, toFile);
+          log.debug("Deleting '" + fromFile + "'");
+          FileUtils.forceDelete(fromFile);
+        } catch (FileNotFoundException fnfe) {
+          log.info("Could not copy '" + fromFile + "' to '" + toFile + "': " + fnfe);
         }
       }
     } catch (MalformedURLException e) {
@@ -265,88 +258,70 @@ public class ArticleUtil {
     }
   }
 
-  private static void delete(String article, Session session, FedoraAPIM apim, FedoraAPIA apia, FgsOperations[] fgs)
+  private static void delete(String article, Session session, FedoraAPIM apim, FgsOperations[] fgs)
       throws NoSuchArticleIdException, RemoteException, ArticleDeleteException {
-    String[] resultsFields = { "pid" };
-    FieldSearchResult fsr = apia.findObjects(resultsFields, new NonNegativeInteger("100"), null);
-    ObjectFields[] results = fsr.getResultList();
-    System.out.println("\n\n\n\n\n\n\nFedora PID search results:");
-    for (ObjectFields result : results) {
-      System.out.println("Found object pid = "+result.getPid());
-    }
-    
     ArticleDeleteException ade = new ArticleDeleteException();
     // load article and objects
     Article a = (Article) session.get(Article.class, article);
-    if (a == null) {
-      ade.addException(new NoSuchArticleIdException(article));
+    if (a == null)
+      throw new NoSuchArticleIdException(article);
+
+    ObjectInfo oi = a;
+    while (oi != null)
+      oi = oi.getNextObject();
+    for (Category c : a.getCategories())
+      ;
+
+    log.info("deleting all objects for uri '" + article + "'");
+
+    // delete the article from mulgara first (in case of problems)
+    try {
+    session.delete(a);
+		} catch (OtmException e) {
+			ade.addException(e);
+		}
+
+    oi = a;
+    while (oi != null) {
+      log.info("deleting uri '" + oi.getId() + "'");
+
+      // Remove article from full-text index first
+      String result = "";
+      for (int i = 0; i < fgs.length; i++) {
+        try {
+          result = fgs[i].updateIndex("deletePid", oi.getPid(), FGS_REPO, null, null, null);
+        } catch (RemoteException re) {
+          ade.addException(re);
+          log.error("Deleted pid '" + oi.getPid() +
+                    "' from some server(s). But not from server " +
+                    i + ". Cleanup required.", re);
+        }
+      }
+
+      log.info("Removed '" + oi.getPid() + "' from full-text index:\n" + result);
+
+      // Remove from fedora
+      try {
+        apim.purgeObject(oi.getPid(), "Purged object", false);
+      } catch (RemoteException re) {
+        if (!FedoraUtil.isNoSuchObjectException(re))
+          ade.addException(re);
+        log.warn("Tried to remove non-existent object '" + oi.getPid() + "'");
+      }
+
+      oi = oi.getNextObject();
     }
 
-    if (a != null) {
-      // I presume this code is used to un-lazy-load the chain of associated objects for deletion. 
-      ObjectInfo oi = a;
-      while (oi != null) {
-        oi = oi.getNextObject();
-      }
-      if (a != null) {
-        for (Category c : a.getCategories()) {
-          ;
-        }
-      }
-      
-      log.info("deleting all objects for uri '" + article + "'");
-      
-      // delete the article from mulgara first (in case of problems)
+    // remove category objects from Fedora
+    for (Category c : a.getCategories()) {
       try {
-        session.delete(a);
-      } catch (OtmException e) {
-        ade.addException(e);
-      }
-      
-      oi = a;
-      while (oi != null) {
-        log.info("deleting uri '" + oi.getId() + "'");
-        
-        // Remove article from full-text index first
-        String result = "";
-        for (int i = 0; i < fgs.length; i++) {
-          try {
-            result = fgs[i].updateIndex("deletePid", oi.getPid(), FGS_REPO, null, null, null);
-          } catch (RemoteException re) {
-            ade.addException(re);
-            log.error("Deleted pid '" + oi.getPid() + "' from some server(s). But not from server " + i
-                      + ". Cleanup required.", re);
-          }
+        apim.purgeObject(c.getPid(), "Purged object", false);
+      } catch (RemoteException re) {
+        if (!FedoraUtil.isNoSuchObjectException(re)) {
+          ade.addException(re);
         }
-        
-        log.info("Removed '" + oi.getPid() + "' from full-text index:\n" + result);
-        
-        // Remove from fedora
-        try {
-          apim.purgeObject(oi.getPid(), "Purged object", false);
-        } catch (RemoteException re) {
-          if (!FedoraUtil.isNoSuchObjectException(re))
-            ade.addException(re);
-          log.warn("Tried to remove non-existent object '" + oi.getPid() + "'");
-        }
-        
-        oi = oi.getNextObject();
+        log.warn("Tried to remove non-existent object '" + c.getPid() + "'");
       }
-      
-      // remove category objects from Fedora
-      for (Category c : a.getCategories()) {
-        try {
-          apim.purgeObject(c.getPid(), "Purged object", false);
-        } catch (RemoteException re) {
-          if (!FedoraUtil.isNoSuchObjectException(re)) {
-            ade.addException(re);
-          }
-          log.warn("Tried to remove non-existent object '" + c.getPid() + "'");
-        }
-      }
-    } else {
-      // Mulgara object could not be found. Attempt to clear out Fedora representation...
-      
     }
 
     if (ade.getExceptionList().size()>0) {
