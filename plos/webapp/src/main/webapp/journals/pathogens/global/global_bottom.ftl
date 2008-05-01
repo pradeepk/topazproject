@@ -22,7 +22,7 @@
 
 <!-- begin : footer -->
 <div id="ftr">
-<#include "/global/global_footer.ftl">
+<#include "/journals/plosJournals/global/global_footer.ftl">
 </div>
 <!-- end : footer -->
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">

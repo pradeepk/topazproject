@@ -26,18 +26,24 @@
 
 var tabsListMap = new Array();
 
-tabsListMap[tabsListMap.length] = {tabKey:    "recentlyPublished",
+tabsListMap[tabsListMap.length] = {tabKey:    "recentContent",
                                    title:     "Recently Published",
                                    className: "published",
                                    urlLoad:   "/article/recentArticles.action",
                                    urlSave:   ""};
 
-tabsListMap[tabsListMap.length] = {tabKey:    "mostCommented",
-                                   title:     "Recent Ratings & Comments",
+tabsListMap[tabsListMap.length] = {tabKey:    "featuredDiscussions",
+                                   title:     "Featured Discussions",
                                    className: "annotated",
                                    urlLoad:   "/article/mostCommented.action",
                                    urlSave:   ""};
 
+tabsListMap[tabsListMap.length] = {tabKey:    "mostViewed",
+                                   title:     "Most Viewed",
+                                   className: "viewed",
+                                   urlLoad:   "/article/mostViewed.action",
+                                   urlSave:   ""};
+                                   
 var querystring = topaz.htmlUtil.getQuerystring();
 var tabSelectId = "";
 

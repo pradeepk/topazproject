@@ -51,43 +51,43 @@
     </action>
     
     <action name="users" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/users.ftl</param>
       </result>
     </action>
     
     <action name="commentGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/commentGuidelines.ftl</param>
       </result>
     </action>
     
     <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/ratingGuidelines.ftl</param>
       </result>
     </action>
     
     <action name="help" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/help.ftl</param>
       </result>
     </action>
     
     <action name="sitemap" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/sitemap.ftl</param>
       </result>
     </action>
     
     <action name="rssInfo" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/rssInfo.ftl</param>
       </result>
     </action>
     
     <action name="releaseNotes" class="org.plos.action.NoOpAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/releaseNotes.ftl</param>
       </result>
     </action>
@@ -96,7 +96,7 @@
   
   <package name="article-overlay" extends="default-overlay" namespace="/journals/overlayJournal/article">
     <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/article/browse.ftl</param>
       </result>
     </action>
