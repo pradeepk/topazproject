@@ -59,7 +59,7 @@ class TopazConfig {
   static final List<String> defFieldsList = Arrays.asList(new String[] { "description", "title", "body" });
   static final List<String> DEFAULT_FIELDS = CONF.getList(  "ambra.services.search.defaultFields", defFieldsList);
   
-  static final String FEDORA_BASE_URL   = CONF.getString("ambra.services.topaz.fedora.baseUrl", null);
+  static final String FEDORA_BASE_URL   = CONF.getString("ambra.topaz.blobStore.fedora.baseUrl", null);
   
   static final String GFIND_XSLT = CONF.getString("ambra.services.search.xslt.gfind", "gfindObjectsToResultPage");
   static final String BROWSE_XSLT = CONF.getString("ambra.services.search.xslt.browse", "browseIndexTResultPage");

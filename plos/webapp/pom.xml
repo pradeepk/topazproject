@@ -383,12 +383,12 @@
   </build>
 
   <profiles>
-    <!-- config webapp to use embedded, local:, Mulgara: mvn -Dtopaz.mulgara.scheme=local: -->
+    <!-- config webapp to use embedded, local:, Mulgara: mvn -Dambra.topaz.tripleStore.mulgara.scheme=local: -->
     <profile>
       <id>mulgara-local</id>
       <activation>
         <property>
-          <name>topaz.mulgara.scheme</name>
+          <name>ambra.topaz.tripleStore.mulgara.scheme</name>
           <value>local:</value>
         </property>
       </activation>

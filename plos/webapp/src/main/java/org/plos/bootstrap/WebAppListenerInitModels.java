@@ -63,11 +63,11 @@ public class WebAppListenerInitModels implements ServletContextListener {
   private void initModels() {
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
-      URI           service = new URI(conf.getString("ambra.services.topaz.itql-admin.uri"));
+      URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql-admin.uri"));
 
       ItqlStore     store   = new ItqlStore(service, new WebappItqlClientFactory());
 
-      conf                  = conf.subset("ambra.services.topaz.models");
+      conf                  = conf.subset("ambra.models");
 
       Iterator it           = conf.getKeys();
 

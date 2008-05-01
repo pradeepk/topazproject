@@ -395,16 +395,18 @@
       </articleType>
     </articleTypeList>
 
-    <services>
-      <topaz>
+    <topaz>
+      <blobStore>
         <!-- Configuration to talk to Fedora -->
         <fedora>
           <auth-method>BASIC</auth-method>
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
         </fedora>
-      </topaz>
-
+      </blobStore>
+    </topaz>
+      
+    <services>
       <registration>
         <!-- It is assumed plos-registartion webapp is running on cas. However that can be changed
           by changing the following settings. -->

@@ -41,8 +41,7 @@
       </articleType>
     </articleTypeList>
     <services>
-      <topaz>
-        <utilities>
+      <documentManagement>
           <imageMagick>
             <imageSetConfigs>
               <imageSet name="#default">
@@ -55,8 +54,7 @@
               </imageSet>
             </imageSetConfigs>
           </imageMagick>
-        </utilities>
-      </topaz>
+      </documentManagement>
     </services>
   </ambra>
 </config>

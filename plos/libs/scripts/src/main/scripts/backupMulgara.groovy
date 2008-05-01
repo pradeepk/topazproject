@@ -40,7 +40,7 @@ def opt = cli.parse(args); if (opt.h) { cli.usage(); return }
 // Load configuration
 CONF = ToolHelper.loadConfiguration(opt.c)
 
-def mulgaraUri = CONF.getString("ambra.services.topaz.itql.uri")
+def mulgaraUri = CONF.getString("ambra.topaz.tripleStore.mulgara.itql.uri")
 def backupFileUri = (opt.f) ? opt.f : 'file:/tmp/serverbackup.gz'
 
 // delete existing backupFile, if any

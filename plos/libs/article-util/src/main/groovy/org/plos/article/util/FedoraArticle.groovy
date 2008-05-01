@@ -47,7 +47,7 @@ class FedoraArticle {
 
     // Get configuration information we need
     def conf = ConfigurationStore.getInstance().configuration
-    def fedoraUri = conf.getString("ambra.services.topaz.fedora.base-url") + "get"
+    def fedoraUri = conf.getString("ambra.topaz.blobStore.fedora.base-url") + "get"
 
     this.url = "$fedoraUri/doi:${URLEncoder.encode(doi.substring(9))}/XML"
     this.article = slurper.parse(new URL(this.url).getContent())

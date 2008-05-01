@@ -74,7 +74,7 @@ public class Env {
 
     mulgara = new Mulgara(Env.path(install, '/mulgara-service'))
     mulgara.sysProperties.'log4j.configuration'       = Env.pathUrl(install, '/mulgaraLog4j.xml')
-    mulgara.sysProperties.'topaz.mulgara.databaseDir' = Env.path(install, '/data/mulgara')
+    mulgara.sysProperties.'ambra.topaz.tripleStore.mulgara.databaseDir' = Env.path(install, '/data/mulgara')
 
     fedora = new Fedora(install)
 

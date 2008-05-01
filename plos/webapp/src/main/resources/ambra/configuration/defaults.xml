@@ -109,12 +109,15 @@
         </platform>
       </OverlayJournal>
     </virtualJournals>
-    
-    <services>
-      <topaz>
+
+    <topaz>
+      <blobStore>
         <!-- must match the name of a bean in the applicationContext.xml -->
-        <blobStore>fedoraBlobStore</blobStore>
-      </topaz>
+        <beanName>fedoraBlobStore</beanName>
+      </blobStore>
+    </topaz>
+
+    <services>
 
       <search>
         <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->
@@ -236,7 +239,7 @@
       <homesite>${ambra.network.hosts.default}</homesite>
       <service>
         <!-- This may need to be mucked with to be just one -->
-        <search>${ambra.services.topaz.fedoraGSearch.urls.url}</search>
+        <search>${ambra.services.search.fedoraGSearch.urls.url}</search>
       </service>
     </spring>
 

@@ -42,7 +42,7 @@ import com.sun.xacml.ctx.Subject;
 public class XacmlUtil extends Util {
   /**
    * The special value for when looking up a PDP in the config to indicate the default PDP.
-   * Example config entry:<pre>  ambra.services.topaz.annotations.pdpName={@value}</pre>
+   * Example config entry:<pre>  ambra.services.xacml.annotations.pdpName={@value}</pre>
    */
   public static final String SN_DEFAULT_PDP = "_default_";
 

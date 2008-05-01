@@ -71,7 +71,7 @@ public class Mulgara extends Service {
 
   private void runMulgara(boolean start, boolean wait) {
     def logConf = sysProperties.'log4j.configuration'
-    def dbDir   = sysProperties.'topaz.mulgara.databaseDir'
+    def dbDir   = sysProperties.'ambra.topaz.tripleStore.mulgara.databaseDir'
     String cmd =
       "java ${jvmargs} -jar ${mulgaraJar} -s topazproject -a ${dbDir} -l ${logConf} -p ${httpPort}"
     if (!start)

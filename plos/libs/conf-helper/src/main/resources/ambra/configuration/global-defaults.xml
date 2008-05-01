@@ -100,100 +100,95 @@
       <figureAction2>&amp;imageURI=</figureAction2>
       <errorPage>static/pageNotFound.action</errorPage> <!-- error page to redirect to in pub app if article not found -->
     </platform>
-    <services>
-      <topaz>
-        <mulgara>
-          <!-- The base uri of all the models that we create in mulgara.-->
-          <scheme>rmi:</scheme>
-          <baseuri>${ambra.services.topaz.mulgara.scheme}//${ambra.network.hosts.mulgara}/topazproject</baseuri>
-        </mulgara>
-        <objects>
-          <!-- The base uri for all objects that we create in fedora. -->
-          <base-uri>info:doi/10.1371/</base-uri>
-        </objects>
-        <!-- The list of models in mulgara that we depend on/create -->
-        <models>
-          <ri type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=ri
-          </ri>
-          <articles type="${ambra.services.topaz.models.ri[@type]}">${ambra.services.topaz.models.ri}</articles>
-          <annotations type="${ambra.services.topaz.models.ri[@type]}">${ambra.services.topaz.models.ri}</annotations>
-          <users type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=users
-          </users>
-          <grants type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=grants
-          </grants>
-          <revokes type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=revokes
-          </revokes>
-          <pp type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=pp
-          </pp>
-          <preferences type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=preferences
-          </preferences>
-          <profiles type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=profiles
-          </profiles>
-          <ratings type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=ratings
-          </ratings>
-          <alerts type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=alerts
-          </alerts>
-          <criteria type="http://topazproject.org/models#filter">
-            ${ambra.services.topaz.mulgara.baseuri}#filter:model=criteria
-          </criteria>
-          <str type="http://topazproject.org/models#StringCompare">
-            ${ambra.services.topaz.mulgara.baseuri}#str
-          </str>
-          <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">${ambra.services.topaz.mulgara.baseuri}#xsd</xsd>
-        </models>
+    
+    <!-- The list of models in mulgara that we depend on/create -->
+    <models>
+      <ri type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=ri
+      </ri>
+      <articles type="${ambra.models.ri[@type]}">${ambra.models.ri}</articles>
+      <annotations type="${ambra.models.ri[@type]}">${ambra.models.ri}</annotations>
+      <users type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=users
+      </users>
+      <grants type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=grants
+      </grants>
+      <revokes type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=revokes
+      </revokes>
+      <pp type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=pp
+      </pp>
+      <preferences type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=preferences
+      </preferences>
+      <profiles type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=profiles
+      </profiles>
+      <ratings type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=ratings
+      </ratings>
+      <alerts type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=alerts
+      </alerts>
+      <criteria type="http://topazproject.org/models#filter">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=criteria
+      </criteria>
+      <str type="http://topazproject.org/models#StringCompare">
+        ${ambra.topaz.tripleStore.mulgara.baseuri}#str
+      </str>
+      <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">${ambra.topaz.tripleStore.mulgara.baseuri}#xsd</xsd>
+    </models>
+    
+    <topaz>
+      <objects>
+        <!-- The base uri for all objects that we create in fedora. -->
+        <base-uri>info:doi/10.1371/</base-uri>
+      </objects>
 
-        <!-- Configuration to talk to Fedora -->
+      <!-- Configuration to talk to Fedora -->
+      <blobStore>
         <fedora>
-          <base-url>http://${ambra.network.hosts.fedora}:${ambra.network.ports.fedora}/fedora/</base-url>
-          <uri>${ambra.services.topaz.fedora.base-url}services/management</uri>
+          <base-url>
+            http://${ambra.network.hosts.fedora}:${ambra.network.ports.fedora}/fedora/
+          </base-url>
+          <uri>${ambra.topaz.blobStore.fedora.base-url}services/management</uri>
           <auth-method>BASIC</auth-method>
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
         </fedora>
-        
-        <fedoraUploader>
-          <uri>${ambra.services.topaz.fedora.base-url}management/upload</uri>
-          <auth-method>${ambra.services.topaz.fedora.auth-method}</auth-method>
-          <userName>${ambra.services.topaz.fedora.userName}</userName>
-          <password>${ambra.services.topaz.fedora.password}</password>
-        </fedoraUploader>
+      </blobStore>
 
-        <!-- Configuration to talk to Mulgara -->
-        <itql>
-          <uri>${ambra.services.topaz.mulgara.baseuri}</uri>
-          <auth-method>NONE</auth-method>
-        </itql>
-        <itql-admin>
-          <uri>${ambra.services.topaz.itql.uri}</uri>
-          <auth-method>NONE</auth-method>
-        </itql-admin>
+      <fedoraUploader>
+        <uri>${ambra.topaz.blobStore.fedora.base-url}management/upload</uri>
+        <auth-method>${ambra.topaz.blobStore.fedora.auth-method}</auth-method>
+        <userName>${ambra.topaz.blobStore.fedora.userName}</userName>
+        <password>${ambra.topaz.blobStore.fedora.password}</password>
+      </fedoraUploader>
 
-        <fedoraGSearch>
-          <urls>
-            <url>
-              http://${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}/ws-search-webapp/services/FedoraGenericSearchServicePort
-            </url>
-          </urls>
-          <repository>Topaz</repository>
-          <index>TopazIndex</index>
-          <indexDocXslt>topazFoxmlToLucene</indexDocXslt>
-          <resultPageXslt>copyXml</resultPageXslt>
-          <fgsrepository>
-            <fedoraSoap>${ambra.services.topaz.fedora.base-url}services</fedoraSoap>
-            <fedoraUser>${ambra.services.topaz.fedora.userName}</fedoraUser>
-            <fedoraPass>${ambra.services.topaz.fedora.password}</fedoraPass>
-          </fgsrepository>
-        </fedoraGSearch>
-      </topaz>
+      <tripleStore>
+        <mulgara>
+          <!-- The base uri of all the models that we create in mulgara.-->
+          <scheme>rmi:</scheme>
+          <baseuri>
+            ${ambra.topaz.tripleStore.mulgara.scheme}//${ambra.network.hosts.mulgara}/topazproject
+          </baseuri>
+          <!-- Configuration to talk to Mulgara -->
+          <itql>
+            <uri>${ambra.topaz.tripleStore.mulgara.baseuri}</uri>
+            <auth-method>NONE</auth-method>
+          </itql>
+          <itql-admin>
+            <uri>${ambra.topaz.tripleStore.mulgara.itql.uri}</uri>
+            <auth-method>NONE</auth-method>
+          </itql-admin>
+        </mulgara>
+      </tripleStore>
+    </topaz>
+
+    <services>
+      
 
       <cas>
         <!-- The following entries defnine how the java webapp talk to the database.
@@ -226,6 +221,25 @@
           </imageSetConfigs>
         </imageMagick>
       </documentManagement>
+      
+      <search>
+        <fedoraGSearch>
+          <urls>
+            <url>
+              http://${ambra.network.hosts.ambra}:${ambra.network.ports.ambra}/ws-search-webapp/services/FedoraGenericSearchServicePort
+            </url>
+          </urls>
+          <repository>Topaz</repository>
+          <index>TopazIndex</index>
+          <indexDocXslt>topazFoxmlToLucene</indexDocXslt>
+          <resultPageXslt>copyXml</resultPageXslt>
+          <fgsrepository>
+            <fedoraSoap>${ambra.topaz.blobStore.fedora.base-url}services</fedoraSoap>
+            <fedoraUser>${ambra.topaz.blobStore.fedora.userName}</fedoraUser>
+            <fedoraPass>${ambra.topaz.blobStore.fedora.password}</fedoraPass>
+          </fgsrepository>
+        </fedoraGSearch>
+      </search>
 
       <xacml>
         <!-- 

@@ -187,16 +187,18 @@
       </PLoSPathogens>
     </virtualJournals>
 
-    <services>
-      <topaz>
-        <!-- Configuration to talk to Fedora -->
+    <topaz>
+      <blobStore>
+      <!-- Configuration to talk to Fedora -->
         <fedora>
           <auth-method>BASIC</auth-method>
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
         </fedora>
-      </topaz>
-
+      </blobStore>
+    </topaz>
+      
+    <services>
       <search>
         <!-- Path where lucene search index is stored -->
         <indexpath>/var/lib/topaz/data/lucene</indexpath>

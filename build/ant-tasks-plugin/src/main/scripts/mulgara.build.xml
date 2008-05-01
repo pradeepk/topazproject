@@ -49,7 +49,7 @@
   <target name="mulgara-start" depends="init,jar">
     <echo>Starting Mulgara (spawn=${SPAWN})</echo>
 
-    <property name="topaz.mulgara.databaseDir" location="${home}/database"/>
+    <property name="ambra.topaz.tripleStore.mulgara.databaseDir" location="${home}/database"/>
 
     <condition property="failonerr" value="true" else="false">
       <isfalse value="${SPAWN}"/>
@@ -63,9 +63,9 @@
     <echo message="Using home    = ${home}"/>
     <echo message="Using jar     = ${mulgara-jar}"/>
     <echo message="Using port    = ${port}"/>
-    <echo message="Using dbdir   = ${topaz.mulgara.databaseDir}"/>
+    <echo message="Using dbdir   = ${ambra.topaz.tripleStore.mulgara.databaseDir}"/>
     <echo message="Using logging = ${logging}"/>
-    <echo message="Use -Dtopaz.mulgara.databaseDir to specify specific DB"/>
+    <echo message="Use -Dambra.topaz.tripleStore.mulgara.databaseDir to specify specific DB"/>
     <echo message="Use -Dlog4j.configuration=file:///..location.. to specify log4j config"/>
 
     <mkdir dir="${home}"/>
@@ -76,7 +76,7 @@
       <arg value="-s"/>
       <arg value="topazproject"/>
       <arg value="-a"/>
-      <arg file="${topaz.mulgara.databaseDir}"/>
+      <arg file="${ambra.topaz.tripleStore.mulgara.databaseDir}"/>
       <arg value="-p"/>
       <arg value="30857"/>
       <arg value="-r"/>

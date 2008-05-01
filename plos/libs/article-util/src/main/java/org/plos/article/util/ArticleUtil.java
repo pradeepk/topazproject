@@ -87,7 +87,7 @@ public class ArticleUtil {
 
   private static Session createSession() throws URISyntaxException {
     SessionFactory factory = new SessionFactoryImpl();
-    ItqlStore      itql    = new ItqlStore(new URI(CONF.getString("ambra.services.topaz.itql.uri")));
+    ItqlStore      itql    = new ItqlStore(new URI(CONF.getString("ambra.topaz.tripleStore.mulgara.itql.uri")));
     factory.setTripleStore(itql);
     return factory.openSession();
   }
@@ -95,12 +95,12 @@ public class ArticleUtil {
   public ArticleUtil(Session sess)
       throws MalformedURLException, ServiceException, RemoteException {
 
-    this(CONF.getString("ambra.services.topaz.fedora.uri"),
-         CONF.getString("ambra.services.topaz.fedora.userName"),
-         CONF.getString("ambra.services.topaz.fedora.password"),
-         CONF.getString("ambra.services.topaz.fedoraUploader.uri"),
-         CONF.getString("ambra.services.topaz.fedoraUploader.userName"),
-         CONF.getString("ambra.services.topaz.fedoraUploader.password"),
+    this(CONF.getString("ambra.topaz.blobStore.fedora.uri"),
+         CONF.getString("ambra.topaz.blobStore.fedora.userName"),
+         CONF.getString("ambra.topaz.blobStore.fedora.password"),
+         CONF.getString("ambra.topaz.blobStore.fedoraUploader.uri"),
+         CONF.getString("ambra.topaz.blobStore.fedoraUploader.userName"),
+         CONF.getString("ambra.topaz.blobStore.fedoraUploader.password"),
          sess);
   }
 
@@ -144,13 +144,13 @@ public class ArticleUtil {
       throws NoSuchObjectIdException, RemoteException {
     try {
       FedoraAPIM apim = APIMStubFactory.create(
-                                      CONF.getString("ambra.services.topaz.fedora.uri"),
-                                      CONF.getString("ambra.services.topaz.fedora.userName"),
-                                      CONF.getString("ambra.services.topaz.fedora.password"));
+                                      CONF.getString("ambra.topaz.blobStore.fedora.uri"),
+                                      CONF.getString("ambra.topaz.blobStore.fedora.userName"),
+                                      CONF.getString("ambra.topaz.blobStore.fedora.password"));
       Uploader upld = new Uploader(
-         CONF.getString("ambra.services.topaz.fedoraUploader.uri"),
-         CONF.getString("ambra.services.topaz.fedoraUploader.userName"),
-         CONF.getString("ambra.services.topaz.fedoraUploader.password"));
+         CONF.getString("ambra.topaz.blobStore.fedoraUploader.uri"),
+         CONF.getString("ambra.topaz.blobStore.fedoraUploader.userName"),
+         CONF.getString("ambra.topaz.blobStore.fedoraUploader.password"));
 
       if (content != null) {
         CountingInputStream cis = new CountingInputStream(content.getInputStream());
@@ -224,11 +224,11 @@ public class ArticleUtil {
       throws NoSuchArticleIdException, RemoteException, IOException, ArticleDeleteException {
     try {
       log.debug("Deleting '" + article + "'");
-      delete(article, session, APIMStubFactory.create(
-                                      CONF.getString("ambra.services.topaz.fedora.uri"),
-                                      CONF.getString("ambra.services.topaz.fedora.userName"),
-                                      CONF.getString("ambra.services.topaz.fedora.password")),
-                            getFgsOperations());
+      delete(article, session, 
+             APIMStubFactory.create(CONF.getString("ambra.topaz.blobStore.fedora.uri"),
+                                    CONF.getString("ambra.topaz.blobStore.fedora.userName"),
+                                    CONF.getString("ambra.topaz.blobStore.fedora.password")),
+             getFgsOperations());
 
       // Clean up spool directories
       File ingestedXmlFile = new File(ingestedDir, article.replaceAll("[:/.]", "_") + ".xml");
@@ -350,18 +350,8 @@ public class ArticleUtil {
   }
 
   private static URI getFedoraBaseUri() {
-    String fedoraBase = CONF.getString("ambra.services.topaz.fedora.uri");
-    URI uri = RdfUtil.validateUri(fedoraBase, "ambra.services.topaz.fedora.uri");
-    /* Removing this code since is seems unnecessary and there's no explanation for it. 
-    if (uri.getHost().equals("localhost")) {
-      try {
-        String serverName = CONF.getString("ambra.services.topaz.server.hostname");
-        uri = new URI(uri.getScheme(), null, serverName, uri.getPort(), uri.getPath(), null, null);
-      } catch (URISyntaxException use) {
-        throw new Error(use); // Can't happen
-      }
-    }
-    */
+    String fedoraBase = CONF.getString("ambra.topaz.blobStore.fedora.uri");
+    URI uri = RdfUtil.validateUri(fedoraBase, "ambra.topaz.blobStore.fedora.uri");
     return uri;
   }
 }
