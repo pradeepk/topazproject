@@ -255,64 +255,31 @@ input,textarea {
 	display: hidden;
 }
 
-/* Global : Icons
+/* Global : Icons and Links
 ----------------------------------------------------------
 */
-a.tooltip,a.tooltip:visited,a.discuss,a.discuss:visited,a.commentary,a.commentary:visited,a.trackback,a.trackback:visited,a.rating,a.rating:visited,a.annotation,a.annotation:visited,a.user,a.user:visited,a.instructions,a.instructions:visited,a.addannotation,a.addannotation:visited,a.corrections,a.corrections:visited
-	{
-	color: #006699;
-}
+a.tooltip:visited,
+a.discuss:visited,
+a.commentary:visited,
+a.trackback:visited,
+a.rating:visited,
+a.annotation:visited,	
+a.user:visited,
+a.instructions:visited,
+a.addannotation:visited,
+a.corrections:visited { color: #960; }
 
-a.tooltip,a.tooltip:visited,a.corrections,a.corrections:visited {
-	font-weight: bold;
-}
+a.tooltip,
+a.tooltip:visited,
+a.corrections,
+a.corrections:visited 
+{ font-weight: bold; }
 
-a.tooltip:hover,a.discuss:hover,a.commentary:hover,a.trackback:hover,a.rating:hover,a.user:hover
-	{
-	color: #008ed5;
-}
+li.icon,
+a.icon, /* use for any accent oriented icon */
+a.tooltip /* use for any functional icon for on page actions */
+{ padding:2px 0 2px 18px; background-repeat:no-repeat; background-position:0px 0px; }
 
-li
-.icon
-,
-a
-.icon
-, /* use for any accent oriented icon */
-a
-.tooltip
-	 /* use for any functional icon for on page actions */
-{
-padding
-:
- 
-2
-px
- 
-0
-2
-px
- 
-18
-px
-;
- 
-background-repeat
-:
- 
-no-repeat
-;
- 
-background-position
-:
- 
-0
-px
- 
-0
-px
-;
- 
-}
 /* for user dashboard icons */
 #user a.icon {
 	padding: 0 16px 0 0;

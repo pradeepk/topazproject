@@ -48,7 +48,7 @@
 <div id="content" class="browse static">
   <!-- begin : banner -->
   <div id="bannerRight"><!--skyscraper-->
-     <a href="#"><img src="/images/adBanner_placeholder_120x600.png" alt=""/></a>
+     <a href="#"><img src="../images/adBanner_placeholder_120x600.png" alt=""/></a>
   </div>
   <!-- end : banner -->
   <h1>Browse Articles</h1>

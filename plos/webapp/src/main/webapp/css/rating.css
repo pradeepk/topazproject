@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.rating{ background: #fff url(../images/ratings_bg2.gif) repeat-x bottom; }
+.rating{ background: transparent url(../images/ratings_bg2.gif) repeat-x bottom; }
 
 #ratingAverages { display: none; }
 

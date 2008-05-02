@@ -31,7 +31,7 @@
         <!-- begin : col 2 -->
           <div class="col last">
           <!-- begin : block journal list -->
-            <div class="block">
+            <!-- <div class="block">
               <h2>Ambra Journal List</h2>
               <ul class="articles">
                 <li><@s.a href="#" title="Read Open Access Article">
@@ -47,11 +47,48 @@
                   Journal Four
                 </@s.a></li>
 				      </ul>
+            </div> -->
+            
+            <div class="explore block">
+              <h2>Journal List</h2>
+              <p>(#) indicates the number of articles published in each Journal.</p>
+              <ul>
+                    <li>
+                      <a href="#">Overlay Journal (86)</a>
+                    </li>
+                    <li>
+                      <a href="#">Journal of Lorem Ipsum (203)</a>
+                    </li>
+                    <li>
+                      <a href="#">Journal of Erat Volputate (93)</a>
+                    </li>
+                    <li>
+                      <a href="#">Journal of Commodo Consequat (113)</a>
+                    </li>
+                    <li>
+                      <a href="#">Journal fo Quis Nostrud Exerci Tation Ullamcorper (69)</a>
+                    </li> 
+              </ul>
+              <ul>
+                    <li>
+                      <a href="#">Journal of Obortis Nisl ut Aliquip (94)</a>
+                    </li>
+                    <li>
+                      <a href="#">Journal of Tincidunt ut Laoreet (147)</a>
+                    </li>
+                    <li>
+                      <a href="#">Journal of Suscipit Lobortis Nisl ut Aliquip (102)</a>
+                    </li>
+                    <li>
+                      <a href="#"><strong>More Journals</strong></a>
+                    </li>
+              </ul>
+              <div class="clearer"> </div>
             </div>
             <!-- end : block journal list -->
             <!-- begin : browse widget -->
             <div id="browseWidget" class="block">
-              <p>Browse Ambra: <a href="${browseSubjectURL}">By Subject</a> or <a href="${browseDateURL}">By Publication Date</a></p>
+              <p>Browse Ambra Articles: <a href="${browseSubjectURL}">By Subject</a> or <a href="${browseDateURL}">By Publication Date</a></p>
             </div>
             <!-- end : browse block -->
             
@@ -61,7 +98,7 @@
 	    
             <!-- begin : explore by subject block -->
             <div class="explore block">
-              <h2>Explore Articles by Subject</h2>
+              <h2>Articles by Subject</h2>
               <p>(#) indicates the number of articles published in each subject category.</p>
               <ul>
                 <#list categoryInfos?keys as category>

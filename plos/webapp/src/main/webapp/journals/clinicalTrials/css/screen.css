@@ -81,41 +81,25 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 .noshow { line-height:0; } /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
 .clearer  { clear:both; line-height:0; }
 
-/* Global : Icons
+/* Global : Icons and Links
 ----------------------------------------------------------
 */
-a.tooltip,
 a.tooltip:visited,
-a.discuss,
 a.discuss:visited,
-a.commentary,
 a.commentary:visited,
-a.trackback,
 a.trackback:visited,
-a.rating,
 a.rating:visited,
-a.annotation,
 a.annotation:visited,	
-a.user,
 a.user:visited,
-a.instructions,
 a.instructions:visited,
-a.addannotation,
 a.addannotation:visited,
-a.corrections,
-a.corrections:visited { color: #006699; }
+a.corrections:visited { color: #900; }
 
 a.tooltip,
 a.tooltip:visited,
 a.corrections,
 a.corrections:visited { font-weight: bold; }
-	
-a.tooltip:hover,
-a.discuss:hover,
-a.commentary:hover,
-a.trackback:hover,
-a.rating:hover,
-a.user:hover	{ color: #008ed5; }
+
 li.icon,
 a.icon, 	/* use for any accent oriented icon */
 a.tooltip	/* use for any functional icon for on page actions */
