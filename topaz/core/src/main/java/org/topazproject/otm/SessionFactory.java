@@ -51,6 +51,15 @@ public interface SessionFactory {
   public Session openSession();
 
   /**
+   * Open a new otm session with an Interceptor.
+   *
+   * @param interceptor the Interceptor to notify object state changes
+   *
+   * @return the newly created session
+   */
+  public Session openSession(Interceptor interceptor);
+
+  /**
    * Obtains the current session.  The definition of what exactly "current" means is
    * controlled by the {@link org.topazproject.otm.context.CurrentSessionContext} impl configured
    * for use.

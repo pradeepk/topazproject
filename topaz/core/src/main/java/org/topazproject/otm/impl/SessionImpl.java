@@ -55,6 +55,7 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
+import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.Session;
@@ -101,7 +102,17 @@ public class SessionImpl extends AbstractSession {
    * @param sessionFactory the session factory that created this session
    */
   SessionImpl(SessionFactoryImpl sessionFactory) {
-    super(sessionFactory);
+    this(sessionFactory, null);
+  }
+
+  /**
+   * Creates a new SessionImpl object.
+   *
+   * @param sessionFactory the session factory that created this session
+   * @param interceptor    the interceptor that listens for object state changes
+   */
+  SessionImpl(SessionFactoryImpl sessionFactory, Interceptor interceptor) {
+    super(sessionFactory, interceptor);
   }
 
   /*
@@ -450,6 +461,8 @@ public class SessionImpl extends AbstractSession {
        bs.delete(cm, id.getId(), o, getBlobStoreCon());
      if (tp)
        store.delete(cm, cm.getRdfMappers(), id.getId(), o, getTripleStoreCon());
+     if (interceptor != null)
+       interceptor.onPostDelete(this, cm, id.getId(), o);
     } else if (isPristineProxy(id, o)) {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
@@ -495,29 +508,46 @@ public class SessionImpl extends AbstractSession {
           break;
         case noChange:
         default:
+          bf = false;
           break;
         }
       }
+      if (interceptor != null)
+        interceptor.onPostWrite(this, cm, id.getId(), o, fields,
+                                bf ? cm.getBlobField() : null);
     }
   }
-
 
   private Object getFromStore(Id id, Object instance, boolean filterObj)
                        throws OtmException {
     TripleStore store = sessionFactory.getTripleStore();
     ClassMetadata cm = id.getClassMetadata();
 
-    if (cm.isView())
-      instance = loadView(cm, id.getId(), instance);
-    else {
-      if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0) {
-        instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
+    boolean found = false;
+    if (interceptor != null) {
+      Object val = interceptor.getEntity(this, cm, id.getId(), instance);
+      found = (val != null);
+      instance = (val == Interceptor.NULL) ? null : val;
+      if (instance != null)
+        cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
+    }
+
+    if (!found) {
+      if (cm.isView())
+        instance = loadView(cm, id.getId(), instance);
+      else {
+        if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0) {
+          instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj);
-        if (instance != null)
-          cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
+          if (instance != null)
+            cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
+        }
+        if (cm.getBlobField() != null)
+          instance = sessionFactory.getBlobStore().get(cm, id.getId(), instance, getBlobStoreCon());
       }
-      if (cm.getBlobField() != null)
-        instance = sessionFactory.getBlobStore().get(cm, id.getId(), instance, getBlobStoreCon());
+
+      if (interceptor != null)
+        interceptor.onPostRead(this, cm, id.getId(), instance);
     }
 
     if (instance == null) {

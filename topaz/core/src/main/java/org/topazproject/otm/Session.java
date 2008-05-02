@@ -105,6 +105,13 @@ public interface Session {
   public SessionFactory getSessionFactory();
 
   /**
+   * Gets the interceptor that is listening to changes in object state.
+   *
+   * @return the interceptor
+   */
+  public Interceptor getInterceptor();
+
+  /**
    * Begins a new read-write transaction with a default timeout. All session usage is within
    * transaction scope.
    *

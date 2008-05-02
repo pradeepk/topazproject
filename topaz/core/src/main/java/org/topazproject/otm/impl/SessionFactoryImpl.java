@@ -58,6 +58,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.BlobStore;
+import org.topazproject.otm.Interceptor;
 
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
@@ -152,7 +153,14 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public Session openSession() {
-    return new SessionImpl(this);
+    return openSession(null);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Session openSession(Interceptor interceptor) {
+    return new SessionImpl(this, interceptor);
   }
 
   /*

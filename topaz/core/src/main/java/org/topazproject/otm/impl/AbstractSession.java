@@ -44,6 +44,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
+import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
@@ -61,6 +62,7 @@ abstract class AbstractSession implements Session {
   private static final Log                      log = LogFactory.getLog(AbstractSession.class);
 
   protected final SessionFactoryImpl            sessionFactory;
+  protected final Interceptor                   interceptor;
   protected       TransactionImpl               locTxn         = null;
   protected       javax.transaction.Transaction jtaTxn         = null;
   protected       boolean                       txnIsRO        = false;
@@ -73,9 +75,11 @@ abstract class AbstractSession implements Session {
    * Creates a new Session object.
    *
    * @param sessionFactory the session factory that created this session
+   * @param interceptor    the interceptor that listens for object state changes
    */
-  protected AbstractSession(SessionFactoryImpl sessionFactory) {
+  protected AbstractSession(SessionFactoryImpl sessionFactory, Interceptor interceptor) {
     this.sessionFactory = sessionFactory;
+    this.interceptor    = interceptor;
   }
 
   /*
@@ -83,6 +87,13 @@ abstract class AbstractSession implements Session {
    */
   public SessionFactory getSessionFactory() {
     return sessionFactory;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Interceptor getInterceptor() {
+    return interceptor;
   }
 
   /*
@@ -103,6 +114,9 @@ abstract class AbstractSession implements Session {
     locTxn = new TransactionImpl(this, jtaTxn);
 
     txnIsRO = readOnly;
+
+    if (interceptor != null)
+      interceptor.afterTransactionBegin(locTxn);
 
     return locTxn;
   }

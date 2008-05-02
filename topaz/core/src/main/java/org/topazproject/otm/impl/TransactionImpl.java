@@ -34,9 +34,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class TransactionImpl implements org.topazproject.otm.Transaction {
   private static final Log  log = LogFactory.getLog(TransactionImpl.class);
+  private static enum State {ACTIVE, COMMITTED, ROLLEDBACK, ERROR};
 
   private final Session     session;
   private final Transaction jtaTxn;
+  private State state = State.ACTIVE;
 
   public int ctr = 0;           // temporary hack for problems with mulgara's blank-nodes
 
@@ -78,24 +80,69 @@ public class TransactionImpl implements org.topazproject.otm.Transaction {
   }
 
   public void commit() throws OtmException {
+    if (state != State.ACTIVE)
+      throw new OtmException("Transaction is not active");
+
     if (log.isDebugEnabled())
       log.debug("Committing transaction " + this);
 
+    if (session.getInterceptor() != null)
+      session.getInterceptor().beforeTransactionCompletion(this);
+
+    OtmException error = null;
     try {
       jtaTxn.commit();
+      state = State.COMMITTED;
     } catch (Exception e) {
-      throw new OtmException("Error committing transaction", e);
+      error = new OtmException("Error committing transaction", e);
+      state = State.ERROR;
     }
+
+    try {
+      if (session.getInterceptor() != null)
+       session.getInterceptor().afterTransactionCompletion(this);
+    } catch (Exception e) {
+      log.warn("Interceptor threw an exception. ", e);
+    }
+
+    if (error != null)
+      throw error;
   }
 
   public void rollback() throws OtmException {
     if (log.isDebugEnabled())
       log.debug("Rolling back transaction " + this);
 
+    OtmException error = null;
+    boolean notify = (state == State.ACTIVE);
     try {
       jtaTxn.rollback();
+      state = State.ROLLEDBACK;
     } catch (Exception e) {
-      throw new OtmException("Error rolling back transaction", e);
+      error = new OtmException("Error rolling back transaction", e);
+      state = State.ERROR;
     }
+
+    try {
+      if (notify && (session.getInterceptor() != null))
+       session.getInterceptor().afterTransactionCompletion(this);
+    } catch (Exception e) {
+      log.warn("Interceptor threw an exception. ", e);
+    }
+
+    if (error != null)
+      throw error;
+  }
+
+  public boolean isActive() {
+    return state == State.ACTIVE;
+  }
+
+  public boolean wasCommitted() {
+    return state == State.COMMITTED;
+  }
+
+  public boolean wasRolledBack() {
+    return state == State.ROLLEDBACK;
   }
 }
