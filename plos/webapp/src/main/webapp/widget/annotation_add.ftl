@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div dojoType="topaz:regionalDialog" id="AnnotationDialog" bgColor="#333333" bgOpacity="0.6" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" style="padding:0;margin:0;">
+<div dojoType="topaz.widget.RegionalDialog" id="AnnotationDialog" style="padding:0;margin:0;">
 	<div class="dialog annotate">
 		<div class="tipu" id="dTipu"></div>
 		<div class="btn close" title="Click to close and cancel">
@@ -54,8 +54,8 @@
 						<!--
 						<div><input type="radio" id="privateFlag" class="radio" title="Choose from one of the options" name="public" value="false" disabled="true" /><label for="Private">Private</label></div>
 						<div><input type="radio" id="publicFlag" class="radio" title="Choose from one of the options" name="public" value="true" checked="true" /><label for="Public">Public</label></div>
-						-->
-						<div class="btnwrap commentPrivate"><input type="button" value="Save" class="commentPrivate" title="Click to save your note privately" id="btn_save"/></div>
+            -->
+            <div class="btnwrap commentPrivate"><input type="button" value="Save" class="commentPrivate" title="Click to save your note privately" id="btn_save"/></div>
 						<div class="btnwrap commentPublic"><input type="button" value="Post" class="commentPublic" title="Click to post your note publicly" id="btn_post"/></div>
 					</fieldset>
 				</form>

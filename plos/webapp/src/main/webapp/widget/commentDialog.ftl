@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div dojoType="topaz:regionalDialog" id="CommentDialog" bgColor="white" bgOpacity="0" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" style="padding:0;margin:0;">
+<div dojoType="topaz.widget.RegionalDialog" id="CommentDialog" bgColor="white" bgOpacity="0" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" style="padding:0;margin:0;">
 	<!-- begin : annotation preview view (wireframe page 12) [SIMPLE] -->
 	<div class="dialog preview">
 		<div class="tipu" id="cTipu"></div>
@@ -40,7 +40,7 @@
 
 <!-- begin : annotation preview view (wireframe page 12) [MULTIPLE] -->
 
-<div dojoType="topaz:regionalDialog" id="CommentDialogMultiple" bgColor="white" bgOpacity="0" toggle="fade" toggleDuration="250" style="padding:0;margin:0;">
+<div dojoType="topaz.widget.RegionalDialog" id="CommentDialogMultiple" bgColor="white" bgOpacity="0" toggle="fade" toggleDuration="250" style="padding:0;margin:0;">
 	<div class="dialog multiple preview">
 		<div class="tipu" id="mTipu"></div>
 		<div class="btn close" id="btn_close_multi" title="Click to close">

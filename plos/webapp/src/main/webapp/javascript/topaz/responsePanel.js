@@ -17,18 +17,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 /**
- * topaz.responsePanel()
+ * topaz.responsePanel
  * 
  * This class sets up and displays the response panel in the commentary page.  It also
  * sets up and displays the flagging panel.
  **/
 
-var togglePanel = new Object();
-
-topaz.responsePanel = new Object();
-
+dojo.provide("topaz.responsePanel");
 topaz.responsePanel = {
+  togglePanel:{},
+  
   upperContainer: "",
   
   newPanel: "",
@@ -53,10 +53,10 @@ topaz.responsePanel = {
     targetObj.actionIndex = (actionIndex) ? actionIndex : 0;
     this.upperContainer = topaz.domUtil.getFirstAncestorByClass(curNode, targetElClassName);
     this.upperContainer.style.display = "none";
-    togglePanel.newPanel = this.newPanel;
-    togglePanel.upperContainer = this.upperContainer;
+    this.togglePanel.newPanel = this.newPanel;
+    this.togglePanel.upperContainer = this.upperContainer;
     
-    dojo.dom.insertAfter(this.newPanel, this.upperContainer, false);
+    topaz.domUtil.insertAfter(this.newPanel, this.upperContainer, false);
 
     if (this.previousUpperContainer) this.previousUpperContainer.style.display = "block";
 
@@ -75,8 +75,8 @@ topaz.responsePanel = {
   },
   
   hide: function() {
-    if (togglePanel.newPanel) togglePanel.newPanel.style.display = "none";
-    if (togglePanel.upperContainer) togglePanel.upperContainer.style.display = "block";
+    if (this.togglePanel.newPanel) this.togglePanel.newPanel.style.display = "none";
+    if (this.togglePanel.upperContainer) this.togglePanel.upperContainer.style.display = "block";
   },
   
   submit: function(targetObj) {
@@ -89,7 +89,7 @@ topaz.responsePanel = {
     this.targetForm.comment.value = "";
     this.targetForm.responseArea.value = targetObj.responseCue;
     var submitMsg = targetObj.error;
-    dojo.dom.removeChildren(submitMsg);
+    topaz.domUtil.removeChildren(submitMsg);
   },
   
   getFlagConfirm: function() {
@@ -106,7 +106,7 @@ topaz.responsePanel = {
 function submitResponseInfo(targetObj) {
   var submitMsg = targetObj.error;
   var targetForm = targetObj.form;
-  dojo.dom.removeChildren(submitMsg);
+  topaz.domUtil.removeChildren(submitMsg);
   //topaz.formUtil.disableFormFields(targetForm);
 
   var urlParam = "";
@@ -123,40 +123,25 @@ function submitResponseInfo(targetObj) {
   }
    
   _ldc.show();
-
-   var bindArgs = {
-    url: _namespace + urlParam,
-    method: "post",
-    error: function(type, data, evt){
-     alert("An error occurred." + data.toSource());
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     //topaz.errorConsole.writeToConsole(err);
-     //topaz.errorConsole.show();
-     topaz.formUtil.enableFormFields(targetForm);
-     _ldc.hide();
-     
-     return false;
+  dojo.xhrPost({
+    url: (_namespace + urlParam),
+    formNode: targetForm,
+    handleAs:'json',
+    error: function(response, ioArgs){
+      handleXhrError(response, ioArgs);
+      topaz.formUtil.enableFormFields(targetForm);
     },
-    load: function(type, data, evt){
-     var jsonObj = dojo.json.evalJson(data);
-     
-     //alert("jsonObj:\n" + jsonObj.toSource());
-     //submitMsg.appendChild(document.createTextNode(jsonObj.toSource()));
-     
-     if (jsonObj.actionErrors.length > 0) {
+    load: function(response, ioArgs){
+      var jsonObj = response;
+      if (jsonObj.actionErrors.length > 0) {
        var errorMsg = "";
-       
        for (var i=0; i<jsonObj.actionErrors.length; i++) {
          errorMsg = errorMsg + jsonObj.actionErrors[i] + "\n";
        }
-       
-       //alert("ERROR: " + errorMsg);
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
        topaz.formUtil.enableFormFields(targetForm);
        _ldc.hide();
-  
-       return false;
      }
      else if (jsonObj.numFieldErrors > 0) {
        var fieldErrors = document.createDocumentFragment();
@@ -172,16 +157,9 @@ function submitResponseInfo(targetObj) {
            fieldErrors.appendChild(brTag);
          }
        }
-       
-       //alert("ERROR: " + fieldErrors);
-       //var err = document.createTextNode("ERROR [Field]:");
-       //submitMsg.appendChild(err);
        submitMsg.appendChild(fieldErrors);
        topaz.formUtil.enableFormFields(targetForm);
-
        _ldc.hide();
-  
-       return false;
      }
      else {
        if (targetObj.requestType == "flag"){
@@ -193,52 +171,31 @@ function submitResponseInfo(targetObj) {
          window.location.href = _namespace + "/annotation/listThread.action?inReplyTo=" + rootId +"&root=" + rootId;
        }
        else {
-         if (dojo.render.html.ie)
-           dojo.dom.insertAfter(togglePanel.newPanel, document.lastChild, false);
+         if (dojo.isIE)
+           topaz.domUtil.insertAfter(topaz.responsePanel.togglePanel.newPanel, document.lastChild, false);
          getDiscussion(targetObj);
          topaz.responsePanel.hide();
          topaz.formUtil.textCues.reset(targetForm.responseArea, targetObj.responseCue);
          topaz.formUtil.enableFormFields(targetForm);
        }
-       return false;
      }
-     
-    },
-    mimetype: "text/plain",
-    transport: "XMLHTTPTransport",
-    formNode: targetForm
-   };
-   dojo.io.bind(bindArgs);
+    }
+   });
 }
 
 function getDiscussion(targetObj) {
   var refreshArea = dojo.byId(responseConfig.discussionContainer);
 
   _ldc.show();
-  
-  var bindArgs = {
+  dojo.xhrGet({
     url: _namespace + "/annotation/listThreadRefresh.action?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.baseId,
-    method: "get",
-    error: function(type, data, evt){
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     //topaz.errorConsole.writeToConsole(err);
-     //topaz.errorConsole.show();
-     alert("ERROR:" + data.toSource());
-     return false;
+    error: function(response, ioArgs){
+      handleXhrError(response, ioArgs);
     },
-    load: function(type, data, evt){
-      var docFragment = document.createDocumentFragment();
-      docFragment = data;
-
-      refreshArea.innerHTML = docFragment;
-      
+    load: function(response, ioArgs){
+      refreshArea.innerHTML = response;
       _ldc.hide();
-
-      return false;
-    },
-    mimetype: "text/html"
-   };
-   dojo.io.bind(bindArgs);
-  
+    }
+  });
 }
 

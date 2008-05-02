@@ -17,16 +17,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 /**
-  * topaz.rating()
+  * topaz.rating
   *
   * This class uses a css-based ratings star and sets up the number of star 
   * rating to be displayed in the right hand column.  This also displays the 
   * rating dialog.
   *
   **/
-topaz.rating = new Object();
-
+dojo.provide("topaz.rating");
 topaz.rating = {
 	rateScale: 5,
 	
@@ -47,7 +47,7 @@ topaz.rating = {
   buildCurrentRating: function(liNode, rateIndex) {
 		var ratedValue = (parseInt(rateIndex)/this.rateScale)*100;
 		liNode.className += " pct" + ratedValue;
-		dojo.dom.textContent(liNode, "Currently " + rateIndex + "/" + this.rateScale + " Stars");
+		dojox.data.dom.textContent(liNode, "Currently " + rateIndex + "/" + this.rateScale + " Stars");
   },
   
   buildDialog: function(jsonObj) {
@@ -145,89 +145,59 @@ topaz.rating = {
 }
   
 function getRatingsForUser() {
-	 var targetUri = _ratingsForm.articleURI.value;
-	 
-   var bindArgs = {
+	var targetUri = _ratingsForm.articleURI.value;
+	dojo.xhrGet({
     url: _namespace + "/rate/secure/getRatingsForUser.action?articleURI=" + targetUri,
-    method: "get",
-    error: function(type, data, evt){
-     alert("An error occurred." + data.toSource());
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     //topaz.errorConsole.writeToConsole(err);
-     //topaz.errorConsole.show();
-     
-     return false;
+    handleAs:'json',
+    error: function(response, ioArgs){
+      handleXhrError(response, ioArgs);
     },
-    load: function(type, data, evt){
-     var jsonObj = dojo.json.evalJson(data);
-     
-     //alert("jsonObj:\n" + jsonObj.toSource());
-     //submitMsg.appendChild(document.createTextNode(jsonObj.toSource()));
-     
-     if (jsonObj.actionErrors.length > 0) {
-       var errorMsg = "";
-       
-       for (var i=0; i<jsonObj.actionErrors.length; i++) {
-         errorMsg = errorMsg + jsonObj.actionErrors[i] + "\n";
+    load: function(response, ioArgs){
+       var jsonObj = response;
+       if (jsonObj.actionErrors.length > 0) {
+         var errorMsg = "";
+         for (var i=0; i<jsonObj.actionErrors.length; i++) {
+           errorMsg = errorMsg + jsonObj.actionErrors[i] + "\n";
+         }
+         alert("ERROR: " + errorMsg);
        }
-       
-       alert("ERROR: " + errorMsg);
-       
-       return false;
-     }
-     else {
-       
-		   _ratingDlg.show();
-       topaz.rating.buildDialog(jsonObj);
-       return false;
-     }
-     
-    },
-    mimetype: "text/plain",
-    transport: "XMLHTTPTransport"
-   };
-   dojo.io.bind(bindArgs);
+       else {
+  		   _ratingDlg.show();
+         topaz.rating.buildDialog(jsonObj);
+       }
+    }
+  });
 }
 
 function updateRating() {
 	topaz.formUtil.disableFormFields(_ratingsForm);
   var submitMsg = dojo.byId('submitRatingMsg');
-  dojo.dom.removeChildren(submitMsg);
+  topaz.domUtil.removeChildren(submitMsg);
   var articleUri = _ratingsForm.articleURI.value;
 
   _ldc.show();
-   
-  var bindArgs = {
+  dojo.xhrPost({
     url: _namespace + "/rate/secure/rateArticle.action",
-    method: "post",
-    error: function(type, data, evt){
-     alert("An error occurred." + data.toSource());
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     
-     return false;
-   },
-   load: function(type, data, evt){
-     var jsonObj = dojo.json.evalJson(data);
-     
+    handleAs:'json',
+    formNode: _ratingsForm,
+    sync: true,
+    error: function(response, ioArgs){
+      handleXhrError(response, ioArgs);
+    },
+    load: function(response, ioArgs){
+     var jsonObj = response;
      if (jsonObj.actionErrors.length > 0) {
        var errorMsg = "";
-       
        for (var i=0; i<jsonObj.actionErrors.length; i++) {
          errorMsg += jsonObj.actionErrors[i] + "\n";
        }
-       
-       //alert("ERROR: " + errorMsg);
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
        topaz.formUtil.enableFormFields(_ratingsForm);
-       //_ratingDlg.placeModalDialog();
        _ldc.hide();
-       
-       return false;
      }
      else if (jsonObj.numFieldErrors > 0) {
        var fieldErrors = document.createDocumentFragment();
-       
        for (var item in jsonObj.fieldErrors) {
          var errorString = "";
          for (var ilist in jsonObj.fieldErrors[item]) {
@@ -242,63 +212,36 @@ function updateRating() {
            }
          }
        }
-       
 	     submitMsg.appendChild(fieldErrors);
        topaz.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();
-
-       return false;
      }
      else {
-       if (djConfig.isDebug) {
-         dojo.byId(djConfig.debugContainerId).innerHTML = "";
-       }
        _ratingDlg.hide();
        getArticle("rating");
-        
        topaz.formUtil.enableFormFields(_ratingsForm);
-       return false;
      }
-     
-   },
-   mimetype: "text/plain",
-   formNode: _ratingsForm,
-   transport: "XMLHTTPTransport",
-   sync: true
-  };
-  dojo.io.bind(bindArgs);
+   }
+  });
 }
 
 function refreshRating(uri) {
-	 var refreshArea1 = dojo.byId(ratingConfig.ratingContainer + "1");
-	 var refreshArea2 = dojo.byId(ratingConfig.ratingContainer + "2");
-	 
-   var bindArgs = {
+	var refreshArea1 = dojo.byId(ratingConfig.ratingContainer + "1");
+	var refreshArea2 = dojo.byId(ratingConfig.ratingContainer + "2");
+  dojo.xhrGet({
     url: _namespace + "/rate/getUpdatedRatings.action?articleURI=" + uri,
-    method: "get",
-    error: function(type, data, evt){
-     alert("An error occurred." + data.toSource());
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     //topaz.errorConsole.writeToConsole(err);
-     //topaz.errorConsole.show();
-     
-     return false;
+    handleAs:'json',
+    error: function(response, ioArgs){
+     handleXhrError(response, ioArgs);
     },
-    load: function(type, data, evt){
-     var jsonObj = dojo.json.evalJson(data);
-     
+    load: function(response, ioArgs){
+     var jsonObj = response;
      var docFragment = document.createDocumentFragment();
      docFragment = data;
-     
      refreshArea1.innerHTML = docFragment;
      refreshArea2.innerHTML = docFragment;
-     
-     return false;
-    },
-    mimetype: "text/plain",
-    transport: "XMLHTTPTransport"
-   };
-   dojo.io.bind(bindArgs);
+    }
+  });
 }
 
   

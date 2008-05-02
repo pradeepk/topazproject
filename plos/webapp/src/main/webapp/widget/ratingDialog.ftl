@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div dojoType="dialog" id="Rating" bgColor="#333333" bgOpacity="0.75" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" class="loadingCycler">
+<div dojoType="dijit.Dialog" id="Rating" bgColor="#333333" bgOpacity="0.75" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" class="loadingCycler">
   <div class="dialog annotate rating">
     <div class="tipu" id="dTipu"></div>
     <div class="btn close" title="Click to close and cancel">

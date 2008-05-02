@@ -25,12 +25,9 @@
   	var loggedIn = false;
 	</#if>
 
-	var djConfig = {
-		isDebug: false,
-		debugContainerId : "dojoDebug",
-		debugAtAllCosts: false,
-  	bindEncoding: "UTF-8",
-  	baseScriptUri: "${freemarker_config.context}/javascript/dojo/"
+  var djConfig = {
+		isDebug: true,
+    parseOnLoad: true,
 	};
 </script>
 <#list freemarker_config.getJavaScript(templateFile, journalContext) as x>
@@ -38,7 +35,9 @@
 <script type="text/javascript">
 <#include "${x}">
 </script>	
-	<#else>
+	<#elseif x?contains("dojo.js")>
+<script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/dojo.js.uncompressed.js"></script>
+  <#else>
 <script type="text/javascript" src="${x}"></script>	
 	</#if>
 </#list>

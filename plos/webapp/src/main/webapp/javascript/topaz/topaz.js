@@ -17,11 +17,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-dojo.provide("topaz.topaz");
 
-
-var topaz = new Object( );
-
+/**
+ * This file is not a dojo module rather simply contains general utility methods.
+ */
 document.getElementsByTagAndClassName = function(tagName, className) {
   if ( tagName == null )
     tagName = '*';
@@ -192,15 +191,15 @@ function jumpToElement(elNode) {
 function toggleExpand(obj, isOpen, textOn, textOff) {
   if (isOpen == false) {
     obj.className = obj.className.replace(/collapse/, "expand");
-    if (textOn) dojo.dom.textContent(obj, textOn);
+    if (textOn) dojox.data.dom.textContent(obj, textOn);
   }
   else if (obj.className.match('collapse')) {
     obj.className = obj.className.replace(/collapse/, "expand");
-    if (textOn) dojo.dom.textContent(obj, textOn);
+    if (textOn) dojox.data.dom.textContent(obj, textOn);
   }
   else {
     obj.className = obj.className.replace(/expand/, "collapse");
-    if (textOff) dojo.dom.textContent(obj, textOff);
+    if (textOff) dojox.data.dom.textContent(obj, textOff);
   }
   
 }
@@ -232,3 +231,23 @@ function singleExpand(obj, targetId) {
   return false;
 }
 
+/**
+ * One stop shopping for handling dojo xhr errors.
+ * This method is intended to be called from within dojo.xhr 'handle' or 'error' callback methods.
+ */
+function handleXhrError(response, ioArgs) {
+  if(response instanceof Error){
+    _ldc.hide();
+    if(response.dojoType == "cancel"){
+      //The request was canceled by some other JavaScript code.
+      console.debug("Request canceled.");
+    }else if(response.dojoType == "timeout"){
+      //The request took over 5 seconds to complete.
+      console.debug("Request timed out.");
+    }else{
+      //Some other error happened.
+      console.error(response);
+      if(djConfig.isDebug) alert(response.toSource());
+    }
+  }
+}

@@ -26,8 +26,7 @@
   * @author  Joycelyn Chung			joycelyn@orangetowers.com
   *
   **/
-topaz.displayComment = new Object();
-
+dojo.provide("topaz.displayComment");
 topaz.displayComment = {
   target: "",
   
@@ -257,33 +256,33 @@ topaz.displayComment = {
    * @return	<nothing>
    */
   buildDisplayView: function(jsonObj){
-    if (topaz.displayComment.sectionTitle.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionTitle);
+    if (topaz.displayComment.sectionTitle.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionTitle);
     topaz.displayComment.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
     
-    if (topaz.displayComment.sectionDetail.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionDetail);
+    if (topaz.displayComment.sectionDetail.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionDetail);
     topaz.displayComment.sectionDetail.appendChild(this.buildDisplayDetail(jsonObj));
 
     //alert(commentFrag);
-    if (topaz.displayComment.sectionComment.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionComment);
+    if (topaz.displayComment.sectionComment.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionComment);
     topaz.displayComment.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
     
-    if (topaz.displayComment.sectionLink.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionLink);
+    if (topaz.displayComment.sectionLink.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionLink);
     this.sectionLink.appendChild(this.buildDisplayViewLink(jsonObj));
     
     // set correction related styling
     var cmtId = dojo.byId(commentConfig.cmtContainer);
     if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeMinorCorrection) >= 0) {
       // minor correction
-      dojo.html.addClass(cmtId, annotationConfig.styleMinorCorrection);
+      dojo.addClass(cmtId, annotationConfig.styleMinorCorrection);
     }
     else if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeFormalCorrection) >= 0) {
       // formal correction
-      dojo.html.addClass(cmtId, annotationConfig.styleFormalCorrection);
+      dojo.addClass(cmtId, annotationConfig.styleFormalCorrection);
     }
     else {
-      dojo.html.removeClass(cmtId, annotationConfig.styleMinorCorrection);
-      dojo.html.removeClass(cmtId, annotationConfig.styleFormalCorrection);
+      dojo.removeClass(cmtId, annotationConfig.styleMinorCorrection);
+      dojo.removeClass(cmtId, annotationConfig.styleFormalCorrection);
     }
   },
   
@@ -320,12 +319,12 @@ topaz.displayComment = {
     // set correction related styling
     if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeMinorCorrection) >= 0) {
       // minor correction
-      dojo.html.addClass(newListItem, annotationConfig.styleMinorCorrection);
+      dojo.addClass(newListItem, annotationConfig.styleMinorCorrection);
       contentDiv.className += ' ' + annotationConfig.styleMinorCorrection;
     }
     else if(jsonObj.annotation.type.indexOf(annotationConfig.annTypeFormalCorrection) >= 0) {
       // formal correction
-      dojo.html.addClass(newListItem, annotationConfig.styleFormalCorrection);
+      dojo.addClass(newListItem, annotationConfig.styleFormalCorrection);
       contentDiv.className += ' ' + annotationConfig.styleFormalCorrection;
     }
 
@@ -356,10 +355,10 @@ topaz.displayComment = {
     }
     else {
       var liList = topaz.domUtil.getChildElementsByTagAndClassName(container, 'li', null);
-      dojo.dom.insertAfter(newListItem, liList[liList.length - 1]);
+      topaz.domUtil.insertAfter(newListItem, liList[liList.length - 1]);
     
       var divList = topaz.domUtil.getChildElementsByTagAndClassName(secondaryContainer, 'div', null);
-      dojo.dom.insertAfter(contentDiv, divList[divList.length - 1]);
+      topaz.domUtil.insertAfter(contentDiv, divList[divList.length - 1]);
     }
 
     var multiDetailDivChild = secondaryContainer.childNodes[secondaryContainer.childNodes.length - 1];
@@ -479,7 +478,7 @@ topaz.displayComment = {
         var ctText = document.createTextNode('0');
       }
       spn.appendChild(ctText);
-      dojo.dom.removeChildren(bugList[i]);
+      topaz.domUtil.removeChildren(bugList[i]);
       bugList[i].appendChild(spn);
     }
   },
@@ -495,8 +494,8 @@ topaz.displayComment = {
    * @param		addPx					Integer					Pixel amount to adjust height.
    */
   adjustDialogHeight: function(container1, container2, addPx) {
-    var container1Mb = dojo.html.getMarginBox(container1).height;
-    var container2Mb = dojo.html.getMarginBox(container2).height;
+    var container1Mb = dojo._getMarginBox(container1).height;
+    var container2Mb = dojo._getMarginBox(container2).height;
     
     if (container1Mb > container2Mb) {
       container1.parentNode.style.height = (container1Mb + addPx) + "px";
@@ -512,7 +511,8 @@ topaz.displayComment = {
     else
       container1.parentNode.style.height = (container2Mb + addPx) + "px";
       
-    _commentMultiDlg.placeModalDialog();
+    // TODO jpk dojo1.1 - do we need this?
+    //_commentMultiDlg.placeModalDialog();
   }
 }
 
@@ -525,12 +525,12 @@ function getComment(obj) {
 
     if (uriArray.length > 1) {
       var targetContainer = document.getElementById('multilist');
-      dojo.dom.removeChildren(targetContainer);
+      topaz.domUtil.removeChildren(targetContainer);
       var targetContainerSecondary = document.getElementById('multidetail');
-      dojo.dom.removeChildren(targetContainerSecondary);
+      topaz.domUtil.removeChildren(targetContainerSecondary);
     }
     else {
-      var targetContainer =  dojo.widget.byId("CommentDialog");
+      var targetContainer =  dijit.byId("CommentDialog");
     }
     
     var maxShown = 4;
@@ -540,34 +540,20 @@ function getComment(obj) {
     
     for (var i=0; i<stopPt; i++) {
       //alert("uriArray[" + i + "] = " + uriArray[i]);
-      var bindArgs = {
+      dojo.xhrGet({
         url: _namespace + "/annotation/getAnnotation.action?annotationId=" + uriArray[i],
-        method: "get",
-        error: function(type, data, evt){
-         alert("ERROR [AJAX]:" + data.toSource());
-         var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-         //topaz.errorConsole.writeToConsole("ERROR [AJAX]:" + data.toSource());
-         //errView.show();
-         return false;
+        handleAs:'json',
+        error: function(response, ioArgs){
+          handleXhrError(response, ioArgs);
         },
-        load: function(type, data, evt){
-         var jsonObj = dojo.json.evalJson(data);
-         
-         //alert("jsonObj:\n" + jsonObj.toSource());
-         
+        load: function(response, ioArgs){
+         var jsonObj = response;
          if (jsonObj.actionErrors.length > 0) {
            var errorMsg = "";
-           //alert("jsonObj.actionErrors.list.length = " + jsonObj.actionErrors.list.length);
            for (var i=0; i<jsonObj.actionErrors.length; i++) {
              errorMsg = errorMsg + jsonObj.actionErrors[i] + "\n";
            }
-           
            alert("ERROR [actionErrors]: " + errorMsg);
-           var err = document.createTextNode("ERROR:" + errorMsg);
-           //topaz.displayComment.retrieveMsg.innerHTML = err;
-           _ldc.hide();
-           
-           return false;
          }
          else if (jsonObj.numFieldErrors > 0) {
            var fieldErrors;
@@ -579,13 +565,7 @@ function getComment(obj) {
              }
              fieldErrors = fieldErrors + item + ": " + errorString + "<br/>";
            }
-           
            alert("ERROR [numFieldErrors]: " + fieldErrors);
-           var err = document.createTextNode("ERROR:" + fieldErrors);
-           //topaz.displayComment.retrieveMsg.innerHTML = err;
-           _ldc.hide();
-  
-           return false;
          }
          else {
          	 var isMulti = (uriArray.length > 1);
@@ -605,23 +585,20 @@ function getComment(obj) {
            else {
              topaz.displayComment.buildDisplayView(jsonObj);
              topaz.displayComment.mouseoverComment(topaz.displayComment.target);
- 
              _commentDlg.show();
-             
              dlg = _commentDlg;
            }
 	         // ensure the dialog is scrolled into view
-			     if(dojo.html.scrollIntoView && dlg && dlg.domNode) {
-             //dojo.html.scrollIntoView(dlg.domNode);
+           // TODO jpk dojo1.1 - we are now doing this in RegionalDialog.show()
+			     /*
+           if(dlg && dlg.domNode) {
              window.scrollTo(0, topaz.domUtil.getCurrentOffset(dlg.domNode).top);
 			     }
+           */
          }
          _ldc.hide();
-         return false;
-        },
-        mimetype: "text/html"
-       };
-       dojo.io.bind(bindArgs);
+        }
+       });
     }
 
   }

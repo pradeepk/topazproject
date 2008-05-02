@@ -20,8 +20,8 @@
   var _dcr = new Object();
   var _ldc;
   
-  function init(e) {
-    _ldc = dojo.widget.byId("LoadingCycle");
+  dojo.addOnLoad(function() {
+    _ldc = dijit.byId("LoadingCycle");
 
     _dcr.widget = dojo.byId("DiscussionPanel");
     _dcr.btnCancel = dojo.byId("btnCancelResponse");
@@ -37,22 +37,22 @@
     var responseTitle = _dcr.form.responseTitle;
     var responseArea = _dcr.form.responseArea;
     
-    dojo.event.connect(_dcr.btnSubmit, "onclick", function(e) {
+    dojo.connect(_dcr.btnSubmit, "onclick", function(e) {
         topaz.responsePanel.submit(_dcr);
       }
     );    
     
-    dojo.event.connect(responseTitle, "onfocus", function(e) {
+    dojo.connect(responseTitle, "onfocus", function(e) {
         topaz.formUtil.textCues.off(responseTitle, _dcr.responseTitleCue);
       }
     );    
        
-    dojo.event.connect(responseArea, "onfocus", function(e) {
+    dojo.connect(responseArea, "onfocus", function(e) {
         topaz.formUtil.textCues.off(responseArea, _dcr.responseCue);
       }
     );    
        
-    dojo.event.connect(responseTitle, "onblur", function(e) {
+    dojo.connect(responseTitle, "onblur", function(e) {
         var fldResponseTitle = _dcr.form.commentTitle;
         if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
           fldResponseTitle.value = responseTitle.value;
@@ -64,7 +64,7 @@
       }
     );    
 
-    dojo.event.connect(responseArea, "onblur", function(e) {
+    dojo.connect(responseArea, "onblur", function(e) {
         var fldResponse = _dcr.form.comment;
         if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
           fldResponse.value = responseArea.value;
@@ -76,7 +76,7 @@
       }
     );    
        
-    dojo.event.connect(responseTitle, "onchange", function(e) {
+    dojo.connect(responseTitle, "onchange", function(e) {
         var fldResponseTitle = _dcr.form.commentTitle;
         if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
           fldResponseTitle.value = responseTitle.value;
@@ -87,7 +87,7 @@
       }
     );    
        
-    dojo.event.connect(responseArea, "onchange", function(e) {
+    dojo.connect(responseArea, "onchange", function(e) {
         var fldResponse = _dcr.form.comment;
         if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
           fldResponse.value = responseArea.value;
@@ -98,6 +98,4 @@
       }
     );    
     
-  }
-  
-  dojo.addOnLoad(init);
+  });

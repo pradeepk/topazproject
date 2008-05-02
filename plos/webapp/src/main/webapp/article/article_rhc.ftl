@@ -103,10 +103,7 @@
       <#include "/article/article_rhc_rating.ftl">
     </div>
 
-
-    <div id="sectionNavTop" class="tools">
-    </div>
-    <!--<div id="dojoDebug"></div>-->
+    <div id="sectionNavTop" class="tools"></div>
   </div>
 
 

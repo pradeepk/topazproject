@@ -17,12 +17,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
   var _dcr = new Object();
   var _dcf = new Object();
   var _ldc;
   
-  function init(e) {
-    _ldc = dojo.widget.byId("LoadingCycle");
+  dojo.addOnLoad(function() {
+    _ldc = dijit.byId("LoadingCycle");
 
     _dcr.widget = dojo.byId("DiscussionPanel");
     _dcr.widget.style.display = "none";
@@ -37,29 +38,29 @@
     var responseTitle = _dcr.form.responseTitle;
     var responseArea = _dcr.form.responseArea;
     
-    dojo.event.connect(_dcr.btnCancel, "onclick", function(e) {
+    dojo.connect(_dcr.btnCancel, "onclick", function(e) {
         topaz.responsePanel.hide(_dcr.widget);
         var submitMsg = _dcr.error;
-        dojo.dom.removeChildren(submitMsg);
+        topaz.domUtil.removeChildren(submitMsg);
       }
     );    
 
-    dojo.event.connect(_dcr.btnSubmit, "onclick", function(e) {
+    dojo.connect(_dcr.btnSubmit, "onclick", function(e) {
         topaz.responsePanel.submit(_dcr);
       }
     );    
        
-    dojo.event.connect(responseTitle, "onfocus", function(e) {
+    dojo.connect(responseTitle, "onfocus", function(e) {
         topaz.formUtil.textCues.off(responseTitle, _dcr.responseTitleCue);
       }
     );    
        
-    dojo.event.connect(responseArea, "onfocus", function(e) {
+    dojo.connect(responseArea, "onfocus", function(e) {
         topaz.formUtil.textCues.off(responseArea, _dcr.responseCue);
       }
     );    
        
-    dojo.event.connect(responseTitle, "onblur", function(e) {
+    dojo.connect(responseTitle, "onblur", function(e) {
         var fldResponseTitle = _dcr.form.commentTitle;
         if(responseTitle.value != "" && responseTitle.value != _dcr.responseTitleCue) {
           fldResponseTitle.value = responseTitle.value;
@@ -72,7 +73,7 @@
       }
     );    
 
-    dojo.event.connect(responseArea, "onblur", function(e) {
+    dojo.connect(responseArea, "onblur", function(e) {
         var fldResponse = _dcr.form.comment;
         if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
           fldResponse.value = responseArea.value;
@@ -84,7 +85,7 @@
       }
     );    
        
-    dojo.event.connect(responseTitle, "onchange", function(e) {
+    dojo.connect(responseTitle, "onchange", function(e) {
         var fldResponseTitle = _dcr.form.commentTitle;
         if(responseTitle.value != "" && responseTitle.value != _dcr.responseTitleCue) {
           fldResponseTitle.value = responseTitle.value;
@@ -97,7 +98,7 @@
       }
     );    
        
-    dojo.event.connect(responseArea, "onchange", function(e) {
+    dojo.connect(responseArea, "onchange", function(e) {
         var fldResponse = _dcr.form.comment;
         if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
           fldResponse.value = responseArea.value;
@@ -121,28 +122,28 @@
     _dcf.requestType = "flag";
     var responseAreaFlag = _dcf.form.responseArea;
     
-    dojo.event.connect(_dcf.btnCancel, "onclick", function(e) {
+    dojo.connect(_dcf.btnCancel, "onclick", function(e) {
         topaz.responsePanel.hide();
       }
     );    
 
-    dojo.event.connect(_dcf.btnFlagClose, "onclick", function(e) {
+    dojo.connect(_dcf.btnFlagClose, "onclick", function(e) {
         topaz.responsePanel.hide();
         topaz.responsePanel.resetFlaggingForm(_dcf);
       }
     );    
 
-    dojo.event.connect(_dcf.btnSubmit, "onclick", function(e) {
+    dojo.connect(_dcf.btnSubmit, "onclick", function(e) {
         topaz.responsePanel.submit(_dcf);
       }
     );    
        
-    dojo.event.connect(responseAreaFlag, "onfocus", function(e) {
+    dojo.connect(responseAreaFlag, "onfocus", function(e) {
         topaz.formUtil.textCues.off(responseAreaFlag, _dcf.responseCue);
       }
     );    
        
-    dojo.event.connect(responseAreaFlag, "onblur", function(e) {
+    dojo.connect(responseAreaFlag, "onblur", function(e) {
         var fldResponse = _dcf.form.comment;
         if(responseAreaFlag.value != "" && responseAreaFlag.value != _dcf.responseCue) {
           fldResponse.value = responseAreaFlag.value;
@@ -154,7 +155,7 @@
       }
     );    
        
-    dojo.event.connect(responseAreaFlag, "onchange", function(e) {
+    dojo.connect(responseAreaFlag, "onchange", function(e) {
         var fldResponse = _dcf.form.comment;
         if(responseAreaFlag.value != "" && responseAreaFlag.value != _dcf.responseCue) {
           fldResponse.value = responseAreaFlag.value;
@@ -165,6 +166,4 @@
       }
     );    
     
-  }
-  
-  dojo.addOnLoad(init);
+  });

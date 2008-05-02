@@ -17,8 +17,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 /**
- * topaz.horizontalTabs()
+ * topaz.horizontalTabs
  * 
  * The horizontal tabs are the secondary navigation that can be found on the
  * home page and the profile page.  This class uses a map object set in the 
@@ -35,13 +36,13 @@
  **/
 
 
-var proceedFlag = false;
-var tempValue = "";
-var changeFlag = false;
-
-topaz.horizontalTabs = new Object();
-
+dojo.provide("topaz.horizontalTabs");
 topaz.horizontalTabs = {
+  
+  proceedFlag:false,
+  tempValue:'',
+  changeFlag:false,
+  
   tabPaneSet: "",
   
   tabsListObject: "",
@@ -125,7 +126,7 @@ topaz.horizontalTabs = {
     //topaz.formUtil.createHiddenFields(this.targetFormObj);
     
     //alert("formObj.formSubmit = " + formObj.formSubmit.value);
-    /*dojo.event.connect(formObj.formSubmit, "onclick", function() {
+    /*dojo.connect(formObj.formSubmit, "onclick", function() {
         //alert("tabKey = " + topaz.horizontalTabs.targetObj.tabKey);
         submitContent(topaz.horizontalTabs.targetObj);
       }
@@ -144,7 +145,7 @@ topaz.horizontalTabs = {
         
       for (var n=0; n<radioObjs.length; n++) {
         if (radioObjs[n].checked) {
-          tempValue = radioObjs[n].value;
+          this.tempValue = radioObjs[n].value;
         }
       }
     }
@@ -156,20 +157,20 @@ topaz.horizontalTabs = {
       if (checkboxObjs.length) {  
         for (var n=0; n<checkboxObjs.length; n++) {
           if (checkboxObjs[n].checked) {
-            tempValue = checkboxObjs[n].value;
+            this.tempValue = checkboxObjs[n].value;
           }
         }
       }
       else {
-        tempValue = checkboxObjs.checked;
+        this.tempValue = checkboxObjs.checked;
       }
     }
     else if (obj.type == "select-one") {
       //alert("formObj.elements[" + i + "][" + obj.selectedIndex + "].value = " + obj[obj.selectedIndex].value);
-      tempValue = obj[obj.selectedIndex].value; 
+      this.tempValue = obj[obj.selectedIndex].value; 
     }
     else {
-      tempValue = obj.value;
+      this.tempValue = obj.value;
     }
     
     //alert("tempValue = " + tempValue);
@@ -185,8 +186,8 @@ topaz.horizontalTabs = {
       //alert("obj.form.elements[" + checkboxName + "].length = " + obj.form.elements[checkboxName].toSource());
       for (var n=0; n<radioObjs.length; n++) {
         if (radioObjs[n].checked) {
-          if (tempValue != radioObjs[n].value)
-            changeFlag = true;
+          if (this.tempValue != radioObjs[n].value)
+            this.changeFlag = true;
         }
       }
     }
@@ -199,31 +200,31 @@ topaz.horizontalTabs = {
       if (checkboxObjs.length) {
         for (var n=0; n<checkboxObjs.length; n++) {
           if (checkboxObjs[n].checked) {
-            if (tempValue != checkboxObjs[n].value)
-              changeFlag = true;
+            if (this.tempValue != checkboxObjs[n].value)
+              this.changeFlag = true;
           }
         }
       }
       else {
-        if (tempValue != checkboxObjs.checked) 
-          changeFlag = true;
+        if (this.tempValue != checkboxObjs.checked) 
+          this.changeFlag = true;
       }
     }
     else if (obj.type == "select-one") {
       //alert("formObj.elements[" + i + "][" + obj.selectedIndex + "].value = " + obj[obj.selectedIndex].value);
-      if (tempValue != obj[obj.selectedIndex].value)
-        changeFlag = true;
+      if (this.tempValue != obj[obj.selectedIndex].value)
+        this.changeFlag = true;
     }
     else {
-      if (tempValue != obj.value)
-        changeFlag = true;
+      if (this.tempValue != obj.value)
+        this.changeFlag = true;
     }
     
     //alert("changeFlag = " + changeFlag);
   },
   
   attachFormEvents: function (formObj) {
-    tempValue = "";
+    topaz.horizontalTabs.tempValue = "";
 
     for (var i=0; i<formObj.elements.length; i++) {
       if (formObj.elements[i].type != 'hidden') {
@@ -231,19 +232,19 @@ topaz.horizontalTabs = {
         var fieldName = formObj.elements[i].name;
         //alert("formName = " + formName + "\n" +
         //      "fieldName = " + fieldName);
-        dojo.event.connect(document.forms[formName].elements[fieldName], "onfocus", function() {
+        dojo.connect(document.forms[formName].elements[fieldName], "onfocus", function() {
         //    alert("tempValue = " + tempValue + "\n" +
         //          "this.id = " + document.forms[formName].elements[fieldName].value);
-            tempValue = this.value;
+            topaz.horizontalTabs.tempValue = this.value;
           }  
         );
 
-        dojo.event.connect(formObj.elements[i], "onchange", function() {
+        dojo.connect(formObj.elements[i], "onchange", function() {
         //    alert("tempValue = " + tempValue + "\n" +
         //          "this.value = " + this.value);
           
-            if (tempValue == this.value) 
-              changeFlag = true;
+            if (topaz.horizontalTabs.tempValue == this.value) 
+              topaz.horizontalTabs.changeFlag = true;
           }  
         );
       }
@@ -257,7 +258,7 @@ topaz.horizontalTabs = {
       if (obj.className) li.className = obj.className;
       if (this.tabsListObject[i].tabKey == obj.tabKey) {
         //li.className = li.className.concat(" active");
-        dojo.html.addClass(li, "active");
+        dojo.addClass(li, "active");
       }
       li.onclick = function () { 
           topaz.horizontalTabs.show(this.id);
@@ -268,7 +269,7 @@ topaz.horizontalTabs = {
       this.tabsContainer.appendChild(li);
     }
     
-    tempValue = "";
+    this.tempValue = "";
   },
   
   buildTabsHome: function(obj) {
@@ -278,7 +279,7 @@ topaz.horizontalTabs = {
       if (this.tabsListObject[i].className) li.className = this.tabsListObject[i].className;
       if (this.tabsListObject[i].tabKey == obj.tabKey) {
         //li.className = li.className.concat(" active");
-        dojo.html.addClass(li, "active");
+        dojo.addClass(li, "active");
       }
       li.onclick = function () { 
           topaz.horizontalTabs.showHome(this.id);
@@ -297,12 +298,12 @@ topaz.horizontalTabs = {
       var tabNode = dojo.byId(this.tabsListObject[i].tabKey);
       
       if (tabNode.className.match("active"))
-        dojo.html.removeClass(tabNode, "active");
+        dojo.removeClass(tabNode, "active");
         //tabNode.className = tabNode.className.replace(/active/, "").trim();
     }
     
     var targetNode = dojo.byId(obj.tabKey);
-    dojo.html.addClass(targetNode, "active");
+    dojo.addClass(targetNode, "active");
     //targetNode.className = targetNode.className.concat(" active");
   },
   
@@ -311,18 +312,18 @@ topaz.horizontalTabs = {
     //isChanged = topaz.formUtil.hasFieldChange(topaz.horizontalTabs.targetFormObj);
    
     //alert("[confirmChange] changeFlag = " + changeFlag);
-    if (changeFlag) {
+    if (this.changeFlag) {
       var warning = confirm("You have made changes, are you sure you want to leave this tab without saving?  If you want to proceed, click \"OK\".  Otherwise click \"Cancel\" to go to save.");
       
-      proceedFlag = warning;
+      this.proceedFlag = warning;
     }
     else {
-      proceedFlag = true;
+      this.proceedFlag = true;
     }
   },
     
   getContent: function() {
-    if (!proceedFlag) {
+    if (!this.proceedFlag) {
       _ldc.hide();
   
       this.targetFormObj.formSubmit.focus();
@@ -367,70 +368,41 @@ function loadContent(targetObj) {
   var targetUri = targetObj.urlLoad + "?tabId=" + targetObj.tabKey;
 
   _ldc.show();
-  
-  var bindArgs = {
+  dojo.xhrGet({
     url: _namespace + targetUri,
-    method: "get",
-    error: function(type, data, evt){
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     //topaz.errorConsole.writeToConsole(err);
-     //topaz.errorConsole.show();
-     alert("ERROR:" + data.toSource());
-     return false;
+    handleAs:'text',
+    headers: { "AJAX_USER_AGENT": "Dojo/" +  dojo.version },
+    error: function(response, ioArgs){
+      handleXhrError(response, ioArgs);
     },
-    load: function(type, data, evt){
-      var docFragment = document.createDocumentFragment();
-      docFragment = data;
-
-      refreshArea.innerHTML = docFragment;
-      
-      //alert("targetObj.tabKey = " + targetObj.tabKey);
+    load: function(response, ioArgs){
+      refreshArea.innerHTML = response;
       topaz.horizontalTabs.toggleTab(targetObj);
       topaz.horizontalTabs.tabSetup(targetObj);
-      tempValue = "";
-      changeFlag = false;
-      
-      proceedFlag = true;
+      topaz.horizontalTabs.tempValue = "";
+      topaz.horizontalTabs.changeFlag = false;
+      topaz.horizontalTabs.proceedFlag = true;
       _ldc.hide();
-
-      return false;
-    },
-    mimetype: "text/html",
-    headers: { "AJAX_USER_AGENT": "Dojo/" +  dojo.version }
-   };
-   dojo.io.bind(bindArgs);
+    }
+  });
 }  
 
 function loadContentHome(targetObj) {
   var refreshArea = dojo.byId(homeConfig.tabPaneSetId);
   var targetUri = targetObj.urlLoad;
 
-  var bindArgs = {
+  dojo.xhrGet({
     url: _namespace + targetUri,
-    method: "get",
-    error: function(type, data, evt){
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     //topaz.errorConsole.writeToConsole(err);
-     //topaz.errorConsole.show();
-     alert("ERROR:" + data.toSource());
-     return false;
+    headers: { "AJAX_USER_AGENT": "Dojo/" +  dojo.version },
+    error: function(response, ioArgs){
+      handleXhrError(response, ioArgs);
     },
-    load: function(type, data, evt){
-      var docFragment = document.createDocumentFragment();
-      docFragment = data;
-      
-      refreshArea.innerHTML = docFragment;
-      
-      //alert("targetObj.tabKey = " + targetObj.tabKey);
+    load: function(response, ioArgs){
+      refreshArea.innerHTML = response;
       topaz.horizontalTabs.setTargetObj(targetObj);
       topaz.horizontalTabs.toggleTab(targetObj);
-
-      return false;
-    },
-    mimetype: "text/html",
-    headers: { "AJAX_USER_AGENT": "Dojo/" +  dojo.version }
-   };
-   dojo.io.bind(bindArgs);
+    }
+  });
 }  
 
 function submitContent() {
@@ -438,43 +410,27 @@ function submitContent() {
   var srcObj = topaz.horizontalTabs.targetObj;
   var targetUri = srcObj.urlSave;
   
-  //alert("formName = " + srcObj.formName + "\ntargetUri = " + targetUri);
-  
   var formObj = document.forms[srcObj.formName];
   var formValueObj = topaz.formUtil.createFormValueObject(formObj);
   
-  //alert("formValueObj = " + formValueObj.toSource());
-
   _ldc.show();
-  
-  var bindArgs = {
+  dojo.xhrPost({
     url: _namespace + targetUri,
-    method: "post",
     content: formValueObj,
-    error: function(type, data, evt){
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
-     //topaz.errorConsole.writeToConsole(err);
-     //topaz.errorConsole.show();
-     alert("ERROR:" + data.toSource());
-     return false;
+    headers: { "AJAX_USER_AGENT": "Dojo/" +  dojo.version },
+    error: function(response, ioArgs){
+      handleXhrError(response, ioArgs);
     },
-    load: function(type, data, evt){
-      var docFragment = document.createDocumentFragment();
-      docFragment = data;
-
+    load: function(response, ioArgs){
       topaz.horizontalTabs.tabSetup(srcObj);
-
-      refreshArea.innerHTML = docFragment;
-      
-      tempValue = "";
-      changeFlag = false;
+      refreshArea.innerHTML = response;
+      topaz.horizontalTabs.tempValue = "";
+      topaz.horizontalTabs.changeFlag = false;
       
       var formObj = document.forms[srcObj.formName];
       
-      formObj.formSubmit.onclick = function () {
-          submitContent();
-        }
-        
+      formObj.formSubmit.onclick = function () { submitContent(); }
+      
       var errorNodes = document.getElementsByTagAndClassName(null, "form-error");
       
       if (errorNodes.length >= 0)
@@ -482,17 +438,8 @@ function submitContent() {
       else
         jumpToElement(errorNodes);
         
-      //topaz.formUtil.createHiddenFields(targetObj.targetFormObj);
-      //topaz.horizontalTabs.attachFormEvents(document.forms[targetObj.formName]);
-      //topaz.horizontalTabs.toggleTab(targetObj);
-      
       _ldc.hide();
-
-      return false;
-    },
-    mimetype: "text/html",
-    headers: { "AJAX_USER_AGENT": "Dojo/" +  dojo.version }
-   };
-   dojo.io.bind(bindArgs);
+    }
+  });
 }  
 

@@ -65,5 +65,3 @@
 </div>
 
 <#include "/widget/loadingCycle.ftl">
-
-<#include "/widget/errorConsole.ftl">

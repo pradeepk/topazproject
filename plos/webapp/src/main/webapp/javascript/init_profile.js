@@ -19,8 +19,8 @@
  */
 var _ldc;
 
-function init(e) {
-  _ldc = dojo.widget.byId("LoadingCycle");
+dojo.addOnLoad(function() {
+  _ldc = dijit.byId("LoadingCycle");
   
   _ldc.show();
 
@@ -31,7 +31,7 @@ function init(e) {
   
   _ldc.hide();
   
-  dojo.event.connect(document, "onunload", topaz.horizontalTabs.confirmChange(topaz.horizontalTabs.targetFormObj));
+  dojo.connect(document, "onunload", topaz.horizontalTabs.confirmChange(topaz.horizontalTabs.targetFormObj));
   
   if (tabSelectId == "alerts") {
     var alertsForm = document.userAlerts;
@@ -39,6 +39,4 @@ function init(e) {
     topaz.formUtil.selectCheckboxPerCollection(alertsForm.checkAllMonthly, alertsForm.monthlyAlerts);
   }
   
-}
-
-dojo.addOnLoad(init);
+});

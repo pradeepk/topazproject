@@ -17,8 +17,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
 /**
- * topaz.slideshow()
+ * topaz.slideshow
  * 
  * This class builds and controls the slideshow thumbnails to display the appropriate
  * images when the thumbnails are clicked.  When an image is selected, the container 
@@ -27,8 +28,7 @@
  * as well to correspond to the link and vice versa.
  **/
 
-topaz.slideshow = new Object();
-
+dojo.provide("topaz.slideshow");
 topaz.slideshow = {
   imgS: "PNG_S",
   
@@ -112,22 +112,22 @@ topaz.slideshow = {
     for (var i=0; i<tbCurrent.length; i++) {
       //alert("tbCurrent[" + i + "] = " + tbCurrent[i].nodeName + "\ntbCurrent[" + i + "].className = " + tbCurrent[i].className);
       //tbCurrent[i].className = tbCurrent[i].className.replace(/\-current/, "");
-      dojo.html.removeClass(tbCurrent[i], "current");
+      dojo.removeClass(tbCurrent[i], "current");
     }
     
     var tbNew = obj.parentNode.parentNode;
     //tbNew.className = tbNew.className.concat("-current");
-    dojo.html.addClass(tbNew, "current");
+    dojo.addClass(tbNew, "current");
     
     if (index == 0) 
-      dojo.html.addClass(dojo.byId("previous"), "hidden");
+      dojo.addClass(dojo.byId("previous"), "hidden");
     else
-      dojo.html.removeClass(dojo.byId("previous"), "hidden");
+      dojo.removeClass(dojo.byId("previous"), "hidden");
     
     if (index == this.itemCount-1) 
-      dojo.html.addClass(dojo.byId("next"), "hidden");
+      dojo.addClass(dojo.byId("next"), "hidden");
     else
-      dojo.html.removeClass(dojo.byId("next"), "hidden");
+      dojo.removeClass(dojo.byId("next"), "hidden");
     
     
     this.activeItemIndex = index;
@@ -180,7 +180,7 @@ topaz.slideshow = {
           }
         }
         else if (grandchild.nodeName == 'H5') {
-          dojo.dom.copyChildren(grandchild, this.figTitle);
+          topaz.domUtil.copyChildren(grandchild, this.figTitle);
         }
         else {
           var newChild = grandchild;
@@ -189,7 +189,7 @@ topaz.slideshow = {
         }
       }
       
-      dojo.dom.copyChildren(caption, this.figCaption);
+      topaz.domUtil.copyChildren(caption, this.figCaption);
       
       return;
     }
@@ -200,16 +200,16 @@ topaz.slideshow = {
   
   adjustContainerHeight: function (obj) {
     // get size viewport
-    var viewportSize = dojo.html.getViewport();
+    var viewport = dijit.getViewport();
     
     // get the offset of the container
 		var objOffset = topaz.domUtil.getCurrentOffset(obj);
 		
 		// find the size of the container
-		var objMb = dojo.html.getMarginBox(obj);
+		var objMb = dojo._getMarginBox(obj);
 
-    var maxContainerHeight = viewportSize.height - (10 * objOffset.top);
-    //alert("objOffset.top = " + objOffset.top + "\nviewportSize.height = " + viewportSize.height + "\nmaxContainerHeight = " + maxContainerHeight);
+    var maxContainerHeight = viewport.h - (10 * objOffset.top);
+    //alert("objOffset.top = " + objOffset.top + "\nviewport.h = " + viewport.h + "\nmaxContainerHeight = " + maxContainerHeight);
     
     obj.style.height = maxContainerHeight + "px";
     obj.style.overflow = "auto";
@@ -218,8 +218,8 @@ topaz.slideshow = {
   adjustViewerHeight: function() {
     var container1 = dojo.byId("figure-window-nav");
     var container2 = dojo.byId("figure-window-container");
-    var container1Mb = dojo.html.getMarginBox(container1).height;
-    var container2Mb = dojo.html.getMarginBox(container2).height;
+    var container1Mb = dojo._getMarginBox(container1).height;
+    var container2Mb = dojo._getMarginBox(container2).height;
     
     if (container1Mb > container2Mb) {
       container2.parentNode.style.height = container1Mb + "px";
@@ -234,7 +234,7 @@ topaz.slideshow = {
   },
   
   adjustViewerWidth: function(figureWindow, maxWidth) {
-    var imageMarginBox = dojo.html.getMarginBox(topaz.slideshow.figureImg);
+    var imageMarginBox = dojo._getMarginBox(topaz.slideshow.figureImg);
     imageWidth = imageMarginBox.width;
     topaz.domUtil.setContainerWidth(figureWindow, imageWidth, maxWidth, 1);
   },
@@ -249,10 +249,10 @@ topaz.slideshow = {
       this.show(newTnObj, newIndex);
       
       if (newIndex == 0) 
-        dojo.html.addClass(obj, 'hidden');
+        dojo.addClass(obj, 'hidden');
       
       if (this.activeItemIndex == this.itemCount-1)
-        dojo.html.removeClass(dojo.byId('next'), 'hidden');
+        dojo.removeClass(dojo.byId('next'), 'hidden');
         
       this.activeItemIndex = newIndex;
     }
@@ -268,10 +268,10 @@ topaz.slideshow = {
       this.show(newTnObj, newIndex);
       
       if (newIndex == this.itemCount-1) 
-        dojo.html.addClass(obj, 'hidden');
+        dojo.addClass(obj, 'hidden');
       
       if (this.activeItemIndex == 0)
-        dojo.html.removeClass(dojo.byId('previous'), 'hidden');
+        dojo.removeClass(dojo.byId('previous'), 'hidden');
         
       this.activeItemIndex = newIndex;
     }

@@ -17,15 +17,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * topaz.htmlUtil()
+ * topaz.htmlUtil
  * 
  * Utility to help get the attribute from the url to be used in the JS.
  * 
  **/
-
-topaz.htmlUtil = new Object();
-
+dojo.provide("topaz.htmlUtil");
 topaz.htmlUtil = {
   getQuerystring: function() {
     var paramQuery = unescape(document.location.search.substring(1));

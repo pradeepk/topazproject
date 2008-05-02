@@ -17,6 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
   * topaz.domUtil
   *
@@ -24,8 +25,8 @@
   *
   * @author  Joycelyn Chung  joycelyn@orangetowers.com
   **/
-topaz.domUtil = new Object();
-
+dojo.provide("topaz.domUtil");
+dojo.require("dojox.data.dom");
 topaz.domUtil = {
   /**
    * topaz.domUtil.getDisplayId(Node obj)
@@ -94,6 +95,7 @@ topaz.domUtil = {
    * 
    * @param    obj          Node    Element node.
    */
+   /*
   removeChildNodes: function(obj) {
     if (obj.hasChildNodes()) {
       //alert("obj has child nodes");
@@ -108,7 +110,48 @@ topaz.domUtil = {
       }
     }
   },
-
+  */
+  
+	removeChildren: function(/*Element*/node){
+	  //  summary:
+	  //    removes all children from node and returns the count of children removed.
+	  //    The children nodes are not destroyed. Be sure to call destroyNode on them
+	  //    after they are not used anymore.
+	  var count = node.childNodes.length;
+	  while(node.hasChildNodes()){ this.removeNode(node.firstChild); }
+	  return count; // int
+	},
+	
+	moveChildren: function(/*Element*/srcNode, /*Element*/destNode, /*boolean?*/trim){
+	  //  summary:
+	  //    Moves children from srcNode to destNode and returns the count of
+	  //    children moved; will trim off text nodes if trim == true
+	  var count = 0;
+	  if(trim) {
+	    while(srcNode.hasChildNodes() &&
+	      srcNode.firstChild.nodeType == dojo.dom.TEXT_NODE) {
+	      srcNode.removeChild(srcNode.firstChild);
+	    }
+	    while(srcNode.hasChildNodes() &&
+	      srcNode.lastChild.nodeType == dojo.dom.TEXT_NODE) {
+	      srcNode.removeChild(srcNode.lastChild);
+	    }
+	  }
+	  while(srcNode.hasChildNodes()){
+	    destNode.appendChild(srcNode.firstChild);
+	    count++;
+	  }
+	  return count; //  number
+	},
+	
+	copyChildren: function(/*Element*/srcNode, /*Element*/destNode, /*boolean?*/trim){
+	  //  summary:
+	  //    Copies children from srcNde to destNode and returns the count of
+	  //    children copied; will trim off text nodes if trim == true
+	  var clonedNode = srcNode.cloneNode(true);
+	  return this.moveChildren(clonedNode, destNode, trim); //  number
+	},
+	
   /**
    * topaz.domUtil.getDisplayMap(Node obj, String/Arraylist displayId)
    * 
@@ -124,7 +167,7 @@ topaz.domUtil = {
    *                                                 count.
    */
   getDisplayMap: function(obj, displayId) {
-    var displayIdList = (displayId != null) ? [displayId] : this.getDisplayId(obj).split(',');
+    var displayIdList = (displayId != null) ? [displayId] : topaz.domUtil.getDisplayId(obj).split(',');
     
     //alert("displayId = " + displayId + "\n" +
     //      "displayIdList = " + displayIdList);
@@ -169,7 +212,7 @@ topaz.domUtil = {
     var elList = document.getElementsByTagAndClassName(elObj, sourceClass);
     
     for (var i=0; i<elList.length; i++) {
-       dojo.html.addClass(elList[i], newClass);
+       dojo.addClass(elList[i], newClass);
     }
   },
   
@@ -189,11 +232,11 @@ topaz.domUtil = {
     
     for (var i=0; i<siblings.length; i++) {
       if (siblings[i].className.match(classNameValue)){
-        dojo.html.removeClass(siblings[i], classNameValue);   
+        dojo.removeClass(siblings[i], classNameValue);   
       }
     }
     
-    dojo.html.addClass(obj, classNameValue);
+    dojo.addClass(obj, classNameValue);
   },
 
   /**
@@ -218,7 +261,7 @@ topaz.domUtil = {
       }
     }
     
-    dojo.html.addClass(obj, triggerClass);
+    dojo.addClass(obj, triggerClass);
   },
   
   /**
@@ -322,9 +365,9 @@ topaz.domUtil = {
       obj.style.display = "none";
       
     if (obj.style.display == "block")
-      dojo.dom.textContent(node, textOn);
+      dojox.data.dom.textContent(node, textOn);
     else
-      dojo.dom.textContent(node, textOff);
+      dojox.data.dom.textContent(node, textOff);
       
     return false;
   },
@@ -419,16 +462,16 @@ topaz.domUtil = {
    */
   adjustContainerHeight: function (obj) {
     // get size viewport
-    var viewportSize = dojo.html.getViewport();
+    var viewport = dijit.getViewport();
     
     // get the offset of the container
-    var objOffset = topaz.domUtil.getCurrentOffset(obj);
+    var objOffset = this.getCurrentOffset(obj);
     
     // find the size of the container
-    var objMb = dojo.html.getMarginBox(obj);
+    var objMb = dojo._getMarginBox(obj);
 
-    var maxContainerHeight = viewportSize.height - (10 * objOffset.top);
-    //alert("objOffset.top = " + objOffset.top + "\nviewportSize.height = " + viewportSize.height + "\nmaxContainerHeight = " + maxContainerHeight);
+    var maxContainerHeight = viewport.h - (10 * objOffset.t);
+    //alert("objOffset.top = " + objOffset.top + "\nviewport.h = " + viewport.h + "\nmaxContainerHeight = " + maxContainerHeight);
     
     obj.style.height = maxContainerHeight + "px";
     obj.style.overflow = "auto";
@@ -445,12 +488,12 @@ topaz.domUtil = {
    * @param    variableWidth  Integer        Variable width.
    */
   setContainerWidth: function (obj, minWidth, maxWidth, variableWidth /* if the container between min and max */) {
-    var viewport = dojo.html.getViewport();
+    var viewport = dijit.getViewport();
     
     // min-width: 675px; max-width: 910px;
-    obj.style.width = (minWidth && viewport.width < minWidth) ? minWidth + "px" : 
-                      (maxWidth && viewport.width > maxWidth) ? maxWidth + "px" :
-                      (!variableWidth && viewport.width < maxWidth) ? maxWidth + "px" : "auto" ;
+    obj.style.width = (minWidth && viewport.w < minWidth) ? minWidth + "px" : 
+                      (maxWidth && viewport.w > maxWidth) ? maxWidth + "px" :
+                      (!variableWidth && viewport.w < maxWidth) ? maxWidth + "px" : "auto" ;
     //alert("container.style.width = " + obj.style.width);
   },
   
@@ -466,10 +509,46 @@ topaz.domUtil = {
    */
   removeNode: function(node, /* boolean */ deep) {
     if (deep && node.hasChildNodes)
-      dojo.dom.removeChildren(node);
+      this.removeChildren(node);
       
-    dojo.dom.removeNode(node);
+	  if(node && node.parentNode){
+	    // return a ref to the removed child
+	    return node.parentNode.removeChild(node); //Node
+	  }
   },
+  
+  replaceNode: function(/*Element*/node, /*Element*/newNode){
+    //  summary:
+    //    replaces node with newNode and returns a reference to the removed node.
+    //    To prevent IE memory leak, call destroyNode on the returned node when
+    //    it is no longer needed.
+    return node.parentNode.replaceChild(newNode, node); // Node
+  },
+
+	insertBefore: function(/*Node*/node, /*Node*/ref, /*boolean?*/force){
+	  //  summary:
+	  //    Try to insert node before ref
+	  if( (force != true)&&
+	    (node === ref || node.nextSibling === ref)){ return false; }
+	  var parent = ref.parentNode;
+	  parent.insertBefore(node, ref);
+	  return true;  //  boolean
+	},
+
+	insertAfter: function(/*Node*/node, /*Node*/ref, /*boolean?*/force){
+	  //  summary:
+	  //    Try to insert node after ref
+	  var pn = ref.parentNode;
+	  if(ref == pn.lastChild){
+	    if((force != true)&&(node === ref)){
+	      return false; //  boolean
+	    }
+	    pn.appendChild(node);
+	  }else{
+	    return this.insertBefore(node, ref.nextSibling, force); //  boolean
+	  }
+	  return true;  //  boolean
+	},
   
   /**
    * topaz.domUtil.insertAfterLast(Node srcNode, Node refNode)
@@ -481,7 +560,7 @@ topaz.domUtil = {
    */
   insertAfterLast: function(srcNode, refNode) {
     if (refNode.hasChildNodes) 
-      dojo.dom.insertAfter(srcNode, refNode[refNode.childNodes.length-1]);
+      this.insertAfter(srcNode, refNode[refNode.childNodes.length-1]);
     else
       refNode.appendChild(srcNode);
   },
@@ -496,7 +575,7 @@ topaz.domUtil = {
    */
   insertBeforeFirst: function(srcNode, refNode) {
     if (refNode.hasChildNodes) 
-      dojo.dom.insertBefore(srcNode, refNode[0]);
+      this.insertBefore(srcNode, refNode[0]);
     else
       refNode.appendChild(srcNode);
   },
@@ -524,10 +603,10 @@ topaz.domUtil = {
       for (var i=0; i<nodeChildren.length; i++) {
         if (nodeChildren[i].nodeName == targetNodeName) {
           if (isAdd) {
-            dojo.html.addClass(nodeChildren[i], className);
+            dojo.addClass(nodeChildren[i], className);
           }
           else {
-            dojo.html.removeClass(nodeChildren[i], className);
+            dojo.removeClass(nodeChildren[i], className);
           }
         }
         
@@ -582,42 +661,23 @@ topaz.domUtil = {
     var childlist = node.childNodes;
     var itemsFound = new Array();
     
-    if (djConfig.isDebug) {
-      dojo.byId(djConfig.debugContainerId).innerHTML +=
-            "<br><br>" + "[topaz.domUtil.isChildContainAttributeValue]"
-            ;
-    }
-    
+    console.debug("[topaz.domUtil.isChildContainAttributeValue]");
+
     for (var i=0; i<=childlist.length-1; i++) {
       var attrObj = new Object();
 
-      if (djConfig.isDebug) {
-        dojo.byId(djConfig.debugContainerId).innerHTML +=
-              "<br>" + "attributeValue = " + attributeValue 
-              + "<br>" + "childlist[" + i + "].nodeName = " + childlist[i].nodeName 
-              ;
-      }
+      console.debug("attributeValue = " + attributeValue + "\nchildlist[" + i + "].nodeName = " + childlist[i].nodeName); 
       
       if (childlist[i].nodeType == 1 &&
           (((attributeValue || attributeValue !=null) && childlist[i].getAttribute(attributeName) == attributeValue) ||
           ((!attributeValue || attributeValue == null) && childlist[i].getAttributeNode(attributeName) != null))) {
 
-        if (djConfig.isDebug) {
-          dojo.byId(djConfig.debugContainerId).innerHTML +=
-                "<br>" + "childlist[" + i + "].getAttribute(" + attributeName + ") = " + childlist[i].getAttribute(attributeName) 
-                ;
-        }
-        
+        console.debug("\nchildlist[" + i + "].getAttribute(" + attributeName + ") = " + childlist[i].getAttribute(attributeName));
+
         attrObj.node = childlist[i];
         attrObj.value = childlist[i].getAttribute(attributeName);
         itemsFound.push(attrObj);
       }
-    }
-    
-    if (djConfig.isDebug) {
-      dojo.byId(djConfig.debugContainerId).innerHTML +=
-            "<br>" + "-----------------------------------------------<br>"
-            ;
     }
     
     return itemsFound;

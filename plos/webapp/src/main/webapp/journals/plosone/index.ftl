@@ -197,52 +197,6 @@
 			<p>Want to get involved? <@s.a href="${feedbackURL}">Nominate your lab</@s.a> and get your team and your work some free publicity.</p>
           </div>
           <!-- end : journal club block -->
-          <!-- begin : advocacy blocks -->
-          <div id="adWrap">
-          <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-          <script language='JavaScript' type='text/javascript'>
-          <!--
-             if (!document.phpAds_used) document.phpAds_used = ',';
-             phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-             document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-             document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-             document.write ("&amp;what=zone:160&amp;source=ONE&amp;target=_top&amp;block=1");
-             document.write ("&amp;exclude=" + document.phpAds_used);
-             if (document.referrer)
-                document.write ("&amp;referer=" + escape(document.referrer));
-             document.write ("'><" + "/script>");
-          //-->
-          </script><noscript><a href='http://ads.plos.org/adclick.php?n=a1ec113d' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:160&amp;source=ONE&amp;n=a1ec113d' border='0' alt=''></a></noscript>
-          <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-          <script language='JavaScript' type='text/javascript'>
-          <!--
-             if (!document.phpAds_used) document.phpAds_used = ',';
-             phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-             document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-             document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-             document.write ("&amp;what=zone:161&amp;source=ONE&amp;target=_top&amp;block=1");
-             document.write ("&amp;exclude=" + document.phpAds_used);
-             if (document.referrer)
-                document.write ("&amp;referer=" + escape(document.referrer));
-             document.write ("'><" + "/script>");
-          //-->
-          </script><noscript><a href='http://ads.plos.org/adclick.php?n=ace5c997' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:161&amp;source=ONE&amp;n=ace5c997' border='0' alt=''></a></noscript>
-          <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
-          <script language='JavaScript' type='text/javascript'>
-          <!--
-             if (!document.phpAds_used) document.phpAds_used = ',';
-             phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
-             document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
-             document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
-             document.write ("&amp;what=zone:162&amp;source=ONE&amp;target=_top&amp;block=1");
-             document.write ("&amp;exclude=" + document.phpAds_used);
-             if (document.referrer)
-                document.write ("&amp;referer=" + escape(document.referrer));
-             document.write ("'><" + "/script>");
-          //-->
-          </script><noscript><a href='http://ads.plos.org/adclick.php?n=aec547bc' target='_top'><img src='http://ads.plos.org/adview.php?what=zone:162&amp;source=ONE&amp;n=aec547bc' border='0' alt=''></a></noscript>
-          </div>
-          <!-- end : advocacy blocks -->
             <!-- begin : stay-connected block -->
             <div id="connect" class="block">
               <h3>Stay Connected</h3>

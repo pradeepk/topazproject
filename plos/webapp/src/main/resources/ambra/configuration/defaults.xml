@@ -288,13 +288,10 @@
             <file>/css/iepc.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_default.js</file>
-            <file>/javascript/dojo/dojo_home.js</file>
-            <file>/javascript/topaz/topaz.js</file>
+            <file>/javascript/dojo.js</file>
             <file>/javascript/dojoRequire_default.ftl</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
+            <file>/javascript/topaz/topaz.js</file>
+            <file>/javascript/config_default.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -308,16 +305,12 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo/dojo_home.js</file>
-            <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/htmlUtil.js</file>
+            <file>/javascript/dojo.js</file>
             <file>/javascript/dojoRequire_default.ftl</file>
+            <file>/javascript/topaz/topaz.js</file>
             <file>/javascript/config_home.js</file>
-            <file>/javascript/topaz/horizontalTabs.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
-            <file>/javascript/init_home.js</file>
           </javascript>
         </page>
         <page>
@@ -330,23 +323,14 @@
             <file>/css/iepc.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_article.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/annotation.js</file>
-            <file>/javascript/topaz/corrections.js</file>
-            <file>/javascript/topaz/displayComment.js</file>
-            <file>/javascript/topaz/rating.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/floatingMenu.js</file>
-            <file>/javascript/topaz/navigationUtil.js</file>
-            <file>/javascript/dojoRequire_article.ftl</file>
-            <file>/javascript/formSetup_article.js</file>
-            <file>/javascript/init_global.js</file>
+            <file>/javascript/config_article.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_article.js</file>
+            <file>/javascript/formSetup_article.js</file>
+            <file>/javascript/init_global.js</file>
           </javascript>
         </page>
         <page>
@@ -356,17 +340,11 @@
             <file>/css/iepc.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/floatingMenu.js</file>
-            <file>/javascript/topaz/navigationUtil.js</file>
-            <file>/javascript/dojoRequire_article.ftl</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
-            <file>/javascript/init_float.js</file>
           </javascript>
         </page>
         <page>
@@ -377,17 +355,10 @@
             <file>/css/ambraTabs.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_article.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/annotation.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/floatingMenu.js</file>
-            <file>/javascript/topaz/navigationUtil.js</file>
-            <file>/javascript/dojoRequire_article.ftl</file>
-            <file>/javascript/dynamicDrive/tabcontent.js</file>
+            <file>/javascript/config_article.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -395,14 +366,10 @@
         <page>
           <name>/discussion/discussion.ftl</name>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_discussion.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/dojoRequire_discussion.ftl</file>
-            <file>/javascript/topaz/responsePanel.js</file>
+            <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_discussion.js</file>
@@ -411,14 +378,10 @@
         <page>
           <name>/discussion/startDiscussion.ftl</name>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_discussion.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/dojoRequire_discussion.ftl</file>
-            <file>/javascript/topaz/responsePanel.js</file>
+            <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_newDiscussion.js</file>
@@ -434,15 +397,10 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_discussion.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/rating.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/dojoRequire_discussion.ftl</file>
-            <file>/javascript/topaz/responsePanel.js</file>
+            <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_discussion.js</file>
@@ -454,15 +412,11 @@
             <file>/css/images.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/config_slideshow.js</file>
-            <file>/javascript/slideshowReference.ftl</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/dojoRequire_slideshow.ftl</file>
-            <file>/javascript/topaz/slideshow.js</file>
+            <file>/javascript/slideshowReference.ftl</file>
+            <file>/javascript/config_slideshow.js</file>
             <file>/javascript/init_slideshow.js</file>
           </javascript>
         </page>
@@ -530,13 +484,8 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/prototype.js</file>
-            <file>/javascript/topaz/advsearch.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -550,11 +499,8 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -562,13 +508,9 @@
         <page>
           <name>/user/createNewUser.ftl</name>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/htmlUtil.js</file>
-            <file>/javascript/dojoRequire_profile.ftl</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_newProfile.js</file>
@@ -583,13 +525,9 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/htmlUtil.js</file>
-            <file>/javascript/dojoRequire_profile.ftl</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_ambraAlerts.js</file>
@@ -604,15 +542,10 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/browserDetection.js</file>
-            <file>/javascript/dojo/dojo_ambra.js</file>
+            <file>/javascript/dojo.js</file>
+            <file>/javascript/dojoRequire_full.ftl</file>
             <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/formUtil.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/htmlUtil.js</file>
-            <file>/javascript/dojoRequire_profile.ftl</file>
             <file>/javascript/config_profile.js</file>
-            <file>/javascript/topaz/horizontalTabs.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_profile.js</file>
@@ -641,13 +574,13 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo/dojo_home.js</file>
-            <file>/javascript/topaz/topaz.js</file>
-            <file>/javascript/topaz/domUtil.js</file>
-            <file>/javascript/topaz/htmlUtil.js</file>
+            <file>/javascript/dojo.js</file>
             <file>/javascript/dojoRequire_default.ftl</file>
+            <file>/javascript/topaz/topaz.js</file>
+            <file>/javascript/config_home.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
+            <file>/javascript/init_home.js</file>
           </javascript>
         </page>
         <page>

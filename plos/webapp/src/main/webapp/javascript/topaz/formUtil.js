@@ -17,13 +17,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * topaz.formUtil
  * 
  * @author		Joycelyn Chung			joycelyn@orangetowers.com
  **/
-topaz.formUtil = new Object();
-
+dojo.provide("topaz.formUtil");
 topaz.formUtil = {
   
   /**
@@ -335,7 +335,7 @@ topaz.formUtil = {
     alert("removeHiddenFields");
     for (var i=0; i<formObj.elements.length; i++) {
       if (formObj.elements[i].type == 'hidden') {
-        dojo.dom.removeNode(formObj.elements[i]);
+        topaz.domUtil.removeNode(formObj.elements[i]);
       }
     }
   },

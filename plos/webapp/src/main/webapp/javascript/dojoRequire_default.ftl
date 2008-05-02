@@ -17,10 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-  dojo.registerModulePath("topaz", "../topaz");
-  dojo.require("topaz.topaz");
-  dojo.require("dojo.html.*");
-  dojo.require("dojo.io.*");
-  dojo.require("dojo.event.*");
 
- 
+dojo.registerModulePath("topaz", "../../topaz");
+dojo.require("topaz.domUtil");
+dojo.require("topaz.htmlUtil");

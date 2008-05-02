@@ -17,16 +17,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 var _ldc;
 var _alertForm;
 
-function init(e) {
-  _ldc = dojo.widget.byId("LoadingCycle");
+dojo.addOnLoad(function() {
+  _ldc = dijit.byId("LoadingCycle");
   
   _alertForm = document.userAlerts;
 
   _alertForm.action = _namespace + "/user/secure/saveAlerts.action";
-  dojo.event.connect(_alertForm.formSubmit, "onclick", function() {
+  dojo.connect(_alertForm.formSubmit, "onclick", function() {
       _alertForm.submit(); 
       return true;
     }
@@ -34,6 +35,4 @@ function init(e) {
   
   topaz.formUtil.selectCheckboxPerCollection(_alertForm.checkAllWeekly, _alertForm.weeklyAlerts);
   topaz.formUtil.selectCheckboxPerCollection(_alertForm.checkAllMonthly, _alertForm.monthlyAlerts);
-}
-
-dojo.addOnLoad(init);
+});

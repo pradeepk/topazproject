@@ -66,5 +66,3 @@
   <#include "/global/global_bottom.ftl">
 </#if>
 <#-- END MAJOR HACK -->
-
-<div id="dojoDebug" style="background: yellow;"></div>

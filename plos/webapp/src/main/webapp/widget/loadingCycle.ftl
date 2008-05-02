@@ -17,6 +17,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div dojoType="dialog" id="LoadingCycle" bgColor="#333333" bgOpacity="0.75" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" class="loadingCycler">
+<div dojoType="dijit.Dialog" id="LoadingCycle" class="loadingCycler">
 	<img src="${freemarker_config.getContext()}/images/loading.gif" width="58" height="58" title="Loading..." />
 </div>

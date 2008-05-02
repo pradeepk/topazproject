@@ -17,7 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-dojo.provide("topaz.corrections");
 
 /**
   * topaz.corrections
@@ -26,8 +25,7 @@ dojo.provide("topaz.corrections");
   * 
   * @author jkirton (jopaki@gmail.com)
   **/
-topaz.corrections = new Object();
-
+dojo.provide("topaz.corrections");
 topaz.corrections = {
   aroot: null, // the top-most element of the article below which corrections are applied
   fch: null,
@@ -45,7 +43,7 @@ topaz.corrections = {
    * Removes any existing formal correction entries from the formal correction header.
    */
   _clearFCEntries: function() {
-    topaz.domUtil.removeChildNodes(this.fclist);
+    topaz.domUtil.removeChildren(this.fclist);
     // TODO handle IE memory leaks
   },
 
@@ -60,8 +58,8 @@ topaz.corrections = {
     this.fch = dojo.byId(formalCorrectionConfig.fchId);
     this.fclist = dojo.byId(formalCorrectionConfig.fcListId);
 
-    this.arrElmMc = dojo.html.getElementsByClass(annotationConfig.styleMinorCorrection, this.aroot);
-    this.arrElmFc = dojo.html.getElementsByClass(annotationConfig.styleFormalCorrection, this.aroot);
+    this.arrElmMc = dojo.query('.'+annotationConfig.styleMinorCorrection, this.aroot);
+    this.arrElmFc = dojo.query('.'+annotationConfig.styleFormalCorrection, this.aroot);
 
     this._clearFCEntries();
     var show = (this.numFormalCrctns() > 0);
@@ -69,16 +67,14 @@ topaz.corrections = {
       // [re-]fetch the formal corrections for the article
       var targetUri = _annotationForm.target.value;
       _ldc.show();
-      var bindArgs = {
+      dojo.xhrGet({
         url: _namespace + "/annotation/getFormalCorrections.action?target=" + targetUri,
-        method: "get",
-        error: function(type, error, evt){
-         var err = document.createTextNode("ERROR [AJAX]:" + error.toSource());
-         alert("ERROR:" + error.toSource());
-         return false;
+        handleAs:'json',
+        error: function(response, ioArgs){
+          handleXhrError(response, ioArgs);
         },
-        load: function(type, data, evt) {
-          var jsonObj = dojo.json.evalJson(data);
+        load: function(response, ioArgs) {
+          var jsonObj = response;
           if (jsonObj.actionErrors.length > 0) {
             var errorMsg = "";
             for (var i=0; i<jsonObj.actionErrors.length; i++) {
@@ -91,12 +87,8 @@ topaz.corrections = {
             topaz.corrections.addFormalCorrections(jsonObj.formalCorrections);
           }
           _ldc.hide();
-          return false;
-        },
-        mimetype: "text/html",
-        transport: "XMLHTTPTransport"
-      };
-      dojo.io.bind(bindArgs);
+        }
+      });
     }
     this.fch.style.display = show? '' : 'none';
 
@@ -141,7 +133,7 @@ topaz.corrections = {
     a.setAttribute('href', '#');
     a.setAttribute(formalCorrectionConfig.annid, fc.id);
     a.innerHTML = 'read formal correction';
-    dojo.event.connect(a, "onclick", topaz.corrections.onClickFC);
+    dojo.connect(a, "onclick", topaz.corrections.onClickFC);
     p.appendChild(a);
     p.appendChild(document.createTextNode(')'));
     return li;
@@ -173,7 +165,7 @@ topaz.corrections = {
     var n, naid;
     for(var i=0; i<this.arrElmFc.length; i++){
       n = this.arrElmFc[i];
-      naid = dojo.html.getAttribute(n, 'annotationid');
+      naid = dojo.attr(n, 'annotationid');
       if(naid != null && naid.indexOf(annId)>=0) return n;
     }
     return null;
@@ -201,7 +193,7 @@ topaz.corrections = {
    * @param e event
    */
   onClickFC: function(e) {
-    var annId = dojo.html.getAttribute(e.target, formalCorrectionConfig.annid);
+    var annId = dojo.attr(e.target, formalCorrectionConfig.annid);
     e.preventDefault();
     var fcn = topaz.corrections._findFrmlCrctnByAnnId(annId);
     if(fcn) {

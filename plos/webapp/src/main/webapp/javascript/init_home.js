@@ -19,11 +19,9 @@
  */
 var _ldc;
 
-function init(e) {
+dojo.addOnLoad(function() {
   topaz.horizontalTabs.setTabPaneSet(dojo.byId(homeConfig.tabPaneSetId));
   topaz.horizontalTabs.setTabsListObject(tabsListMap);
   topaz.horizontalTabs.setTabsContainer(dojo.byId(homeConfig.tabsContainer));
   topaz.horizontalTabs.initSimple(tabSelectId);
-}
-
-dojo.addOnLoad(init);
+});
