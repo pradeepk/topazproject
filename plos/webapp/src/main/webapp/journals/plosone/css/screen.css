@@ -648,13 +648,13 @@ div.horizontalTabs		{ position: relative; border-width: 0;}
 
 /* wrap with div source when referencing original article */
 div.correction div.source { margin-right: 268px; }
-div.source			{ padding: 0; font-size: .9em; margin: 10px 0; }
-div.source a.article{ background-image: url(../images/icon_source.gif); background-position: 10px 4px;padding-left: 30px;display: block; text-decoration: none; color: #333;  border: 2px solid #ccc; }
-div.source a:link,
-div.source a:visited{ color: #333; background-color: #eee;}
-div.source a:hover	{ color: #000; background-color: #ddd; border-color: #999;}
+div.source			{ padding: 0; font-size: 1.3em; font-weight:bold; margin: 10px 0; }
+div.source a.article{ background-image: url(../images/icon_source.gif); background-position: 0 4px;padding-left: 20px;display: block; font-family:Georgia,"Times New Roman",Times,serif; text-decoration: none;  border-bottom: 1px solid #ccc; }
+div.source a:visited { color:#069; }
+div.source a:hover	{ color:#008ed5; text-decoration:underline; }
+div.source a:hover span.inline-rating { text-decoration:none; background-color:#fff; }
 /* span wraps original article label */
-div.source span		{ color: #999; padding: 4px 0 4px 14px; }
+div.source span		{ color: #999; padding: 4px 0; font-size: 0.7em; font-weight:normal; }
 
 /* ------ Trackback Styles ----*/
 #trackbackURL { margin:0; }
