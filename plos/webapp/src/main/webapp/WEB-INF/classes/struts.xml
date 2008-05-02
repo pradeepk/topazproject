@@ -43,13 +43,13 @@
         class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true">
       </result-type>
       <result-type name="ambraFreemarker" class="org.plos.struts2.PlosOneFreemarkerResult">
-        <param name="location">/templates/main_template.ftl</param>
+        <param name="location">/journals/plosone/templates/main_template.ftl</param>
       </result-type>
       <result-type name="headless" class="org.plos.struts2.PlosOneFreemarkerResult">
-        <param name="location">/templates/headless_template.ftl</param>
+        <param name="location">/journals/plosone/templates/headless_template.ftl</param>
       </result-type>
       <result-type name="user" class="org.plos.struts2.PlosOneFreemarkerResult">
-        <param name="location">/templates/user_shared_template.ftl</param>
+        <param name="location">/journals/plosone/templates/user_shared_template.ftl</param>
       </result-type>
       <result-type name="plosStream" class="org.plos.struts2.PlosStreamResult" />
       <result-type name="json" class="org.plos.struts2.JsonResult">
