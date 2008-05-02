@@ -205,7 +205,7 @@ public class OtmInterceptor implements Interceptor {
     String prefix = journal + "-";
     int    count  = 0;
 
-    for (String key : cache.getKeys()) {
+    for (String key : (Collection<String>)cache.getKeys()) {
       if (key.startsWith(prefix)) {
         cache.remove(key);
         count++;

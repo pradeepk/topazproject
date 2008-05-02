@@ -199,15 +199,14 @@ public class EhcacheProvider implements Cache {
   /*
    * inherited javadoc
    */
-  public Set<String> getKeys() {
-    Set<String> keys;
-    keys = removedAll ? new HashSet<String>() : new HashSet<String>(cache.getKeys());
+  public Set<?> getKeys() {
+    Set keys = removedAll ? new HashSet() : new HashSet(cache.getKeys());
 
     for (Object key : local.keySet()) {
       if (NULL.equals(local.get(key)))
-        keys.remove(key.toString());
+        keys.remove(key);
       else
-        keys.add(key.toString());
+        keys.add(key);
     }
 
     return keys;

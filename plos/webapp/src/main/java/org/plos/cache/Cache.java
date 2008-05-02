@@ -114,7 +114,7 @@ public interface Cache {
    *
    * @return the set of keys
    */
-  public Set<String> getKeys();
+  public Set<?> getKeys();
 
   /**
    * An object to indicate 'null' values stored in the cache.
