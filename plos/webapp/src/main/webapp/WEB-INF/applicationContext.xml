@@ -373,6 +373,9 @@
 
   <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
       destroy-method="close" scope="request">
+    <constructor-arg index="0">
+       <ref bean="otmInterceptor"/>
+    </constructor-arg>
     <aop:scoped-proxy proxy-target-class="false"/>
   </bean>
 
@@ -383,7 +386,9 @@
 
   <tx:annotation-driven transaction-manager="txManager"/>
 
-  <bean id="browseService" class="org.plos.article.service.BrowseService"/>
+  <bean id="browseService" class="org.plos.article.service.BrowseService">
+    <property name="browseCache" ref="browseCache"/>
+  </bean>
 
   <tx:advice id="txAdvice" transaction-manager="txManager">
     <tx:attributes>
@@ -401,6 +406,32 @@
       "/>
     <aop:advisor advice-ref="txAdvice" pointcut-ref="needTx"/>
   </aop:config>
+
+  <!-- cache manager configs -->
+  <bean id="txCacheManagerFactory" class="org.plos.cache.CacheManagerFactory"/>
+  <bean id="txCacheManager" scope="request" destroy-method="shutdown"
+      factory-bean="txCacheManagerFactory" factory-method="createCacheManager">
+    <constructor-arg index="0" value="20"/> <!-- seconds to wait for the write lock -->
+  </bean>
+  <bean id="objectCache" class="org.plos.cache.EhcacheProvider" scope="request">
+    <constructor-arg index="0">
+       <ref bean="txCacheManager"/>
+    </constructor-arg>
+    <constructor-arg index="1">
+       <ref bean="objectEhcache"/>
+    </constructor-arg>
+  </bean>
+  <bean id="otmInterceptor" class="org.plos.cache.OtmInterceptor" scope="request">
+    <constructor-arg index="0">
+       <ref bean="txCacheManager"/>
+    </constructor-arg>
+    <constructor-arg index="1">
+       <ref bean="objectCache"/>
+    </constructor-arg>
+    <constructor-arg index="2">
+       <ref bean="journalService"/>
+    </constructor-arg>
+  </bean>
   
   <!-- freemarker configs -->
   <bean id="plosOneFreemarkerManager" class="org.plos.struts2.PlosOneFreemarkerManager">
@@ -453,6 +484,10 @@
 
   <bean id="searchCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="SearchCache"/>
+  </bean>
+
+  <bean id="objectEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName" value="ObjectCache"/>
   </bean>
 
   <bean id="virtualJournalMappingFilterCache"

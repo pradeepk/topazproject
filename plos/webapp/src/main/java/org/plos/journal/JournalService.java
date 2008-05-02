@@ -685,10 +685,7 @@ public class JournalService {
    * @see #getJournal(String jName).
    */
   public Journal getJournal() {
-    final String jName = ((VirtualJournalContext) ServletActionContext.getRequest()
-      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
-
-    return getJournal(jName);
+    return getJournal(getCurrentJournalKey());
   }
 
   /**
@@ -704,6 +701,17 @@ public class JournalService {
     }
     return res;
   }
+
+  public Set<String> getAllJournalKeys() {
+    return journalFilters.keySet();
+  }
+
+  public String getCurrentJournalKey() {
+    VirtualJournalContext vjc = (VirtualJournalContext) ServletActionContext.getRequest()
+      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
+    return (vjc == null) ? null : vjc.getJournal();
+  }
+
 
   /**
    * Signal that the given journal was modified (added or changed). The filters and object lists

@@ -613,4 +613,20 @@
            timeToLiveSeconds="600"
            overflowToDisk="false">
     </cache>
+    <!--
+    OTM Second-Level cache. Lots of entries. count(subject-id) * (count(journals) + 1)
+    This cache replicates using defaults.
+    It also bootstraps from the cluster, using default properties.
+    -->
+    <cache name="ObjectCache"
+           maxElementsInMemory="30000"
+           eternal="true"
+           timeToIdleSeconds="1800"
+           timeToLiveSeconds="1800"
+           overflowToDisk="false">
+        <bootstrapCacheLoaderFactory
+                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        <cacheEventListenerFactory
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+    </cache>
 </ehcache>
