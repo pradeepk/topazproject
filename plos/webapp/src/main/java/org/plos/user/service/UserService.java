@@ -39,6 +39,7 @@ import org.plos.Constants;
 import org.plos.models.AuthenticationId;
 import org.plos.models.UserAccount;
 import org.plos.models.UserPreferences;
+import org.plos.models.UserProfile;
 import org.plos.models.UserRole;
 import org.plos.permission.service.PermissionsService;
 import org.plos.user.PlosOneUser;
@@ -207,7 +208,10 @@ public class UserService {
       throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
 
-    return new PlosOneUser(getUserAccount(topazUserId), applicationId, pep);
+    UserAccount ua = getUserAccount(topazUserId);
+    if (ua.getProfile() != null)
+      session.evict(ua.getProfile());
+    return new PlosOneUser(ua, applicationId, pep);
   }
 
   /**
@@ -225,7 +229,10 @@ public class UserService {
         setParameter("id", authId).execute();
     if (!r.next())
       return null;
-    return new PlosOneUser((UserAccount) r.get(0), applicationId, pep);
+    UserAccount ua = (UserAccount) r.get(0);
+    if (ua.getProfile() != null)
+      session.evict(ua.getProfile());
+    return new PlosOneUser(ua, applicationId, pep);
   }
 
   /**
@@ -240,7 +247,6 @@ public class UserService {
 
     UserAccount ua = getUserAccount(userId);
     ua.setState(state);
-    session.saveOrUpdate(ua);
   }
 
   /**
@@ -371,10 +377,12 @@ public class UserService {
     }
 
     UserAccount ua = getUserAccount(inUser.getUserId());
-    if (ua.getProfile() != null)
-      session.evict(ua.getProfile());
-    ua.setProfile(inUser.getUserProfile());
-    session.saveOrUpdate(ua);
+    UserProfile old = ua.getProfile();
+    UserProfile nu = inUser.getUserProfile();
+    // if we are swapping out a profile with another with the same id, evict the old
+    if ((old != null) && (nu != null) && (old != nu) && old.getId().equals(nu.getId()))
+      session.evict(old);
+    ua.setProfile(nu);
 
     userCache.remove(USER_KEY + inUser.getUserId());
   }
@@ -532,7 +540,6 @@ public class UserService {
     }
     inUser.getUserPrefs(p);
 
-    session.saveOrUpdate(ua);
   }
 
   /**
@@ -556,7 +563,6 @@ public class UserService {
     ua.getRoles().clear();
     for (String r : roleIds)
       ua.getRoles().add(new UserRole(r));
-    session.saveOrUpdate(ua);
   }
 
   /**

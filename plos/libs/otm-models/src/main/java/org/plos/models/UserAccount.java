@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -46,13 +47,15 @@ public class UserAccount implements Serializable {
   private URI id;
   @Predicate(uri = Rdf.topaz + "accountState")
   private int state = ACNT_ACTIVE;
-  @Predicate(uri = Rdf.topaz + "hasAuthId")
+  @Predicate(uri = Rdf.topaz + "hasAuthId", cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private Set<AuthenticationId> authIds = new HashSet<AuthenticationId>();
-  @Predicate(uri = Rdf.topaz + "hasRoles")
+  @Predicate(uri = Rdf.topaz + "hasRoles", cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private Set<UserRole>         roles = new HashSet<UserRole>();
-  @Predicate(uri = Rdf.topaz + "hasPreferences", model="preferences")
+  @Predicate(uri = Rdf.topaz + "hasPreferences", model="preferences", 
+             cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private Set<UserPreferences>  preferences = new HashSet<UserPreferences>();
-  @Predicate(uri = Rdf.foaf + "holdsAccount", inverse = true, model="profiles")
+  @Predicate(uri = Rdf.foaf + "holdsAccount", inverse = true, model="profiles",
+             cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private UserProfile           profile;
 
   /**

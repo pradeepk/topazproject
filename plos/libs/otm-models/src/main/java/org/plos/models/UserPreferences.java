@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -45,7 +46,7 @@ public class UserPreferences implements Serializable {
   private URI    id;
   @Predicate(uri = Rdf.dc_terms + "mediator")
   private String appId;
-  @Predicate(uri = Rdf.topaz + "preference")
+  @Predicate(uri = Rdf.topaz + "preference", cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private Set<UserPreference> prefs = new HashSet<UserPreference>();
 
   /**
