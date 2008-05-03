@@ -560,6 +560,20 @@ public class BasicOtmTest extends AbstractOtmTest {
             assertTrue(o.getIsPartOf() == a);
         }
       });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          // test to ensure delete is done children first
+          Article a = session.get(Article.class, aid.toString());
+          session.delete(a);
+          // Now check if the back-pointing articles are all loaded
+          assertNotNull(a);
+          assertEquals(2, a.getParts().size());
+
+          for (ObjectInfo o : a.getParts())
+            assertTrue(o.getIsPartOf() == a);
+
+        }
+      });
   }
 
   /**

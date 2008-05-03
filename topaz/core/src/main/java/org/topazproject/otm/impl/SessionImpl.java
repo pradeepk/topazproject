@@ -185,10 +185,6 @@ public class SessionImpl extends AbstractSession {
     try {
       currentIds.add(id);
 
-      cleanMap.remove(id);
-      dirtyMap.remove(id);
-      deleteMap.put(id, o);
-
       ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
 
@@ -212,6 +208,10 @@ public class SessionImpl extends AbstractSession {
 
       for (Wrapper ao : assocs)
         delete(ao.get());
+
+      cleanMap.remove(id);
+      dirtyMap.remove(id);
+      deleteMap.put(id, o);
     } finally {
       currentIds.remove(id);
     }
@@ -822,7 +822,8 @@ public class SessionImpl extends AbstractSession {
                       throws Throwable {
           if (!loaded && !loading) {
             if (log.isDebugEnabled())
-              log.debug(m.getName() + " on " + id + " is forcing a load from store");
+              log.debug(m.getName() + " on " + id + " is forcing a load from store",
+                   trimStackTrace(new Throwable("trimmed-stack-trace"), 3, 8));
 
             loading = true;
             try {
