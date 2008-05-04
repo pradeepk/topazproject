@@ -12,18 +12,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>
     </dependency>
@@ -41,94 +29,43 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>fedora-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>ambra-otm-models</artifactId>
-      <version>${version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>ambra-util</artifactId>
-      <version>${version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>otm-extras</artifactId>
+      <version>${pom.version}</version>
     </dependency>
 
-    <!-- For scripts -->
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-    </dependency>
-
-    <!-- TODO: Move search stuff over to plosone -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-search-client-impl</artifactId>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>compile</id>
-            <!-- phase process-classes ensures groovy is compiled AFTER java -->
-            <phase>process-classes</phase>
-            <configuration>
-              <tasks>
-                <mkdir dir="${project.build.outputDirectory}" />
-                <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                  <classpath refid="maven.compile.classpath" />
-                </taskdef>
-                <groovyc destdir="${project.build.outputDirectory}" srcdir="${basedir}/src/main/groovy/" listfiles="true">
-                  <classpath refid="maven.compile.classpath" />
-                </groovyc>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.codehaus.mojo.groovy</groupId>
+        <artifactId>groovy-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
 
   <profiles>
     <profile>
-      <id>ingest</id>
-      <dependencies>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </dependency>
-      </dependencies>
+      <id>add-manifest</id>
       <build>
-        <defaultGoal>exec:java</defaultGoal>
+        <defaultGoal>groovy:execute</defaultGoal>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.0.2</version>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.plos.article.util.Ingest</mainClass>
-              <arguments>
-                <argument>${args}</argument>
-              </arguments>
+              <source>
+                import org.plos.article.util.AddManifest
+                AddManifest.main "${args}"
+              </source>
             </configuration>
           </plugin>
         </plugins>
@@ -136,25 +73,18 @@
     </profile>
 
     <profile>
-      <id>delete</id>
-      <dependencies>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </dependency>
-      </dependencies>
+      <id>fix-article</id>
       <build>
-        <defaultGoal>exec:java</defaultGoal>
+        <defaultGoal>groovy:execute</defaultGoal>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.0.2</version>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.plos.article.util.Delete</mainClass>
-              <arguments>
-                <argument>${args}</argument>
-              </arguments>
+              <source>
+                import org.plos.article.util.FixArticle
+                FixArticle.main "${args}"
+              </source>
             </configuration>
           </plugin>
         </plugins>
@@ -162,25 +92,56 @@
     </profile>
 
     <profile>
-      <id>geturl</id>
-      <dependencies>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </dependency>
-      </dependencies>
+      <id>process-images</id>
       <build>
-        <defaultGoal>exec:java</defaultGoal>
+        <defaultGoal>groovy:execute</defaultGoal>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.0.2</version>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.plos.article.util.GetURL</mainClass>
-              <arguments>
-                <argument>${args}</argument>
-              </arguments>
+              <source>
+                import org.plos.article.util.ProcessImages
+                ProcessImages.main "${args}"
+              </source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>validate</id>
+      <build>
+        <defaultGoal>groovy:execute</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-maven-plugin</artifactId>
+            <configuration>
+              <source>
+                import org.plos.article.util.ValidateSIP
+                ValidateSIP.main "${args}"
+              </source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>prepare-sip</id>
+      <build>
+        <defaultGoal>groovy:execute</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-maven-plugin</artifactId>
+            <configuration>
+              <source>
+                import org.plos.article.util.PrepareSIP
+                PrepareSIP.main "${args}"
+              </source>
             </configuration>
           </plugin>
         </plugins>
@@ -212,32 +173,5 @@
         </plugins>
       </build>
     </profile>
-
-    <profile>
-      <id>test</id>
-      <dependencies>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </dependency>
-      </dependencies>
-      <build>
-        <defaultGoal>exec:java</defaultGoal>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <version>1.0.2</version>
-            <configuration>
-              <mainClass>org.plos.article.util.Test</mainClass>
-              <arguments>
-                <argument>${args}</argument>
-              </arguments>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
-
 </project>

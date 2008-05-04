@@ -25,12 +25,14 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.SecondaryObject;
-import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.models.ObjectInfo;
 import org.plos.models.Representation;
 
 import java.net.URL;
 import java.util.Set;
+
+import javax.activation.URLDataSource;
 
 public class FetchObjectTest extends BasePlosoneTestCase {
   private static final Log log = LogFactory.getLog(FetchObjectTest.class);
@@ -88,7 +90,7 @@ public class FetchObjectTest extends BasePlosoneTestCase {
       //means that this article is not ingested yet, so delete would fail
     }
 
-    final String ingestedUri = service.ingest(article);
+    final String ingestedUri = service.ingest(new URLDataSource(article), false).getId().toString();
     assertEquals(uri, ingestedUri);
   }
 }

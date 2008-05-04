@@ -25,21 +25,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.ServletContext;
 
 import org.plos.ApplicationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.util.ServletContextAware;
 
-public class PublishArchivesAction extends BaseAdminActionSupport implements ServletContextAware {
+public class PublishArchivesAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
 
   private String[] articlesToPublish;
   private String[] articlesInVirtualJournals;
   private String[] articlesToDelete;
-  private ServletContext servletContext;
 
   /**
    * Deletes and publishes checked articles from the admin console.  Note that delete has priority
@@ -90,7 +87,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
     if (articlesToDelete == null)
       return;
 
-    List<String> msgs = getDocumentManagementService().delete(articlesToDelete, servletContext);
+    List<String> msgs = getDocumentManagementService().delete(articlesToDelete);
     for (String msg : msgs)
       addActionMessage(msg);
   }
@@ -117,14 +114,5 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
    */
   public void setArticlesToDelete(String[] articles) {
     articlesToDelete= articles;
-  }
-
-  /**
-   * Sets the servlet context.  Needed in order to clear the image cache
-   *
-   * @param context SerlvetContext to set
-   */
-  public void setServletContext (ServletContext context) {
-    this.servletContext = context;
   }
 }

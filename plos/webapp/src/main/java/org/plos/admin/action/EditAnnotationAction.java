@@ -28,7 +28,7 @@ import org.plos.action.BaseActionSupport;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationsPEP;
-import org.plos.article.util.NoSuchObjectIdException;
+import org.plos.article.service.NoSuchObjectIdException;
 
 import org.topazproject.otm.Session;
 

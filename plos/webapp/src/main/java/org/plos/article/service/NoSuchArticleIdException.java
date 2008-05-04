@@ -16,40 +16,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.article.util;
+
+package org.plos.article.service;
 
 /**
- * Signifies that the article with the requested id already exists.
+ * Signifies that the article does not exist.
  *
  * @author Ronald Tschalär
  * @author Eric Brown
- * @version $Id$
  */
-public class DuplicateArticleIdException extends Exception {
+public class NoSuchArticleIdException extends Exception {
   private final String id;
 
   /**
    * Create a new exception instance with a default exception message.
    *
-   * @param id      the (duplicate) id
+   * @param id      the (non-existant) id
    */
-  public DuplicateArticleIdException(String id) {
-    this(id, "id = '" + id + "'");
+  public NoSuchArticleIdException(String id) {
+    this(id, "", null);
   }
 
   /**
    * Create a new exception instance.
    *
-   * @param id      the (duplicate) id
+   * @param id      the (non-existant) id
    * @param message the exception message
    */
-  public DuplicateArticleIdException(String id, String message) {
-    super(message);
+  public NoSuchArticleIdException(String id, String message) {
+    this(id, message, null);
+  }
+
+  /**
+   * Create a new exception instance with a cause.
+   *
+   * @param id      the (non-existant) id
+   * @param message the exception message
+   * @param cause   the original cause
+   */
+  public NoSuchArticleIdException(String id, String message, Throwable cause) {
+    super("(id = '" + id + "')" + message, cause);
     this.id = id;
   }
 
   /**
-   * @return the (duplicate) id
+   * @return the id
    */
   public String getId() {
     return id;

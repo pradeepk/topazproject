@@ -27,7 +27,7 @@ import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.models.Article;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;

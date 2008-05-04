@@ -21,7 +21,6 @@ package org.plos.article.action;
 
 import java.io.IOException;
 
-
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.ehcache.Ehcache;
@@ -32,7 +31,7 @@ import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.CitationUtils;

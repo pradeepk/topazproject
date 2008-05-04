@@ -25,8 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Annotator;
-import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.Article;
 import org.plos.models.ArticleAnnotation;
 import org.plos.util.ArticleXMLUtils;
@@ -37,16 +35,13 @@ import org.w3c.dom.Document;
 
 import org.xml.sax.SAXException;
 
-import javax.activation.DataHandler;
-import javax.activation.URLDataSource;
-import javax.xml.parsers.DocumentBuilder;
+import javax.activation.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
 import net.sf.ehcache.Ehcache;
@@ -146,11 +141,10 @@ public class FetchArticleService {
   private Document getAnnotatedContentAsDocument(final String articleDOI)
       throws IOException, NoSuchArticleIdException, ParserConfigurationException, SAXException,
              ApplicationException {
-    final String contentUrl;
+    DataSource content;
     try {
-      // Calculate the URL from which we can retrieve the article context using GET
-      contentUrl = articleXmlUtils.getArticleService().
-                                   getObjectURL(articleDOI, articleXmlUtils.getArticleRep());
+      content =
+        articleXmlUtils.getArticleService().getContent(articleDOI, articleXmlUtils.getArticleRep());
     } catch (NoSuchObjectIdException ex) {
       throw new NoSuchArticleIdException(articleDOI,
                                          "(representation=" + articleXmlUtils.getArticleRep() + ")",
@@ -158,24 +152,24 @@ public class FetchArticleService {
     }
 
     final ArticleAnnotation[] annotations = articleAnnotationService.listAnnotations(articleDOI);
-    return applyAnnotationsOnContentAsDocument (contentUrl, annotations);
+    return applyAnnotationsOnContentAsDocument(content, annotations);
   }
 
-  private Document applyAnnotationsOnContentAsDocument (final String contentUrl,
-                                                        final ArticleAnnotation[] annotations)
-          throws IOException, ParserConfigurationException, ApplicationException {
-    final DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
-    final DocumentBuilder builder = articleXmlUtils.createDocBuilder();
-    if (annotations.length != 0) {
-      return Annotator.annotateAsDocument(content, annotations, builder);
-    }
+  private Document applyAnnotationsOnContentAsDocument(DataSource content,
+                                                       ArticleAnnotation[] annotations)
+          throws ApplicationException {
     try {
-      return builder.parse(content.getInputStream());
+      Document doc = articleXmlUtils.createDocBuilder().parse(content.getInputStream());
+      if (annotations.length != 0)
+        return Annotator.annotateAsDocument(doc, annotations);
+      else
+        return doc;
     } catch (Exception e){
       if (log.isErrorEnabled()) {
-        log.error("Could not apply annotations to article: " + contentUrl, e);
+        log.error("Could not apply annotations to article: " + content.getName(), e);
       }
-      throw new ApplicationException("Applying annotations failed for resource:" + contentUrl, e);
+      throw new ApplicationException("Applying annotations failed for resource:" +
+                                     content.getName(), e);
     }
   }
 

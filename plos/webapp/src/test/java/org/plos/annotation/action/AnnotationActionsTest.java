@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.activation.URLDataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
@@ -40,7 +42,7 @@ import org.plos.annotation.service.AnnotationsPEP;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.WebReply;
 import org.plos.article.action.FetchArticleAction;
-import org.plos.article.util.DuplicateArticleIdException;
+import org.plos.article.service.DuplicateArticleIdException;
 import org.plos.permission.service.PermissionsService;
 
 import com.opensymphony.xwork2.Action;
@@ -68,7 +70,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final URL article = getAsUrl(resourceToIngest);
 
     try {
-      testXmlTarget = getArticleOtmService().ingest(article);
+      testXmlTarget = getArticleOtmService().ingest(new URLDataSource(article), false).
+                                             getId().toString();
     } catch(DuplicateArticleIdException ex) {
       //article has already been ingested
     }

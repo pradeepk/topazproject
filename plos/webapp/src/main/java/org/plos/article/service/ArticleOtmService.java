@@ -18,9 +18,11 @@
  */
 package org.plos.article.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
-import java.net.URL;
 import java.text.ParseException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.xml.rpc.ServiceException;
 
 import net.sf.ehcache.Ehcache;
@@ -42,13 +44,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 
-import org.plos.article.util.ArticleDeleteException;
-import org.plos.article.util.ArticleUtil;
-import org.plos.article.util.IngestException;
-import org.plos.article.util.DuplicateArticleIdException;
-import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.article.util.NoSuchObjectIdException;
-import org.plos.article.util.Zip;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Category;
@@ -59,8 +54,8 @@ import org.plos.models.ObjectInfo;
 import org.plos.models.Representation;
 import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
+import org.plos.permission.service.PermissionsService;
 import org.plos.util.CacheAdminHelper;
-import org.plos.bootstrap.migration.Migrator;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -76,16 +71,17 @@ import org.topazproject.otm.query.Results;
  * Provide Article "services" via OTM.
  */
 public class ArticleOtmService {
-  private String smallImageRep;
-  private String largeImageRep;
-  private String mediumImageRep;
-
-  private ArticlePEP     pep;
-  private Session        session;
-  private JournalService jrnlSvc;
-  private Ehcache        articleAnnotationCache;
-
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
+
+  private String         smallImageRep;
+  private String         largeImageRep;
+  private String         mediumImageRep;
+
+  private ArticlePEP         pep;
+  private Session            session;
+  private JournalService     jrnlSvc;
+  private Ehcache            articleAnnotationCache;
+  private PermissionsService permissionsService;
 
   public ArticleOtmService() throws IOException {
     pep = new ArticlePEP();
@@ -94,95 +90,72 @@ public class ArticleOtmService {
   /**
    * Ingest an article.
    *
-   * @param dataHandler dataHandler
-   * @return the uri of the article ingested
+   * @param article the article
+   * @param force   if true don't check for duplicate and instead always (re-)ingest
+   * @return the ingested article
    * @throws IngestException IngestException
    * @throws DuplicateIdException DuplicateIdException
    */
-  public String ingest(final DataHandler dataHandler)
+  public Article ingest(DataSource article, boolean force)
           throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException,
                  IOException {
-    // ask PEP if ingest is allowed
-    // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
     // ingest article
-    ArticleUtil util = new ArticleUtil(session);
-    String ret = util.ingest(
-      new Zip.DataSourceZip(
-        new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
-                                          8192, "application/octet-stream", true)));
-
-    // XXX: Temporary hack till #439 is fixed
-    Migrator migrator = new Migrator();
-    migrator.migrateReps(session);
+    Ingester ingester = new Ingester(session, permissionsService);
+    Article art = ingester.ingest(new Zip.DataSourceZip(article), force);
 
     // notify journal service of new article
-    jrnlSvc.objectWasAdded(URI.create(ret));
+    jrnlSvc.objectWasAdded(art.getId());
 
-    return ret;
+    return art;
   }
 
   /**
-   * Ingest an article.
+   * Get the contents of the given object.
    *
-   * @param articleUrl articleUrl
-   * @return the uri of the article ingested
-   * @throws IngestException IngestException
-   * @throws DuplicateIdException DuplicateIdException
+   * @param obj the uri of the object
+   * @param rep the representation to get
+   * @return the contents
+   * @throws NoSuchObjectIdException if the object cannot be found
    */
-  public String ingest(final URL articleUrl)
-          throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException,
-                 IOException  {
-    return ingest(new DataHandler(articleUrl));
-  }
+  public DataSource getContent(String obj, String rep) throws NoSuchObjectIdException {
+    pep.checkAccess(ArticlePEP.GET_OBJECT_CONTENT, URI.create(obj));
 
-  /**
-   * Mark an article as superseded by another article
-   * @param oldUri oldUri
-   * @param newUri newUri
-   * @throws NoSuchArticleIdException NoSuchArticleIdException
-   */
-  public void markSuperseded(final String oldUri, final String newUri)
-          throws NoSuchArticleIdException {
-    // TODO
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * Get the URL from which the objects contents can be retrieved via GET.
-   *
-   * @param obj uri
-   * @param rep rep
-   * @return the URL, or null if this object doesn't exist in the desired version
-   * @throws NoSuchObjectIdException NoSuchObjectIdException
-   */
-  public String getObjectURL(final String obj, final String rep) throws NoSuchObjectIdException {
-    // ask PEP if getting Object URL is allowed
-    // logged in user is automatically resolved by the ServletActionContextAttribute
-    pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
-
-    ObjectInfo a = session.get(ObjectInfo.class, obj);
-    if (a == null)
+    ObjectInfo oi = session.get(ObjectInfo.class, obj);
+    if (oi == null)
       throw new NoSuchObjectIdException(obj);
 
-    return ArticleUtil.getFedoraDataStreamURL(a.getPid(), rep);
+    for (Representation r : oi.getRepresentations()) {
+      if (r.getName().equals(rep))
+        return new ByteArrayDataSource(r);
+    }
+
+    throw new NoSuchObjectIdException(rep);
   }
 
   /**
    * Delete an article.
    *
-   * @param article uri
+   * @param article the uri of the article
    * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void delete(String article)
-          throws RemoteException, NoSuchArticleIdException, IOException, ArticleDeleteException {
-    // ask PEP if delete is allowed
-    // logged in user is automatically resolved by the ServletActionContextAttribute
+          throws NoSuchArticleIdException, RemoteException, ServiceException {
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
-    ArticleUtil.delete(article, session);
+    Article a = session.get(Article.class, article);
+    if (a == null)
+      throw new NoSuchArticleIdException(article);
+
+    session.delete(a);
+    SearchUtil.delete(article);
+
+    // TODO: find a better way to know what needs to be deleted, rather than "hardcoding" it here
+    permissionsService.cancelPropagatePermissions(article,
+                                permissionsService.listPermissionPropagations(article, false));
+
     jrnlSvc.objectWasDeleted(URI.create(article));
   }
 
@@ -479,7 +452,7 @@ public class ArticleOtmService {
     if (article == null) {
       throw new NoSuchArticleIdException(uri.toString());
     }
-    
+
     // TODO: touch all of the Article to force OTM to resolve references,
     // needed for cache Serialization, avoid lazy loading issues in webapp usage.
     getAllArticle(article);
@@ -493,15 +466,15 @@ public class ArticleOtmService {
    * @return the secondary objects of the article
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public SecondaryObject[] listSecondaryObjects(final String article) throws NoSuchArticleIdException {
-    
+  public SecondaryObject[] listSecondaryObjects(final String article)
+        throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
-    
+
     // do cache aware lookup
     final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern(); // lock @ Article
     return CacheAdminHelper
-        .getFromCacheE(articleAnnotationCache, FetchArticleService.ARTICLE_SECONDARY_KEY + article, -1, lock,
-                       "secondaryObjects",
+        .getFromCacheE(articleAnnotationCache, FetchArticleService.ARTICLE_SECONDARY_KEY + article,
+                       -1, lock, "secondaryObjects",
                        new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
                          public SecondaryObject[] lookup() throws NoSuchArticleIdException {
                            // get objects
@@ -509,14 +482,8 @@ public class ArticleOtmService {
                            if (art == null) {
                              throw new NoSuchArticleIdException(article);
                            }
-                           // TODO: Article.parts should be RdfSeq or RdfList, forced to walk
-                            // nextObject
-                           List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
-                           for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject()) {
-                             sorted.add(oi);
-                           }
                            // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
-                           return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
+                           return convert(art.getParts());
                          }
                        });
   }
@@ -567,18 +534,18 @@ public class ArticleOtmService {
           }
 
           // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
-          return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
+          return convert(sorted);
         }
     });
   }
 
-  private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
+  private SecondaryObject[] convert(List<ObjectInfo> objectInfos) {
     if (objectInfos == null) {
       return null;
     }
-    SecondaryObject[] convertedObjectInfos = new SecondaryObject[objectInfos.length];
-    for (int i = 0; i < objectInfos.length; i++) {
-      convertedObjectInfos[i] = convert(objectInfos[i]);
+    SecondaryObject[] convertedObjectInfos = new SecondaryObject[objectInfos.size()];
+    for (int i = 0; i < objectInfos.size(); i++) {
+      convertedObjectInfos[i] = convert(objectInfos.get(i));
     }
     return convertedObjectInfos;
   }
@@ -632,43 +599,6 @@ public class ArticleOtmService {
   }
 
   /**
-   * Create or update a representation of an object. The object itself must exist; if the specified
-   * representation does not exist, it is created, otherwise the current one is replaced.
-   *
-   * @param objId    the URI of the object
-   * @param rep      the name of this representation
-   * @param content  the actual content that makes up this representation; if this contains a
-   *                 content-type then that will be used; otherwise the content-type will be
-   *                 set to <var>application/octet-stream</var>; may be null, in which case
-   *                 the representation is removed.
-   * @throws NoSuchObjectIdException if the object does not exist
-   * @throws RemoteException if some other error occured
-   * @throws NullPointerException if any of the parameters are null
-   */
-  public void setRepresentation(final String objId, final String rep, final byte[] content, 
-      String contentType) throws NoSuchObjectIdException, RemoteException {
-    pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
-
-    // get the object info
-    ObjectInfo obj = session.get(ObjectInfo.class, objId);
-    if (obj == null)
-      throw new NoSuchObjectIdException(objId);
-
-    Representation r = obj.getRepresentation(rep);
-    if (r == null) {
-      r = new Representation(obj, rep);
-      obj.getRepresentations().add(r);
-    }
-
-    if (contentType == null)
-      contentType = "application/octet-stream";
-
-    r.setContentType(contentType);
-    r.setSize(content.length);
-    r.setBody(content);
-  }
-
-  /**
    * Set the small image representation
    * @param smallImageRep smallImageRep
    */
@@ -719,6 +649,14 @@ public class ArticleOtmService {
   @Required
   public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
+  }
+
+  /**
+   * @param permissionsService the permissions service to use
+   */
+  @Required
+  public void setPermissionsService(PermissionsService permissionsService) {
+    this.permissionsService = permissionsService;
   }
 
   /**
@@ -790,8 +728,6 @@ public class ArticleOtmService {
     // objectInfo.getEIssn();
     // objectInfo.getId();
     // skip objectInfo.getIsPartOf(), avoid recursing into self Article
-    getAllObjectInfo(objectInfo.getNextObject());
-    // objectInfo.getPid();
     // iterateAll(objectInfo.getRepresentations());
     // objectInfo.getState();
   }
@@ -845,7 +781,6 @@ public class ArticleOtmService {
 
     category.getId();
     // category.getMainCategory();
-    // category.getPid();
     // category.getState();
     // category.getSubCategory();
   }
@@ -910,19 +845,42 @@ public class ArticleOtmService {
   }
 
   private static void getAllLicense(License license) {
-
     if (license == null) { return; }
 
     license.getId();
   }
 
   private static void iterateAll(Collection collection) {
-
     if (collection == null) { return; }
 
     Iterator iterator = collection.iterator();
     while (iterator.hasNext()) {
       iterator.next();
+    }
+  }
+
+  private static class ByteArrayDataSource implements DataSource {
+    private final Representation rep;
+
+    public ByteArrayDataSource(Representation rep) {
+      this.rep = rep;
+    }
+
+    public String getName() {
+      return rep.getObject().getId() + "#" + rep.getName();
+    }
+
+    public String getContentType() {
+      String ct = rep.getContentType();
+      return (ct != null) ? ct : "application/octet-stream";
+    }
+
+    public InputStream getInputStream() {
+      return new ByteArrayInputStream(rep.getBody());
+    }
+
+    public OutputStream getOutputStream() throws IOException {
+      throw new IOException("writing not supported");
     }
   }
 }

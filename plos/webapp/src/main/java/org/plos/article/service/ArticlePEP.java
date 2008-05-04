@@ -41,14 +41,10 @@ public class ArticlePEP extends AbstractSimplePEP {
   public static final String DELETE_ARTICLE = "articles:deleteArticle";
   /** The action that represents a set-state operation in XACML policies. */
   public static final String SET_ARTICLE_STATE = "articles:setArticleState";
-  /** The action that represents a get-object-url operation in XACML policies. */
-  public static final String GET_OBJECT_URL = "articles:getObjectURL";
-  /** The action that represents a set-representation operation in XACML policies. */
-  public static final String SET_REPRESENTATION = "articles:setRepresentation";
+  /** The action that represents a get-object-content operation in XACML policies. */
+  public static final String GET_OBJECT_CONTENT = "articles:getObjectContent";
   /** The action that represents a set-author-user-ids operation in XACML policies. */
   public static final String SET_AUTHOR_USER_IDS = "articles:setAuthorUserIds";
-  /** The action that represents a get-object-info operation in XACML policies. */
-  public static final String GET_OBJECT_INFO = "articles:getObjectInfo";
   /** The action that represents a list-secondary-objects operation in XACML policies. */
   public static final String LIST_SEC_OBJECTS = "articles:listSecondaryObjects";
   /** The action that represents checking if we can access a specific article. */
@@ -62,18 +58,14 @@ public class ArticlePEP extends AbstractSimplePEP {
                                                            INGEST_ARTICLE,
                                                            DELETE_ARTICLE,
                                                            SET_ARTICLE_STATE,
-                                                           GET_OBJECT_URL,
-                                                           SET_REPRESENTATION,
+                                                           GET_OBJECT_CONTENT,
                                                            SET_AUTHOR_USER_IDS,
-                                                           GET_OBJECT_INFO,
                                                            LIST_SEC_OBJECTS,
                                                            READ_META_DATA,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
-                                                           null,
-                                                           null,
                                                            null,
                                                            null,
                                                            null,

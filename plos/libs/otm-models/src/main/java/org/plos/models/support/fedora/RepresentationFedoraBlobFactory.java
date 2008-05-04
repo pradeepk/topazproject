@@ -18,6 +18,9 @@
  */
 package org.plos.models.support.fedora;
 
+import java.net.URI;
+import java.util.BitSet;
+
 import org.plos.models.Article;
 import org.plos.models.Representation;
 
@@ -29,12 +32,27 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 
+import org.apache.commons.codec.net.URLCodec;
+
 /**
  * A factory to create fedora blobs for article representations.
  *
  * @author Pradeep Krishnan
  */
 public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
+  private static final BitSet DOI_PID_CHARS = new BitSet(128);
+
+  static {
+    // Allowed chars in Fedora-pid: [A-Za-z0-9.-]+:([A-Za-z0-9.~_-]|%[0-9A-F]{2})+
+    for (int ch = '0'; ch <= '9'; ch++)  DOI_PID_CHARS.set(ch);
+    for (int ch = 'A'; ch <= 'Z'; ch++)  DOI_PID_CHARS.set(ch);
+    for (int ch = 'a'; ch <= 'z'; ch++)  DOI_PID_CHARS.set(ch);
+    DOI_PID_CHARS.set('-');
+    DOI_PID_CHARS.set('_');
+    DOI_PID_CHARS.set('.');
+    DOI_PID_CHARS.set('~');
+  }
+
   /*
    * inherited javadoc
    */
@@ -58,8 +76,22 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
     String         cModel =
       (r.getObject() instanceof Article) ? "PlosArticle" : "PlosArticleSecObj";
 
-    return new RepresentationFedoraBlob(cm, id, r.getObject().getPid(), r.getName(),
-                                        r.getContentType(), cModel);
+    String pid = toPid(r.getObject().getId());
+
+    return new RepresentationFedoraBlob(cm, id, pid, r.getName(), r.getContentType(), cModel);
+  }
+
+  private static String toPid(URI uri) throws OtmException {
+    // info:doi/ -> doi:
+    if (!uri.toString().startsWith("info:doi/"))
+      throw new OtmException("Unknown uri type '" + uri + "' - can only map info:doi/... uri's");
+
+    try {
+      byte[] dec = URLCodec.decodeUrl(uri.toString().substring(9).getBytes("UTF-8"));
+      return "doi:" + new String(URLCodec.encodeUrl(DOI_PID_CHARS, dec), "ISO-8859-1");
+    } catch (Exception e) {
+      throw new OtmException("Error converting '" + uri + "' to fedora pid", e);
+    }
   }
 
   /*

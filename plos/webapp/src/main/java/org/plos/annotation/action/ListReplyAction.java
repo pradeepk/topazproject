@@ -32,7 +32,7 @@ import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.action.CreateCitation;
 import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.models.Article;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;

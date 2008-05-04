@@ -444,7 +444,7 @@ public class ArticleFeed extends BaseActionSupport {
           Element feedCategory = new Element("category", ATOM_NS);
           feedCategory.setAttribute("term", category.getMainCategory());
           // TODO: what's the URI for our categories
-          // feedCategory.setScheme(category.getPid());
+          // feedCategory.setScheme();
           feedCategory.setAttribute("label", category.getMainCategory());
 
           // subCategory?

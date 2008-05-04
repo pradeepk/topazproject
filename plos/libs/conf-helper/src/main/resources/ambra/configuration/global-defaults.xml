@@ -142,11 +142,6 @@
     </models>
     
     <topaz>
-      <objects>
-        <!-- The base uri for all objects that we create in fedora. -->
-        <base-uri>info:doi/10.1371/</base-uri>
-      </objects>
-
       <!-- Configuration to talk to Fedora -->
       <blobStore>
         <fedora>
@@ -159,13 +154,6 @@
           <password>fedoraAdmin</password>
         </fedora>
       </blobStore>
-
-      <fedoraUploader>
-        <uri>${ambra.topaz.blobStore.fedora.base-url}management/upload</uri>
-        <auth-method>${ambra.topaz.blobStore.fedora.auth-method}</auth-method>
-        <userName>${ambra.topaz.blobStore.fedora.userName}</userName>
-        <password>${ambra.topaz.blobStore.fedora.password}</password>
-      </fedoraUploader>
 
       <tripleStore>
         <mulgara>
@@ -188,8 +176,6 @@
     </topaz>
 
     <services>
-      
-
       <cas>
         <!-- The following entries defnine how the java webapp talk to the database.
           For example, talking to postgresql, you need the database name at the end of the url

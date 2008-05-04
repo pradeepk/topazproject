@@ -19,7 +19,6 @@
 
 package org.plos.util;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,8 +28,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
-import javax.activation.DataHandler;
-import javax.activation.URLDataSource;
+import javax.activation.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -48,9 +46,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
-import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.service.ArticleOtmService;
+import org.plos.article.service.NoSuchArticleIdException;
+import org.plos.article.service.NoSuchObjectIdException;
 import org.plos.configuration.ConfigurationStore;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -210,17 +208,12 @@ public class ArticleXMLUtils {
 
   private Document getArticleAsDocument(final String articleUri)
         throws IOException, SAXException, ParserConfigurationException, NoSuchArticleIdException {
-
-    final String contentUrl;
     try {
-      contentUrl = articleService.getObjectURL(articleUri, articleRep);
+      DataSource content = articleService.getContent(articleUri, articleRep);
+      return createDocBuilder().parse(content.getInputStream());
     } catch (NoSuchObjectIdException ex) {
       throw new NoSuchArticleIdException(articleUri, "(representation=" + articleRep + ")", ex);
     }
-
-    final DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
-    final DocumentBuilder builder = createDocBuilder();
-    return builder.parse(content.getInputStream());
   }
 
   /**

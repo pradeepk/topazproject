@@ -23,11 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.BasePlosoneTestCase;
-import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.article.util.DuplicateArticleIdException;
+import org.plos.article.service.NoSuchArticleIdException;
+import org.plos.article.service.DuplicateArticleIdException;
 import org.plos.annotation.action.BodyFetchAction;
+import org.plos.models.Article;
 
-import javax.activation.DataHandler;
+import javax.activation.URLDataSource;
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,8 +53,8 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     }
 
     final URL article = getAsUrl(resourceToIngest);
-    String uri = getArticleOtmService().ingest(article);
-    assertEquals(uri, resourceURI);
+    Article art = getArticleOtmService().ingest(new URLDataSource(article), false);
+    assertEquals(art.getId().toString(), resourceURI);
 
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
     fetchArticleAction.setArticleURI(resourceURI);
@@ -99,21 +100,21 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 
     final URL article = getAsUrl(resourceToIngest);
 
-    String uri = getArticleOtmService().ingest(article);
-    assertEquals(uri, resourceURI);
+    Article art = getArticleOtmService().ingest(new URLDataSource(article), false);
+    assertEquals(art.getId(), resourceURI);
 
-    assertNotNull(getArticleOtmService().getObjectURL(uri, "XML"));
+    assertNotNull(art.getRepresentation("XML"));
 
     try {
-      uri = getArticleOtmService().ingest(new DataHandler(article));
+      art = getArticleOtmService().ingest(new URLDataSource(article), false);
       fail("Failed to get expected duplicate-id exception");
     } catch (DuplicateArticleIdException die) {
     }
 
-    getArticleOtmService().delete(uri);
+    getArticleOtmService().delete(art.getId().toString());
 
     try {
-      getArticleOtmService().delete(uri);
+      getArticleOtmService().delete(art.getId().toString());
       fail("Failed to get NoSuchArticleIdException");
     } catch (NoSuchArticleIdException nsie) {
     }

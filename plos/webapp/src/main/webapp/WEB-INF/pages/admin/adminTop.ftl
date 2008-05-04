@@ -77,6 +77,8 @@
             <@s.checkbox name="filesToIngest" label="${file}" fieldValue="${file}"/><br/>
           </#list>
           <br/>
+            <@s.checkbox name="force" label="Force ingestion even if article(s) already exist" fieldValue="true"/><br/>
+          <br/>
           <@s.submit value="Ingest Selected Archives" />
         </@s.form>
       </fieldset>

@@ -22,26 +22,14 @@ import it.unibo.cs.xpointer.Location;
 import it.unibo.cs.xpointer.XPointerAPI;
 import it.unibo.cs.xpointer.datatype.LocationList;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.activation.DataHandler;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +41,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -66,38 +53,16 @@ public class Annotator {
   private static String    AML_NS = "http://topazproject.org/aml/";
 
   /**
-   * Creates an annotated document and returns it as Document.
-   *
-   * @param content the source document
-   * @param annotations the list of annotations to apply
-   * @param documentBuilder documentBuilder that provides it's own entity resolver
-   * @return the annotated document
-   *
-   * @throws RemoteException on a failure
-   */
-  public static Document annotateAsDocument(DataHandler content, ArticleAnnotation[] annotations,
-                                            final DocumentBuilder documentBuilder)
-                              throws RemoteException {
-    try {
-      return annotate(parse(content, documentBuilder), annotations);
-    } catch (Exception e) {
-      throw new RemoteException("", e);
-    }
-  }
-
-  /**
-   * Creates an annotated document.
+   * Annotates a document.
    *
    * @param document the source document
    * @param annotations the list of annotations to apply
-   *
    * @return the annotated document
-   *
    * @throws URISyntaxException if at least one annotation context is an invalid URI
    * @throws TransformerException if at least one annotation context is an invalid xpointer
    *         expression
    */
-  private static Document annotate(Document document, ArticleAnnotation[] annotations)
+  public static Document annotateAsDocument(Document document, ArticleAnnotation[] annotations)
                            throws URISyntaxException, TransformerException {
     LocationList[] lists = evaluate(document, annotations);
 
@@ -139,22 +104,6 @@ public class Annotator {
     source.appendChild(annotations);
 
     return document;
-  }
-
-  /**
-   * Parses the content into a DOM document.
-   *
-   * @param content the content to parse
-   * @param builder documentBuilder
-   * @return the dom document
-   *
-   * @throws SAXException on an error in parse
-   * @throws ParserConfigurationException if a suitable parser could not be found
-   * @throws IOException on an error in reading the content
-   */
-  private static Document parse(final DataHandler content, final DocumentBuilder builder)
-                        throws SAXException, ParserConfigurationException, IOException {
-    return builder.parse(content.getInputStream());
   }
 
   private static LocationList[] evaluate(Document document, ArticleAnnotation[] annotations)

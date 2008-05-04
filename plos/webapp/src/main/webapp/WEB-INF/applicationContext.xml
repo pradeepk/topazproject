@@ -400,7 +400,9 @@
   <aop:config proxy-target-class="true">
     <!-- all (potential) action methods, all getters (for lazy loading), and user-lookup -->
     <aop:pointcut id="needTx" expression="
-      execution(public String org.plos..*Action.*()) ||
+      (execution(public String org.plos..*Action.*()) &amp;&amp;
+       !execution(public String org.plos.admin.action.IngestArchivesAction.execute())) ||
+      execution(public * org.plos.admin.service.DocumentManagementService.ingest(..)) ||
       execution(public * org.plos..*Action.get*()) ||
       execution(public * org.plos.user.UserAccountsInterceptor.intercept(..))
       "/>

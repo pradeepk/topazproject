@@ -51,7 +51,6 @@ public class ArticleType implements Serializable {
 
   private final URI uri;
   private final String heading;
-  private String imageConfigName;
 
   private ArticleType(URI articleTypeUri, String displayHeading) {
     uri = articleTypeUri;
@@ -162,18 +161,9 @@ public class ArticleType implements Serializable {
             (theDefaultArticleType == null)) {
           theDefaultArticleType = at;
         }
-        at.setImageSetConfigName(myConfig.getString(baseString + "imageSetConfigName"));
       }
       count++;
     } while (uriStr != null);
-  }
-
-  public void setImageSetConfigName(String imgConfigName) {
-    this.imageConfigName = imgConfigName;
-  }
-
-  public String getImageSetConfigName() {
-    return imageConfigName;
   }
 
   public static ArticleType getDefaultArticleType() {

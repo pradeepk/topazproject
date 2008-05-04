@@ -19,10 +19,9 @@
 
 package org.plos.admin.service;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,24 +29,17 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
 
-import javax.activation.DataHandler;
-import javax.servlet.ServletContext;
+import javax.activation.FileDataSource;
 import javax.xml.rpc.ServiceException;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -55,26 +47,20 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
 
-import org.plos.article.service.BrowseService;
+import org.plos.ApplicationException;
 import org.plos.article.service.ArticleOtmService;
+import org.plos.article.service.BrowseService;
+import org.plos.article.service.DuplicateArticleIdException;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.service.SecondaryObject;
-import org.plos.model.article.ArticleType;
+import org.plos.article.service.IngestException;
+import org.plos.article.service.NoSuchArticleIdException;
+import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Journal;
-import org.plos.models.ObjectInfo;
-import org.plos.models.Representation;
-import org.plos.article.util.ArticleDeleteException;
-import org.plos.article.util.DuplicateArticleIdException;
-import org.plos.article.util.IngestException;
-import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.article.util.NoSuchObjectIdException;
-import org.plos.journal.JournalService;
-import org.plos.util.FileUtils;
 
 import org.topazproject.otm.Session;
 import org.topazproject.xml.transform.cache.CachedSource;
@@ -154,48 +140,87 @@ public class DocumentManagementService {
   }
 
   /**
-   * @param filenameOrURL
-   *          filenameOrURL
-   * @throws URISyntaxException
-   *           URISyntaxException
+   * @param filenameOrURL filenameOrURL
    * @return the local or remote file or url as a java.io.File
+   * @throws URISyntaxException
    */
   private File getAsFile(final String filenameOrURL) throws URISyntaxException {
     final URL resource = getClass().getResource(filenameOrURL);
     if (null == resource) {
       // access it as a local file resource
-      return new File(FileUtils.getFileName(filenameOrURL));
+      return new File(org.plos.util.FileUtils.getFileName(filenameOrURL));
     } else {
       return new File(resource.toURI());
     }
   }
 
   /**
-   * Deletes an article from Topaz, but does not flush the cache
+   * Deletes an article from Topaz, but does not flush any caches.
    * Useful for deleting a recently ingested article that hasn't been published
    *
-   * @param objectURI -
-   *          URI of the article to delete
+   * @param objectURI URI of the article to delete
    * @throws RemoteException
+   * @throws ServiceException
    * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI) throws RemoteException, ServiceException,
-          NoSuchArticleIdException, IOException, ArticleDeleteException {
+  public void delete(String objectURI)
+        throws RemoteException, ServiceException, NoSuchArticleIdException {
     articleOtmService.delete(objectURI);
+
+    try {
+      cleanSpoolDirectories(objectURI);
+    } catch (IOException ioe) {
+      log.warn("Error cleaning up spool directories for '" + objectURI +
+               "' - manual cleanup required", ioe);
+    }
+  }
+
+  private void cleanSpoolDirectories(String uri) throws IOException {
+    // delete any crossref submission file
+    File queueDir        = new File(documentDirectory);
+    File ingestedDir     = new File(ingestedDocumentDirectory);
+    File ingestedXmlFile = new File(ingestedDir, uri.replaceAll("[:/.]", "_") + ".xml");
+
+    if (log.isDebugEnabled())
+      log.debug("Deleting '" + ingestedXmlFile + "'");
+
+    try {
+      FileUtils.forceDelete(ingestedXmlFile);
+    } catch (FileNotFoundException fnfe) {
+      log.info("'" + ingestedXmlFile + "' does not exist - cannot delete: ", fnfe);
+    }
+
+    // move zip back to ingestion queue
+    if (!queueDir.equals(ingestedDir)) {
+      String fname = uri.substring(25) + ".zip";        // strip 'info:doi/10.1371/journal.'
+      File fromFile = new File(ingestedDir, fname);
+      File toFile   = new File(queueDir,    fname);
+
+      try {
+        if (log.isDebugEnabled())
+          log.debug("Copying '" + fromFile + "' to '" + toFile + "'");
+        FileUtils.copyFile(fromFile, toFile);
+
+        if (log.isDebugEnabled())
+          log.debug("Deleting '" + fromFile + "'");
+        FileUtils.forceDelete(fromFile);
+      } catch (FileNotFoundException fnfe) {
+        log.info("Could not copy '" + fromFile + "' to '" + toFile + "': ", fnfe);
+      }
+    }
   }
 
   /**
    * Deletes articles from Topaz and flushes the servlet image cache and article cache
    *
-   * @param objectURIs     URIs of the articles to delete
-   * @param servletContext Servlet Context under which the image cache exists
+   * @param objectURIs  URIs of the articles to delete
    * @return a list of messages describing what was successful and what failed
    */
-  public List<String> delete(String[] objectURIs, ServletContext servletContext) {
+  public List<String> delete(String[] objectURIs) {
     List<String> msgs = new ArrayList<String>();
     for (String objectURI : objectURIs) {
       try {
-        articleOtmService.delete(objectURI);
+        delete(objectURI);
         msgs.add("Deleted: " + objectURI);
         if (log.isDebugEnabled())
           log.debug("deleted article: " + objectURI);
@@ -212,226 +237,42 @@ public class DocumentManagementService {
   }
 
   /**
-   *
-   * @param pathname
-   *          of file on server to be ingested
-   * @return URI of ingested document
-   * @throws IngestException
-   * @throws DuplicateArticleIdException
-   * @throws IOException
-   * @throws TransformerException
-   * @throws NoSuchArticleIdException
-   * @throws NoSuchObjectIdException
-   * @throws ImageResizeException
-   * @throws ServiceException
-   */
-  public String ingest(String pathname) throws IngestException, DuplicateArticleIdException,
-  ImageResizeException, IOException, SAXException, TransformerException, NoSuchArticleIdException,
-  NoSuchObjectIdException, ServiceException {
-    return ingest(new File(pathname));
-  }
-
-  /**
    * Ingest the file. If successful move it to the ingestedDocumentDirectory then create the
    * Transformed CrossRef xml file and deposit that in the Directory as well.
    *
-   *
-   * @param file
-   *          to be ingested
-   * @return URI of ingested document
+   * @param file  file to be ingested
+   * @param force if true don't check for duplicate and instead always (re-)ingest
+   * @return the ingested article
    * @throws IngestException
    * @throws DuplicateArticleIdException
    * @throws IOException
    * @throws TransformerException
-   * @throws NoSuchArticleIdException
-   * @throws NoSuchObjectIdException
-   * @throws ImageResizeException
    * @throws ServiceException
    */
-  public String ingest(File file) throws IngestException, DuplicateArticleIdException,
-  ImageResizeException, IOException, SAXException, TransformerException, NoSuchArticleIdException,
-  NoSuchObjectIdException, ServiceException {
-    String uri;
-    File ingestedDir = new File(ingestedDocumentDirectory);
+  public Article ingest(File file, boolean force)
+      throws IngestException, DuplicateArticleIdException, IOException, TransformerException,
+             SAXException, ServiceException {
     if (log.isDebugEnabled()) {
       log.debug("Ingesting: " + file);
     }
-    DataHandler dh = new DataHandler(file.toURL());
-    uri = articleOtmService.ingest(dh);
-    
-    ImageSetConfig imageSetConf = getImageSetConfigForArticleUri(uri);
-    if (imageSetConf == null) {
-      imageSetConf = ImageSetConfig.getDefaultImageSetConfig();
-    }
-    
+
+    Article article = articleOtmService.ingest(new FileDataSource(file), force);
+
+    generateCrossRefInfoDoc(article);
     if (log.isInfoEnabled()) {
-      log.info("Ingested: " + file);
-    }
-    try {
-      resizeImages(uri, imageSetConf);
-    } catch (Exception e) {
-      if (log.isErrorEnabled()) {
-        log.error("Resize images failed for article " + uri, e);
-      }
-      URI articleUri = null;
-      try {
-        articleUri = new URI (uri);
-      } catch (URISyntaxException ue) {
-      }
-      ImageResizeException ire = new ImageResizeException(articleUri, e);
-      throw ire;
-    } finally {
-      try {
-        dh.getOutputStream().close();
-      } catch (Exception e) {
-        // ignore
-      }
+      log.info("Generated Xref for article " + article.getId() + " ingested from '" + file + "'");
     }
 
-    if (log.isInfoEnabled()) {
-      log.info("Resized images");
-    }
-    generateCrossRefInfoDoc(file, uri);
-    if (log.isInfoEnabled()) {
-      log.info("Generated Xref for file: " + file);
-    }
+    File ingestedDir = new File(ingestedDocumentDirectory);
     if (!file.renameTo(new File(ingestedDir, file.getName()))) {
-      throw new IOException("Cannot relocate ingested documented " + file.getName());
+      throw new IOException("Cannot relocate ingested sip " + file.getName());
     }
+
     if (log.isInfoEnabled()) {
-      log.info("Ingested and relocated " + file + ":" + uri);
+      log.info("Ingested and relocated " + file + ":" + article.getId());
     }
-    return uri;
-  }
 
-  /**
-   * Find the ImageSetConfig for the given Article URI String. 
-   * @param uri of the article
-   * @return ArticleType of the given article URI
-   */
-  private ImageSetConfig getImageSetConfigForArticleUri(String uri) {
-    Article article = null;
-    try {
-      article = fetchArticleService.getArticleInfo(uri);
-    } catch (ApplicationException e) {
-      log.error("Unable to retrieve Article URI='"+uri+"'", e);
-    }
-    if (article == null) {
-      log.warn("fetchArticleService.getArticleInfo() returned null for article URI: '"+uri+"' so using default image set");
-      return ImageSetConfig.getDefaultImageSetConfig();
-    }
-    
-    Set<URI> artTypes = article.getArticleType();
-    ArticleType at = null;
-    ImageSetConfig isc;
-    for (URI artTypeUri : artTypes) {
-      if ((at = ArticleType.getKnownArticleTypeForURI(artTypeUri))!= null) {
-        if ((isc = ImageSetConfig.getImageSetConfig(at.getImageSetConfigName())) != null) {
-          return isc;
-        }
-      }
-    }
-    
-    log.debug("Unable to find ImageSetConfig for article: '"+uri+"'");
-    return null;
-  }
-
-  private void resizeImages(String uri, ImageSetConfig imageSetConfig) throws NoSuchArticleIdException, NoSuchObjectIdException,
-                                               ImageResizeException,
-                                               HttpException, IOException {
-    ImageResizeService irs;
-
-    SecondaryObject[] objects = articleOtmService.listSecondaryObjects(uri);
-    SecondaryObject object = null;
-    for (int i = 0; i < objects.length; ++i) {
-      irs = new ImageResizeService(imageSetConfig);
-      object = objects[i];
-      if (log.isDebugEnabled()) {
-        log.debug("retrieving Object Info for: " + object.getUri());
-      }
-      ObjectInfo info = articleOtmService.getObjectInfo(object.getUri());
-      if (log.isDebugEnabled()) {
-        log.debug("object Info " + info);
-        log.debug("contextElement" + info.getContextElement());
-      }
-      String context = info.getContextElement();
-      if (context != null) {
-        context = context.trim();
-        if (context.equalsIgnoreCase("fig")) {
-          Representation rep = object.getRepresentations().iterator().next();
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize: " + rep.getId() + " repsize-" + rep.getSize());
-          }
-
-          final byte[] originalBytes = rep.getBody();
-          articleOtmService.setRepresentation(object.getUri(), "PNG_S", 
-              irs.getSmallScaledImage(originalBytes), "image/png");
-          if (log.isDebugEnabled()) {
-            log.debug("Set small image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_M",
-              irs.getMediumScaledImage(originalBytes), "image/png");
-          if (log.isDebugEnabled()) {
-            log.debug("Set medium image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_L",
-              irs.getLargeScaledImage(originalBytes), "image/png");
-          if (log.isDebugEnabled()) {
-            log.debug("Set large image for " + object.getUri());
-          }
-        } else if (context.equalsIgnoreCase("table-wrap")) {
-          Representation rep = object.getRepresentations().iterator().next();
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize: " + rep.getId() + " repsize-" + rep.getSize());
-          }
-
-          final byte[] originalBytes = rep.getBody();
-          articleOtmService.setRepresentation(object.getUri(), "PNG_S", 
-              irs.getSmallScaledImage(originalBytes), "image/png");
-          if (log.isDebugEnabled()) {
-            log.debug("Set small image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_M",
-              irs.getMediumScaledImage(originalBytes), "image/png");
-          if (log.isDebugEnabled()) {
-            log.debug("Set medium image for " + object.getUri());
-          }
-          articleOtmService.setRepresentation(object.getUri(), "PNG_L",
-              irs.getLargeScaledImage(originalBytes), "image/png");
-          if (log.isDebugEnabled()) {
-            log.debug("Set large image for " + object.getUri());
-          }
-        } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
-          Representation rep = object.getRepresentations().iterator().next();
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize for disp-forumla: " + rep.getId());
-          }
-
-          final byte[] originalBytes = rep.getBody();
-          articleOtmService.setRepresentation(object.getUri(), "PNG",
-              irs.getLargeScaledImage(originalBytes), "image/png");
-        } else if (context.equals("inline-formula")) {
-          Representation rep = object.getRepresentations().iterator().next();
-
-          if (log.isDebugEnabled()) {
-            log.debug("Found image to resize for inline formula: " + rep.getId());
-          }
-
-          final byte[] originalBytes = rep.getBody();
-          articleOtmService.setRepresentation(object.getUri(), "PNG",
-              irs.getLargeScaledImage(originalBytes), "image/png");
-        }
-        // Don't continue trying to process images if one of them failed
-        /*
-         * } catch (Exception e) {
-         *
-         * log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri())); }
-         */
-      }
-    }
+    return article;
   }
 
   /**
@@ -467,51 +308,20 @@ public class DocumentManagementService {
     }
   }
 
-  private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException,
-  TransformerException, SAXException {
-    ZipFile zip = new ZipFile(file);
-    Enumeration entries = zip.entries();
-
-    try {
-      while (entries.hasMoreElements()) {
-        ZipEntry entry = (ZipEntry) entries.nextElement();
-        if (entry.getName().toLowerCase().endsWith(".xml")) {
-          File source_xml = File.createTempFile("xref-doi-src", ".xml");
-          File target_xml = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
-
-          BufferedInputStream fis = new BufferedInputStream(zip.getInputStream(entry));
-          BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(source_xml));
-          byte[] buf = new byte[(int) entry.getSize()];
-          int size;
-          while (-1 != (size = fis.read(buf))) {
-            bos.write(buf, 0, size);
-          }
-          bos.flush();
-          bos.close();
-          fis.close();
-          try {
-            target_xml = crossRefXML(source_xml, target_xml);
-          } finally {
-            source_xml.delete();
-          }
-          break;
-        }
-      }
-    } finally {
-      zip.close();
-    }
-  }
-
-  private File crossRefXML(File src, File dest) throws IOException,
-  TransformerFactoryConfigurationError, TransformerException, SAXException {
-
+  private void generateCrossRefInfoDoc(Article article)
+      throws IOException, TransformerException, SAXException {
     Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
     t.setParameter("plosDoiUrl", plosDoiUrl);
     t.setParameter("plosEmail", plosEmail);
-    Source       s_source = new CachedSource(new InputSource(src.toURI().toString()));
-    StreamResult s_result = new StreamResult(dest);
-    t.transform(s_source, s_result);
-    return dest;
+
+    InputSource artXml = new InputSource(
+        new ByteArrayInputStream(article.getRepresentation("XML").getBody()));
+    artXml.setSystemId(article.getId().toString());
+
+    File target_xml =
+        new File(ingestedDocumentDirectory, uriToFilename(article.getId().toString()) + ".xml");
+
+    t.transform(new CachedSource(artXml), new StreamResult(target_xml));
   }
 
   /**

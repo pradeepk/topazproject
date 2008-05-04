@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -46,7 +47,7 @@ public class Article extends ObjectInfo {
   /** Active article states */
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
-  @Predicate(uri = Rdf.dc_terms + "hasPart")
+  @Predicate(uri = Rdf.dc_terms + "hasPart", collectionType = CollectionType.RDFSEQ)
   private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
 
   // This will be used to indicate the different types the article conforms to

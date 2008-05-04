@@ -49,12 +49,6 @@ public class ObjectInfo implements Serializable {
   private Article isPartOf;
 
   // PLoS specific predicates:
-  @Predicate(uri = Rdf.topaz + "nextObject")
-  private ObjectInfo nextObject;
-
-  @Predicate(uri = Rdf.topaz + "isPID")
-  private String pid;
-
   /** The state of this object (or its parts). */
   @Predicate(uri = Rdf.topaz + "articleState")
   private int state;
@@ -119,42 +113,6 @@ public class ObjectInfo implements Serializable {
    */
   public void setIsPartOf(Article isPartOf) {
     this.isPartOf = isPartOf;
-  }
-
-  /**
-   * Get the next object
-   *
-   * @return the nextObject
-   */
-  public ObjectInfo getNextObject() {
-    return nextObject;
-  }
-
-  /**
-   * Set the next object
-   *
-   * @param nextObject the nextObject to set
-   */
-  public void setNextObject(ObjectInfo nextObject) {
-    this.nextObject = nextObject;
-  }
-
-  /**
-   * Get the PID associated with this
-   *
-   * @return the pid
-   */
-  public String getPid() {
-    return pid;
-  }
-
-  /**
-   * Set the PID associated with this
-   *
-   * @param pid the pid to set
-   */
-  public void setPid(String pid) {
-    this.pid = pid;
   }
 
   /**

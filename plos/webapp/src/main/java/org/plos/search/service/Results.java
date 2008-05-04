@@ -40,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
-import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.search.SearchResultPage;

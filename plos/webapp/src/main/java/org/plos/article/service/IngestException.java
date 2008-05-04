@@ -16,52 +16,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.article.util;
+
+package org.plos.article.service;
 
 /**
- * Signifies that the requested object does not exist.
+ * Singals an error with the ingest.
  *
  * @author Ronald Tschalär
- * @author Eric Brown
  */
-public class NoSuchObjectIdException extends Exception {
-  private final String id;
-
+public class IngestException extends Exception {
   /**
-   * Create a new exception instance with a default exception message.
+   * Create a new exception instance.
    *
-   * @param id      the (non-existant) id
+   * @param message a message describing the error
    */
-  public NoSuchObjectIdException(String id) {
-    this(id, "", null);
+  public IngestException(String message) {
+    super(message);
   }
 
   /**
    * Create a new exception instance.
    *
-   * @param id      the (non-existant) id
-   * @param message the exception message
+   * @param message a message describing the error
+   * @param cause   the exception that caused the error
    */
-  public NoSuchObjectIdException(String id, String message) {
-    this(id, message, null);
+  public IngestException(String message, Throwable cause) {
+    super(message, cause);
   }
 
   /**
-   * Create a new exception instance.
+   * This is just here so axis will generate a service version with a contructor that takes the
+   * message.
    *
-   * @param id      the (non-existant) id
-   * @param message the exception message
-   * @param cause   the exception cause
+   * @return the message
    */
-  public NoSuchObjectIdException(String id, String message, Throwable cause) {
-    super("(id=" + id + ")" + message, cause);
-    this.id = id;
-  }
-
-  /**
-   * @return the id
-   */
-  public String getId() {
-    return id;
+  public String getMessage() {
+    return super.getMessage();
   }
 }

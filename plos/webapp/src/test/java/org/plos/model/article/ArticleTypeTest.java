@@ -61,9 +61,6 @@ public class ArticleTypeTest extends TestCase {
     String defaultArticleTypeUri = "http://rdf.plos.org/RDF/articleType/Research%20Article";
     assertEquals("Default ArticleType URI not as expected.", 
         defaultArticleTypeUri, dat.getUri().toString());
-    String imageSetConfigName = "MyImageSet";
-    assertEquals("Default imageSetConfigName not as expected", 
-        imageSetConfigName, dat.getImageSetConfigName());
   }
   
   public void testArticleTypeEquality() throws Exception {

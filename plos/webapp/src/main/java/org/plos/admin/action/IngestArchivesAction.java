@@ -24,53 +24,62 @@ import java.rmi.RemoteException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
-import org.plos.admin.service.ImageResizeException;
 
-import org.plos.article.util.DuplicateArticleIdException;
+import org.plos.ApplicationException;
+import org.plos.article.service.DuplicateArticleIdException;
+import org.plos.article.service.SearchUtil;
 
 public class IngestArchivesAction extends BaseAdminActionSupport {
-
   private static final Log log = LogFactory.getLog(IngestArchivesAction.class);
   private String[] filesToIngest;
+  private boolean  force = false;
 
   public void setFilesToIngest(String[] files) {
     filesToIngest = files;
   }
 
+  public void setForce(boolean flag) {
+    force = flag;
+  }
+
   public String execute() throws RemoteException, ApplicationException {
     if (filesToIngest != null) {
-      String articleURI = null;
       for (String filename : filesToIngest) {
-        articleURI = null;
         filename = filename.trim();
         try {
-          articleURI = getDocumentManagementService().ingest(new File(
-              getDocumentManagementService().getDocumentDirectory(),
-              filename));
+          File file = new File(getDocumentManagementService().getDocumentDirectory(), filename);
+          String id = getDocumentManagementService().ingest(file, force).getId().toString();
           addActionMessage("Ingested: " + filename);
-        } catch (DuplicateArticleIdException de) {
-          addActionError("Error ingesting: " + filename + " - " + de.toString());
-          log.error("Error ingesting article: " + filename , de);
-        } catch (ImageResizeException ire) {
-          addActionError("Error ingesting: " + filename + " - " + ire.getCause().toString());
-          log.error("Error ingesting articles: " + filename, ire);
-          articleURI = ire.getArticleURI().toString();
-          if (log.isDebugEnabled()) {
-            log.debug("trying to delete: " + articleURI);
-          }
+
+          // FIXME: hack until ingest can directly put into search
           try {
-            getDocumentManagementService().delete(articleURI);
-          } catch (Exception deleteException) {
-            addActionError("Could not delete article: " + articleURI + ", " + deleteException);
-            log.error("Could not delete article: " + articleURI, deleteException);
+            /* Disabled until tx management is reworked, because the blob does not get
+             * put into fedora until commit.
+            SearchUtil.index(id);
+             */
+          } catch (Exception e) {
+            addActionError("Error updating search index for '" + id + "': " + getMessages(e));
           }
+        } catch (DuplicateArticleIdException de) {
+          addActionError("Error ingesting: " + filename + " - " + getMessages(de));
+          log.error("Error ingesting article: " + filename , de);
         } catch (Exception e) {
-          addActionError("Error ingesting: " + filename + " - " + e.toString());
+          addActionError("Error ingesting: " + filename + " - " + getMessages(e));
           log.error("Error ingesting article: " + filename, e);
         }
       }
     }
     return base();
+  }
+
+  private static String getMessages(Throwable t) {
+    StringBuilder msg = new StringBuilder();
+    while (t != null) {
+      msg.append(t.toString());
+      t = t.getCause();
+      if (t != null)
+        msg.append("<br/>\n");
+    }
+    return msg.toString();
   }
 }

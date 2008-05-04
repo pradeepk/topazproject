@@ -24,7 +24,7 @@ import java.security.Guard;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.service.NoSuchArticleIdException;
 
 /**
  * Iterator wrapper that returns the subset of its delegate iterator that are not guarded.

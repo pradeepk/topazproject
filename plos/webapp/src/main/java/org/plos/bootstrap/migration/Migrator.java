@@ -141,7 +141,8 @@ public class Migrator implements ServletContextListener {
       sess.doNativeQuery("select $s subquery (select $p $o from <" + RI
                          + "> where $s $p $o) from <" + RI + "> where ($s <rdf:type> <" + Rdf.topaz
                          + "Article> or " + "($a <rdf:type> <" + Rdf.topaz + "Article> and $a <"
-                         + Rdf.dc_terms + "hasPart> $s))" + " minus ($s <" + Rdf.topaz
+                         + Rdf.dc_terms + "hasPart> $x and $x <rdf:type> <rdf:Seq> and $x $li $s))"
+                         + " minus ($s <" + Rdf.topaz
                          + "hasRepresentation> $rep and $rep <rdf:type> <" + Rdf.topaz
                          + "Representation>);");
 
@@ -171,7 +172,8 @@ public class Migrator implements ServletContextListener {
         }
       }
 
-      objs.put(id, reps.values());
+      if (reps.size() > 0)      // happens for $li=<rdf:type> $s=<rdf:Seq>
+        objs.put(id, reps.values());
       allReps.addAll(reps.keySet());
     }
 
