@@ -483,13 +483,13 @@ public class Ingester {
 
     @Override
     public String getFieldNameForItemTypeAndName(Class definedIn, Class itemType,
-						 String itemFieldName) {
+                                                 String itemFieldName) {
       while (definedIn != null) {
-	for (ImplicitCollectionMapping icm : getOrCreateICM(definedIn)) {
-	  if (icm.getItemType().isAssignableFrom(itemType) && itemFieldName.equals(icm.getFieldName()))
-	    return icm.getFieldName();
-	}
-	definedIn = definedIn.getSuperclass();
+        for (ImplicitCollectionMapping icm : getOrCreateICM(definedIn)) {
+          if (icm.getItemType().isAssignableFrom(itemType) && itemFieldName.equals(icm.getFieldName()))
+            return icm.getFieldName();
+        }
+        definedIn = definedIn.getSuperclass();
       }
       return null;
     }
@@ -497,29 +497,29 @@ public class Ingester {
     @Override
     public Class getItemTypeForItemFieldName(Class definedIn, String itemFieldName) {
       while (definedIn != null) {
-	for (ImplicitCollectionMapping icm : getOrCreateICM(definedIn)) {
-	  if (itemFieldName.equals(icm.getFieldName()))
-	    return icm.getItemType();
-	}
-	definedIn = definedIn.getSuperclass();
+        for (ImplicitCollectionMapping icm : getOrCreateICM(definedIn)) {
+          if (itemFieldName.equals(icm.getFieldName()))
+            return icm.getItemType();
+        }
+        definedIn = definedIn.getSuperclass();
       }
       return null;
     }
 
     @Override
     public ImplicitCollectionMapping getImplicitCollectionDefForFieldName(Class itemType,
-	                                                                  String fieldName) {
+                                                                          String fieldName) {
       ImplicitCollectionMapping icm = findMapping(itemType, fieldName);
       if (icm != null)
-	return icm;
+        return icm;
 
       // see if this is an array or collection, and if so get the component type
       Class<?> declType = null;
       Class<?> compType = null;
       try {
         // try this as a public field
-	Field f = itemType.getField(fieldName);
-	declType = f.getDeclaringClass();
+        Field f = itemType.getField(fieldName);
+        declType = f.getDeclaringClass();
         compType = getCompType(f.getType(), f.getGenericType());
       } catch (NoSuchFieldException nsfe) {
         if (Ingester.log.isTraceEnabled())
@@ -527,20 +527,20 @@ public class Ingester {
 
         // not a public field, so look for getter
         String getter = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-	try {
-	  Method m = itemType.getMethod(getter);
-	  declType = m.getDeclaringClass();
+        try {
+          Method m = itemType.getMethod(getter);
+          declType = m.getDeclaringClass();
           compType = getCompType(m.getReturnType(), m.getGenericReturnType());
-	} catch (NoSuchMethodException nsme) {
+        } catch (NoSuchMethodException nsme) {
           if (Ingester.log.isTraceEnabled())
             Ingester.log.trace("class '" + itemType.getName() + "', method '" + getter + "'", nsme);
-	}
+        }
       }
 
       if (compType != null) {
-	super.add(declType, fieldName, compType);
-	icm = super.getImplicitCollectionDefForFieldName(declType, fieldName);
-	getOrCreateICM(declType).add(icm);
+        super.add(declType, fieldName, compType);
+        icm = super.getImplicitCollectionDefForFieldName(declType, fieldName);
+        getOrCreateICM(declType).add(icm);
 
         if (Ingester.log.isTraceEnabled())
           Ingester.log.trace("created def: defIn=" + declType + ", fieldName=" +
@@ -554,17 +554,17 @@ public class Ingester {
     private Set<ImplicitCollectionMapping> getOrCreateICM(Class<?> definedIn) {
       Set<ImplicitCollectionMapping> icmList = mappings.get(definedIn);
       if (icmList == null)
-	mappings.put(definedIn, icmList = new HashSet<ImplicitCollectionMapping>());
+        mappings.put(definedIn, icmList = new HashSet<ImplicitCollectionMapping>());
       return icmList;
     }
 
     private ImplicitCollectionMapping findMapping(Class<?> definedIn, String field) {
       while (definedIn != null) {
-	for (ImplicitCollectionMapping icm : getOrCreateICM(definedIn)) {
-	  if (icm.getFieldName().equals(field))
-	    return icm;
-	}
-	definedIn = definedIn.getSuperclass();
+        for (ImplicitCollectionMapping icm : getOrCreateICM(definedIn)) {
+          if (icm.getFieldName().equals(field))
+            return icm;
+        }
+        definedIn = definedIn.getSuperclass();
       }
       return null;
     }
@@ -585,17 +585,17 @@ public class Ingester {
 
     private static Class<?> getClass(Type t) {
       if (t instanceof Class)
-	return (Class<?>) t;
+        return (Class<?>) t;
 
       if (t instanceof GenericArrayType)
-	return Array.newInstance(getClass(((GenericArrayType) t).getGenericComponentType()), 0).
+        return Array.newInstance(getClass(((GenericArrayType) t).getGenericComponentType()), 0).
                      getClass();
 
       if (t instanceof ParameterizedType)
-	return getClass(((ParameterizedType) t).getRawType());
+        return getClass(((ParameterizedType) t).getRawType());
 
       if (t instanceof WildcardType)
-	return getClass(((WildcardType) t).getUpperBounds()[0]);
+        return getClass(((WildcardType) t).getUpperBounds()[0]);
 
       return Object.class;
     }
