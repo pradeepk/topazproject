@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -102,7 +103,9 @@ public class DublinCore implements Serializable {
   @Predicate(uri = Rdf.dc_terms + "created", dataType = Rdf.xsd + "date")
   private Date created;
 
-  @Predicate(uri = Rdf.dc_terms + "license")
+  @Predicate(uri = Rdf.dc_terms + "license",
+             cascade = { CascadeType.saveOrUpdate, CascadeType.merge, CascadeType.refresh,
+                         CascadeType.evict })
   private Set<License> license;
 
   @Predicate(uri = Rdf.dc_terms + "modified", dataType = Rdf.xsd + "date")
