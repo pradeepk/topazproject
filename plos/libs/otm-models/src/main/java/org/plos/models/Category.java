@@ -23,6 +23,7 @@ import java.net.URI;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -37,7 +38,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "ri")
 public class Category implements Serializable {
-  @Id
+  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/category/")
   private URI id;
   @Predicate(uri = Rdf.topaz + "isPID")
   private String pid;

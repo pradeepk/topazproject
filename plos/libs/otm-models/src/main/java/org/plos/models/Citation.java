@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Predicate.PropType;
@@ -41,7 +42,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @Entity(type = PLoS.bibtex + "Entry", model = "ri")
 @UriPrefix(Rdf.topaz)
 public class Citation implements Serializable {
-  @Id
+  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/citation/")
   private URI   id;
 
   @Predicate(uri = PLoS.bibtex + "hasKey", dataType = Rdf.xsd + "string")
