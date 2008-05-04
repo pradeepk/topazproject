@@ -21,7 +21,6 @@ package org.plos.model.article;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Projection;
 import org.topazproject.otm.annotations.SubView;
 

@@ -21,7 +21,6 @@ package org.plos.journal;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +39,6 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.DetachedCriteria;
-import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.filter.ConjunctiveFilterDefinition;

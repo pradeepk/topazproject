@@ -20,19 +20,11 @@ package org.plos.xacml;
 
 import java.io.IOException;
 
-import java.net.URI;
-
-import java.util.Collections;
-import java.util.Set;
-
 import org.plos.configuration.ConfigurationStore;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
-import com.sun.xacml.attr.StringAttribute;
-import com.sun.xacml.ctx.Attribute;
-import com.sun.xacml.ctx.Subject;
 
 /**
  * XACML related Utility functions.

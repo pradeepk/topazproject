@@ -25,7 +25,6 @@ import org.plos.models.ArticleAnnotation;
 import org.plos.models.Reply;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class AnnotationConverter {
    * @throws ApplicationException
    */
   public WebReply[] convert(final Reply[] replies, Commentary com) throws ApplicationException {
-    final Collection<WebReply> plosoneReplies = new ArrayList<WebReply>();
+    final List<WebReply> plosoneReplies = new ArrayList<WebReply>();
     final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
     int numReplies = replies.length;
     String latestReplyTime = null;

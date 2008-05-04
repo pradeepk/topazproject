@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.plos.article.service.BrowseService;
 import org.plos.model.UserProfileInfo;
 import org.plos.models.PLoS;
 import org.topazproject.otm.CollectionType;

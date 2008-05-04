@@ -19,8 +19,6 @@
 package org.plos.annotation.service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -356,7 +354,6 @@ public class AnnotationService {
    * @param target target doi that the listed annotations annotate
    * @param annotationClassTypes a set of Annotation class types to filter the results
    * @return a list of annotations
-   * @throws RemoteException RemoteException
    */
   public WebAnnotation[] listAnnotations(String target,
                                          Set<Class<? extends ArticleAnnotation>> annotationTypeClasses)

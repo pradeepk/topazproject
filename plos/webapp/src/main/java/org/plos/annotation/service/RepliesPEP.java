@@ -20,8 +20,6 @@ package org.plos.annotation.service;
 
 import java.io.IOException;
 
-import java.util.Set;
-
 import org.plos.xacml.XacmlUtil;
 import org.plos.xacml.AbstractSimplePEP;
 

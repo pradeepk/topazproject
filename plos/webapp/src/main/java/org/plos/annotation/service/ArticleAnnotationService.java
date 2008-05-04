@@ -19,7 +19,6 @@
 package org.plos.annotation.service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import java.net.URI;
 
@@ -38,7 +37,6 @@ import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 
 import org.plos.article.service.FetchArticleService;
 
-import org.plos.models.Annotation;
 import org.plos.models.AnnotationBlob;
 import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;

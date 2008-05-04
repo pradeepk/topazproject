@@ -20,7 +20,6 @@ package org.plos.annotation.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
 import org.plos.user.service.UserService;
 
 import org.plos.models.Annotation;
