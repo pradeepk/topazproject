@@ -60,12 +60,6 @@
     </dependency>
 
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xerces</artifactId>
-      <version>1.4.4</version>
-    </dependency>
-    
-    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
     </dependency>
