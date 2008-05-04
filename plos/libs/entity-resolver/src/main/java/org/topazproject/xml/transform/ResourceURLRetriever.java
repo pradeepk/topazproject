@@ -53,7 +53,7 @@ public class ResourceURLRetriever implements URLRetriever {
   }
 
   public byte[] retrieve(String url, String id) throws IOException {
-    String resource = urlMap.getProperty(id);
+    String resource = (id != null) ? urlMap.getProperty(id) : null;
 
     if (log.isDebugEnabled())
       log.debug("Resource retriever ('" + id + "'): " +
