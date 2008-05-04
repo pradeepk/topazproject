@@ -52,6 +52,9 @@ echo "svn info and recent changes"
 svn info
 svn log -rBASE:{`date "+%Y-%m-%d"`}
 
+# Remove all old rpm packages to not eat up disk space
+find $HOME/.m2/repository/org/topazproject/packages -name "*.rpm" -exec rm {} \; -print
+
 rm -f plos/it/install/*/installed
 set -e
 #${MVN} ${MVNARGS} -Pit clean install --batch-mode
