@@ -237,8 +237,6 @@
       <contextElement><xsl:value-of select="local-name($ctxt-obj)"/></contextElement>
     </xsl:if>
 
-    <state><xsl:value-of select="$initial-state"/></state>
-
     <xsl:for-each select="representation">
       <xsl:call-template name="gen-rep">
         <xsl:with-param name="rep" select="."/>
