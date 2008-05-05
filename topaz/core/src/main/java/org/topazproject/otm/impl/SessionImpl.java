@@ -526,10 +526,11 @@ public class SessionImpl extends AbstractSession {
     boolean found = false;
     if (interceptor != null) {
       Object val = interceptor.getEntity(this, cm, id.getId(), instance);
-      found = (val != null);
-      instance = (val == Interceptor.NULL) ? null : val;
-      if (instance != null)
-        cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
+      if (found = (val != null)) {
+        instance = (val == Interceptor.NULL) ? null : val;
+        if (instance != null)
+          cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
+      }
     }
 
     if (!found) {
@@ -576,7 +577,7 @@ public class SessionImpl extends AbstractSession {
     }
 
     if (log.isDebugEnabled())
-      log.debug("Object loaded from store: " + id.getId());
+      log.debug("Object loaded from " + (found ? "interceptor: " : "store: ") + id.getId());
     return instance;
   }
 
