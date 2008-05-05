@@ -48,11 +48,6 @@ public class ObjectInfo implements Serializable {
   @Predicate(uri = Rdf.dc_terms + "isPartOf")
   private Article isPartOf;
 
-  // PLoS specific predicates:
-  /** The state of this object (or its parts). */
-  @Predicate(uri = Rdf.topaz + "articleState")
-  private int state;
-
   // PDF, TIF, PNG_S, DOC, ....
   @Predicate(uri = Rdf.topaz + "hasRepresentation")
   private Set<Representation> representations = new HashSet<Representation>();
@@ -149,24 +144,6 @@ public class ObjectInfo implements Serializable {
         return rep;
 
     return null;
-  }
-
-  /**
-   * Get the state of the object
-   *
-   * @return the state
-   */
-  public int getState() {
-    return state;
-  }
-
-  /**
-   * Set the state of the object
-   *
-   * @param state the state to set
-   */
-  public void setState(int state) {
-    this.state = state;
   }
 
   /**

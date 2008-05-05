@@ -40,8 +40,6 @@ import org.topazproject.otm.annotations.Predicate;
 public class Category implements Serializable {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/category/")
   private URI id;
-  @Predicate(uri = Rdf.topaz + "articleState")
-  private int state;
   @Predicate(uri = Rdf.topaz + "mainCategory")
   private String mainCategory;
   @Predicate(uri = Rdf.topaz + "subCategory")
@@ -75,20 +73,6 @@ public class Category implements Serializable {
    */
   public void setMainCategory(String mainCategory) {
     this.mainCategory = mainCategory;
-  }
-
-  /**
-   * @return the article state
-   */
-  public int getState() {
-    return state;
-  }
-
-  /**
-   * @param state the article state to set
-   */
-  public void setState(int state) {
-    this.state = state;
   }
 
   /**

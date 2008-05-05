@@ -121,7 +121,8 @@ public class Migrator implements ServletContextListener {
     log.info("Checking and performing data-migrations ...");
 
     return migrateReps(sess) +
-           migrateObjInfo(sess);
+           addObjInfoType(sess) +
+           removeObsoleteStates(sess);
   }
 
   /**
@@ -261,6 +262,12 @@ public class Migrator implements ServletContextListener {
     return o;
   }
 
+  private static class Representation {
+    public String          name;
+    public Results.Literal contentType;
+    public Results.Literal objectSize;
+  }
+
   /**
    * Add the rdf:type for ObjectInfo's.
    *
@@ -268,7 +275,7 @@ public class Migrator implements ServletContextListener {
    * @return the number of migrations performed
    * @throws OtmException on an error
    */
-  public int migrateObjInfo(Session sess) throws OtmException {
+  public int addObjInfoType(Session sess) throws OtmException {
     log.info("Adding rdf:type to ObjectInfo's ...");
 
     Results r = sess.doNativeQuery(
@@ -289,9 +296,32 @@ public class Migrator implements ServletContextListener {
     return cnt;
   }
 
-  private static class Representation {
-    public String          name;
-    public Results.Literal contentType;
-    public Results.Literal objectSize;
+  /**
+   * Removes articleState's on ObjectInfo's and Category's.
+   *
+   * @param sess the otm session to use
+   * @return the number of migrations performed
+   * @throws OtmException on an error
+   */
+  public int removeObsoleteStates(Session sess) throws OtmException {
+    log.info("Removing obsolete state fields ...");
+
+    Results r = sess.doNativeQuery(
+          "select count(select $s from <" + RI + "> where " +
+          "             $s <topaz:articleState> $o minus $s <rdf:type> <topaz:Article>) " +
+          "from <" + RI + "> where $dummy <mulgara:is> 'ignored';");
+    r.next();
+    int cnt = (int) Double.parseDouble(r.getString(0));
+
+    if (cnt == 0) {
+      log.info("Did not find any objects with leftover state fields.");
+    } else {
+      sess.doNativeUpdate("delete select $s <topaz:articleState> $o from <" + RI +
+                          "> where $s <topaz:articleState> $o minus $s <rdf:type> <topaz:Article>" +
+                          " from <" + RI + ">;");
+      log.warn("Removed state fields from " + cnt + " objects.");
+    }
+
+    return cnt;
   }
 }

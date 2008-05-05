@@ -174,12 +174,6 @@ public class ArticleOtmService {
       throw new NoSuchArticleIdException(article);
 
     a.setState(state);
-    for (ObjectInfo oi : a.getParts())
-      oi.setState(state);
-    for (Category c : a.getCategories())
-      c.setState(state);
-
-    session.saveOrUpdate(a);
   }
 
   /**
@@ -716,6 +710,7 @@ public class ArticleOtmService {
       }
     }
     getAllObjectInfo((ObjectInfo) article);
+    // article.getState();
   }
 
   private static void getAllObjectInfo(ObjectInfo objectInfo) {
@@ -729,7 +724,6 @@ public class ArticleOtmService {
     // objectInfo.getId();
     // skip objectInfo.getIsPartOf(), avoid recursing into self Article
     // iterateAll(objectInfo.getRepresentations());
-    // objectInfo.getState();
   }
 
   private static void getAllRelatedArticle(RelatedArticle relatedArticle) {
@@ -781,7 +775,6 @@ public class ArticleOtmService {
 
     category.getId();
     // category.getMainCategory();
-    // category.getState();
     // category.getSubCategory();
   }
 

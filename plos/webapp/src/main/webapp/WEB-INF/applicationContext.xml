@@ -322,6 +322,7 @@
         <value>org.plos.models.Journal</value>
         <value>org.plos.models.License</value>
         <value>org.plos.models.ObjectInfo</value>
+        <value>org.plos.models.PermissionsPropagator</value>
         <value>org.plos.models.PLoS</value>
         <value>org.plos.models.Rating</value>
         <value>org.plos.models.RatingContent</value>

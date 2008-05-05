@@ -65,6 +65,10 @@ public class Article extends ObjectInfo {
   @Predicate(uri = Rdf.topaz + "hasCategory")
   private Set<Category> categories = new HashSet<Category>();
 
+  /** The state of this article. */
+  @Predicate(uri = Rdf.topaz + "articleState")
+  private int state;
+
   /** 
    * @return the different parts of the article 
    */
@@ -134,5 +138,23 @@ public class Article extends ObjectInfo {
    */
   public void setRelatedArticles(Set<RelatedArticle> relatedArticles) {
     this.relatedArticles = relatedArticles;
+  }
+
+  /**
+   * Get the state of this article.
+   *
+   * @return the article state
+   */
+  public int getState() {
+    return state;
+  }
+
+  /**
+   * Set the state of this article.
+   *
+   * @param state the article state to set
+   */
+  public void setState(int state) {
+    this.state = state;
   }
 }
