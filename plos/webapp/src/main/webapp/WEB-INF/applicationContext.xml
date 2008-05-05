@@ -379,9 +379,9 @@
 
   <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
       destroy-method="close" scope="request">
-    <!--constructor-arg index="0">
+    <constructor-arg index="0">
        <ref bean="otmInterceptor"/>
-    </constructor-arg-->
+    </constructor-arg>
     <aop:scoped-proxy proxy-target-class="false"/>
   </bean>
 
