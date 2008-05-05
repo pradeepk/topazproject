@@ -40,6 +40,8 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.Binder.RawFieldData;
 import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
@@ -290,12 +292,19 @@ public class OtmInterceptor implements Interceptor {
         blob = copy((byte[]) blobField.getBinder(sess).getRawValue(instance, false));
 
       for (RdfMapper mapper : fields) {
-        if (mapper.isPredicateMap())
-          pmap = copy((Map<String, List<String>>) mapper.getBinder(sess).getRawValue(instance, false));
+        Binder binder = mapper.getBinder(sess);
+        RawFieldData data = binder.getRawFieldData(instance);
+        if (data != null) {
+          values.put(getName(mapper, sess), data.getValues());
+          Map<String, Set<String>> m = data.getTypeLookAhead();
+          if (m != null)
+            tla.putAll(m);
+        } else if (mapper.isPredicateMap())
+          pmap = copy((Map<String, List<String>>) binder.getRawValue(instance, false));
         else if (!mapper.isAssociation())
-          values.put(getName(mapper, sess), mapper.getBinder(sess).get(instance));
+          values.put(getName(mapper, sess), binder.get(instance));
         else {
-          List          a  = mapper.getBinder(sess).get(instance);
+          List          a  = binder.get(instance);
           List<String>  v  = new ArrayList(a.size());
           ClassMetadata am =
             sess.getSessionFactory().getClassMetadata(mapper.getAssociatedEntity());
