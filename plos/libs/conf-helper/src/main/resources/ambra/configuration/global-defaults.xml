@@ -104,41 +104,46 @@
     <!-- The list of models in mulgara that we depend on/create -->
     <models>
       <ri type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=ri
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=ri
       </ri>
       <articles type="${ambra.models.ri[@type]}">${ambra.models.ri}</articles>
       <annotations type="${ambra.models.ri[@type]}">${ambra.models.ri}</annotations>
       <users type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=users
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=users
       </users>
       <grants type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=grants
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=grants
       </grants>
       <revokes type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=revokes
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=revokes
       </revokes>
       <pp type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=pp
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=pp
       </pp>
       <preferences type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=preferences
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=preferences
       </preferences>
       <profiles type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=profiles
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=profiles
       </profiles>
       <ratings type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=ratings
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=ratings
       </ratings>
       <alerts type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=alerts
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=alerts
       </alerts>
       <criteria type="http://topazproject.org/models#filter">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#filter:model=criteria
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}filter:model=criteria
       </criteria>
       <str type="http://topazproject.org/models#StringCompare">
-        ${ambra.topaz.tripleStore.mulgara.baseuri}#str
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}str
       </str>
-      <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">${ambra.topaz.tripleStore.mulgara.baseuri}#xsd</xsd>
+      <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}xsd
+      </xsd>
+      <prefix type="http://mulgara.org/mulgara#PrefixModel">
+        ${ambra.topaz.tripleStore.mulgara.modelPrefix}prefix
+      </prefix>
     </models>
     
     <topaz>
@@ -162,6 +167,9 @@
           <baseuri>
             ${ambra.topaz.tripleStore.mulgara.scheme}//${ambra.network.hosts.mulgara}/topazproject
           </baseuri>
+          <modelPrefix>
+            ${ambra.topaz.tripleStore.mulgara.baseuri}#
+          </modelPrefix>
           <!-- Configuration to talk to Mulgara -->
           <itql>
             <uri>${ambra.topaz.tripleStore.mulgara.baseuri}</uri>
