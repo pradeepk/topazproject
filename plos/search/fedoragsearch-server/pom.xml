@@ -7,32 +7,6 @@
   <name>fedoragsearch server implementation</name>
   <url>http://defxws2006.cvt.dk/fedoragsearch/</url>
 
-  <repositories>
-    <repository>
-      <id>topaz</id>
-      <name>Maven 2 Repository for Topaz</name>
-      <url>http://www.topazproject.org/maven2</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>topaz</id>
-      <name>Maven 2 Repository for Topaz</name>
-      <url>http://www.topazproject.org/maven2</url>
-    </pluginRepository>
-  </pluginRepositories>
-  
-  <distributionManagement>
-    <repository>
-      <id>topaz</id>
-      <url>http://www.topazproject.org/maven2/</url>
-    </repository>
-    <site>
-      <id>topaz-docs</id>
-      <url>${topazproject.site.url}/ambra/ws-search/fedoragsearch-server</url>
-    </site>
-  </distributionManagement>
-
   <dependencies>
     <dependency>
       <groupId>axis</groupId>
@@ -68,12 +42,12 @@
       <version>2.1.1</version>
     </dependency>
     <dependency>
-      <groupId>lucene</groupId>
+      <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
       <version>2.0.0</version>
     </dependency>
     <dependency>
-      <groupId>lucene</groupId>
+      <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-demos</artifactId>
       <version>2.0.0</version>
     </dependency>
