@@ -245,6 +245,9 @@ options {
     }
 
     private String getModelUri(String modelId) throws RecognitionException {
+      if (modelId == null)
+        return null;
+
       ModelConfig mc = sessFactory.getModel(modelId);
       if (mc == null)
         throw new RecognitionException("Unable to find model '" + modelId + "'");

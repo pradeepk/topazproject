@@ -27,6 +27,7 @@ import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.criterion.Disjunction;
@@ -1040,6 +1041,27 @@ public class OqlTest extends AbstractTest {
       s.delete(o1);
       s.delete(o2);
     }
+
+    // non-entity class with no model, but model on predicate
+    o1 = cls1.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
+    rdf.sessFactory.preload(NonEntity.class);
+
+    doInTx { s ->
+      s.saveOrUpdate(o1);
+
+      Results r = s.createQuery("select t from Test2 t where " +
+                                "cast(cast(t, NonEntity).bar1, Bar12).foo2 = 'f2';").
+                    execute()
+      checker.verify(r) {
+        row { object (class:cls1, id:o1.id) }
+      }
+
+      assert shouldFail(QueryException, {
+        s.createQuery("select t from Test2 t where cast(t, NonEntity).bar1.foo2 = 'f2';").execute()
+      }).contains("error parsing query")
+
+      s.delete(o1);
+    }
   }
 
   void testClassResolution() {
@@ -2015,4 +2037,9 @@ class ResultChecker extends BuilderSupport {
       col = colHist.pop()
     }
   }
+}
+
+private class NonEntity {
+  @Predicate(uri = "topaz:bar1", model = "m1")
+  URI bar1
 }
