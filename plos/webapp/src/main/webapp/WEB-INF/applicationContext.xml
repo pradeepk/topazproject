@@ -234,70 +234,75 @@
     </property>
     <property name="models">
       <list>
-        <bean name="riModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="ri" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=ri"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.ri}"/>
+          <constructor-arg index="2" value="${ambra.models.ri[@type]}"/>
         </bean>
-        <bean name="annotationsModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="annotations" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=ri"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.annotations}"/>
+          <constructor-arg index="2" value="${ambra.models.annotations[@type]}"/>
         </bean>
-        <bean name="usersModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="users" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=users"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.users}"/>
+          <constructor-arg index="2" value="${ambra.models.users[@type]}"/>
         </bean>
-        <bean name="grantsModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="grants" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=grants"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.grants}"/>
+          <constructor-arg index="2" value="${ambra.models.grants[@type]}"/>
         </bean>
-        <bean name="revokesModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="revokes" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=revokes"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.revokes}"/>
+          <constructor-arg index="2" value="${ambra.models.revokes[@type]}"/>
         </bean>
-        <bean name="ppModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="pp" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=pp"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.pp}"/>
+          <constructor-arg index="2" value="${ambra.models.pp[@type]}"/>
         </bean>
-        <bean name="preferencesModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="preferences" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=preferences"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.preferences}"/>
+          <constructor-arg index="2" value="${ambra.models.preferences[@type]}"/>
         </bean>
-        <bean name="profilesModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="profiles" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=profiles"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.profiles}"/>
+          <constructor-arg index="2" value="${ambra.models.profiles[@type]}"/>
         </bean>
-        <bean name="alertsModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
+          <constructor-arg index="0" value="ratings" />
+          <constructor-arg index="1" value="${ambra.models.ratings}"/>
+          <constructor-arg index="2" value="${ambra.models.ratings[@type]}"/>
+        </bean>
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="alerts" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=alerts"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.alerts}"/>
+          <constructor-arg index="2" value="${ambra.models.alerts[@type]}"/>
         </bean>
-        <bean name="criteriaModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="criteria" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#filter:model=criteria"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#filter"/>
+          <constructor-arg index="1" value="${ambra.models.criteria}"/>
+          <constructor-arg index="2" value="${ambra.models.criteria[@type]}"/>
         </bean>
-        <bean name="strModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="str" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#str"/>
-          <constructor-arg index="2" value="http://topazproject.org/models#StringCompare"/>
+          <constructor-arg index="1" value="${ambra.models.str}"/>
+          <constructor-arg index="2" value="${ambra.models.str[@type]}"/>
         </bean>
-        <bean name="xsdModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="xsd" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#xsd"/>
-          <constructor-arg index="2" value="http://mulgara.org/mulgara#XMLSchemaModel"/>
+          <constructor-arg index="1" value="${ambra.models.xsd}"/>
+          <constructor-arg index="2" value="${ambra.models.xsd[@type]}"/>
         </bean>
-        <bean name="prefixModel" class="org.topazproject.otm.ModelConfig">
+        <bean class="org.topazproject.otm.ModelConfig">
           <constructor-arg index="0" value="prefix" />
-          <constructor-arg index="1" value="${ambra.topaz.tripleStore.mulgara.itql.uri}#prefix"/>
-          <constructor-arg index="2" value="http://mulgara.org/mulgara#PrefixModel"/>
+          <constructor-arg index="1" value="${ambra.models.prefix}"/>
+          <constructor-arg index="2" value="${ambra.models.prefix[@type]}"/>
         </bean>
       </list>
     </property>
