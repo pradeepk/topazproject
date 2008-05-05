@@ -180,6 +180,14 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
+  public RawFieldData getRawFieldData(Object o) throws OtmException {
+    Object co = container.getRawValue(o, false);
+    return (co == null) ? null : field.getRawFieldData(co);
+  }
+
+  /*
+   * inherited javadoc
+   */
   public String toString() {
     return "EmbeddedClassMemberFieldBinder[container=" + container + ", field=" + field + "]";
   }

@@ -259,6 +259,13 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
+  public RawFieldData getRawFieldData(Object instance) throws OtmException {
+    return null;
+  }
+
+  /*
+   * inherited javadoc
+   */
   public String toString() {
     return getClass().getName() + "[field=" + name + ", type="
            + ((type != null) ? type.getName() : "-null-") + ", componentType="

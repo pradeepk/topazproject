@@ -116,4 +116,26 @@ public interface Binder {
    * @throws OtmException on an error
    */
   public boolean isLoaded(Object instance) throws OtmException;
+
+  /**
+   * Gets the raw field data from which this field was loaded. Usually this information is only 
+   * available for proxy fields that are yet to be loaded. Implementations are not expected to
+   * retain this information once a field has been fully loaded and instantiated.
+   *
+   * @param instance the object
+   *
+   * @return the raw data used in load or null if not available.
+   *
+   * @throws OtmException on an error
+   */
+  public RawFieldData getRawFieldData(Object instance) throws OtmException;
+
+  /**
+   * The raw data from which a field is loaded.
+   */
+  public static interface RawFieldData {
+    public List<String> getValues();
+    Map<String, Set<String>> getTypeLookAhead();
+  }
+
 }

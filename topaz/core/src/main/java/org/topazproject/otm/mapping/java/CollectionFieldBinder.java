@@ -218,6 +218,12 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
       public boolean isLoaded() {
         return loaded;
       }
+      public RawFieldData getRawFieldData() {
+        return new RawFieldData() {
+          public List<String> getValues() { return values; }
+          public Map<String, Set<String>> getTypeLookAhead() { return types; }
+        };
+      }
     };
 
     Collection value = (Collection) Proxy.newProxyInstance(getClass().getClassLoader(), 
@@ -245,12 +251,23 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
       ((OtmInvocationHandler)Proxy.getInvocationHandler(val)).isLoaded();
   }
 
+  /*
+   * inherited javadoc
+   */
+  public RawFieldData getRawFieldData(Object instance) throws OtmException {
+    Collection val = (Collection)getRawValue(instance, false);
+    return (val != null) && isOurProxy(val) ?
+      ((OtmInvocationHandler)Proxy.getInvocationHandler(val)).getRawFieldData() : null;
+  }
+
   /**
    * A marker interface to detect when it is ours
    */
   private static interface OtmInvocationHandler extends InvocationHandler {
 
     public boolean isLoaded();
+
+    public RawFieldData getRawFieldData();
 
   }
 
