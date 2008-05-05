@@ -190,7 +190,7 @@ public class ArticleXMLUtils {
     builder.setEntityResolver(CachedSource.getResolver());
     return builder;
   }
-  
+
   /**
    * Get a translet, compiled stylesheet, for the xslTemplate.
    *
@@ -290,8 +290,7 @@ public class ArticleXMLUtils {
   public DocumentBuilderFactory getFactory() {
     return factory;
   }
-  
-  
+
   /**
    * Transform article XML to HTML for inclusion in the feed
    */
@@ -326,5 +325,5 @@ public class ArticleXMLUtils {
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
     return objInfoXsltTemplate.newTransformer();
-  }  
+  }
 }

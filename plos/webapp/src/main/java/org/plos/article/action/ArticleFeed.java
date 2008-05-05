@@ -124,8 +124,8 @@ public class ArticleFeed extends BaseActionSupport {
       uri = URI.create(pathInfo);
 
     }
-    
-    int feedDuration = 3; 
+
+    int feedDuration = 3;
     try {
       feedDuration = Integer.valueOf(journalConfGetString(configuration, getCurrentJournal(),
                                                           "ambra.services.feed.defaultDuration", "3"));
@@ -634,8 +634,8 @@ public class ArticleFeed extends BaseActionSupport {
   }
 
   /**
-   * Called by Spring to initialize an articleXmlUtils reference. 
-   * 
+   * Called by Spring to initialize an articleXmlUtils reference.
+   *
    * @param articleXmlUtils The articleXmlUtils to set.
    */
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
