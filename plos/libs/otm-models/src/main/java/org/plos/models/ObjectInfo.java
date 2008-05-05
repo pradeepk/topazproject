@@ -30,8 +30,8 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
- * Model for the generic PLoS object. This is the base class for any PLoS
- * object that needs to be stored and retrieved.
+ * Model for main objects that make up an article, including the article itself and things
+ * like images, data-sets, additional docs, etc.
  *
  * @author Eric Brown
  * @author Amit Kapoor
