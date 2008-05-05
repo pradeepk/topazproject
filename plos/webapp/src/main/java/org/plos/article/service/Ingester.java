@@ -383,6 +383,7 @@ public class Ingester {
       this.zip = zip;
     }
 
+    @Override
     public Source resolve(String href, String base) throws TransformerException {
       if (log.isDebugEnabled())
         log.debug("resolving: base='" + base + "', href='" + href + "'");
