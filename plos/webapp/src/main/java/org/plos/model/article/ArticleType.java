@@ -18,6 +18,7 @@
  */
 package org.plos.model.article;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -27,9 +28,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.plos.configuration.ConfigurationStore;
 
 @SuppressWarnings("serial")
@@ -41,10 +42,11 @@ public class ArticleType implements Serializable {
 
   // private static final Log log = LogFactory.getLog(ArticleType.class);
 
-  private static HashMap<String, ArticleType> _knownArticleTypes = new HashMap<String, ArticleType>();
-  private static List<ArticleType> _articleTypeOrder = new ArrayList<ArticleType>();
-  private static HashMap<String, ArticleType> _newArticleTypes = new HashMap<String, ArticleType>();
-  private static ArticleType theDefaultArticleType = null;
+  private static Map<URI, ArticleType> knownArticleTypes = new HashMap<URI, ArticleType>();
+  private static Map<URI, ArticleType> newArticleTypes = new HashMap<URI, ArticleType>();
+  private static List<ArticleType>     articleTypeOrder = new ArrayList<ArticleType>();
+  private static ArticleType           theDefaultArticleType = null;
+
   static {
     configureArticleTypes(ConfigurationStore.getInstance().getConfiguration());
   }
@@ -59,11 +61,12 @@ public class ArticleType implements Serializable {
 
   /**
    * Returns an ArticleType if configured in defaults.xml (etc) or null otherwise
-   * @param uri
-   * @return
+   *
+   * @param uri 
+   * @return the article type
    */
   public static ArticleType getKnownArticleTypeForURI(URI uri) {
-    return _knownArticleTypes.get(uri.toString());
+    return knownArticleTypes.get(uri);
   }
 
   /**
@@ -71,14 +74,15 @@ public class ArticleType implements Serializable {
    * createIfAbsent is true, a new ArticleType shall be created and added to a list of types
    * (although shall not be recognized as an official ArticleType by getKnownArticleTypeForURI).
    * If createIfAbsent is false, an ArticleType shall not be created and null shall be returned.
+   *
    * @param uri
    * @param createIfAbsent
    * @return The ArticleType for the given URI
    */
   public static ArticleType getArticleTypeForURI(URI uri, boolean createIfAbsent) {
-    ArticleType at = uri == null ? null : _knownArticleTypes.get(uri.toString());
+    ArticleType at = knownArticleTypes.get(uri);
     if (at == null) {
-      at = _newArticleTypes.get(uri.toString());
+      at = newArticleTypes.get(uri);
       if ((at == null) && createIfAbsent) {
         String uriStr = uri.toString();
         if (uriStr.contains("/")) {
@@ -89,7 +93,7 @@ public class ArticleType implements Serializable {
             // ignore and just use encoded uriStr :(
           }
           at = new ArticleType(uri, uriStr);
-          _newArticleTypes.put(uri.toString(), at);
+          newArticleTypes.put(uri, at);
         }
       }
     }
@@ -97,24 +101,24 @@ public class ArticleType implements Serializable {
   }
 
   /**
-   * Ensures that the same object instance is used for identical URIs.
-   * The readResolve() method is called when deserializing an object. ArticleType objects
-   * are serialized and deserialized when propagated over the ehcache from one VM to another.
+   * Ensures that the same object instance is used for identical URIs. The readResolve() method is
+   * called when deserializing an object. ArticleType objects are serialized and deserialized when
+   * propagated over the ehcache from one VM to another.
+   *
    * @return
-   * @throws java.io.ObjectStreamException
+   * @throws ObjectStreamException
    */
-  private Object readResolve() throws java.io.ObjectStreamException
-  {
+  private Object readResolve() throws ObjectStreamException {
     return getArticleTypeForURI(this.uri, true);
   }
 
   public static ArticleType addArticleType(URI uri, String heading) {
-    if (_knownArticleTypes.containsKey(uri.toString())) {
-      return _knownArticleTypes.get(uri.toString());
+    if (knownArticleTypes.containsKey(uri)) {
+      return knownArticleTypes.get(uri);
     }
     ArticleType at = new ArticleType(uri, heading);
-    _knownArticleTypes.put(uri.toString(), at);
-    _articleTypeOrder.add(at);
+    knownArticleTypes.put(uri, at);
+    articleTypeOrder.add(at);
     return at;
   }
 
@@ -127,13 +131,13 @@ public class ArticleType implements Serializable {
   }
 
   /**
-   * Returns an unmodifiable ordered list of known ArticleTypes as read in order from the configuration
-   * in configureArticleTypes().
+   * Returns an unmodifiable ordered list of known ArticleTypes as read in order from the
+   * configuration in configureArticleTypes().
    *
    * @return Collection of ArticleType(s)
    */
   public static List<ArticleType> getOrderedListForDisplay() {
-    return Collections.unmodifiableList(_articleTypeOrder);
+    return Collections.unmodifiableList(articleTypeOrder);
   }
 
   /**
@@ -146,15 +150,15 @@ public class ArticleType implements Serializable {
     int count = 0;
     String basePath = "ambra.articleTypeList.articleType";
     String uriStr;
-    String headingStr;
-    // Iterate through the defined article types. This is ugly since the index needs
-    // to be given in xpath format to access the element, so we calculate a base string
-    // like: ambra.articleTypeList.articleType(x) and check if it's non-null for typeUri
+
+    /* Iterate through the defined article types. This is ugly since the index needs
+     * to be given in xpath format to access the element, so we calculate a base string
+     * like: ambra.articleTypeList.articleType(x) and check if it's non-null for typeUri
+     */
     do {
-      String baseString = (new StringBuffer(basePath).append("(").append(count)
-          .append(").")).toString();
+      String baseString = basePath + "(" + count + ").";
       uriStr = myConfig.getString(baseString + "typeUri");
-      headingStr = myConfig.getString(baseString + "typeHeading");
+      String headingStr = myConfig.getString(baseString + "typeHeading");
       if ((uriStr != null) && (headingStr != null)) {
         ArticleType at = addArticleType(URI.create(uriStr), headingStr);
         if (("true".equalsIgnoreCase(myConfig.getString(baseString + "default"))) ||
@@ -176,22 +180,24 @@ public class ArticleType implements Serializable {
    * @return true/false
    */
   public static boolean isResearchArticle(ArticleType articleType) {
-    return articleType == null ? false : ARTICLE_TYPE_HEADING_RESEARCH.equals(articleType.getHeading());
+    return articleType == null ? false :
+                                 ARTICLE_TYPE_HEADING_RESEARCH.equals(articleType.getHeading());
   }
 
   /**
    * Is the collection of {@link ArticleType}s research related?
    * <p>
-   * This method returns <code>true</code> when one occurrence of {@link ArticleType#ARTICLE_TYPE_HEADING_RESEARCH}
-   * is encountered.
+   * This method returns <code>true</code> when one occurrence of
+   * {@link ArticleType#ARTICLE_TYPE_HEADING_RESEARCH} is encountered.
    *
    * @param articleTypeURIs
    * @return true/false
    */
   public static boolean isResearchArticle(Collection<ArticleType> articleTypes) {
-    if(articleTypes != null) {
-      for(ArticleType at : articleTypes) {
-        if(isResearchArticle(at)) return true;
+    if (articleTypes != null) {
+      for (ArticleType at : articleTypes) {
+        if (isResearchArticle(at))
+          return true;
       }
     }
     return false;
@@ -218,6 +224,6 @@ public class ArticleType implements Serializable {
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(getUri()).hashCode();
+    return getUri().hashCode();
   }
 }
