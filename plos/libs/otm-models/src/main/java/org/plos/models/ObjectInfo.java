@@ -36,7 +36,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(model = "ri")
+@Entity(type = Rdf.topaz + "ObjectInfo", model = "ri")
 public class ObjectInfo implements Serializable {
   @Id
   private URI id;

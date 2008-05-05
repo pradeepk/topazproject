@@ -120,7 +120,8 @@ public class Migrator implements ServletContextListener {
   public int migrate(Session sess) throws OtmException {
     log.info("Checking and performing data-migrations ...");
 
-    return migrateReps(sess);
+    return migrateReps(sess) +
+           migrateObjInfo(sess);
   }
 
   /**
@@ -258,6 +259,34 @@ public class Migrator implements ServletContextListener {
     }
 
     return o;
+  }
+
+  /**
+   * Add the rdf:type for ObjectInfo's.
+   *
+   * @param sess the otm session to use
+   * @return the number of migrations performed
+   * @throws OtmException on an error
+   */
+  public int migrateObjInfo(Session sess) throws OtmException {
+    log.info("Adding rdf:type to ObjectInfo's ...");
+
+    Results r = sess.doNativeQuery(
+          "select count(select $s from <" + RI + "> where " +
+          "             $s <dcterms:isPartOf> $o minus $s <rdf:type> <topaz:ObjectInfo>) " +
+          "from <" + RI + "> where $dummy <mulgara:is> 'ignored';");
+    r.next();
+    int cnt = (int) Double.parseDouble(r.getString(0));
+
+    if (cnt == 0) {
+      log.info("Did not find any ObjectInfo that required an rdf:type to be added.");
+    } else {
+      sess.doNativeUpdate("insert select $s <rdf:type> <topaz:ObjectInfo> from <" + RI +
+                          "> where $s <dcterms:isPartOf> $o into <" + RI + ">;");
+      log.warn("Added rdf:type to " + cnt + " ObjectInfo's.");
+    }
+
+    return cnt;
   }
 
   private static class Representation {
