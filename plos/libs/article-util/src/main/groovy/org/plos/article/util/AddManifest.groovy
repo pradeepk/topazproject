@@ -73,7 +73,7 @@ public class AddManifest {
 
       // write the manifest
       zout.putNextEntry(new ZipEntry(SipUtil.MANIFEST))
-      
+
       zout << '<?xml version="1.1"?>\n'
       zout << "<!DOCTYPE manifest SYSTEM \"${SipUtil.MANIFEST_DTD}\">\n"
 
