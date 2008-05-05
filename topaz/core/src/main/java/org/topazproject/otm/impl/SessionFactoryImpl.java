@@ -144,7 +144,7 @@ public class SessionFactoryImpl implements SessionFactory {
     addAlias("rdfs",     Rdfs.base);
     addAlias("xsd",      Rdf.xsd);
     addAlias("dc",       Rdf.dc);
-    addAlias("dc_terms", Rdf.dc_terms);
+    addAlias("dcterms",  Rdf.dc_terms);
     addAlias("mulgara",  Rdf.mulgara);
     addAlias("topaz",    Rdf.topaz);
   }
