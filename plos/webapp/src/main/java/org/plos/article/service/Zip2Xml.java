@@ -82,11 +82,9 @@ public class Zip2Xml {
       res.append(" name=\"").append(attrEscape(zip.getName())).append("\"");
     res.append(">\n");
 
-    Enumeration entries = zip.getEntries();
-    while (entries.hasMoreElements()) {
-      ZipEntry ze = (ZipEntry) entries.nextElement();
-      entry2xml(ze, res);
-    }
+    Enumeration<ZipEntry> entries = zip.getEntries();
+    while (entries.hasMoreElements())
+      entry2xml(entries.nextElement(), res);
 
     res.append("</ZipInfo>\n");
     return res.toString();
