@@ -380,9 +380,19 @@ public class UserService {
     UserProfile old = ua.getProfile();
     UserProfile nu = inUser.getUserProfile();
     // if we are swapping out a profile with another with the same id, evict the old
-    if ((old != null) && (nu != null) && (old != nu) && old.getId().equals(nu.getId()))
+    if ((old != null) && (nu != null) && (old != nu) && old.getId().equals(nu.getId())) {
+      if (log.isDebugEnabled())
+        log.debug("Evicting old profile (" + old + ") with id " + old.getId());
       session.evict(old);
-    ua.setProfile(nu);
+    }
+    if (nu != null) {
+      ua.setProfile(nu);
+      session.saveOrUpdate(ua); // force it since 'nu' may have been evicted
+      session.flush();
+      session.evict(nu);
+      if (log.isDebugEnabled())
+        log.debug("Evicting nu profile (" + nu + ") with id " + nu.getId());
+    }
 
     userCache.remove(USER_KEY + inUser.getUserId());
   }
