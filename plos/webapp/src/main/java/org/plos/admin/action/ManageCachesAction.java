@@ -164,7 +164,7 @@ public class ManageCachesAction extends BaseActionSupport {
   public void setCacheName(String cacheName) {
     this.cacheName = cacheName;
   }
-  
+
   /**
    * @param cacheKey The cachekey to use.
    */

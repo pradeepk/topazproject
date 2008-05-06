@@ -41,7 +41,6 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
   /**
    * Deletes and publishes checked articles from the admin console.  Note that delete has priority
    * over publish.
-   *
    */
   public String execute() throws RemoteException, ApplicationException {
     try {

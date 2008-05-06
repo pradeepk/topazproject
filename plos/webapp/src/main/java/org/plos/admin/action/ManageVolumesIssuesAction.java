@@ -175,7 +175,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     session.saveOrUpdate(currentJournal);
     journalService.journalWasModified(currentJournal);
     addActionMessage("Volume was added to current Journal: " + currentJournal);
-    
+
     return SUCCESS;
   }
 
@@ -327,7 +327,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     addActionMessage("Updated Issue: " + issue.toString());
 
     browseService.clearIssueInfoCache(doi);
-    
+
     return SUCCESS;
   }
 
@@ -459,7 +459,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
   }
-  
+
   /**
    * Spring injected method to set the BrowseService
    * @param bs

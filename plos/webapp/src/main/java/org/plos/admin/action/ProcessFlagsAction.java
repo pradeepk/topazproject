@@ -82,10 +82,11 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   }
 
   /**
-   * Process the checked action items on the Flag Annotations displayed in the admin page. If an error occurs when
-   * processing a checked item, the exception is logged and an action error is added to be displayed on the admin
-   * console. We continue to attempt to process the other checked items. The same admin console will be displayed
-   * regardless of error, and the errors will be displayed in the console at the top of the page.
+   * Process the checked action items on the Flag Annotations displayed in the admin page. If an
+   * error occurs when processing a checked item, the exception is logged and an action error is
+   * added to be displayed on the admin console. We continue to attempt to process the other checked
+   * items. The same admin console will be displayed regardless of error, and the errors will be
+   * displayed in the console at the top of the page.
    */
   public String execute() {
     if (commentsToUnflag != null){
@@ -117,7 +118,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         try {
           deleteTarget(tokens[0], tokens[1], tokens[2]);
         } catch (Exception e) {
-          String errorMessage = "Failed to delete annotation id='" + tokens[1] + "to Formal Correction annotation.";
+          String errorMessage = "Failed to delete annotation id='" + tokens[1] +
+                                "to Formal Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
         }
@@ -135,7 +137,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
           annotationService.convertArticleAnnotationToType(tokens[1], FormalCorrection.class);
           annotationService.deleteFlag(tokens[0]);
         } catch(Exception e) {
-          String errorMessage = "Failed to convert annotation id='" + tokens[1] + "to Formal Correction annotation.";
+          String errorMessage = "Failed to convert annotation id='" + tokens[1] +
+                                "to Formal Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
         }
@@ -152,7 +155,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
           annotationService.convertArticleAnnotationToType(tokens[1], MinorCorrection.class);
           annotationService.deleteFlag(tokens[0]);
         } catch(Exception e) {
-          String errorMessage = "Failed to convert annotation id='" + tokens[1] + "to Minor Correction annotation.";
+          String errorMessage = "Failed to convert annotation id='" + tokens[1] +
+                                "to Minor Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
         }
@@ -207,7 +211,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    * @throws NoSuchAnnotationIdException
    * @throws RemoteException
    */
-  private void deleteTarget(String root, String target, String targetType) throws ApplicationException, RemoteException {
+  private void deleteTarget(String root, String target, String targetType)
+    throws ApplicationException, RemoteException {
     Reply[] replies;
     Flag[] flags = annotationService.listFlags(target);
 
@@ -278,17 +283,24 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     }
   }
 
-  // TODO: It is redundant (and error prone) to presume the caller of this action has provided the correct
-  // target or targetType. This information should be retrieved from the flag by the service.
-  private void deleteFlag(String target, String flag, String targetType) throws ApplicationException {
+  /*
+   *TODO: It is redundant (and error prone) to presume the caller of this action has provided the
+   * correct target or targetType. This information should be retrieved from the flag by the
+   * service.
+   */
+  private void deleteFlag(String target, String flag, String targetType)
+    throws ApplicationException {
     // Delete flag
     annotationService.deleteFlag(flag);
-    // TODO: The Action shouldn't have to worry about this kind of housekeeping. Move this to the service!
-    // Deal with 'flagged' status
+    /*
+     * TODO: The Action shouldn't have to worry about this kind of housekeeping. Move this to the
+     * service!  Deal with 'flagged' status
+     */
     Flag[] flags = annotationService.listFlags(target);
     if (log.isDebugEnabled()) {
       log.debug("Deleting flag: " + flag + " on target: " + target);
-      log.debug("Checking for flags on target: " + target + ". There are " + flags.length + " flags remaining");
+      log.debug("Checking for flags on target: " + target + ". There are " + flags.length +
+                " flags remaining");
     }
     if (flags.length == 0) {
       if (log.isDebugEnabled()) {
