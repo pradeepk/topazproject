@@ -35,12 +35,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
+import org.plos.cache.Cache;
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
@@ -85,7 +83,7 @@ public class BrowseService {
 
   private final ArticlePEP     pep;
   private       Session        session;
-  private       Ehcache        browseCache;
+  private       Cache          browseCache;
   private       JournalService journalService;
 
 
@@ -110,17 +108,16 @@ public class BrowseService {
     String key  = DATE_LIST_KEY + jnlName;
     Object lock = (DATE_LIST_LOCK + jnlName).intern();
 
-    return
-      CacheAdminHelper.getFromCache(browseCache, key, -1, lock, "article dates",
-                                    !load ? null : new CacheAdminHelper.EhcacheUpdater<Years>() {
-        public Years lookup() {
+    return browseCache.get(key, -1, 
+                  !load ? null : new Cache.SynchronizedLookup<Years, RuntimeException> (lock) {
+        public Years lookup() throws RuntimeException {
           return loadArticleDates();
         }
       });
   }
 
   private void updateArticleDates(Years dates, String jnlName) {
-    browseCache.put(new Element(DATE_LIST_KEY + jnlName, dates));
+    browseCache.put(DATE_LIST_KEY + jnlName, dates);
   }
 
   /**
@@ -173,10 +170,9 @@ public class BrowseService {
     Object lock    = (ARTBYDATE_LIST_LOCK + mod).intern();
     int    ttl     = getSecsTillMidnight();
 
-    List<URI> uris =
-      CacheAdminHelper.getFromCache(browseCache, key, ttl, lock, "articles by date",
-                                    new CacheAdminHelper.EhcacheUpdater<List<URI>>() {
-        public List<URI> lookup() {
+    List<URI> uris = browseCache.get(key, ttl,
+                              new Cache.SynchronizedLookup<List<URI>, RuntimeException>(lock) {
+        public List<URI> lookup() throws RuntimeException {
           return loadArticlesByDate(startDate, endDate);
         }
       });
@@ -220,10 +216,9 @@ public class BrowseService {
    * @return the Issue information.
    */
   public IssueInfo getIssueInfo(final URI doi) {
-    return CacheAdminHelper.getFromCache(browseCache, ISSUE_KEY + doi, -1,
-        ISSUE_LOCK + doi, "issue " + doi,
-        new CacheAdminHelper.EhcacheUpdater<IssueInfo>() {
-          public IssueInfo lookup() {
+    return browseCache.get(ISSUE_KEY + doi, -1,
+        new Cache.SynchronizedLookup<IssueInfo, RuntimeException>((ISSUE_LOCK + doi).intern()) {
+          public IssueInfo lookup() throws RuntimeException {
             return getIssueInfo2(doi);
           }
         });
@@ -347,8 +342,8 @@ public class BrowseService {
 
     String key = (VOL_INFOS_FOR_JOURNAL_KEY + (journal.getKey())).intern();
 
-    return CacheAdminHelper.getFromCache(browseCache, key, -1, key, "List of volumes for journal" + journal.getId(),
-                                         new CacheAdminHelper.EhcacheUpdater<List<VolumeInfo>>() {
+    return browseCache.get(key, -1,
+                              new Cache.SynchronizedLookup<List<VolumeInfo>, RuntimeException>(key) {
        public List<VolumeInfo> lookup() {
          final List<URI> volumeDois = journal.getVolumes();
          List<VolumeInfo> volumeInfos = loadVolumeInfos(volumeDois);
@@ -410,29 +405,15 @@ public class BrowseService {
     return getCatInfo(key, desc, load, getCurrentJournal());
   }
 
-  private Object getCatInfo(String key, String desc, boolean load, String jnlName) {
-    key += jnlName;
-
-    synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
-      Element e = browseCache.get(key);
-
-      if (e == null) {
-        if (!load) {
-          return null;
-        }
-
-        if (log.isDebugEnabled()) {
-          log.debug("retrieving " + desc + " from db");
-        }
-
-        loadCategoryInfos(jnlName);
-        e = browseCache.get(key);
-      } else if (log.isDebugEnabled()) {
-        log.debug("retrieved " + desc + " from cache");
-      }
-
-      return e.getValue();
-    }
+  private Object getCatInfo(String key, String desc, boolean load, final String jnlName) {
+    final String jnlkey = key + jnlName;
+    return browseCache.get(key, -1, !load ? null : 
+        new Cache.SynchronizedLookup<Object, RuntimeException>((CAT_INFO_LOCK + jnlName).intern()) {
+          public Object lookup() throws RuntimeException {
+             loadCategoryInfos(jnlName);
+             return  browseCache.get(jnlkey);
+          }
+      });
   }
 
   private String getCurrentJournal() {
@@ -487,7 +468,7 @@ public class BrowseService {
       // update date lists
       browseCache.remove(DATE_LIST_KEY + jnlName);
 
-      for (Object key : browseCache.getKeysNoDuplicateCheck()) {
+      for (Object key : browseCache.getKeys()) {
         if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
           browseCache.remove(key);
         }
@@ -543,7 +524,7 @@ public class BrowseService {
         updateArticleDates(dates, jnlName);
       }
 
-      for (Object key : browseCache.getKeysNoDuplicateCheck()) {
+      for (Object key : browseCache.getKeys()) {
         if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
           browseCache.remove(key);
         }
@@ -581,14 +562,14 @@ public class BrowseService {
       browseCache.remove(CAT_INFO_KEY + jnlName);
       browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
     }
-    
+
     clearVolumeInfoCacheForJournal(jnlName);
 
     synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
       browseCache.remove(DATE_LIST_KEY + jnlName);
     }
 
-    for (Object key : browseCache.getKeysNoDuplicateCheck()) {
+    for (Object key : browseCache.getKeys()) {
       if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
         browseCache.remove(key);
       }
@@ -643,8 +624,8 @@ public class BrowseService {
     }
 
     // save in cache
-    browseCache.put(new Element(ARTBYCAT_LIST_KEY + jnlName, artByCat));
-    browseCache.put(new Element(CAT_INFO_KEY + jnlName, catSizes));
+    browseCache.put(ARTBYCAT_LIST_KEY + jnlName, artByCat);
+    browseCache.put(CAT_INFO_KEY + jnlName, catSizes);
   }
 
   private ArticleInfo loadArticleInfo(final URI id) {
@@ -755,10 +736,9 @@ public class BrowseService {
     }
 
     return
-      CacheAdminHelper.getFromCache(browseCache, ARTICLE_KEY + id, -1, ARTICLE_LOCK + id,
-                                    "article " + id,
-                                    new CacheAdminHelper.EhcacheUpdater<ArticleInfo>() {
-        public ArticleInfo lookup() {
+      browseCache.get(ARTICLE_KEY + id, -1,
+           new Cache.SynchronizedLookup<ArticleInfo, RuntimeException>((ARTICLE_LOCK + id).intern()) {
+        public ArticleInfo lookup() throws RuntimeException {
           return loadArticleInfo(id);
         }
       });
@@ -796,7 +776,7 @@ public class BrowseService {
    * @param browseCache The browse-cache to use.
    */
   @Required
-  public void setBrowseCache(Ehcache browseCache) {
+  public void setBrowseCache(Cache browseCache) {
     this.browseCache = browseCache;
   }
 

@@ -444,6 +444,14 @@
        <ref bean="journalService"/>
     </constructor-arg>
   </bean>
+  <bean id="browseCache" class="org.plos.cache.EhcacheProvider">
+    <constructor-arg index="0">
+       <ref bean="txCacheManager"/>
+    </constructor-arg>
+    <constructor-arg index="1">
+       <ref bean="browseEhcache"/>
+    </constructor-arg>
+  </bean>
   
   <!-- freemarker configs -->
   <bean id="plosOneFreemarkerManager" class="org.plos.struts2.PlosOneFreemarkerManager">
@@ -486,7 +494,7 @@
     </property>
   </bean>
 
-  <bean id="browseCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+  <bean id="browseEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="BrowseCache"/>
   </bean>
 
