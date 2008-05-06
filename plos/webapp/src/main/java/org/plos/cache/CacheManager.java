@@ -271,7 +271,8 @@ public class CacheManager implements CacheListener, ObjectListener {
     }
 
     public boolean getRemovedAll(String cache) {
-      return removedAll.get(cache);
+      Boolean r = removedAll.get(cache);
+      return (r == null) ? false : r;
     }
 
     public void setRemovedAll(String cache, boolean val) {
