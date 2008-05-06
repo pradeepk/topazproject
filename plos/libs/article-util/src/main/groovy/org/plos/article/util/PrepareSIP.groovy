@@ -50,13 +50,15 @@ if (opt.h || otherArgs.size() != 1) {
   return
 }
 
+def config = ToolHelper.loadConfiguration(opt.c)
+
 new AddManifest().addManifest(otherArgs[0], opt.o ?: null)
 println "manifest added"
 
 new FixArticle().fixLinks(opt.o ?: otherArgs[0], null)
 println "article links fixed"
 
-new ProcessImages(verbose:opt.v).processImages(opt.o ?: otherArgs[0], null)
+new ProcessImages(config, opt.v).processImages(opt.o ?: otherArgs[0], null)
 println "images processed"
 
 new ValidateSIP().validate(opt.o ?: otherArgs[0])

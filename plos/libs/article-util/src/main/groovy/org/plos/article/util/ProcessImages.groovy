@@ -20,12 +20,8 @@
 package org.plos.article.util
 
 import java.util.zip.ZipEntry
-import java.util.zip.ZipException
-import java.util.zip.ZipFile
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 
-import org.plos.util.ToolHelper
+import org.apache.commons.configuration.Configuration
 
 /**
  * Create scaled down versions of all images and add them as additional representations
@@ -35,9 +31,35 @@ import org.plos.util.ToolHelper
  * @author Ronald Tschalär
  */
 public class ProcessImages {
-  boolean verbose
-  String  imConvert = 'convert'
-  String  imIdentify = 'identify'
+  /** Map of article image contexts and their associated representations. */
+  private static final Map<String, String[]> repsByCtxt = new HashMap<String, String[]>()
+  
+  static {
+    String[] smallMediumLarge = [ "PNG_S", "PNG_M", "PNG_L" ]
+    String[] singleLarge      = [ "PNG" ]
+  
+    repsByCtxt.put('fig',                 smallMediumLarge)
+    repsByCtxt.put('table-wrap',          smallMediumLarge)
+    repsByCtxt.put('disp-formula',        singleLarge)
+    repsByCtxt.put('chem-struct-wrapper', singleLarge)
+    repsByCtxt.put('inline-formula',      singleLarge)
+  }
+
+  Configuration config
+  ImageUtil     imgUtil
+  boolean       verbose
+
+  /** 
+   * Create a new image processor. 
+   * 
+   * @param config  the configuration to use
+   * @param verbose if true, print out some info while processing
+   */
+  public ProcessImages(Configuration config, boolean verbose) {
+    this.config  = config
+    this.imgUtil = new ImageUtil(config, verbose)
+    this.verbose = verbose
+  }
 
   /**
    * Create the scaled images and add them to the sip.
@@ -59,12 +81,16 @@ public class ProcessImages {
 
       def manif = SipUtil.getManifestParser().parse(articleZip.getInputStream(me))
 
+      // get the proper image-set
+      def art = SipUtil.getArticle(articleZip, manif)
+      Configuration imgSet = getImageSet(art)
+
       // copy and scale
       Map<String, List<File>> imgNames = [:]
 
       for (entry in articleZip.entries()) {
         if (entry.name == SipUtil.MANIFEST)
-          continue
+          continue              // a new one is written below
 
         newZip.copyFrom(articleZip, [entry.name])
 
@@ -75,16 +101,18 @@ public class ProcessImages {
           f.withOutputStream{ it << articleZip.getInputStream(entry) }
 
           imgNames[entry.name] = []
-          resizeImage(entry.name, imgNames[entry.name], f)
+          processImage(entry.name, imgNames[entry.name], f, imgSet,
+                       repsByCtxt[getContext(entry.name, art, manif)])
           f.delete()
         }
       }
 
+      def allNewImgs = imgNames.values().toList().flatten()
       if (verbose)
-        println 'Number of resized images: ' + imgNames.inject(0){ cnt, e -> cnt += e.value.size() }
+        println 'Number of resized images: ' + allNewImgs.size()
 
       // write out the new images
-      for (newImg in imgNames.inject([]){ res, e -> res + e.value }) {
+      for (newImg in allNewImgs) {
         if (verbose)
           println 'Adding to zip file: ' + newImg.name
 
@@ -132,88 +160,66 @@ public class ProcessImages {
     }
   }
 
-  private void resizeImage(name, imgNames, file) {
-    def baseName = name.substring(0, name.lastIndexOf('.')) + '.png'
-
-    doResize(file, baseName + '_S', "-resize \"70x>\"", imgNames)
-    doResize(file, baseName + '_L', "", imgNames)
-
-    if (verbose) {
-      println "Sizing " + name
-    }
-    def props = antExec(imIdentify, '-quiet -format "%w %h" "' + file.getCanonicalPath() + '"')
-
-    def dim = props.cmdOut.split(" ")
-    def height = dim[1]
-    def width = dim[0]
-
-    if (verbose) {
-      println 'height = ' + height;
-      println 'width= ' + width;
-    }
-
-    def arg = (height > width) ? "x600>" : "600x>"
-
-    doResize(file, baseName + '_M', "-resize \"${arg}\"", imgNames)
-  }
-
-  private void doResize(file, outName, args, imgNames) {
-    def newFile = new File(new File(System.getProperty('java.io.tmpdir')), outName)
-
-    if (verbose) {
-      println "Creating " + newFile
-    }
-
-    def props = antExec(imConvert, "\"${file.canonicalPath}\" ${args} \"png:${newFile}\"")
-
-    if (props.cmdExit == '0') {
-      imgNames.add(newFile)
-    }
-  }
-
-  private Properties antExec(exe, args) {
-    def ant = new AntBuilder()   // create an antbuilder
-    ant.exec(outputproperty:"cmdOut",
-             errorproperty: "cmdErr",
-             resultproperty:"cmdExit",
-             failonerror: "true",
-             executable: exe) {
-               arg(line: args)
-             }
-
-    if (verbose) {
-      println "return code:  ${ant.project.properties.cmdExit}"
-      println "stderr:       ${ant.project.properties.cmdErr}"
-      println "stdout:       ${ant.project.properties.cmdOut}"
-    }
-
-    return ant.project.properties
-  }
-
-  public static void main(String[] args) {
-    args = ToolHelper.fixArgs(args)
-
-    def cli = new CliBuilder(usage: 'processimages [-v] [-c <config-overrides.xml>] [-o <output.zip>] <article.zip>' , writer : new PrintWriter(System.out))
-    cli.h(longOpt:'help', "help (this message)")
-    cli.o(args:1, 'output.zip - new zip file containing resized images')
-    cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz/ambra.xml')
-    cli.v(args:0, 'verbose')
-
-
-    // Display help if requested
-    def opt = cli.parse(args); if (opt.h) { cli.usage(); return }
-    String[] otherArgs = opt.arguments()
-    if (otherArgs.size() != 1) {
-      cli.usage()
+  private void processImage(String name, List<File> imgNames, File file, Configuration imgSet,
+                            String[] reps)
+      throws ImageProcessingException {
+    if (!reps)
       return
+
+    def baseName = name.substring(0, name.lastIndexOf('.') + 1)
+
+    use (CommonsConfigCategory) {
+      if (reps.any{ it == 'PNG_S' })
+        imgNames.add(imgUtil.resizeImage(file, baseName + 'PNG_S', 'png',
+                                         imgSet?.small?.'@width'?.toInteger() ?: 70, 0,
+                                         imgSet?.small?.'@quality'?.toInteger() ?: 70))
+
+      if (reps.any{ it == 'PNG_M' })
+        imgNames.add(imgUtil.resizeImage(file, baseName + 'PNG_M', 'png',
+                                         imgSet?.medium?.'@maxDimension'?.toInteger() ?: 600,
+                                         imgSet?.medium?.'@maxDimension'?.toInteger() ?: 600,
+                                         imgSet?.medium?.'@quality'?.toInteger() ?: 80))
+
+      String lrg = reps.find{ it == 'PNG_L' || it == 'PNG' }
+      if (lrg)
+        imgNames.add(imgUtil.resizeImage(file, baseName + lrg, 'png', 0, 0,
+                                         imgSet?.large?.'@quality'?.toInteger() ?: 90))
     }
+  }
 
-    ProcessImages pi = new ProcessImages(verbose: opt.v)
+  /**
+   * Find the configured image-set for the article.
+   */
+  private Configuration getImageSet(def art) throws IOException {
+    def artType = art.front.'article-meta'.'article-categories'.'subj-group'.
+                      find{ it.'@subj-group-type' = 'heading' }.subject
 
-    def CONF = ToolHelper.loadConfiguration(opt.c)
-    pi.imConvert  = CONF.getString("ambra.services.documentManagement.imageMagick.executablePath", 'convert')
-    pi.imIdentify = CONF.getString("ambra.services.documentManagement.imageMagick.identifyPath", 'identify')
+    use (CommonsConfigCategory) {
+      def name = config.ambra.articleTypeList.articleType.grep{ it.typeHeader == artType }.
+                        imageSetConfigName
+      name = name ?: '#default'
 
-    pi.processImages(otherArgs[0], opt.o ?: null)
+      def is = config.ambra.services.documentManagement.imageMagick.imageSetConfigs.imageSet.
+                      find{ it.'@name' == name }
+
+      if (verbose) {
+        println "article-type: ${artType}"
+        println "img-set-name: ${name}"
+        println "img-set:      ${is ? 'found' : 'not-found, using hardcoded defaults'}"
+      }
+
+      return is
+    }
+  }
+
+  /**
+   * Get the context element in the article for the link that points to the given entry.
+   */
+  private String getContext(String entryName, def art, def manif) {
+    String uri = manif.articleBundle.object.
+                       find{ it.representation.'@entry'.text().contains(entryName) }.'@uri'.text()
+
+    def ref = art.'**'*.'@xlink:href'.find{ it.text() == uri }.'..'
+    return ref.name() == 'supplementary-material' ? ref.name() : ref.'..'.name()
   }
 }
