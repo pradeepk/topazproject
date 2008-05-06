@@ -72,25 +72,4 @@ public interface Transaction {
    * @throws OtmException on an error in roll-back
    */
   public void rollback() throws OtmException;
-
-  /**
-   * Test to see if the transaction is still active.
-   *
-   * @return true if active.
-   */
-  public boolean isActive();
-
-  /**
-   * Test to see if the transaction was committed.
-   *
-   * @return true if active.
-   */
-  public boolean wasCommitted();
-
-  /**
-   * Test to see if the transaction was committed.
-   *
-   * @return true if active.
-   */
-  public boolean wasRolledBack();
 }

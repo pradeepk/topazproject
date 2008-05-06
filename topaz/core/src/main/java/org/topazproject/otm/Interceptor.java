@@ -41,28 +41,8 @@ import org.topazproject.otm.mapping.BlobMapper;
  */
 public interface Interceptor {
    public static String NULL = "NULL";
-  /**
-   * Called after a transaction is begun via the Session#beginTransaction.
-   *
-   * @param txn the transaction
-   */
-  public void afterTransactionBegin(Transaction txn);
 
-  /**
-   * Called after a transaction is complete.
-   *
-   * @param txn the transaction
-   */
-  public void afterTransactionCompletion(Transaction txn);
-
-  /**
-   * Called before a transaction is committed. It is not called before a rollback.
-   *
-   * @param txn the transaction
-   */
-  public void beforeTransactionCompletion(Transaction txn);
-
-  /**
+   /**
    * Gets a fully loaded entity instance that is cached externally,
    *
    * @param session the session that is doing the lookup

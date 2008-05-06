@@ -18,16 +18,26 @@
  */
 package org.plos.cache;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import javax.transaction.TransactionManager;
+
+import org.topazproject.otm.SessionFactory;
 
 /**
- * A factory class for CacheManagers that all synchronize using a shared lock.
+ * A factory class for CacheManagers that share the same TransactionManager as OTM.
  *
  * @author Pradeep Krishnan
  */
 public class CacheManagerFactory {
-  private final Lock updateLock = new ReentrantLock();
+  private SessionFactory sessionFactory;
+
+  /**
+   * Creates a new cache manager factory.
+   *
+   * @param factory the session factory
+   */
+  public CacheManagerFactory(SessionFactory factory) {
+    this.sessionFactory = factory;
+  }
 
   /**
    * Creates a new CacheManager
@@ -37,6 +47,15 @@ public class CacheManagerFactory {
    * @return the newly created CacheManager instance
    */
   public CacheManager createCacheManager(long lockWaitSeconds) {
-    return new CacheManager(updateLock, lockWaitSeconds);
+    return new CacheManager(this, lockWaitSeconds);
+  }
+
+  /**
+   * Gets the transaction manager.
+   *
+   * @return gets the transaction manager
+   */
+  public TransactionManager getTransactionManager() {
+    return sessionFactory.getTransactionManager();
   }
 }

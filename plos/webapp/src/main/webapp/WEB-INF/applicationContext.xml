@@ -416,12 +416,16 @@
   </aop:config>
 
   <!-- cache manager configs -->
-  <bean id="txCacheManagerFactory" class="org.plos.cache.CacheManagerFactory"/>
-  <bean id="txCacheManager" scope="request" destroy-method="shutdown"
+  <bean id="txCacheManagerFactory" class="org.plos.cache.CacheManagerFactory">
+    <constructor-arg index="0">
+       <ref bean="otmSessionFactory"/>
+    </constructor-arg>
+  </bean>
+  <bean id="txCacheManager"
       factory-bean="txCacheManagerFactory" factory-method="createCacheManager">
     <constructor-arg index="0" value="20"/> <!-- seconds to wait for the write lock -->
   </bean>
-  <bean id="objectCache" class="org.plos.cache.EhcacheProvider" scope="request">
+  <bean id="objectCache" class="org.plos.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -429,7 +433,7 @@
        <ref bean="objectEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="otmInterceptor" class="org.plos.cache.OtmInterceptor" scope="request">
+  <bean id="otmInterceptor" class="org.plos.cache.OtmInterceptor">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>

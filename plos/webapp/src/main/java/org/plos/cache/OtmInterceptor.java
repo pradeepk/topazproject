@@ -39,7 +39,6 @@ import org.plos.models.Journal;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Binder.RawFieldData;
 import org.topazproject.otm.mapping.BlobMapper;
@@ -49,53 +48,28 @@ import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.metadata.Reference;
 
 /**
- * An interceptor that listens to changes from OTM and updates the cache-manager and also
- * maintains an object cache that acts as a second level cache for OTM.
+ * An interceptor that listens to changes from OTM and maintains an object cache  that acts as
+ * a second level cache for OTM.
  *
  * @author Pradeep Krishnan
  */
 public class OtmInterceptor implements Interceptor {
-  private static final Log     log             = LogFactory.getLog(OtmInterceptor.class);
-  private static final NotNull NOT_NULL        = new NotNull();
+  private static final Log     log            = LogFactory.getLog(OtmInterceptor.class);
+  private static final NotNull NOT_NULL       = new NotNull();
   private final CacheManager   cacheManager;
   private final Cache          cache;
   private final JournalService journalService;
-  private Set<String>          changedJournals = null;
 
   /**
    * Creates a new OtmInterceptor object.
    *
-   * @param cacheManager the cache manager to update.
    * @param objCache the object cache 
    * @param journalService the journal service  
    */
   public OtmInterceptor(CacheManager cacheManager, Cache objCache, JournalService journalService) {
-    this.cacheManager     = cacheManager;
-    this.cache            = objCache;
-    this.journalService   = journalService;
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public void afterTransactionBegin(Transaction txn) {
-    cacheManager.beginTransaction();
-    changedJournals = new HashSet<String>();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public void beforeTransactionCompletion(Transaction txn) {
-    cacheManager.prepare();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public void afterTransactionCompletion(Transaction txn) {
-    cacheManager.complete(txn.wasCommitted());
-    changedJournals = null;
+    this.cacheManager                         = cacheManager;
+    this.cache                                = objCache;
+    this.journalService                       = journalService;
   }
 
   /*
@@ -103,7 +77,7 @@ public class OtmInterceptor implements Interceptor {
    */
   public Object getEntity(Session session, ClassMetadata cm, String id, Object instance) {
     if (cm.isView())
-     return null;
+      return null;
 
     Object val = cache.rawGet(id);
 
@@ -116,7 +90,7 @@ public class OtmInterceptor implements Interceptor {
     String journal = getCurrentJournal();
 
     if (journal != null) {
-      if (changedJournals.contains(journal))
+      if (getChangedJournals().contains(journal))
         return null;
 
       Object o = cache.rawGet(journal + "-" + id);
@@ -209,12 +183,12 @@ public class OtmInterceptor implements Interceptor {
   }
 
   private void journalChanged(String journal, boolean deleted) {
-    changedJournals.add(journal);
+    getChangedJournals().add(journal);
 
     String prefix = journal + "-";
     int    count  = 0;
 
-    for (String key : (Collection<String>)cache.getKeys()) {
+    for (String key : (Collection<String>) cache.getKeys()) {
       if (key.startsWith(prefix)) {
         cache.remove(key);
         count++;
@@ -225,6 +199,10 @@ public class OtmInterceptor implements Interceptor {
       log.warn("Removed(pending-commit) " + count + " entries from '" + cache.getName()
                + "' because the journal '" + journal + "' was "
                + (deleted ? "deleted." : "updated."));
+  }
+
+  private Set<String> getChangedJournals() {
+    return cacheManager.getTxnContext().getChangedJournals();
   }
 
   private String getCurrentJournal() {
@@ -299,11 +277,14 @@ public class OtmInterceptor implements Interceptor {
         blob = copy((byte[]) blobField.getBinder(sess).getRawValue(instance, false));
 
       for (RdfMapper mapper : fields) {
-        Binder binder = mapper.getBinder(sess);
-        RawFieldData data = binder.getRawFieldData(instance);
+        Binder       binder = mapper.getBinder(sess);
+        RawFieldData data   = binder.getRawFieldData(instance);
+
         if (data != null) {
           values.put(getName(mapper, sess), data.getValues());
+
           Map<String, Set<String>> m = data.getTypeLookAhead();
+
           if (m != null)
             tla.putAll(m);
         } else if (mapper.isPredicateMap())

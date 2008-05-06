@@ -115,9 +115,6 @@ abstract class AbstractSession implements Session {
 
     txnIsRO = readOnly;
 
-    if (interceptor != null)
-      interceptor.afterTransactionBegin(locTxn);
-
     return locTxn;
   }
 

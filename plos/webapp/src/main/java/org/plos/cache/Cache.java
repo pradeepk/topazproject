@@ -20,12 +20,9 @@ package org.plos.cache;
 
 import java.io.Serializable;
 
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
-
-import org.plos.cache.CacheManager.CacheEvent;
 
 /**
  * Transactional cache abstraction. Currently only supports a READ_COMMITTED isolation level.
@@ -44,14 +41,6 @@ public interface Cache {
    * @return the name of this cache
    */
   public String getName();
-
-  /**
-   * Sets the event queue where cache updates should be queued waiting for transaction
-   * completion.
-   *
-   * @param queue the events queue
-   */
-  public void setEventQueue(Queue<CacheEvent> queue);
 
   /**
    * Gets an object from the cache.
@@ -161,7 +150,7 @@ public interface Cache {
     }
   }
 
-/**
+  /**
    * A call-back operation from the Cache during a read-thru cache read.
    */
   public static interface Operation<E extends Exception> {
