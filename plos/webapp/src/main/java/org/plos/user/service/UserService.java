@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -36,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
 import org.plos.Constants;
+import org.plos.cache.Cache;
 import org.plos.models.AuthenticationId;
 import org.plos.models.UserAccount;
 import org.plos.models.UserPreferences;
@@ -78,7 +77,7 @@ public class UserService {
   private final UsersPEP pep;
 
   private PermissionsService permissionsService;
-  private Ehcache userCache;
+  private Cache userCache;
 
   private String applicationId;
   private String emailAddressUrl;
@@ -166,8 +165,8 @@ public class UserService {
 
     final Object lock = (USER_LOCK + topazUserId).intern();
 
-    return CacheAdminHelper.getFromCacheE(userCache, USER_KEY + topazUserId, -1, lock, "userName",
-                               new CacheAdminHelper.EhcacheUpdaterE<String, ApplicationException>() {
+    return userCache.get(USER_KEY + topazUserId, -1,
+                               new Cache.SynchronizedLookup<String, ApplicationException>(lock) {
       public String lookup() throws ApplicationException {
         return getDisplayName(topazUserId);
       }
@@ -676,7 +675,7 @@ public class UserService {
    * @param userCache The User cache to use.
    */
   @Required
-  public void setUserCache(Ehcache userCache) {
+  public void setUserCache(Cache userCache) {
     this.userCache = userCache;
   }
 
