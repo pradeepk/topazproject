@@ -118,7 +118,6 @@
     </topaz>
 
     <services>
-
       <search>
         <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->
         <fieldMaxLength>50</fieldMaxLength><!-- Max chars per indexed field? -->
@@ -209,7 +208,7 @@
             </imageSet>
           </imageSetConfigs>
         </imageMagick>
-      </documentManagement>>
+      </documentManagement>
       
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
