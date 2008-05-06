@@ -20,14 +20,12 @@ package org.plos.search.service;
 
 import java.util.concurrent.TimeUnit;
 
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
+import org.plos.cache.Cache;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
@@ -43,7 +41,7 @@ import org.topazproject.otm.spring.OtmTransactionManager;
 public class SearchService {
   private static final Log           log   = LogFactory.getLog(SearchService.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private Ehcache cache;
+  private Cache cache;
 
   private SearchWebService           searchWebService;
   private FetchArticleService        fetchArticleService;
@@ -64,16 +62,12 @@ public class SearchService {
       PlosOneUser   user     = PlosOneUser.getCurrentUser();
       final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
 
-      Results results;
-      synchronized(cache) {
-        Element e = cache.get(cacheKey);
-        if (e == null) {
-          cache.put(e = new Element(cacheKey, new Results(query, searchWebService, fetchArticleService)));
-          if (log.isDebugEnabled())
-            log.debug("Created search cache for '" + cacheKey + "'");
-        }
-        results = (Results)e.getObjectValue();
-      }
+      Results results = cache.get(cacheKey, -1,
+          new Cache.SynchronizedLookup<Results, ApplicationException>(cacheKey.intern()) {
+            public Results lookup() {
+              return new Results(query, searchWebService, fetchArticleService);
+            }
+          });
 
       // Results are shared, but not concurrently.
       if (!results.getLock().tryLock(10L, TimeUnit.SECONDS)) { // XXX: tune
@@ -116,7 +110,7 @@ public class SearchService {
   }
 
   @Required
-  public void setSearchCache(Ehcache cache) {
+  public void setSearchCache(Cache cache) {
     this.cache = cache;
   }
 }

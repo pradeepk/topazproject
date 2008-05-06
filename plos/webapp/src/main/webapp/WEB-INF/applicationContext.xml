@@ -468,6 +468,14 @@
        <ref bean="feedEhcache"/>
     </constructor-arg>
   </bean>
+  <bean id="searchCache" class="org.plos.cache.EhcacheProvider">
+    <constructor-arg index="0">
+       <ref bean="txCacheManager"/>
+    </constructor-arg>
+    <constructor-arg index="1">
+       <ref bean="searchEhcache"/>
+    </constructor-arg>
+  </bean>
   
   <!-- freemarker configs -->
   <bean id="plosOneFreemarkerManager" class="org.plos.struts2.PlosOneFreemarkerManager">
@@ -518,7 +526,7 @@
     <property name="cacheName" value="FeedCache"/>
   </bean>
 
-  <bean id="searchCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+  <bean id="searchEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="SearchCache"/>
   </bean>
 
