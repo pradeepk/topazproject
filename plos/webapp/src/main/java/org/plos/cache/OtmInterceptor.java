@@ -140,16 +140,20 @@ public class OtmInterceptor implements Interceptor {
     if (cm.isView())
       return; // since we can't safely invalidate
 
-    Object val = cache.rawGet(id);
-    Entry  e;
+    if (instance == null)
+      cache.put(id, NULL);
+    else {
+      Object val = cache.rawGet(id);
+      Entry  e;
 
-    if (val instanceof Entry)
-      e = new Entry((Entry) val);
-    else
-      e = new Entry();
+      if (val instanceof Entry)
+        e = new Entry((Entry) val);
+      else
+        e = new Entry();
 
-    e.set(session, cm, id, instance, fields, blob);
-    cache.put(id, e);
+      e.set(session, cm, id, instance, fields, blob);
+      cache.put(id, e);
+    }
 
     String journal = getCurrentJournal();
 
