@@ -35,8 +35,6 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +44,7 @@ import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.configuration.ConfigurationStore;
+import org.plos.cache.Cache;
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.models.Citation;
@@ -72,7 +71,7 @@ import com.sun.syndication.feed.atom.Person;
 public class ArticleFeed extends BaseActionSupport {
 
   private ArticleOtmService articleOtmService;
-  private Ehcache feedCache;
+  private Cache feedCache;
 
   private DocumentBuilderFactory factory;
 
@@ -117,13 +116,7 @@ public class ArticleFeed extends BaseActionSupport {
     // use native HTTP to avoid WebWorks
     HttpServletRequest request = ServletActionContext.getRequest();
     String pathInfo = request.getPathInfo();
-    URI uri;
-    if (pathInfo == null) {
-      uri = URI.create("/");
-    } else {
-      uri = URI.create(pathInfo);
-
-    }
+    final URI uri = (pathInfo == null) ? URI.create("/") : URI.create(pathInfo);
 
     int feedDuration = 3;
     try {
@@ -151,20 +144,12 @@ public class ArticleFeed extends BaseActionSupport {
 
     // Get feed if cached or generate feed by querying OTM
     String cacheKey = getCacheKey();
-    net.sf.ehcache.Element e = feedCache.get(cacheKey);
-    if (e != null) {
-      if (log.isDebugEnabled())
-        log.debug("Retrieved feed " + cacheKey + " from cache." +
-                  " Created " + new Date(e.getCreationTime()) +
-                  " last access " + new Date(e.getLastAccessTime()) +
-                  " hit count " + e.getHitCount());
-      wireFeed = (WireFeed) e.getValue();
-    } else {
-      wireFeed = getFeed(uri);
-      feedCache.put(new net.sf.ehcache.Element(cacheKey, wireFeed));
-      if (log.isDebugEnabled())
-        log.debug("Built feed " + cacheKey);
-    }
+    wireFeed = feedCache.get(cacheKey, -1, 
+        new Cache.SynchronizedLookup<WireFeed, ApplicationException>(cacheKey.intern()) {
+          public WireFeed lookup() throws ApplicationException {
+            return getFeed(uri);
+          }
+        });
 
     // Action response type is PlosOneFeedResult, it will return wireFeed as a response.
 
@@ -537,7 +522,7 @@ public class ArticleFeed extends BaseActionSupport {
    *
    * @param feedCache the ehcache instance
    */
-  public void setFeedCache(final Ehcache feedCache) {
+  public void setFeedCache(final Cache feedCache) {
     this.feedCache = feedCache;
   }
 
