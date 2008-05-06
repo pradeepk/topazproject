@@ -102,6 +102,9 @@ public class OtmInterceptor implements Interceptor {
    * inherited javadoc
    */
   public Object getEntity(Session session, ClassMetadata cm, String id, Object instance) {
+    if (cm.isView())
+     return null;
+
     Object val = cache.rawGet(id);
 
     if (Cache.NULL.equals(val))
