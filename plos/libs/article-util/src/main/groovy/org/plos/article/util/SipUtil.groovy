@@ -26,6 +26,8 @@ import java.util.zip.ZipOutputStream
 import org.xml.sax.EntityResolver
 import org.xml.sax.InputSource
 
+import org.topazproject.xml.transform.cache.CachedSource
+
 /**
  * Utilities for dealing with SIP's.
  *
@@ -114,6 +116,20 @@ public class SipUtil {
     XmlSlurper slurper = new XmlSlurper(true, false)
     slurper.setEntityResolver(new ManifestDTDResolver())
     return slurper
+  }
+
+  /** 
+   * Get the parsed article. 
+   * 
+   * @param sip      the sip
+   * @param manifest the manifest
+   * @return the parsed article
+   */
+  public static def getArticle(ZipFile sip, def manifest) {
+    XmlSlurper slurper = new XmlSlurper()
+    slurper.setEntityResolver(CachedSource.getResolver())
+    ZipEntry ae = sip.getEntry(manifest.articleBundle.article.'@main-entry'.text())
+    return slurper.parse(sip.getInputStream(ae))
   }
 
   /** 

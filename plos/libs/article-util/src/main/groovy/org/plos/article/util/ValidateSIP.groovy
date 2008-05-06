@@ -26,7 +26,6 @@ import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
 
 import org.plos.util.ToolHelper
-import org.topazproject.xml.transform.cache.CachedSource
 
 /**
  * Validate the SIP.
@@ -71,10 +70,7 @@ public class ValidateSIP {
 
     validateManifest(zf, manif, ve)
 
-    slurper = new XmlSlurper()
-    slurper.setEntityResolver(CachedSource.getResolver())
-    ZipEntry ae = zf.getEntry(manif.articleBundle.article.'@main-entry'.text())
-    def art = slurper.parse(zf.getInputStream(ae))
+    def art = SipUtil.getArticle(zf, manif)
 
     validateLinks(zf, manif, art, ve)
     validateEntries(zf, manif, art, ve)
