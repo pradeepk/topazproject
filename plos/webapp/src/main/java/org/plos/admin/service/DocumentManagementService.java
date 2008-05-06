@@ -86,9 +86,7 @@ public class DocumentManagementService {
   private String plosDoiUrl;
   private String plosEmail;
   private boolean sendToXref;
-  
-  
-  
+ 
   public DocumentManagementService() {
   }
 
