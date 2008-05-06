@@ -93,7 +93,8 @@ public class EhcacheProvider implements Cache {
   /*
    * inherited javadoc
    */
-  public <T, E extends Exception> T get(final Object key, final Lookup<T, E> lookup)
+  public <T, E extends Exception> T get(final Object key, final int refresh,
+                                        final Lookup<T, E> lookup)
                                  throws E {
     Object val = rawGet(key);
 
@@ -113,7 +114,12 @@ public class EhcacheProvider implements Cache {
               if (val == null)
                 val = NULL;
 
-              cache.put(new Element(key, val));
+              Element e = new Element(key, val);
+
+              if (refresh > 0)
+                e.setTimeToLive(refresh);
+
+              cache.put(e);
 
               if (log.isDebugEnabled())
                 log.debug("Populated entry with '" + key + "' in " + getName());

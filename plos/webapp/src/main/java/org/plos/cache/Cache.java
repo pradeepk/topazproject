@@ -69,13 +69,14 @@ public interface Cache {
    * @param <T> type of the value expected
    * @param <E> type of the exception expected to be thrown by lookup
    * @param key the key to use for the lookup
+   * @param refresh the max-age of entries in the cache (in seconds), or -1 for indefinite
    * @param lookup the lookup to call to get the value if not found in the cache; may be null
    *
    * @return the value in the cache, or returned by the <var>lookup</var> if not in the cache
    *
    * @throws E the exception thrown by lookup
    */
-  public <T, E extends Exception> T get(Object key, Lookup<T, E> lookup)
+  public <T, E extends Exception> T get(Object key, int refresh, Lookup<T, E> lookup)
                                  throws E;
 
   /**
