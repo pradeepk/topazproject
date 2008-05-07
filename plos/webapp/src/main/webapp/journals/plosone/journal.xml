@@ -5,7 +5,7 @@
 <config>
   <ambra>
     <journal>
-      <key>PLoSONE</key>
+      <identifier>PLoSONE</identifier>
       <name>PLoS ONE</name>
       <eIssn>1932-6203</eIssn>
       <title>PLoS ONE: Publishing science\, accelerating research</title>
@@ -49,7 +49,7 @@
           <file>/javascript/init_navigation.js</file>
         </javascript>
         <page>
-          <name>/journals/plosone/index.ftl</name>
+          <name>index.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -431,7 +431,7 @@
 
         <!-- plosone specific -->
         <page>
-          <name>/journals/plosone/static/about.ftl</name>
+          <name>/static/about.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -439,7 +439,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/authors.ftl</name>
+          <name>/static/authors.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -447,7 +447,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/browse.ftl</name>
+          <name>/static/browse.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -456,7 +456,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/checklist.ftl</name>
+          <name>/static/checklist.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -464,7 +464,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/contact.ftl</name>
+          <name>/static/contact.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -472,7 +472,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/edboard.ftl</name>
+          <name>/static/edboard.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -480,7 +480,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/faq.ftl</name>
+          <name>/static/faq.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -488,7 +488,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/guidelines.ftl</name>
+          <name>/static/guidelines.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -496,7 +496,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/information.ftl</name>
+          <name>/static/information.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -504,7 +504,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/journalClub.ftl</name>
+          <name>/static/journalClub.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -512,7 +512,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/latex.ftl</name>
+          <name>/static/latex.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -520,7 +520,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/policies.ftl</name>
+          <name>/static/policies.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -528,7 +528,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/reviewer_guidelines.ftl</name>
+          <name>/static/reviewer_guidelines.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -536,7 +536,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/rss_feeds.ftl</name>
+          <name>/static/rss_feeds.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -544,7 +544,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/users.ftl</name>
+          <name>/static/users.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -552,7 +552,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/sitemap.ftl</name>
+          <name>/static/sitemap.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -560,7 +560,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/whypublish.ftl</name>
+          <name>/static/whypublish.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
