@@ -19,7 +19,6 @@
 
 package org.plos.util;
 
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.w3c.dom.Document;
 
@@ -71,18 +70,6 @@ public class FileUtils {
     final FileWriter fileWriter = new FileWriter(targetFilename);
     fileWriter.write(getTextFromUrl(url));
     fileWriter.close();
-  }
-
-  /**
-   * Serialize a node to a given file.
-   * @param doc node of an xml doc
-   * @param outputFileName outputFileName
-   * @throws IOException IOException
-   */
-  public static void serializeNode(final Document doc, final String outputFileName) throws IOException {
-    final XMLSerializer serializer = new XMLSerializer();
-    serializer.setOutputCharStream(new FileWriter(outputFileName));
-    serializer.serialize(doc);
   }
 
   /**
