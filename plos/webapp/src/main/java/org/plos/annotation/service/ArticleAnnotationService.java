@@ -280,10 +280,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     fetchArticleService.removeFromArticleCache(new String[] { target });
 
-    if (log.isDebugEnabled()) {
-      log.debug("removed " + target + " from articleAnnotationCache");
-    }
-
     return newId;
   }
 
@@ -721,6 +717,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
            if (v.size() == 1)
              articleAnnotationCache.remove(ANNOTATED_KEY + v.get(0));
         }
+        if (removed)
+          articleAnnotationCache.remove(ANNOTATED_KEY + id);
       }
     }
   }
