@@ -4,7 +4,7 @@
   <artifactId>mulgara-client</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>Mulgara Client</name>
+  <name>Topaz Mulgara Client Library</name>
   <description>A Mulgara client library to provide a common, consistent API for accessing
     Mulgara remotely over various transports or running an embedded instance.</description>
 

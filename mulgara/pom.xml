@@ -24,8 +24,8 @@
   <artifactId>mulgara</artifactId>
   <version>0.9-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Mulgara Libs</name>
-  <description>Mulgara related libraries for Topaz.</description>
+  <name>Topaz Mulgara Components</name>
+  <description>Mulgara as a triple store for Topaz</description>
   
   <parent>
     <groupId>org.topazproject</groupId>

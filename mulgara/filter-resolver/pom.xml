@@ -5,7 +5,7 @@
   <artifactId>filter-resolver</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>Mulgara filter resolver</name>
+  <name>Topaz Mulgara Filter Resolver</name>
   <description>A Mulgara resolver which intercepts updates in order to trigger
     various actions, thereby providing functionality akin to sql triggers.</description>
 
