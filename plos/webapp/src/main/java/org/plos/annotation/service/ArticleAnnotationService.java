@@ -38,8 +38,10 @@ import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 import org.plos.article.service.FetchArticleService;
 
 import org.plos.cache.Cache;
+import org.plos.cache.ObjectListener;
 
 import org.plos.models.AnnotationBlob;
+import org.plos.models.Article;
 import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;
 
@@ -51,9 +53,11 @@ import org.plos.util.CacheAdminHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.criterion.Restrictions;
 
 /**
@@ -71,6 +75,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   private PermissionsService permissionsService;
   private FetchArticleService  fetchArticleService;
   private Cache              articleAnnotationCache;
+  private Invalidator        invalidator;
 
   static {
     ALL_ANNOTATION_CLASSES.add(ArticleAnnotation.class);
@@ -189,8 +194,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     // TODO - is it necessary to remove the article from the cache just because we changed 
     // an annotation?
     fetchArticleService.removeFromArticleCache(new String[] { target });
-    // Flush the annotation cache for this target and the annotation
-    removeAnnotationFromCache(newComment);
 
     if (log.isDebugEnabled()) {
       log.debug("removed " + target + " from articleAnnotationCache");
@@ -347,7 +350,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     if (a != null) {
       session.delete(a);
       fetchArticleService.removeFromArticleCache(new String[] { a.getAnnotates().toString() });
-      removeAnnotationFromCache(a);
     }
   }
 
@@ -542,7 +544,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationDoi);
     a.setState(a.getState() | PUBLIC_MASK);
-    removeAnnotationFromCache(a);
   }
 
   /**
@@ -558,7 +559,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
     a.setState(a.getState() | FLAG_MASK);
-    removeAnnotationFromCache(a);
   }
 
   /**
@@ -632,7 +632,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
     for (ArticleAnnotation refAn : refAns) {
       refAn.setAnnotates(newIdUri);
-      removeAnnotationFromCache(refAn);
     }
 
     /*
@@ -640,7 +639,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
      * since that also removes the body of the article from fedora and we are referencing that from
      * the new annotation.
      */
-    removeAnnotationFromCache(srcAnnotation);
     oldAn.setBody(null);
     session.delete(oldAn);
 
@@ -656,16 +654,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Remove this annotation from the cache, and remove the cached list of annotation that is
-   * targets
-   *
-   * @param a Annotation
-   */
-  public void removeAnnotationFromCache(ArticleAnnotation a) {
-    articleAnnotationCache.remove(ANNOTATED_KEY + a.getAnnotates().toString());
-  }
-
-  /**
    * Sets the article-annotation cache.
    *
    * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
@@ -674,6 +662,10 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   @Required
   public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
+    if (invalidator == null) {
+      invalidator = new Invalidator();
+      articleAnnotationCache.getCacheManager().registerListener(invalidator);
+    }
   }
 
   /**
@@ -704,5 +696,32 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   @Required
   public void setPermissionsService(final PermissionsService permissionsService) {
     this.permissionsService = permissionsService;
+  }
+
+  private class Invalidator implements ObjectListener {
+    public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
+        Updates updates) {
+      handleEvent(id, o, updates, false);
+    }
+    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
+      handleEvent(id, o, null, true);
+    }
+    private void handleEvent(String id, Object o, Updates updates, boolean removed) {
+      if ((o instanceof Article) && removed) {
+        if (log.isDebugEnabled())
+          log.debug("Invalidating annotation list for the article that was deleted.");
+        articleAnnotationCache.remove(ANNOTATED_KEY + id);
+      } else if (o instanceof ArticleAnnotation) {
+        if (log.isDebugEnabled())
+          log.debug("ArticleAnnotation changed/deleted. Invalidating annotation list " + 
+              " for the article this was annotating or is about to annotate.");
+        articleAnnotationCache.remove(ANNOTATED_KEY + ((ArticleAnnotation)o).getAnnotates().toString());
+        if ((updates != null) && updates.isChanged("annotates")) {
+           List<String> v = updates.getOldValue("annotates");
+           if (v.size() == 1)
+             articleAnnotationCache.remove(ANNOTATED_KEY + v.get(0));
+        }
+      }
+    }
   }
 }
