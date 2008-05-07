@@ -61,7 +61,7 @@ import org.topazproject.otm.criterion.Restrictions;
  */
 public class ArticleAnnotationService extends BaseAnnotationService {
   public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
-  public static final String ANNOTATION_LOCK = "ArticleAnnotationCache-lock-";
+
   protected static final Set<Class<?extends ArticleAnnotation>> ALL_ANNOTATION_CLASSES =
     new HashSet<Class<?extends ArticleAnnotation>>();
   private static final Log     log                    =
@@ -106,8 +106,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws Exception on an error in create
    */
   public String createFlagAnnotation(final String mimeType, final String target, final String body,
-                                     String reasonCode)
-                              throws Exception {
+      String reasonCode) throws Exception {
     // TODO - eventually this should create a different type of annotation and not call this ...
     return createAnnotation(mimeType, target, null, null, null, body);
   }
@@ -127,8 +126,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws Exception on an error
    */
   public String createAnnotation(final String mimeType, final String target, final String context,
-                                 final String olderAnnotation, final String title, final String body)
-                          throws Exception {
+      final String olderAnnotation, final String title, final String body) throws Exception {
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
 
     final String contentType = getContentType(mimeType);
@@ -217,10 +215,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws Exception on an error
    */
   public String createArticleAnnotation(Class<ArticleAnnotation> annotationClass,
-                                        final String mimeType, final String target,
-                                        final String context, final String olderAnnotation,
-                                        final String title, final String body)
-                                 throws Exception {
+      final String mimeType, final String target, final String context, final String olderAnnotation,
+      final String title, final String body) throws Exception {
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
 
     final String contentType = getContentType(mimeType);
@@ -238,7 +234,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     final ArticleAnnotation annotation = (ArticleAnnotation) annotationClass.newInstance();
 
     annotation.setMediator(getApplicationId());
-    // a.setType(getDefaultType());
     annotation.setAnnotates(URI.create(target));
     annotation.setContext(context);
     annotation.setTitle(title);
@@ -297,8 +292,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
-  public void unflagAnnotation(final String annotationId)
-                        throws OtmException, SecurityException {
+  public void unflagAnnotation(final String annotationId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
@@ -315,7 +309,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    */
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
-                               throws OtmException, SecurityException {
+    throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
     deleteAnnotation(annotationId);
   }
@@ -329,7 +323,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    */
   public void deletePublicAnnotation(final String annotationId)
-                              throws OtmException, SecurityException {
+    throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
     deleteAnnotation(annotationId);
   }
@@ -347,8 +341,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     deleteAnnotation(flagId);
   }
 
-  private void deleteAnnotation(final String annotationId)
-                         throws OtmException {
+  private void deleteAnnotation(final String annotationId) throws OtmException {
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
 
     if (a != null) {
@@ -367,16 +360,14 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    */
-  private List<ArticleAnnotation> listAnnotationsForTarget(String target)
-                                             throws OtmException {
+  private List<ArticleAnnotation> listAnnotationsForTarget(String target) throws OtmException {
     return listAnnotationsForTarget(target, null);
   }
 
   /**
-   * Retrieve all Annotation instances that annotate the given target DOI. If
-   * annotationClassTypes is null, then all annotation types are retrieved. If
-   * annotationClassTypes is not null, only the Annotation class types in the annotationClassTypes
-   * Set are returned.
+   * Retrieve all Annotation instances that annotate the given target DOI. If annotationClassTypes
+   * is null, then all annotation types are retrieved. If annotationClassTypes is not null, only the
+   * Annotation class types in the annotationClassTypes Set are returned.
    *
    * @param target
    * @param annotationClassTypes
@@ -386,13 +377,12 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    */
   private List<ArticleAnnotation> listAnnotationsForTarget(final String target,
-                                                    Set<Class<?extends ArticleAnnotation>> annotationClassTypes)
-                                             throws OtmException {
+      Set<Class<?extends ArticleAnnotation>> annotationClassTypes) throws OtmException {
     // lock @ Article level
     final Object     lock           = (FetchArticleService.ARTICLE_LOCK + target).intern();
     List<ArticleAnnotation> allAnnotations =
       articleAnnotationCache.get(ANNOTATED_KEY + target, -1,
-                            new Cache.SynchronizedLookup<List<ArticleAnnotation>, OtmException>(lock) {
+          new Cache.SynchronizedLookup<List<ArticleAnnotation>, OtmException>(lock) {
           public List<ArticleAnnotation> lookup() throws OtmException {
             return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
           }
@@ -406,7 +396,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     if (annotationClassTypes == null)
       annotationClassTypes = ALL_ANNOTATION_CLASSES;
 
-    List<ArticleAnnotation> filteredAnnotations = new ArrayList<ArticleAnnotation>(allAnnotations.size());
+    List<ArticleAnnotation> filteredAnnotations = new
+      ArrayList<ArticleAnnotation>(allAnnotations.size());
 
     for (ArticleAnnotation a : allAnnotations) {
       for (Class classType : annotationClassTypes) {
@@ -422,9 +413,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   private List<ArticleAnnotation> listAnnotations(final String target, final String mediator,
-                                           final int state,
-                                           final Set<Class<?extends ArticleAnnotation>> classTypes)
-                                    throws OtmException {
+      final int state, final Set<Class<?extends ArticleAnnotation>> classTypes)
+    throws OtmException {
     List<ArticleAnnotation> combinedAnnotations = new ArrayList<ArticleAnnotation>();
 
     for (Class anClass : classTypes) {
@@ -449,7 +439,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @param state the state to filter by (0 for all non-zero, -1 to not restrict by state)
    */
   private static void setRestrictions(Criteria c, final String target, final String mediator,
-                                      final int state) {
+      final int state) {
     if (mediator != null) {
       c.add(Restrictions.eq("mediator", mediator));
     }
@@ -477,17 +467,15 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    */
-  public ArticleAnnotation[] listAnnotations(final String target)
-                                   throws OtmException {
+  public ArticleAnnotation[] listAnnotations(final String target) throws OtmException {
     return listAnnotations(target, null);
   }
 
   /**
-   * Retrieve all Annotation instances that annotate the given target DOI. If
-   * annotationClassTypes is null, then all annotation types are retrieved. If
-   * annotationClassTypes is not null, only the Annotation class types in the annotationClassTypes
-   * Set are returned. Each Class in annotationClassTypes should extend Annotation. E.G.
-   * Comment.class or FormalCorrection.class
+   * Retrieve all Annotation instances that annotate the given target DOI. If annotationClassTypes
+   * is null, then all annotation types are retrieved. If annotationClassTypes is not null, only the
+   * Annotation class types in the annotationClassTypes Set are returned. Each Class in
+   * annotationClassTypes should extend Annotation. E.G.  Comment.class or FormalCorrection.class
    *
    * @param target target doi that the listed annotations annotate
    * @param annotationClassTypes a set of Annotation class types to filter the results
@@ -498,8 +486,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    */
   public ArticleAnnotation[] listAnnotations(final String target,
-                                          Set<Class<?extends ArticleAnnotation>> annotationClassTypes)
-                                   throws OtmException, SecurityException {
+      Set<Class<?extends ArticleAnnotation>> annotationClassTypes)
+    throws OtmException, SecurityException {
     pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS, URI.create(target));
 
 
@@ -531,7 +519,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    */
   public ArticleAnnotation getAnnotation(final String annotationId)
-                               throws OtmException, SecurityException {
+    throws OtmException, SecurityException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
     // comes from object-cache.
     ArticleAnnotation   a = session.get(ArticleAnnotation.class, annotationId);
@@ -578,7 +566,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @param mediator if present only those annotations that match this mediator are returned
    * @param state the state to filter the list of annotations by or 0 to return annotations in any
-   *        administrative state
+   *              administrative state
    *
    * @return an array of annotation metadata; if no matching annotations are found, an empty array
    *         is returned
@@ -595,25 +583,23 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   /**
-   * Replaces the Annotation with DOI targetId with a new Annotation of type
-   * newAnnotationClassType. Converting requires that a new class type be used, so the old
-   * annotation properties are copied over to the new type. All annotations that referenced the
-   * old annotation are updated to reference the new annotation. The old annotation is deleted.
-   * The given newAnnotationClassType should implement the interface ArticleAnnotation. Known
-   * annotation classes that implement this interface are Comment, FormalCorrection,
-   * MinorCorrection
+   * Replaces the Annotation with DOI targetId with a new Annotation of type newAnnotationClassType.
+   * Converting requires that a new class type be used, so the old annotation properties are copied
+   * over to the new type. All annotations that referenced the old annotation are updated to
+   * reference the new annotation. The old annotation is deleted.  The given newAnnotationClassType
+   * should implement the interface ArticleAnnotation. Known annotation classes that implement this
+   * interface are Comment, FormalCorrection, MinorCorrection
    *
-   * @param srcAnnotationId - the DOI of the annotation to convert
-   * @param newAnnotationClassType - the Class of the new annotation type. Should implement
-   *        ArticleAnnotation
+   * @param srcAnnotationId the DOI of the annotation to convert
+   * @param newAnnotationClassType the Class of the new annotation type. Should implement
+   *                               ArticleAnnotation
    *
    * @return the id of the new annotation
    *
    * @throws Exception on an error
    */
   public String convertArticleAnnotationToType(final String srcAnnotationId,
-                                               final Class newAnnotationClassType)
-                                        throws Exception {
+      final Class newAnnotationClassType) throws Exception {
     ArticleAnnotation srcAnnotation = session.get(ArticleAnnotation.class, srcAnnotationId);
 
     if (srcAnnotation == null) {
@@ -626,9 +612,11 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     ArticleAnnotation newAn = (ArticleAnnotation) newAnnotationClassType.newInstance();
 
     BeanUtils.copyProperties(newAn, oldAn);
-    newAn.setId(null); // this should not have been copied (original
-                       // ArticleAnnotation interface did not have a setId()
-                       // method...but somehow it is! Reset to null.
+    /*
+     * This should not have been copied (original ArticleAnnotation interface did not have a setId()
+     * method..but somehow it is! Reset to null.
+     */
+    newAn.setId(null);
 
     pep.checkAccess(pep.CREATE_ANNOTATION, oldAn.getAnnotates());
 
@@ -636,9 +624,10 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     URI    newIdUri = new URI(newId);
     permissionsService.propagatePermissions(newId, new String[] { newAn.getBody().getId() });
 
-    // Find all Annotations that refer to the old Annotation and update their
-    // target 'annotates'
-    // property to point to the new Annotation.
+    /*
+     * Find all Annotations that refer to the old Annotation and update their target 'annotates'
+     * property to point to the new Annotation.
+     */
     List<ArticleAnnotation> refAns = listAnnotationsForTarget(oldAn.getId().toString());
 
     for (ArticleAnnotation refAn : refAns) {
@@ -646,11 +635,11 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       removeAnnotationFromCache(refAn);
     }
 
-    // Delete the original annotation from mulgara. Note, we don't call
-    // deleteAnnotation() here
-    // since that also removes the body of the article from fedora and we are
-    // referencing that from
-    // the new annotation.
+    /*
+     * Delete the original annotation from mulgara. Note, we don't call deleteAnnotation() here
+     * since that also removes the body of the article from fedora and we are referencing that from
+     * the new annotation.
+     */
     removeAnnotationFromCache(srcAnnotation);
     oldAn.setBody(null);
     session.delete(oldAn);
@@ -680,7 +669,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * Sets the article-annotation cache.
    *
    * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
-   *        to use.
+   *                               to use.
    */
   @Required
   public void setArticleAnnotationCache(Cache articleAnnotationCache) {
