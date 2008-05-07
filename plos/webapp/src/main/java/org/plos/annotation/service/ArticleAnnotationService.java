@@ -61,7 +61,6 @@ import org.topazproject.otm.criterion.Restrictions;
  */
 public class ArticleAnnotationService extends BaseAnnotationService {
   public static final String ANNOTATED_KEY = "ArticleAnnotationCache-Annotation-";
-  public static final String ANNOTATION_KEY = "ArticleAnnotationCache-SingleAnnotation-";
   public static final String ANNOTATION_LOCK = "ArticleAnnotationCache-lock-";
   protected static final Set<Class<?extends ArticleAnnotation>> ALL_ANNOTATION_CLASSES =
     new HashSet<Class<?extends ArticleAnnotation>>();
@@ -533,19 +532,12 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   public ArticleAnnotation getAnnotation(final String annotationId)
                                throws OtmException, SecurityException {
-    final Object lock = (ANNOTATION_LOCK + annotationId).intern();
-    ArticleAnnotation   a    = articleAnnotationCache.get(ANNOTATION_KEY + annotationId, -1,
-                                    new Cache.SynchronizedLookup<ArticleAnnotation, OtmException>(lock) {
-          public ArticleAnnotation lookup() throws OtmException {
-            return session.get(ArticleAnnotation.class, annotationId);
-          }
-        });
-
+    pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
+    // comes from object-cache.
+    ArticleAnnotation   a = session.get(ArticleAnnotation.class, annotationId);
     if (a == null)
       throw new IllegalArgumentException("invalid annoation id: " + annotationId);
 
-
-    pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
     return a;
   }
 
@@ -681,7 +673,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @param a Annotation
    */
   public void removeAnnotationFromCache(ArticleAnnotation a) {
-    articleAnnotationCache.remove(ANNOTATION_KEY + a.getId().toString());
     articleAnnotationCache.remove(ANNOTATED_KEY + a.getAnnotates().toString());
   }
 
