@@ -22,8 +22,6 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -33,6 +31,7 @@ import org.plos.article.action.CreateCitation;
 import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.NoSuchArticleIdException;
+import org.plos.cache.Cache;
 import org.plos.models.Article;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
@@ -56,7 +55,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   private Article article;
   private ArticleXMLUtils citationService;
   private FetchArticleService fetchArticleService;
-  private Ehcache articleAnnotationCache;
+  private Cache articleAnnotationCache;
   private String citation;
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
@@ -101,9 +100,9 @@ public class ListReplyAction extends AnnotationActionSupport {
       if(baseAnnotation.isFormalCorrection()) {
         // lock @ Article level
         final Object lock = (FetchArticleService.ARTICLE_LOCK + articleId).intern();
-        CitationInfo result = CacheAdminHelper.getFromCacheE(articleAnnotationCache,
-                CreateCitation.CITATION_KEY + articleId, -1, lock, "citation",
-                new CacheAdminHelper.EhcacheUpdaterE<CitationInfo, ApplicationException>() {
+        CitationInfo result = articleAnnotationCache.get(
+                CreateCitation.CITATION_KEY + articleId, -1,
+                new Cache.SynchronizedLookup<CitationInfo, ApplicationException>(lock) {
                   public CitationInfo lookup() throws ApplicationException {
 
                     XStream xstream = new XStream();
@@ -201,7 +200,7 @@ public class ListReplyAction extends AnnotationActionSupport {
    *   to use.
    */
   @Required
-  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
   }
 

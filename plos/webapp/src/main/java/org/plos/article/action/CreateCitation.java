@@ -23,8 +23,6 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -32,6 +30,7 @@ import org.plos.action.BaseActionSupport;
 import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.NoSuchArticleIdException;
+import org.plos.cache.Cache;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.CitationUtils;
@@ -57,7 +56,7 @@ public class CreateCitation extends BaseActionSupport {
   private ArticleXMLUtils citationService;
   private CitationInfo citation;
   private String citationString;
-  private Ehcache articleAnnotationCache;
+  private Cache articleAnnotationCache;
 
   private static final Log log = LogFactory.getLog(CreateCitation.class);
 
@@ -72,9 +71,8 @@ public class CreateCitation extends BaseActionSupport {
     // lock @ Article level
     final Object lock = (FetchArticleService.ARTICLE_LOCK + articleURI).intern();
 
-    citation = CacheAdminHelper.getFromCacheE(articleAnnotationCache, CITATION_KEY + articleURI, -1,
-            lock, "citation",
-            new CacheAdminHelper.EhcacheUpdaterE<CitationInfo, ApplicationException>() {
+    citation = articleAnnotationCache.get(CITATION_KEY + articleURI, -1,
+            new Cache.SynchronizedLookup<CitationInfo, ApplicationException>(lock) {
               public CitationInfo lookup() throws ApplicationException {
                 XStream xstream = new XStream();
                 try {
@@ -136,7 +134,7 @@ public class CreateCitation extends BaseActionSupport {
    *   to use.
    */
   @Required
-  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
   }
 }

@@ -38,12 +38,11 @@ import java.util.Map;
 import javax.activation.DataSource;
 import javax.xml.rpc.ServiceException;
 
-import net.sf.ehcache.Ehcache;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 
+import org.plos.cache.Cache;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Category;
@@ -80,7 +79,7 @@ public class ArticleOtmService {
   private ArticlePEP         pep;
   private Session            session;
   private JournalService     jrnlSvc;
-  private Ehcache            articleAnnotationCache;
+  private Cache            articleAnnotationCache;
   private PermissionsService permissionsService;
 
   public ArticleOtmService() throws IOException {
@@ -466,10 +465,8 @@ public class ArticleOtmService {
 
     // do cache aware lookup
     final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern(); // lock @ Article
-    return CacheAdminHelper
-        .getFromCacheE(articleAnnotationCache, FetchArticleService.ARTICLE_SECONDARY_KEY + article,
-                       -1, lock, "secondaryObjects",
-                       new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
+    return articleAnnotationCache.get(FetchArticleService.ARTICLE_SECONDARY_KEY + article, -1,
+                       new Cache.SynchronizedLookup<SecondaryObject[], NoSuchArticleIdException>(lock) {
                          public SecondaryObject[] lookup() throws NoSuchArticleIdException {
                            // get objects
                            Article art = session.get(Article.class, article);
@@ -498,9 +495,8 @@ public class ArticleOtmService {
 
     // do cache aware lookup
     final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern();  // lock @ Article
-    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
-      FetchArticleService.ARTICLE_FIGURESTABLE_KEY + article, -1, lock, "figuresTables",
-      new CacheAdminHelper.EhcacheUpdaterE<SecondaryObject[], NoSuchArticleIdException>() {
+    return articleAnnotationCache.get(FetchArticleService.ARTICLE_FIGURESTABLE_KEY + article, -1,
+      new Cache.SynchronizedLookup<SecondaryObject[], NoSuchArticleIdException>(lock) {
         public SecondaryObject[] lookup() throws NoSuchArticleIdException {
           Disjunction figuresTables = Restrictions.disjunction();
           figuresTables.add(Restrictions.eq("contextElement", FIGURE_CONTEXT))
@@ -641,7 +637,7 @@ public class ArticleOtmService {
    *   to use.
    */
   @Required
-  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
   }
 

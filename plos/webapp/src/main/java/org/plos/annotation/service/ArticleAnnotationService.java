@@ -37,6 +37,8 @@ import static org.plos.annotation.service.WebAnnotation.PUBLIC_MASK;
 
 import org.plos.article.service.FetchArticleService;
 
+import org.plos.cache.Cache;
+
 import org.plos.models.AnnotationBlob;
 import org.plos.models.ArticleAnnotation;
 import org.plos.models.Comment;
@@ -54,8 +56,6 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
-import net.sf.ehcache.Ehcache;
-
 /**
  * Wrapper over annotation(not the same as reply) web service
  */
@@ -71,7 +71,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   private Session              session;
   private PermissionsService permissionsService;
   private FetchArticleService  fetchArticleService;
-  private Ehcache              articleAnnotationCache;
+  private Cache              articleAnnotationCache;
 
   static {
     ALL_ANNOTATION_CLASSES.add(ArticleAnnotation.class);
@@ -392,9 +392,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     // lock @ Article level
     final Object     lock           = (FetchArticleService.ARTICLE_LOCK + target).intern();
     List<ArticleAnnotation> allAnnotations =
-      CacheAdminHelper.getFromCacheE(articleAnnotationCache, ANNOTATED_KEY + target, -1, lock,
-                                     "annotation list",
-                                     new CacheAdminHelper.EhcacheUpdaterE<List<ArticleAnnotation>, OtmException>() {
+      articleAnnotationCache.get(ANNOTATED_KEY + target, -1,
+                            new Cache.SynchronizedLookup<List<ArticleAnnotation>, OtmException>(lock) {
           public List<ArticleAnnotation> lookup() throws OtmException {
             return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
           }
@@ -535,10 +534,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   public ArticleAnnotation getAnnotation(final String annotationId)
                                throws OtmException, SecurityException {
     final Object lock = (ANNOTATION_LOCK + annotationId).intern();
-    ArticleAnnotation   a    =
-      CacheAdminHelper.getFromCacheE(articleAnnotationCache, ANNOTATION_KEY + annotationId, -1,
-                                    lock, "individual annotation",
-                                    new CacheAdminHelper.EhcacheUpdaterE<ArticleAnnotation, OtmException>() {
+    ArticleAnnotation   a    = articleAnnotationCache.get(ANNOTATION_KEY + annotationId, -1,
+                                    new Cache.SynchronizedLookup<ArticleAnnotation, OtmException>(lock) {
           public ArticleAnnotation lookup() throws OtmException {
             return session.get(ArticleAnnotation.class, annotationId);
           }
@@ -695,7 +692,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *        to use.
    */
   @Required
-  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
   }
 

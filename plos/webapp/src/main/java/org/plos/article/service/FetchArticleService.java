@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Annotator;
+import org.plos.cache.Cache;
 import org.plos.models.Article;
 import org.plos.models.ArticleAnnotation;
 import org.plos.util.ArticleXMLUtils;
@@ -71,7 +72,7 @@ public class FetchArticleService {
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private ArticleAnnotationService articleAnnotationService;
 
-  private Ehcache articleAnnotationCache;
+  private Cache articleAnnotationCache;
   private Ehcache simplePageCachingFilter;
 
   private String getTransformedArticle(final String articleURI) throws ApplicationException {
@@ -101,9 +102,8 @@ public class FetchArticleService {
                           RemoteException, NoSuchArticleIdException {
     final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
 
-    return CacheAdminHelper.getFromCacheE(articleAnnotationCache, ARTICLE_KEY  + articleURI, -1,
-            lock, "transformed article",
-            new CacheAdminHelper.EhcacheUpdaterE<String, ApplicationException>() {
+    return articleAnnotationCache.get(ARTICLE_KEY  + articleURI, -1,
+            new Cache.SynchronizedLookup<String, ApplicationException>(lock) {
               public String lookup() throws ApplicationException {
                 return getTransformedArticle(articleURI);
               }
@@ -222,7 +222,7 @@ public class FetchArticleService {
    *   to use.
    */
   @Required
-  public void setArticleAnnotationCache(Ehcache articleAnnotationCache) {
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
   }
 
@@ -251,9 +251,8 @@ public class FetchArticleService {
     // do caching here rather than at articleOtmService level because we want the cache key
     // to be article specific
     final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
-    return CacheAdminHelper.getFromCacheE(articleAnnotationCache,
-            ARTICLEINFO_KEY + articleURI, -1, lock, "objectInfo",
-            new CacheAdminHelper.EhcacheUpdaterE<Article, ApplicationException>() {
+    return articleAnnotationCache.get(ARTICLEINFO_KEY + articleURI, -1,
+            new Cache.SynchronizedLookup<Article, ApplicationException>(lock) {
               public Article lookup() throws ApplicationException {
                 try {
                   Article article = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
