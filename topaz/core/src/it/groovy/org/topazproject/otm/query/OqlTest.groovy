@@ -1890,6 +1890,48 @@ public class OqlTest extends AbstractTest {
       assertEquals('dc_type', ch.criterionList[0].criterions[1].arguments[0])
       assertEquals('x:y'.toURI(), ch.criterionList[0].criterions[1].arguments[1])
 
+      // oql w/ long chain of aliases backwards from projection -> more referrer criteria 
+      qry = """select n from Article a where 
+        n := m.isPartOf and
+        m := o.parts    and
+        o := p.isPartOf and
+        p := a.parts
+        ;"""
+      ofd = new OqlFilterDefinition("oqlRC2", "Article", qry)
+      c = ofd.createFilter(s).getCriteria()
+
+      assertEquals('Article', c.classMetadata.name)
+      assertEquals(0, c.criterionList.size())
+      assertEquals(1, c.children.size())
+
+      c = c.children[0];                        // n := m.isPartOf
+      assertEquals('isPartOf',   c.mapping.name)
+      assertEquals('ObjectInfo', c.classMetadata.name)
+      assertEquals(true,         c.isReferrer())
+      assertEquals(0, c.criterionList.size())
+      assertEquals(1, c.children.size())
+
+      c = c.children[0];                        // m := o.parts
+      assertEquals('parts',      c.mapping.name)
+      assertEquals('Article',    c.classMetadata.name)
+      assertEquals(true,         c.isReferrer())
+      assertEquals(0, c.criterionList.size())
+      assertEquals(1, c.children.size())
+
+      c = c.children[0];                        // o := p.isPartOf
+      assertEquals('isPartOf',   c.mapping.name)
+      assertEquals('ObjectInfo', c.classMetadata.name)
+      assertEquals(true,         c.isReferrer())
+      assertEquals(0, c.criterionList.size())
+      assertEquals(1, c.children.size())
+
+      c = c.children[0];                        // p := a.parts
+      assertEquals('parts',      c.mapping.name)
+      assertEquals('Article',    c.classMetadata.name)
+      assertEquals(true,         c.isReferrer())
+      assertEquals(0, c.criterionList.size())
+      assertEquals(0, c.children.size())
+
       // two types for the same criteria
       qry = """select n from Article a where a.title = 'foo' and
                n := cast(a, Annotation).annotates;"""

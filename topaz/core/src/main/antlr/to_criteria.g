@@ -296,6 +296,9 @@ options {
                    "Internal type mismatch for '" + var + "': typeMap=" + typeMap.get(var) +
                    ", critMap=" + critMap.get(var).getClassMetadata();
 
+            if (aliases.containsKey(var))
+              createAliasCriteria(var, aliases);
+
           } else {                              // we're walking down the tree
             Criteria crit;
             if (!critMap.containsKey(var)) {
