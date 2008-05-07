@@ -61,6 +61,13 @@ public class EhcacheProvider implements Cache {
   /*
    * inherited javadoc
    */
+  public CacheManager getCacheManager() {
+    return cacheManager;
+  }
+
+  /*
+   * inherited javadoc
+   */
   public <T> T get(Object key) {
     Object val = rawGet(key);
 

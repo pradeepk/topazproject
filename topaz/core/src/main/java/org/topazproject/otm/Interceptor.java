@@ -18,10 +18,10 @@
  */
 package org.topazproject.otm;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.mapping.BlobMapper;
 
 /**
  * Allows user code to inspect and/or change property values. 
@@ -73,11 +73,10 @@ public interface Interceptor {
    * @param cm class metadata for the entity
    * @param id the id of the instance
    * @param instance the instance that was written out
-   * @param fields the collection of fields that was written out. 
-   * @param blob the blob field that was written out or null if no change to the blob. 
+   * @param update the updates that we detected or null if the instance just got attached
    */
   public void onPostWrite(Session session, ClassMetadata cm, String id, Object instance, 
-                           Collection<RdfMapper> fields, BlobMapper blob);
+                           Updates update);
 
   /**
    * Called after an entity instance is deleted from the store.
@@ -88,4 +87,39 @@ public interface Interceptor {
    * @param instance the instance that was inserted
    */
   public void onPostDelete(Session session, ClassMetadata cm, String id, Object instance);
+
+  /**
+   * Change notification structure.
+   */
+  public static class Updates {
+    public boolean pmapChanged = false;
+    public boolean blobChanged = false;
+    public List<RdfMapper> rdfMappers = new ArrayList<RdfMapper>();
+    public List<List<String>> oldValues = new ArrayList<List<String>>();
+
+    /**
+     * Gets the old serialized value of a field.
+     */
+    public List<String> getOldValue(String name) {
+      int idx = nameToIndex(name);
+      return (idx < 0) ? null : oldValues.get(idx);
+    }
+
+    /**
+     * Test if a property is changed.
+     */
+    public boolean isChanged(String name) {
+      return nameToIndex(name) >= 0;
+    }
+
+    private int nameToIndex(String name) {
+      int idx = 0;
+      for (RdfMapper m : rdfMappers) {
+        if (m.getName().equals(name))
+          return idx;
+        idx++;
+      }
+      return -1;
+    }
+  }
 }

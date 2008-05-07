@@ -43,6 +43,13 @@ public interface Cache {
   public String getName();
 
   /**
+   * Gets the cache-manager associated with this cache.
+   *
+   * @return the cache manager
+   */
+  public CacheManager getCacheManager();
+
+  /**
    * Gets an object from the cache.
    *
    * @param <T> the type of the value expected

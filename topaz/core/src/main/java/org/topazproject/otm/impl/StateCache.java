@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.RdfMapper;
 
@@ -74,7 +75,7 @@ class StateCache {
    *
    * @return the collection of fields that were updated or null
    */
-  public Collection<RdfMapper> update(Object o, ClassMetadata cm, Session session)
+  public Updates update(Object o, ClassMetadata cm, Session session)
       throws OtmException {
     expunge();
 
@@ -171,10 +172,9 @@ class StateCache {
       vmap.put(m, !m.isAssociation() ? b.get(o) : session.getIds(b.get(o)));
     }
 
-    public <T> Collection<RdfMapper> update(T instance, ClassMetadata cm, Session session)
+    public <T> Updates update(T instance, ClassMetadata cm, Session session)
         throws OtmException {
-      Collection<RdfMapper> rdfMappers = new ArrayList<RdfMapper>();
-      boolean pmapChanged = false;
+      Updates u = new Updates();
 
       for (RdfMapper m : cm.getRdfMappers()) {
         Binder b = m.getBinder(session);
@@ -184,7 +184,7 @@ class StateCache {
 
           if (!eq) {
             pmap      = nv;
-            pmapChanged = true;
+            u.pmapChanged = true;
           }
         } else if (b.isLoaded(instance)) {
           List<String> ov = vmap.get(m);
@@ -194,15 +194,13 @@ class StateCache {
 
           if (!eq) {
             vmap.put(m, nv);
-            rdfMappers.add(m);
+            u.rdfMappers.add(m);
+            u.oldValues.add(ov);
           }
         }
       }
 
-      if (pmapChanged)
-        rdfMappers = cm.getRdfMappers(); // all fields since predicate-map is a wild-card
-
-      return rdfMappers;
+      return u;
     }
 
     public BlobChange digestUpdate(Object instance, Binder blobField) throws OtmException {
@@ -261,4 +259,5 @@ class StateCache {
       return hash;
     }
   }
+
 }

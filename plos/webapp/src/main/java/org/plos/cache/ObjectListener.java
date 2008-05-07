@@ -19,6 +19,8 @@
 package org.plos.cache;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Interceptor;
+import org.topazproject.otm.Session;
 
 /**
  * Listener for OTM Object changes.
@@ -29,17 +31,22 @@ public interface ObjectListener extends Listener {
   /**
    * Fired when an object is added to the cache
    *
+   * @param session the session that is reporting this change
    * @param cm the key
    * @param id the value
-   * @param object the object changed
+   * @param object the object that changed
+   * @param update the changes or null if previous state is unavailable
    */
-  public void objectChanged(ClassMetadata cm, String id, Object object);
+  public void objectChanged(Session session, ClassMetadata cm, String id, Object object, 
+          Interceptor.Updates updates);
 
   /**
    * Fired when an object is removed from the cache.
    *
+   * @param session the session that is reporting this change
    * @param cm the cache
    * @param id the key
+   * @param object the object that got deleted
    */
-  public void objectRemoved(ClassMetadata cm, String id);
+  public void objectRemoved(Session session, ClassMetadata cm, String id, Object object);
 }

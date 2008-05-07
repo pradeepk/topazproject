@@ -39,6 +39,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Interceptor;
+import org.topazproject.otm.Session;
 
 /**
  * Manages transactions across a set of caches. It also brokers the event notifications from
@@ -154,19 +156,20 @@ public class CacheManager implements CacheListener, ObjectListener {
   /*
    * inherited javadoc
    */
-  public void objectChanged(ClassMetadata cm, String id, Object obj) {
+  public void objectChanged(Session session, ClassMetadata cm, String id, Object obj,
+      Interceptor.Updates updates) {
     for (Listener listener : listeners)
       if (listener instanceof ObjectListener)
-        ((ObjectListener) listener).objectChanged(cm, id, obj);
+        ((ObjectListener) listener).objectChanged(session, cm, id, obj, updates);
   }
 
   /*
    * inherited javadoc
    */
-  public void objectRemoved(ClassMetadata cm, String id) {
+  public void objectRemoved(Session session, ClassMetadata cm, String id, Object obj) {
     for (Listener listener : listeners)
       if (listener instanceof ObjectListener)
-        ((ObjectListener) listener).objectRemoved(cm, id);
+        ((ObjectListener) listener).objectRemoved(session, cm, id, obj);
   }
 
   /**

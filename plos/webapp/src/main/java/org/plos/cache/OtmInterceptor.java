@@ -149,8 +149,12 @@ public class OtmInterceptor implements Interceptor {
    * inherited javadoc
    */
   public void onPostWrite(Session session, ClassMetadata cm, String id, Object instance,
-                          Collection<RdfMapper> fields, BlobMapper blob) {
-    attach(session, cm, id, instance, fields, blob);
+                          Interceptor.Updates updates) {
+    if (updates == null)
+      attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField());
+    else
+      attach(session, cm, id, instance, updates.rdfMappers, 
+          updates.blobChanged ? cm.getBlobField() : null);
 
     /* Note: if a smart-collection rule was updated as opposed to
      * new rules added or deleted, we wouldn't be able to detect it.
@@ -159,11 +163,12 @@ public class OtmInterceptor implements Interceptor {
      * this attempt to detect a change is not likely to be hit.
      */
     if ((instance instanceof Journal)
-         && (fields.contains(cm.getMapperByName("smartCollectionRules"))
-             || fields.contains(cm.getMapperByName("simpleCollection"))))
+         && ((updates == null)
+             || updates.rdfMappers.contains(cm.getMapperByName("smartCollectionRules"))
+             || updates.rdfMappers.contains(cm.getMapperByName("simpleCollection"))))
       journalChanged(((Journal) instance).getKey(), false);
 
-    cacheManager.objectChanged(cm, id, instance);
+    cacheManager.objectChanged(session, cm, id, instance, updates);
   }
 
   /*
@@ -179,7 +184,7 @@ public class OtmInterceptor implements Interceptor {
     if (instance instanceof Journal)
       journalChanged(((Journal) instance).getKey(), true);
 
-    cacheManager.objectRemoved(cm, id);
+    cacheManager.objectRemoved(session, cm, id, instance);
   }
 
   private void journalChanged(String journal, boolean deleted) {

@@ -83,7 +83,7 @@ public class SessionImpl extends AbstractSession {
         super.insert(o, cm, session);
       }
     }
-    public Collection<RdfMapper> update(Object o, ClassMetadata cm, Session session)
+    public Interceptor.Updates update(Object o, ClassMetadata cm, Session session)
         throws OtmException {
       synchronized(this) {
         return super.update(o, cm, session);
@@ -467,10 +467,14 @@ public class SessionImpl extends AbstractSession {
       if (log.isDebugEnabled())
         log.debug("Update skipped for " + id + ". This is a proxy object and is not even loaded.");
     } else {
-      Collection<RdfMapper> fields = states.update(o, cm, this);
-      boolean firstTime = (fields == null);
+      Interceptor.Updates updates = states.update(o, cm, this);
+      Collection<RdfMapper> fields;
+      boolean firstTime = (updates == null);
       if (firstTime)
         fields = cm.getRdfMappers();
+      else
+        fields = updates.pmapChanged ? cm.getRdfMappers() : updates.rdfMappers;
+
       int nFields = fields.size();
       if (log.isDebugEnabled()) {
         if (firstTime)
@@ -511,10 +515,11 @@ public class SessionImpl extends AbstractSession {
           bf = false;
           break;
         }
+        if (updates != null)
+          updates.blobChanged = bf;
       }
       if (interceptor != null)
-        interceptor.onPostWrite(this, cm, id.getId(), o, fields,
-                                bf ? cm.getBlobField() : null);
+        interceptor.onPostWrite(this, cm, id.getId(), o, updates);
     }
   }
 
