@@ -344,7 +344,7 @@ public class BrowseService {
 
     return browseCache.get(key, -1,
                               new Cache.SynchronizedLookup<List<VolumeInfo>, RuntimeException>(key) {
-       public List<VolumeInfo> lookup() {
+       public List<VolumeInfo> lookup() throws RuntimeException {
          final List<URI> volumeDois = journal.getVolumes();
          List<VolumeInfo> volumeInfos = loadVolumeInfos(volumeDois);
          Collections.reverse(volumeInfos);

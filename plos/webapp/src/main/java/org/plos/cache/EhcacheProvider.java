@@ -98,10 +98,11 @@ public class EhcacheProvider implements Cache {
                                  throws E {
     Object val = rawGet(key);
 
-    if ((val == null) && (lookup != null)) {
-      val =
-        lookup.execute(new Operation<E>() {
-            public Object execute(boolean degraded) throws E {
+    try {
+      if ((val == null) && (lookup != null)) {
+        val =
+          lookup.execute(new Lookup.Operation() {
+            public Object execute(boolean degraded) throws Exception {
               if (degraded)
                 log.warn("Degraded mode lookup for key '" + key + "' in cache '"
                          + EhcacheProvider.this.getName() + "'");
@@ -127,6 +128,11 @@ public class EhcacheProvider implements Cache {
               return val;
             }
           });
+      }
+    } catch (RuntimeException e)  {
+       throw e;
+    } catch (Exception e) {
+      throw (E)e;
     }
 
     return NULL.equals(val) ? null : (T) val;

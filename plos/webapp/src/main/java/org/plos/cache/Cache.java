@@ -144,18 +144,18 @@ public interface Cache {
      *
      * @return the value returned by executing the operation; not necessarily of type <T>
      *
-     * @throws E the exception thrown by lookup
+     * @throws Exception the exception thrown by lookup
      */
-    public Object execute(Operation<E> operation) throws E {
+    public Object execute(Operation operation) throws Exception {
       return operation.execute(false);
     }
-  }
 
-  /**
-   * A call-back operation from the Cache during a read-thru cache read.
-   */
-  public static interface Operation<E extends Exception> {
-    public Object execute(boolean degradedMode) throws E;
+    /**
+     * A call-back operation from the Cache during a read-thru cache read.
+     */
+    public interface Operation {
+      public Object execute(boolean degradedMode) throws Exception;
+    }
   }
 
   /**
@@ -174,7 +174,7 @@ public interface Cache {
       this.lock = lock;
     }
 
-    public Object run(Operation<E> operation) throws E {
+    public Object execute(Operation operation) throws Exception {
       synchronized (lock) {
         return operation.execute(false);
       }
@@ -201,15 +201,8 @@ public interface Cache {
       this.unit       = unit;
     }
 
-    public Object run(Operation<E> operation) throws E {
-      boolean acquired;
-
-      try {
-        acquired = lock.tryLock(timeWait, unit);
-      } catch (InterruptedException e) {
-        throw new RuntimeException("Interrupted while acquiring a lock", e);
-      }
-
+    public Object execute(Operation operation) throws Exception {
+      boolean acquired = lock.tryLock(timeWait, unit);
       try {
         return operation.execute(!acquired);
       } finally {

@@ -64,7 +64,7 @@ public class SearchService {
 
       Results results = cache.get(cacheKey, -1,
           new Cache.SynchronizedLookup<Results, ApplicationException>(cacheKey.intern()) {
-            public Results lookup() {
+            public Results lookup() throws ApplicationException {
               return new Results(query, searchWebService, fetchArticleService);
             }
           });
