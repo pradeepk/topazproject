@@ -3,7 +3,7 @@
   <artifactId>otm</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>Object/Triple Mapping</name>
+  <name>Topaz Core Library</name>
   <description>The core Topaz Object-Tripple-Mapping library.</description>
 
   <parent>

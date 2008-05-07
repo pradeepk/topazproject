@@ -3,7 +3,7 @@
   <artifactId>otm-extras</artifactId>
   <packaging>jar</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>otm-extra-utilities</name>
+  <name>Topaz Extra Utilities</name>
   <description>Helpers for using Topaz in various contexts.</description>
 
   <parent>
