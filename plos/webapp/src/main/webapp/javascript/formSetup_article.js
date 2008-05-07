@@ -226,6 +226,105 @@ function initAnnotationForm() {
 
 }
 
+/*
+var activeToggleId = "";
+var activeWidget = "";
+
+function setActiveToggle(widgetId, boxId) {
+  activeToggleId = boxId;
+  activeWidget = dojo.byId(widgetId);
+}
+
+function singleView(obj) {
+  if (activeToggleId != "") {
+    topaz.domUtil.swapDisplayMode(activeToggleId, "none");
+    toggleExpand(activeWidget, false); 
+  }
+}
+
+function singleExpand(obj, targetId) {
+  if (targetId != activeToggleId) {
+    singleView(obj);
+  }
+  setActiveToggle
+   (obj.id, targetId);
+  topaz.domUtil.swapDisplayMode(targetId);
+  toggleExpand(obj); 
+  
+  return false;
+}
+*/
+
+function toggleAnnotation(obj, userType) {
+  _ldc.show();
+  var bugs = document.getElementsByTagAndClassName('a', 'bug');
+  
+  for (var i=0; i<bugs.length; i++) {
+    var classList = new Array();
+    classList = bugs[i].className.split(' ');
+    for (var n=0; n<classList.length; n++) {
+      if (classList[n].match(userType))
+        bugs[i].style.display = (bugs[i].style.display == "none") ? "inline" : "none";
+    }
+  }
+  
+  toggleExpand(obj, null, "Show notes", "Hide notes");
+  
+  _ldc.hide();
+  
+  return false;
+}
+
+function getAnnotationEl(annotationId) {
+  var elements = document.getElementsByTagAndAttributeName('a', 'displayid');
+     
+  var targetEl
+  for (var i=0; i<elements.length; i++) {
+    var elDisplay = topaz.domUtil.getDisplayId(elements[i]);
+    var displayList = elDisplay.split(',');
+
+    for (var n=0; n<displayList.length; n++) {
+      if (displayList[n] == annotationId) {
+        targetEl = elements[i];
+        return targetEl;
+      }
+    }
+    
+  }
+  
+  return false;
+}
+
+var elLocation;
+function jumpToAnnotation(annotationId) {
+  var targetEl = getAnnotationEl(annotationId);
+
+  jumpToElement(targetEl);
+}
+
+function jumpToElement(elNode) {
+  if (elNode) {
+    elLocation = topaz.domUtil.getCurrentOffset(elNode);
+    window.scrollTo(0, elLocation.top);
+  }
+}
+
+function toggleExpand(obj, isOpen, textOn, textOff) {
+  if (isOpen == false) {
+    obj.className = obj.className.replace(/collapse/, "expand");
+    if (textOn) dojox.data.dom.textContent(obj, textOn);
+  }
+  else if (obj.className.match('collapse')) {
+    obj.className = obj.className.replace(/collapse/, "expand");
+    if (textOn) dojox.data.dom.textContent(obj, textOn);
+  }
+  else {
+    obj.className = obj.className.replace(/expand/, "collapse");
+    if (textOff) dojox.data.dom.textContent(obj, textOff);
+  }
+  
+}
+
 function showAnnotationDialog() {
    // reset
   _noteType.selectedIndex = 0;
@@ -242,7 +341,7 @@ function validateNewComment() {
   dojo.xhrPost({
      url: _namespace + "/annotation/secure/createAnnotationSubmit.action",
      handleAs:'json',
-     formNode: _annotationForm,
+     form: _annotationForm,
      error: function(response, ioArgs){
        handleXhrError(response, ioArgs);
        topaz.formUtil.enableFormFields(_annotationForm);
@@ -307,15 +406,12 @@ function getArticle(refreshType) {
   _ldc.show();
   dojo.xhrGet({
     url: _namespace + "/article/fetchBody.action?articleURI=" + targetUri,
-    handleAs:'json',
+    handleAs:'text',
     error: function(response, ioArgs){
       handleXhrError(response);
     },
     load: function(response, ioArgs){
-      var docFragment = document.createDocumentFragment();
-      docFragment = response;
-      console.debug("type = " + type + "\nevt = " + evt + "\n" + docFragment);
-      refreshArea.innerHTML = docFragment;
+      refreshArea.innerHTML = response;
       
       if (refreshType  == "rating") {
         refreshRating(targetUri);
@@ -342,7 +438,7 @@ function getAnnotationCount() {
   var targetUri = _annotationForm.target.value;
   dojo.xhrGet({
     url: _namespace + "/article/fetchArticleRhc.action?articleURI=" + targetUri,
-    handleAs:'json',
+    handleAs:'text',
     error: function(response, ioArgs){
       handleXhrError(response, ioArgs);
     },

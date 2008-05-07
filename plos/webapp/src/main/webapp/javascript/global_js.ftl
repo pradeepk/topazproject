@@ -35,8 +35,10 @@
 <script type="text/javascript">
 <#include "${x}">
 </script>	
-	<#elseif x?contains("dojo.js")>
+  <#elseif x?contains("dojo.js")>
 <script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/dojo.js.uncompressed.js"></script>
+	<#elseif x?contains("ambra.js")>
+<script type="text/javascript" src="${freemarker_config.context}/javascript/ambra.js.uncompressed.js"></script>
   <#else>
 <script type="text/javascript" src="${x}"></script>	
 	</#if>
