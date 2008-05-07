@@ -242,6 +242,15 @@ options {
     private void createAliasCriteria() throws RecognitionException {
       Map<String, AST> aliases = new HashMap<String, AST>(aliasMap);
 
+      /* start with the alias for the projection expression, if any, in order that we correctly
+       * walk up the tree and build referrer criteria where necessary.
+       */
+      assert critMap.size() == 1 : "Unexpected number of elements in criteria-map: " + critMap;
+      String rootVar = critMap.keySet().iterator().next();
+      if (aliases.containsKey(rootVar))
+        createAliasCriteria(rootVar, aliases);
+
+      // process all remaining aliases
       while (aliases.size() > 0)
         createAliasCriteria(aliases.keySet().iterator().next(), aliases);
     }
@@ -297,6 +306,7 @@ options {
                 // This is just to simplify the rest of the logic, but in the end it gets tossed
                 crit = new Criteria(sess, null, null, false, typeMap.get(alias), null);
                 makeParents(factor, crit);
+                critMap.put(var, crit);
               }
             }
             crit = makeChildren(factor, critMap.get(var), true);
