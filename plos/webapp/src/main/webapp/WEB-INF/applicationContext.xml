@@ -508,12 +508,6 @@
     <property name="cacheName" value="ArticleCarriers"/>
   </bean>
 
-  <bean id="simplePageCachingFilter" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-    <property name="cacheName">
-      <value>SimplePageCachingFilter</value>
-    </property>
-  </bean>
-
   <bean id="articleAnnotationEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName">
       <value>ArticleAnnotationCache</value>

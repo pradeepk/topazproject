@@ -45,7 +45,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.List;
-import net.sf.ehcache.Ehcache;
 import org.plos.article.action.CreateCitation;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -73,7 +72,6 @@ public class FetchArticleService {
   private ArticleAnnotationService articleAnnotationService;
 
   private Cache articleAnnotationCache;
-  private Ehcache simplePageCachingFilter;
 
   private String getTransformedArticle(final String articleURI) throws ApplicationException {
     try {
@@ -227,14 +225,6 @@ public class FetchArticleService {
   }
 
   /**
-   * @param simplePageCachingFilter The simplePageCachingFilter (action page results) cache to use.
-   */
-  @Required
-  public void setSimplePageCachingFilter(Ehcache simplePageCachingFilter) {
-    this.simplePageCachingFilter = simplePageCachingFilter;
-  }
-
-  /**
    * @param articleXmlUtils The articleXmlUtils to set.
    */
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
@@ -276,7 +266,6 @@ public class FetchArticleService {
    * All (ARTICLE_KEY, ARTICLEINFO_KEY, ArticleAnnotationService.ANNOTATION_KEY,
    * CreateCitation.CITATION_KEY) + objectUri will be removed.
    * Removal is syncronized on ARTICLE_LOCK + objectUri.
-   * Removal of Articles invalidates the SimplePageCachingFilter (action page results) cache.
    * TODO: for now, do not invalidate results cache, revist when actual action caching and
    * invalidation by DOI are implemented
    *
@@ -295,8 +284,5 @@ public class FetchArticleService {
         articleAnnotationCache.remove(CreateCitation.CITATION_KEY + objectUri);
       }
     }
-
-    // TODO: would be ideal to invalidate cache after every Article removal, performance issues?
-    // simplePageCachingFilter.removeAll();
   }
 }
