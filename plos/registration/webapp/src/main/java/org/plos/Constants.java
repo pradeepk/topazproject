@@ -19,10 +19,9 @@
 package org.plos;
 
 /**
- * Some of the constants for the Plosone application.
+ * Some of the constants for the Ambra application.
  */
 public interface Constants {
-
   /**
    * Defines the length of various fields used by Webwork Annotations
    */

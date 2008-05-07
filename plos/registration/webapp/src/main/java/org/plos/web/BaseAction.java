@@ -22,8 +22,6 @@ package org.plos.web;
 import com.opensymphony.xwork2.ActionSupport;
 import org.plos.OtherConstants;
 
-
-
 /**
  * @author stevec
  *
@@ -44,5 +42,4 @@ public class BaseAction extends ActionSupport {
   public void setOtherConstants(OtherConstants otherConstants) {
     otherConstants = otherConstants;
   }
-  
 }

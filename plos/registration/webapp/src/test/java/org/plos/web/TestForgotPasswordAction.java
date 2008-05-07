@@ -23,7 +23,8 @@ import org.plos.BasePlosoneRegistrationTestCase;
 import com.opensymphony.xwork2.Action;
 
 public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
-  public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered() throws Exception {
+  public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered()
+    throws Exception {
     final String email = "viru-forgot-password-not-registered@home.com";
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
@@ -31,7 +32,8 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     assertEquals(Action.INPUT, forgotPasswordAction.execute());
   }
 
-  public void testShouldSendEmailForForgotPasswordEmailEvenIfTheEmailItIsNotVerified() throws Exception {
+  public void testShouldSendEmailForForgotPasswordEmailEvenIfTheEmailItIsNotVerified()
+    throws Exception {
     final String email = "viru-forgot-password-not-verified-yet@home.com";
 
     assertEquals(Action.SUCCESS, createUser(email, "virupasswd"));
@@ -56,7 +58,8 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     assertTrue(forgotPasswordAction.getActionErrors().isEmpty());
   }
 
-  public void testShouldSendEmailForForgotPasswordEmailIfTheEmailIsVerifiedAndActive() throws Exception {
+  public void testShouldSendEmailForForgotPasswordEmailIfTheEmailIsVerifiedAndActive()
+    throws Exception {
     final String email = "viru-forgot-password-verified-and-active@home.com";
     createUser(email, "virupasswd");
 
@@ -95,5 +98,4 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     assertNotNull(forgotPasswordUser.getResetPasswordToken());
     assertTrue(forgotPasswordUser.getResetPasswordToken().length() > 0);
   }
-
 }

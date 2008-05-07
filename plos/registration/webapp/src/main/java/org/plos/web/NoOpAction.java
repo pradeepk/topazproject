@@ -17,9 +17,8 @@
  * limitations under the License.
  * 
  */
+
 package org.plos.web;
-
-
 
 /**
  * Change the password action.
@@ -28,5 +27,4 @@ public class NoOpAction extends BaseAction {
   public String execute() throws Exception {
     return SUCCESS;
   }
-
 }

@@ -18,6 +18,7 @@
  */
 
 package org.plos.service;
+
 /**
  * User has not been verified exception. May happen if the user never verified his email address
  */

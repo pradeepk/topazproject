@@ -96,5 +96,4 @@ public class TestConfirmationAction extends BasePlosoneRegistrationTestCase {
     final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
     assertTrue(verifiedUser.isVerified());
   }
-
 }

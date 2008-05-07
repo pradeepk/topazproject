@@ -33,9 +33,9 @@ public interface RegistrationService {
    * @throws UserAlreadyExistsException UserAlreadyExistsException
    * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
    */
-  User createUser(final String loginName, final String password) throws UserAlreadyExistsException, PasswordServiceException;
+  User createUser(final String loginName, final String password) throws UserAlreadyExistsException,
+       PasswordServiceException;
 
-  
   /**
    * Change password.
    * @param loginName loginName
@@ -46,9 +46,10 @@ public interface RegistrationService {
    * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
    * @throws UserAlreadyExistsException UserAlreadyExistsException
    */
-  void changeLogin (final String loginName, final String password, final String newLogin) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, PasswordServiceException, UserAlreadyExistsException;
+  void changeLogin (final String loginName, final String password, final String newLogin)
+    throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, PasswordServiceException,
+                    UserAlreadyExistsException;
 
-    
   /**
    * Will send an email with an address verification link in it if the user has not already been verified
    * 
@@ -56,9 +57,9 @@ public interface RegistrationService {
    * @throws NoUserFoundWithGivenLoginNameException
    * @throws UserAlreadyVerifiedException
    */
-  void sendRegistrationEmail (final String loginName) throws NoUserFoundWithGivenLoginNameException, UserAlreadyVerifiedException;
+  void sendRegistrationEmail (final String loginName) throws NoUserFoundWithGivenLoginNameException,
+       UserAlreadyVerifiedException;
 
-  
   /**
    * Get user with loginName
    * @param loginName loginName
@@ -86,7 +87,9 @@ public interface RegistrationService {
    * @throws UserAlreadyVerifiedException UserAlreadyVerifiedException
    * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
    */
-  void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException, NoUserFoundWithGivenLoginNameException;
+  void verifyUser(final String loginName, final String emailVerificationToken)
+    throws VerificationTokenInvalidException, UserAlreadyVerifiedException,
+                    NoUserFoundWithGivenLoginNameException;
 
   /**
    * Verify the users account and changes the login to newLoginName
@@ -96,7 +99,9 @@ public interface RegistrationService {
    * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
    * @throws UserAlreadyExistsException UserAlreadyExistsException
    */
-  void verifyChangeUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, NoUserFoundWithGivenLoginNameException, UserAlreadyExistsException;
+  void verifyChangeUser(final String loginName, final String emailVerificationToken)
+    throws VerificationTokenInvalidException, NoUserFoundWithGivenLoginNameException,
+                    UserAlreadyExistsException;
 
   /**
    * Send a forgot password message.
@@ -115,7 +120,9 @@ public interface RegistrationService {
    * @throws UserNotVerifiedException UserNotVerifiedException
    * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
    */
-  void changePassword(final String loginName, final String oldPassword, final String newPassword) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException, PasswordServiceException;
+  void changePassword(final String loginName, final String oldPassword, final String newPassword)
+    throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException,
+                    PasswordServiceException;
 
   /**
    * Reset the user's password to a new one.
@@ -126,7 +133,9 @@ public interface RegistrationService {
    * @throws VerificationTokenInvalidException VerificationTokenInvalidException
    * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
    */
-  void resetPassword(final String loginName, final String resetPasswordToken, final String newPassword) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException, PasswordServiceException;
+  void resetPassword(final String loginName, final String resetPasswordToken, final String newPassword)
+    throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException,
+                    PasswordServiceException;
 
   /**
    * Return the user with the given loginName and resetPasswordToken
@@ -136,5 +145,6 @@ public interface RegistrationService {
    * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
    * @throws VerificationTokenInvalidException VerificationTokenInvalidException
    */
-  User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
+  User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken)
+    throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
 }

@@ -54,7 +54,6 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
      getHibernateTemplate().delete(user);
   }
 
-
   /**
    * If more than one user is found it throws an Exception.
    * @see UserDAO#findUserWithLoginName(String)
@@ -64,12 +63,14 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
       new HibernateCallback(){
         public Object doInHibernate(final Session session) throws HibernateException, SQLException {
           final DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
-//          detachedCriteria.add(Restrictions.eq("loginName", loginName));
-          detachedCriteria.add(Restrictions.sqlRestriction("lower(loginName) = lower(?)", loginName, Hibernate.STRING));
+          detachedCriteria.add(Restrictions.sqlRestriction
+            ("lower(loginName) = lower(?)", loginName, Hibernate.STRING));
+
           final List list = getHibernateTemplate().findByCriteria(detachedCriteria);
 
           if (list.size() > 1) {
-            final DuplicateLoginNameException duplicateLoginNameException = new DuplicateLoginNameException(loginName);
+            final DuplicateLoginNameException duplicateLoginNameException
+                     = new DuplicateLoginNameException(loginName);
 
             log.error("DuplicateLoginName:"+loginName, duplicateLoginNameException);
             throw duplicateLoginNameException;
@@ -80,7 +81,6 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
           }
           return (User) list.get(0);
         }
-    });
+      });
   }
-
 }

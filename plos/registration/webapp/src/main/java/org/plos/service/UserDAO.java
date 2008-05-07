@@ -23,8 +23,7 @@ import org.plos.registration.User;
 /**
  * Contract for all User DAO's.
  */
- public interface UserDAO {
-
+public interface UserDAO {
   /**
    * Save or update the user
    * @param user User
@@ -44,6 +43,4 @@ import org.plos.registration.User;
    * @return User
    */
   User findUserWithLoginName(final String loginName);
-
 }
-

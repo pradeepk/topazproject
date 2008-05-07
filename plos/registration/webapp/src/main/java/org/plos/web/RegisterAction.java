@@ -18,8 +18,6 @@
  */
 package org.plos.web;
 
-import static org.plos.Constants.Length.PASSWORD_MAX;
-import static org.plos.Constants.Length.PASSWORD_MIN;
 import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -31,6 +29,9 @@ import org.plos.registration.User;
 import org.plos.service.RegistrationMailer;
 import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
+
+import static org.plos.Constants.Length.PASSWORD_MAX;
+import static org.plos.Constants.Length.PASSWORD_MIN;
 
 /**
  * Uses use this to register as a new user. Verification stage is separate from this.
@@ -49,7 +50,6 @@ public class RegisterAction extends BaseAction {
   private static final Log log = LogFactory.getLog(RegisterAction.class);
 
   public String execute() throws Exception {
-
     try {
       final User user = registrationService.createUser(loginName1, password1);
     } catch (final UserAlreadyExistsException e) {
@@ -70,7 +70,8 @@ public class RegisterAction extends BaseAction {
    */
   @RegexFieldValidator(message = "You must enter a valid e-mail", expression = EMAIL_REGEX)
   @RequiredStringValidator(message="You must enter an e-mail address")
-  @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2", message="Email addresses must match")
+  @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2",
+      message="Email addresses must match")
   @StringLengthFieldValidator(maxLength = "256", message="E-mail must be less than 256")
   public String getLoginName1() {
     return loginName1;
@@ -104,8 +105,10 @@ public class RegisterAction extends BaseAction {
    * @return password1
    */
   @RequiredStringValidator(message="You must enter a password", shortCircuit=true)
-  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match", shortCircuit=true)
-  @StringLengthFieldValidator(minLength= PASSWORD_MIN, maxLength = PASSWORD_MAX, message="Password length must be between " + PASSWORD_MIN + " and " + PASSWORD_MAX, shortCircuit=true)
+  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2",
+      message="Passwords must match", shortCircuit=true)
+  @StringLengthFieldValidator(minLength= PASSWORD_MIN, maxLength = PASSWORD_MAX,
+      message="Password length must be between " + PASSWORD_MIN + " and " + PASSWORD_MAX, shortCircuit=true)
   public String getPassword1() {
     return password1;
   }
@@ -148,12 +151,10 @@ public class RegisterAction extends BaseAction {
     return registrationVerificationMailer;
   }
 
-
   /**
    * @param registrationMailer The registrationMailer to set.
    */
   public void setRegistrationVerificationMailer(RegistrationMailer registrationMailer) {
     this.registrationVerificationMailer = registrationMailer;
   }
-
 }

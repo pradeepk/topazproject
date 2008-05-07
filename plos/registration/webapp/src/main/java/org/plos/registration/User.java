@@ -25,7 +25,6 @@ import java.sql.Timestamp;
  * Interface for Plos Reistration User
  */
 public interface User {
-
   /**
    * Get the Login Name
    * @return Login Name
@@ -49,8 +48,7 @@ public interface User {
     * @param email  Set User Login Name
     */
   void setNewLoginName(String email);
-  
-  
+
   /**
    * Get the User Password
    * @return User Password
@@ -146,5 +144,4 @@ public interface User {
     * @param resetPasswordToken resetPasswordToken
     */
   void setResetPasswordToken(final String resetPasswordToken);
-
 }

@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
-
 /**
  * Action that takes in a user's login id and looks him up.  If he is found, then the
  * address confirmation email is sent.  If the user is already verified, it will inform
@@ -41,11 +40,11 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 public class ResendRegistrationAction extends BaseAction {
 
   private String loginName;
-  
+
   private RegistrationService registrationService;
   private RegistrationMailer registrationVerificationMailer;
   private static final Log log = LogFactory.getLog(ResendRegistrationAction.class);
-  
+
   public String execute() throws Exception {
     try {
       registrationService.sendRegistrationEmail(loginName);
@@ -89,7 +88,7 @@ public class ResendRegistrationAction extends BaseAction {
   public void setRegistrationService(RegistrationService registrationService) {
     this.registrationService = registrationService;
   }
-  
+
   /**
    * @return Returns the registrationMailer.
    */
@@ -97,12 +96,10 @@ public class ResendRegistrationAction extends BaseAction {
     return registrationVerificationMailer;
   }
 
-
   /**
    * @param registrationMailer The registrationMailer to set.
    */
   public void setRegistrationVerificationMailer(RegistrationMailer registrationMailer) {
     this.registrationVerificationMailer = registrationMailer;
   }
-
 }

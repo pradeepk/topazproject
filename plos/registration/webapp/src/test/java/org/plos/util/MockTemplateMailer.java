@@ -26,10 +26,14 @@ import org.plos.service.RegistrationMailer;
 import java.util.Map;
 
 public class MockTemplateMailer extends RegistrationMailer {
-  public void mail(final String toEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename) {
+  public void mail(final String toEmailAddress, final String subject,
+      final Map<String, Object> context, final String textTemplateFilename,
+      final String htmlTemplateFilename) {
   }
 
-  public void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject, final String textTemplateFilename, final String htmlTemplateFilename) {
+  public void massMail(final Map<String, Map<String, Object>> emailAddressContextMap,
+      final String subject, final String textTemplateFilename,
+      final String htmlTemplateFilename) {
   }
 
   public void sendEmailAddressVerificationEmail(final User user) {
@@ -60,7 +64,7 @@ public class MockTemplateMailer extends RegistrationMailer {
     return null;
   }
 
-  public void setForgotPasswordVerificationEmailMap(final Map<String, String> forgotPasswordVerificationEmailMap) {
+  public void setForgotPasswordVerificationEmailMap
+    (final Map<String, String> forgotPasswordVerificationEmailMap) {
   }
-
 }

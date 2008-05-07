@@ -27,10 +27,13 @@ import org.plos.web.RegisterAction;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 /**
- * Base test case for the registration unit tests. It provides spring injection from one of its superclasses.
+ * Base test case for the registration unit tests. It provides spring injection from one of its
+ * superclasses.
  *
  */
-public abstract class BasePlosoneRegistrationTestCase extends AbstractDependencyInjectionSpringContextTests {
+public abstract class BasePlosoneRegistrationTestCase
+  extends AbstractDependencyInjectionSpringContextTests {
+
   protected RegistrationService registrationService;
   private ConfirmationAction confirmationAction;
   private RegisterAction registerAction;

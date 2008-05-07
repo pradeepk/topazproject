@@ -28,6 +28,8 @@ import java.security.MessageDigest;
 /**
  * Password digest service. It should hash the password such that it should be
  * difficult to get the original password back from it.
+ *
+ * @author viru
  */
 public class PasswordDigestService {
   private String algorithm;
@@ -56,13 +58,16 @@ public class PasswordDigestService {
 
 
   /**
-   * Return a digest of the password also known as hashing. Use the salt as provided to make the deduction of the original password more time consuming.
+   * Return a digest of the password also known as hashing. Use the salt as provided to make the
+   * deduction of the original password more time consuming.
+   *
    * @param password password
    * @param salt salt
    * @return digest password
    * @throws PasswordServiceException on failure
    */
-  private String getDigestPassword(final String password, final String salt) throws PasswordServiceException {
+  private String getDigestPassword(final String password, final String salt)
+    throws PasswordServiceException {
     try {
       final MessageDigest md = MessageDigest.getInstance(algorithm);
       final byte[] bytes = md.digest((salt + password).getBytes(encodingCharset));
@@ -81,7 +86,8 @@ public class PasswordDigestService {
    * @return true if verified successfully, false otherwise
    * @throws PasswordServiceException on failure
    */
-  public boolean verifyPassword(final String passwordToVerify, final String savedPassword) throws PasswordServiceException {
+  public boolean verifyPassword(final String passwordToVerify, final String savedPassword)
+    throws PasswordServiceException {
     final String salt = getSalt(savedPassword);
     final String newPasswordDigest = getDigestPassword(passwordToVerify, salt);
 
@@ -128,6 +134,7 @@ public class PasswordDigestService {
   /**
    * Keeping the salt length hard coded for now, thinking that it might be better for security than
    * if plainly visible in the spring configuration
+   *
    * @return the length of salt
    */
   private int getSaltLength() {

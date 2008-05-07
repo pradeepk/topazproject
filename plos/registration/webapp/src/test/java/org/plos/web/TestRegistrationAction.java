@@ -40,5 +40,4 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
 
     assertEquals(Action.INPUT, createUser(email, password));
   }
-
 }

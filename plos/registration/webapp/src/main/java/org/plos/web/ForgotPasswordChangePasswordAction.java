@@ -24,17 +24,17 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import static org.plos.Constants.Length.PASSWORD_MIN;
-import static org.plos.Constants.Length.PASSWORD_MAX;
 import org.plos.service.RegistrationService;
 import org.plos.service.VerificationTokenInvalidException;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
+
+import static org.plos.Constants.Length.PASSWORD_MIN;
+import static org.plos.Constants.Length.PASSWORD_MAX;
 
 /**
  * Used to present the user with reset password facility after having forgotten their password.
  */
 public class ForgotPasswordChangePasswordAction extends BaseAction {
-
   private String loginName;
   private String resetPasswordToken;
   private String password1;
@@ -130,10 +130,12 @@ public class ForgotPasswordChangePasswordAction extends BaseAction {
       return false;
     } else {
       final int passwordLength = password1.length();
-      if (passwordLength < Integer.parseInt(PASSWORD_MIN) || passwordLength > Integer.parseInt(PASSWORD_MAX)) {
-        addFieldError("password1",  "Password length must be between " + PASSWORD_MIN + " and " + PASSWORD_MAX);
+      if (passwordLength < Integer.parseInt(PASSWORD_MIN) ||
+          passwordLength > Integer.parseInt(PASSWORD_MAX)) {
+        addFieldError("password1",  "Password length must be between " + PASSWORD_MIN +
+            " and " + PASSWORD_MAX);
         return false;
-      } 
+      }
     }
 
     return true;

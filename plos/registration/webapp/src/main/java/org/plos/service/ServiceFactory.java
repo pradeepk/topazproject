@@ -52,5 +52,4 @@ public class ServiceFactory {
   public void setPersistenceService(final PersistenceService persistenceService) {
     this.persistenceService = persistenceService;
   }
-
 }

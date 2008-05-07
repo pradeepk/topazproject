@@ -33,7 +33,7 @@ public class TestUniqueTokenGenerator extends TestCase {
     for (int i = 0; i < loopCount; i++) {
       set.add(TokenGenerator.getUniqueToken());
     }
-    
+
     assertEquals(loopCount, set.size());
   }
 }

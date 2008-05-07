@@ -38,17 +38,19 @@ public class ChangeEmailConfirmAction extends BaseAction {
   private String emailVerificationToken;
   private String loginName;
   private RegistrationService registrationService;
-  
+
   private static final Log log = LogFactory.getLog(ChangeEmailConfirmAction.class);
 
   public String execute() throws Exception {
     if (log.isDebugEnabled()) {
-      log.debug("Verifying change email request for user: " + loginName + " with token: " + emailVerificationToken);
+      log.debug("Verifying change email request for user: " + loginName + " with token: "
+          + emailVerificationToken);
     }
     try {
       registrationService.verifyChangeUser(loginName, emailVerificationToken);
     } catch (final VerificationTokenInvalidException e) {
-      final String message = "Verification token invalid: "+ emailVerificationToken+", e-mail: " + loginName;
+      final String message = "Verification token invalid: " +
+        emailVerificationToken+", e-mail: " + loginName;
       addActionError(message);
       if (log.isTraceEnabled()) {
         log.trace(message, e);
@@ -58,23 +60,21 @@ public class ChangeEmailConfirmAction extends BaseAction {
       final String message = "No user found with given e-mail address: "+ loginName;
       addActionError(message);
       addFieldError("login", message);
-      if (log.isTraceEnabled()) {      
+      if (log.isTraceEnabled()) {
         log.trace(message, e);
       }
       return ERROR;
     } catch (final ApplicationException e) {
       addActionError(e.getMessage());
       addFieldError("loginName", e.getMessage());
-      if (log.isWarnEnabled()) {      
+      if (log.isWarnEnabled()) {
         log.warn(e, e);
       }
       return ERROR;
     }
     return SUCCESS;
-       
-  } 
-  
-  
+  }
+
   /**
    * Get registrationService
    * @return registrationService
@@ -82,7 +82,7 @@ public class ChangeEmailConfirmAction extends BaseAction {
   public RegistrationService getRegistrationService() {
     return this.registrationService;
   }
-  
+
   /**
    * Set registrationService
    * @param registrationService registrationService
@@ -110,7 +110,8 @@ public class ChangeEmailConfirmAction extends BaseAction {
   /**
    * @return loginName
    */
-  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid e-mail address")
+  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName",
+      message="Not a valid e-mail address")
   @RequiredStringValidator(message="E-mail address not specified")
   public String getLoginName() {
     return loginName;
@@ -123,5 +124,4 @@ public class ChangeEmailConfirmAction extends BaseAction {
   public void setLoginName(final String loginName) {
     this.loginName = loginName;
   }
-
 }

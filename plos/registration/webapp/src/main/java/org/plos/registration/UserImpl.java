@@ -31,7 +31,7 @@ import javax.persistence.Version;
 import java.sql.Timestamp;
 
 /**
- * Implementation of Plos Registered User
+ * Implementation of Ambra Registered User
  */
 
 @Entity
@@ -45,7 +45,7 @@ public class UserImpl implements User {
 
   @Column  (unique = true, length = 256)
   private String newLoginName;
-  
+
   @Column (nullable = false, length = 256)
   private String password;
 
@@ -134,7 +134,6 @@ public class UserImpl implements User {
   @Transactional(propagation= Propagation.MANDATORY)
   public void setActive(final boolean active) {
     this.active = active;
-
   }
 
   /**
