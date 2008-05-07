@@ -200,14 +200,6 @@
         <ingestDestinationDir>
           /var/spool/ambra/ingested
         </ingestDestinationDir>
-        <imageMagick>
-          <imageSetConfigs>
-            <!-- set up an alternet imageSet. name must match an articleType configured below -->
-            <imageSet name="issueImage">
-              <small width="120" />
-            </imageSet>
-          </imageSetConfigs>
-        </imageMagick>
       </documentManagement>
       
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
@@ -251,7 +243,6 @@
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Issue%20Image</typeUri>
         <typeHeading>Issue Image</typeHeading>
-        <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>
 
