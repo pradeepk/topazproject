@@ -17,14 +17,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-</div>
-<!-- end : container -->	
-
-<!-- begin : footer -->
-<div id="ftr">
-<#include "/journals/plosJournals/global/global_footer.ftl">
-</div>
-<!-- end : footer -->
-<#include "google.ftl">
-</body>
-</html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<#include "user_head.ftl">
+</head>
+<body>
+<!-- begin : container -->
+<div id="container">
+	
+<#include "user_header.ftl">

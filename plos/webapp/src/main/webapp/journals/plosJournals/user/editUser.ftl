@@ -17,14 +17,34 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-</div>
-<!-- end : container -->	
+<#if Parameters.tabId?exists>
+   <#assign tabId = Parameters.tabId>
+<#else>
+   <#assign tabId = "">
+</#if>
+<#if displayName?exists>
+   <#assign username = displayName>
+<#else>
+   <#assign username = "">
+</#if>
 
-<!-- begin : footer -->
-<div id="ftr">
-<#include "/journals/plosJournals/global/global_footer.ftl">
+
+<div id="content">
+	<h1>PLoS Profile: ${username}</h1>
+	
+	<div class="horizontalTabs">
+		<ul id="tabsContainer">
+		</ul>
+		
+		<div id="tabPaneSet" class="contentwrap">
+		  <#if tabId == "alerts">
+				<#include "/user/alerts.ftl">
+		  <#else>
+				<#include "user.ftl">
+			</#if>
+		</div>
+	</div>
+	
 </div>
-<!-- end : footer -->
-<#include "google.ftl">
-</body>
-</html>
+
+<#include "/widget/loadingCycle.ftl">

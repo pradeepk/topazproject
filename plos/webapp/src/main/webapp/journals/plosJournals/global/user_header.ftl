@@ -17,14 +17,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<!-- begin : header -->
+<div id="hdr">
+	<div id="logo"><a href="http://www.plosjournals.org" title="PLoS Journals"><span>PLoS Journals</span></a></div>
+	<div id="tagline"><span>A peer-reviewed, open-access journal published by the Public Library of Science</span></div>
 </div>
-<!-- end : container -->	
+<!-- end : header -->
 
-<!-- begin : footer -->
-<div id="ftr">
-<#include "/journals/plosJournals/global/global_footer.ftl">
-</div>
-<!-- end : footer -->
-<#include "google.ftl">
-</body>
-</html>
+<!-- begin : navigation -->
+	<#include "user_navigation.ftl">
+<!-- end : navigation -->

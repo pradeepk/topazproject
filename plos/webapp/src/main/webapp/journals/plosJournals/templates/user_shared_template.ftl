@@ -17,10 +17,38 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#include "/global/user_top.ftl">
+<#include "/journals/plosJournals/global/user_top.ftl">
 
 <!-- begin : main content -->
 <#include "${templateFile}">
 <!-- end : main contents -->
 
-<#include "/global/user_bottom.ftl">
+</div>
+<!-- end : container -->	
+
+<!-- begin : footer -->
+<div id="ftr">
+<#include "/journals/plosJournals/global/user_footer.ftl">
+</div>
+<!-- end : footer -->
+<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
+<#if journalContext = "PLoSClinicalTrials" >
+  <#include "/journals/clinicalTrials/global/google.ftl">
+<#elseif journalContext = "PLoSCompBiol" >
+  <#include "/journals/compbiol/global/google.ftl">
+<#elseif journalContext = "PLoSGenetics" >
+  <#include "/journals/genetics/global/google.ftl">
+<#elseif journalContext = "PLoSNTD" >
+  <#include "/journals/ntd/global/google.ftl">
+<#elseif journalContext = "PLoSONE" >
+  <#include "/journals/plosone/global/google.ftl">
+<#elseif journalContext = "PLoSPathogens" >
+  <#include "/journals/pathogens/global/google.ftl">
+<#else>
+  <#include "/global/google.ftl">
+</#if>
+<#-- END MAJOR HACK -->
+</body>
+</html>
+
+

@@ -669,10 +669,10 @@
 
     <action name="editAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success" type="user">
-        <param name="templateFile">/user/editPlosAlerts.ftl</param>
+        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
       </result>
       <result name="input" type="user">
-        <param name="templateFile">/user/editPlosAlerts.ftl</param>
+        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
       </result>
     </action>
 
@@ -691,7 +691,6 @@
       </result>
     </action>
 
-
     <action name="retrieveUserAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success">/user/alerts.ftl</result>
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
@@ -699,10 +698,10 @@
 
     <action name="saveAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="saveAlerts">
       <result name="success" type="user">
-        <param name="templateFile">/user/editPlosAlerts.ftl</param>
+        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
       </result>
       <result name="input" type="user">
-        <param name="templateFile">/user/editPlosAlerts.ftl</param>
+        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
       </result>
     </action>
 
@@ -720,7 +719,6 @@
         <param name="noCache">true</param>
       </result>
      </action>
-
 
     <action name="editProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="user">
@@ -811,8 +809,9 @@
       </result>
     </action>
 
+    <!-- TODO: not needed ??? -->
     <action name="newUser">
-      <result>/WEB-INF/pages/user/newUser.ftl</result>
+      <result>//user/newUser.ftl</result>
     </action>
 
     <action name="displayUser" class="org.plos.user.action.DisplayUserAction">

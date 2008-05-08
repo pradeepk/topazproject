@@ -1,5 +1,5 @@
 <#--
-  $HeadURL::                                                                            $
+  $HeadURL::
   $Id$
   
   Copyright (c) 2007-2008 by Topaz, Inc.
@@ -17,14 +17,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-</div>
-<!-- end : container -->	
-
-<!-- begin : footer -->
-<div id="ftr">
-<#include "/journals/plosJournals/global/global_footer.ftl">
-</div>
-<!-- end : footer -->
-<#include "google.ftl">
-</body>
-</html>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-338393-1";
+_udn = "www.ploscompbiol.org";;
+urchinTracker();
+</script>
