@@ -29,7 +29,7 @@ journal style sheets
 ----------------------------------------------------------
 */
 
-html	{ margin: 0 0 1px 0; min-height: 100%; background: #FFF url(../images/jour_body_bg.gif) 0 0 repeat-x; }
+html	{ margin: 0 0 1px 0; min-height: 100%; background: #FFF url(../images/user_body_bg.gif) 0 0 repeat-x; }
 body	{ font: 0.85em Verdana, Arial, Helvetica, sans-serif; color: #330; margin: 0; border-bottom: 6px solid #333; min-height: 100%; }
 
 * a:link			{ text-decoration: underline; color: #f60; }
@@ -43,7 +43,7 @@ strong					{ font-style: bold; }
 
 h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.05em; color: #333; }
 h1			{ font-size: 2.8em; font-weight: normal; border-top: 4px solid #ccc; padding-top: .4em;}
-h2			{ font-size: 1.8em; font-weight: normal; background: url(../images/jour_dotted_border.gif) repeat-x bottom; padding: 2px 0;}
+h2			{ font-size: 1.8em; font-weight: normal; background: url(../images/user_dotted_border.gif) repeat-x bottom; padding: 2px 0;}
 h3			{ font-size: 1.6em; font-weight: normal; }
 h4			{ font-size: 1.2em; }
 h5			{ font-size: 1em; }
@@ -68,8 +68,8 @@ div#hdr 		{ height: 132px; }
 /* Header : Elements
 ----------------------------------------------------------
 */
-#hdr div#logo 	{ background: transparent url(../images/jour_hdr_logo.gif) no-repeat top left; color: #039; }
-#hdr div#tagline{ background: transparent url(../images/jour_hdr_tagline.gif) no-repeat top left; color: #039; }
+#hdr div#logo 	{ background: transparent url(../images/user_hdr_logo.gif) no-repeat top left; color: #039; }
+#hdr div#tagline{ background: transparent url(../images/user_hdr_tagline.gif) no-repeat top left; color: #039; }
 
 /* Navigation : Main Menu : Elements
 ----------------------------------------------------------
@@ -84,7 +84,7 @@ div#hdr 		{ height: 132px; }
 #nav li li { background-color: #fff; clear: both;}
 
 #nav li a,
-#nav li a:visited { display:block; text-decoration:none; width: auto; padding: 3px .85em 0 .85em; background: transparent url(../images/jour_nav_li_bg.gif) repeat-y right; float:left; height:1.6em; line-height:normal; color:#666; }
+#nav li a:visited { display:block; text-decoration:none; width: auto; padding: 3px .85em 0 .85em; background: transparent url(../images/user_nav_li_bg.gif) repeat-y right; float:left; height:1.6em; line-height:normal; color:#666; }
 #nav li ul { visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; }
 #nav table { margin:-1px; border-collapse:collapse; }
 /* fist line style for IE7 and non-IE browsers and the second line for IE5.5 and IE6 */
@@ -132,7 +132,7 @@ div#hdr 		{ height: 132px; }
 
 #nav li.journalnav { float: right; }
 #nav li.journalnav a,
-#nav li.journalnav a:visited { background: transparent url(../images/jour_nav_li_bg.gif) repeat-y left; }
+#nav li.journalnav a:visited { background: transparent url(../images/user_nav_li_bg.gif) repeat-y left; }
 #nav li.journalnav li a, #nav li.journalnav li a:visited { background-image: none; }
 
 div#content { padding: 30px 0; margin: 0 4px; font-size: .9em; line-height: 1.6em; }
@@ -148,14 +148,14 @@ div.home h2		{ clear: both; }
 /* Footer : Elements
 ----------------------------------------------------------
 */
-div#ftr 		{ background: #FFF url(../images/jour_body_bg.gif) repeat-x 0px -50px; text-align: center;  padding: 20px; border-top: 1px solid #999; clear: both;}
+div#ftr 		{ background: #FFF url(../images/user_body_bg.gif) repeat-x 0px -50px; text-align: center;  padding: 20px; border-top: 1px solid #999; clear: both;}
 div#ftr ul 		{ margin: 0; padding: 0; list-style-type: none; }
 div#ftr ul li 	{ margin: 0 5px; display: inline;  font-size: .85em;}
 div#ftr ul a,
 div#ftr ul a:visited { font-size: .85em; }
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p		{ font-size: .85em; color: #666; margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #999; white-space: nowrap; }
-div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
+div#ftr p span 	{ display: inline; background: #FFF url(../images/user_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
 div#ftr p.iscb	{ border: none; background-color: transparent; }
 
 div#ftr ul.journals { margin-top: 10px; font-size: .85em;}
@@ -177,7 +177,7 @@ div.horizontalTabs	{ position: relative; border-width: 0;}
 	z-index: 10; 
 	margin-bottom: 4px;
 	padding-bottom: 7px;
-	background: url(../images/jour_tab_underline.gif) repeat-x bottom; 
+	background: url(../images/user_tab_underline.gif) repeat-x bottom; 
 	}
 .horizontalTabs ul li	{ 
 	display: inline; 
