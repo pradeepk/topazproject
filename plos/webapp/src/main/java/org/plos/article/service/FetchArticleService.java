@@ -61,9 +61,6 @@ public class FetchArticleService {
   public  static final String ARTICLE_LOCK     = "ArticleAnnotationCache-Lock-";
   private static final String ARTICLE_KEY      = "ArticleAnnotationCache-Article-";
   private static final String ARTICLEINFO_KEY  = "ArticleAnnotationCache-ArticleInfo-";
-  public  static final String ARTICLE_SECONDARY_KEY = "ArticleAnnotationCache-Article-Secondary-";
-  public  static final String ARTICLE_FIGURESTABLE_KEY =
-          "ArticleAnnotationCache-Article-FiguresTables-";
 
   private String encodingCharset;
   private ArticleXMLUtils articleXmlUtils;
@@ -278,8 +275,6 @@ public class FetchArticleService {
       synchronized (lock) {
         articleAnnotationCache.remove(ARTICLE_KEY     + objectUri);
         articleAnnotationCache.remove(ARTICLEINFO_KEY + objectUri);
-        articleAnnotationCache.remove(ARTICLE_SECONDARY_KEY + objectUri);
-        articleAnnotationCache.remove(ARTICLE_FIGURESTABLE_KEY + objectUri);
       }
     }
   }

@@ -42,7 +42,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 
-import org.plos.cache.Cache;
 import org.plos.journal.JournalService;
 import org.plos.models.Article;
 import org.plos.models.Category;
@@ -54,7 +53,6 @@ import org.plos.models.Representation;
 import org.plos.models.RelatedArticle;
 import org.plos.models.UserProfile;
 import org.plos.permission.service.PermissionsService;
-import org.plos.util.CacheAdminHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -79,7 +77,6 @@ public class ArticleOtmService {
   private ArticlePEP         pep;
   private Session            session;
   private JournalService     jrnlSvc;
-  private Cache            articleAnnotationCache;
   private PermissionsService permissionsService;
 
   public ArticleOtmService() throws IOException {
@@ -463,20 +460,12 @@ public class ArticleOtmService {
         throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
-    // do cache aware lookup
-    final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern(); // lock @ Article
-    return articleAnnotationCache.get(FetchArticleService.ARTICLE_SECONDARY_KEY + article, -1,
-                       new Cache.SynchronizedLookup<SecondaryObject[], NoSuchArticleIdException>(lock) {
-                         public SecondaryObject[] lookup() throws NoSuchArticleIdException {
-                           // get objects
-                           Article art = session.get(Article.class, article);
-                           if (art == null) {
-                             throw new NoSuchArticleIdException(article);
-                           }
-                           // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
-                           return convert(art.getParts());
-                         }
-                       });
+    // make use of object-cache
+    Article art = session.get(Article.class, article);
+    if (art == null)
+      throw new NoSuchArticleIdException(article);
+    // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
+    return convert(art.getParts(), null);
   }
 
   /**
@@ -487,51 +476,31 @@ public class ArticleOtmService {
    * @throws NoSuchArticleIdException NoSuchArticleIdException.
    */
   public SecondaryObject[] listFiguresTables(final String article) throws NoSuchArticleIdException {
-
-    final String FIGURE_CONTEXT = "fig";
-    final String TABLE_CONTEXT = "table-wrap";
-
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
-    // do cache aware lookup
-    final Object lock = (FetchArticleService.ARTICLE_LOCK + article).intern();  // lock @ Article
-    return articleAnnotationCache.get(FetchArticleService.ARTICLE_FIGURESTABLE_KEY + article, -1,
-      new Cache.SynchronizedLookup<SecondaryObject[], NoSuchArticleIdException>(lock) {
-        public SecondaryObject[] lookup() throws NoSuchArticleIdException {
-          Disjunction figuresTables = Restrictions.disjunction();
-          figuresTables.add(Restrictions.eq("contextElement", FIGURE_CONTEXT))
-                  .add(Restrictions.eq("contextElement", TABLE_CONTEXT));
-          
-          List<ObjectInfo> sorted = session.createCriteria(ObjectInfo.class)
-                  .add(Restrictions.eq("isPartOf", article))
-                  .add(figuresTables)
-                  .addOrder(Order.asc("id"))
-                  .list();
-          
-          if (log.isDebugEnabled()) {
-            log.debug("list of figures and tables for " + article + ":" + sorted);
-          }
-          
-          // TODO: why sort it again?
-          Collections.sort(sorted, new Comparator<ObjectInfo>() {
-            public int compare(ObjectInfo arg0, ObjectInfo arg1) {
-              return arg0.getId().compareTo((arg1.getId()));
-            }
-          });
-
-          if (log.isDebugEnabled()) {
-            log.debug("*post sort*: list of figures and tables for " + article + ":" + sorted);
-          }
-
-          // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
-          return convert(sorted);
-        }
-    });
+    // make use of object-cache
+    Article art = session.get(Article.class, article);
+    if (art == null)
+      throw new NoSuchArticleIdException(article);
+    // convert to SecondaryObject's. TODO: re-factor to return ObjectInfo
+    return convert(art.getParts(), new String[] {"fig", "table-wrap"});
   }
 
-  private SecondaryObject[] convert(List<ObjectInfo> objectInfos) {
+  private SecondaryObject[] convert(List<ObjectInfo> objectInfos, String[] contextFilter) {
     if (objectInfos == null) {
       return null;
+    }
+    if (contextFilter != null) {
+      List<ObjectInfo> filtered = new ArrayList<ObjectInfo>(objectInfos.size());
+      for(ObjectInfo o : objectInfos) {
+        for (String context : contextFilter) {
+          if (context.equals(o.getContextElement())) {
+              filtered.add(o);
+              break;
+          }
+        }
+      }
+      objectInfos = filtered;
     }
     SecondaryObject[] convertedObjectInfos = new SecondaryObject[objectInfos.size()];
     for (int i = 0; i < objectInfos.size(); i++) {
@@ -630,15 +599,6 @@ public class ArticleOtmService {
   @Required
   public void setJournalService(JournalService service) {
     this.jrnlSvc = service;
-  }
-
-  /**
-   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
-   *   to use.
-   */
-  @Required
-  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
-    this.articleAnnotationCache = articleAnnotationCache;
   }
 
   /**
