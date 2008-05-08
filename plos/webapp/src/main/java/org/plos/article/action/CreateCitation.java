@@ -31,6 +31,8 @@ import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.cache.Cache;
+import org.plos.cache.ObjectListener;
+import org.plos.models.Article;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.CitationUtils;
@@ -38,6 +40,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
+
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Interceptor.Updates;
+import org.topazproject.otm.Session;
 
 
 /**
@@ -59,7 +65,7 @@ public class CreateCitation extends BaseActionSupport {
   private Cache articleAnnotationCache;
 
   private static final Log log = LogFactory.getLog(CreateCitation.class);
-
+  private static Invalidator invalidator;
 
   /**
    * Generate citation information by first attempting to get from cache.  If not present,
@@ -90,7 +96,7 @@ public class CreateCitation extends BaseActionSupport {
     });
 
     citationString = CitationUtils.generateArticleCitationString(citation);
-    
+
     return SUCCESS;
   }
 
@@ -121,7 +127,7 @@ public class CreateCitation extends BaseActionSupport {
   public CitationInfo getCitation() {
     return citation;
   }
-  
+
   /**
    * @return The formatted citation String.
    */
@@ -136,5 +142,28 @@ public class CreateCitation extends BaseActionSupport {
   @Required
   public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
+    if (invalidator == null)
+      invalidator = new Invalidator(articleAnnotationCache);
+  }
+
+  private static class Invalidator implements ObjectListener {
+    private static Cache articleAnnotationCache;
+
+    public Invalidator(Cache articleAnnotationCache) {
+      this.articleAnnotationCache = articleAnnotationCache;
+      articleAnnotationCache.getCacheManager().registerListener(this);
+    }
+
+    public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
+        Updates updates) {
+    }
+
+    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
+      if (o instanceof Article) {
+        if (log.isDebugEnabled())
+          log.debug("Invalidating citation for the article that was deleted.");
+        articleAnnotationCache.remove(CITATION_KEY + id);
+      }
+    }
   }
 }
