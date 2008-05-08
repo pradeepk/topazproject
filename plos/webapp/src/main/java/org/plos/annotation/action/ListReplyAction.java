@@ -194,7 +194,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   public void setArticleInfo(Article articleInfo) {
     this.article = articleInfo;
   }
-  
+
   /**
    * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
    *   to use.

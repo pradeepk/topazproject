@@ -86,7 +86,7 @@ public class DocumentManagementService {
   private String plosDoiUrl;
   private String plosEmail;
   private boolean sendToXref;
- 
+
   public DocumentManagementService() {
   }
 
@@ -229,7 +229,6 @@ public class DocumentManagementService {
     }
 
     browseService.notifyArticlesDeleted(objectURIs);
-    fetchArticleService.removeFromArticleCache(objectURIs);
 
     return msgs;
   }

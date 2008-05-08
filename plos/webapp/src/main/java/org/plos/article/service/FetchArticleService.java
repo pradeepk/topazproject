@@ -26,6 +26,7 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Annotator;
 import org.plos.cache.Cache;
+import org.plos.cache.ObjectListener;
 import org.plos.models.Article;
 import org.plos.models.ArticleAnnotation;
 import org.plos.util.ArticleXMLUtils;
@@ -48,6 +49,9 @@ import java.util.List;
 import org.plos.article.action.CreateCitation;
 import org.springframework.beans.factory.annotation.Required;
 
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Interceptor.Updates;
 
 /**
  * Fetch article service.
@@ -68,6 +72,7 @@ public class FetchArticleService {
   private ArticleAnnotationService articleAnnotationService;
 
   private Cache articleAnnotationCache;
+  private Invalidator invalidator;
 
   private String getTransformedArticle(final String articleURI) throws ApplicationException {
     try {
@@ -218,6 +223,10 @@ public class FetchArticleService {
   @Required
   public void setArticleAnnotationCache(Cache articleAnnotationCache) {
     this.articleAnnotationCache = articleAnnotationCache;
+    if (invalidator == null) {
+      invalidator = new Invalidator();
+      articleAnnotationCache.getCacheManager().registerListener(invalidator);
+    }
   }
 
   /**
@@ -247,23 +256,29 @@ public class FetchArticleService {
     }
   }
 
-  /**
-   * Remove objectUris from the articleAnnotationCache.
-   *
-   * All (ARTICLE_KEY, ARTICLEINFO_KEY, ArticleAnnotationService.ANNOTATION_KEY,
-   * CreateCitation.CITATION_KEY) + objectUri will be removed.
-   * Removal is syncronized on ARTICLE_LOCK + objectUri.
-   * TODO: for now, do not invalidate results cache, revist when actual action caching and
-   * invalidation by DOI are implemented
-   *
-   * @param objectUris Object Uris to flush.
-   */
-  public void removeFromArticleCache(final String[] objectUris) {
-
-    for (final String objectUri : objectUris) {
-      final Object lock = (ARTICLE_LOCK + objectUri).intern();  // lock @ Article level
-      synchronized (lock) {
-        articleAnnotationCache.remove(ARTICLE_KEY     + objectUri);
+  private class Invalidator implements ObjectListener {
+    public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
+        Updates updates) {
+      handleEvent(id, o, updates, false);
+    }
+    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
+      handleEvent(id, o, null, true);
+    }
+    private void handleEvent(String id, Object o, Updates updates, boolean removed) {
+      if ((o instanceof Article) && removed) {
+        if (log.isDebugEnabled())
+          log.debug("Invalidating transformed-article for the article that was deleted.");
+        articleAnnotationCache.remove(ARTICLE_KEY + id);
+      } else if (o instanceof ArticleAnnotation) {
+        if (log.isDebugEnabled())
+          log.debug("ArticleAnnotation changed/deleted. Invalidating transformed-article " + 
+              " for the article this was annotating or is about to annotate.");
+        articleAnnotationCache.remove(ARTICLE_KEY + ((ArticleAnnotation)o).getAnnotates().toString());
+        if ((updates != null) && updates.isChanged("annotates")) {
+           List<String> v = updates.getOldValue("annotates");
+           if (v.size() == 1)
+             articleAnnotationCache.remove(ARTICLE_KEY + v.get(0));
+        }
       }
     }
   }

@@ -73,7 +73,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   private final AnnotationsPEP       pep;
   private Session              session;
   private PermissionsService permissionsService;
-  private FetchArticleService  fetchArticleService;
   private Cache              articleAnnotationCache;
   private Invalidator        invalidator;
 
@@ -191,14 +190,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       }
     }
 
-    // TODO - is it necessary to remove the article from the cache just because we changed 
-    // an annotation?
-    fetchArticleService.removeFromArticleCache(new String[] { target });
-
-    if (log.isDebugEnabled()) {
-      log.debug("removed " + target + " from articleAnnotationCache");
-    }
-
     return newId;
   }
 
@@ -278,8 +269,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       }
     }
 
-    fetchArticleService.removeFromArticleCache(new String[] { target });
-
     return newId;
   }
 
@@ -343,10 +332,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   private void deleteAnnotation(final String annotationId) throws OtmException {
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
 
-    if (a != null) {
+    if (a != null)
       session.delete(a);
-      fetchArticleService.removeFromArticleCache(new String[] { a.getAnnotates().toString() });
-    }
   }
 
   /**
@@ -638,14 +625,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     oldAn.setBody(null);
     session.delete(oldAn);
 
-    // We must clear the annotated article from the article cache
-    String target = newAn.getAnnotates().toString();
-    fetchArticleService.removeFromArticleCache(new String[] { target });
-
-    if (log.isDebugEnabled()) {
-      log.debug("removed " + target + " from articleAnnotationCache");
-    }
-
     return newAn.getId().toString();
   }
 
@@ -672,16 +651,6 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
-  }
-
-  /**
-   * Set the fetchArticleService.
-   *
-   * @param fetchArticleService To use.
-   */
-  @Required
-  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
   }
 
   /**
