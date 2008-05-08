@@ -65,6 +65,7 @@
 
     <platform>
       <appContext></appContext>
+      <defaultJournalName>PLoSONE</defaultJournalName>
       <!-- common display constants -->
       <name>Public Library of Science</name>
       <email>
