@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.models.Journal;
 
@@ -48,7 +47,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   private String[] articlesToDelete;
   private Session session;
   private JournalService journalService;
-  private BrowseService browseService;
 
   private static final Log log = LogFactory.getLog(ManageVirtualJournalsAction.class);
 
@@ -268,10 +266,4 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
     this.journalService = journalService;
   }
 
-  /**
-   * @param browseService The browseService to set.
-   */
-  public void setBrowseService(BrowseService browseService) {
-    this.browseService = browseService;
-  }
 }
