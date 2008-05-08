@@ -60,7 +60,6 @@ public class FetchArticleService {
    */
   public  static final String ARTICLE_LOCK     = "ArticleAnnotationCache-Lock-";
   private static final String ARTICLE_KEY      = "ArticleAnnotationCache-Article-";
-  private static final String ARTICLEINFO_KEY  = "ArticleAnnotationCache-ArticleInfo-";
 
   private String encodingCharset;
   private ArticleXMLUtils articleXmlUtils;
@@ -235,26 +234,17 @@ public class FetchArticleService {
    * @see ArticleOtmService#getArticle(java.net.URI)
    */
   public Article getArticleInfo(final String articleURI) throws ApplicationException {
-    // do caching here rather than at articleOtmService level because we want the cache key
-    // to be article specific
-    final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
-    return articleAnnotationCache.get(ARTICLEINFO_KEY + articleURI, -1,
-            new Cache.SynchronizedLookup<Article, ApplicationException>(lock) {
-              public Article lookup() throws ApplicationException {
-                try {
-                  Article article = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
-                  // don't cache nulls, e.g. journal filtered Articles.
-                  if (article == null) {
-                    throw new ApplicationException("null Article for: " + articleURI);
-                  }
-                  return article;
-                } catch (NoSuchArticleIdException nsaie) {
-                  throw new ApplicationException(nsaie);
-                } catch (URISyntaxException use) {
-                  throw new ApplicationException(use);
-                }
-        }
-      });
+    try {
+      Article article = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
+      if (article == null) {
+        throw new ApplicationException("null Article for: " + articleURI);
+      }
+      return article;
+    } catch (NoSuchArticleIdException nsaie) {
+       throw new ApplicationException(nsaie);
+    } catch (URISyntaxException use) {
+       throw new ApplicationException(use);
+    }
   }
 
   /**
@@ -274,7 +264,6 @@ public class FetchArticleService {
       final Object lock = (ARTICLE_LOCK + objectUri).intern();  // lock @ Article level
       synchronized (lock) {
         articleAnnotationCache.remove(ARTICLE_KEY     + objectUri);
-        articleAnnotationCache.remove(ARTICLEINFO_KEY + objectUri);
       }
     }
   }
