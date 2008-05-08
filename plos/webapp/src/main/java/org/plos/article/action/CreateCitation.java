@@ -147,7 +147,7 @@ public class CreateCitation extends BaseActionSupport {
   }
 
   private static class Invalidator implements ObjectListener {
-    private static Cache articleAnnotationCache;
+    private Cache articleAnnotationCache;
 
     public Invalidator(Cache articleAnnotationCache) {
       this.articleAnnotationCache = articleAnnotationCache;
