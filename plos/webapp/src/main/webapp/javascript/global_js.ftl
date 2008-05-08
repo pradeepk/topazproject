@@ -26,8 +26,8 @@
 	</#if>
 
   var djConfig = {
-		isDebug: true,
-    parseOnLoad: true,
+		isDebug: false,
+    parseOnLoad: true
 	};
 </script>
 <#list freemarker_config.getJavaScript(templateFile, journalContext) as x>

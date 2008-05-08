@@ -606,11 +606,9 @@
           <javascript>
             <file>/javascript/dojo.js</file>
             <file>/javascript/ambra.js</file>
-            <file>/javascript/config_article.js</file>
+            <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_article.js</file>
-            <file>/javascript/formSetup_article.js</file>
-            <file>/javascript/init_global.js</file>
           </javascript>
         </page>
         <page>
@@ -636,7 +634,6 @@
           <javascript>
             <file>/javascript/dojo.js</file>
             <file>/javascript/ambra.js</file>
-            <file>/javascript/config_article.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>

@@ -290,7 +290,7 @@ ambra.annotation = {
 
   	console.debug('ambra.annotation.analyzeRange() - annotationConfig.regionalDialogMarker: ' + annotationConfig.regionalDialogMarker);
     var marker = dojo.byId(annotationConfig.regionalDialogMarker);
-  	_dlg.setMarker(marker);
+  	_annotationDlg.setMarker(marker);
     showAnnotationDialog();
   },
 
