@@ -280,7 +280,6 @@ public class FetchArticleService {
         articleAnnotationCache.remove(ARTICLEINFO_KEY + objectUri);
         articleAnnotationCache.remove(ARTICLE_SECONDARY_KEY + objectUri);
         articleAnnotationCache.remove(ARTICLE_FIGURESTABLE_KEY + objectUri);
-        articleAnnotationCache.remove(ArticleAnnotationService.ANNOTATED_KEY + objectUri);
         articleAnnotationCache.remove(CreateCitation.CITATION_KEY + objectUri);
       }
     }
