@@ -19,7 +19,6 @@
 
 package org.plos.action;
 
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -42,16 +41,6 @@ public class HomePageAction extends BaseActionSupport {
    */
   @Override
   public String execute() {
-    Calendar startDate = Calendar.getInstance();
-    startDate.set(Calendar.HOUR,        0);
-    startDate.set(Calendar.MINUTE,      0);
-    startDate.set(Calendar.SECOND,      0);
-    startDate.set(Calendar.MILLISECOND, 0);
-
-    Calendar endDate = (Calendar) startDate.clone();
-    startDate.add(Calendar.DATE, -7);
-    endDate.add(Calendar.DATE, 1);
-
     categoryInfos = browseService.getCategoryInfos();
 
     return SUCCESS;
