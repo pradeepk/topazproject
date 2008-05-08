@@ -46,7 +46,7 @@ function initAnnotationForm() {
   
 	// Annotation Dialog Box: Title field
 	dojo.connect(_commentTitle, "onfocus", function () { 
-	  topaz.formUtil.textCues.off(_commentTitle, _titleCue); 
+	  ambra.formUtil.textCues.off(_commentTitle, _titleCue); 
 	});
 	
 	dojo.connect(_commentTitle, "onchange", function () {
@@ -67,12 +67,12 @@ function initAnnotationForm() {
     else {
       fldTitle.value = "";
     }
-	  topaz.formUtil.textCues.on(_commentTitle, _titleCue); 
+	  ambra.formUtil.textCues.on(_commentTitle, _titleCue); 
 	});
 	
 	// Annotation Dialog Box: Comment field
 	dojo.connect(_comments, "onfocus", function () {
-	  topaz.formUtil.textCues.off(_comments, _commentCue);
+	  ambra.formUtil.textCues.off(_comments, _commentCue);
 	});
 
 	dojo.connect(_comments, "onchange", function () {
@@ -93,20 +93,20 @@ function initAnnotationForm() {
     else {
       fldTitle.value = "";
     }
-	  topaz.formUtil.textCues.on(_comments, _commentCue); 
-	  //topaz.formUtil.checkFieldStrLength(_comments);
+	  ambra.formUtil.textCues.on(_comments, _commentCue); 
+	  //ambra.formUtil.checkFieldStrLength(_comments);
 	});
 	
 	// Annotation Dialog Box: Private/Public radio buttons
 	/*
   dojo.connect(privateFlag, "onclick", function() {
-	  topaz.formUtil.toggleFieldsByClassname('commentPrivate', 'commentPublic'); 
+	  ambra.formUtil.toggleFieldsByClassname('commentPrivate', 'commentPublic'); 
 	  _dlg.placeModalDialog();
   	//var btn = btnSave;
   	//__dlg.setCloseControl(btn);
   });
   dojo.connect(publicFlag, "onclick", function() {
-	  topaz.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate'); 
+	  ambra.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate'); 
 	  _dlg.placeModalDialog();
   	//var btn = btnPost;
   	//_dlg.setCloseControl(btn);
@@ -128,18 +128,18 @@ function initAnnotationForm() {
   });
 
 	dojo.connect(btnCancel, "onclick", function(e) {
-    topaz.domUtil.removeChildren(submitMsg);
+    ambra.domUtil.removeChildren(submitMsg);
     _dlg.hide();
-    topaz.formUtil.enableFormFields(_annotationForm);
+    ambra.formUtil.enableFormFields(_annotationForm);
     if(!annotationConfig.rangeInfoObj.isSimpleText) {
       // we are in an INDETERMINISTIC state for annotation markup
       // Article re-fetch is necessary to maintain the integrity of the existing annotation markup
       getArticle();
-      topaz.displayComment.processBugCount();
+      ambra.displayComment.processBugCount();
     }
     else {
       // we can safely rollback the pending annotation markup from the dom
-      topaz.annotation.undoPendingAnnotation();
+      ambra.annotation.undoPendingAnnotation();
     }
     e.preventDefault();
   });
@@ -154,7 +154,7 @@ function initAnnotationForm() {
 	var submitRatingMsg        = dojo.byId('submitRatingMsg');
 	
 	dojo.connect(_ratingTitle, "onfocus", function () { 
-	  topaz.formUtil.textCues.off(_ratingTitle, _ratingTitleCue); 
+	  ambra.formUtil.textCues.off(_ratingTitle, _ratingTitleCue); 
 	});
 	
 	dojo.connect(_ratingTitle, "onchange", function () {
@@ -175,12 +175,12 @@ function initAnnotationForm() {
     else {
       fldTitle.value = "";
     }
-	  topaz.formUtil.textCues.on(_ratingTitle, _ratingTitleCue); 
+	  ambra.formUtil.textCues.on(_ratingTitle, _ratingTitleCue); 
 	});
 	
 	// Annotation Dialog Box: Comment field
 	dojo.connect(_ratingComments, "onfocus", function () {
-	  topaz.formUtil.textCues.off(_ratingComments, _ratingCommentCue);
+	  ambra.formUtil.textCues.off(_ratingComments, _ratingCommentCue);
 	});
 
 	dojo.connect(_ratingComments, "onchange", function () {
@@ -201,25 +201,25 @@ function initAnnotationForm() {
     else {
       fldTitle.value = "";
     }
-	  topaz.formUtil.textCues.on(_ratingComments, _ratingCommentCue); 
-	  //topaz.formUtil.checkFieldStrLength(_ratingComments);
+	  ambra.formUtil.textCues.on(_ratingComments, _ratingCommentCue); 
+	  //ambra.formUtil.checkFieldStrLength(_ratingComments);
 	});
 	
 	// Rating Dialog Box: Post buttons
 	dojo.connect(btnPostRating, "onclick", function(e) {
     updateRating();
-    topaz.rating.resetDialog();
+    ambra.rating.resetDialog();
     e.preventDefault();
   });
 
 	dojo.connect(btnCancelRating, "onclick", function(e) {
-    topaz.domUtil.removeChildren(submitMsg);
+    ambra.domUtil.removeChildren(submitMsg);
     _ratingDlg.hide();
-    topaz.formUtil.enableFormFields(_ratingsForm);
-    topaz.rating.resetDialog();
+    ambra.formUtil.enableFormFields(_ratingsForm);
+    ambra.rating.resetDialog();
 	  /* don't re-fetch article on cancel
     getArticle("rating");
-    topaz.displayComment.processBugCount();
+    ambra.displayComment.processBugCount();
     */
     e.preventDefault();
   });
@@ -237,7 +237,7 @@ function setActiveToggle(widgetId, boxId) {
 
 function singleView(obj) {
   if (activeToggleId != "") {
-    topaz.domUtil.swapDisplayMode(activeToggleId, "none");
+    ambra.domUtil.swapDisplayMode(activeToggleId, "none");
     toggleExpand(activeWidget, false); 
   }
 }
@@ -248,7 +248,7 @@ function singleExpand(obj, targetId) {
   }
   setActiveToggle
    (obj.id, targetId);
-  topaz.domUtil.swapDisplayMode(targetId);
+  ambra.domUtil.swapDisplayMode(targetId);
   toggleExpand(obj); 
   
   return false;
@@ -280,7 +280,7 @@ function getAnnotationEl(annotationId) {
      
   var targetEl
   for (var i=0; i<elements.length; i++) {
-    var elDisplay = topaz.domUtil.getDisplayId(elements[i]);
+    var elDisplay = ambra.domUtil.getDisplayId(elements[i]);
     var displayList = elDisplay.split(',');
 
     for (var n=0; n<displayList.length; n++) {
@@ -304,7 +304,7 @@ function jumpToAnnotation(annotationId) {
 
 function jumpToElement(elNode) {
   if (elNode) {
-    elLocation = topaz.domUtil.getCurrentOffset(elNode);
+    elLocation = ambra.domUtil.getCurrentOffset(elNode);
     window.scrollTo(0, elLocation.top);
   }
 }
@@ -334,8 +334,8 @@ function showAnnotationDialog() {
 
 function validateNewComment() {
   var submitMsg = dojo.byId('submitMsg');
-  topaz.domUtil.removeChildren(submitMsg);
-  topaz.formUtil.disableFormFields(_annotationForm);
+  ambra.domUtil.removeChildren(submitMsg);
+  ambra.formUtil.disableFormFields(_annotationForm);
   
   _ldc.show();
   dojo.xhrPost({
@@ -344,7 +344,7 @@ function validateNewComment() {
      form: _annotationForm,
      error: function(response, ioArgs){
        handleXhrError(response, ioArgs);
-       topaz.formUtil.enableFormFields(_annotationForm);
+       ambra.formUtil.enableFormFields(_annotationForm);
      },
      load: function(response, ioArgs){
        var jsonObj = response;
@@ -355,7 +355,7 @@ function validateNewComment() {
          }
          var err = document.createTextNode(errorMsg);
          submitMsg.appendChild(err);
-         topaz.formUtil.enableFormFields(_annotationForm);
+         ambra.formUtil.enableFormFields(_annotationForm);
          _dlg.placeModalDialog();
          _ldc.hide();
          
@@ -379,16 +379,16 @@ function validateNewComment() {
            }
          }
          submitMsg.appendChild(fieldErrors);
-         topaz.formUtil.enableFormFields(_annotationForm);
+         ambra.formUtil.enableFormFields(_annotationForm);
          _dlg.placeModalDialog();
          _ldc.hide();
        }
        else {
          getArticle();
          _dlg.hide();
-         topaz.formUtil.textCues.reset(_commentTitle, _titleCue);
-         topaz.formUtil.textCues.reset(_comments, _commentCue);
-         topaz.formUtil.enableFormFields(_annotationForm);
+         ambra.formUtil.textCues.reset(_commentTitle, _titleCue);
+         ambra.formUtil.textCues.reset(_comments, _commentCue);
+         ambra.formUtil.enableFormFields(_annotationForm);
        }
       }
   });
@@ -420,10 +420,10 @@ function getArticle(refreshType) {
 	      getAnnotationCount();
      	}
      	
-      topaz.displayComment.processBugCount();
+      ambra.displayComment.processBugCount();
       
       // re-apply corrections
-      topaz.corrections.apply();
+      ambra.corrections.apply();
       
       _ldc.hide();
 

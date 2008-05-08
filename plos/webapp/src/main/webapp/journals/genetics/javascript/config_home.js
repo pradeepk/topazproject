@@ -44,7 +44,7 @@ tabsListMap[tabsListMap.length] = {tabKey:    "mostViewed",
                                    urlLoad:   "/article/mostViewed.action",
                                    urlSave:   ""};
                                    
-var querystring = topaz.htmlUtil.getQuerystring();
+var querystring = ambra.htmlUtil.getQuerystring();
 var tabSelectId = "";
 
 for (var i=0; i<querystring.length; i++) {

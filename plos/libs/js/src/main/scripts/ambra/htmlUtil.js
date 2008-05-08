@@ -19,13 +19,13 @@
  */
 
 /**
- * topaz.htmlUtil
+ * ambra.htmlUtil
  * 
  * Utility to help get the attribute from the url to be used in the JS.
  * 
  **/
-dojo.provide("topaz.htmlUtil");
-topaz.htmlUtil = {
+dojo.provide("ambra.htmlUtil");
+ambra.htmlUtil = {
   getQuerystring: function() {
     var paramQuery = unescape(document.location.search.substring(1));
     var paramArray = paramQuery.split("&");

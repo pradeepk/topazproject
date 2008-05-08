@@ -127,7 +127,7 @@
             <ul>
               <li>
                 <#if Session[freemarker_config.userAttributeKey]?exists>
-                  <a href="#" onclick="topaz.responsePanel.show(this, _dcf, 'toolbar', '${articleRatingSummary.ratingId}', null, null, 2); return false;" class="flag tooltip" title="Request Review">Request review</a>
+                  <a href="#" onclick="ambra.responsePanel.show(this, _dcf, 'toolbar', '${articleRatingSummary.ratingId}', null, null, 2); return false;" class="flag tooltip" title="Request Review">Request review</a>
                 <#else>
                   <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="flag tooltip" title="Request review">Request review</a>
                 </#if>

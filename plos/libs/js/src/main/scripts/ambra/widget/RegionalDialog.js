@@ -17,16 +17,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-dojo.provide("topaz.widget.RegionalDialog");
+dojo.provide("ambra.widget.RegionalDialog");
 
 dojo.require("dojo.io.iframe");
 dojo.require("dijit.Dialog");
-dojo.require("topaz.domUtil");
+dojo.require("ambra.domUtil");
 
 // summary
 //	Mixin for widgets implementing a modal dialog
 dojo.declare(
-	"topaz.widget.RegionalDialogBase", 
+	"ambra.widget.RegionalDialogBase", 
 	[dijit.Dialog],
 {
 	_changeTipDirection: function(isTipDown, xShift) {
@@ -49,7 +49,7 @@ dojo.declare(
 	placeModalDialog: function() {
 		var docscroll = dojo._docScroll();
 		var viewport = dijit.getViewport();
-		var markerOffset = topaz.domUtil.getCurrentOffset(this.markerNode);
+		var markerOffset = ambra.domUtil.getCurrentOffset(this.markerNode);
 		var mb = dojo.marginBox(this.containerNode);
 
     /*
@@ -178,20 +178,20 @@ dojo.declare(
 });
 
 dojo.declare(
-	"topaz.widget.RegionalDialog",
-	[topaz.widget.RegionalDialogBase],
+	"ambra.widget.RegionalDialog",
+	[ambra.widget.RegionalDialogBase],
 {
-  templatePath: dojo.moduleUrl('topaz.widget', 'templates/RegionalDialog.html'),
+  templatePath: dojo.moduleUrl('ambra.widget', 'templates/RegionalDialog.html'),
 	
   /*
   postMixInProperties: function(){
-		//topaz.widget.RegionalDialog.superclass.postMixInProperties.apply(this, arguments);
+		//ambra.widget.RegionalDialog.superclass.postMixInProperties.apply(this, arguments);
     this.inherited(arguments);
 	},
   
 	postCreate: function(){
-		//topaz.widget.RegionalDialog.superclass.postCreate.apply(this, arguments);
-		//topaz.widget.RegionalDialogBase.prototype.postCreate.apply(this, arguments);
+		//ambra.widget.RegionalDialog.superclass.postCreate.apply(this, arguments);
+		//ambra.widget.RegionalDialogBase.prototype.postCreate.apply(this, arguments);
     this.inherited(arguments);
 	},
   */
@@ -199,7 +199,7 @@ dojo.declare(
   show: function() {
     console.debug('RegionalDialog.show()');
     this.inherited(arguments);
-    window.scrollTo(0, topaz.domUtil.getCurrentOffset(this.domNode).top);
+    window.scrollTo(0, ambra.domUtil.getCurrentOffset(this.domNode).top);
     this.placeModalDialog();
 	},
   

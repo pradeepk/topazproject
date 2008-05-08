@@ -24,19 +24,19 @@ dojo.addOnLoad(function() {
   
   _ldc.show();
 
-  topaz.horizontalTabs.setTabPaneSet(dojo.byId(profileConfig.tabPaneSetId));
-  topaz.horizontalTabs.setTabsListObject(tabsListMap);
-  topaz.horizontalTabs.setTabsContainer(dojo.byId(profileConfig.tabsContainer));
-  topaz.horizontalTabs.init(tabSelectId);
+  ambra.horizontalTabs.setTabPaneSet(dojo.byId(profileConfig.tabPaneSetId));
+  ambra.horizontalTabs.setTabsListObject(tabsListMap);
+  ambra.horizontalTabs.setTabsContainer(dojo.byId(profileConfig.tabsContainer));
+  ambra.horizontalTabs.init(tabSelectId);
   
   _ldc.hide();
   
-  dojo.connect(document, "onunload", topaz.horizontalTabs.confirmChange(topaz.horizontalTabs.targetFormObj));
+  dojo.connect(document, "onunload", ambra.horizontalTabs.confirmChange(ambra.horizontalTabs.targetFormObj));
   
   if (tabSelectId == "alerts") {
     var alertsForm = document.userAlerts;
-    topaz.formUtil.selectCheckboxPerCollection(alertsForm.checkAllWeekly, alertsForm.weeklyAlerts);
-    topaz.formUtil.selectCheckboxPerCollection(alertsForm.checkAllMonthly, alertsForm.monthlyAlerts);
+    ambra.formUtil.selectCheckboxPerCollection(alertsForm.checkAllWeekly, alertsForm.weeklyAlerts);
+    ambra.formUtil.selectCheckboxPerCollection(alertsForm.checkAllMonthly, alertsForm.monthlyAlerts);
   }
   
 });

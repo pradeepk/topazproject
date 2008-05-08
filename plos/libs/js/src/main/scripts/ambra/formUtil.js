@@ -19,15 +19,15 @@
  */
 
 /**
- * topaz.formUtil
+ * ambra.formUtil
  * 
  * @author		Joycelyn Chung			joycelyn@orangetowers.com
  **/
-dojo.provide("topaz.formUtil");
-topaz.formUtil = {
+dojo.provide("ambra.formUtil");
+ambra.formUtil = {
   
   /**
-   * topaz.formUtil.textCues
+   * ambra.formUtil.textCues
    * 
    * This turns the form field cues on and off.  It also resets them.  It takes the form object
    * and the text string for each state.
@@ -53,7 +53,7 @@ topaz.formUtil = {
   },
   
   /**
-   * topaz.formUtil.toggleFieldsByClassname(String toggleClassOn, String toggleClassOff)
+   * ambra.formUtil.toggleFieldsByClassname(String toggleClassOn, String toggleClassOff)
    * 
    * Toggles all elements with a class attribute containing toggleClassOn/toggleClassOff on and off,
    * respectively.
@@ -75,7 +75,7 @@ topaz.formUtil = {
   },
   
   /**
-   * topaz.formUtil.checkFieldStrLength(Form field  fieldObj, Integer maxLength)
+   * ambra.formUtil.checkFieldStrLength(Form field  fieldObj, Integer maxLength)
    * 
    * Checks the specified fieldObj value exceeds the maxLength.
    * 
@@ -97,7 +97,7 @@ topaz.formUtil = {
   },
   
   /**
-   * topaz.formUtil.disableFormFields(Form formObj)
+   * ambra.formUtil.disableFormFields(Form formObj)
    * 
    * Method goes through all the elements of the form object formObj and disables all
    * except hidden fields.
@@ -113,7 +113,7 @@ topaz.formUtil = {
   },
   
   /**
-   * topaz.formUtil.enableFormFields(Form formObj)
+   * ambra.formUtil.enableFormFields(Form formObj)
    * 
    * Method goes through all the elements of the form object formObj and enables all
    * except hidden fields.
@@ -129,7 +129,7 @@ topaz.formUtil = {
   },
   
   /**
-   * topaz.formUtil.createHiddenFields(Form formObj)
+   * ambra.formUtil.createHiddenFields(Form formObj)
    * 
    * Method goes through the form object formObj looking for elements other than hidden fields,
    * buttons and submits and where the names are not null.  The elements that does meet the 
@@ -184,7 +184,7 @@ topaz.formUtil = {
 */  
   
   /**
-   * topaz.formUtil.createFormValueObject(Form formObj)
+   * ambra.formUtil.createFormValueObject(Form formObj)
    * 
    * Method goes through the form object and looks for all fields that are not hidden,
    * buttons, or submits.  For all other fields, the field names are stored as keys while
@@ -250,7 +250,7 @@ topaz.formUtil = {
   },
   
   /**
-   * topaz.formUtil.hasFieldChange(Form formObj)
+   * ambra.formUtil.hasFieldChange(Form formObj)
    * 
    * Checks the fields in formObj that are not hidden, buttons, or submits, to see they have changed.
    */
@@ -335,7 +335,7 @@ topaz.formUtil = {
     alert("removeHiddenFields");
     for (var i=0; i<formObj.elements.length; i++) {
       if (formObj.elements[i].type == 'hidden') {
-        topaz.domUtil.removeNode(formObj.elements[i]);
+        ambra.domUtil.removeNode(formObj.elements[i]);
       }
     }
   },
@@ -370,7 +370,7 @@ topaz.formUtil = {
 */  
   
   /**
-   * topaz.formUtil.selectAllCheckboxes(Form field  srcObj, Form field  targetCheckboxObj)
+   * ambra.formUtil.selectAllCheckboxes(Form field  srcObj, Form field  targetCheckboxObj)
    * 
    * If the form field srcObj has been selected, all the checkboxes in the form field targetCheckboxObj
    * gets selected.  When srcObj is not selected, all the checkboxes in targetCheckboxObj gets
@@ -393,7 +393,7 @@ topaz.formUtil = {
   },
   
   /**
-   * topaz.formUtil.selectCheckboxPerCollection(Form field  srcObj, Form field  collectionObj)
+   * ambra.formUtil.selectCheckboxPerCollection(Form field  srcObj, Form field  collectionObj)
    * 
    * Checks to see if all of the checkboxes in the collectionObj are selected.  If it is, select srcObj
    * also.  If all of the checkboxes in collectionObj are not selected, deselect srcObj.

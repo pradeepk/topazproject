@@ -19,7 +19,7 @@
  */
 
 /**
-  * topaz.annotation
+  * ambra.annotation
   *
   * This object takes a selection that has been made on screen and locates the XPath and 
   * offset for the start and end of the selection.  It then takes the selection and wraps 
@@ -32,13 +32,13 @@
   * @author  jkirton            jopaki@gmail.com
   **/
 
-dojo.provide("topaz.annotation");
-dojo.require("topaz.domUtil");
-dojo.require("topaz.formUtil");
-dojo.require("topaz.displayComment");
-topaz.annotation = {
+dojo.provide("ambra.annotation");
+dojo.require("ambra.domUtil");
+dojo.require("ambra.formUtil");
+dojo.require("ambra.displayComment");
+ambra.annotation = {
   /** 
-   * topaz.annotation._createAnnotationOnkeyup(event)
+   * ambra.annotation._createAnnotationOnkeyup(event)
    * 
 	 * Method triggered when the event is tied to the document and the user presses a key.
 	 * If the key pressed is ENTER, creates an annotation using the currently-selected text.
@@ -63,7 +63,7 @@ topaz.annotation = {
   },
   
   /** 
-   * topaz.annotation.createAnnotationOnMouseDown()
+   * ambra.annotation.createAnnotationOnMouseDown()
    * 
    * Method triggered on onmousedown or onclick event of a tag.  When this method is 
    * triggered, it initiates an annotation creation using the currently-selected text.
@@ -71,8 +71,8 @@ topaz.annotation = {
 	 * @return true														 Success.
    */
   createAnnotationOnMouseDown: function () {
-	  topaz.formUtil.textCues.reset(_commentTitle, _titleCue); 
-	  topaz.formUtil.textCues.reset(_comments, _commentCue); 
+	  ambra.formUtil.textCues.reset(_commentTitle, _titleCue); 
+	  ambra.formUtil.textCues.reset(_comments, _commentCue); 
 	  _annotationForm.commentTitle.value = "";
 	  _annotationForm.comment.value = "";
 	  
@@ -97,7 +97,7 @@ topaz.annotation = {
   },
 
   /** 
-   * topaz.annotation.createNewAnnotation()
+   * ambra.annotation.createNewAnnotation()
    * 
    * Method that takes in the selection that was made and sends it to getRangeOfSelection to 
    * figure out the XPath and offset of the selection.  An object is returned with the text of 
@@ -156,7 +156,7 @@ topaz.annotation = {
   },
   
   /** 
-   * topaz.annotation.getHTMLOfSelection()
+   * ambra.annotation.getHTMLOfSelection()
    * 
    * Method returns the html markup of the selection.
    * 
@@ -190,7 +190,7 @@ topaz.annotation = {
   */
 
   /** 
-   * topaz.annotation.getHTMLOfRange()
+   * ambra.annotation.getHTMLOfRange()
    * 
    * Method takes in the range object and returns the html markup for the selection.
    * 
@@ -235,7 +235,7 @@ topaz.annotation = {
   },
 
   /**
-   * topaz.annotation.getRangeOfSelection()
+   * ambra.annotation.getRangeOfSelection()
    * 
    * Method determines which selection object that the user's browser recognizes and 
    * forwards to the appropriate method that will the range.
@@ -267,7 +267,7 @@ topaz.annotation = {
   },
 
 	/**
-	 * topaz.annotation.analyzeRange(Object rangeInfo)
+	 * ambra.annotation.analyzeRange(Object rangeInfo)
 	 * 
 	 * This method takes in the rangeInfo object and passes it to insertHighlightWrapper().
 	 * If insertHighlightWrapper() returns with "noSelect", this method returns "noSelect".
@@ -288,14 +288,14 @@ topaz.annotation = {
       return annotationConfig.excludeSelection;
     }
 
-  	console.debug('topaz.annotation.analyzeRange() - annotationConfig.regionalDialogMarker: ' + annotationConfig.regionalDialogMarker);
+  	console.debug('ambra.annotation.analyzeRange() - annotationConfig.regionalDialogMarker: ' + annotationConfig.regionalDialogMarker);
     var marker = dojo.byId(annotationConfig.regionalDialogMarker);
   	_dlg.setMarker(marker);
     showAnnotationDialog();
   },
 
 	/**
-	 * topaz.annotation.findIeRange()
+	 * ambra.annotation.findIeRange()
 	 * 
    * This method is only valid for Internet Explorer because the selection and range 
    * object is different for this browser.
@@ -441,8 +441,8 @@ topaz.annotation = {
           return annotationConfig.excludeSelection;
         }
         // it is presumed all contained text w/in the following container (node) is selected
-        var ftn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.startOffset], true);
-        var ltn = topaz.domUtil.findTextNode(range.startContainer.childNodes[range.endOffset - 1], false);
+        var ftn = ambra.domUtil.findTextNode(range.startContainer.childNodes[range.startOffset], true);
+        var ltn = ambra.domUtil.findTextNode(range.startContainer.childNodes[range.endOffset - 1], false);
         range.setStart(ftn, 0);
         range.setEnd(ltn, ltn.length);
       }
@@ -463,7 +463,7 @@ topaz.annotation = {
   },
 
 	/**
-	 * topaz.annotation.findMozillaRange()
+	 * ambra.annotation.findMozillaRange()
 	 * 
    * This method works for many Gecko based browsers such as Firefox and Safari.
    * 
@@ -584,7 +584,7 @@ topaz.annotation = {
   },
   
 	/**
-	 * topaz.annotation.getRangePoint(Object range)
+	 * ambra.annotation.getRangePoint(Object range)
 	 * 
 	 * This method takes in the range object that has been collapsed.  A temporary span is 
 	 * created with an id of "POINT_SPAN".  The temporary span is then inserted into the range.
@@ -634,7 +634,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.getPointOffset(Node sourceNode, Node targetNode)
+   * ambra.annotation.getPointOffset(Node sourceNode, Node targetNode)
    * 
    * Method takes in the sourceNode from which the offset is counted from and the targetNode
    * where the counting ends.  Recursively looping through the sourceNode's previousSibling,
@@ -693,7 +693,7 @@ topaz.annotation = {
   },
 
   /**
-   * topaz.annotation.getAncestors(Node sourceNode, text lastAncestorId)
+   * ambra.annotation.getAncestors(Node sourceNode, text lastAncestorId)
    * 
    * This method traverses up the node tree until it finds the parent where the id matches 
    * lastAncestorId collecting an array of the parents at each level of the node tree.
@@ -725,7 +725,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.isAncestorOf(Node sourceNode, text attributeName, text attributeValue)
+   * ambra.annotation.isAncestorOf(Node sourceNode, text attributeName, text attributeValue)
    * 
    * Method takes in a sourceNode and an attribute and it's value to match.  First it finds all the 
    * ancestors of the sourceNode up to the last ancestor of the annotation section.  As it recurses 
@@ -753,7 +753,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.getFirstXpathAncestor(Node sourceNode)
+   * ambra.annotation.getFirstXpathAncestor(Node sourceNode)
    * 
    * Method traverses up the node tree looking for the first parent that contains the 
    * xpathlocation attribute.  When a parent node is found with the correct attribute,
@@ -809,7 +809,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.getChildList(Object parentObj, Node element)
+   * ambra.annotation.getChildList(Object parentObj, Node element)
    * 
    * Method takes in the parent object and the element node to search for.  A search is
    * made on the parent object to see if it has any child that matches that specific element
@@ -848,7 +848,7 @@ topaz.annotation = {
   */
  
 	/**
-	 * topaz.annotation.insertHighlightWrapper(Object rangeObj)
+	 * ambra.annotation.insertHighlightWrapper(Object rangeObj)
 	 * 
 	 * This method creates a span tag with all the attribute set to highlight some text.
 	 * It also creates a linked image to be used at the beginning of the selection.  Both 
@@ -911,9 +911,9 @@ topaz.annotation = {
 	  //link.id = markerId;
 	  link.title = 'Click to preview this note';
 	  link.displayId = "";
-	  link.onclick = function() { topaz.displayComment.show(this); }
-	  link.onmouseover = function() { topaz.displayComment.mouseoverComment(this); }
-	  link.onmouseout = function() { topaz.displayComment.mouseoutComment(this); }
+	  link.onclick = function() { ambra.displayComment.show(this); }
+	  link.onmouseover = function() { ambra.displayComment.mouseoverComment(this); }
+	  link.onmouseout = function() { ambra.displayComment.mouseoutComment(this); }
 	  link.appendChild(document.createTextNode('1'));
 
     // Insertion for IE
@@ -924,15 +924,15 @@ topaz.annotation = {
           							        '"  annotationId=""' +
           							       '">' + 
                                '<a href="#" class="bug public" id="' + markerId + 
-                               '"  onclick="topaz.displayComment.show(this);"' + 
-                               ' onmouseover="topaz.displayComment.mouseoverComment(this);"' + 
-                               ' onmouseout="topaz.displayComment.mouseoutComment(this);"' + 
+                               '"  onclick="ambra.displayComment.show(this);"' + 
+                               ' onmouseover="ambra.displayComment.mouseoverComment(this);"' + 
+                               ' onmouseout="ambra.displayComment.mouseoutComment(this);"' + 
                                ' title="Click to preview this note">1</a>' +
           							       html + '</span>');
 */
       var tempNode = document.createElement("div");
       tempNode.innerHTML = html;
-      topaz.domUtil.copyChildren(tempNode, contents);
+      ambra.domUtil.copyChildren(tempNode, contents);
   
         
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
@@ -947,33 +947,33 @@ topaz.annotation = {
       }
       
       if (modContents.hasChildNodes()) {  
-        topaz.domUtil.removeChildren(tempNode);
-        topaz.domUtil.copyChildren(modContents, tempNode);
+        ambra.domUtil.removeChildren(tempNode);
+        ambra.domUtil.copyChildren(modContents, tempNode);
         rangeObj.range.pasteHTML(tempNode.innerHTML);
       }
       
 /*      var startPoint = dojo.byId("tempStartPoint");
       if (!modContents.hasChildNodes()) {
         for (var currentNode = startPoint.nextSibling; currentNode != null; currentNode = currentNode.nextSibling) {
-          topaz.domUtil.removeNode(currentNode);
+          ambra.domUtil.removeNode(currentNode);
         }
       }
-      topaz.domUtil.removeNode(startPoint);
+      ambra.domUtil.removeNode(startPoint);
       
       var endPoint = dojo.byId("tempEndPoint");
       if (!modContents.hasChildNodes()) {
         for (var currentNode = endPoint.previousSibling; currentNode != null; currentNode = currentNode.previousSibling) {
-          topaz.domUtil.removeNode(currentNode);
+          ambra.domUtil.removeNode(currentNode);
         }
         
         document.selection.empty();
       }
-      topaz.domUtil.removeNode(endPoint);
+      ambra.domUtil.removeNode(endPoint);
 */
       var startPoint = dojo.byId("tempStartPoint");
-      topaz.domUtil.removeNode(startPoint);
+      ambra.domUtil.removeNode(startPoint);
       var endPoint = dojo.byId("tempEndPoint");
-      topaz.domUtil.removeNode(endPoint);
+      ambra.domUtil.removeNode(endPoint);
       document.selection.empty();
     }
     else {
@@ -999,7 +999,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.modifySelection(Object rangeObj, Document fragment  contents, Node newspan, Node link, String markerId)
+   * ambra.annotation.modifySelection(Object rangeObj, Document fragment  contents, Node newspan, Node link, String markerId)
    * 
    * Method determines whether the start and end of the range is within the same container 
    * and routes the content accordingly.
@@ -1032,7 +1032,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.modifyMultiSelection(Object rangeObj, Document fragment  contents, Node newspan, Node link, String markerId)
+   * ambra.annotation.modifyMultiSelection(Object rangeObj, Document fragment  contents, Node newspan, Node link, String markerId)
    * 
    * Method takes selections that spans across multiple containers, such as <p>, and figures 
    * out if the container is at the beginning, middle, or end of the selection and a value of 
@@ -1150,7 +1150,7 @@ topaz.annotation = {
   },
   
   /**
-   * topaz.annotation.isContainXpath(Node node, Integer multiPosition)
+   * ambra.annotation.isContainXpath(Node node, Integer multiPosition)
    * 
    * Method examines a node to determines if any of its children contain the xpathlocation attribute.
    * 
@@ -1166,7 +1166,7 @@ topaz.annotation = {
    * 																						 attribute.
    */
   isContainXpath: function(node, multiPosition) {
-    var xpathAttr = topaz.domUtil.isChildContainAttributeValue(node, "xpathlocation", null);
+    var xpathAttr = ambra.domUtil.isChildContainAttributeValue(node, "xpathlocation", null);
     console.debug("xpathAttr.length = " + xpathAttr.length);
 
     if (xpathAttr.length == 0) {
@@ -1194,7 +1194,7 @@ topaz.annotation = {
   },
       
   /**
-   * topaz.annotation.insertWrapper(rangeObject, rangeContent, refWrapperNode, linkObject, markerId, multiPosition)
+   * ambra.annotation.insertWrapper(rangeObject, rangeContent, refWrapperNode, linkObject, markerId, multiPosition)
    *
    * Inner function to process selection and place the appropriate markers for displaying the selection 
    * highlight and annotation dialog box.
@@ -1264,7 +1264,7 @@ topaz.annotation = {
       var existingNode = childContents[i];
       
       // modify the existing note span
-      if (existingNode.nodeName == "SPAN" && topaz.domUtil.isClassNameExist(existingNode, "note")) {
+      if (existingNode.nodeName == "SPAN" && ambra.domUtil.isClassNameExist(existingNode, "note")) {
         spanToInsert = existingNode.cloneNode(true);
         spanToInsert.className = refWrapperNode.getAttributeNode("class").nodeValue;
       }
@@ -1283,12 +1283,12 @@ topaz.annotation = {
           spanToInsert.setAttribute("id", markerId);
         }
 
-        topaz.domUtil.insertBefore(linkObject, spanToInsert.firstChild, false);
+        ambra.domUtil.insertBefore(linkObject, spanToInsert.firstChild, false);
       }
 
       // insert into the range content before the existing node (the existing node will be deleted, leaving only the new one)
       if (multiPosition == null || multiPosition == 0) {
-        topaz.domUtil.replaceNode(existingNode, spanToInsert);
+        ambra.domUtil.replaceNode(existingNode, spanToInsert);
       }
       // insert into the document 
       else {
@@ -1310,8 +1310,8 @@ topaz.annotation = {
           
           if (multiPosition < 0) {
             if (tempPointStart && tempPointStart != null) {
-              topaz.domUtil.insertBefore(spanToInsert, tempPointStart);
-              topaz.domUtil.removeNode(tempPointStart.nextSibling);
+              ambra.domUtil.insertBefore(spanToInsert, tempPointStart);
+              ambra.domUtil.removeNode(tempPointStart.nextSibling);
             }
             else {
               elements[elements.length-1].appendChild(spanToInsert);
@@ -1320,7 +1320,7 @@ topaz.annotation = {
           else {
             var elToInsert = document.createDocumentFragment();
             if (dojo.isSafari && multiPosition == 1 && i == (childContents.length-1)) {
-              topaz.domUtil.copyChildren(spanToInsert, elToInsert);
+              ambra.domUtil.copyChildren(spanToInsert, elToInsert);
             }
             else {
               elToInsert = spanToInsert;
@@ -1328,7 +1328,7 @@ topaz.annotation = {
 
             if (dojo.isIE && insertIndex == 0) {
               ieDocFrag.appendChild(elToInsert);
-              topaz.domUtil.removeNode(tempPointEnd.previousSibling);
+              ambra.domUtil.removeNode(tempPointEnd.previousSibling);
             }
             else {
               elements[elements.length-1].insertBefore(elToInsert, elements[elements.length-1].childNodes[insertIndex]);
@@ -1343,14 +1343,14 @@ topaz.annotation = {
     }
     
     if (dojo.isIE && multiPosition == 1) {
-      topaz.domUtil.insertAfter(ieDocFrag, tempPointEnd);
+      ambra.domUtil.insertAfter(ieDocFrag, tempPointEnd);
       return;
     }     
    
     // remove the existing node from the range content
     if (nodesToRemove.length > 0) {
       for (var i = 0; i < nodesToRemove.length; i++) {
-        topaz.domUtil.removeNode(nodesToRemove[i]);
+        ambra.domUtil.removeNode(nodesToRemove[i]);
       }
     }   
    
@@ -1363,7 +1363,7 @@ topaz.annotation = {
   },
 
   /**
-   * topaz.annotation.undoPendingAnnotation()
+   * ambra.annotation.undoPendingAnnotation()
    *
    * Removes all pending annotation markup from the document 
    * restoring it to the state it was in prior to a user selection.
@@ -1377,17 +1377,17 @@ topaz.annotation = {
     
     // remove POINT_SPAN node (if present)
     var pointSpan = document.getElementById('POINT_SPAN');
-    if(pointSpan) topaz.domUtil.removeNode(pointSpan);
+    if(pointSpan) ambra.domUtil.removeNode(pointSpan);
 
     // remove temp (IE) nodes
     arr = dojo.query('.temp', annotationConfig.articleContainer);
     if(arr) for(var i=0; i<arr.length; i++) {
-      topaz.domUtil.removeNode(arr[i]);
+      ambra.domUtil.removeNode(arr[i]);
     }
     
     // remove the rdm node (for IE this is the a.bug node, for Gecko this a span node)
     var rdm = dojo.byId('rdm');
-    if(rdm) topaz.domUtil.removeNode(rdm);
+    if(rdm) ambra.domUtil.removeNode(rdm);
 
     // remove all span nodes having class marked as pending annotation 
     // promoting any text node children as succeeding siblings of the span node to be removed
@@ -1414,7 +1414,7 @@ topaz.annotation = {
       for(var i=0; i<arr.length; i++) {
         n = arr[i];
         pn = n.parentNode;
-        topaz.domUtil.removeNode(n);
+        ambra.domUtil.removeNode(n);
         if(!(document.selection && document.selection.createRange)) {
           // non IE
           pn.normalize();	// to merge adjacent text nodes (non-IE only)
@@ -1427,7 +1427,7 @@ topaz.annotation = {
   },
   
 	/**
-	 * topaz.annotation.normalizeText( Document object  documentObj, String resultStr)
+	 * ambra.annotation.normalizeText( Document object  documentObj, String resultStr)
 	 * 
 	 * Method nomalizes a string.  This method is used instead of the prebuilt version
 	 * for IE is because it has a tendency to crash the browser.

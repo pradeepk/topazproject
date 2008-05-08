@@ -19,7 +19,7 @@
  */
  
 /**
- * topaz.horizontalTabs
+ * ambra.horizontalTabs
  * 
  * The horizontal tabs are the secondary navigation that can be found on the
  * home page and the profile page.  This class uses a map object set in the 
@@ -36,9 +36,9 @@
  **/
 
 
-dojo.provide("topaz.horizontalTabs");
-dojo.require("topaz.formUtil");
-topaz.horizontalTabs = {
+dojo.provide("ambra.horizontalTabs");
+dojo.require("ambra.formUtil");
+ambra.horizontalTabs = {
   
   proceedFlag:false,
   tempValue:'',
@@ -124,12 +124,12 @@ topaz.horizontalTabs = {
     var formObj = document.forms[formName];
     
     this.setTargetFormObj(formObj);
-    //topaz.formUtil.createHiddenFields(this.targetFormObj);
+    //ambra.formUtil.createHiddenFields(this.targetFormObj);
     
     //alert("formObj.formSubmit = " + formObj.formSubmit.value);
     /*dojo.connect(formObj.formSubmit, "onclick", function() {
-        //alert("tabKey = " + topaz.horizontalTabs.targetObj.tabKey);
-        submitContent(topaz.horizontalTabs.targetObj);
+        //alert("tabKey = " + ambra.horizontalTabs.targetObj.tabKey);
+        submitContent(ambra.horizontalTabs.targetObj);
       }
     );*/
     
@@ -225,7 +225,7 @@ topaz.horizontalTabs = {
   },
   
   attachFormEvents: function (formObj) {
-    topaz.horizontalTabs.tempValue = "";
+    ambra.horizontalTabs.tempValue = "";
 
     for (var i=0; i<formObj.elements.length; i++) {
       if (formObj.elements[i].type != 'hidden') {
@@ -236,7 +236,7 @@ topaz.horizontalTabs = {
         dojo.connect(document.forms[formName].elements[fieldName], "onfocus", function() {
         //    alert("tempValue = " + tempValue + "\n" +
         //          "this.id = " + document.forms[formName].elements[fieldName].value);
-            topaz.horizontalTabs.tempValue = this.value;
+            ambra.horizontalTabs.tempValue = this.value;
           }  
         );
 
@@ -244,8 +244,8 @@ topaz.horizontalTabs = {
         //    alert("tempValue = " + tempValue + "\n" +
         //          "this.value = " + this.value);
           
-            if (topaz.horizontalTabs.tempValue == this.value) 
-              topaz.horizontalTabs.changeFlag = true;
+            if (ambra.horizontalTabs.tempValue == this.value) 
+              ambra.horizontalTabs.changeFlag = true;
           }  
         );
       }
@@ -262,7 +262,7 @@ topaz.horizontalTabs = {
         dojo.addClass(li, "active");
       }
       li.onclick = function () { 
-          topaz.horizontalTabs.show(this.id);
+          ambra.horizontalTabs.show(this.id);
           return false; 
         }
       li.appendChild(document.createTextNode(this.tabsListObject[i].title));
@@ -283,7 +283,7 @@ topaz.horizontalTabs = {
         dojo.addClass(li, "active");
       }
       li.onclick = function () { 
-          topaz.horizontalTabs.showHome(this.id);
+          ambra.horizontalTabs.showHome(this.id);
           return false; 
         }
       var span = document.createElement("span");
@@ -310,7 +310,7 @@ topaz.horizontalTabs = {
   
   confirmChange: function (formObj) {
     //var isChanged = false;
-    //isChanged = topaz.formUtil.hasFieldChange(topaz.horizontalTabs.targetFormObj);
+    //isChanged = ambra.formUtil.hasFieldChange(ambra.horizontalTabs.targetFormObj);
    
     //alert("[confirmChange] changeFlag = " + changeFlag);
     if (this.changeFlag) {
@@ -331,7 +331,7 @@ topaz.horizontalTabs = {
       return false;
     }
     else {
-      //topaz.formUtil.removeHiddenFields(this.targetFormObj);
+      //ambra.formUtil.removeHiddenFields(this.targetFormObj);
       loadContent(this.newTarget);
     }
   },
@@ -361,7 +361,7 @@ topaz.horizontalTabs = {
 }  
 
 function getContentFunc () {
-  topaz.horizontalTabs.getContent();
+  ambra.horizontalTabs.getContent();
 }
 
 function loadContent(targetObj) {
@@ -378,11 +378,11 @@ function loadContent(targetObj) {
     },
     load: function(response, ioArgs){
       refreshArea.innerHTML = response;
-      topaz.horizontalTabs.toggleTab(targetObj);
-      topaz.horizontalTabs.tabSetup(targetObj);
-      topaz.horizontalTabs.tempValue = "";
-      topaz.horizontalTabs.changeFlag = false;
-      topaz.horizontalTabs.proceedFlag = true;
+      ambra.horizontalTabs.toggleTab(targetObj);
+      ambra.horizontalTabs.tabSetup(targetObj);
+      ambra.horizontalTabs.tempValue = "";
+      ambra.horizontalTabs.changeFlag = false;
+      ambra.horizontalTabs.proceedFlag = true;
       _ldc.hide();
     }
   });
@@ -400,19 +400,19 @@ function loadContentHome(targetObj) {
     },
     load: function(response, ioArgs){
       refreshArea.innerHTML = response;
-      topaz.horizontalTabs.setTargetObj(targetObj);
-      topaz.horizontalTabs.toggleTab(targetObj);
+      ambra.horizontalTabs.setTargetObj(targetObj);
+      ambra.horizontalTabs.toggleTab(targetObj);
     }
   });
 }  
 
 function submitContent() {
   var refreshArea = dojo.byId(profileConfig.tabPaneSetId);
-  var srcObj = topaz.horizontalTabs.targetObj;
+  var srcObj = ambra.horizontalTabs.targetObj;
   var targetUri = srcObj.urlSave;
   
   var formObj = document.forms[srcObj.formName];
-  var formValueObj = topaz.formUtil.createFormValueObject(formObj);
+  var formValueObj = ambra.formUtil.createFormValueObject(formObj);
   
   _ldc.show();
   dojo.xhrPost({
@@ -423,10 +423,10 @@ function submitContent() {
       handleXhrError(response, ioArgs);
     },
     load: function(response, ioArgs){
-      topaz.horizontalTabs.tabSetup(srcObj);
+      ambra.horizontalTabs.tabSetup(srcObj);
       refreshArea.innerHTML = response;
-      topaz.horizontalTabs.tempValue = "";
-      topaz.horizontalTabs.changeFlag = false;
+      ambra.horizontalTabs.tempValue = "";
+      ambra.horizontalTabs.changeFlag = false;
       
       var formObj = document.forms[srcObj.formName];
       

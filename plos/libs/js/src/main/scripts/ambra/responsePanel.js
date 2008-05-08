@@ -19,16 +19,16 @@
  */
  
 /**
- * topaz.responsePanel
+ * ambra.responsePanel
  * 
  * This class sets up and displays the response panel in the commentary page.  It also
  * sets up and displays the flagging panel.
  **/
 
-dojo.provide("topaz.responsePanel");
-dojo.require("topaz.domUtil");
-dojo.require("topaz.formUtil");
-topaz.responsePanel = {
+dojo.provide("ambra.responsePanel");
+dojo.require("ambra.domUtil");
+dojo.require("ambra.formUtil");
+ambra.responsePanel = {
   togglePanel:{},
   
   upperContainer: "",
@@ -53,12 +53,12 @@ topaz.responsePanel = {
     targetObj.baseId = (baseId) ? baseId : "";
     targetObj.replyId = (replyId)? replyId : "";
     targetObj.actionIndex = (actionIndex) ? actionIndex : 0;
-    this.upperContainer = topaz.domUtil.getFirstAncestorByClass(curNode, targetElClassName);
+    this.upperContainer = ambra.domUtil.getFirstAncestorByClass(curNode, targetElClassName);
     this.upperContainer.style.display = "none";
     this.togglePanel.newPanel = this.newPanel;
     this.togglePanel.upperContainer = this.upperContainer;
     
-    topaz.domUtil.insertAfter(this.newPanel, this.upperContainer, false);
+    ambra.domUtil.insertAfter(this.newPanel, this.upperContainer, false);
 
     if (this.previousUpperContainer) this.previousUpperContainer.style.display = "block";
 
@@ -91,7 +91,7 @@ topaz.responsePanel = {
     this.targetForm.comment.value = "";
     this.targetForm.responseArea.value = targetObj.responseCue;
     var submitMsg = targetObj.error;
-    topaz.domUtil.removeChildren(submitMsg);
+    ambra.domUtil.removeChildren(submitMsg);
   },
   
   getFlagConfirm: function() {
@@ -108,8 +108,8 @@ topaz.responsePanel = {
 function submitResponseInfo(targetObj) {
   var submitMsg = targetObj.error;
   var targetForm = targetObj.form;
-  topaz.domUtil.removeChildren(submitMsg);
-  //topaz.formUtil.disableFormFields(targetForm);
+  ambra.domUtil.removeChildren(submitMsg);
+  //ambra.formUtil.disableFormFields(targetForm);
 
   var urlParam = "";
   if (targetObj.requestType == "flag"){
@@ -117,11 +117,11 @@ function submitResponseInfo(targetObj) {
   }
   else if (targetObj.requestType == "new"){
     urlParam = targetObj.formAction;
-    topaz.formUtil.disableFormFields(targetForm);
+    ambra.formUtil.disableFormFields(targetForm);
   }
   else { 
     urlParam = targetObj.formAction + "?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.replyId;
-    topaz.formUtil.disableFormFields(targetForm);
+    ambra.formUtil.disableFormFields(targetForm);
   }
    
   _ldc.show();
@@ -131,7 +131,7 @@ function submitResponseInfo(targetObj) {
     handleAs:'json',
     error: function(response, ioArgs){
       handleXhrError(response, ioArgs);
-      topaz.formUtil.enableFormFields(targetForm);
+      ambra.formUtil.enableFormFields(targetForm);
     },
     load: function(response, ioArgs){
       var jsonObj = response;
@@ -142,7 +142,7 @@ function submitResponseInfo(targetObj) {
        }
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
-       topaz.formUtil.enableFormFields(targetForm);
+       ambra.formUtil.enableFormFields(targetForm);
        _ldc.hide();
      }
      else if (jsonObj.numFieldErrors > 0) {
@@ -160,13 +160,13 @@ function submitResponseInfo(targetObj) {
          }
        }
        submitMsg.appendChild(fieldErrors);
-       topaz.formUtil.enableFormFields(targetForm);
+       ambra.formUtil.enableFormFields(targetForm);
        _ldc.hide();
      }
      else {
        if (targetObj.requestType == "flag"){
          _ldc.hide();
-         topaz.responsePanel.getFlagConfirm();
+         ambra.responsePanel.getFlagConfirm();
        }
        else if (targetObj.requestType == "new"){
          var rootId = jsonObj.annotationId;
@@ -174,11 +174,11 @@ function submitResponseInfo(targetObj) {
        }
        else {
          if (dojo.isIE)
-           topaz.domUtil.insertAfter(topaz.responsePanel.togglePanel.newPanel, document.lastChild, false);
+           ambra.domUtil.insertAfter(ambra.responsePanel.togglePanel.newPanel, document.lastChild, false);
          getDiscussion(targetObj);
-         topaz.responsePanel.hide();
-         topaz.formUtil.textCues.reset(targetForm.responseArea, targetObj.responseCue);
-         topaz.formUtil.enableFormFields(targetForm);
+         ambra.responsePanel.hide();
+         ambra.formUtil.textCues.reset(targetForm.responseArea, targetObj.responseCue);
+         ambra.formUtil.enableFormFields(targetForm);
        }
      }
     }

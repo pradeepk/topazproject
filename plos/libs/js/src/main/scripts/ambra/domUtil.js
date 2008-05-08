@@ -19,17 +19,17 @@
  */
 
 /**
-  * topaz.domUtil
+  * ambra.domUtil
   *
   * DOM Utilities.
   *
   * @author  Joycelyn Chung  joycelyn@orangetowers.com
   **/
-dojo.provide("topaz.domUtil");
+dojo.provide("ambra.domUtil");
 dojo.require("dojox.data.dom");
-topaz.domUtil = {
+ambra.domUtil = {
   /**
-   * topaz.domUtil.getDisplayId(Node obj)
+   * ambra.domUtil.getDisplayId(Node obj)
    * 
    * Gets the values of the custom attribute displayId.
    * 
@@ -48,7 +48,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.getAnnotationId(Node obj)
+   * ambra.domUtil.getAnnotationId(Node obj)
    * 
    * Gets the values of the custom attribute annotationId.
    * 
@@ -67,7 +67,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.ISOtoJSDate(Date ISO_DT)
+   * ambra.domUtil.ISOtoJSDate(Date ISO_DT)
    * 
    * Converts ISO date formats to a javascript date format.
    * 
@@ -89,7 +89,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.removeChildNodes(Node obj)
+   * ambra.domUtil.removeChildNodes(Node obj)
    * 
    * Removes the child nodes of the node object that was passed in.
    * 
@@ -153,7 +153,7 @@ topaz.domUtil = {
 	},
 	
   /**
-   * topaz.domUtil.getDisplayMap(Node obj, String/Arraylist displayId)
+   * ambra.domUtil.getDisplayMap(Node obj, String/Arraylist displayId)
    * 
    * Parses the list of displayId(s).  Based on each displayId, searches for the matching ID in
    * the custom attribute annotationId.  Takes the displayId, the list of elements that has the
@@ -167,7 +167,7 @@ topaz.domUtil = {
    *                                                 count.
    */
   getDisplayMap: function(obj, displayId) {
-    var displayIdList = (displayId != null) ? [displayId] : topaz.domUtil.getDisplayId(obj).split(',');
+    var displayIdList = (displayId != null) ? [displayId] : ambra.domUtil.getDisplayId(obj).split(',');
     
     //alert("displayId = " + displayId + "\n" +
     //      "displayIdList = " + displayIdList);
@@ -199,7 +199,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.addNewClass(String sourceClass, String newClass, Node el)
+   * ambra.domUtil.addNewClass(String sourceClass, String newClass, Node el)
    * 
    * Searches for elements with the sourceClass and adds the newClass to each of them.
    * 
@@ -217,7 +217,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.swapClassNameBtwnSibling(Node obj, String tagName, String classNameValue)
+   * ambra.domUtil.swapClassNameBtwnSibling(Node obj, String tagName, String classNameValue)
    * 
    * Finds sibling elements that has a classNameValue that matches and removes them.  
    * Then adds the className to the source node object.
@@ -240,7 +240,7 @@ topaz.domUtil = {
   },
 
   /**
-   * topaz.domUtil.swapAttributeByClassNameForDisplay(Node obj, String triggerClass, String displayId)
+   * ambra.domUtil.swapAttributeByClassNameForDisplay(Node obj, String triggerClass, String displayId)
    * 
    * Using the source node obj and the displayId, get a list of displayIds mapped to elements that has 
    * a matching ID in its annotationId attribute node.  Using this list of maps, iterate through to find
@@ -265,7 +265,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.getCurrentOffset(Node obj)
+   * ambra.domUtil.getCurrentOffset(Node obj)
    * 
    * Gets the offset of the node obj from it's parent.
    * 
@@ -292,7 +292,7 @@ topaz.domUtil = {
   },
 
   /**
-   * topaz.domUtil.getFirstAncestorByClass(Node selfNode, String ancestorClassName)
+   * ambra.domUtil.getFirstAncestorByClass(Node selfNode, String ancestorClassName)
    * 
    * Gets the parent node of selfNode that has the matching classname to ancestorClassName.
    * 
@@ -313,7 +313,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.swapDisplayMode(Node obj, String state)
+   * ambra.domUtil.swapDisplayMode(Node obj, String state)
    * 
    * Swaps the display mode of node obj between "block" and "none".
    * 
@@ -339,7 +339,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.swapDisplayTextMode(Node node, String objId, String state, String textOn, String textOff)
+   * ambra.domUtil.swapDisplayTextMode(Node node, String objId, String state, String textOn, String textOff)
    * 
    * Swaps the display mode of node object based on the objId between "block" and "none".  
    * Also changes the text of node object node to the text specified in textOn and textOff.
@@ -373,7 +373,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.removeExtraSpaces(String text)
+   * ambra.domUtil.removeExtraSpaces(String text)
    * 
    * Removes all extra spaces, carriage returns, and line feeds and replacing them with 
    * one space.
@@ -388,7 +388,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.getChildElementsByTagAndClassName(Node node, String tagName, String className)
+   * ambra.domUtil.getChildElementsByTagAndClassName(Node node, String tagName, String className)
    * 
    * Looks through the child nodes of node object node for matching tagName and/or
    * matching className.
@@ -454,7 +454,7 @@ topaz.domUtil = {
   },
 
   /**
-   * topaz.domUtil.adjustContainerHeight(Node obj)
+   * ambra.domUtil.adjustContainerHeight(Node obj)
    * 
    * Adjusts the height of node object obj.
    * 
@@ -478,7 +478,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.setContainerWidth(Node obj, Integer minWidth, Integer maxWidth, Integer variableWidth)
+   * ambra.domUtil.setContainerWidth(Node obj, Integer minWidth, Integer maxWidth, Integer variableWidth)
    * 
    * Resets the size of the node object obj based on minWidth, maxWidth and variableWidth.
    * 
@@ -498,7 +498,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.removeNode(Node node, boolean deep)
+   * ambra.domUtil.removeNode(Node node, boolean deep)
    * 
    * Removes a node.  If deep is set to true, the children of the node object node is 
    * also removed.  
@@ -551,7 +551,7 @@ topaz.domUtil = {
 	},
   
   /**
-   * topaz.domUtil.insertAfterLast(Node srcNode, Node refNode)
+   * ambra.domUtil.insertAfterLast(Node srcNode, Node refNode)
    * 
    * Inserts the srcNode after the refNode.
    * 
@@ -566,7 +566,7 @@ topaz.domUtil = {
   },
 
   /**
-   * topaz.domUtil.insertBeforeFirst(Node srcNode, Node refNode)
+   * ambra.domUtil.insertBeforeFirst(Node srcNode, Node refNode)
    * 
    * Inserts the srcNode before the refNode.
    * 
@@ -581,7 +581,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.modifyNodeChildClassname(Node node, String targetNodeName, String className, boolean isAdd)
+   * ambra.domUtil.modifyNodeChildClassname(Node node, String targetNodeName, String className, boolean isAdd)
    * 
    * Modifies the class name of child nodes of node.  The child nodes must match the targetNodeName.  If isAdd
    * is set to true, the className is added.  Otherwise, the className is removed.
@@ -623,7 +623,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.isClassNameExist(Node node, String className)
+   * ambra.domUtil.isClassNameExist(Node node, String className)
    * 
    * Determines whether the className exists in the class attribute of node.
    * 
@@ -646,7 +646,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.isChildContainAttributeValue(Node node, String attributeName, String attributeValue)
+   * ambra.domUtil.isChildContainAttributeValue(Node node, String attributeName, String attributeValue)
    * 
    * Determines whether the child nodes contain an attributeName attribute and, if specified, is equal
    * to attributeValue.
@@ -661,7 +661,7 @@ topaz.domUtil = {
     var childlist = node.childNodes;
     var itemsFound = new Array();
     
-    console.debug("[topaz.domUtil.isChildContainAttributeValue]");
+    console.debug("[ambra.domUtil.isChildContainAttributeValue]");
 
     for (var i=0; i<=childlist.length-1; i++) {
       var attrObj = new Object();
@@ -684,7 +684,7 @@ topaz.domUtil = {
   },
   
   /**
-   * topaz.domUtil.firstSibling(Node siblingObj)
+   * ambra.domUtil.firstSibling(Node siblingObj)
    * 
    * Finds the first sibling of siblingObj.
    * 

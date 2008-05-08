@@ -19,7 +19,7 @@
  */
  
 /**
- * topaz.slideshow
+ * ambra.slideshow
  * 
  * This class builds and controls the slideshow thumbnails to display the appropriate
  * images when the thumbnails are clicked.  When an image is selected, the container 
@@ -28,9 +28,9 @@
  * as well to correspond to the link and vice versa.
  **/
 
-dojo.provide("topaz.slideshow");
-dojo.require("topaz.domUtil");
-topaz.slideshow = {
+dojo.provide("ambra.slideshow");
+dojo.require("ambra.domUtil");
+ambra.slideshow = {
   imgS: "PNG_S",
   
   imgM: "PNG_M",
@@ -133,7 +133,7 @@ topaz.slideshow = {
     
     this.activeItemIndex = index;
     
-    window.setTimeout("topaz.slideshow.adjustViewerHeight()", 100);
+    window.setTimeout("ambra.slideshow.adjustViewerHeight()", 100);
     
   },
   
@@ -181,7 +181,7 @@ topaz.slideshow = {
           }
         }
         else if (grandchild.nodeName == 'H5') {
-          topaz.domUtil.copyChildren(grandchild, this.figTitle);
+          ambra.domUtil.copyChildren(grandchild, this.figTitle);
         }
         else {
           var newChild = grandchild;
@@ -190,7 +190,7 @@ topaz.slideshow = {
         }
       }
       
-      topaz.domUtil.copyChildren(caption, this.figCaption);
+      ambra.domUtil.copyChildren(caption, this.figCaption);
       
       return;
     }
@@ -204,7 +204,7 @@ topaz.slideshow = {
     var viewport = dijit.getViewport();
     
     // get the offset of the container
-		var objOffset = topaz.domUtil.getCurrentOffset(obj);
+		var objOffset = ambra.domUtil.getCurrentOffset(obj);
 		
 		// find the size of the container
 		var objMb = dojo._getMarginBox(obj);
@@ -235,9 +235,9 @@ topaz.slideshow = {
   },
   
   adjustViewerWidth: function(figureWindow, maxWidth) {
-    var imageMarginBox = dojo._getMarginBox(topaz.slideshow.figureImg);
+    var imageMarginBox = dojo._getMarginBox(ambra.slideshow.figureImg);
     imageWidth = imageMarginBox.width;
-    topaz.domUtil.setContainerWidth(figureWindow, imageWidth, maxWidth, 1);
+    ambra.domUtil.setContainerWidth(figureWindow, imageWidth, maxWidth, 1);
   },
 
   showPrevious: function(obj) {

@@ -50,18 +50,18 @@
         		<li>
         			<label for="checkAllWeekly">
         			<#if tabId?has_content>
-        				<input type="checkbox" value="checkAllWeekly" name="checkAllWeekly" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.formUtil.selectAllCheckboxes(this, document.userAlerts.weeklyAlerts); topaz.horizontalTabs.checkValue(this);" /> Check all weekly alerts
+        				<input type="checkbox" value="checkAllWeekly" name="checkAllWeekly" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.formUtil.selectAllCheckboxes(this, document.userAlerts.weeklyAlerts); ambra.horizontalTabs.checkValue(this);" /> Check all weekly alerts
         			<#else>
-        				<input type="checkbox" value="checkAllWeekly" name="checkAllWeekly" onclick="topaz.formUtil.selectAllCheckboxes(this, document.userAlerts.weeklyAlerts);" /> Check all weekly alerts
+        				<input type="checkbox" value="checkAllWeekly" name="checkAllWeekly" onclick="ambra.formUtil.selectAllCheckboxes(this, document.userAlerts.weeklyAlerts);" /> Check all weekly alerts
         			</#if>
         			</label>
         		</li>
         		<li>
         			<label for="checkAllMonthly">
          			<#if tabId?has_content>
-        				<input type="checkbox" value="checkAllMonthly" name="checkAllMonthly" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.formUtil.selectAllCheckboxes(this, document.userAlerts.monthlyAlerts); topaz.horizontalTabs.checkValue(this);" /> Check all monthly alerts
+        				<input type="checkbox" value="checkAllMonthly" name="checkAllMonthly" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.formUtil.selectAllCheckboxes(this, document.userAlerts.monthlyAlerts); ambra.horizontalTabs.checkValue(this);" /> Check all monthly alerts
         			<#else>
-        				<input type="checkbox" value="checkAllMonthly" name="checkAllMonthly" onclick="topaz.formUtil.selectAllCheckboxes(this, document.userAlerts.monthlyAlerts);" /> Check all monthly alerts
+        				<input type="checkbox" value="checkAllMonthly" name="checkAllMonthly" onclick="ambra.formUtil.selectAllCheckboxes(this, document.userAlerts.monthlyAlerts);" /> Check all monthly alerts
         			</#if>
         			</label>
         		</li>
@@ -75,9 +75,9 @@
               <#if category.weeklyAvailable>
                 <label for="${category.key}">
 				<#if tabId?has_content>
-	              <@s.checkbox name="weeklyAlerts" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this); topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" onchange="topaz.horizontalTabs.checkValue(this);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
+	              <@s.checkbox name="weeklyAlerts" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.horizontalTabs.checkValue(this); ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" onchange="ambra.horizontalTabs.checkValue(this);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
 				<#else>
-	              <@s.checkbox name="weeklyAlerts" onclick="topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
+	              <@s.checkbox name="weeklyAlerts" onclick="ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
 				</#if>
                 Weekly </label>
               </#if>
@@ -87,9 +87,9 @@
               <#if category.monthlyAvailable>
                 <label for="${category.key}">
     			<#if tabId?has_content>
-	              <@s.checkbox name="monthlyAlerts" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this); topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);" onchange="topaz.horizontalTabs.checkValue(this);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
+	              <@s.checkbox name="monthlyAlerts" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.horizontalTabs.checkValue(this); ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);" onchange="ambra.horizontalTabs.checkValue(this);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
     			<#else>
-                  <@s.checkbox name="monthlyAlerts" onclick="topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
+                  <@s.checkbox name="monthlyAlerts" onclick="ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
     			</#if>
                   Monthly </label>
               <#else>

@@ -19,16 +19,16 @@
  */
 
 /**
-  * topaz.corrections
+  * ambra.corrections
   *
   * Decorates an article with correction specific markup. 
   * 
   * @author jkirton (jopaki@gmail.com)
   **/
-dojo.provide("topaz.corrections");
-dojo.require("topaz.domUtil");
-dojo.require("topaz.displayComment");
-topaz.corrections = {
+dojo.provide("ambra.corrections");
+dojo.require("ambra.domUtil");
+dojo.require("ambra.displayComment");
+ambra.corrections = {
   aroot: null, // the top-most element of the article below which corrections are applied
   fch: null,
   fclist: null, // the formal corrections ordered list element ref
@@ -45,12 +45,12 @@ topaz.corrections = {
    * Removes any existing formal correction entries from the formal correction header.
    */
   _clearFCEntries: function() {
-    topaz.domUtil.removeChildren(this.fclist);
+    ambra.domUtil.removeChildren(this.fclist);
     // TODO handle IE memory leaks
   },
 
   /**
-   * topaz.corrections.apply
+   * ambra.corrections.apply
    *
    * Applies correction specific decorations to the article
    */
@@ -86,7 +86,7 @@ topaz.corrections = {
           }
           else {
             // success
-            topaz.corrections.addFormalCorrections(jsonObj.formalCorrections);
+            ambra.corrections.addFormalCorrections(jsonObj.formalCorrections);
           }
           _ldc.hide();
         }
@@ -112,7 +112,7 @@ topaz.corrections = {
     var node = document.createElement('span');
     node.innerHTML = etc;
     node = node.childNodes[0];
-    return '<p>' + topaz.domUtil.findTextNode(node,true).nodeValue + '</p>';
+    return '<p>' + ambra.domUtil.findTextNode(node,true).nodeValue + '</p>';
   },
 
   /**
@@ -135,7 +135,7 @@ topaz.corrections = {
     a.setAttribute('href', '#');
     a.setAttribute(formalCorrectionConfig.annid, fc.id);
     a.innerHTML = 'read formal correction';
-    dojo.connect(a, "onclick", topaz.corrections.onClickFC);
+    dojo.connect(a, "onclick", ambra.corrections.onClickFC);
     p.appendChild(a);
     p.appendChild(document.createTextNode(')'));
     return li;
@@ -197,11 +197,11 @@ topaz.corrections = {
   onClickFC: function(e) {
     var annId = dojo.attr(e.target, formalCorrectionConfig.annid);
     e.preventDefault();
-    var fcn = topaz.corrections._findFrmlCrctnByAnnId(annId);
+    var fcn = ambra.corrections._findFrmlCrctnByAnnId(annId);
     if(fcn) {
-	    var annAnchor = topaz.corrections._getAnnAnchor(fcn);
+	    var annAnchor = ambra.corrections._getAnnAnchor(fcn);
 	    if(!annAnchor) throw 'Unable to resolve annotation anchor!';
-	    topaz.displayComment.show(annAnchor);
+	    ambra.displayComment.show(annAnchor);
 	  }
   }
 }

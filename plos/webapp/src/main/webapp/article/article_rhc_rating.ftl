@@ -31,7 +31,7 @@
                     <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
                     <li class="current-rating overall-rating pct${overallPct}">Currently ${overallRoundedAverage?string("0.#")}/5 Stars.</li>
                 </ul>
-                <a href="javascript:void(0);" onclick="return topaz.domUtil.swapDisplayTextMode(this, 'ratingAverages', null, 'Hide all categories', 'See all categories');" class="rating catAvg">See all categories</a>
+                <a href="javascript:void(0);" onclick="return ambra.domUtil.swapDisplayTextMode(this, 'ratingAverages', null, 'Hide all categories', 'See all categories');" class="rating catAvg">See all categories</a>
                 <fieldset id="ratingAverages">
                   <ol class="ratingAvgs">
                     <li><label for="insight">Insight</label>
@@ -62,9 +62,9 @@
               </#if>
               <#if Session[freemarker_config.userAttributeKey]?exists>
                 <#if hasRated>
-                  <a href="javascript:void(0);" onclick="return topaz.rating.show('edit');" class="rating">Edit My Rating</a>
+                  <a href="javascript:void(0);" onclick="return ambra.rating.show('edit');" class="rating">Edit My Rating</a>
                 <#else>
-                  <a href="javascript:void(0);" onclick="return topaz.rating.show();" class="rating">Rate This Article</a>
+                  <a href="javascript:void(0);" onclick="return ambra.rating.show();" class="rating">Rate This Article</a>
                 </#if>
               <#else>
                 <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="rating">Rate This Article</a>

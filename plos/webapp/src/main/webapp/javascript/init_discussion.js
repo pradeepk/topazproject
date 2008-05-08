@@ -39,24 +39,24 @@
     var responseArea = _dcr.form.responseArea;
     
     dojo.connect(_dcr.btnCancel, "onclick", function(e) {
-        topaz.responsePanel.hide(_dcr.widget);
+        ambra.responsePanel.hide(_dcr.widget);
         var submitMsg = _dcr.error;
-        topaz.domUtil.removeChildren(submitMsg);
+        ambra.domUtil.removeChildren(submitMsg);
       }
     );    
 
     dojo.connect(_dcr.btnSubmit, "onclick", function(e) {
-        topaz.responsePanel.submit(_dcr);
+        ambra.responsePanel.submit(_dcr);
       }
     );    
        
     dojo.connect(responseTitle, "onfocus", function(e) {
-        topaz.formUtil.textCues.off(responseTitle, _dcr.responseTitleCue);
+        ambra.formUtil.textCues.off(responseTitle, _dcr.responseTitleCue);
       }
     );    
        
     dojo.connect(responseArea, "onfocus", function(e) {
-        topaz.formUtil.textCues.off(responseArea, _dcr.responseCue);
+        ambra.formUtil.textCues.off(responseArea, _dcr.responseCue);
       }
     );    
        
@@ -69,7 +69,7 @@
           fldResponseTitle.value = "";
         }
 
-        topaz.formUtil.textCues.on(responseTitle, _dcr.responseTitleCue);
+        ambra.formUtil.textCues.on(responseTitle, _dcr.responseTitleCue);
       }
     );    
 
@@ -81,7 +81,7 @@
         else {
           fldResponse.value = "";
         }
-        topaz.formUtil.textCues.on(responseArea, _dcr.responseCue);
+        ambra.formUtil.textCues.on(responseArea, _dcr.responseCue);
       }
     );    
        
@@ -94,7 +94,7 @@
           fldResponseTitle.value = "";
         }
 
-        topaz.formUtil.textCues.on(responseTitle, _dcr.responseTitleCue);
+        ambra.formUtil.textCues.on(responseTitle, _dcr.responseTitleCue);
       }
     );    
        
@@ -106,7 +106,7 @@
         else {
           fldResponse.value = "";
         }
-        topaz.formUtil.textCues.on(responseArea, _dcr.responseCue);
+        ambra.formUtil.textCues.on(responseArea, _dcr.responseCue);
       }
     );    
 
@@ -123,23 +123,23 @@
     var responseAreaFlag = _dcf.form.responseArea;
     
     dojo.connect(_dcf.btnCancel, "onclick", function(e) {
-        topaz.responsePanel.hide();
+        ambra.responsePanel.hide();
       }
     );    
 
     dojo.connect(_dcf.btnFlagClose, "onclick", function(e) {
-        topaz.responsePanel.hide();
-        topaz.responsePanel.resetFlaggingForm(_dcf);
+        ambra.responsePanel.hide();
+        ambra.responsePanel.resetFlaggingForm(_dcf);
       }
     );    
 
     dojo.connect(_dcf.btnSubmit, "onclick", function(e) {
-        topaz.responsePanel.submit(_dcf);
+        ambra.responsePanel.submit(_dcf);
       }
     );    
        
     dojo.connect(responseAreaFlag, "onfocus", function(e) {
-        topaz.formUtil.textCues.off(responseAreaFlag, _dcf.responseCue);
+        ambra.formUtil.textCues.off(responseAreaFlag, _dcf.responseCue);
       }
     );    
        
@@ -151,7 +151,7 @@
         else {
           fldResponse.value = "";          
         }
-        topaz.formUtil.textCues.on(responseAreaFlag, _dcf.responseCue);
+        ambra.formUtil.textCues.on(responseAreaFlag, _dcf.responseCue);
       }
     );    
        

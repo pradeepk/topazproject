@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div dojoType="topaz.widget.RegionalDialog" id="AnnotationDialog" style="padding:0;margin:0;">
+<div dojoType="ambra.widget.RegionalDialog" id="AnnotationDialog" style="padding:0;margin:0;">
 	<div class="dialog annotate">
 		<div class="tipu" id="dTipu"></div>
 		<div class="btn close" title="Click to close and cancel">

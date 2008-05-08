@@ -33,6 +33,6 @@ dojo.addOnLoad(function() {
     }
   );
   
-  topaz.formUtil.selectCheckboxPerCollection(_alertForm.checkAllWeekly, _alertForm.weeklyAlerts);
-  topaz.formUtil.selectCheckboxPerCollection(_alertForm.checkAllMonthly, _alertForm.monthlyAlerts);
+  ambra.formUtil.selectCheckboxPerCollection(_alertForm.checkAllWeekly, _alertForm.weeklyAlerts);
+  ambra.formUtil.selectCheckboxPerCollection(_alertForm.checkAllMonthly, _alertForm.monthlyAlerts);
 });

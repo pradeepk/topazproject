@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<a href="#" class="close" onclick="topaz.slideshow.closeReturn();">Return to article</a>
+<a href="#" class="close" onclick="ambra.slideshow.closeReturn();">Return to article</a>
 
 <div id="figure-window-wrapper">
 <#if Parameters.imageURI?exists>
@@ -36,7 +36,7 @@
 			</#if>
 	    <@s.url id="imageUrl" includeParams="none"  action="fetchObject" uri="${image.uri}"/>
 	    <@s.a title="Click for larger image" href="#"> <!--put code here for onclick and change the pane-->
-	    <img border="0" class="thumbnail" id="tn${image_index}" src="${imageUrl}&representation=${image.repSmall}" onclick="topaz.slideshow.show(this, ${image_index});" title="${image.title} ${image.plainCaptionTitle}" />
+	    <img border="0" class="thumbnail" id="tn${image_index}" src="${imageUrl}&representation=${image.repSmall}" onclick="ambra.slideshow.show(this, ${image_index});" title="${image.title} ${image.plainCaptionTitle}" />
 	    </@s.a>
 		    
 	</div>
@@ -52,7 +52,7 @@
  	    <@s.url id="currentImageAttachmentUrl" includeParams="none"  action="fetchObjectAttachment" uri="${currentImage.uri}"/>
 		<div id="figure-window-hdr">
 			<div class="figure-next">
-				<a href="#" id="previous" onclick="return topaz.slideshow.showPrevious(this);" class="previous icon<#if currentImage == secondaryObjects?first> hidden</#if>">Previous</a> | <a href="#" id="next" onclick="return topaz.slideshow.showNext(this);" class="next icon<#if currentImage == secondaryObjects?last> hidden</#if>">Next</a>
+				<a href="#" id="previous" onclick="return ambra.slideshow.showPrevious(this);" class="previous icon<#if currentImage == secondaryObjects?first> hidden</#if>">Previous</a> | <a href="#" id="next" onclick="return ambra.slideshow.showNext(this);" class="next icon<#if currentImage == secondaryObjects?last> hidden</#if>">Next</a>
 			</div>
 			<div id="figure-window-hdr-links">
 				<a href="${currentImageViewLarger}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 

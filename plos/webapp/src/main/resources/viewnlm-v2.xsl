@@ -5442,9 +5442,9 @@ Make article meta data
         <xsl:attribute name="displayId">
           <xsl:value-of select="substring($displayAnn,2)"/> <!-- get rid of first comma in list -->
         </xsl:attribute>
-        <xsl:attribute name="onclick">return(topaz.displayComment.show(this));</xsl:attribute>
-        <xsl:attribute name="onmouseover">topaz.displayComment.mouseoverComment(this);</xsl:attribute>
-        <xsl:attribute name="onmouseout">topaz.displayComment.mouseoutComment(this);</xsl:attribute>
+        <xsl:attribute name="onclick">return(ambra.displayComment.show(this));</xsl:attribute>
+        <xsl:attribute name="onmouseover">ambra.displayComment.mouseoverComment(this);</xsl:attribute>
+        <xsl:attribute name="onmouseout">ambra.displayComment.mouseoutComment(this);</xsl:attribute>
         <xsl:attribute name="title">Click to preview this note</xsl:attribute>
       </xsl:element>
     </xsl:if>

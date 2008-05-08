@@ -19,12 +19,12 @@
  */
 
 /**
- * topaz.navigation
+ * ambra.navigation
  * 
  * This class builds the table of content navigation in the right-hand column. 
  **/
-dojo.provide("topaz.navigation");
-topaz.navigation = {
+dojo.provide("ambra.navigation");
+ambra.navigation = {
  buildTOC: function(tocObj){
    var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
    

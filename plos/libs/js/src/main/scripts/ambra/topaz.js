@@ -1,6 +1,6 @@
 /*
  * $HeadURL:: http://gandalf.topazproject.org/svn/head/plos/webapp/src/main/webapp/javas#$
- * $Id: topaz.js 5581 2008-05-02 23:01:11Z jkirton $
+ * $Id: ambra.js 5581 2008-05-02 23:01:11Z jkirton $
  *
  * Copyright (c) 2006-2008 by Topaz, Inc.
  * http://topazproject.org
@@ -22,7 +22,7 @@
  * This file is not a dojo module rather simply contains general utility methods.
  */
  
-dojo.provide("topaz.topaz");
+dojo.provide("ambra.topaz");
 
 document.getElementsByTagAndClassName = function(tagName, className) {
   if ( tagName == null )

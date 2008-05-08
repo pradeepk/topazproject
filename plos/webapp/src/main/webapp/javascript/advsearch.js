@@ -19,12 +19,12 @@
  */
 
 /**
- * topaz.advsearch
+ * ambra.advsearch
  * Advanced search methods.
  * @author jkirton (jopaki@gmail.com)
  **/
-//dojo.provide("topaz.advsearch");
-topaz.advsearch = {
+//dojo.provide("ambra.advsearch");
+ambra.advsearch = {
 	Config: {
 	  idAuthNmePrototype:'as_anp',
 	  idOlAuthNmes:'as_ol_an',
@@ -64,16 +64,16 @@ topaz.advsearch = {
    
   init: function() {
     // search by author section...
-    topaz.advsearch.authNmeProto = dojo.byId(topaz.advsearch.Config.idAuthNmePrototype);
-    topaz.advsearch.olAuthNmes = dojo.byId(topaz.advsearch.Config.idOlAuthNmes);
-    topaz.advsearch.liAuthNmeOptions = dojo.query('.options', topaz.advsearch.olAuthNmes)[0];
-    topaz.advsearch.liAuthNmesOpts = dojo.byId(topaz.advsearch.Config.idLiAuthNmesOpts);
+    ambra.advsearch.authNmeProto = dojo.byId(ambra.advsearch.Config.idAuthNmePrototype);
+    ambra.advsearch.olAuthNmes = dojo.byId(ambra.advsearch.Config.idOlAuthNmes);
+    ambra.advsearch.liAuthNmeOptions = dojo.query('.options', ambra.advsearch.olAuthNmes)[0];
+    ambra.advsearch.liAuthNmesOpts = dojo.byId(ambra.advsearch.Config.idLiAuthNmesOpts);
 
     // dates section...
-    var slct = dojo.byId(topaz.advsearch.Config.idPublishDate);
+    var slct = dojo.byId(ambra.advsearch.Config.idPublishDate);
     var showDates = (slct.options[slct.selectedIndex].value == 'range');
-    dojo.byId(topaz.advsearch.Config.idPubDateOptions).style.display = showDates ? '' : 'none';
-    dojo.connect(dojo.byId(topaz.advsearch.Config.idPublishDate), "onchange", topaz.advsearch.onChangePublishDate);
+    dojo.byId(ambra.advsearch.Config.idPubDateOptions).style.display = showDates ? '' : 'none';
+    dojo.connect(dojo.byId(ambra.advsearch.Config.idPublishDate), "onchange", ambra.advsearch.onChangePublishDate);
 
     // date part comment cue event bindings...
     var year1 = dojo.byId('range1');
@@ -83,48 +83,48 @@ topaz.advsearch = {
     var month2 = dojo.byId('range-m2');
     var day2 = dojo.byId('range-d2');
     
-    dojo.connect(year1, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
-    dojo.connect(month1, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
-    dojo.connect(day1, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
+    dojo.connect(year1, "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
+    dojo.connect(month1, "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
+    dojo.connect(day1, "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
     
-    dojo.connect(year1, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
-    dojo.connect(month1, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
-    dojo.connect(day1, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
+    dojo.connect(year1, "onblur", ambra.advsearch.onBlurCommentCueInputHandler);
+    dojo.connect(month1, "onblur", ambra.advsearch.onBlurCommentCueInputHandler);
+    dojo.connect(day1, "onblur", ambra.advsearch.onBlurCommentCueInputHandler);
     
-    //dojo.connect(year1, "onkeyup", topaz.advsearch.onKeyUpCommentCueInputHandler);
-    //dojo.connect(month1, "onkeyup", topaz.advsearch.onKeyUpCommentCueInputHandler);
-    //dojo.connect(day1, "onkeyup", topaz.advsearch.onKeyUpCommentCueInputHandler);
+    //dojo.connect(year1, "onkeyup", ambra.advsearch.onKeyUpCommentCueInputHandler);
+    //dojo.connect(month1, "onkeyup", ambra.advsearch.onKeyUpCommentCueInputHandler);
+    //dojo.connect(day1, "onkeyup", ambra.advsearch.onKeyUpCommentCueInputHandler);
     
-    dojo.connect(year2, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
-    dojo.connect(month2, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
-    dojo.connect(day2, "onfocus", topaz.advsearch.onFocusCommentCueInputHandler);
+    dojo.connect(year2, "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
+    dojo.connect(month2, "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
+    dojo.connect(day2, "onfocus", ambra.advsearch.onFocusCommentCueInputHandler);
     
-    dojo.connect(year2, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
-    dojo.connect(month2, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
-    dojo.connect(day2, "onblur", topaz.advsearch.onBlurCommentCueInputHandler);
+    dojo.connect(year2, "onblur", ambra.advsearch.onBlurCommentCueInputHandler);
+    dojo.connect(month2, "onblur", ambra.advsearch.onBlurCommentCueInputHandler);
+    dojo.connect(day2, "onblur", ambra.advsearch.onBlurCommentCueInputHandler);
     
     // subject categories section...
     if(document.selection) {
       // IE
-      dojo.connect(dojo.byId(topaz.advsearch.Config.idSubjCatsAll), "onfocus", topaz.advsearch.onChangeSubjectCategories);
-      dojo.connect(dojo.byId(topaz.advsearch.Config.idSubjCatsSlct), "onfocus", topaz.advsearch.onChangeSubjectCategories);
+      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsAll), "onfocus", ambra.advsearch.onChangeSubjectCategories);
+      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsSlct), "onfocus", ambra.advsearch.onChangeSubjectCategories);
     } else {
       // gecko et al.
-      dojo.connect(dojo.byId(topaz.advsearch.Config.idSubjCatsAll), "onchange", topaz.advsearch.onChangeSubjectCategories);
-      dojo.connect(dojo.byId(topaz.advsearch.Config.idSubjCatsSlct), "onchange", topaz.advsearch.onChangeSubjectCategories);
+      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsAll), "onchange", ambra.advsearch.onChangeSubjectCategories);
+      dojo.connect(dojo.byId(ambra.advsearch.Config.idSubjCatsSlct), "onchange", ambra.advsearch.onChangeSubjectCategories);
     }
     
     // hijack form submission for validation...
-    dojo.connect(dojo.byId('button-search'), "onclick", topaz.advsearch.onSubmitHandler);
+    dojo.connect(dojo.byId('button-search'), "onclick", ambra.advsearch.onSubmitHandler);
 
-    topaz.advsearch.liAuthNmesOpts.style.display = 'none';
-    topaz.advsearch.tglSubCategories();
+    ambra.advsearch.liAuthNmesOpts.style.display = 'none';
+    ambra.advsearch.tglSubCategories();
     
-    topaz.advsearch.explodeAuthNames();
+    ambra.advsearch.explodeAuthNames();
   },
   
   onSubmitHandler: function(e) {
-    topaz.advsearch.handleSubmit();
+    ambra.advsearch.handleSubmit();
     dojo.stopEvent(e);
     return false;
   },
@@ -143,7 +143,7 @@ topaz.advsearch = {
   },
   
   validateDateNum: function(val, range, nme, errs) {
-    if(val == '' || val == topaz.advsearch.Config.yearCue || val == topaz.advsearch.Config.monthCue || val == topaz.advsearch.Config.dayCue) {
+    if(val == '' || val == ambra.advsearch.Config.yearCue || val == ambra.advsearch.Config.monthCue || val == ambra.advsearch.Config.dayCue) {
       errs.push(nme + ' must be specified.');
     }
     else if(isNaN(parseInt(val))) {
@@ -163,7 +163,7 @@ topaz.advsearch = {
     var errs = [];
     
     // validate published date range (if applicable)
-    var slct = dojo.byId(topaz.advsearch.Config.idPublishDate);
+    var slct = dojo.byId(ambra.advsearch.Config.idPublishDate);
     if(slct.options[slct.selectedIndex].value == 'range') {
       var year1 = dojo.byId('range1');
       var month1 = dojo.byId('range-m1');
@@ -172,38 +172,38 @@ topaz.advsearch = {
       var month2 = dojo.byId('range-m2');
       var day2 = dojo.byId('range-d2');
       
-      this.validateDateNum(year1.value, topaz.advsearch.Config.pubDateYearRange, 'Publish Date from Year', errs);
-      this.validateDateNum(month1.value, topaz.advsearch.Config.monthRange, 'Publish Date from Month', errs);
-      this.validateDateNum(day1.value, topaz.advsearch.Config.dayRange, 'Publish Date from Day', errs);
+      this.validateDateNum(year1.value, ambra.advsearch.Config.pubDateYearRange, 'Publish Date from Year', errs);
+      this.validateDateNum(month1.value, ambra.advsearch.Config.monthRange, 'Publish Date from Month', errs);
+      this.validateDateNum(day1.value, ambra.advsearch.Config.dayRange, 'Publish Date from Day', errs);
       
-      this.validateDateNum(year2.value, topaz.advsearch.Config.pubDateYearRange, 'Publish Date to Year', errs);
-      this.validateDateNum(month2.value, topaz.advsearch.Config.monthRange, 'Publish Date to Month', errs);
-      this.validateDateNum(day2.value, topaz.advsearch.Config.dayRange, 'Publish Date to Day', errs);
+      this.validateDateNum(year2.value, ambra.advsearch.Config.pubDateYearRange, 'Publish Date to Year', errs);
+      this.validateDateNum(month2.value, ambra.advsearch.Config.monthRange, 'Publish Date to Month', errs);
+      this.validateDateNum(day2.value, ambra.advsearch.Config.dayRange, 'Publish Date to Day', errs);
     }
  
     return errs;
   },
   
   getCueText: function(inptId) {
-    if(inptId.indexOf(topaz.advsearch.Config.idMonthPart) > 0) {
-      return topaz.advsearch.Config.monthCue;
+    if(inptId.indexOf(ambra.advsearch.Config.idMonthPart) > 0) {
+      return ambra.advsearch.Config.monthCue;
     }
-    else if(inptId.indexOf(topaz.advsearch.Config.idDayPart) > 0) {
-      return topaz.advsearch.Config.dayCue;
+    else if(inptId.indexOf(ambra.advsearch.Config.idDayPart) > 0) {
+      return ambra.advsearch.Config.dayCue;
     }
     else {
-      return topaz.advsearch.Config.yearCue;
+      return ambra.advsearch.Config.yearCue;
     }
   },
   
   onFocusCommentCueInputHandler: function(e) {
-    topaz.advsearch.onFocusCommentCueInput(e.target);
+    ambra.advsearch.onFocusCommentCueInput(e.target);
     dojo.stopEvent(e);
     return false;
   },
   
   onBlurCommentCueInputHandler: function(e) {
-    topaz.advsearch.onBlurCommentCueInput(e.target);
+    ambra.advsearch.onBlurCommentCueInput(e.target);
     dojo.stopEvent(e);
     return false;
   },
@@ -219,23 +219,23 @@ topaz.advsearch = {
   onChangePublishDate: function(e) {
     var slct = e.target;
     var show = (slct.options[slct.selectedIndex].value == 'range');
-    dojo.byId(topaz.advsearch.Config.idPubDateOptions).style.display = (show ? '' : 'none');
+    dojo.byId(ambra.advsearch.Config.idPubDateOptions).style.display = (show ? '' : 'none');
     dojo.stopEvent(e);
     return false;
   },
 
   onChangeSubjectCategories: function(e) {
-    topaz.advsearch.tglSubCategories();
+    ambra.advsearch.tglSubCategories();
     dojo.stopEvent(e);
     return true;
   },
   
   tglSubCategories: function() {
-    var rbAll = dojo.byId(topaz.advsearch.Config.idSubjCatsAll);
-    var rbSlct = dojo.byId(topaz.advsearch.Config.idSubjCatsSlct);
+    var rbAll = dojo.byId(ambra.advsearch.Config.idSubjCatsAll);
+    var rbSlct = dojo.byId(ambra.advsearch.Config.idSubjCatsSlct);
     var enable = rbSlct.checked;
-    var fs = dojo.byId(topaz.advsearch.Config.idFsSubjectCatOpt);
-    if(enable) topaz.formUtil.enableFormFields(fs); else topaz.formUtil.disableFormFields(fs);
+    var fs = dojo.byId(ambra.advsearch.Config.idFsSubjectCatOpt);
+    if(enable) ambra.formUtil.enableFormFields(fs); else ambra.formUtil.disableFormFields(fs);
     rbSlct.disabled = '';
     rbAll.disabled = '';
   },
@@ -273,14 +273,14 @@ topaz.advsearch = {
   // handles adding additional auth names 
   onClickAddAuthNameHandler: function(e) {
     //dojo.fixEvent(e);
-    topaz.advsearch.addAuthName(e.target);
+    ambra.advsearch.addAuthName(e.target);
     //dojo.stopEvent(e);
   },
   
   // handles removing previously added auth names 
   onClickRmvAuthNameHandler: function(e) {
     dojo.fixEvent(e);
-    topaz.advsearch.rmvAuthName(e.target);
+    ambra.advsearch.rmvAuthName(e.target);
     dojo.stopEvent(e);
   },
   
@@ -291,17 +291,17 @@ topaz.advsearch = {
   
   addAuthName: function(lnkAddCrnt) {
     var num = this._getAuthNmeNum(lnkAddCrnt);
-    var inpt = dojo.byId(this._assembleId(topaz.advsearch.Config.idInptAuthNme, num));
+    var inpt = dojo.byId(this._assembleId(ambra.advsearch.Config.idInptAuthNme, num));
     if(inpt.value == '') {
       this._handleAddError('Specify an Author Name to add another.', inpt);
       return;
     }
-    else if(num >= topaz.advsearch.Config.maxNumAuthNames) {
-      this._handleAddError('Only ' + topaz.advsearch.Config.maxNumAuthNames + ' Author Names are allowed.', inpt);
+    else if(num >= ambra.advsearch.Config.maxNumAuthNames) {
+      this._handleAddError('Only ' + ambra.advsearch.Config.maxNumAuthNames + ' Author Names are allowed.', inpt);
       return;
     }
     lnkAddCrnt.style.display = 'none';
-    var spnSpcr = dojo.byId(this._assembleId(topaz.advsearch.Config.idSpnSpcr, num));
+    var spnSpcr = dojo.byId(this._assembleId(ambra.advsearch.Config.idSpnSpcr, num));
     spnSpcr.style.display = 'none';
     num++;
 
@@ -321,10 +321,10 @@ topaz.advsearch = {
     this.olAuthNmes.insertBefore(li, this.liAuthNmeOptions);
     inpt.focus();
     
-    var spnRmv = dojo.byId(this._assembleId(topaz.advsearch.Config.idSpnRmvAuthNme, num));
-    var lnkRmv = dojo.byId(this._assembleId(topaz.advsearch.Config.idLnkRmvAuthNme, num));
-    var lnkAdd = dojo.byId(this._assembleId(topaz.advsearch.Config.idLnkAddAuthNme, num));
-    spnSpcr = dojo.byId(this._assembleId(topaz.advsearch.Config.idSpnSpcr, num));
+    var spnRmv = dojo.byId(this._assembleId(ambra.advsearch.Config.idSpnRmvAuthNme, num));
+    var lnkRmv = dojo.byId(this._assembleId(ambra.advsearch.Config.idLnkRmvAuthNme, num));
+    var lnkAdd = dojo.byId(this._assembleId(ambra.advsearch.Config.idLnkAddAuthNme, num));
+    spnSpcr = dojo.byId(this._assembleId(ambra.advsearch.Config.idSpnSpcr, num));
 
     spnRmv.style.display = '';
     lnkAdd.style.display = '';
@@ -345,18 +345,18 @@ topaz.advsearch = {
     // restore links above
     if(--num == 1) {
       if(isLast) {
-        lnkAdd = dojo.byId(this._assembleId(topaz.advsearch.Config.idLnkAddAuthNme, num));
+        lnkAdd = dojo.byId(this._assembleId(ambra.advsearch.Config.idLnkAddAuthNme, num));
         lnkAdd.style.display = '';
       }
     }
     else {
-      var lnkRmv = dojo.byId(this._assembleId(topaz.advsearch.Config.idLnkRmvAuthNme, num));
+      var lnkRmv = dojo.byId(this._assembleId(ambra.advsearch.Config.idLnkRmvAuthNme, num));
       lnkRmv.style.display = '';
       var isLast = dojo.hasClass(liToRmv.nextSibling, 'options');
       if(isLast) {
-        var spnSpcr = dojo.byId(this._assembleId(topaz.advsearch.Config.idSpnSpcr, num));
+        var spnSpcr = dojo.byId(this._assembleId(ambra.advsearch.Config.idSpnSpcr, num));
         spnSpcr.style.display = '';
-        var lnkAdd = dojo.byId(this._assembleId(topaz.advsearch.Config.idLnkAddAuthNme, num));
+        var lnkAdd = dojo.byId(this._assembleId(ambra.advsearch.Config.idLnkAddAuthNme, num));
         lnkAdd.style.display = '';
       }
     }
@@ -379,7 +379,7 @@ topaz.advsearch = {
   
   // auto-adds auth name edit fields based on the current value in the initial auth name edit field
   explodeAuthNames: function() {
-    var fan = dojo.byId(this._assembleId(topaz.advsearch.Config.idInptAuthNme));
+    var fan = dojo.byId(this._assembleId(ambra.advsearch.Config.idInptAuthNme));
     var auths = fan.value;
     if(!auths || auths.length < 1) return;
     var j, arr = auths.split(','), auth, lnkAdd;
@@ -388,11 +388,11 @@ topaz.advsearch = {
         auth = arr[i];
         j = i + 1;
         if(i>0) this.addAuthName(lnkAdd);
-        lnkAdd = dojo.byId(this._assembleId(topaz.advsearch.Config.idLnkAddAuthNme, j));
-        dojo.byId(this._assembleId(topaz.advsearch.Config.idInptAuthNme, j)).value = auth;
+        lnkAdd = dojo.byId(this._assembleId(ambra.advsearch.Config.idLnkAddAuthNme, j));
+        dojo.byId(this._assembleId(ambra.advsearch.Config.idInptAuthNme, j)).value = auth;
       }
     }
   }
   
 };
-dojo.addOnLoad(topaz.advsearch.init);
+dojo.addOnLoad(ambra.advsearch.init);

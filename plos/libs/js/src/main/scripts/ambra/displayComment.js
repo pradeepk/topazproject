@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 /**
-  * topaz.displayComment
+  * ambra.displayComment
   * 
   * This object builds the dialog that displays the comments for a specific 
   * annotation bug.
@@ -26,9 +26,9 @@
   * @author  Joycelyn Chung			joycelyn@orangetowers.com
   *
   **/
-dojo.provide("topaz.displayComment");
-dojo.require("topaz.domUtil");
-topaz.displayComment = {
+dojo.provide("ambra.displayComment");
+dojo.require("ambra.domUtil");
+ambra.displayComment = {
   target: "",
   
   targetSecondary: "",
@@ -86,7 +86,7 @@ topaz.displayComment = {
   },
   
   /**
-   * topaz.displayComment.show(Node node)
+   * ambra.displayComment.show(Node node)
    * 
    * Method that triggers the display of the dialog box.
    * 
@@ -106,7 +106,7 @@ topaz.displayComment = {
   },
 
   /**
-   * topaz.displayComment.buildDisplayHeader(JSON jsonObj)
+   * ambra.displayComment.buildDisplayHeader(JSON jsonObj)
    * 
    * Builds the header of the annotation comment display dialog.
    * 
@@ -131,7 +131,7 @@ topaz.displayComment = {
   },
 
   /**
-   * topaz.displayComment.buildDisplayDetail(JSON jsonObj)
+   * ambra.displayComment.buildDisplayDetail(JSON jsonObj)
    * 
    * Builds the details of the annotation comment display dialog.
    * 
@@ -208,7 +208,7 @@ topaz.displayComment = {
   },
   
   /**
-   * topaz.displayComment.buildDisplayBody(JSON jsonObj)
+   * ambra.displayComment.buildDisplayBody(JSON jsonObj)
    * 
    * Builds the comment body of the annotation comment display dialog.
    * 
@@ -226,7 +226,7 @@ topaz.displayComment = {
   },
   
   /**
-   * topaz.displayComment.buildDisplayViewLink(JSON jsonObj)
+   * ambra.displayComment.buildDisplayViewLink(JSON jsonObj)
    * 
    * Builds the link that takes the user to the discussion section.
    * 
@@ -246,7 +246,7 @@ topaz.displayComment = {
   },
   
   /**
-   * topaz.displayComment.buildDisplayView(JSON jsonObj)
+   * ambra.displayComment.buildDisplayView(JSON jsonObj)
    * 
    * Builds the comment dialog box for a single comment.  Empties out the inner 
    * containers if text already exists in it.
@@ -257,18 +257,18 @@ topaz.displayComment = {
    * @return	<nothing>
    */
   buildDisplayView: function(jsonObj){
-    if (topaz.displayComment.sectionTitle.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionTitle);
-    topaz.displayComment.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
+    if (ambra.displayComment.sectionTitle.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionTitle);
+    ambra.displayComment.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
     
-    if (topaz.displayComment.sectionDetail.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionDetail);
-    topaz.displayComment.sectionDetail.appendChild(this.buildDisplayDetail(jsonObj));
+    if (ambra.displayComment.sectionDetail.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionDetail);
+    ambra.displayComment.sectionDetail.appendChild(this.buildDisplayDetail(jsonObj));
 
     //alert(commentFrag);
-    if (topaz.displayComment.sectionComment.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionComment);
-    topaz.displayComment.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
+    if (ambra.displayComment.sectionComment.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionComment);
+    ambra.displayComment.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
     
-    if (topaz.displayComment.sectionLink.hasChildNodes) topaz.domUtil.removeChildren(topaz.displayComment.sectionLink);
+    if (ambra.displayComment.sectionLink.hasChildNodes) ambra.domUtil.removeChildren(ambra.displayComment.sectionLink);
     this.sectionLink.appendChild(this.buildDisplayViewLink(jsonObj));
     
     // set correction related styling
@@ -288,7 +288,7 @@ topaz.displayComment = {
   },
   
   /**
-   * topaz.displayComment.buildDisplayViewMultiple(JSON jsonObj)
+   * ambra.displayComment.buildDisplayViewMultiple(JSON jsonObj)
    * 
    * Builds the comment dialog box for a multiple comments.  Empties out the inner 
    * containers if text already exists in it.
@@ -355,28 +355,28 @@ topaz.displayComment = {
       secondaryContainer.appendChild(contentDiv);
     }
     else {
-      var liList = topaz.domUtil.getChildElementsByTagAndClassName(container, 'li', null);
-      topaz.domUtil.insertAfter(newListItem, liList[liList.length - 1]);
+      var liList = ambra.domUtil.getChildElementsByTagAndClassName(container, 'li', null);
+      ambra.domUtil.insertAfter(newListItem, liList[liList.length - 1]);
     
-      var divList = topaz.domUtil.getChildElementsByTagAndClassName(secondaryContainer, 'div', null);
-      topaz.domUtil.insertAfter(contentDiv, divList[divList.length - 1]);
+      var divList = ambra.domUtil.getChildElementsByTagAndClassName(secondaryContainer, 'div', null);
+      ambra.domUtil.insertAfter(contentDiv, divList[divList.length - 1]);
     }
 
     var multiDetailDivChild = secondaryContainer.childNodes[secondaryContainer.childNodes.length - 1];
     newListItem.onclick = function() {
-        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
-        topaz.displayComment.mouseoverComment(topaz.displayComment.target, jsonObj.annotationId);
-        topaz.domUtil.swapClassNameBtwnSibling(this, this.nodeName, 'active');
-        topaz.domUtil.swapClassNameBtwnSibling(multiDetailDivChild, multiDetailDivChild.nodeName, 'active');
-        topaz.domUtil.swapAttributeByClassNameForDisplay(topaz.displayComment.target, ' active', jsonObj.annotationId);
+        ambra.displayComment.mouseoutComment(ambra.displayComment.target);
+        ambra.displayComment.mouseoverComment(ambra.displayComment.target, jsonObj.annotationId);
+        ambra.domUtil.swapClassNameBtwnSibling(this, this.nodeName, 'active');
+        ambra.domUtil.swapClassNameBtwnSibling(multiDetailDivChild, multiDetailDivChild.nodeName, 'active');
+        ambra.domUtil.swapAttributeByClassNameForDisplay(ambra.displayComment.target, ' active', jsonObj.annotationId);
         
-        topaz.displayComment.adjustDialogHeight(container, secondaryContainer, 50);
+        ambra.displayComment.adjustDialogHeight(container, secondaryContainer, 50);
       }
 
   },
   
   /**
-   * topaz.displayComment.mouseoverComment(Node obj, String displayId)
+   * ambra.displayComment.mouseoverComment(Node obj, String displayId)
    * 
    * This method gets a map of all element nodes that contain the same display ID
    * and iterates through the map and modifies the classname to show highlight.
@@ -387,7 +387,7 @@ topaz.displayComment = {
    * @return	<nothing>
    */
   mouseoverComment: function (obj, displayId) {
-   var elementList = topaz.domUtil.getDisplayMap(obj, displayId);
+   var elementList = ambra.domUtil.getDisplayMap(obj, displayId);
    
    // Find the displayId that has the most span nodes containing that has a 
    // corresponding id in the annotationId attribute.  
@@ -411,7 +411,7 @@ topaz.displayComment = {
      this.modifyClassName(elObj);
      
      if (n == 0) {
-       var bugObj = topaz.domUtil.getChildElementsByTagAndClassName(elObj, 'a', 'bug');
+       var bugObj = ambra.domUtil.getChildElementsByTagAndClassName(elObj, 'a', 'bug');
        
        for (var i=0; i<bugObj.length; i++) {
          this.modifyClassName(bugObj[i]);
@@ -422,7 +422,7 @@ topaz.displayComment = {
   },
 
 	/**
-	 * topaz.displayComment.mouseoutComment(Node obj) 
+	 * ambra.displayComment.mouseoutComment(Node obj) 
 	 * 
 	 * Resets span tags that were modified to highlight to no highlight.
 	 * 
@@ -438,7 +438,7 @@ topaz.displayComment = {
   },
   
   /**
-   * topaz.displayComment.modifyClassName(Node obj)
+   * ambra.displayComment.modifyClassName(Node obj)
    * 
    * Modifies the className
    * 
@@ -456,7 +456,7 @@ topaz.displayComment = {
   },
   
   /**
-   * topaz.displayComment.processBugCount()
+   * ambra.displayComment.processBugCount()
    * 
    * Searches the document for tags that has the classname of "bug" indicating
    * that it's an annotation bug.  Looks at the node id which should have a list
@@ -467,7 +467,7 @@ topaz.displayComment = {
     var bugList = document.getElementsByTagAndClassName(null, 'bug');
     
     for (var i=0; i<bugList.length; i++) {
-      var bugCount = topaz.domUtil.getDisplayId(bugList[i]);
+      var bugCount = ambra.domUtil.getDisplayId(bugList[i]);
       var spn = document.createElement('span');
 
       if (bugCount != null) {
@@ -479,13 +479,13 @@ topaz.displayComment = {
         var ctText = document.createTextNode('0');
       }
       spn.appendChild(ctText);
-      topaz.domUtil.removeChildren(bugList[i]);
+      ambra.domUtil.removeChildren(bugList[i]);
       bugList[i].appendChild(spn);
     }
   },
   
   /**
-   * topaz.displayComment.adjustDialogHeight(Node container1, Node container2, Integer addPx)
+   * ambra.displayComment.adjustDialogHeight(Node container1, Node container2, Integer addPx)
    * 
    * The height of the margin box of container1 and container2 are compared and
    * the height are adjusted accordingly.  
@@ -501,7 +501,7 @@ topaz.displayComment = {
     if (container1Mb > container2Mb) {
       container1.parentNode.style.height = (container1Mb + addPx) + "px";
       
-      var contentDivs = topaz.domUtil.getChildElementsByTagAndClassName(container2, 'div', 'contentwrap');
+      var contentDivs = ambra.domUtil.getChildElementsByTagAndClassName(container2, 'div', 'contentwrap');
       for (var i=0; i<contentDivs.length; i++) {
         if (contentDivs[i].className.match('active')) {
           contentDivs[i].style.height = (container1Mb - container1Mb/(3.59*contentDivs.length)) + "px";
@@ -520,15 +520,15 @@ topaz.displayComment = {
 function getComment(obj) {
     _ldc.show();
     
-    var targetUri = topaz.domUtil.getDisplayId(obj);
+    var targetUri = ambra.domUtil.getDisplayId(obj);
           
     var uriArray = targetUri.split(",");
 
     if (uriArray.length > 1) {
       var targetContainer = document.getElementById('multilist');
-      topaz.domUtil.removeChildren(targetContainer);
+      ambra.domUtil.removeChildren(targetContainer);
       var targetContainerSecondary = document.getElementById('multidetail');
-      topaz.domUtil.removeChildren(targetContainerSecondary);
+      ambra.domUtil.removeChildren(targetContainerSecondary);
     }
     else {
       var targetContainer =  dijit.byId("CommentDialog");
@@ -572,20 +572,20 @@ function getComment(obj) {
          	 var isMulti = (uriArray.length > 1);
          	 var dlg;
            if(isMulti) {             
-             topaz.displayComment.buildDisplayViewMultiple(jsonObj, targetContainer.childNodes.length, targetContainer, targetContainerSecondary);
+             ambra.displayComment.buildDisplayViewMultiple(jsonObj, targetContainer.childNodes.length, targetContainer, targetContainerSecondary);
              
              if (targetContainer.childNodes.length == stopPt) {
-               topaz.displayComment.mouseoverComment(topaz.displayComment.target, uriArray[0]);
+               ambra.displayComment.mouseoverComment(ambra.displayComment.target, uriArray[0]);
                 
                _commentMultiDlg.show();
 
-               topaz.displayComment.adjustDialogHeight(targetContainer, targetContainerSecondary, 50);
+               ambra.displayComment.adjustDialogHeight(targetContainer, targetContainerSecondary, 50);
              }
              dlg = _commentMultiDlg;
            }
            else {
-             topaz.displayComment.buildDisplayView(jsonObj);
-             topaz.displayComment.mouseoverComment(topaz.displayComment.target);
+             ambra.displayComment.buildDisplayView(jsonObj);
+             ambra.displayComment.mouseoverComment(ambra.displayComment.target);
              _commentDlg.show();
              dlg = _commentDlg;
            }
@@ -593,7 +593,7 @@ function getComment(obj) {
            // TODO jpk dojo1.1 - we are now doing this in RegionalDialog.show()
 			     /*
            if(dlg && dlg.domNode) {
-             window.scrollTo(0, topaz.domUtil.getCurrentOffset(dlg.domNode).top);
+             window.scrollTo(0, ambra.domUtil.getCurrentOffset(dlg.domNode).top);
 			     }
            */
          }

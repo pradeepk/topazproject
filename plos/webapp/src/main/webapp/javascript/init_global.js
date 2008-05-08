@@ -26,19 +26,19 @@ dojo.addOnLoad(function() {
     _topBannerDiv = dojo.byId("topBanner");
     
     if (_containerDiv) {
-      topaz.domUtil.setContainerWidth(_containerDiv, 675, 940);
+      ambra.domUtil.setContainerWidth(_containerDiv, 675, 940);
       
       dojo.connect(window, "onresize", function() {
-          setTimeout("topaz.domUtil.setContainerWidth(_containerDiv, 675, 940)", 100);
+          setTimeout("ambra.domUtil.setContainerWidth(_containerDiv, 675, 940)", 100);
         }
       );
     }
     
     if (_topBannerDiv) {
-      topaz.domUtil.setContainerWidth(_topBannerDiv, 942, 944);
+      ambra.domUtil.setContainerWidth(_topBannerDiv, 942, 944);
       
       dojo.connect(window, "onresize", function() {
-          setTimeout("topaz.domUtil.setContainerWidth(_topBannerDiv, 942, 944)", 100);
+          setTimeout("ambra.domUtil.setContainerWidth(_topBannerDiv, 942, 944)", 100);
         }
       );
     }

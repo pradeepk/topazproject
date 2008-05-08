@@ -41,44 +41,44 @@
 			<label for="insight">Insight</label>
 			<ul class="star-rating rating edit" title="Rate insight" id="rateInsight">
 				<li class="current-rating pct0"></li>
-				<li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'insight', 1);">1</a></li>
-				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'insight', 2);">2</a></li>
-				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="topaz.rating.setRatingCategory(this, 'insight', 3);">3</a></li>
-				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="topaz.rating.setRatingCategory(this, 'insight', 4);">4</a></li>
-				<li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="topaz.rating.setRatingCategory(this, 'insight', 5);">5</a></li>
+				<li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'insight', 1);">1</a></li>
+				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 2);">2</a></li>
+				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 3);">3</a></li>
+				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 4);">4</a></li>
+				<li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'insight', 5);">5</a></li>
 			</ul>		
 	      	<input type="hidden" name="insight" title="insight" value="" />
             
             <label for="reliability">Reliability</label>
 			<ul class="star-rating rating edit" title="Rate reliability" id="rateReliability">
 				<li class="current-rating pct0"></li>
-				<li><a href="javascript:void(0);" title="Tenuous" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'reliability', 1);">1</a></li>
-				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'reliability', 2);">2</a></li>
-				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="topaz.rating.setRatingCategory(this, 'reliability', 3);">3</a></li>
-				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="topaz.rating.setRatingCategory(this, 'reliability', 4);">4</a></li>
-				<li><a href="javascript:void(0);" title="Unassailable" class="five-stars" onclick="topaz.rating.setRatingCategory(this, 'reliability', 5);">5</a></li>
+				<li><a href="javascript:void(0);" title="Tenuous" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'reliability', 1);">1</a></li>
+				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 2);">2</a></li>
+				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 3);">3</a></li>
+				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 4);">4</a></li>
+				<li><a href="javascript:void(0);" title="Unassailable" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'reliability', 5);">5</a></li>
 			</ul>		
 	      	<input type="hidden" name="reliability" title="reliability" value="" />
             
             <label for="style">Style</label>
         	<ul class="star-rating rating edit" title="Rate style" id="rateStyle">
 				<li class="current-rating pct0"></li>
-				<li><a href="javascript:void(0);" title="Crude" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'style', 1);">1</a></li>
-				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'style', 2);">2</a></li>
-				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="topaz.rating.setRatingCategory(this, 'style', 3);">3</a></li>
-				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="topaz.rating.setRatingCategory(this, 'style', 4);">4</a></li>
-				<li><a href="javascript:void(0);" title="Elegant" class="five-stars" onclick="topaz.rating.setRatingCategory(this, 'style', 5);">5</a></li>
+				<li><a href="javascript:void(0);" title="Crude" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'style', 1);">1</a></li>
+				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 2);">2</a></li>
+				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 3);">3</a></li>
+				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 4);">4</a></li>
+				<li><a href="javascript:void(0);" title="Elegant" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'style', 5);">5</a></li>
 			</ul>		
 	      	<input type="hidden" name="style" title="style" value="" />
 	        <#else>
 			<label for="singleRating">Rating</label>
 			<ul class="star-rating rating edit" title="Rate single" id="rateSingleRating">
 				<li class="current-rating pct0"></li>
-				<li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 1);">1</a></li>
-				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 2);">2</a></li>
-				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 3);">3</a></li>
-				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 4);">4</a></li>
-				<li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="topaz.rating.setRatingCategory(this, 'singleRating', 5);">5</a></li>
+				<li><a href="javascript:void(0);" title="Bland" class="one-star" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 1);">1</a></li>
+				<li><a href="javascript:void(0);" title="" class="two-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 2);">2</a></li>
+				<li><a href="javascript:void(0);" title="" class="three-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 3);">3</a></li>
+				<li><a href="javascript:void(0);" title="" class="four-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 4);">4</a></li>
+				<li><a href="javascript:void(0);" title="Profound" class="five-stars" onclick="ambra.rating.setRatingCategory(this, 'singleRating', 5);">5</a></li>
 			</ul>		
 	      	<input type="hidden" name="singleRating" title="singleRating" value="" />
 	        </#if>

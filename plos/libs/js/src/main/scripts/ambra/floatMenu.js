@@ -19,7 +19,7 @@
  */
 
 /**
- * topaz.floatMenu
+ * ambra.floatMenu
  * 
  * The function is activated when the page is scrolled or the window is resized.
  * "postcomment" is the outer container of the sections that floats.  "floatMarker"
@@ -31,9 +31,9 @@
  * @author		Joycelyn Chung		joycelyn@orangetowers.com
  **/
 
-dojo.provide("topaz.floatMenu");
-dojo.require("topaz.domUtil");
-topaz.floatMenu = {
+dojo.provide("ambra.floatMenu");
+dojo.require("ambra.domUtil");
+ambra.floatMenu = {
   el:null,
   changeHeight:null,
   
@@ -42,8 +42,8 @@ topaz.floatMenu = {
 	  var marker = dojo.byId('floatMarker');
     if(!marker) return;
 	  var markerParent = marker.parentNode;
-	  var mOffset = topaz.domUtil.getCurrentOffset(marker);
-	  var mpOffset = topaz.domUtil.getCurrentOffset(markerParent);
+	  var mOffset = ambra.domUtil.getCurrentOffset(marker);
+	  var mpOffset = ambra.domUtil.getCurrentOffset(markerParent);
 	  var scrollOffset = dojo._docScroll();
 	  var vpOffset = dijit.getViewport();
 	
@@ -77,27 +77,27 @@ topaz.floatMenu = {
 	  
 	  if (dojo.isIE && dojo.isIE < 7 && ((document.body.offsetHeight-scrollY) >= vpOffset.h)) {
 	    this.changeHeight = y;
-	    window.setTimeout("topaz.floatMenu.el.style.top = topaz.floatMenu.changeHeight + \"px\";", 100); 
+	    window.setTimeout("ambra.floatMenu.el.style.top = ambra.floatMenu.changeHeight + \"px\";", 100); 
 	  }
 	}
 }
 
 dojo.addOnLoad(function() {
   dojo.connect(window, "onscroll", function() {
-     topaz.floatMenu.doFloat();
+     ambra.floatMenu.doFloat();
   });
   
   dojo.connect(window, "onresize", function() {
-    topaz.floatMenu.doFloat();
+    ambra.floatMenu.doFloat();
   });
 
   dojo.connect(dojo.doc, "onscroll", function() {
-      topaz.floatMenu.doFloat();
+      ambra.floatMenu.doFloat();
   });
   
   dojo.connect(dojo.doc, "onkey", function() {
-    topaz.floatMenu.doFloat();
+    ambra.floatMenu.doFloat();
   });
   
-  topaz.floatMenu.doFloat();
+  ambra.floatMenu.doFloat();
 });

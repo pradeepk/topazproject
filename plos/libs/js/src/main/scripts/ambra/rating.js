@@ -19,17 +19,17 @@
  */
  
 /**
-  * topaz.rating
+  * ambra.rating
   *
   * This class uses a css-based ratings star and sets up the number of star 
   * rating to be displayed in the right hand column.  This also displays the 
   * rating dialog.
   *
   **/
-dojo.provide("topaz.rating");
-dojo.require("topaz.domUtil");
-dojo.require("topaz.formUtil");
-topaz.rating = {
+dojo.provide("ambra.rating");
+dojo.require("ambra.domUtil");
+dojo.require("ambra.formUtil");
+ambra.rating = {
 	rateScale: 5,
 	
   init: function() {
@@ -83,8 +83,8 @@ topaz.rating = {
 		      }
 		      
 					if (indexInt < rateItemCount) {
-						currentChild.onmouseover = function() { topaz.rating.hover.on(this); }
-						currentChild.onmouseout  = function() { topaz.rating.hover.off(this); }
+						currentChild.onmouseover = function() { ambra.rating.hover.on(this); }
+						currentChild.onmouseout  = function() { ambra.rating.hover.off(this); }
 						
 						indexInt++;
 					}
@@ -120,26 +120,26 @@ topaz.rating = {
 	      ratingList[i].className = ratingList[i].className.replaceStringArray(" ", "pct", "pct0");
     }
     
-		topaz.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);
-		topaz.formUtil.textCues.reset(_ratingComments, _ratingCommentCue);
+		ambra.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);
+		ambra.formUtil.textCues.reset(_ratingComments, _ratingCommentCue);
   	
   },
   
   hover: {
   	on: function(node) {
-  		var sibling = topaz.domUtil.firstSibling(node);
+  		var sibling = ambra.domUtil.firstSibling(node);
   		sibling.style.display = "none"
   	},
   	
   	off: function(node) {
-  		var sibling = topaz.domUtil.firstSibling(node);
+  		var sibling = ambra.domUtil.firstSibling(node);
   		sibling.style.display = "block";
   	}
   },
   
   setRatingCategory: function(node, categoryId, rateNum) {
   	_ratingsForm[categoryId].value = rateNum;
-  	var sibling = topaz.domUtil.firstSibling(node.parentNode);
+  	var sibling = ambra.domUtil.firstSibling(node.parentNode);
   	var rateStyle = "pct" + (parseInt(rateNum) * 20);  
   	sibling.className = sibling.className.replaceStringArray(" ", "pct", rateStyle);
 		this.buildCurrentRating(sibling, rateNum);
@@ -165,16 +165,16 @@ function getRatingsForUser() {
        }
        else {
   		   _ratingDlg.show();
-         topaz.rating.buildDialog(jsonObj);
+         ambra.rating.buildDialog(jsonObj);
        }
     }
   });
 }
 
 function updateRating() {
-	topaz.formUtil.disableFormFields(_ratingsForm);
+	ambra.formUtil.disableFormFields(_ratingsForm);
   var submitMsg = dojo.byId('submitRatingMsg');
-  topaz.domUtil.removeChildren(submitMsg);
+  ambra.domUtil.removeChildren(submitMsg);
   var articleUri = _ratingsForm.articleURI.value;
 
   _ldc.show();
@@ -195,7 +195,7 @@ function updateRating() {
        }
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
-       topaz.formUtil.enableFormFields(_ratingsForm);
+       ambra.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();
      }
      else if (jsonObj.numFieldErrors > 0) {
@@ -215,13 +215,13 @@ function updateRating() {
          }
        }
 	     submitMsg.appendChild(fieldErrors);
-       topaz.formUtil.enableFormFields(_ratingsForm);
+       ambra.formUtil.enableFormFields(_ratingsForm);
        _ldc.hide();
      }
      else {
        _ratingDlg.hide();
        getArticle("rating");
-       topaz.formUtil.enableFormFields(_ratingsForm);
+       ambra.formUtil.enableFormFields(_ratingsForm);
      }
    }
   });

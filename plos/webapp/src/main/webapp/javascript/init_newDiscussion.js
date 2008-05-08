@@ -38,17 +38,17 @@
     var responseArea = _dcr.form.responseArea;
     
     dojo.connect(_dcr.btnSubmit, "onclick", function(e) {
-        topaz.responsePanel.submit(_dcr);
+        ambra.responsePanel.submit(_dcr);
       }
     );    
     
     dojo.connect(responseTitle, "onfocus", function(e) {
-        topaz.formUtil.textCues.off(responseTitle, _dcr.responseTitleCue);
+        ambra.formUtil.textCues.off(responseTitle, _dcr.responseTitleCue);
       }
     );    
        
     dojo.connect(responseArea, "onfocus", function(e) {
-        topaz.formUtil.textCues.off(responseArea, _dcr.responseCue);
+        ambra.formUtil.textCues.off(responseArea, _dcr.responseCue);
       }
     );    
        
@@ -60,7 +60,7 @@
         else {
           fldResponseTitle.value = "";
         }
-        topaz.formUtil.textCues.on(responseTitle, _dcr.responseTitleCue);
+        ambra.formUtil.textCues.on(responseTitle, _dcr.responseTitleCue);
       }
     );    
 
@@ -72,7 +72,7 @@
         else {
           fldResponse.value = "";
         }
-        topaz.formUtil.textCues.on(responseArea, _dcr.responseCue);
+        ambra.formUtil.textCues.on(responseArea, _dcr.responseCue);
       }
     );    
        

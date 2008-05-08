@@ -30,11 +30,11 @@
     //_ldc.show();
     
     var tocObj = dojo.byId('sectionNavTop');
-    topaz.navigation.buildTOC(tocObj);
+    ambra.navigation.buildTOC(tocObj);
     
     if (dojo.isSafari) {
       var tocObj = dojo.byId('sectionNavTopFloat');
-      topaz.navigation.buildTOC(tocObj);
+      ambra.navigation.buildTOC(tocObj);
     }
         
  		_annotationForm = document.createAnnotation;
@@ -46,7 +46,7 @@
 
     initAnnotationForm();
     
-    topaz.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
+    ambra.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
     
   	_dlg = dijit.byId("AnnotationDialog");
   	var dlgCancel = dojo.byId('btn_cancel');
@@ -60,11 +60,11 @@
   	_commentDlg.setTipDown(dojo.byId(commentConfig.tipDownDiv));
   	_commentDlg.setTipUp(dojo.byId(commentConfig.tipUpDiv));
     dojo.connect(commentDlgClose, 'onclick', function(e) {
-        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
+        ambra.displayComment.mouseoutComment(ambra.displayComment.target);
       }
     );
     dojo.connect(commentDlgClose, 'onblur', function(e) {
-        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
+        ambra.displayComment.mouseoutComment(ambra.displayComment.target);
       }
     );
   	
@@ -74,18 +74,18 @@
   	_commentMultiDlg.setTipDown(dojo.byId(multiCommentConfig.tipDownDiv));
   	_commentMultiDlg.setTipUp(dojo.byId(multiCommentConfig.tipUpDiv));
     dojo.connect(popupCloseMulti, 'onclick', function(e) {
-        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
+        ambra.displayComment.mouseoutComment(ambra.displayComment.target);
       }
     );
     dojo.connect(popupCloseMulti, 'onblur', function(e) {
-        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
+        ambra.displayComment.mouseoutComment(ambra.displayComment.target);
       }
     );
     
-    topaz.displayComment.init();
-    topaz.displayComment.processBugCount();
-    topaz.corrections.apply();
-    //topaz.rating.init();
+    ambra.displayComment.init();
+    ambra.displayComment.processBugCount();
+    ambra.corrections.apply();
+    //ambra.rating.init();
 
     var anId = document.articleInfo.annotationId.value;
     var anEl = getAnnotationEl(anId);

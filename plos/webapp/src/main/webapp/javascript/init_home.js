@@ -20,8 +20,8 @@
 var _ldc;
 
 dojo.addOnLoad(function() {
-  topaz.horizontalTabs.setTabPaneSet(dojo.byId(homeConfig.tabPaneSetId));
-  topaz.horizontalTabs.setTabsListObject(tabsListMap);
-  topaz.horizontalTabs.setTabsContainer(dojo.byId(homeConfig.tabsContainer));
-  topaz.horizontalTabs.initSimple(tabSelectId);
+  ambra.horizontalTabs.setTabPaneSet(dojo.byId(homeConfig.tabPaneSetId));
+  ambra.horizontalTabs.setTabsListObject(tabsListMap);
+  ambra.horizontalTabs.setTabsContainer(dojo.byId(homeConfig.tabsContainer));
+  ambra.horizontalTabs.initSimple(tabSelectId);
 });

@@ -22,9 +22,9 @@
 	
 	<div class="horizontalTabs">
 		<ol>
-			<li id="preferences" class="active" onclick="return topaz.horizontalTabs.show('preferences');">Preferences</li>
-			<li id="alerts" onclick="return topaz.horizontalTabs.show('alerts');">Alerts</li>
-			<li id="forgotPassword" onclick="return topaz.horizontalTabs.show('forgotPassword');">Forgot Password</li>
+			<li id="preferences" class="active" onclick="return ambra.horizontalTabs.show('preferences');">Preferences</li>
+			<li id="alerts" onclick="return ambra.horizontalTabs.show('alerts');">Alerts</li>
+			<li id="forgotPassword" onclick="return ambra.horizontalTabs.show('forgotPassword');">Forgot Password</li>
 		</ol>
 		
 		<div id="tabPaneSet" class="contentwrap">

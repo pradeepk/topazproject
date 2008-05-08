@@ -31,7 +31,7 @@ tabsListMap[tabsListMap.length] = {tabKey:   "alerts",
                                    urlLoad:  "/user/secure/editAjaxAlerts.action",
                                    urlSave:  "/user/secure/saveAjaxAlerts.action"};
 
-var querystring = topaz.htmlUtil.getQuerystring();
+var querystring = ambra.htmlUtil.getQuerystring();
 var tabSelectId = "";
 
 for (var i=0; i<querystring.length; i++) {

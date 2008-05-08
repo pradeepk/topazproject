@@ -8,20 +8,20 @@ dependencies = {
         "dijit.layout.ContentPane",
         "dijit.Dialog",
         "dojox.data.dom",
-        "topaz.topaz",
-        "topaz.domUtil",
-        "topaz.htmlUtil",
-        "topaz.formUtil",
-        "topaz.widget.RegionalDialog",
-        "topaz.navigation",
-        "topaz.horizontalTabs",
-        "topaz.floatMenu",
-        "topaz.annotation",
-        "topaz.corrections",
-        "topaz.displayComment",
-        "topaz.responsePanel",
-        "topaz.rating",
-        "topaz.slideshow"
+        "ambra.topaz",
+        "ambra.domUtil",
+        "ambra.htmlUtil",
+        "ambra.formUtil",
+        "ambra.widget.RegionalDialog",
+        "ambra.navigation",
+        "ambra.horizontalTabs",
+        "ambra.floatMenu",
+        "ambra.annotation",
+        "ambra.corrections",
+        "ambra.displayComment",
+        "ambra.responsePanel",
+        "ambra.rating",
+        "ambra.slideshow"
       ]
     }
   ],
@@ -29,6 +29,6 @@ dependencies = {
   prefixes: [
     [ "dijit", "../dijit" ],
     [ "dojox", "../dojox" ],
-    [ "topaz", "../../topaz" ]
+    [ "ambra", "../../ambra" ]
   ]
 }
