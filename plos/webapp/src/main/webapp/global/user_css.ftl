@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!-- global_css.ftl -->
+<!-- user_css.ftl -->
 
 <style type="text/css" media="all"> @import "${freemarker_config.context}/css/user_screen.css";</style>
 <style type="text/css" media="all"> @import "${freemarker_config.context}/css/user_iepc.css";</style>
