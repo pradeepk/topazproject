@@ -40,6 +40,7 @@ public class EhcacheProvider implements Cache {
   private static final Log   log          = LogFactory.getLog(EhcacheProvider.class);
   private final CacheManager cacheManager;
   private final Ehcache      cache;
+  private final String       name;
 
   /**
    * Creates a new EhcacheProvider object.
@@ -49,13 +50,14 @@ public class EhcacheProvider implements Cache {
   public EhcacheProvider(CacheManager cacheManager, Ehcache cache) {
     this.cache                            = cache;
     this.cacheManager                     = cacheManager;
+    this.name                             = cache.getName();
   }
 
   /*
    * inherited javadoc
    */
   public String getName() {
-    return cache.getName();
+    return name;
   }
 
   /*
@@ -208,6 +210,12 @@ public class EhcacheProvider implements Cache {
     Map    local = ctx.getLocal(getName());
     Object val   = local.get(key);
 
+    rawPut(key, val);
+
+    local.remove(key);
+  }
+
+  public void rawPut(Object key, Object val) {
     if (NULL.equals(val)) {
       cache.remove(key);
 
@@ -219,7 +227,5 @@ public class EhcacheProvider implements Cache {
       if (log.isDebugEnabled())
         log.debug("Added '" + key + "' to " + getName());
     }
-
-    local.remove(key);
   }
 }

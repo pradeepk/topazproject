@@ -81,9 +81,15 @@ public class OtmInterceptor implements Interceptor {
 
     Object val = cache.rawGet(id);
 
+    // Deleted entry - so null
     if (Cache.NULL.equals(val))
       return NULL;
 
+    // We know it is a null in the database
+    if (NULL.equals(val))
+      return NULL;
+
+    // Not found in cache - so don't know
     if (val == null)
       return null;
 
@@ -100,6 +106,10 @@ public class OtmInterceptor implements Interceptor {
 
       if (Cache.NULL.equals(o))
         return NULL;
+
+      // We know it is a null in the database
+       if (NULL.equals(o))
+         return NULL;
     }
 
     if (log.isTraceEnabled())

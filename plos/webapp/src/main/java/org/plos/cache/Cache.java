@@ -69,6 +69,14 @@ public interface Cache {
   public Object rawGet(Object key);
 
   /**
+   * Puts an object directly to the cache.
+   *
+   * @param key the key
+   * @param the value or Null. Putting null is a no-op.
+   */
+  public void rawPut(Object key, Object val);
+
+  /**
    * Read-thru cache that looks up from cache first and falls back to the supplied look-up.
    * The entry returned by the lookup is committed immediately to the cache and becomes available
    * to all other caches that share the same underlying cache/store. (READ_COMMITTED)
