@@ -131,7 +131,6 @@ public class BrowseVolumeAction extends BaseActionSupport {
     this.journalService = journalService;
   }
 
-  
   /**
    * Returns the last linked volume for this journal - which is assumed to be
    * the current volume.

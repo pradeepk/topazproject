@@ -337,7 +337,6 @@ public class DocumentManagementService {
    */
   public List<String> publish(String[] uris, Map<String, Set<String>> vjMap) {
     final List<String> msgs             = new ArrayList<String>();
-    final Set<Journal> modifiedJournals = new HashSet<Journal>();
 
     // publish articles
     for (String article : uris) {
@@ -382,7 +381,6 @@ public class DocumentManagementService {
 
             // update Journal
             session.saveOrUpdate(journal);
-            modifiedJournals.add(journal);
 
             final String message =
               "Article '" + article + "' was published in the journal '" + virtualJournal + "'";
@@ -397,15 +395,6 @@ public class DocumentManagementService {
       }
     }
 
-    // notify journal service
-    for (Journal journal : modifiedJournals) {
-      try {
-        journalService.journalWasModified(journal);
-      } catch (Exception e) {
-        log.error("Error updating journal '" + journal + "'", e);
-        msgs.add("Error updating journal '" + journal + "' - " + e.toString());
-      }
-    }
 
     // notify browse service
     browseService.notifyArticlesAdded(uris);

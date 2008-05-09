@@ -76,7 +76,6 @@ public class ArticleOtmService {
 
   private ArticlePEP         pep;
   private Session            session;
-  private JournalService     jrnlSvc;
   private PermissionsService permissionsService;
 
   public ArticleOtmService() throws IOException {
@@ -100,9 +99,6 @@ public class ArticleOtmService {
     // ingest article
     Ingester ingester = new Ingester(session, permissionsService);
     Article art = ingester.ingest(new Zip.DataSourceZip(article), force);
-
-    // notify journal service of new article
-    jrnlSvc.objectWasAdded(art.getId());
 
     return art;
   }
@@ -151,8 +147,6 @@ public class ArticleOtmService {
     // TODO: find a better way to know what needs to be deleted, rather than "hardcoding" it here
     permissionsService.cancelPropagatePermissions(article,
                                 permissionsService.listPermissionPropagations(article, false));
-
-    jrnlSvc.objectWasDeleted(URI.create(article));
   }
 
   /**
@@ -578,16 +572,6 @@ public class ArticleOtmService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
-  }
-
-  /**
-   * Set the journal service. Called by spring's bean wiring.
-   *
-   * @param service The journal session to set.
-   */
-  @Required
-  public void setJournalService(JournalService service) {
-    this.jrnlSvc = service;
   }
 
   /**

@@ -92,9 +92,9 @@ public class FetchArticleAction extends BaseActionSupport {
       }
 
       Article artInfo = fetchArticleService.getArticleInfo(articleURI);
-      
+
       setArticleInfo(artInfo);
-      
+
       articleType = ArticleType.getDefaultArticleType();
       for (URI artTypeUri : artInfo.getArticleType()) {
         if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {

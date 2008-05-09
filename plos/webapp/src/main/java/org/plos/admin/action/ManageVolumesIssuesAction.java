@@ -173,7 +173,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     Journal currentJournal = journalService.getJournal();
     currentJournal.getVolumes().add(doi);
     session.saveOrUpdate(currentJournal);
-    journalService.journalWasModified(currentJournal);
     addActionMessage("Volume was added to current Journal: " + currentJournal);
 
     return SUCCESS;
@@ -198,7 +197,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       if (currentVolumes.contains(doi)) {
         currentVolumes.remove(doi);
         session.saveOrUpdate(currentJournal);
-        journalService.journalWasModified(currentJournal);
         addActionMessage("Deleted Volume from Journal: " + currentJournal);
       }
       return SUCCESS;
@@ -269,7 +267,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     latestVolume.getIssueList().add(doi);
     session.saveOrUpdate(latestVolume);
     addActionMessage("Added Issue to Volume: " + latestVolume);
-    journalService.journalWasModified(currentJournal);
     addActionMessage("Updated Journal: " + currentJournal);
 
     return SUCCESS;
@@ -300,7 +297,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
         }
         // XXX: assume current Journal needs updating, should be smarter
         final Journal currentJournal = journalService.getJournal();
-        journalService.journalWasModified(currentJournal);
         addActionMessage("Updated Journal: " + currentJournal);
       }
       return SUCCESS;
