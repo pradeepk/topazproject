@@ -55,7 +55,6 @@ import org.topazproject.otm.metadata.Reference;
  */
 public class OtmInterceptor implements Interceptor {
   private static final Log     log            = LogFactory.getLog(OtmInterceptor.class);
-  private static final String  NOT_NULL       = "NOT-NULL";
   private static final String  NO_JOURNAL     = "__NO_JOURNAL__";
   private final CacheManager   cacheManager;
   private final Cache          cache;
@@ -92,7 +91,7 @@ public class OtmInterceptor implements Interceptor {
       return null;
     }
 
-    Object o = cache.get(journal + "-" + id);
+    Cache.Item o = cache.get(journal + "-" + id);
 
     if (o == null) {
       if (log.isDebugEnabled())
@@ -102,7 +101,7 @@ public class OtmInterceptor implements Interceptor {
       return null;
     }
 
-    if (NULL.equals(o)) {
+    if (o.getValue() == null) {
       if (log.isDebugEnabled())
         log.debug(cm.getName() + " with id <" + id + "> is marked in cache as 'non-existant'."
                   + " Forcing OTM to return a 'null'");
@@ -110,7 +109,7 @@ public class OtmInterceptor implements Interceptor {
       return NULL;
     }
 
-    Object val = cache.get(id);
+    Cache.Item val = cache.get(id);
 
     if (val == null) {
       if (log.isDebugEnabled())
@@ -127,7 +126,7 @@ public class OtmInterceptor implements Interceptor {
      * This assumption currently holds because filters are
      * not currently applied on 'writes' by OTM.
      */
-    return ((Entry) val).get(session, cm, id, instance);
+    return ((Entry) val.getValue()).get(session, cm, id, instance);
   }
 
   private void attach(Session session, ClassMetadata cm, String id, Object instance,
@@ -136,8 +135,9 @@ public class OtmInterceptor implements Interceptor {
       return; // since we can't safely invalidate
 
     if (instance != null) {
-      Object val = cache.get(id);
-      Entry  e;
+      Cache.Item item = cache.get(id);
+      Object val = (item == null) ? null : item.getValue();
+      Entry e;
 
       if (val instanceof Entry)
         e = new Entry((Entry) val);
@@ -153,7 +153,7 @@ public class OtmInterceptor implements Interceptor {
 
     String journal = getCurrentJournal();
 
-    cache.put(journal + "-" + id, (instance == null) ? NULL : NOT_NULL);
+    cache.put(journal + "-" + id, (instance == null) ? null : id);
   }
 
   /*

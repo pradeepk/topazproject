@@ -143,7 +143,7 @@ public class JournalFilterService {
       for (String fn : oldDefs)
         sf.removeFilterDefinition(fn);
     }
-    filterCache.rawPut(keyPrefix + jName, Cache.NULL);
+    filterCache.rawPut(keyPrefix + jName, Cache.DELETED);
   }
 
   /* must be invoked with journalCache monitor held and active tx on session */
@@ -175,7 +175,7 @@ public class JournalFilterService {
     if (!journalFilters.containsKey(j.getKey()))
       journalFilters.put(j.getKey(), Collections.EMPTY_SET);
 
-    filterCache.rawPut(keyPrefix + j.getKey(), journalFilters.get(j.getKey()));
+    filterCache.rawPut(keyPrefix + j.getKey(), new Cache.Item(journalFilters.get(j.getKey())));
 
     return journalFilters.get(j.getKey());
   }
@@ -392,7 +392,8 @@ public class JournalFilterService {
   public Set<String> getFilters(String jName, Session s) {
     synchronized (monitor) {
       Set<String> local = journalFilters.get(jName);
-      Set<String> cached = filterCache.get(keyPrefix + jName);
+      Cache.Item item = filterCache.get(keyPrefix + jName);
+      Set<String> cached = (item == null) ? null : (Set<String>) item.getValue();
       if (local != null && local.equals(cached))
         return local;
       // there is a mismatch. So reload

@@ -31,9 +31,9 @@ import java.util.concurrent.locks.Lock;
  */
 public interface Cache {
   /**
-   * Represents 'null' in cache.
+   * Represents an entry that is pending deletes in the txn-context
    */
-  public static Null NULL = new Null();
+  public static PendingDelete DELETED = new PendingDelete();
 
   /**
    * Gets the name of this cache.
@@ -52,29 +52,29 @@ public interface Cache {
   /**
    * Gets an object from the cache.
    *
-   * @param <T> the type of the value expected
    * @param key the key
    *
-   * @return the value or null
+   * @return the value or null if not found in cache
    */
-  public <T> T get(Object key);
+  public Item get(Object key);
 
   /**
    * Gets an object from the cache.
    *
    * @param key the key
    *
-   * @return the value or null or Null
+   * @return Item or DELETED or null
    */
-  public Object rawGet(Object key);
+  public CachedItem rawGet(Object key);
 
   /**
    * Puts an object directly to the cache.
    *
    * @param key the key
-   * @param the value or Null. Putting null is a no-op.
+   * @param the Item or DELETED. Putting null is a no-op while putting 
+   *            a DELETED will remove this entry.
    */
-  public void rawPut(Object key, Object val);
+  public void rawPut(Object key, CachedItem val);
 
   /**
    * Read-thru cache that looks up from cache first and falls back to the supplied look-up.
@@ -98,7 +98,7 @@ public interface Cache {
    * Puts an object into the cache.
    *
    * @param key the key
-   * @param val the value
+   * @param val the value (including null)
    */
   public void put(Object key, Object val);
 
@@ -121,16 +121,34 @@ public interface Cache {
    */
   public Set<?> getKeys();
 
+  public static interface CachedItem extends Serializable {
+  }
+
   /**
-   * An object to indicate 'null' values stored in the cache.
+   * An object to indicate a delete-pending state for a key.
    */
-  public static class Null implements Serializable {
+  public static class PendingDelete implements CachedItem {
     public boolean equals(Object o) {
-      return o instanceof Null;
+      return o instanceof PendingDelete;
     }
 
     public int hashCode() {
       return 0;
+    }
+  }
+
+  /**
+   * An object to indicate a delete-pending state for a key.
+   */
+  public static class Item implements CachedItem {
+    private final Object value;
+
+    public Item(Object value) {
+      this.value = value;
+    }
+
+    public Object getValue() {
+      return value;
     }
   }
 
@@ -144,7 +162,7 @@ public interface Cache {
     /**
      * Looks up a value to populate the cache.
      *
-     * @return the value to return; this value will be put into the cache
+     * @return the value to return; this value (including null) will be put into the cache
      *
      * @throws E from look up.
      */
@@ -157,11 +175,11 @@ public interface Cache {
      *
      * @param operation the operation to execute
      *
-     * @return the value returned by executing the operation; not necessarily of type <T>
+     * @return the value returned by executing the operation
      *
      * @throws Exception the exception thrown by lookup
      */
-    public Object execute(Operation operation) throws Exception {
+    public Item execute(Operation operation) throws Exception {
       return operation.execute(false);
     }
 
@@ -169,7 +187,7 @@ public interface Cache {
      * A call-back operation from the Cache during a read-thru cache read.
      */
     public interface Operation {
-      public Object execute(boolean degradedMode) throws Exception;
+      public Item execute(boolean degradedMode) throws Exception;
     }
   }
 
@@ -189,7 +207,7 @@ public interface Cache {
       this.lock = lock;
     }
 
-    public Object execute(Operation operation) throws Exception {
+    public Item execute(Operation operation) throws Exception {
       synchronized (lock) {
         return operation.execute(false);
       }
@@ -216,7 +234,7 @@ public interface Cache {
       this.unit       = unit;
     }
 
-    public Object execute(Operation operation) throws Exception {
+    public Item execute(Operation operation) throws Exception {
       boolean acquired = lock.tryLock(timeWait, unit);
       try {
         return operation.execute(!acquired);

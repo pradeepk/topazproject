@@ -411,7 +411,8 @@ public class BrowseService {
         new Cache.SynchronizedLookup<Object, RuntimeException>((CAT_INFO_LOCK + jnlName).intern()) {
           public Object lookup() throws RuntimeException {
              loadCategoryInfos(jnlName);
-             return  browseCache.get(jnlkey);
+             Cache.Item item = browseCache.get(jnlkey);
+             return (item == null) ? null : item.getValue();
           }
       });
   }

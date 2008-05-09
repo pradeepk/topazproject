@@ -70,27 +70,27 @@ public class EhcacheProvider implements Cache {
   /*
    * inherited javadoc
    */
-  public <T> T get(Object key) {
-    Object val = rawGet(key);
+  public Item get(Object key) {
+    CachedItem val = rawGet(key);
 
-    return NULL.equals(val) ? null : (T) val;
+    return DELETED.equals(val) ? null : (Item) val;
   }
 
   /*
    * inherited javadoc
    */
-  public Object rawGet(Object key) {
+  public CachedItem rawGet(Object key) {
     TxnContext ctx = cacheManager.getTxnContext();
-    Object     val = ctx.getLocal(getName()).get(key);
+    CachedItem val = ctx.getLocal(getName()).get(key);
 
     if ((val == null) && ctx.getRemovedAll(getName()))
-      val = NULL;
+      val = DELETED;
 
     if (val == null) {
       Element e = cache.get(key);
 
       if (e != null)
-        val = e.getValue();
+        val = (Item) e.getValue();
     }
 
     if (log.isTraceEnabled())
@@ -105,46 +105,43 @@ public class EhcacheProvider implements Cache {
   public <T, E extends Exception> T get(final Object key, final int refresh,
                                         final Lookup<T, E> lookup)
                                  throws E {
-    Object val = rawGet(key);
+    Item val = get(key);
 
     try {
       if ((val == null) && (lookup != null)) {
         val =
           lookup.execute(new Lookup.Operation() {
-            public Object execute(boolean degraded) throws Exception {
-              if (degraded)
-                log.warn("Degraded mode lookup for key '" + key + "' in cache '"
-                         + EhcacheProvider.this.getName() + "'");
+              public Item execute(boolean degraded) throws Exception {
+                if (degraded)
+                  log.warn("Degraded mode lookup for key '" + key + "' in cache '"
+                           + EhcacheProvider.this.getName() + "'");
 
-              Object val = rawGet(key);
+                Item val = get(key);
 
-              if (val == null)
-                val = lookup.lookup();
+                if (val == null)
+                  val = new Item(lookup.lookup());
 
-              if (val == null)
-                val = NULL;
+                Element e = new Element(key, val);
 
-              Element e = new Element(key, val);
+                if (refresh > 0)
+                  e.setTimeToLive(refresh);
 
-              if (refresh > 0)
-                e.setTimeToLive(refresh);
+                cache.put(e);
 
-              cache.put(e);
+                if (log.isDebugEnabled())
+                  log.debug("Populated entry with '" + key + "' in " + getName());
 
-              if (log.isDebugEnabled())
-                log.debug("Populated entry with '" + key + "' in " + getName());
-
-              return val;
-            }
-          });
+                return val;
+              }
+            });
       }
-    } catch (RuntimeException e)  {
-       throw e;
+    } catch (RuntimeException e) {
+      throw e;
     } catch (Exception e) {
-      throw (E)e;
+      throw (E) e;
     }
 
-    return NULL.equals(val) ? null : (T) val;
+    return (val == null) ? null : (T) val.getValue();
   }
 
   /*
@@ -152,7 +149,7 @@ public class EhcacheProvider implements Cache {
    */
   public void put(final Object key, final Object val) {
     TxnContext ctx = cacheManager.getTxnContext();
-    ctx.getLocal(getName()).put(key, val);
+    ctx.getLocal(getName()).put(key, new Item(val));
     ctx.enqueue(new CacheEvent() {
         public void execute(TxnContext ctx, boolean commit) {
           if (commit)
@@ -167,7 +164,7 @@ public class EhcacheProvider implements Cache {
    */
   public void remove(final Object key) {
     TxnContext ctx = cacheManager.getTxnContext();
-    ctx.getLocal(getName()).put(key, NULL);
+    ctx.getLocal(getName()).put(key, DELETED);
     ctx.enqueue(new CacheEvent() {
         public void execute(TxnContext ctx, boolean commit) {
           if (commit)
@@ -191,13 +188,13 @@ public class EhcacheProvider implements Cache {
    * inherited javadoc
    */
   public Set<?> getKeys() {
-    TxnContext ctx        = cacheManager.getTxnContext();
-    Map        local      = ctx.getLocal(getName());
-    boolean    removedAll = ctx.getRemovedAll(getName());
-    Set        keys       = removedAll ? new HashSet() : new HashSet(cache.getKeys());
+    TxnContext              ctx        = cacheManager.getTxnContext();
+    Map<Object, CachedItem> local      = ctx.getLocal(getName());
+    boolean                 removedAll = ctx.getRemovedAll(getName());
+    Set                     keys       = removedAll ? new HashSet() : new HashSet(cache.getKeys());
 
     for (Object key : local.keySet()) {
-      if (NULL.equals(local.get(key)))
+      if (DELETED.equals(local.get(key)))
         keys.remove(key);
       else
         keys.add(key);
@@ -207,25 +204,30 @@ public class EhcacheProvider implements Cache {
   }
 
   private void commit(TxnContext ctx, Object key) {
-    Map    local = ctx.getLocal(getName());
-    Object val   = local.get(key);
+    Map<Object, CachedItem> local = ctx.getLocal(getName());
+    CachedItem              val   = local.get(key);
 
-    rawPut(key, val);
+    if (val != null)
+      rawPut(key, val);
 
     local.remove(key);
   }
 
-  public void rawPut(Object key, Object val) {
-    if (NULL.equals(val)) {
+  /*
+   * inherited javadoc
+   */
+  public void rawPut(Object key, CachedItem val) {
+    if (DELETED.equals(val)) {
       cache.remove(key);
 
       if (log.isDebugEnabled())
         log.debug("Removed '" + key + "' from " + getName());
-    } else if (val != null) {
+    } else if (val instanceof Item) {
       cache.put(new Element(key, val));
 
       if (log.isDebugEnabled())
         log.debug("Added '" + key + "' to " + getName());
-    }
+    } else
+      throw new IllegalArgumentException("Expecting an 'Item' for " + key + " instead found " + val);
   }
 }

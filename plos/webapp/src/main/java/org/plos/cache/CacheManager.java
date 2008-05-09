@@ -188,7 +188,8 @@ public class CacheManager implements CacheListener, ObjectListener {
   public class TxnContext implements Synchronization {
     private final Transaction          txn;
     private final Queue<CacheEvent>    queue           = new LinkedList<CacheEvent>();
-    private final Map<String, Map>     locals          = new HashMap<String, Map>();
+    private final Map<String, Map<Object, Cache.CachedItem>> locals
+                                       = new HashMap<String, Map<Object, Cache.CachedItem>>();
     private final Map<String, Boolean> removedAll      = new HashMap<String, Boolean>();
     private final Set<String>          changedJournals = new HashSet<String>();
     private boolean                    locked          = false;
@@ -264,11 +265,11 @@ public class CacheManager implements CacheListener, ObjectListener {
       queue.add(ev);
     }
 
-    public Map getLocal(String cache) {
-      Map m = locals.get(cache);
+    public Map<Object, Cache.CachedItem> getLocal(String cache) {
+      Map<Object, Cache.CachedItem> m = locals.get(cache);
 
       if (m == null)
-        locals.put(cache, m = new HashMap());
+        locals.put(cache, m = new HashMap<Object, Cache.CachedItem>());
 
       return m;
     }

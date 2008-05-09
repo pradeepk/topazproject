@@ -165,9 +165,10 @@ public class JournalCarrierService {
 
     int count = 0;
     for (URI o : (Set<URI>) objectCarriers.getKeys()) {
-      Set<String> keys = objectCarriers.get(o);
-      if (keys == null)
+      Cache.Item e = objectCarriers.get(o);
+      if (e == null)
         continue;
+      Set<String> keys = (Set<String>)e.getValue();
 
       boolean mod = keys.remove(jName);
       if (obj.remove(o)) {
