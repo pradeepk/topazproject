@@ -55,7 +55,8 @@ import org.topazproject.otm.metadata.Reference;
  */
 public class OtmInterceptor implements Interceptor {
   private static final Log     log            = LogFactory.getLog(OtmInterceptor.class);
-  private static final NotNull NOT_NULL       = new NotNull();
+  private static final String  NOT_NULL       = "NOT-NULL";
+  private static final String  NO_JOURNAL     = "__NO_JOURNAL__";
   private final CacheManager   cacheManager;
   private final Cache          cache;
   private final JournalService journalService;
@@ -79,41 +80,48 @@ public class OtmInterceptor implements Interceptor {
     if (cm.isView())
       return null;
 
-    Object val = cache.rawGet(id);
-
-    // Deleted entry - so null
-    if (Cache.NULL.equals(val))
-      return NULL;
-
-    // We know it is a null in the database
-    if (NULL.equals(val))
-      return NULL;
-
-    // Not found in cache - so don't know
-    if (val == null)
-      return null;
-
     String journal = getCurrentJournal();
 
-    if (journal != null) {
-      if (getChangedJournals().contains(journal))
-        return null;
+    if (getChangedJournals().contains(journal)) {
+      // Note: This is only in this transaction context. ie. Pending commit.
+      if (log.isDebugEnabled())
+        log.debug(cm.getName() + " with id <" + id
+                  + "> must be loaded from the database since the journal '" + journal
+                  + "' is marked as changed.");
 
-      Object o = cache.rawGet(journal + "-" + id);
-
-      if (o == null)
-        return null;
-
-      if (Cache.NULL.equals(o))
-        return NULL;
-
-      // We know it is a null in the database
-       if (NULL.equals(o))
-         return NULL;
+      return null;
     }
 
-    if (log.isTraceEnabled())
-      log.trace("Returning an entity from the cache " + cm.getName() + " " + id);
+    Object o = cache.get(journal + "-" + id);
+
+    if (o == null) {
+      if (log.isDebugEnabled())
+        log.debug(cm.getName() + " with id <" + id + "> is not in the cache for journal '"
+                  + journal + "'");
+
+      return null;
+    }
+
+    if (NULL.equals(o)) {
+      if (log.isDebugEnabled())
+        log.debug(cm.getName() + " with id <" + id + "> is marked in cache as 'non-existant'."
+                  + " Forcing OTM to return a 'null'");
+
+      return NULL;
+    }
+
+    Object val = cache.get(id);
+
+    if (val == null) {
+      if (log.isDebugEnabled())
+        log.debug(cm.getName() + " with id <" + id
+                  + "> is not in the cache but the journal entry was present for '" + journal + "'");
+
+      return null;
+    }
+
+    if (log.isDebugEnabled())
+      log.debug(cm.getName() + " with id <" + id + "> is found in the cache for " + journal);
 
     /* Note: Assumes get filtering produces identical results.
      * This assumption currently holds because filters are
@@ -127,16 +135,17 @@ public class OtmInterceptor implements Interceptor {
     if (cm.isView())
       return; // since we can't safely invalidate
 
-    if (instance == null)
-      cache.put(id, NULL);
-    else {
-      Object val = cache.rawGet(id);
+    if (instance != null) {
+      Object val = cache.get(id);
       Entry  e;
 
       if (val instanceof Entry)
         e = new Entry((Entry) val);
-      else
-        e = new Entry();
+      else {
+        e        = new Entry();
+        fields   = cm.getRdfMappers();
+        blob     = cm.getBlobField();
+      }
 
       e.set(session, cm, id, instance, fields, blob);
       cache.put(id, e);
@@ -144,14 +153,17 @@ public class OtmInterceptor implements Interceptor {
 
     String journal = getCurrentJournal();
 
-    if (journal != null)
-      cache.put(journal + "-" + id, NOT_NULL);
+    cache.put(journal + "-" + id, (instance == null) ? NULL : NOT_NULL);
   }
 
   /*
    * inherited javadoc
    */
   public void onPostRead(Session session, ClassMetadata cm, String id, Object instance) {
+    /*
+     * Note: this will have to be also transactionally added - since the read
+     * may have depended on prior writes that we are not aware of.
+     */
     attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField());
   }
 
@@ -163,8 +175,8 @@ public class OtmInterceptor implements Interceptor {
     if (updates == null)
       attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField());
     else
-      attach(session, cm, id, instance, updates.rdfMappers, 
-          updates.blobChanged ? cm.getBlobField() : null);
+      attach(session, cm, id, instance, updates.rdfMappers,
+             updates.blobChanged ? cm.getBlobField() : null);
 
     /* Note: if a smart-collection rule was updated as opposed to
      * new rules added or deleted, we wouldn't be able to detect it.
@@ -190,6 +202,8 @@ public class OtmInterceptor implements Interceptor {
     for (String journal : journalService.getAllJournalKeys())
       if (!"".equals(journal))
         cache.remove(journal + "-" + id);
+
+    cache.remove(NO_JOURNAL + "-" + id);
 
     if (instance instanceof Journal)
       journalChanged(((Journal) instance).getKey(), true);
@@ -223,8 +237,8 @@ public class OtmInterceptor implements Interceptor {
   private String getCurrentJournal() {
     String journal = journalService.getCurrentJournalKey();
 
-    if ("".equals(journal))
-      journal = null;
+    if ((journal == null) || "".equals(journal))
+      journal = NO_JOURNAL;
 
     return journal;
   }
@@ -368,19 +382,6 @@ public class OtmInterceptor implements Interceptor {
         return getName(sess.getSessionFactory().getDefinition(((Reference) def).getReferred()), sess);
 
       return def.getName();
-    }
-  }
-
-  /**
-   * An object to indicate existence of objects in a journal.
-   */
-  private static class NotNull implements Serializable {
-    public boolean equals(Object o) {
-      return o instanceof NotNull;
-    }
-
-    public int hashCode() {
-      return 0;
     }
   }
 }
