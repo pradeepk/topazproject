@@ -137,19 +137,24 @@ public class SessionImpl extends AbstractSession {
       }
     }
 
-    for (Map.Entry<Id, Object> e : deleteMap.entrySet())
-      write(e.getKey(), e.getValue(), true);
+    do {
+      Map<Id, Object> workDelete = new HashMap<Id, Object>(deleteMap);
+      Map<Id, Object> workDirty = new HashMap<Id, Object>(dirtyMap);
 
-    for (Object o : dirtyMap.values())
-      if (o instanceof PreInsertEventListener)
-        ((PreInsertEventListener)o).onPreInsert(this, o);
+      for (Map.Entry<Id, Object> e : workDelete.entrySet())
+        write(e.getKey(), e.getValue(), true);
 
-    for (Map.Entry<Id, Object> e : dirtyMap.entrySet())
-      write(e.getKey(), e.getValue(), false);
+      for (Object o : workDirty.values())
+        if (o instanceof PreInsertEventListener)
+          ((PreInsertEventListener)o).onPreInsert(this, o);
 
-    deleteMap.clear();
-    cleanMap.putAll(dirtyMap);
-    dirtyMap.clear();
+      for (Map.Entry<Id, Object> e : workDirty.entrySet())
+        write(e.getKey(), e.getValue(), false);
+
+      deleteMap.keySet().removeAll(workDelete.keySet());
+      dirtyMap.keySet().removeAll(workDirty.keySet());
+      cleanMap.putAll(workDirty);
+    } while ((deleteMap.size() > 0) || (dirtyMap.size() > 0));
   }
 
   /*
