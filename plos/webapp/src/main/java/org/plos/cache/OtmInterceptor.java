@@ -160,6 +160,9 @@ public class OtmInterceptor implements Interceptor {
    * inherited javadoc
    */
   public void onPostRead(Session session, ClassMetadata cm, String id, Object instance) {
+    if (log.isDebugEnabled())
+      log.debug(cm.getName() + " with id <" + id + "> is "
+          + ((instance != null) ? "loaded" : "null"));
     /*
      * Note: this will have to be also transactionally added - since the read
      * may have depended on prior writes that we are not aware of.
@@ -172,6 +175,9 @@ public class OtmInterceptor implements Interceptor {
    */
   public void onPostWrite(Session session, ClassMetadata cm, String id, Object instance,
                           Interceptor.Updates updates) {
+    if (log.isDebugEnabled())
+      log.debug(cm.getName() + " with id <" + id + "> is updated.");
+
     if (updates == null)
       attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField());
     else
@@ -197,6 +203,9 @@ public class OtmInterceptor implements Interceptor {
    * inherited javadoc
    */
   public void onPostDelete(Session session, ClassMetadata cm, String id, Object instance) {
+    if (log.isDebugEnabled())
+      log.debug(cm.getName() + " with id <" + id + "> is deleted.");
+
     cache.remove(id);
 
     for (String journal : journalService.getAllJournalKeys())
