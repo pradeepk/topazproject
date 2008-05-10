@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 import org.plos.cache.Cache;
+import org.plos.cache.ObjectListener;
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
@@ -52,6 +53,8 @@ import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
 
@@ -73,11 +76,11 @@ public class BrowseService {
   private static final String ARTBYDATE_LIST_LOCK = "ArtByDateLock-";
   private static final String ARTBYDATE_LIST_KEY  = "ArtByDate-";
 
-  public static final String ARTICLE_LOCK        = "ArticleLock-";
-  public static final String ARTICLE_KEY         = "Article-";
+  private static final String ARTICLE_LOCK        = "ArticleLock-";
+  private static final String ARTICLE_KEY         = "Article-";
 
-  public static final String ISSUE_LOCK        = "IssueLock-";
-  public static final String ISSUE_KEY         = "Issue-";
+  private static final String ISSUE_LOCK        = "IssueLock-";
+  private static final String ISSUE_KEY         = "Issue-";
 
   public static final String VOL_INFOS_FOR_JOURNAL_KEY = "VolInfos_";
 
@@ -85,6 +88,8 @@ public class BrowseService {
   private       Session        session;
   private       Cache          browseCache;
   private       JournalService journalService;
+  private       Invalidator    invalidator;
+
 
 
   /**
@@ -428,42 +433,40 @@ public class BrowseService {
    *
    * @param uris the list of id's of the deleted articles
    */
-  public void notifyArticlesDeleted(String[] uris) {
+  private void notifyArticlesDeleted(String[] uris) {
     // create list of articles for each journal
     Map<String, Set<String>> artMap = getArticlesByJournal(uris);
 
     // process each journal
     for (String jnlName : artMap.keySet()) {
       // update category lists
-      synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
-        SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
-            getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
-        if (artByCat != null) {
-          Set<URI> uriSet = new HashSet<URI>();
-          for (String uri : artMap.get(jnlName)) {
-            uriSet.add(URI.create(uri));
-          }
+      SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
+          getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
+      if (artByCat != null) {
+        Set<URI> uriSet = new HashSet<URI>();
+        for (String uri : artMap.get(jnlName)) {
+          uriSet.add(URI.create(uri));
+        }
 
-          cat: for (Iterator<List<URI>> catIter = artByCat.values().iterator(); catIter.hasNext(); ) {
-            List<URI> articles = catIter.next();
-            for (Iterator<URI> artIter = articles.iterator(); artIter.hasNext(); ) {
-              URI art = artIter.next();
-              if (uriSet.remove(art)) {
-                artIter.remove();
+        cat: for (Iterator<List<URI>> catIter = artByCat.values().iterator(); catIter.hasNext(); ) {
+          List<URI> articles = catIter.next();
+          for (Iterator<URI> artIter = articles.iterator(); artIter.hasNext(); ) {
+            URI art = artIter.next();
+            if (uriSet.remove(art)) {
+              artIter.remove();
 
-                if (articles.isEmpty()) {
-                  catIter.remove();
-                }
+              if (articles.isEmpty()) {
+                catIter.remove();
+              }
 
-                if (uriSet.isEmpty()) {
-                  break cat;
-                }
+              if (uriSet.isEmpty()) {
+                break cat;
               }
             }
           }
-
-          updateCategoryCaches(artByCat, jnlName);
         }
+
+        updateCategoryCaches(artByCat, jnlName);
       }
 
       // update date lists
@@ -488,7 +491,7 @@ public class BrowseService {
    *
    * @param uris the list of id's of the added articles
    */
-  public void notifyArticlesAdded(String[] uris) {
+  private void notifyArticlesAdded(String[] uris) {
     // create list of articles for each journal
     Map<String, Set<String>> artMap = getArticlesByJournal(uris);
 
@@ -498,32 +501,28 @@ public class BrowseService {
       List<NewArtInfo> nais = getNewArticleInfos(artMap.get(jnlName));
 
       // update category lists
-      synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
-        final SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
+      final SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
                             getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
-        if (artByCat != null) {
-          for (NewArtInfo nai: nais) {
-            List<URI> arts = artByCat.get(nai.category);
-            if (arts == null) {
-              artByCat.put(nai.category, arts = new ArrayList<URI>());
-            }
-            arts.add(0, nai.id);
+      if (artByCat != null) {
+        for (NewArtInfo nai: nais) {
+          List<URI> arts = artByCat.get(nai.category);
+          if (arts == null) {
+            artByCat.put(nai.category, arts = new ArrayList<URI>());
           }
-
-          updateCategoryCaches(artByCat, jnlName);
+          arts.add(0, nai.id);
         }
+
+        updateCategoryCaches(artByCat, jnlName);
       }
 
       // update date lists
-      synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
-        Years dates = getArticleDates(false, jnlName);
-        if (dates != null) {
-          for (NewArtInfo nai: nais) {
-            insertDate(dates, nai.date);
-          }
+      Years dates = getArticleDates(false, jnlName);
+      if (dates != null) {
+        for (NewArtInfo nai: nais) {
+          insertDate(dates, nai.date);
         }
-        updateArticleDates(dates, jnlName);
       }
+      updateArticleDates(dates, jnlName);
 
       for (Object key : browseCache.getKeys()) {
         if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
@@ -558,17 +557,13 @@ public class BrowseService {
    *
    * @param jnlName the key of the journal that was modified
    */
-  public void notifyJournalModified(final String jnlName) {
-    synchronized ((CAT_INFO_LOCK + jnlName).intern()) {
-      browseCache.remove(CAT_INFO_KEY + jnlName);
-      browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
-    }
+  private void notifyJournalModified(final String jnlName) {
+    browseCache.remove(CAT_INFO_KEY + jnlName);
+    browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
 
     clearVolumeInfoCacheForJournal(jnlName);
 
-    synchronized ((DATE_LIST_LOCK + jnlName).intern()) {
-      browseCache.remove(DATE_LIST_KEY + jnlName);
-    }
+    browseCache.remove(DATE_LIST_KEY + jnlName);
 
     for (Object key : browseCache.getKeys()) {
       if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
@@ -771,6 +766,10 @@ public class BrowseService {
   @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
+
+    // We are order dependent on what the journal service does. So register the listener there.
+    if (journalService != null)
+      journalService.getJournalCarrierService().setBrowseServiceObjectListener(new Invalidator());
   }
 
   /**
@@ -798,5 +797,37 @@ public class BrowseService {
    */
   public void clearIssueInfoCache(URI issueDoi) {
     browseCache.remove(BrowseService.ISSUE_KEY + issueDoi);
+  }
+
+  private class Invalidator implements ObjectListener {
+    public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
+        Updates updates) {
+      if ((o instanceof Article) && (updates == null)) {
+        if (log.isDebugEnabled())
+          log.debug("Updating browsecache for the article that was added.");
+        notifyArticlesAdded(new String[]{id});
+      }
+      if (o instanceof Journal) {
+        String key = ((Journal)o).getKey();
+        if (browseCache.getCacheManager().getTxnContext().getChangedJournals().contains(key)) {
+          if (log.isDebugEnabled())
+            log.debug("Updating browsecache for the journal that was modified.");
+          notifyJournalModified(key);
+        }
+      }
+    }
+
+    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
+      if (o instanceof Article) {
+        if (log.isDebugEnabled())
+          log.debug("Updating browsecache for the article that was deleted.");
+        notifyArticlesDeleted(new String[]{id});
+      }
+      if (o instanceof Journal) {
+        if (log.isDebugEnabled())
+          log.debug("Updating browsecache for the journal that was modified.");
+        notifyJournalModified(((Journal)o).getKey());
+      }
+    }
   }
 }

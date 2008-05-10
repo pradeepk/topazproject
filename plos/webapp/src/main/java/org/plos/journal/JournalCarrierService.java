@@ -66,6 +66,7 @@ public class JournalCarrierService {
   private final Cache                    objectCarriers;        // obj-id -> Set<journal-key>
   private final JournalKeyService        journalKeyService;
   private final JournalFilterService     journalFilterService;
+  private ObjectListener                 browseServiceObjectListener;
 
   /**
    * Create a new journal-service instance. One and only one of these should be created for evey
@@ -101,9 +102,15 @@ public class JournalCarrierService {
 
         if ((o instanceof Article) && (updates == null))
           objectWasAdded(((Article) o).getId(), s);
+
+        if (browseServiceObjectListener != null)
+          browseServiceObjectListener.objectChanged(s, cm, id, o, updates);
          
       }
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
+        if (browseServiceObjectListener != null)
+          browseServiceObjectListener.objectRemoved(s, cm, id, o);
+
         if (o instanceof Journal)
             updateCarrierMap(((Journal)o).getKey(), true, s);
 
@@ -258,6 +265,7 @@ public class JournalCarrierService {
    * @param oid the info:&lt;oid&gt; uri of the object
    */
   private void objectWasAdded(URI oid, Session s) {
+    objectCarriers.remove(oid);
     Set<String> keys = getJournalKeysForObject(oid, s);
 
     if (log.isDebugEnabled())
@@ -276,5 +284,8 @@ public class JournalCarrierService {
       log.debug("object '" + oid + "' was removed");
   }
 
+  public void setBrowseServiceObjectListener(ObjectListener listener) {
+    browseServiceObjectListener = listener;
+  }
 
 }

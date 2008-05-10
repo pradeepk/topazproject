@@ -155,4 +155,8 @@ public class JournalService {
   public void setOtmSession(Session session) {
     this.session = session;
   }
+
+  public JournalCarrierService getJournalCarrierService() {
+    return journalCarrierService;
+  }
 }

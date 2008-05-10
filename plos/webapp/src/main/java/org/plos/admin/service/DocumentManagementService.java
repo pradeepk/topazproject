@@ -80,7 +80,6 @@ public class DocumentManagementService {
   private String ingestedDocumentDirectory;
   private CrossRefPosterService crossRefPosterService;
   private File xslTemplate;
-  private BrowseService browseService;
   private JournalService journalService;
   private Session session;
   private String plosDoiUrl;
@@ -227,8 +226,6 @@ public class DocumentManagementService {
         msgs.add("Error deleting: " + objectURI + " - " + e);
       }
     }
-
-    browseService.notifyArticlesDeleted(objectURIs);
 
     return msgs;
   }
@@ -396,18 +393,7 @@ public class DocumentManagementService {
     }
 
 
-    // notify browse service
-    browseService.notifyArticlesAdded(uris);
-
     return msgs;
-  }
-
-  /**
-   * @param browseService The BrowseService to set.
-   */
-  @Required
-  public void setBrowseService(BrowseService browseService) {
-    this.browseService = browseService;
   }
 
   /**
