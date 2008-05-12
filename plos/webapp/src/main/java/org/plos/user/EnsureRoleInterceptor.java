@@ -52,9 +52,16 @@ public class EnsureRoleInterceptor extends AbstractInterceptor {
       return Action.ERROR;
     }
 
-    final PlosOneUser plosUser = (PlosOneUser) sessionMap.get(Constants.PLOS_ONE_USER_KEY);
-    if (null != plosUser) {
-      final String[] userRoles = userService.getRole(plosUser.getUserId());
+    String[] userRoles = (String[]) sessionMap.get(Constants.USER_ROLES_KEY);
+    if (userRoles == null) {
+      PlosOneUser plosUser = (PlosOneUser) sessionMap.get(Constants.PLOS_ONE_USER_KEY);
+      if (plosUser != null) {
+        userRoles = userService.getRole(plosUser.getUserId());
+        sessionMap.put(Constants.USER_ROLES_KEY, userRoles);
+      }
+    }
+
+    if (userRoles != null) {
       if (ArrayUtils.contains(userRoles, roleToCheck)) {
         log.debug("User found with admin role:" + userId);
         return actionInvocation.invoke();

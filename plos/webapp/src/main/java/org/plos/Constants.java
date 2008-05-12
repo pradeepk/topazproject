@@ -28,6 +28,7 @@ import java.util.Map;
  */
 public interface Constants {
   String PLOS_ONE_USER_KEY = "PLOS_ONE_USER";
+  String USER_ROLES_KEY = "USER_ROLES";
   String SINGLE_SIGNON_USER_KEY = CASFilter.CAS_FILTER_USER;
   String SINGLE_SIGNON_RECEIPT = CASFilter.CAS_FILTER_RECEIPT;
   String SINGLE_SIGNON_EMAIL_KEY = "org.plos.sso.email";
