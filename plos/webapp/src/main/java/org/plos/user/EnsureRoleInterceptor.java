@@ -18,24 +18,29 @@
  */
 package org.plos.user;
 
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.Interceptor;
+import java.util.Map;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+
 import org.plos.Constants;
 import org.plos.user.service.UserService;
 
-import java.util.Map;
-
 /**
  * Ensures that the user has the required role.
+ *
+ * FIXME: this class should not exist. Instead, normal access-controls be used.
  */
-public class EnsureRoleInterceptor implements Interceptor {
+public class EnsureRoleInterceptor extends AbstractInterceptor {
+  private static final Log log = LogFactory.getLog(EnsureRoleInterceptor.class);
+
   private UserService userService;
   private String roleToCheck;
-  private static final Log log = LogFactory.getLog(EnsureRoleInterceptor.class);
 
   public String intercept(final ActionInvocation actionInvocation) throws Exception {
     log.debug("EnsureRoleInterceptor called for role:" + roleToCheck);
@@ -50,7 +55,6 @@ public class EnsureRoleInterceptor implements Interceptor {
     final PlosOneUser plosUser = (PlosOneUser) sessionMap.get(Constants.PLOS_ONE_USER_KEY);
     if (null != plosUser) {
       final String[] userRoles = userService.getRole(plosUser.getUserId());
-
       if (ArrayUtils.contains(userRoles, roleToCheck)) {
         log.debug("User found with admin role:" + userId);
         return actionInvocation.invoke();
@@ -84,15 +88,4 @@ public class EnsureRoleInterceptor implements Interceptor {
   public void setRoleToCheck(final String roleToCheck) {
     this.roleToCheck = roleToCheck;
   }
-
-  /**
-   * Getter for roleToCheck.
-   * @return Value of roleToCheck.
-   */
-  public String getRoleToCheck() {
-    return roleToCheck;
-  }
-
-  public void destroy() {}
-  public void init() {}
 }
