@@ -123,7 +123,7 @@
                 <mapping>
                   <directory>/etc/sysconfig/</directory>
                   <configuration>true</configuration>
-                  <filemode>644</filemode>
+                  <filemode>755</filemode>
                   <username>root</username>
                   <groupname>root</groupname>
                   <sources>
