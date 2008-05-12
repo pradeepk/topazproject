@@ -82,15 +82,8 @@ public class Util {
    * @return Returns the EvaluationResult with the processing error status code
    */
   public static EvaluationResult processingError(String message, URI type, URI id) {
-    // Note: This form of attribute constructor is marked as deprecated.
-    // However this is the exact functionality that we want. Also
-    // note that even though the documentation says a null can be passed for
-    // AttributeValue, the encode() method assumes the value not to be null.
-    // So we use an empty StringAttribute here.
-    Attribute    attr   = new Attribute(id, type, null, null, new StringAttribute(""));
-    StatusDetail detail = new StatusDetail(Collections.singletonList(attr));
-    Status       status =
-      new Status(Collections.singletonList(Status.STATUS_PROCESSING_ERROR), message, detail);
+    Status status = new Status(Collections.singletonList(Status.STATUS_PROCESSING_ERROR),
+                               message + "\nattribute-id: " + id + ", attribute-type: " + type);
 
     return new EvaluationResult(status);
   }
