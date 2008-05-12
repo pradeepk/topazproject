@@ -133,7 +133,7 @@
 
       <xsl:for-each select="$meta/related-article">
         <relatedArticles>
-          <references><xsl:value-of select="@xlink:href"/></references>
+          <article><xsl:value-of select="@xlink:href"/></article>
           <relationType><xsl:value-of select="@related-article-type"/></relationType>
         </relatedArticles>
       </xsl:for-each>
@@ -582,7 +582,7 @@
      - is not recognized -->
   <xsl:function name="my:ext-to-mime" as="xs:string">
     <xsl:param name="ext" as="xs:string"/>
-    <xsl:variable name="e" as="xs:string" select="lower-case($ext)"/>
+    <xsl:variable name="e" as="xs:string" select="replace(lower-case($ext), '[_-].*', '')"/>
     <xsl:value-of select="
       if ($e = 'xml') then 'text/xml'
       else if ($e = 'htm' or $e = 'html') then 'text/html'
