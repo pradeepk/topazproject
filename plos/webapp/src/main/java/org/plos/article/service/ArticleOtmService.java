@@ -118,12 +118,11 @@ public class ArticleOtmService {
     if (oi == null)
       throw new NoSuchObjectIdException(obj);
 
-    for (Representation r : oi.getRepresentations()) {
-      if (r.getName().equals(rep))
-        return new ByteArrayDataSource(r);
-    }
+    Representation r = oi.getRepresentation(rep);
+    if (r == null)
+      throw new NoSuchObjectIdException(rep);
 
-    throw new NoSuchObjectIdException(rep);
+    return new ByteArrayDataSource(r);
   }
 
   /**
