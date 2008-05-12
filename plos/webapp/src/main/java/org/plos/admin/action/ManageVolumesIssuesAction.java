@@ -172,7 +172,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     // add Volume to current Journal
     Journal currentJournal = journalService.getJournal();
     currentJournal.getVolumes().add(doi);
-    session.saveOrUpdate(currentJournal);
     addActionMessage("Volume was added to current Journal: " + currentJournal);
 
     return SUCCESS;
@@ -196,7 +195,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       List<URI> currentVolumes = currentJournal.getVolumes();
       if (currentVolumes.contains(doi)) {
         currentVolumes.remove(doi);
-        session.saveOrUpdate(currentJournal);
         addActionMessage("Deleted Volume from Journal: " + currentJournal);
       }
       return SUCCESS;
@@ -218,7 +216,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     }
     volume.setIssueList(volumeIssues);
 
-    session.saveOrUpdate(volume);
     browseService.clearVolumeInfoCacheForJournal(currentJournal.getKey());
 
     addActionMessage("Updated Volume: " + volume.toString());
@@ -265,7 +262,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     Volume latestVolume = session.get(Volume.class, currentJournal.getVolumes()
             .get(currentJournal.getVolumes().size() - 1).toString());
     latestVolume.getIssueList().add(doi);
-    session.saveOrUpdate(latestVolume);
     addActionMessage("Added Issue to Volume: " + latestVolume);
     addActionMessage("Updated Journal: " + currentJournal);
 
@@ -292,7 +288,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       if (containingVolumes.size() > 0) {
         for (Volume containingVolume : containingVolumes) {
           containingVolume.getIssueList().remove(doi);
-          session.saveOrUpdate(containingVolume);
           addActionMessage("Deleted Issue from Volume: " + containingVolume);
         }
         // XXX: assume current Journal needs updating, should be smarter
@@ -317,8 +312,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       issueArticles = null;
     }
     issue.setSimpleCollection(issueArticles);
-
-    session.saveOrUpdate(issue);
 
     addActionMessage("Updated Issue: " + issue.toString());
 

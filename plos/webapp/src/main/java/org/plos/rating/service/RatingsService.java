@@ -105,6 +105,8 @@ public class RatingsService {
       articleRating.setCreator(user.getUserId());
       articleRating.setCreated(now);
       articleRating.setBody(new RatingContent());
+
+      session.saveOrUpdate(articleRating);
     } else {
       newRating = false;
 
@@ -130,6 +132,8 @@ public class RatingsService {
       articleRatingSummary.setContext("");
       articleRatingSummary.setCreated(now);
       articleRatingSummary.setBody(new RatingSummaryContent());
+
+      session.saveOrUpdate(articleRatingSummary);
     } else {
       newRatingSummary = false;
 
@@ -192,9 +196,6 @@ public class RatingsService {
     articleRatingSummary.getBody().addRating(Rating.RELIABILITY_TYPE,reliability);
     articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE,style);
     articleRatingSummary.getBody().addRating(Rating.SINGLE_RATING_TYPE,single);
-
-    session.saveOrUpdate(articleRating);
-    session.saveOrUpdate(articleRatingSummary);
   }
 
   /**
@@ -258,7 +259,6 @@ public class RatingsService {
       articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE,single);
     }
 
-    session.saveOrUpdate(articleRatingSummary);
     session.delete(articleRating);
   }
 
@@ -271,7 +271,6 @@ public class RatingsService {
   public void setPublic(final String ratingId) throws ApplicationException {
     Rating r = session.get(Rating.class,ratingId);
     r.setState(PUBLIC_MASK);
-    session.saveOrUpdate(r);
   }
 
   /**
@@ -283,7 +282,6 @@ public class RatingsService {
   public void setFlagged(final String ratingId) throws ApplicationException {
     Rating r = session.get(Rating.class,ratingId);
     r.setState(PUBLIC_MASK | FLAG_MASK);
-    session.saveOrUpdate(r);
   }
 
   /**

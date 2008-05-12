@@ -133,8 +133,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
       // new Journal Articles
       journal.setSimpleCollection(articles);
 
-      // Journal was updated
-      session.saveOrUpdate(journal);
       addActionMessage("Browse cache flush for: " + journal.getKey());
     }
 

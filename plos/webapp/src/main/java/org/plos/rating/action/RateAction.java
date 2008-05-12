@@ -163,6 +163,8 @@ public class RateAction extends BaseActionSupport {
       articleRating.setCreator(user.getUserId());
       articleRating.setCreated(now);
       articleRating.setBody(new RatingContent());
+
+      session.saveOrUpdate(articleRating);
     } else if (ratingsList.size() == 1) {
       articleRating = ratingsList.get(0);
     } else {
@@ -183,6 +185,8 @@ public class RateAction extends BaseActionSupport {
       articleRatingSummary.setContext("");
       articleRatingSummary.setCreated(now);
       articleRatingSummary.setBody(new RatingSummaryContent());
+
+      session.saveOrUpdate(articleRatingSummary);
     } else if (summaryList.size() == 1) {
       articleRatingSummary = summaryList.get(0);
     } else {
@@ -257,10 +261,6 @@ public class RateAction extends BaseActionSupport {
       articleRatingSummary.getBody().setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() + 1);
     }
 
-    // PLoS states that ratings can never be deleted once created,
-    // so always do a Session.saveOrUpdate(), no delete
-    session.saveOrUpdate(articleRating);
-    session.saveOrUpdate(articleRatingSummary);
     return SUCCESS;
   }
 

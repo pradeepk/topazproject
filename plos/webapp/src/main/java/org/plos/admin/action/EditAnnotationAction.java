@@ -89,7 +89,6 @@ public class EditAnnotationAction extends BaseActionSupport {
     }
 
     a.setContext(saveAnnotationContext);
-    session.saveOrUpdate(a);
 
     addActionMessage("Annotation: " + saveAnnotationId
       + ", Updated Context: " + saveAnnotationContext);

@@ -376,9 +376,6 @@ public class DocumentManagementService {
             // add Article to Journal
             journal.getSimpleCollection().add(URI.create(article));
 
-            // update Journal
-            session.saveOrUpdate(journal);
-
             final String message =
               "Article '" + article + "' was published in the journal '" + virtualJournal + "'";
             msgs.add(message);
