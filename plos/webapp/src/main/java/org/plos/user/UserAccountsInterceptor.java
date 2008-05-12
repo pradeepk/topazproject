@@ -68,14 +68,14 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
 
   private Session session;
   private boolean wrap = false;
-  
+
   /**
    * Internal key used for detecting whether or not this interceptor 
    * has already been applied for the targeted action.  
    * This check is necessary when considering action chaining. 
    */
   private static final String REENTRANT_KEY = UserAccountsInterceptor.class.getName() + ".reentrant";
-  
+
   /**
    * Checks for and sets the {@link #REENTRANT_KEY} value for the current {@link ActionContext}
    * and reports on whether or not it was previously set.
@@ -84,7 +84,7 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
    */
   private boolean reentrantCheck(ActionInvocation invocation) {
     Object obj = invocation.getInvocationContext().get(REENTRANT_KEY);
-    if(obj == null) {
+    if (obj == null) {
       invocation.getInvocationContext().put(REENTRANT_KEY, true);
     }
     return obj != null;
@@ -92,9 +92,10 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
 
   @Override
   public String intercept(ActionInvocation invocation) throws Exception {
-    if(!reentrantCheck(invocation)) {
+    if (!reentrantCheck(invocation)) {
       String user = lookupUser(ServletActionContext.getRequest());
-      if(wrap) ServletActionContext.setRequest(wrapRequest(ServletActionContext.getRequest(), user));
+      if (wrap)
+        ServletActionContext.setRequest(wrapRequest(ServletActionContext.getRequest(), user));
     }
     return invocation.invoke();
   }
