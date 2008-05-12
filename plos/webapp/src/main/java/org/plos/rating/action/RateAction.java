@@ -115,16 +115,15 @@ public class RateAction extends BaseActionSupport {
 
     getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
 
-    if(isResearchArticle) {
+    if (isResearchArticle) {
       // must rate at least one rating category
       if (insight == 0 && reliability == 0 && style == 0) {
         addActionError("At least one category must be rated");
         return INPUT;
       }
-    }
-    else {
+    } else {
       // ensure the single rating specified
-      if(singleRating == 0) {
+      if (singleRating == 0) {
         addActionError("A rating must be specified.");
         return INPUT;
       }
@@ -133,8 +132,7 @@ public class RateAction extends BaseActionSupport {
     // reject profanity in content
     final List<String> profaneWordsInCommentTitle = profanityCheckingService.validate(commentTitle);
     final List<String> profaneWordsInComment      = profanityCheckingService.validate(comment);
-    if (profaneWordsInCommentTitle.size() != 0
-      || profaneWordsInComment.size() != 0) {
+    if (profaneWordsInCommentTitle.size() != 0 || profaneWordsInComment.size() != 0) {
       addProfaneMessages(profaneWordsInCommentTitle, "commentTitle", "title");
       addProfaneMessages(profaneWordsInComment, "comment", "comment");
       return INPUT;
@@ -322,7 +320,7 @@ public class RateAction extends BaseActionSupport {
    * @param articleURI The articleUri to set.
    */
   public void setArticleURI(String articleURI) throws Exception {
-    if(articleURI != null && articleURI.equals(this.articleURI)) {
+    if (articleURI != null && articleURI.equals(this.articleURI)) {
       return;
     }
     this.articleURI = articleURI;
