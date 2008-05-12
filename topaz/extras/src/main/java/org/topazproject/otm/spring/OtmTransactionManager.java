@@ -73,7 +73,7 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
       throws TransactionException {
     try {
       Transaction tx = ((TransactionObject) transaction).getSession().
-                            beginTransaction(definition.isReadOnly(), definition.getTimeout());
+                            beginTransaction(definition.isReadOnly(), determineTimeout(definition));
     } catch (OtmException oe) {
       throw new TransactionSystemException("error beginning transaction", oe);
     }
