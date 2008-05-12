@@ -19,9 +19,6 @@
 
 package org.plos.util;
 
-import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
-import org.w3c.dom.Document;
-
 import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,14 +35,6 @@ import java.util.Map;
 public class FileUtils {
   public static final String NEW_LINE = System.getProperty("line.separator");
   private static Map<String, String> mimeTypeMap;
-  private static final ConfigurableMimeFileTypeMap mimetypesFileTypeMap = new ConfigurableMimeFileTypeMap();
-
-  //TODO: is this still required
-  private static final Map<String, String> customMimeTypes = new HashMap<String, String>();
-
-  static {
-    customMimeTypes.put("xml", "text/xml");
-  }
 
   /**
    * Return the filename from the given absolute path or url
@@ -110,20 +99,6 @@ public class FileUtils {
     in.close();
 
     return sb.toString();
-  }
-
-  /**
-   * Return the mime-type(content type) for a given file name
-   * @param filename filename
-   * @return the mime type
-   */
-  public static String getContentType(final String filename) {
-    //TODO: Is custom still required
-    final String customMimeType = customMimeTypes.get(filename.toLowerCase());
-    if (null != customMimeType) {
-      return customMimeType;
-    }
-    return mimetypesFileTypeMap.getContentType("a." + filename.toLowerCase());
   }
 
   /**

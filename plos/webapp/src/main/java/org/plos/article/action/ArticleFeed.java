@@ -353,7 +353,7 @@ public class ArticleFeed extends BaseActionSupport {
           altLink.setHref(xmlBase + fetchObjectAttachmentAction + "?uri=" + dc.getIdentifier() + "&representation=" + representation.getName());
           altLink.setRel("related");
           altLink.setTitle("(" + representation.getName() + ") " + dc.getTitle());
-          altLink.setType(FileUtils.getContentType(representation.getName()));
+          altLink.setType(representation.getContentType());
           altLinks.add(altLink);
         }
       }
