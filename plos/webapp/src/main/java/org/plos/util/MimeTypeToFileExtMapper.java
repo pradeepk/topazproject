@@ -28,15 +28,23 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A mime-type to file-extension mapper utility.
+ *
+ * @author viru
+ */
 public class MimeTypeToFileExtMapper {
   private Resource mappingLocation = new ClassPathResource("mime.types");
-  private BufferedReader bufferedReader;
 
-  public MimeTypeToFileExtMapper() throws IOException {
-    bufferedReader = new BufferedReader(new InputStreamReader(mappingLocation.getInputStream(), "UTF-8"));
-  }
-
+  /**
+   * Get a map of mime-type's to file-extensions.
+   *
+   * @return the map, with mime-type's as keys and file-extensions as values
+   */
   public Map<String, String> getFileExtListByMimeType() throws IOException {
+    BufferedReader bufferedReader =
+        new BufferedReader(new InputStreamReader(mappingLocation.getInputStream(), "UTF-8"));
+
     final Map<String, String> mimeMap = new HashMap<String, String>();
     String line;
     while ((line = bufferedReader.readLine()) != null) {

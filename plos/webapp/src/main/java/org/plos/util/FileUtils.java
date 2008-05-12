@@ -19,25 +19,29 @@
 
 package org.plos.util;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * Utility methods for working with files
  */
 public class FileUtils {
-  public static final String NEW_LINE = System.getProperty("line.separator");
-  private static Map<String, String> mimeTypeMap;
+  private static final Map<String, String> mimeTypeMap;
+
+  static {
+    try {
+      mimeTypeMap = new MimeTypeToFileExtMapper().getFileExtListByMimeType();
+    } catch (IOException ioe) {
+      throw new Error("Error loading mime-type map", ioe);
+    }
+  }
 
   /**
-   * Return the filename from the given absolute path or url
+   * Return the filename from the given absolute path or url.
+   *
    * @param absolutePath absolutePath
    * @return filename
    */
@@ -50,93 +54,26 @@ public class FileUtils {
   }
 
   /**
-   * Create a local text copy of the url.
-   * @param url url
-   * @param targetFilename targetFilename
-   * @throws IOException IOException
-   */
-  public static void createLocalCopyOfTextFile(final String url, final String targetFilename) throws IOException {
-    final FileWriter fileWriter = new FileWriter(targetFilename);
-    fileWriter.write(getTextFromUrl(url));
-    fileWriter.close();
-  }
-
-  /**
-   * Is this a http like URL.
-   * @param url url
-   * @return true if it a url
-   */
-  public static boolean isHttpURL(final String url) {
-    return url.startsWith("http://") || url.startsWith("https://") ;
-  }
-
-  /**
-   * Gets all the text content from the given url. It is expected that the url will have all content as a text type.
+   * Gets all the text content from the given url. It is expected that the url will have all
+   * content as a text type.
+   *
    * @param url url
    * @return the whole content from the url
    * @throws IOException IOException
    */
   public static String getTextFromUrl(final String url) throws IOException {
     // Read all the text returned by the server
-    return getTextFromCharStream(new URL(url).openStream());
+    return IOUtils.toString(new URL(url).openStream(), "UTF-8");
   }
 
   /**
-   * Return the text from a character stream
-   * @param inputStream inputStream
-   * @return character text
-   * @throws IOException IOException
+   * Return the first file extension that maps to the given mimeType.
+   *
+   * @param mimeType the mimeType
+   * @return the file extension
    */
-  public static String getTextFromCharStream(final InputStream inputStream) throws IOException {
-    final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-
-    final StringBuilder sb = new StringBuilder();
-    final char[] cbuf = new char[1024];
-    int numRead;
-    while (((numRead = in.read(cbuf)) >= 0)) {
-      sb.append(cbuf, 0, numRead);
-    }
-    in.close();
-
-    return sb.toString();
-  }
-
-  /**
-   * Return the first file extension that maps to a mimeType
-   * @param mimeType mimeType
-   * @return file extension
-   * @throws java.io.IOException IOException
-   */
-  public static String getDefaultFileExtByMimeType(final String mimeType) throws IOException {
-    if (null == mimeTypeMap) {
-      populateAllMimeMappings();
-    }
-
-    final String extension = mimeTypeMap.get(mimeType.toLowerCase());
+  public static String getDefaultFileExtByMimeType(final String mimeType) {
+    String extension = mimeTypeMap.get(mimeType.toLowerCase());
     return null == extension ? "" : extension;
   }
-
-  public static void populateAllMimeMappings() throws IOException {
-    final MimeTypeToFileExtMapper mimeTypeMapToFileExt = new MimeTypeToFileExtMapper();
-    mimeTypeMap = mimeTypeMapToFileExt.getFileExtListByMimeType();
-  }
-
-  public static String escapeURIAsPath (final String inURI) {
-    StringBuffer buf = new StringBuffer();
-
-    int i = 0;
-    while ( i < inURI.length() ) {
-      char c = inURI.charAt(i);
-      if ( ' ' != c && '/' != c && ':' != c)
-        buf.append( c );
-      i++;
-    }
-    return buf.toString();
-
-  }
-
-  public static String escapeURIAsPath (final URI inURI) {
-    return (inURI == null) ? null : escapeURIAsPath(inURI.toString());
-  }
-
 }
