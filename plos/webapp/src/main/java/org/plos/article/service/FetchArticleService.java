@@ -19,8 +19,24 @@
 
 package org.plos.article.service;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
+import java.util.List;
+
+import javax.activation.DataSource;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.w3c.dom.Document;
+
+import org.xml.sax.SAXException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.beans.factory.annotation.Required;
 
 import org.plos.ApplicationException;
 import org.plos.annotation.service.ArticleAnnotationService;
@@ -30,24 +46,7 @@ import org.plos.cache.ObjectListener;
 import org.plos.models.Article;
 import org.plos.models.ArticleAnnotation;
 import org.plos.util.ArticleXMLUtils;
-import org.plos.util.CacheAdminHelper;
 import org.plos.util.TextUtils;
-
-import org.w3c.dom.Document;
-
-import org.xml.sax.SAXException;
-
-import javax.activation.DataSource;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.rmi.RemoteException;
-import java.util.List;
-import org.plos.article.action.CreateCitation;
-import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
