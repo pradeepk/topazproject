@@ -501,9 +501,11 @@ public class SessionImpl extends AbstractSession {
         }
       }
 
+      boolean wroteSomething = false;
       if (tp && (firstTime || (nFields > 0))) {
         store.delete(cm, fields, id.getId(), o, getTripleStoreCon());
         store.insert(cm, fields, id.getId(), o, getTripleStoreCon());
+        wroteSomething = true;
       }
       if (bf) {
         switch(states.digestUpdate(o, cm, this)) {
@@ -522,8 +524,10 @@ public class SessionImpl extends AbstractSession {
         }
         if (updates != null)
           updates.blobChanged = bf;
+        if (bf)
+          wroteSomething = true;
       }
-      if (interceptor != null)
+      if ((interceptor != null) && wroteSomething)
         interceptor.onPostWrite(this, cm, id.getId(), o, updates);
     }
   }
