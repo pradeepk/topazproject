@@ -100,7 +100,7 @@ public class JournalCarrierService {
                  || updates.isChanged("simpleCollection")))
             updateCarrierMap(((Journal)o).getKey(), false, s);
 
-        if ((o instanceof Article) && (updates == null))
+        if (o instanceof Article)
           objectWasAdded(((Article) o).getId(), s);
 
         if (browseServiceObjectListener != null)

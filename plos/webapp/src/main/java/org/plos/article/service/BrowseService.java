@@ -802,7 +802,7 @@ public class BrowseService {
   private class Invalidator implements ObjectListener {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
-      if ((o instanceof Article) && (updates == null)) {
+      if (o instanceof Article) {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was added.");
         notifyArticlesAdded(new String[]{id});
