@@ -35,7 +35,7 @@
 
 <a id="account" name="account"></a>
 <h2>Journals Account</h2>
-<p>You may read journals without creating an account.  However, an account is required to receive journal e-mail alerts and to comment on articles.</p>
+<p>You may read journals without creating an account.  However, an account is required to comment on articles.</p>
 
 <h3>Create Account</h3>
 <p>Create an account at <a href="http://register.ambra.org" title="Create Journals Profile">http://register.ambra.org</a>.  A confirmation will be sent to your e-mail address with the title "Please verify your journal registration".  Use the URL in that e-mail to complete your registration.</p>
@@ -46,25 +46,7 @@
 <p>The first time you log in, you are required to create a profile with basic information, with which you will be identified whenever you rate or comment on an article. As part of your profile, you must choose a username. Your username is attached to all commentary that you make on the journal web sites. This means that all your commentary is credited and attributed to you. <strong>You cannot change your username.</strong> It is possible to get a new username by registering for a whole new account, but anything you have done on your original account will not transfer to the new account with the new username.</p>
 
 <h3>Lost Password</h3>
-<p>If you have forgotten your password, go to <a href="http://register.ambra.org/reminder" title="Journals Profile Password Reminder">http://register.ambra.org/reminder</a>, enter your E-mail address, and click "Submit". An e-mail will be sent to the e-mail address you use to log in to your user account.  </p>
-
-<h2>Journal E-mail Alerts</h2>
-
-<p>Sign up for a journal e-mail alert at <a href="#" title="Register for Journals E-mail Alerts">http://register.___.org</a>.  A confirmation will be sent to your e-mail address with the title "Please verify your journal registration". Use the URL in that e-mail to complete your registration.</p>
-
-<p>To unsubscribe from a journal e-mail alert:</p>
-<ol>
-	<li>Login at <a href="#" title="Register for Journals E-mail Alerts">http://www.___.org/alerts</a>. Enter your login E-mail address and Password. Click "Go!".</li>
-	<li>Please check/uncheck the boxes to subscribe/unsubscribe from a specific mailing list.</li>
-	<li>Scroll to the bottom of the page and click "Save".</li>
-</ol>
-
-<p>To update your e-mail address to which journal e-mail alerts are sent:</p>
-<ol>
-	<li>Login at <a href="#" title="Edit Journals Profile">http://www.___.org/profile</a>. Enter your login E-mail address and Password. Click "Go!".</li>
-	<li>Under "Preferences", click "Change your e-mail address".</li>
-	<li>Enter the new e-mail address which you wish to use to receive alerts and click "Submit".</li>
-</ol>
+<p>If you have forgotten your password, go to <a href="http://register.ambra.org/reminder" title="Journals Profile Password Reminder">http://register.ambra.org/reminder</a>, enter your E-mail address, and click "Submit". An e-mail will be sent to the e-mail address you use to log in to your user account.</p>
 
 <a id="printing" name="printing"></a>
 <h2>Printing PDFs</h2>
@@ -169,7 +151,7 @@
 <a id="xmlcontent" name="xmlcontent"></a>
 <h2>XML Content</h2>
 
-<p>The XML for an individual article can be downloaded directly from that article's Web page using the "Download Article XML" link in the sidebar. If you wish to download the entire corpus of a journal, please contact <strong>webmaster [at] ___.org</strong>.</p>
+<p>The XML for an individual article can be downloaded directly from that article's Web page using the "Download Article XML" link in the sidebar.</p>
 
 </div>
 <!-- end : main contents -->

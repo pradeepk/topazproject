@@ -21,7 +21,7 @@
 <!-- begin : main content -->
 <div id="content" class="static">
 
-<h1><em>Ambra Journal</em> Site Map</h1>
+<h1><em>Ambra</em> Site Map</h1>
 
 <h2>Home</h2>
 <ul>
@@ -31,28 +31,25 @@
     <@s.url action="releaseNotes" namespace="/static" includeParams="none" id="releaseURL"/>
     <@s.url namespace="/user/secure" includeParams="none" id="loginURL" action="secureRedirect" goTo="${thisPage}"/>
 	
-    <li><@s.a href="${homeURL}" title="Ambra Journals | Home page">Home page</@s.a></li>
-    <li>
-      <@s.a href="${rssFeedURL}" title="Ambra Journals | RSS Feeds">RSS Feeds</@s.a></li>
+    <li><@s.a href="${homeURL}" title="Ambra | Home page">Home page</@s.a></li>
+    <li><@s.a href="${rssFeedURL}" title="Ambra | RSS Feeds">RSS Feeds</@s.a>
 		  <ul>
-        <li><@s.a href="${rssInfoURL}" title="Ambra Journal | About RSS Feeds">About Ambra Journal RSS Feeds</@s.a></li>
+        <li><@s.a href="${rssInfoURL}" title="Ambra | About RSS Feeds">About Ambra RSS Feeds</@s.a></li>
       </ul>
     </li>
-    <li><@s.a href="${loginURL}" title="Ambra Journals | Account Login">Login</@s.a></li>
-    <li><@s.a href="${freemarker_config.registrationURL}" title="Ambra Journals | Create a New Account">Create Account</@s.a></li>
-    <li><@s.a href="${feedbackURL}" title="Ambra Journals | Send Us Your Feedback">Send Us Feedback</@s.a></li>
-    <li><@s.a href="${releaseURL}" title="Ambra Journals | Release Notes">Release Notes</@s.a></li>
+    <li><@s.a href="${loginURL}" title="Ambra | Account Login">Login</@s.a></li>
+    <li><@s.a href="${freemarker_config.registrationURL}" title="Ambra | Create a New Account">Create Account</@s.a></li>
+    <li><@s.a href="${feedbackURL}" title="Ambra | Send Us Your Feedback">Send Us Feedback</@s.a></li>
+    <li><@s.a href="${releaseURL}" title="Ambra | Release Notes">Release Notes</@s.a></li>
 </ul>
 
 <h2>Browse Articles</h2>
 <ul>
-	<@s.url action="browseIssue" field="issue" namespace="/article" includeParams="none" id="browseIssueURL"/>
-	<@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
+	  <@s.url action="browse" field="date" namespace="/article" includeParams="none" id="browseDateURL"/>
     <@s.url action="browse" namespace="/article" includeParams="none" id="browseSubURL"/>
-	
-	<li><@s.a href="${tocStatic}" title="Ambra Journals | Current Issue">Current Issue</@s.a></li><!-- Note that this is a temporary var to static TOC. Once dynamic TOC is in place, should be changed back to "browseIssueURL" -->
-    <li><@s.a href="${browseDateURL}" title="Ambra Journals | Browse by Publication Date">By Publication Date</@s.a></li>
-    <li><@s.a href="${browseSubURL}" title="Ambra Journals | Browse by Subject">By Subject</@s.a></li>
+    
+    <li><@s.a href="${browseDateURL}" title="Ambra | Browse by Publication Date">By Publication Date</@s.a></li>
+    <li><@s.a href="${browseSubURL}" title="Ambra | Browse by Subject">By Subject</@s.a></li>
 </ul>
 
 <h2>For Readers</h2>
@@ -60,16 +57,10 @@
     <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="commentURL"/>
     <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="ratingURL"/>
     <@s.url action="help" namespace="/static" includeParams="none" id="helpURL"/>
-    <@s.url action="downloads" namespace="/static" includeParams="none" id="downloadsURL"/>
-	
-    <li><@s.a href="${commentURL}" title="Ambra Journals | Guidelines for Notes, Comments, and Corrections">Guidelines for Notes, Comments, and Corrections</@s.a></li>
-    <li><@s.a href="${ratingURL}" title="Ambra Journals | Guidelines for Rating">Guidelines for Rating</@s.a></li>
-    <li><@s.a href="${helpURL}" title="Ambra Journals | Help Using this Site">Help Using This Site</@s.a></li>
-</ul>
-
-<h2>Journals</h2>
-<ul>
-    <li><@s.a href="#" title="Ambra Journal"><em>Ambra Journal</em></@s.a></li>
+    
+    <li><@s.a href="${commentURL}" title="Ambra | Guidelines for Notes, Comments, and Corrections">Guidelines for Notes, Comments, and Corrections</@s.a></li>
+    <li><@s.a href="${ratingURL}" title="Ambra | Guidelines for Rating">Guidelines for Rating</@s.a></li>
+    <li><@s.a href="${helpURL}" title="Ambra | Help Using this Site">Help Using This Site</@s.a></li>
 </ul>
 
 <h2>Overlay Journals</h2>

@@ -29,12 +29,12 @@
 
 .required {color: #A61200; font-weight: bold; }
 
-.pone-form {
+.ambra-form {
 	position: relative;
 	display: block;
 }
 
-.pone-form fieldset {
+.ambra-form fieldset {
 	position: relative;
 	border-top: 2px solid #FF6600;
 	border-bottom: 2px solid #FF6600;
@@ -46,16 +46,16 @@
 	padding: 0px 0px 15px;
 	background: #D2F7FF url(../images/user_forms_bg.gif) repeat-x left top;
 }
-.pone-form fieldset legend {
+.ambra-form fieldset legend {
 	font-family: Georgia, "Times New Roman", Times, serif;
 	font-size: 1.6em;
 	color: #333;
 	background-color: #FFFFFF;
 	padding-right: 5px;
 }
-.pone-form ol { list-style-type: none; margin: 15px 0px 0px; padding: 0px; position: relative;}
+.ambra-form ol { list-style-type: none; margin: 15px 0px 0px; padding: 0px; position: relative;}
 
-.pone-form ol li {
+.ambra-form ol li {
 	position: relative;
 	list-style: none;
 	display: block;
@@ -70,45 +70,45 @@
 	clear: both;
 }
 
-.pone-form .form-last-item { border-bottom:none; }
+.ambra-form .form-last-item { border-bottom:none; }
 /************* inline form elements styles *****************/
-.pone-form ol li ol li {
+.ambra-form ol li ol li {
 	float: left;
 	margin-right: 10px;
 	border-bottom-style: none;
 	padding-left: 0px;
 	clear: none;
 }
-.pone-form ol li ol {
+.ambra-form ol li ol {
 	display: block;
 	clear: both;
 	width: 100%;
 	float: none;
 }
 /************* general component styles *****************/
-.pone-form ol li label { font-weight: bold; display: block; }
-.pone-form ol li input { width: 200px; border: 1px solid #ACF1FF; padding: 2px; }
-.pone-form ol li input.radio { border-width: 0; }
-.pone-form ol li .long-input { width: 324px; } 
-.pone-form ol li select { width: 206px; border: 1px solid #ACF1FF; padding: 2px; }
-.pone-form ol li .radio { width: 14px;}
-.pone-form ol li .checkbox { width: 14px;}
-.pone-form textarea {width: 324px; border: 1px solid #ACF1FF; }
-.pone-form #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
+.ambra-form ol li label { font-weight: bold; display: block; }
+.ambra-form ol li input { width: 200px; border: 1px solid #ACF1FF; padding: 2px; }
+.ambra-form ol li input.radio { border-width: 0; }
+.ambra-form ol li .long-input { width: 324px; } 
+.ambra-form ol li select { width: 206px; border: 1px solid #ACF1FF; padding: 2px; }
+.ambra-form ol li .radio { width: 14px;}
+.ambra-form ol li .checkbox { width: 14px;}
+.ambra-form textarea {width: 324px; border: 1px solid #ACF1FF; }
+.ambra-form #submit, .ambra-form #cancel {margin-top: 15px; margin-left: 10px; }
 
 /***********************************************/
 /* individual styles                         */
 /***********************************************/ 
 
 /************* error styles *****************/
-.pone-form ol .form-error { color: #A61200; }
-.pone-form ol .form-error label { color: #00131D;}
+.ambra-form ol .form-error { color: #A61200; }
+.ambra-form ol .form-error label { color: #00131D;}
 /************* success message styles *****************/
-.pone-form fieldset .form-success { padding: 25px 0px 25px 10px; }
+.ambra-form fieldset .form-success { padding: 25px 0px 25px 10px; }
 
 /************* create profile styles *****************/
 
-.pone-form .public-private {
+.ambra-form .public-private {
 	width:324px;
  	background-image: none;
 	margin-top:10px;
@@ -116,7 +116,7 @@
 	border: none;
 }
 
-.pone-form .public-private legend { background-color:transparent; font-size:1.4em; margin: 20px 0;}
+.ambra-form .public-private legend { background-color:transparent; font-size:1.4em; margin: 20px 0;}
 
 /************* alerts styles *****************/
 #alert-form ol li.alerts-title { width: 190px; font-weight:bold; }

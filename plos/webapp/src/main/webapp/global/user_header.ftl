@@ -19,8 +19,8 @@
 -->
 <!-- begin : header -->
 <div id="hdr">
-	<div id="logo"><a href="http://www.plosjournals.org" title="PLoS Journals"><span>PLoS Journals</span></a></div>
-	<div id="tagline"><span>A peer-reviewed, open-access journal published by the Public Library of Science</span></div>
+  <div id="logo"><a href="${homeURL}" title="Ambra"><span>Ambra</span></a></div>
+	<div id="tagline"><span>An Open Source end-to-end electronic publishing system</span></div>
 </div>
 <!-- end : header -->
 

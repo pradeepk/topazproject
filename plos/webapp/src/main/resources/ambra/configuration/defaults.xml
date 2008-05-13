@@ -265,12 +265,10 @@
         <name>AmbraJournal</name>
         <metaKeywords>Ambra\, RDF</metaKeywords>
         <metaDescription>
-          Ambra is a new Open Source software applications development project to create an
-          innovative, end-to-end electronic publishing system that will become a powerful driver of
-          the Open Access movement.
+          Ambra is a new Open Source end-to-end electronic publishing system.
         </metaDescription>
         <articleTitlePrefix>Ambra Journal:</articleTitlePrefix>
-        <displayName>Ambra Journal</displayName>
+        <displayName>Ambra</displayName>
         <default>
           <title>Ambra : It's refreshing.</title>
           <css>

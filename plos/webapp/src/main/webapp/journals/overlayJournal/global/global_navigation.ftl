@@ -52,9 +52,9 @@
           <li><a href="${hubUrl}" title="Ambra Overlay Journal">Ambra Overlay Journal</a></li>
         </ul>
       </li>
-      <li class="journalnav"><a href="#" tabindex="108">Journals</a>
-        <ul>
+      <li class="journalnav"><a href="#" tabindex="108">Ambra</a>
+        <!--<ul>
           <li><a href="#" title="Ambra Journal">Ambra Journal</a></li>
-        </ul>
+        </ul>-->
       </li>
     </ul>

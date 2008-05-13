@@ -35,7 +35,7 @@
   <h2>1. Rating Categories</h2>
 
   <p>
-    The Ambra Journal allows users to rate articles for subjective "quality". Scientific work can be measured on a number of scales. To reflect this, research articles can be rated in three separate categories: Insight, Reliability, and Style. Rating is done on a 1 to 5 scale with 1 being the lowest and 5 the highest rating.
+    Ambra allows users to rate articles for subjective "quality". Scientific work can be measured on a number of scales. To reflect this, research articles can be rated in three separate categories: Insight, Reliability, and Style. Rating is done on a 1 to 5 scale with 1 being the lowest and 5 the highest rating.
   </p>
 
   <ol>

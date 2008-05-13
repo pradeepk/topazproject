@@ -17,20 +17,19 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#include "journal_include.ftl">
-<#include "/static/cj_shared_blocks.ftl">
 
 <!-- begin : main content -->
 <div id="content" class="static">
   <h1>RSS Feeds</h1>
   <@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssURL"/>
-  
+  <@s.url action="feed" namespace="/article" includeParams="none" id="rssFeedURL"/>
+  <#assign currentJournalName = freemarker_config.getDisplayName(journalContext) />
   <p>
-    <em>${journal_name}</em> provides the following <@s.a href="${rssURL}">RSS feeds</@s.a> which are updated as new articles are posted:
+  <em>${currentJournalName}</em> provides the following <@s.a href="${rssURL}">RSS feeds</@s.a> which are updated as new articles are posted:
   </p>
 
   <ul>
-    <li><a href="/article/feed">New Articles</a></li>
+    <li><@s.a href="${rssFeedURL}">New Articles</@s.a></li>
   </ul>
    
 </div>

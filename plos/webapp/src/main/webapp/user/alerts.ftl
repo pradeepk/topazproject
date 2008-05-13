@@ -41,7 +41,7 @@
   <#assign actionValue="saveUserAlerts"/>
   <#assign namespaceValue="/user/secure"/>
 </#if>
-  <@s.form action="${actionValue}" namespace="${namespaceValue}" method="post" cssClass="pone-form" method="post" title="Alert Form" name="userAlerts">
+  <@s.form action="${actionValue}" namespace="${namespaceValue}" method="post" cssClass="ambra-form" method="post" title="Alert Form" name="userAlerts">
   <fieldset id="alert-form">
 		<legend>Choose your alerts</legend>
 		<ol>

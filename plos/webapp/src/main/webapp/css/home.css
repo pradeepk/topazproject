@@ -192,7 +192,7 @@ div.recent p		{ margin: 0 0 10px 0; }
 /* Explore by Subject block */
 div.explore p { margin:14px 14px 7px 14px }
 div.explore ul	{ width:244px; float:left; margin:5px 0 10px 0; padding: 0; text-indent: 0; }
-div.explore li	{ margin:0; padding:0 0 5px 14px; text-indent:0; list-style-type: none; font-size:0.9em; }
+div.explore li	{ margin:0; padding:0 14px 5px; text-indent:0; list-style-type: none; font-size:0.9em; }
 div.explore li img { vertical-align:-1px }
 
 /* browse widget */

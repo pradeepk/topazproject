@@ -32,10 +32,9 @@
     <@s.url namespace="/user/secure" includeParams="none" id="loginURL" action="secureRedirect" goTo="${thisPage}"/>
 	
     <li><@s.a href="${homeURL}" title="Overlay Journal | Home page">Home page</@s.a></li>
-    <li>
-      <@s.a href="${rssFeedURL}" title="Overlay Journal | RSS Feeds">RSS Feeds</@s.a></li>
+    <li><@s.a href="${rssFeedURL}" title="Overlay Journal | RSS Feeds">RSS Feeds</@s.a>
 		  <ul>
-        <li><@s.a href="${rssInfoURL}" title="Ambra Journal | About RSS Feeds">About Ambra Journal RSS Feeds</@s.a></li>
+        <li><@s.a href="${rssInfoURL}" title="Overlay Journal | About RSS Feeds">About Overlay Journal RSS Feeds</@s.a></li>
       </ul>
     </li>
     <li><@s.a href="${loginURL}" title="Overlay Journal | Account Login">Login</@s.a></li>
@@ -65,11 +64,6 @@
     <li><@s.a href="${commentURL}" title="Overlay Journal | Guidelines for Notes, Comments, and Corrections">Guidelines for Notes, Comments, and Corrections</@s.a></li>
     <li><@s.a href="${ratingURL}" title="Overlay Journal | Guidelines for Rating">Guidelines for Rating</@s.a></li>
     <li><@s.a href="${helpURL}" title="Overlay Journal | Help Using this Site">Help Using This Site</@s.a></li>
-</ul>
-
-<h2>Journals</h2>
-<ul>
-    <li><@s.a href="#" title="Ambra Journal"><em>Ambra Journal</em></@s.a></li>
 </ul>
 
 <h2>Overlay Journals</h2>

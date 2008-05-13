@@ -142,9 +142,8 @@
             <div id="connect" class="block">
               <h3>Stay Connected</h3>
               <ul>
-                  <li><img src="images/icon_alerts_small.gif" alt="email alerts icon" /><a href="${freemarker_config.registrationURL}"><strong>E-mail Alerts</strong></a><br />Sign up for alerts by e-mail</li>
                   <li><img src="images/icon_rss_small.gif" alt="rss icon" /><@s.url action="rssInfo" namespace="/static" includeParams="none" id="rssinfo"/><a href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}"><strong>RSS</strong></a> (<a href="${rssinfo}">What is RSS?</a>)<br />Subscribe to content feed</li>
-                  <li><img src="images/icon_join.gif" alt="Join Us" /><a href="#" title="Join Us: Show Your Support"><strong>Join Us</strong></a><br />Support our organization!</li>
+                  <li><img src="images/icon_join.gif" alt="Join Us" /><a href="${freemarker_config.registrationURL}" title="Join Us: Show Your Support"><strong>Join Us</strong></a><br />Support our organization!</li>
               </ul>
             </div>
             <!-- end : stay-connected block -->

@@ -1,6 +1,6 @@
 <#--
   $HeadURL::                                                                            $
-  $Id$
+  Id: newUser.ftl 5405 2008-04-10 16:28:43Z alex $
   
   Copyright (c) 2007-2008 by Topaz, Inc.
   http://topazproject.org
@@ -19,11 +19,11 @@
 -->
 <!-- begin : main content wrapper -->
 <div id="content"  class="static">
-<h2>PLoS Member Profiles: Create a Profile</h2>
+<h2>Ambra Profiles: Create a Profile</h2>
 	<p><strong>Create or Update Your Profile</strong></p>
 	<p>Fields marked with an <span class="required">*</span> are required. </p>
 
-<@s.form name="createNewUserForm" action="createNewUser" namespace="/user" method="post" title="User Information Form" cssClass="pone-form">
+<@s.form name="createNewUserForm" action="createNewUser" namespace="/user" method="post" title="User Information Form" cssClass="ambra-form">
 
 <fieldset>
   <legend>Your Profile</legend>

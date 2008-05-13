@@ -35,7 +35,7 @@
   <a id="intro" name="intro"></a>
   <h2>1. Post-Publication Review</h2>
 
-  <p>The Ambra Journal site employs a system for the assessment of articles that combines
+  <p>Ambra employs a system for the assessment of articles that combines
    pre- and post-publication peer review. There are three major components to post-publication review:</p>
 
   <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="rateGuideURL"/>
