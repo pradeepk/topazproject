@@ -412,7 +412,7 @@ public class BrowseService {
 
   private Object getCatInfo(String key, String desc, boolean load, final String jnlName) {
     final String jnlkey = key + jnlName;
-    return browseCache.get(key, -1, !load ? null : 
+    return browseCache.get(jnlkey, -1, !load ? null : 
         new Cache.SynchronizedLookup<Object, RuntimeException>((CAT_INFO_LOCK + jnlName).intern()) {
           public Object lookup() throws RuntimeException {
              loadCategoryInfos(jnlName);
@@ -539,13 +539,18 @@ public class BrowseService {
     Map<String, Set<String>> artMap = new HashMap<String, Set<String>>();
 
     for (String uri : artUris) {
+      Set<String> jks = log.isDebugEnabled() ? new HashSet<String>() : null;
       for (Journal j : journalService.getJournalsForObject(URI.create(uri))) {
         Set<String> artList = artMap.get(j.getKey());
         if (artList == null) {
           artMap.put(j.getKey(), artList = new HashSet<String>());
         }
         artList.add(uri);
+        if (log.isDebugEnabled())
+          jks.add(j.getKey());
       }
+      if (log.isDebugEnabled())
+        log.debug("Article with id <" + uri + "> is part of journals " + jks);
     }
 
     return artMap;
