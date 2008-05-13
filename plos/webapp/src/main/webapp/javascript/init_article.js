@@ -229,9 +229,6 @@ function validateNewComment() {
          submitMsg.appendChild(err);
          ambra.formUtil.enableFormFields(_annotationForm);
          _annotationDlg.placeModalDialog();
-         _ldc.hide();
-         
-         return false;
        }
        else if (jsonObj.numFieldErrors > 0) {
          var fieldErrors = document.createDocumentFragment();
@@ -253,7 +250,6 @@ function validateNewComment() {
          submitMsg.appendChild(fieldErrors);
          ambra.formUtil.enableFormFields(_annotationForm);
          _annotationDlg.placeModalDialog();
-         _ldc.hide();
        }
        else {
          getArticle();
@@ -262,7 +258,8 @@ function validateNewComment() {
          ambra.formUtil.textCues.reset(_comments, _commentCue);
          ambra.formUtil.enableFormFields(_annotationForm);
        }
-      }
+       _ldc.hide();
+     }//load
   });
 }  
 
@@ -298,10 +295,8 @@ function getArticle(refreshType) {
       ambra.corrections.apply();
       
       _ldc.hide();
-
-      return false;
     }
-   });
+  });
 }
 
 function getAnnotationCount() {
@@ -327,10 +322,6 @@ function getAnnotationCount() {
 dojo.addOnLoad(function() {
   // int loading "throbber"
   _ldc = dijit.byId("LoadingCycle");
-  alert('init_article _ldc: ' + _ldc);
-  
-  // show loading... while we initialize
-  _ldc.show();
   
   // build RHC table of contents
   var tocObj = dojo.byId('sectionNavTop');
@@ -581,7 +572,4 @@ dojo.addOnLoad(function() {
   // jump to annotation?
   var anId = document.articleInfo.annotationId.value;
   if(anId) jumpToAnnotation(anId);
-  
-  // initialization complete
-  _ldc.hide();
 });
