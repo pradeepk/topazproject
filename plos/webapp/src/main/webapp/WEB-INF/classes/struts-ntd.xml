@@ -273,12 +273,16 @@
   </package>
 
   <package name="user-ntd" extends="default-ntd" namespace="/journals/ntd/user">
+    <default-interceptor-ref name="plosBaseStack" />
+    
     <action name="newUser">
       <result>/journals/plosJournals/user/newUser.ftl</result>
     </action>
   </package>
   
   <package name="admin-ntd" extends="default-ntd" namespace="/journals/ntd/admin">
+    <default-interceptor-ref name="plosAdminStack" />
+    
     <action name="editProfileByAdmin" class="org.plos.user.action.AdminUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosJournals/user/user.ftl</param>
