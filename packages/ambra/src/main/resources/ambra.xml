@@ -598,6 +598,7 @@
           <name>/article/article_body.ftl</name>
           <title>CODE_ARTICLE_TITLE</title>
           <css>
+            <file>dojo.css</file>
             <file>/css/star_rating.css</file>
             <file>/css/rating.css</file>
             <file>/css/screen.css</file>

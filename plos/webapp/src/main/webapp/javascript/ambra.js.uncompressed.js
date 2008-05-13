@@ -1097,23 +1097,21 @@ dijit.scrollIntoView = function(/* DomNode */node){
 
   // don't rely on that node.scrollIntoView works just because the function is there
   // it doesnt work in Konqueror or Opera even though the function is there and probably
-  // not safari either
+  //  not safari either
+  // native scrollIntoView() causes FF3's whole window to scroll if there is no scroll bar 
+  //  on the immediate parent
   // dont like browser sniffs implementations but sometimes you have to use it
-  if(dojo.isMozilla){
-    node.scrollIntoView(false);
-  }else{
-    // #6146: IE scrollIntoView is broken
-    // It's not enough just to scroll the menu node into view if
-    // node.scrollIntoView hides part of the parent's scrollbar,
-    // so just manage the parent scrollbar ourselves
-    var parent = node.parentNode;
-    var parentBottom = parent.scrollTop + dojo.marginBox(parent).h; //PORT was getBorderBox
-    var nodeBottom = node.offsetTop + dojo.marginBox(node).h;
-    if(parentBottom < nodeBottom){
-      parent.scrollTop += (nodeBottom - parentBottom);
-    }else if(parent.scrollTop > node.offsetTop){
-      parent.scrollTop -= (parent.scrollTop - node.offsetTop);
-    }
+  // #6146: IE scrollIntoView is broken
+  // It's not enough just to scroll the menu node into view if
+  // node.scrollIntoView hides part of the parent's scrollbar,
+  // so just manage the parent scrollbar ourselves
+  var parent = node.parentNode;
+  var parentBottom = parent.scrollTop + dojo.marginBox(parent).h; //PORT was getBorderBox
+  var nodeBottom = node.offsetTop + dojo.marginBox(node).h;
+  if(parentBottom < nodeBottom){
+    parent.scrollTop += (nodeBottom - parentBottom);
+  }else if(parent.scrollTop > node.offsetTop){
+    parent.scrollTop -= (parent.scrollTop - node.offsetTop);
   }
 };
 
@@ -5859,8 +5857,8 @@ dojox.data.dom.innerXML = function(/*Node*/node){
 
 }
 
-if(!dojo._hasResource["ambra.topaz"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["ambra.topaz"] = true;
+if(!dojo._hasResource["ambra.general"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["ambra.general"] = true;
 /*
  * $HeadURL:: http://gandalf.topazproject.org/svn/head/plos/webapp/src/main/webapp/javas#$
  * $Id: ambra.js 5581 2008-05-02 23:01:11Z jkirton $
@@ -5885,7 +5883,7 @@ dojo._hasResource["ambra.topaz"] = true;
  * This file is not a dojo module rather simply contains general utility methods.
  */
  
-dojo.provide("ambra.topaz");
+dojo.provide("ambra.general");
 
 document.getElementsByTagAndClassName = function(tagName, className) {
   if ( tagName == null )
@@ -6053,6 +6051,7 @@ dojo._hasResource["ambra.domUtil"] = true;
   * @author  Joycelyn Chung  joycelyn@orangetowers.com
   **/
 dojo.provide("ambra.domUtil");
+
 
 ambra.domUtil = {
   /**
@@ -6874,6 +6873,7 @@ dojo._hasResource["ambra.formUtil"] = true;
  * @author    Joycelyn Chung      joycelyn@orangetowers.com
  **/
 dojo.provide("ambra.formUtil");
+
 ambra.formUtil = {
   
   /**
@@ -7809,7 +7809,7 @@ dojo.declare(
   "ambra.widget.RegionalDialog",
   [ambra.widget.RegionalDialogBase],
 {
-  templateString:"<div id=\"${id}\" class=\"dojoDialog\" dojoAttachPoint=\"wrapper\"><div dojoAttachPoint=\"containerNode\" style=\"position: relative; z-index: 2;\"></div></div>\r\n",
+  templateString:"<div id=\"${id}\" class=\"dijitDialog\" style=\"overflow:visible;\" dojoAttachPoint=\"wrapper\"><div dojoAttachPoint=\"containerNode\"></div></div>\r\n",
   
   /*
   postMixInProperties: function(){
@@ -7892,9 +7892,11 @@ dojo._hasResource["ambra.navigation"] = true;
  * This class builds the table of content navigation in the right-hand column. 
  **/
 dojo.provide("ambra.navigation");
+
 ambra.navigation = {
  buildTOC: function(tocObj){
    var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
+   if(!tocEl) return;
    
    var ul = document.createElement('ul');
    
@@ -7959,6 +7961,7 @@ dojo._hasResource["ambra.horizontalTabs"] = true;
 
 
 dojo.provide("ambra.horizontalTabs");
+
 
 ambra.horizontalTabs = {
   
@@ -8508,6 +8511,7 @@ dojo._hasResource["ambra.displayComment"] = true;
   *
   **/
 dojo.provide("ambra.displayComment");
+
 
 ambra.displayComment = {
   target: "",
@@ -11004,6 +11008,7 @@ dojo._hasResource["ambra.rating"] = true;
 dojo.provide("ambra.rating");
 
 
+
 ambra.rating = {
   rateScale: 5,
   
@@ -11260,6 +11265,7 @@ dojo._hasResource["ambra.slideshow"] = true;
  **/
 
 dojo.provide("ambra.slideshow");
+
 
 ambra.slideshow = {
   imgS: "PNG_S",
@@ -11527,4 +11533,5 @@ dojo.provide("dojo.nls.ambra_xx");dojo.provide("dijit.nls.loading");dijit.nls.lo
 dojo.provide("dojo.nls.ambra_ROOT");dojo.provide("dijit.nls.loading");dijit.nls.loading._built=true;dojo.provide("dijit.nls.loading.ROOT");dijit.nls.loading.ROOT={"loadingState":"Loading...","errorState":"Sorry, an error occurred"};dojo.provide("dijit.nls.common");dijit.nls.common._built=true;dojo.provide("dijit.nls.common.ROOT");dijit.nls.common.ROOT={"buttonOk":"OK","buttonCancel":"Cancel","buttonSave":"Save","itemClose":"Close"};
 dojo.provide("dojo.nls.ambra_en");dojo.provide("dijit.nls.loading");dijit.nls.loading._built=true;dojo.provide("dijit.nls.loading.en");dijit.nls.loading.en={"loadingState":"Loading...","errorState":"Sorry, an error occurred"};dojo.provide("dijit.nls.common");dijit.nls.common._built=true;dojo.provide("dijit.nls.common.en");dijit.nls.common.en={"buttonOk":"OK","buttonCancel":"Cancel","buttonSave":"Save","itemClose":"Close"};
 dojo.provide("dojo.nls.ambra_en-us");dojo.provide("dijit.nls.loading");dijit.nls.loading._built=true;dojo.provide("dijit.nls.loading.en_us");dijit.nls.loading.en_us={"loadingState":"Loading...","errorState":"Sorry, an error occurred"};dojo.provide("dijit.nls.common");dijit.nls.common._built=true;dojo.provide("dijit.nls.common.en_us");dijit.nls.common.en_us={"buttonOk":"OK","buttonCancel":"Cancel","buttonSave":"Save","itemClose":"Close"};
+
 dojo.i18n._preloadLocalizations("dojo.nls.ambra", ["xx","ROOT","en","en-us"]);
