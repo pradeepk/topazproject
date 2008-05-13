@@ -1,1 +1,1 @@
-dojo-release-1.1.0-src
+dojo-release-1.1.1-src
