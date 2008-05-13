@@ -19,8 +19,11 @@
 
 package org.plos.article.service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.List;
 
@@ -55,12 +58,17 @@ public class SearchUtil {
   }
 
   /**
-   * Temporary hack: info:doi/ -> doi: . FIXME: In theory we should re-encode, but currently we
-   * don't have any special characters in our doi that would need re-encoding, and hopefully this
+   * Temporary hack: info:doi/ -> doi: . FIXME: In theory we should re-encode using fedora's
+   * reserved/allowed character list, but the difference between that and what URLEncoder encodes
+   * is just '~' and '*' and we currently don't have either of those in our doi; and hopefully this
    * hack will go away before we do.
    */
   private static String objIdToFedoraPid(String uri) {
-    return "doi:" + uri.substring(9);
+    try {
+      return "doi:" + URLEncoder.encode(URLDecoder.decode(uri.substring(9), "UTF-8"), "UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+      throw new RuntimeException("Unexpected exception", uee);
+    }
   }
 
   /**
