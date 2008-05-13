@@ -521,8 +521,8 @@ public class BrowseService {
         for (NewArtInfo nai: nais) {
           insertDate(dates, nai.date);
         }
+        updateArticleDates(dates, jnlName);
       }
-      updateArticleDates(dates, jnlName);
 
       for (Object key : browseCache.getKeys()) {
         if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
