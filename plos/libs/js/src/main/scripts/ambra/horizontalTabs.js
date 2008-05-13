@@ -37,6 +37,7 @@
 
 
 dojo.provide("ambra.horizontalTabs");
+dojo.require("ambra.general");
 dojo.require("ambra.formUtil");
 ambra.horizontalTabs = {
   

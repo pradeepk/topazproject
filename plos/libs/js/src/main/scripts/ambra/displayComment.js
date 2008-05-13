@@ -27,6 +27,7 @@
   *
   **/
 dojo.provide("ambra.displayComment");
+dojo.require("ambra.general");
 dojo.require("ambra.domUtil");
 ambra.displayComment = {
   target: "",

@@ -24,6 +24,7 @@
  * @author		Joycelyn Chung			joycelyn@orangetowers.com
  **/
 dojo.provide("ambra.formUtil");
+dojo.require("ambra.general");
 ambra.formUtil = {
   
   /**

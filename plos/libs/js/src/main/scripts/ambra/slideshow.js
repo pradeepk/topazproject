@@ -29,6 +29,7 @@
  **/
 
 dojo.provide("ambra.slideshow");
+dojo.require("ambra.general");
 dojo.require("ambra.domUtil");
 ambra.slideshow = {
   imgS: "PNG_S",

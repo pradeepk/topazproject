@@ -27,6 +27,7 @@
   **/
 dojo.provide("ambra.domUtil");
 dojo.require("dojox.data.dom");
+dojo.require("ambra.general");
 ambra.domUtil = {
   /**
    * ambra.domUtil.getDisplayId(Node obj)

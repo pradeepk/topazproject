@@ -22,7 +22,7 @@
  * This file is not a dojo module rather simply contains general utility methods.
  */
  
-dojo.provide("ambra.topaz");
+dojo.provide("ambra.general");
 
 document.getElementsByTagAndClassName = function(tagName, className) {
   if ( tagName == null )

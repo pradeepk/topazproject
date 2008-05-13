@@ -24,9 +24,11 @@
  * This class builds the table of content navigation in the right-hand column. 
  **/
 dojo.provide("ambra.navigation");
+dojo.require("ambra.general");
 ambra.navigation = {
  buildTOC: function(tocObj){
    var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
+   if(!tocEl) return;
    
    var ul = document.createElement('ul');
    

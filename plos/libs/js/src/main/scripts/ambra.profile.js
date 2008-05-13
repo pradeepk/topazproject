@@ -8,7 +8,7 @@ dependencies = {
         "dijit.layout.ContentPane",
         "dijit.Dialog",
         "dojox.data.dom",
-        "ambra.topaz",
+        "ambra.general",
         "ambra.domUtil",
         "ambra.htmlUtil",
         "ambra.formUtil",

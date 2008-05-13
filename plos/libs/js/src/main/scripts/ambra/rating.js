@@ -27,6 +27,7 @@
   *
   **/
 dojo.provide("ambra.rating");
+dojo.require("ambra.general");
 dojo.require("ambra.domUtil");
 dojo.require("ambra.formUtil");
 ambra.rating = {
