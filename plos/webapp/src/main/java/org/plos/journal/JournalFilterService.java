@@ -220,12 +220,15 @@ public class JournalFilterService {
       dc.setAlias(normalize(dc.getAlias(), sf));
       put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
     }
+
+    /* disable for now 5/13/2008
     if (addSelf) {      // FIXME: use the addSelf below instead when queries are fixed
       // FIXME: note use of Journal v. Aggregation
       DetachedCriteria dc =
           new DetachedCriteria("Journal").add(new SubjectCriterion(a.getId().toString()));
       put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
     }
+    */
 
     Map<String, FilterDefinition> smartFilterDefs = combineFilterDefs(sfd, pfx + "-af-");
 
