@@ -128,8 +128,10 @@ public class EhcacheProvider implements Cache {
 
                 cache.put(e);
 
-                if (log.isDebugEnabled())
-                  log.debug("Populated entry with '" + key + "' in " + getName());
+                if (log.isDebugEnabled() && (val.getValue() == null))
+                  log.debug(getName() + ".populate-null(" + key + ")");
+                else if (log.isDebugEnabled())
+                  log.debug(getName() + ".populate(" + key + ")");
 
                 return val;
               }
@@ -221,12 +223,15 @@ public class EhcacheProvider implements Cache {
       cache.remove(key);
 
       if (log.isDebugEnabled())
-        log.debug("Removed '" + key + "' from " + getName());
+        log.debug(getName() + ".remove(" + key + ")");
     } else if (val instanceof Item) {
       cache.put(new Element(key, val));
 
-      if (log.isDebugEnabled())
-        log.debug("Added '" + key + "' to " + getName());
+
+      if (log.isDebugEnabled() && (((Item)val).getValue() == null))
+        log.debug(getName() + ".put-null(" + key + ")");
+      else if (log.isDebugEnabled())
+        log.debug(getName() + ".put(" + key + ")");
     } else
       throw new IllegalArgumentException("Expecting an 'Item' for " + key + " instead found " + val);
   }
