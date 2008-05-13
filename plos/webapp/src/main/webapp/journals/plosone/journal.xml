@@ -30,8 +30,8 @@
 
       <doiResolver>
         <mapping>
-          <url>>http://www.plosone.org:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
           <regex>10\.1371/journal\.pone\.\d{7}</regex>
+          <url>>http://www.plosone.org:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
         </mapping>
       </doiResolver>
 
@@ -553,6 +553,7 @@
           </css>
         </page>
       </resources>
+
       <struts>
         <package name="default-plosone" extends="default" namespace="/journals/plosone">
           <action name="home" class="org.plos.action.HomePageAction">
