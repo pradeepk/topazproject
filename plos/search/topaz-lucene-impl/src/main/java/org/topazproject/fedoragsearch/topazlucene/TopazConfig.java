@@ -74,7 +74,7 @@ class TopazConfig {
   // Log some errors if necessary
   static {
     if (FEDORAOBJ_PATH == null) // may still work fine as long as don't re-index all of fedora
-      log.info("topaz.search.fedoraobjpath - location of fedora foxml files not configured");
+      log.info("ambra.services.search.fedoraObjPath - location of fedora foxml files not configured");
 
     INDEX_PATH = getIndexPath(); // Get config if set or create temp location
     initializeIndex(); // If it doesn't exist, create it
@@ -90,7 +90,7 @@ class TopazConfig {
   private static String getIndexPath() {
     String indexPath = CONF.getString("ambra.services.search.indexPath", null);
     if (indexPath == null) {
-      log.error("topaz.search.indexpath - location of lucene index not configured");
+      log.error("ambra.services.search.indexPath - location of lucene index not configured");
       try {
         // Create a temporary directory to stash DB
         File dir = File.createTempFile("topazlucene", "_db");
