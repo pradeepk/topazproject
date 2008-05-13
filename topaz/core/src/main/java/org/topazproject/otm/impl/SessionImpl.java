@@ -76,6 +76,7 @@ public class SessionImpl extends AbstractSession {
   private final Map<Id, LazyLoadMethodHandler> proxies        = new HashMap<Id, LazyLoadMethodHandler>();
   private final Map<Id, Set<Wrapper>>          orphanTrack    = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
+  private boolean flushing                                    = false;
 
   private static final StateCache              states         = new StateCache() {
     public void insert(Object o, ClassMetadata cm, Session session) throws OtmException {
@@ -126,6 +127,18 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public void flush() throws OtmException {
+    try {
+      // prevent re-entrant flushing. (Occurs if interceptor attempts a query)
+      if (!flushing) {
+        flushing = true;
+        doFlush();
+      }
+    } finally {
+      flushing = false;
+    }
+  }
+
+  private void doFlush() throws OtmException {
     // auto-save objects that aren't explicitly saved
     for (Id id : new HashSet<Id>(cleanMap.keySet())) {
       Object o = cleanMap.get(id);
