@@ -125,8 +125,6 @@ function singleExpand(obj, targetId) {
    (obj.id, targetId);
   ambra.domUtil.swapDisplayMode(targetId);
   toggleExpand(obj); 
-  
-  return false;
 }
 */
 
@@ -146,8 +144,6 @@ function toggleAnnotation(obj, userType) {
   toggleExpand(obj, null, "Show notes", "Hide notes");
   
   _ldc.hide();
-  
-  return false;
 }
 
 function getAnnotationEl(annotationId) {
@@ -166,8 +162,6 @@ function getAnnotationEl(annotationId) {
     }
     
   }
-  
-  return false;
 }
 
 function jumpToAnnotation(annotationId) {
@@ -314,7 +308,6 @@ function getAnnotationCount() {
       docFragment = response;
       refreshArea1.innerHTML = docFragment;
       refreshArea2.innerHTML = docFragment;
-      return false;
     }
   });
 }
@@ -324,12 +317,8 @@ dojo.addOnLoad(function() {
   _ldc = dijit.byId("LoadingCycle");
   
   // build RHC table of contents
-  var tocObj = dojo.byId('sectionNavTop');
-  ambra.navigation.buildTOC(tocObj);
-  if (dojo.isSafari) {
-    var tocObj = dojo.byId('sectionNavTopFloat');
-    ambra.navigation.buildTOC(tocObj);
-  }
+  var tocObj = dojo.byId(dojo.isSafari ? 'sectionNavTopFloat' : 'sectionNavTop');
+  if(tocObj) ambra.navigation.buildTOC(tocObj);
   
   // ---------------------
   // rating dialog related
