@@ -20,6 +20,7 @@ package org.plos.user.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.plos.ApplicationException;
 import org.plos.user.PlosOneUser;
@@ -44,6 +45,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
    * @return webwork status
    * @throws Exception Exception
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String saveAlerts() throws Exception {
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
     if (log.isDebugEnabled()) {
@@ -81,6 +83,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
    * @return webwork status
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String retrieveAlerts() throws Exception {
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
     final Collection<String> monthlyAlertsList = new ArrayList<String>();

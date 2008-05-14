@@ -38,6 +38,7 @@ import org.plos.models.RatingSummaryContent;
 import org.plos.models.UserAccount;
 import org.plos.rating.service.RatingsPEP;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
@@ -79,6 +80,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    * @return WebWork action status
    */
   @Override
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     assert articleURI != null : "An article URI must be specified";
     getPEP().checkAccess(RatingsPEP.GET_RATINGS, URI.create(articleURI));

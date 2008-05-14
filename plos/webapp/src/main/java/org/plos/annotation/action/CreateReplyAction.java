@@ -21,6 +21,8 @@ package org.plos.annotation.action;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.plos.ApplicationException;
 import org.plos.util.ProfanityCheckingService;
 
@@ -41,6 +43,7 @@ public class CreateReplyAction extends AnnotationActionSupport {
 
   private static final Log log = LogFactory.getLog(CreateReplyAction.class);
 
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
     try {
       final List<String> profaneWordsInTitle = profanityCheckingService.validate(commentTitle);
@@ -56,6 +59,7 @@ public class CreateReplyAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not create reply to root: " + root + " and inReplyTo: " + inReplyTo, e);
       addActionError("Reply creation failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     addActionMessage("Reply created with id:" + replyId);

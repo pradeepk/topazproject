@@ -49,6 +49,8 @@ import org.plos.rating.service.RatingsService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Used for both annotation and reply services.
  * Provides the Create/Read/Delete annotation operations .
@@ -92,6 +94,7 @@ public class AnnotationService {
    * @throws org.plos.ApplicationException ApplicationException
    * @return unique identifier for the newly created annotation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createAnnotation(final String target, final String context,
                                  final String olderAnnotation, final String title,
                                  final String mimeType, final String body, final boolean isPublic)
@@ -133,6 +136,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return unique identifier for the newly created reply
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createReply(final String root, final String inReplyTo, final String title,
                             final String mimeType, final String body)
         throws ApplicationException {
@@ -156,6 +160,7 @@ public class AnnotationService {
    * @return unique identifier for the newly created flag
    * @throws org.plos.ApplicationException ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createFlag(final String target, final String reasonCode, final String body,
                            final String mimeType, final boolean isAnnotation)
         throws ApplicationException {
@@ -184,6 +189,7 @@ public class AnnotationService {
    * @return unique identifier for the newly created flag
    * @throws org.plos.ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createRatingFlag(final String target, final String reasonCode, final String body,
                                  final String mimeType)
         throws ApplicationException {
@@ -317,6 +323,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of annotations
    */
+  @Transactional(readOnly = true)
   public WebAnnotation[] listAnnotations(String target)  throws ApplicationException {
     return listAnnotations(target, null);
   }
@@ -328,6 +335,7 @@ public class AnnotationService {
    * @return
    * @throws ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebAnnotation[] listCorrections(String target) throws ApplicationException {
     return listAnnotations(target, CORRECTION_SET);
   }
@@ -339,6 +347,7 @@ public class AnnotationService {
    * @return
    * @throws ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebAnnotation[] listComments(String target) throws ApplicationException {
     return listAnnotations(target, COMMENT_SET);
   }
@@ -355,6 +364,7 @@ public class AnnotationService {
    * @param annotationClassTypes a set of Annotation class types to filter the results
    * @return a list of annotations
    */
+  @Transactional(readOnly = true)
   public WebAnnotation[] listAnnotations(String target,
                                          Set<Class<? extends ArticleAnnotation>> annotationTypeClasses)
         throws ApplicationException {
@@ -385,6 +395,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of undeleted flags
    */
+  @Transactional(readOnly = true)
   public Flag[] listFlags(final String target) throws ApplicationException {
     final WebAnnotation[] annotations = listAnnotations(target);
     final Collection<Flag> flagList = new ArrayList<Flag>(annotations.length);
@@ -408,6 +419,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of replies
    */
+  @Transactional(readOnly = true)
   public WebReply[] listReplies(final String root, final String inReplyTo)
         throws ApplicationException {
     try {
@@ -426,6 +438,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
+  @Transactional(readOnly = true)
   public WebReply[] listAllReplies(final String root, final String inReplyTo)
         throws ApplicationException {
     return listAllReplies(root, inReplyTo, null);
@@ -457,6 +470,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
+  @Transactional(readOnly = true)
   public WebReply[] listAllReplies(final String root, final String inReplyTo, final Commentary com)
                                 throws ApplicationException {
     try {
@@ -474,6 +488,7 @@ public class AnnotationService {
    * @throws ApplicationException ApplicationException
    * @return Annotation
    */
+  @Transactional(readOnly = true)
   public WebAnnotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
       final ArticleAnnotation annotation = articleAnnotationService.getAnnotation(annotationId);
@@ -490,6 +505,7 @@ public class AnnotationService {
    * @return the reply object
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebReply getReply(final String replyId) throws ApplicationException {
     try {
       final Reply reply = replyService.getReply(replyId);
@@ -542,6 +558,7 @@ public class AnnotationService {
    * @param annotationDoi annotationDoi
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setAnnotationPublic(final String annotationDoi) throws ApplicationException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
     try {
@@ -563,6 +580,7 @@ public class AnnotationService {
     }
   }
 
+  @Transactional(rollbackFor = { Throwable.class })
   public void setReplyPublic(final String id) throws ApplicationException {
     final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
     try {
@@ -598,6 +616,7 @@ public class AnnotationService {
    * @return
    * @throws Exception
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String convertArticleAnnotationToType(String targetId, Class newAnnotationClassType)
         throws Exception {
     String newAnnotationId = articleAnnotationService.
@@ -611,6 +630,7 @@ public class AnnotationService {
    * @param ann
    * @return
    */
+  @Transactional(readOnly = true)
   public static String getWebType(Annotea ann) {
     if (ann == null || ann.getType() == null){
       return null;

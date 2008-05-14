@@ -27,6 +27,7 @@ import java.util.SortedMap;
 
 import org.plos.article.service.BrowseService;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author stevec
@@ -40,6 +41,7 @@ public class HomePageAction extends BaseActionSupport {
    * This execute method always returns SUCCESS
    */
   @Override
+  @Transactional(readOnly = true)
   public String execute() {
     categoryInfos = browseService.getCategoryInfos();
 

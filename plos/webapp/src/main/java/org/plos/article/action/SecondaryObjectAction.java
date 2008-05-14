@@ -24,6 +24,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
@@ -42,6 +43,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(SecondaryObjectAction.class);
 
   @Override
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     try {
       secondaryObjects = articleOtmService.listSecondaryObjects(uri);
@@ -59,7 +61,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
    * @return webork status string
    * @throws Exception
    */
-
+  @Transactional(readOnly = true)
   public String listFiguresAndTables() throws Exception {
     try {
       secondaryObjects = articleOtmService.listFiguresTables(uri);

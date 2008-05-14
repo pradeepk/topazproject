@@ -45,6 +45,8 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
  * General Rating action class to store and retrieve a users's rating
@@ -92,6 +94,7 @@ public class RateAction extends BaseActionSupport {
    *
    * @return WebWork action status
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String rateArticle() {
     final PlosOneUser       user               = PlosOneUser.getCurrentUser();
     final Date              now                = new Date(System.currentTimeMillis());
@@ -102,6 +105,7 @@ public class RateAction extends BaseActionSupport {
       annotatedArticle = new URI(articleURI);
     } catch (URISyntaxException ue) {
       log.info("Could not construct article URI: " + articleURI, ue);
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
       return ERROR;
     }
@@ -109,6 +113,7 @@ public class RateAction extends BaseActionSupport {
     if (user == null) {
       log.info("User is null for rating articles");
       addActionError("Must be logged in");
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
       return ERROR;
     }
@@ -119,12 +124,14 @@ public class RateAction extends BaseActionSupport {
       // must rate at least one rating category
       if (insight == 0 && reliability == 0 && style == 0) {
         addActionError("At least one category must be rated");
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         return INPUT;
       }
     } else {
       // ensure the single rating specified
       if (singleRating == 0) {
         addActionError("A rating must be specified.");
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         return INPUT;
       }
     }
@@ -135,6 +142,7 @@ public class RateAction extends BaseActionSupport {
     if (profaneWordsInCommentTitle.size() != 0 || profaneWordsInComment.size() != 0) {
       addProfaneMessages(profaneWordsInCommentTitle, "commentTitle", "title");
       addProfaneMessages(profaneWordsInComment, "comment", "comment");
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return INPUT;
     }
 
@@ -267,6 +275,7 @@ public class RateAction extends BaseActionSupport {
    *
    * @return WebWork action status
    */
+  @Transactional(readOnly = true)
   public String retrieveRatingsForUser() {
     final PlosOneUser user = PlosOneUser.getCurrentUser();
 

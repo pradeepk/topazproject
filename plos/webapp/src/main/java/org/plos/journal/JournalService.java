@@ -32,7 +32,7 @@ import org.plos.cache.Cache;
 import org.plos.models.Journal;
 
 import org.springframework.beans.factory.annotation.Required;
-
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service manages journal definitions and associated info. All retrievals and modifications
@@ -53,28 +53,27 @@ public class JournalService {
   private static final Log    log = LogFactory.getLog(JournalService.class);
   private static final String RI_MODEL = "ri";
 
-  private final SessionFactory         sf;
-  private final Cache                  journalCache;          // key    -> Journal
-  private final Cache                  objectCarriers;        // obj-id -> Set<journal-key>
+  private SessionFactory         sf;
+  private Cache                  journalCache;          // key    -> Journal
+  private Cache                  objectCarriers;        // obj-id -> Set<journal-key>
 
-  private final JournalKeyService      journalKeyService;
-  private final JournalFilterService   journalFilterService;
-  private final JournalCarrierService  journalCarrierService;
+  private JournalKeyService      journalKeyService;
+  private JournalFilterService   journalFilterService;
+  private JournalCarrierService  journalCarrierService;
 
   private Session                session;
-  /**
-   * Create a new journal-service instance. One and only one of these should be created for evey
-   * session-factory instance, and this must be done before the first session instance is created.
-   *
-   * @param sf           the session-factory to use
-   * @param journalCache the cache to use for caching journal definitions
-   * @param objectCache  the cache to use for caching the list of journals that carry each object
-   */
-  public JournalService(SessionFactory sf, Cache journalCache, Cache objectCache) {
-    this.sf             = sf;
-    this.journalCache   = journalCache;
-    this.objectCarriers = objectCache;
 
+  /**
+   * Create a new journal-service instance. One and only one of these should be created for every
+   * session-factory instance, and this must be done before the first session instance is created.
+   */
+  public JournalService() {
+  }
+
+  /**
+   * Initialize this service. Must be called after all properties are set.
+   */
+  public void init() {
     journalKeyService = new JournalKeyService(journalCache, "KEY-");
     journalFilterService = new JournalFilterService(sf, journalCache, "FILTER-", journalKeyService);
     journalCarrierService = new JournalCarrierService(sf, objectCarriers, 
@@ -89,6 +88,7 @@ public class JournalService {
    * @return the list of filters (which may be empty), or null if no journal by the given name is
    *         known
    */
+  @Transactional(readOnly = true)
   public Set<String> getFilters(String jName) {
     return journalFilterService.getFilters(jName, session);
   }
@@ -99,10 +99,12 @@ public class JournalService {
    * @param jName  the journal's name
    * @return the journal, or null if no found
    */
+  @Transactional(readOnly = true)
   public Journal getJournal(String jName) {
     return journalKeyService.getJournal(jName, session);
   }
 
+  @Transactional(readOnly = true)
   public Journal getJournal() {
     return journalKeyService.getCurrentJournal(session);
   }
@@ -113,6 +115,7 @@ public class JournalService {
    * @return the journal, or null if none found.
    * @see #getJournal(String jName).
    */
+  @Transactional(readOnly = true)
   public Journal getCurrentJournal(Session session) {
     return journalKeyService.getCurrentJournal(session);
   }
@@ -122,14 +125,17 @@ public class JournalService {
    *
    * @return all the journals, or the empty set if there are none
    */
+  @Transactional(readOnly = true)
   public Set<Journal> getAllJournals() {
     return journalKeyService.getAllJournals(session);
   }
 
+  @Transactional(readOnly = true)
   public Set<String> getAllJournalKeys() {
     return journalKeyService.getAllJournalKeys(session);
   }
 
+  @Transactional(readOnly = true)
   public String getCurrentJournalKey() {
     return journalKeyService.getCurrentJournalKey();
   }
@@ -142,8 +148,39 @@ public class JournalService {
    * @return the list of journals which carry this object; will be empty if this object
    *         doesn't belong to any journal
    */
+  @Transactional(readOnly = true)
   public Set<Journal> getJournalsForObject(URI oid) {
     return journalCarrierService.getJournalsForObject(oid, session);
+  }
+
+  /**
+   * Set the OTM session-facctory. Called by spring's bean wiring.
+   *
+   * @param sf the otm session-facctory
+   */
+  @Required
+  public void setOtmSessionFactory(SessionFactory sf) {
+    this.sf = sf;
+  }
+
+  /**
+   * Set the journal cache. Called by spring's bean wiring.
+   *
+   * @param journalCache the journal cache
+   */
+  @Required
+  public void setJournalCache(Cache journalCache) {
+    this.journalCache = journalCache;
+  }
+
+  /**
+   * Set the carrier cache. Called by spring's bean wiring.
+   *
+   * @param objectCache the carrier cache
+   */
+  @Required
+  public void setCarrierCache(Cache objectCache) {
+    this.objectCarriers = objectCache;
   }
 
   /**

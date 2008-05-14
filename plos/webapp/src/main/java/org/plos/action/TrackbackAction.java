@@ -42,6 +42,7 @@ import org.plos.models.TrackbackContent;
 import org.plos.web.VirtualJournalContext;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Order;
@@ -80,6 +81,7 @@ public class TrackbackAction extends BaseActionSupport {
    * Main action execution.
    *
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
 
     if (!ServletActionContext.getRequest().getMethod().equals("POST")) {
@@ -174,6 +176,7 @@ public class TrackbackAction extends BaseActionSupport {
    *
    * @return status
    */
+  @Transactional(readOnly = true)
   public String getTrackbackCount() {
     if (trackbackId == null)
       trackbackId = articleURI;
@@ -188,6 +191,7 @@ public class TrackbackAction extends BaseActionSupport {
    * @return status
    * @throws Exception
    */
+  @Transactional(readOnly = true)
   public String getTrackbacksForArticle() throws Exception {
     if (trackbackId == null)
       trackbackId = articleURI;
@@ -202,6 +206,7 @@ public class TrackbackAction extends BaseActionSupport {
    * @return status
    * @throws Exception
    */
+  @Transactional(readOnly = true)
   public String getTrackbacks() {
     return getTrackbacks(true);
   }

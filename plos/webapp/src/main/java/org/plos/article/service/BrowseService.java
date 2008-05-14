@@ -38,6 +38,10 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
 import org.plos.journal.JournalService;
@@ -52,7 +56,7 @@ import org.plos.models.Journal;
 import org.plos.models.Volume;
 import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
-import org.springframework.beans.factory.annotation.Required;
+
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
@@ -105,6 +109,7 @@ public class BrowseService {
    *
    * @return the article dates.
    */
+  @Transactional(readOnly = true)
   public Years getArticleDates() {
     return getArticleDates(true, getCurrentJournal());
   }
@@ -137,6 +142,7 @@ public class BrowseService {
    * @param numArt   (output) the total number of articles in the given category
    * @return the articles.
    */
+  @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByCategory(final String catName, int pageNum, int pageSize,
                                                  int[] numArt) {
     List<URI> uris = ((SortedMap<String, List<URI>>)
@@ -167,6 +173,7 @@ public class BrowseService {
    * @param numArt    (output) the total number of articles in the given category
    * @return the articles.
    */
+  @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByDate(final Calendar startDate, final Calendar endDate,
                                              int pageNum, int pageSize, int[] numArt) {
     String jnlName = getCurrentJournal();
@@ -209,6 +216,7 @@ public class BrowseService {
    *
    * @return the category infos.
    */
+  @Transactional(readOnly = true)
   public SortedMap<String, Integer> getCategoryInfos() {
     return (SortedMap<String, Integer>) getCatInfo(CAT_INFO_KEY, "category infos", true);
   }
@@ -220,6 +228,7 @@ public class BrowseService {
    *          DOI of Issue.
    * @return the Issue information.
    */
+  @Transactional(readOnly = true)
   public IssueInfo getIssueInfo(final URI doi) {
     return browseCache.get(ISSUE_KEY + doi, -1,
         new Cache.SynchronizedLookup<IssueInfo, RuntimeException>((ISSUE_LOCK + doi).intern()) {
@@ -294,6 +303,7 @@ public class BrowseService {
    * @param issueDOI
    * @return
    */
+  @Transactional(readOnly = true)
   public List<ArticleInfo> getArticleInfosForIssue(final URI issueDOI) {
 
     IssueInfo iInfo = getIssueInfo(issueDOI);
@@ -316,6 +326,7 @@ public class BrowseService {
    * @param id
    * @return
    */
+  @Transactional(readOnly = true)
   public VolumeInfo getVolumeInfo(URI id) {
     // Attempt to get the volume infos from the cached journal list...
     List<VolumeInfo> volumes = getVolumeInfosForJournal(journalService.getCurrentJournal(session));
@@ -343,6 +354,7 @@ public class BrowseService {
    * @param journal To find VolumeInfos for.
    * @return VolumeInfos for journal in reverse order.
    */
+  @Transactional(readOnly = true)
   public List<VolumeInfo> getVolumeInfosForJournal(final Journal journal) {
 
     String key = (VOL_INFOS_FOR_JOURNAL_KEY + (journal.getKey())).intern();
@@ -364,6 +376,7 @@ public class BrowseService {
    * @param volumeDois to look up.
    * @return volumeInfos.
    */
+  @Transactional(readOnly = true)
   public List<VolumeInfo> loadVolumeInfos(final List<URI> volumeDois) {
     // XXX look up VolumeInfos in Cache
 
@@ -726,6 +739,7 @@ public class BrowseService {
     return res;
   }
 
+  @Transactional(readOnly = true)
   public ArticleInfo getArticleInfo(final URI id) {
     try {
       pep.checkAccess(ArticlePEP.READ_META_DATA, id);

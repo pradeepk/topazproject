@@ -54,6 +54,7 @@ import org.plos.models.UserProfile;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.FileUtils;
 import org.plos.web.VirtualJournalContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.feed.atom.Content;
@@ -106,6 +107,7 @@ public class ArticleFeed extends BaseActionSupport {
    * @return webwork status code
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
 
     // Create a document builder factory and set the defaults

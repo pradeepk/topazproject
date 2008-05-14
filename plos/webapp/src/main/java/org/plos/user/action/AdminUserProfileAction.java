@@ -18,6 +18,8 @@
  */
 package org.plos.user.action;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.ApplicationException;
 import org.plos.user.PlosOneUser;
 
@@ -45,6 +47,7 @@ public class AdminUserProfileAction extends UserProfileAction {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public String executeRetrieveUserProfile() throws Exception {
     final String status = super.executeRetrieveUserProfile();
     if (userIsHalfCreated) {

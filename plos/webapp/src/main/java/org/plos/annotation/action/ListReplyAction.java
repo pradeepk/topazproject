@@ -37,6 +37,7 @@ import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.CitationUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -79,6 +80,7 @@ public class ListReplyAction extends AnnotationActionSupport {
    * @return webwork status for the call
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String listAllReplies() throws Exception {
     try {
       // Allow a single 'root' param to be accepted. If 'inReplyTo' is null or

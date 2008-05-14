@@ -21,10 +21,12 @@ package org.plos.admin.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class AdminTopAction extends BaseAdminActionSupport {
+import org.springframework.transaction.annotation.Transactional;
 
+public class AdminTopAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(AdminTopAction.class);
 
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     return base();
   }

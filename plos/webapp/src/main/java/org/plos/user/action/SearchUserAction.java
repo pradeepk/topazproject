@@ -18,6 +18,8 @@
  */
 package org.plos.user.action;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -37,6 +39,7 @@ public class SearchUserAction extends UserActionSupport {
    * @return webwork status
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String executeFindUserByAuthId() throws Exception {
     try {
       if (log.isDebugEnabled()) {
@@ -60,6 +63,7 @@ public class SearchUserAction extends UserActionSupport {
    * @return webwork status
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String executeFindUserByEmailAddress() throws Exception {
     try {
       if (log.isDebugEnabled()) {

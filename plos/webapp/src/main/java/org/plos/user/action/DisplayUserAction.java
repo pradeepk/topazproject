@@ -23,6 +23,8 @@ package org.plos.user.action;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
 
@@ -48,6 +50,7 @@ public class DisplayUserAction extends UserActionSupport {
    * 
    * @return webwork status string
    */
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("retrieving user profile for: " + userId);
@@ -62,6 +65,7 @@ public class DisplayUserAction extends UserActionSupport {
    * @return webwork status string
    * @throws Exception Exception when it fails
    */
+  @Transactional(readOnly = true)
   public String fetchUserProfileWithPrivateVisibility() throws Exception {
     final Collection<UserProfileGrant> privateGrants = getUserService().getProfileFieldsThatArePrivate(userId);
 

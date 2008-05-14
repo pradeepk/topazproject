@@ -37,6 +37,7 @@ import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.CitationUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
@@ -72,6 +73,7 @@ public class CreateCitation extends BaseActionSupport {
    * will create a CitationInfo object.
    */
   @Override
+  @Transactional(readOnly = true)
   public String execute () throws Exception {
 
     // lock @ Article level

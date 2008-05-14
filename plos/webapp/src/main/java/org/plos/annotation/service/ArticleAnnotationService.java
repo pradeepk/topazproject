@@ -52,6 +52,7 @@ import org.plos.user.PlosOneUser;
 import org.plos.util.CacheAdminHelper;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
@@ -109,6 +110,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws Exception on an error in create
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createFlagAnnotation(final String mimeType, final String target, final String body,
       String reasonCode) throws Exception {
     // TODO - eventually this should create a different type of annotation and not call this ...
@@ -129,6 +131,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws Exception on an error
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createAnnotation(final String mimeType, final String target, final String context,
       final String olderAnnotation, final String title, final String body) throws Exception {
     pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, URI.create(target));
@@ -208,6 +211,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws Exception on an error
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createArticleAnnotation(Class<ArticleAnnotation> annotationClass,
       final String mimeType, final String target, final String context, final String olderAnnotation,
       final String title, final String body) throws Exception {
@@ -280,6 +284,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void unflagAnnotation(final String annotationId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
@@ -296,6 +301,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
     throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
@@ -310,6 +316,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deletePublicAnnotation(final String annotationId)
     throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
@@ -324,6 +331,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deleteFlag(final String flagId) throws OtmException, SecurityException {
     pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(flagId));
     deleteAnnotation(flagId);
@@ -452,6 +460,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws OtmException on an error
    */
+  @Transactional(readOnly = true)
   public ArticleAnnotation[] listAnnotations(final String target) throws OtmException {
     return listAnnotations(target, null);
   }
@@ -470,6 +479,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(readOnly = true)
   public ArticleAnnotation[] listAnnotations(final String target,
       Set<Class<?extends ArticleAnnotation>> annotationClassTypes)
     throws OtmException, SecurityException {
@@ -503,6 +513,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(readOnly = true)
   public ArticleAnnotation getAnnotation(final String annotationId)
     throws OtmException, SecurityException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
@@ -522,6 +533,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setPublic(final String annotationDoi) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
 
@@ -537,6 +549,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setFlagged(final String annotationId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
@@ -556,6 +569,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws OtmException if some error occurred
    */
+  @Transactional(readOnly = true)
   public ArticleAnnotation[] listAnnotations(final String mediator, final int state)
                                    throws OtmException {
     pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
@@ -581,6 +595,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    *
    * @throws Exception on an error
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String convertArticleAnnotationToType(final String srcAnnotationId,
       final Class newAnnotationClassType) throws Exception {
     ArticleAnnotation srcAnnotation = session.get(ArticleAnnotation.class, srcAnnotationId);

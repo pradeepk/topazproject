@@ -23,6 +23,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.plos.ApplicationException;
 import org.plos.annotation.Context;
 import org.plos.annotation.ContextFormatter;
@@ -56,6 +59,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * Also does some profanity check for commentTitle and comment before creating the annotation.
    */
   @Override
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
     return createAnnotation();
   }
@@ -65,6 +69,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * @return webwork status
    * @throws Exception Exception
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String executeSaveDiscussion() throws Exception {
     return createAnnotation();
   }
@@ -94,6 +99,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not create annotation", e);
       addActionError("Annotation creation failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     addActionMessage("Annotation created with id:" + annotationId);

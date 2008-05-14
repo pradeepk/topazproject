@@ -21,6 +21,7 @@ package org.plos.admin.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.plos.action.BaseActionSupport;
 import org.plos.models.Rating;
@@ -35,6 +36,7 @@ public class ViewRatingAction extends BaseActionSupport {
   private RatingsService ratingsService;
 
 
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
 
     rating = getRatingsService().getRating(ratingId);

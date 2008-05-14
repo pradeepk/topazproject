@@ -21,12 +21,15 @@ package org.plos.admin.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class DeleteArticleAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(DeleteArticleAction.class);
   private String article;
 
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
     try {
       getDocumentManagementService().delete(article);

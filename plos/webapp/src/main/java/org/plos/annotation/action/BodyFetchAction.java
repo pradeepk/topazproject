@@ -19,8 +19,11 @@
 package org.plos.annotation.action;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.ApplicationException;
 import org.plos.util.TextUtils;
 
@@ -34,6 +37,7 @@ public class BodyFetchAction extends AnnotationActionSupport {
 
   private static final Log log = LogFactory.getLog(BodyFetchAction.class);
 
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     try {
       final String bodyContent = getAnnotationService().getBody(bodyURL);

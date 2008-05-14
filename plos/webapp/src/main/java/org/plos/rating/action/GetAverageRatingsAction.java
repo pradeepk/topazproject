@@ -33,6 +33,7 @@ import org.plos.models.RatingSummary;
 import org.plos.rating.service.RatingsPEP;
 import org.plos.user.PlosOneUser;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
@@ -84,6 +85,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    * @return WebWork action status
    */
   @Override
+  @Transactional(readOnly = true)
   public String execute() {
     final PlosOneUser   user               = PlosOneUser.getCurrentUser();
 

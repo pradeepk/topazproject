@@ -23,14 +23,16 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
 import org.plos.cache.Cache;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
+
 import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.spring.OtmTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service to provide search capabilities for the application
@@ -45,7 +47,6 @@ public class SearchService {
 
   private SearchWebService           searchWebService;
   private FetchArticleService        fetchArticleService;
-  private OtmTransactionManager      txManager;
 
   /**
    * Find the results for a given query.
@@ -56,6 +57,7 @@ public class SearchService {
    * @return A SearchResultPage representing the search results page to be rendered
    * @throws ApplicationException that wraps some underlying exception
    */
+  @Transactional(readOnly = true)
   public SearchResultPage find(final String query, final int startPage, final int pageSize)
       throws ApplicationException {
     try {
@@ -78,7 +80,7 @@ public class SearchService {
       }
 
       try {
-        return results.getPage(startPage, pageSize, txManager);
+        return results.getPage(startPage, pageSize);
       } finally {
         results.getLock().unlock();
       }
@@ -102,11 +104,6 @@ public class SearchService {
    */
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
     this.fetchArticleService = fetchArticleService;
-  }
-
-  @Required
-  public void setTxManager(OtmTransactionManager txManager) {
-    this.txManager = txManager;
   }
 
   @Required

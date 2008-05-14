@@ -37,6 +37,7 @@ import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.otm.Session;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -72,6 +73,7 @@ public class FetchArticleAction extends BaseActionSupport {
 
 
   @Override
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
@@ -126,6 +128,7 @@ public class FetchArticleAction extends BaseActionSupport {
    * 
    * @return Annotated Article XML String
    */
+  @Transactional(readOnly = true)
   public String displayAnnotatedArticle() {
     try {
       setTransformedArticle(fetchArticleService.getAnnotatedContent(articleURI));

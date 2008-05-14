@@ -29,6 +29,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * A kind of utility class to convert types between topaz and plosone types fro Annotations and Replies
  */
@@ -40,6 +42,7 @@ public class AnnotationConverter {
    * @return an array of Annotation objects as required by the web layer
    * @throws org.plos.ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebAnnotation[] convert(final ArticleAnnotation[] annotations) throws ApplicationException {
     final WebAnnotation wa[]  = new WebAnnotation[annotations.length];
 
@@ -54,6 +57,7 @@ public class AnnotationConverter {
    * @return the Annotation
    * @throws ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebAnnotation convert(final ArticleAnnotation annotation) throws ApplicationException {
     return new WebAnnotation(annotation, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
@@ -74,6 +78,7 @@ public class AnnotationConverter {
    * @return an array of Reply objects as required by the web layer
    * @throws org.plos.ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebReply[] convert(final Reply[] replies) throws ApplicationException {
     return convert (replies, null);
   }
@@ -87,6 +92,7 @@ public class AnnotationConverter {
    * @return the hierarchical replies
    * @throws ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebReply[] convert(final Reply[] replies, Commentary com) throws ApplicationException {
     final List<WebReply> plosoneReplies = new ArrayList<WebReply>();
     final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
@@ -141,6 +147,7 @@ public class AnnotationConverter {
    * @return the reply for the web layer
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public WebReply convert(final Reply reply) throws ApplicationException {
 
     return new WebReply(reply, userService) {

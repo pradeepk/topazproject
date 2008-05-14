@@ -66,6 +66,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -243,6 +244,7 @@ public class DocumentManagementService {
    * @throws TransformerException
    * @throws ServiceException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(File file, boolean force)
       throws IngestException, DuplicateArticleIdException, IOException, TransformerException,
              SAXException, ServiceException {
@@ -332,6 +334,7 @@ public class DocumentManagementService {
    * @param vjMap a map giving the set of virtual-journals each article is to be published in
    * @return a list of messages describing what was successful and what failed
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public List<String> publish(String[] uris, Map<String, Set<String>> vjMap) {
     final List<String> msgs             = new ArrayList<String>();
 

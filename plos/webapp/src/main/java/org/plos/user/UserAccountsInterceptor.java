@@ -29,14 +29,14 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
-import org.plos.models.UserAccount;
+
 import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.query.Results;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+
+import org.plos.models.UserAccount;
+import org.plos.user.service.UserService;
 
 /**
  * A webwork interceptor that maps the authenticated user id to an internal plos-user-id. The plos
@@ -66,8 +66,8 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
    */
   public static String AUTH_KEY = "org.topazproject.auth-id";
 
-  private Session session;
-  private boolean wrap = false;
+  private UserService userService;
+  private boolean     wrap = false;
 
   /**
    * Internal key used for detecting whether or not this interceptor 
@@ -146,7 +146,9 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
       return user;
     }
 
-    UserAccount ua = lookupUser(authId);
+    session.setAttribute(USER_KEY, "anonymous:user/");  // so policies let us get the account
+    session.setAttribute(STATE_KEY, 0);                 // so policies let us get the account
+    UserAccount ua = (authId != null) ? userService.getUserAccountByAuthId(authId) : null;
 
     if (ua != null)
       user = ua.getId().toString();
@@ -185,38 +187,13 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
   }
 
   /**
-   * Looks up a plos user.
+   * Set the userService
    *
-   * @param authId the authenticated-id
-   * @return the user-account, or null if either <var>authId</var> is null or the user
-   *         can't be found (happens for newly created accounts)
-   * @throws OtmException if the lookup fails
-   */
-  protected UserAccount lookupUser(final String authId) throws OtmException {
-    if (authId == null)
-      return null;
-
-    Results r = session.
-        createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
-        setParameter("id", authId).execute();
-
-    if (!r.next()) {
-      if (log.isDebugEnabled())
-        log.debug("Failed to look up plos-user with auth-id '" + authId + "'");
-      return null;
-    }
-
-    return (UserAccount) r.get(0);
-  }
-
-  /** 
-   * Set the OTM session. Called by spring's bean wiring. 
-   * 
-   * @param session the otm session
+   * @param userService userService
    */
   @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
+  public void setUserService(final UserService userService) {
+    this.userService = userService;
   }
 
   /**

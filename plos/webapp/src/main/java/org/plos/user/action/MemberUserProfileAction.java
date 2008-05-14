@@ -18,6 +18,8 @@
  */
 package org.plos.user.action;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.user.PlosOneUser;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.Constants;
@@ -35,6 +37,7 @@ public class MemberUserProfileAction extends UserProfileAction {
    * @throws Exception
    */
   @Override
+  @Transactional(rollbackFor = { Throwable.class })
   public String executeSaveUser() throws Exception {
     final String statusCode = super.executeSaveUser();
 

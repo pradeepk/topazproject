@@ -37,6 +37,8 @@ import org.plos.models.RatingSummaryContent;
 import org.plos.user.PlosOneUser;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
@@ -69,6 +71,7 @@ public class RatingsService {
    *                      whether it is new or to be updated.
    * @throws ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void saveOrUpdateRating(final PlosOneUser user,
                                  final String articleURIStr,
                                  final Rating values) throws ApplicationException {
@@ -204,6 +207,7 @@ public class RatingsService {
    * @param ratingId the identifier of the Rating object to be unflagged
    * @throws ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void unflagRating(final String ratingId)
                   throws ApplicationException {
     setPublic(ratingId);
@@ -215,6 +219,7 @@ public class RatingsService {
    * @param ratingId the identifier of the Rating object to be deleted
    * @throws ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deleteRating(final String ratingId)
                          throws ApplicationException {
     pep.checkAccess(RatingsPEP.DELETE_RATINGS, URI.create(ratingId));
@@ -268,6 +273,7 @@ public class RatingsService {
    * @param ratingId the id of the Rating
    * @throws ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setPublic(final String ratingId) throws ApplicationException {
     Rating r = session.get(Rating.class,ratingId);
     r.setState(PUBLIC_MASK);
@@ -279,6 +285,7 @@ public class RatingsService {
    * @param ratingId the id of rating object
    * @throws ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setFlagged(final String ratingId) throws ApplicationException {
     Rating r = session.get(Rating.class,ratingId);
     r.setState(PUBLIC_MASK | FLAG_MASK);
@@ -291,6 +298,7 @@ public class RatingsService {
    *
    * @return Rating
    */
+  @Transactional(readOnly = true)
   public Rating getRating(final String ratingId) {
     Rating rating = session.get(Rating.class, ratingId);
 
@@ -312,6 +320,7 @@ public class RatingsService {
    * @return an array of rating metadata; if no matching annotations are found, an empty array
    *         is returned
    */
+  @Transactional(readOnly = true)
   public Rating[] listRatings(final String mediator,final int state) {
     Criteria c = session.createCriteria(Rating.class);
 

@@ -32,6 +32,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
@@ -89,6 +91,7 @@ public class SearchAction extends BaseActionSupport {
   /**
    * @return return simple search result
    */
+  @Transactional(readOnly = true)
   public String executeSimpleSearch() {
     String rval = executeSearch(query);
     // the simple search text field correlates to advanced search's "for all the words" field
@@ -99,6 +102,7 @@ public class SearchAction extends BaseActionSupport {
   /**
    * @return return simple search result
    */
+  @Transactional(readOnly = true)
   public String executeAdvancedSearch() {
     if(doSearch()) {
       query = buildAdvancedQuery();

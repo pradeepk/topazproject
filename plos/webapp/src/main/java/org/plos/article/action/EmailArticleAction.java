@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
@@ -59,6 +60,7 @@ public class EmailArticleAction extends UserActionSupport {
    * @return webwork status
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String executeRender() throws Exception {
     final PlosOneUser plosOneUser = PlosOneUser.getCurrentUser();
     if (null != plosOneUser) {
@@ -74,6 +76,7 @@ public class EmailArticleAction extends UserActionSupport {
    * @return webwork status
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String executeSend() throws Exception {
     if (!validates()) return INPUT;
     setArticleTitleAndDesc(articleURI);

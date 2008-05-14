@@ -24,6 +24,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.plos.ApplicationException;
 import static org.plos.Constants.Length;
 import static org.plos.Constants.ReturnCode.NEW_PROFILE;
@@ -153,6 +156,7 @@ public abstract class UserProfileAction extends UserActionSupport {
    * 
    * @return status code for webwork
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String executeSaveUser() throws Exception {
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
     //if new user then capture the displayname or if display name is blank (when user has been migrated)
@@ -166,6 +170,7 @@ public abstract class UserProfileAction extends UserActionSupport {
       if (log.isDebugEnabled()) {
         log.debug("Topaz ID: " + topazId + " with authID: " + authId + " did not validate");
       }
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return INPUT;
     }
 
@@ -199,6 +204,7 @@ public abstract class UserProfileAction extends UserActionSupport {
       newUser.setDisplayName(StringUtils.EMPTY);  //Empty out the display name from the newUser object
       isDisplayNameSet = false;
       addErrorForField(DISPLAY_NAME, "is already in use. Please select a different username");
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return INPUT;
     }
 
@@ -222,6 +228,7 @@ public abstract class UserProfileAction extends UserActionSupport {
     return TextUtils.makeValidUrl(newUrl);
   }
 
+  @Transactional(readOnly = true)
   public String executeRetrieveUserProfile() throws Exception {
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
     assignUserFields (plosOneUser);
@@ -260,6 +267,7 @@ public abstract class UserProfileAction extends UserActionSupport {
    * @return return code for webwork
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String prePopulateUserDetails() throws Exception {
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
 

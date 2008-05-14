@@ -22,8 +22,6 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
-import org.topazproject.otm.spring.OtmTransactionManager;
-
 import java.security.Guard;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -48,9 +46,6 @@ import org.plos.search.SearchUtil;
 import org.plos.xacml.AbstractSimplePEP;
 import org.plos.xacml.XacmlUtil;
 
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.support.DefaultTransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 /**
  * Store the progress of a search. That is, when a search is done, we get the first N results
  * and don't get more until more are requested.
@@ -61,14 +56,13 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 public class Results {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log           log  = LogFactory.getLog(Results.class);
-  private static final DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
+
   private SearchPEP                  pep;
   private SearchWebService           service;
   private FetchArticleService        fetchArticleService;
   private CachingIterator            cache;
   private String                     query;
   private int                        totalHits = 0;
-  private OtmTransactionManager      txManager;
   private Lock                       lock = new ReentrantLock();
 
   /**
@@ -95,14 +89,12 @@ public class Results {
    *
    * @param startPage the page number to return (starts with 0)
    * @param pageSize  the number of entries to return
-   * @param txManager  the current otm transaction manager
    * @return The results for one page of a search.
    * @throws UndeclaredThrowableException if there was a problem retrieving the search results.
    *         It likely wraps a RemoteException (talking to the search webapp) or an IOException
    *         parsing the results.
    */
-  public SearchResultPage getPage(int startPage, int pageSize, OtmTransactionManager txManager) {
-    this.txManager = txManager;
+  public SearchResultPage getPage(int startPage, int pageSize) {
     ArrayList<SearchHit> hits = new ArrayList<SearchHit>(pageSize);
     int                  cnt  = 0; // Actual number of hits retrieved
 
@@ -122,17 +114,6 @@ public class Results {
     return new SearchResultPage(totalHits, pageSize, hits);
   }
 
-  /**
-   * @param txManager  the current otm transaction manager
-   * @return The total number of records lucene thinks we have. This may be inaccurate if
-   *         XACML filters any out.
-   */
-  public int getTotalHits(OtmTransactionManager txManager) {
-    this.txManager = txManager;
-    cache.hasNext(); // Read at least one record to populate totalHits instance variable
-    return totalHits;
-  }
-
   public Lock getLock() {
     return lock;
   }
@@ -149,10 +130,6 @@ public class Results {
 
     public boolean hasNext() {
       if (!iter.hasNext()) {
-        // Tx hack alert!!! Need disable tx during search because search can take a while...
-        txManager.doCommit(
-            (DefaultTransactionStatus) TransactionAspectSupport.currentTransactionStatus());
-
         try {
           String xml = service.find(query, position,
                                     CONF.getInt("ambra.services.search.fetchSize", 10),
@@ -175,8 +152,6 @@ public class Results {
         } catch (Exception e) {
           // It is possible we could throw a RemoteException or IOException
           throw new UndeclaredThrowableException(e, "Error talking to search service");
-        } finally {
-          txManager.doBegin(txManager.doGetTransaction(), txnDef);
         }
       }
 

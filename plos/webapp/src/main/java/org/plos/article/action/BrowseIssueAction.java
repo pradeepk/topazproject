@@ -36,6 +36,7 @@ import org.plos.model.article.ArticleType;
 import org.plos.models.Journal;
 import org.plos.util.ArticleXMLUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.otm.Session;
 
 /**
@@ -61,6 +62,7 @@ public class BrowseIssueAction extends BaseActionSupport{
   private VolumeInfo volumeInfo;
 
   @Override
+  @Transactional(readOnly = true)
   public String execute() {
 
     // was issued specified, or use Journal.currentIssue?

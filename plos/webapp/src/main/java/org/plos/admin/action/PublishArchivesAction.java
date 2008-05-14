@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import org.plos.ApplicationException;
 
 import org.apache.commons.logging.Log;
@@ -42,6 +45,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
    * Deletes and publishes checked articles from the admin console.  Note that delete has priority
    * over publish.
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws RemoteException, ApplicationException {
     try {
       deleteArticles();
@@ -49,7 +53,8 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
     } catch (Exception e) {
       addActionError("Exception: " + e);
       log.error(e);
-      // continue processing
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+      return ERROR;
     }
 
     return base();
@@ -58,7 +63,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
   /**
    * Publishes articles from the admin console.
    */
-  public void publishArticles() {
+  private void publishArticles() {
     if (articlesToPublish == null)
       return;
 
@@ -82,7 +87,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
   /**
    * Deletes the checked articles from the admin console.
    */
-  public void deleteArticles() {
+  private void deleteArticles() {
     if (articlesToDelete == null)
       return;
 

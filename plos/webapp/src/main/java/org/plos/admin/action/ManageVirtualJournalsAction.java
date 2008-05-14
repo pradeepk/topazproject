@@ -30,6 +30,7 @@ import org.plos.journal.JournalService;
 import org.plos.models.Journal;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.otm.Session;
 
@@ -54,6 +55,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    * Manage Journals.  Display Journals and processes all add/deletes.
    */
   @Override
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception  {
     if (log.isDebugEnabled()) {
       log.debug("journalToModify: " + journalToModify + ", articlesToAdd: " + articlesToAdd

@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.ApplicationException;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.models.FormalCorrection;
@@ -39,7 +41,7 @@ public class ListAnnotationAction extends AnnotationActionSupport {
   private WebAnnotation[] formalCorrections;
 
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
-  
+
   /**
    * Loads all annotations for a given target.
    * @return status
@@ -61,13 +63,15 @@ public class ListAnnotationAction extends AnnotationActionSupport {
    * @throws Exception
    */
   @Override
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     return loadAnnotations();
   }
-  
+
   /**
    * @return Only those annotations that represent formal corrections.
    */
+  @Transactional(readOnly = true)
   public String fetchFormalCorrections() {
     if(!SUCCESS.equals(loadAnnotations())) {
       formalCorrections = null;

@@ -185,6 +185,10 @@
     <property name="profaneWords" ref="profaneWords"/>
   </bean>
 
+  <bean id="browseService" class="org.plos.article.service.BrowseService">
+    <property name="browseCache" ref="browseCache"/>
+  </bean>
+
   <!-- Add all your constants to the map with a key and a value/ref -->
   <util:map id="otherConstants" map-class="java.util.HashMap">
     <entry key="countries" value-ref="countries"/>
@@ -197,17 +201,7 @@
 
   <bean id="searchWebService" class="org.plos.search.service.SearchWebService"/>
 
-  <bean id="journalService" class="org.plos.journal.JournalService">
-    <constructor-arg index="0">
-      <ref bean="otmSessionFactory"/>
-    </constructor-arg>
-    <constructor-arg index="1">
-      <ref bean="journalCache"/>
-    </constructor-arg>
-    <constructor-arg index="2">
-      <ref bean="carrierCache"/>
-    </constructor-arg>
-  </bean>
+  <bean id="journalService" class="org.plos.journal.JournalService" init-method="init"/>
 
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore">
@@ -388,33 +382,10 @@
   <!-- Set up Transaction-Manager stuff -->
   <bean id="txManager" class="org.topazproject.otm.spring.OtmTransactionManager">
     <property name="otmSession" ref="otmSession"/>
+    <property name="defaultTimeout" value="600"/>
   </bean>
 
-  <tx:annotation-driven transaction-manager="txManager"/>
-
-  <bean id="browseService" class="org.plos.article.service.BrowseService">
-    <property name="browseCache" ref="browseCache"/>
-  </bean>
-
-  <tx:advice id="txAdvice" transaction-manager="txManager">
-    <tx:attributes>
-      <tx:method name="get*" read-only="true"/>
-      <tx:method name="*" rollback-for="Throwable" timeout="600"/>
-    </tx:attributes>
-  </tx:advice>
-  
-  <aop:config proxy-target-class="true">
-    <!-- all (potential) action methods, all getters (for lazy loading), and user-lookup -->
-    <aop:pointcut id="needTx" expression="
-      (execution(public String org.plos..*Action.*()) &amp;&amp;
-       !execution(public String org.plos.admin.action.IngestArchivesAction.execute())) ||
-      execution(public * org.plos.admin.service.DocumentManagementService.ingest(..)) ||
-      execution(public * org.plos..*Action.get*()) ||
-      execution(public * org.plos.journal.SessionFiltersInterceptor.intercept(..)) ||
-      execution(public * org.plos.user.UserAccountsInterceptor.intercept(..))
-      "/>
-    <aop:advisor advice-ref="txAdvice" pointcut-ref="needTx"/>
-  </aop:config>
+  <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
   <!-- cache manager configs -->
   <bean id="txCacheManagerFactory" class="org.plos.cache.CacheManagerFactory">

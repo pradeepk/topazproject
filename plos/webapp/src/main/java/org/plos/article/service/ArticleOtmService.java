@@ -55,6 +55,7 @@ import org.plos.models.UserProfile;
 import org.plos.permission.service.PermissionsService;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
@@ -91,6 +92,7 @@ public class ArticleOtmService {
    * @throws IngestException IngestException
    * @throws DuplicateIdException DuplicateIdException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(DataSource article, boolean force)
           throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException,
                  IOException {
@@ -111,6 +113,7 @@ public class ArticleOtmService {
    * @return the contents
    * @throws NoSuchObjectIdException if the object cannot be found
    */
+  @Transactional(readOnly = true)
   public DataSource getContent(String obj, String rep) throws NoSuchObjectIdException {
     pep.checkAccess(ArticlePEP.GET_OBJECT_CONTENT, URI.create(obj));
 
@@ -132,6 +135,7 @@ public class ArticleOtmService {
    * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void delete(String article)
           throws NoSuchArticleIdException, RemoteException, ServiceException {
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
@@ -155,6 +159,7 @@ public class ArticleOtmService {
    * @param state state
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setState(final String article, final int state) throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
 
@@ -175,6 +180,7 @@ public class ArticleOtmService {
    * @param ascending  controls the sort order (by date).
    * @return the (possibly empty) list of article ids.
    */
+  @Transactional(readOnly = true)
   public List<String> getArticleIds(final String startDate, final String endDate,
                                     final int[] states, boolean ascending) throws Exception {
     final StringBuilder qry = new StringBuilder();
@@ -244,6 +250,7 @@ public class ArticleOtmService {
    * @return the (possibly empty) list of articles.
    * @throws ParseException if any of the dates could not be parsed
    */
+  @Transactional(readOnly = true)
   public Article[] getArticles(final String startDate, final String endDate, final String[] categories,
                                final String[] authors, final int[] states, final boolean ascending)
       throws ParseException {
@@ -277,6 +284,7 @@ public class ArticleOtmService {
    * @throws ParseException
    *             if any of the dates could not be parsed
    */
+  @Transactional(readOnly = true)
   public List<Article> getArticles(final String startDate, final String endDate,
                                    final String[] categories, final String[] authors,
                                    final int[] states, final Map<String, Boolean> orderBy,
@@ -370,6 +378,7 @@ public class ArticleOtmService {
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
+  @Transactional(readOnly = true)
   public ObjectInfo getObjectInfo(final String uri) throws NoSuchObjectIdException {
     // sanity check parms
     if (uri == null)
@@ -404,6 +413,7 @@ public class ArticleOtmService {
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIDException NoSuchArticleIdException
    */
+  @Transactional(readOnly = true)
   public Article getArticle(final URI uri) throws NoSuchArticleIdException {
     // sanity check parms
     if (uri == null)
@@ -438,6 +448,7 @@ public class ArticleOtmService {
    * @return the secondary objects of the article
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
+  @Transactional(readOnly = true)
   public SecondaryObject[] listSecondaryObjects(final String article)
         throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
@@ -457,6 +468,7 @@ public class ArticleOtmService {
    * @return Figures and Tables for the article in DOI order.
    * @throws NoSuchArticleIdException NoSuchArticleIdException.
    */
+  @Transactional(readOnly = true)
   public SecondaryObject[] listFiguresTables(final String article) throws NoSuchArticleIdException {
     pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
@@ -499,6 +511,7 @@ public class ArticleOtmService {
    * @param maxArticles Maximum # of Articles to retrieve.
    * @return Article[] of most commented Articles.
    */
+  @Transactional(readOnly = true)
   public Article[] getCommentedArticles(final int maxArticles) {
     // sanity check args
     if (maxArticles < 0) {

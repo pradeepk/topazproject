@@ -24,6 +24,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
@@ -53,6 +54,7 @@ public class FetchObjectAction extends BaseActionSupport {
    * @return webwork status code
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     if (StringUtils.isEmpty(representation)) {
       addFieldError("representation", "Object representation is required");
@@ -82,6 +84,7 @@ public class FetchObjectAction extends BaseActionSupport {
    * @return webwork status code
    * @throws Exception Exception
    */
+  @Transactional(readOnly = true)
   public String fetchFirstObject() throws Exception {
     final ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
 

@@ -53,10 +53,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
 
           // FIXME: hack until ingest can directly put into search
           try {
-            /* Disabled until tx management is reworked, because the blob does not get
-             * put into fedora until commit.
             SearchUtil.index(id);
-             */
           } catch (Exception e) {
             addActionError("Error updating search index for '" + id + "': " + getMessages(e));
           }

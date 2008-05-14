@@ -23,6 +23,8 @@ import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.service.WebAnnotation;
@@ -73,6 +75,7 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
    * @throws Exception
    */
   @Override
+  @Transactional(readOnly = true)
   public final String execute() throws Exception {
     final String useCaseDsc = useCaseDescriptor();
     try {
@@ -111,6 +114,7 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
     return SUCCESS;
   }
 
+  @Transactional(readOnly = true)
   public final String getArticleMetaInfo () throws Exception {
     article = fetchArticleService.getArticleInfo(target);
     return SUCCESS;

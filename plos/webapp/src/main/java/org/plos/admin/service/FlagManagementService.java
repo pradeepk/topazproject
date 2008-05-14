@@ -40,6 +40,7 @@ import org.plos.models.Reply;
 import org.plos.models.Rating;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.otm.Session;
 
@@ -58,6 +59,7 @@ public class FlagManagementService {
   private ReplyService replyService;
   private UserService userService;
 
+  @Transactional(readOnly = true)
   public Collection<FlaggedCommentRecord> getFlaggedComments() throws RemoteException, ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
     Annotation[] annotations;

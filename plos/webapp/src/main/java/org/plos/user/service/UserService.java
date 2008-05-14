@@ -51,6 +51,7 @@ import org.topazproject.otm.query.Results;
 import org.topazproject.otm.spring.OtmTransactionManager;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -99,6 +100,7 @@ public class UserService {
    * @return the user's internal id
    * @throws ApplicationException if the <var>authId</var> is a duplicate
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createUser(final String authId) throws ApplicationException {
     pep.checkAccessAE(pep.CREATE_USER, pep.ANY_RESOURCE);
 
@@ -133,6 +135,7 @@ public class UserService {
    *          the Topaz User ID
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deleteUser(final String topazUserId) throws ApplicationException {
     pep.checkAccessAE(pep.DELETE_USER, URI.create(topazUserId));
 
@@ -161,6 +164,7 @@ public class UserService {
    * @return username username
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public String getUsernameByTopazId(final String topazUserId) throws ApplicationException {
 
     final Object lock = (USER_LOCK + topazUserId).intern();
@@ -191,6 +195,7 @@ public class UserService {
    * @return user associated with the topazUserId
    * @throws ApplicationException on access-check failure
    */
+  @Transactional(readOnly = true)
   public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
     return getUserWithProfileLoaded(topazUserId);
   }
@@ -203,6 +208,7 @@ public class UserService {
    * @return PlosOneUser
    * @throws ApplicationException on access-check failure
    */
+  @Transactional(readOnly = true)
   public PlosOneUser getUserWithProfileLoaded(final String topazUserId)
       throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
@@ -220,18 +226,34 @@ public class UserService {
    * @return the user associated with the authID
    * @throws ApplicationException on access-check failure
    */
+  @Transactional(readOnly = true)
   public PlosOneUser getUserByAuthId(final String authId) throws ApplicationException {
+    UserAccount ua = getUserAccountByAuthId(authId);
+    if (ua == null)
+      return null;
+
+    if (ua.getProfile() != null)
+      session.evict(ua.getProfile());
+
+    return new PlosOneUser(ua, applicationId, pep);
+  }
+
+  /**
+   * Gets the user specified by the authentication ID (CAS ID currently)
+   *
+   * @param authId authentication ID
+   * @return the user associated with the authID
+   * @throws ApplicationException on access-check failure
+   */
+  @Transactional(readOnly = true)
+  public UserAccount getUserAccountByAuthId(String authId) throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
 
     Results r = session.
         createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
         setParameter("id", authId).execute();
-    if (!r.next())
-      return null;
-    UserAccount ua = (UserAccount) r.get(0);
-    if (ua.getProfile() != null)
-      session.evict(ua.getProfile());
-    return new PlosOneUser(ua, applicationId, pep);
+
+    return r.next() ? (UserAccount) r.get(0) : null;
   }
 
   /**
@@ -241,6 +263,7 @@ public class UserService {
    * @param state  new state of the user
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setState(final String userId, int state) throws ApplicationException {
     pep.checkAccessAE(pep.SET_STATE, URI.create(userId));
 
@@ -255,6 +278,7 @@ public class UserService {
    * @return current state of the user
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public int getState(final String userId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_STATE, URI.create(userId));
 
@@ -269,6 +293,7 @@ public class UserService {
    * @return first authentiation ID associated with the Topaz userID
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public String getAuthenticationId(final String topazId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_AUTH_IDS, URI.create(topazId));
 
@@ -283,6 +308,7 @@ public class UserService {
    * @return Topaz userID for a given authentication ID
    * @throws ApplicationException on access-check failure
    */
+  @Transactional(readOnly = true)
   public String lookUpUserByAuthId(final String authId) throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
 
@@ -300,6 +326,7 @@ public class UserService {
    * @return topaz id of the user
    * @throws ApplicationException on access-check failure
    */
+  @Transactional(readOnly = true)
   public String lookUpUserByEmailAddress(final String emailAddress) throws ApplicationException {
     return lookUpUserByProfile("email", URI.create("mailto:" + emailAddress));
   }
@@ -323,6 +350,7 @@ public class UserService {
    * @throws ApplicationException ApplicationException
    * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setProfile(final PlosOneUser inUser)
       throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
@@ -341,6 +369,7 @@ public class UserService {
    * @throws ApplicationException ApplicationException
    * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setProfile(final PlosOneUser inUser, final String[] privateFields,
                          final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
@@ -403,6 +432,7 @@ public class UserService {
    * @return the collection of UserProfileGrant
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public Collection<UserProfileGrant> getProfileFieldsThatArePublic(String topazId)
       throws ApplicationException {
     try {
@@ -429,6 +459,7 @@ public class UserService {
    * @return the collection of UserProfileGrant
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(readOnly = true)
   public Collection<UserProfileGrant> getProfileFieldsThatArePrivate(String topazId)
       throws ApplicationException {
     try {
@@ -456,6 +487,7 @@ public class UserService {
    * @param profileGrantEnums profileGrantEnums
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setProfileFieldsPrivate(String topazId, UserProfileGrant[] profileGrantEnums)
       throws ApplicationException {
     UserProfileGrant[] allUserProfileGrants = UserProfileGrant.values();
@@ -476,6 +508,7 @@ public class UserService {
    * @param profileGrantEnums profileGrantEnums
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setProfileFieldsPublic(String topazId, UserProfileGrant[] profileGrantEnums)
       throws ApplicationException {
     final String[] grants = getGrants(profileGrantEnums);
@@ -533,6 +566,7 @@ public class UserService {
    *          User whose preferences should be written
    * @throws ApplicationException ApplicationException
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setPreferences(final PlosOneUser inUser) throws ApplicationException {
     if (inUser == null)
       throw new ApplicationException("User is null");
@@ -554,6 +588,7 @@ public class UserService {
   /**
    * @see org.plos.user.service.UserService#setRole(String, String[])
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setRole(final String topazId, final String roleId) throws ApplicationException {
     setRole(topazId, new String[] { roleId });
   }
@@ -565,6 +600,7 @@ public class UserService {
    * @param roleIds the new roles
    * @throws ApplicationException if the user doesn't exist
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setRole(final String topazId, final String[] roleIds) throws ApplicationException {
     pep.checkAccessAE(pep.SET_ROLES, URI.create(topazId));
 
@@ -578,6 +614,7 @@ public class UserService {
    * Get the roles for the user.
    * @param topazId topazId
    */
+  @Transactional(readOnly = true)
   public String[] getRole(final String topazId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_ROLES, URI.create(topazId));
 

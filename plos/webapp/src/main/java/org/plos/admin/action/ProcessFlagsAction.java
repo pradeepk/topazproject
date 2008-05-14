@@ -32,6 +32,8 @@ import org.plos.models.FormalCorrection;
 import org.plos.models.MinorCorrection;
 import org.plos.models.Reply;
 import org.plos.rating.service.RatingsService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class ProcessFlagsAction extends BaseAdminActionSupport {
 
@@ -88,6 +90,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    * items. The same admin console will be displayed regardless of error, and the errors will be
    * displayed in the console at the top of the page.
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() {
     if (commentsToUnflag != null){
       for (String toUnFlag : commentsToUnflag){
@@ -105,6 +108,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
           "for annotation id='" + tokens[1] + "'";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
+          TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+          return ERROR;
         }
       }
     }
@@ -122,6 +127,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
                                 "to Formal Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
+          TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+          return ERROR;
         }
       }
     }
@@ -141,6 +148,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
                                 "to Formal Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
+          TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+          return ERROR;
         }
       }
     }
@@ -159,6 +168,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
                                 "to Minor Correction annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
+          TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+          return ERROR;
         }
       }
     }
@@ -176,6 +187,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
           String errorMessage = "Failed to convert annotation id='" + tokens[1] + "to Note annotation.";
           addActionError(errorMessage + " Exception: " +e.getMessage());
           log.error(errorMessage, e);
+          TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+          return ERROR;
         }
       }
     }

@@ -41,6 +41,7 @@ import org.plos.permission.service.PermissionsService;
 import org.plos.user.PlosOneUser;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
@@ -86,6 +87,7 @@ public class ReplyService extends BaseAnnotationService {
    *
    * @throws Exception on an error
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createReply(final String mimeType, final String root, final String inReplyTo,
                             final String title, final String body)
                      throws Exception {
@@ -148,6 +150,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deleteReply(final String replyId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
@@ -164,6 +167,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deleteReplies(final String root, final String inReplyTo)
                      throws OtmException, SecurityException {
     final List<Reply> all =
@@ -196,6 +200,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void deleteReplies(final String target) throws OtmException, SecurityException {
     if (log.isDebugEnabled()) {
       log.debug("deleting reply and descendants with id: " + target);
@@ -241,6 +246,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws SecurityException if a security policy prevented this operation
    * @throws IllegalArgumentException if the id does not correspond to a reply
    */
+  @Transactional(readOnly = true)
   public Reply getReply(final String replyId)
                          throws OtmException, SecurityException, IllegalArgumentException {
     pep.checkAccess(pep.GET_REPLY_INFO, URI.create(replyId));
@@ -264,6 +270,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(readOnly = true)
   public Reply[] listReplies(final String root, final String inReplyTo)
                           throws OtmException, SecurityException {
     List<Reply> all =
@@ -298,6 +305,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(readOnly = true)
   public Reply[] listAllReplies(final String root, final String inReplyTo)
                              throws OtmException, SecurityException {
     List<Reply> all =
@@ -328,6 +336,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void unflagReply(final String replyId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
@@ -343,6 +352,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void setFlagged(final String replyId) throws OtmException, SecurityException {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
@@ -362,6 +372,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @Transactional(readOnly = true)
   public Reply[] listReplies(final String mediator, final int state)
                           throws OtmException, SecurityException {
     pep.checkAccess(pep.LIST_REPLIES_IN_STATE, pep.ANY_RESOURCE);

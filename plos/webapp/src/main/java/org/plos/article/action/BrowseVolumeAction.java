@@ -32,6 +32,7 @@ import org.plos.model.VolumeInfo;
 import org.plos.models.Journal;
 import org.plos.util.ArticleXMLUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.otm.Session;
 
 public class BrowseVolumeAction extends BaseActionSupport {
@@ -48,6 +49,7 @@ public class BrowseVolumeAction extends BaseActionSupport {
   private ArticleXMLUtils articleXmlUtils;
 
   @Override
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     Journal currentJournal = journalService.getCurrentJournal(session);
     volumeInfos = browseService.getVolumeInfosForJournal(currentJournal);

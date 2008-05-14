@@ -38,6 +38,7 @@ import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleInfoMostRecentDateComparator;
 import org.plos.model.article.Years;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author stevec
@@ -75,6 +76,7 @@ public class BrowseArticlesAction extends BaseActionSupport {
   private String endDateParam;
 
   @Override
+  @Transactional(readOnly = true)
   public String execute() throws Exception {
     if (DATE_FIELD.equals(getField())) {
       return browseDate();

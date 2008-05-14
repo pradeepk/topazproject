@@ -33,6 +33,7 @@ import org.plos.models.Issue;
 import org.plos.models.Journal;
 import org.plos.models.Volume;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 
@@ -70,6 +71,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
    * Manage Volumes/Issues.  Display Volumes/Issues and processes all adds/modifications/deletes.
    */
   @Override
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception  {
 
     if (manageVolumesIssuesAction != null) {

@@ -33,6 +33,7 @@ import org.plos.article.service.NoSuchObjectIdException;
 import org.topazproject.otm.Session;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 public class EditAnnotationAction extends BaseActionSupport {
 
@@ -67,6 +68,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   /**
    * Struts Action to load an Annotation.
    */
+  @Transactional(readOnly = true)
   public String loadAnnotation() throws Exception {
 
     annotation = annotationService.getAnnotation(loadAnnotationId);
@@ -78,6 +80,7 @@ public class EditAnnotationAction extends BaseActionSupport {
   /**
    * Struts Action to save an Annotation.
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String saveAnnotation() throws Exception {
 
     // ask PEP if allowed

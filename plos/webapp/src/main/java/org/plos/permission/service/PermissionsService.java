@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -210,6 +211,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#grant
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void grant(String resource, String[] permissions, String[] principals)
              throws OtmException {
     updateModel(pep.GRANT, GRANTS_MODEL, grantsCache, resource, permissions, principals, true);
@@ -218,6 +220,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#revoke
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void revoke(String resource, String[] permissions, String[] principals)
               throws OtmException {
     updateModel(pep.REVOKE, REVOKES_MODEL, revokesCache, resource, permissions, principals, true);
@@ -226,6 +229,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#cancleGrants
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void cancelGrants(String resource, String[] permissions, String[] principals)
                     throws OtmException {
     updateModel(pep.CANCEL_GRANTS, GRANTS_MODEL, grantsCache, resource, permissions, principals,
@@ -235,6 +239,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#cancelRevokes
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void cancelRevokes(String resource, String[] permissions, String[] principals)
                      throws OtmException {
     updateModel(pep.CANCEL_REVOKES, REVOKES_MODEL, revokesCache, resource, permissions, principals,
@@ -244,6 +249,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#listGrants
    */
+  @Transactional(readOnly = true)
   public String[] listGrants(String resource, String principal)
                       throws OtmException {
     return listPermissions(pep.LIST_GRANTS, GRANTS_MODEL, resource, principal);
@@ -252,6 +258,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#listRevokes
    */
+  @Transactional(readOnly = true)
   public String[] listRevokes(String resource, String principal)
                        throws OtmException {
     return listPermissions(pep.LIST_REVOKES, REVOKES_MODEL, resource, principal);
@@ -260,6 +267,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#implyPermission
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void implyPermissions(String permission, String[] implies)
                         throws OtmException {
     updatePP(pep.IMPLY_PERMISSIONS, permission, IMPLIES, implies, true);
@@ -268,6 +276,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#cancelImplyPermission
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void cancelImplyPermissions(String permission, String[] implies)
                               throws OtmException {
     updatePP(pep.CANCEL_IMPLY_PERMISSIONS, permission, IMPLIES, implies, false);
@@ -276,6 +285,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#listImpliedPermissions
    */
+  @Transactional(readOnly = true)
   public String[] listImpliedPermissions(String permission, boolean transitive)
                                   throws OtmException {
     return listPP(pep.LIST_IMPLIED_PERMISSIONS, permission, IMPLIES, transitive);
@@ -284,6 +294,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#propagatePermissions
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void propagatePermissions(String resource, String[] to)
                             throws OtmException {
     updatePP(pep.PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, true);
@@ -292,6 +303,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#cancelPropagatePermissions
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public void cancelPropagatePermissions(String resource, String[] to)
                                   throws OtmException {
     updatePP(pep.CANCEL_PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, false);
@@ -300,6 +312,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#listPermissionPropagations
    */
+  @Transactional(readOnly = true)
   public String[] listPermissionPropagations(String resource, boolean transitive)
                                       throws OtmException {
     return listPP(pep.LIST_PERMISSION_PROPAGATIONS, resource, PROPAGATES, transitive);
@@ -308,6 +321,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#isGranted
    */
+  @Transactional(readOnly = true)
   public boolean isGranted(String resource, String permission, String principal)
                     throws OtmException {
     if (principal == null)
@@ -340,6 +354,7 @@ public class PermissionsService implements Permissions {
   /*
    * @see org.plos.permission.service.Permissions#isGranted
    */
+  @Transactional(readOnly = true)
   public boolean isRevoked(String resource, String permission, String principal)
                     throws OtmException {
     if (principal == null)
