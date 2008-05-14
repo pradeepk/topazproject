@@ -731,7 +731,14 @@ dojo.global = {
       if(dojo.isAIR){
         setTimeout(function(){dojo.loaded();}, 0);
       }else{
-        setTimeout(dojo._scopeName + ".loaded();", 0);
+        // ----
+        // HACK (ambra - jkirton)
+        // we need to force a timout for IE to ensure loading is complete!
+        // ----
+        setTimeout(dojo._scopeName + ".loaded();", (dojo.isIE && typeof articlePage != 'undefined') ? 1000 : 0);
+        // --------
+        // END HACK
+        // --------
       }
     }else{
       d.loaded();
