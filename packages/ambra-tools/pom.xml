@@ -132,9 +132,6 @@
                     <source>
                       <location>src/main/resources/log4j.xml</location>
                     </source>
-                    <source>
-                      <location>src/main/resources/toolsBTM.properties</location>
-                    </source>
                   </sources>
                 </mapping>
               </mappings>

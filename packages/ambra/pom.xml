@@ -139,9 +139,6 @@
                     <source>
                       <location>src/main/resources/ambra.xml</location>
                     </source>
-                    <source>
-                      <location>src/main/resources/ambraBTM.properties</location>
-                    </source>
                   </sources>
                 </mapping>
                 <mapping>

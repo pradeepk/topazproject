@@ -20,4 +20,4 @@
 # Load the common functions
 . /usr/local/topaz/bin/tools
 
-java -Dbitronix.tm.configuration=/usr/local/topaz/classes/toolsBTM.properties -cp `getJars` RunGroovy "$@"
+java -cp `getJars` RunGroovy "$@"
