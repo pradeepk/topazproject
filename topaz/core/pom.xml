@@ -36,21 +36,19 @@
       <version>1.0.1B</version>
     </dependency>
     <dependency>
-      <groupId>jotm</groupId>
-      <artifactId>jotm</artifactId>
-      <version>2.0.10</version>
-      <!-- the jotm pom has the wrong dependency: it specifies version 1.0, but really needs 1.5 -->
+      <groupId>org.codehaus.btm</groupId>
+      <artifactId>btm</artifactId>
+      <version>1.2</version>
       <exclusions>
         <exclusion>
-          <groupId>javax.resource</groupId>
-          <artifactId>connector</artifactId>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector-api</artifactId>
-      <version>1.5</version>
     </dependency>
     <dependency>
       <groupId>antlr</groupId>

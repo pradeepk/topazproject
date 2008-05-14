@@ -173,9 +173,9 @@ public class TransactionTest extends AbstractTest {
     assertEquals(o1.uri, res.uri)
     res.title = "The end of things"
 
-    Thread.sleep(2000);
+    Thread.sleep(2500);
 
-    assertTrue(s.transaction.isRollbackOnly())
+    // JOTM sets this, BTM 1.2 doesn't (but 1.3 does): assertTrue(s.transaction.isRollbackOnly())
     shouldFail(OtmException.class) { s.transaction.commit() }
 
     // no timeout, make sure it goes back to default

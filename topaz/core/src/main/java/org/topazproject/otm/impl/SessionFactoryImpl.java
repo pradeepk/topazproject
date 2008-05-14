@@ -18,23 +18,35 @@
  */
 package org.topazproject.otm.impl;
 
+import java.lang.ref.WeakReference;
+
 import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
-import javax.naming.NamingException;
+import javax.naming.Reference;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
+
+import bitronix.tm.BitronixTransactionManager;
+import bitronix.tm.internal.XAResourceHolderState;
+import bitronix.tm.resource.ResourceRegistrar;
+import bitronix.tm.resource.common.AbstractXAResourceHolder;
+import bitronix.tm.resource.common.ResourceBean;
+import bitronix.tm.resource.common.XAResourceHolder;
+import bitronix.tm.resource.common.XAResourceProducer;
+import bitronix.tm.resource.common.XAStatefulHolder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.objectweb.jotm.Jotm;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
@@ -75,7 +87,7 @@ import org.topazproject.otm.Interceptor;
 public class SessionFactoryImpl implements SessionFactory {
   private static final Log log = LogFactory.getLog(SessionFactory.class);
 
-  private static Jotm jotm;
+  private static TransactionManager defTxnMgr;
 
   /**
    * definition name to definition map
@@ -464,29 +476,31 @@ public class SessionFactoryImpl implements SessionFactory {
   public TransactionManager getTransactionManager() throws OtmException {
     if (txMgr == null) {
       try {
-        txMgr = getJotm().getTransactionManager();
-      } catch (NamingException ne) {
-        throw new OtmException("Failed to create default transaction-manager", ne);
+        txMgr = getDefaultTransactionManager();
+      } catch (RuntimeException re) {
+        throw new OtmException("Failed to create default transaction-manager", re);
       }
     }
 
     return txMgr;
   }
 
-  private static synchronized Jotm getJotm() throws NamingException {
-    if (jotm == null) {
-      jotm  = new Jotm(true, false) {
+  private static synchronized TransactionManager getDefaultTransactionManager() {
+    if (defTxnMgr == null) {
+      defTxnMgr = new BitronixTransactionManager() {
         protected void finalize() throws Throwable {
           try {
-            stop();
+            shutdown();
           } finally {
             super.finalize();
           }
         }
       };
+
+      ResourceRegistrar.register(new SimpleXAResourceProducer());
     }
 
-    return jotm;
+    return defTxnMgr;
   }
 
   /*
@@ -612,6 +626,53 @@ public class SessionFactoryImpl implements SessionFactory {
         throw new OtmException("Cannot add a new property to " + getName() 
             + " since a ClassMetadata is already created for this Class");
       super.addAndBindProperty(prop, mode, binder);
+    }
+  }
+
+  private static class SimpleXAResourceProducer implements XAResourceProducer {
+    private final Map<XAResource, WeakReference<XAResourceHolder>> xaresHolders =
+                                    new WeakHashMap<XAResource, WeakReference<XAResourceHolder>>();
+
+    public void init()                           { }
+    public void close()                          { }
+    public String getUniqueName()                { return "OTM-Simple-Resource-Producer"; }
+    public XAResourceHolderState startRecovery() { return null; }
+    public void endRecovery()                    { }
+    public Reference getReference()              { return null; }
+    public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean) {
+      return null;
+    }
+
+    public XAResourceHolder findXAResourceHolder(final XAResource xaResource) {
+      WeakReference<XAResourceHolder> resHolderRef = xaresHolders.get(xaResource);
+      XAResourceHolder resHolder = (resHolderRef != null) ? resHolderRef.get() : null;
+
+      if (resHolder == null) {
+        ResourceBean rb = new ResourceBean() {
+          public XAResourceProducer createResource() { return null; }
+        };
+        rb.setUniqueName(xaResource.getClass().getName() + System.identityHashCode(xaResource));
+
+        resHolder = new SimpleXAResourceHolder(xaResource);
+        resHolder.setXAResourceHolderState(new XAResourceHolderState(resHolder, rb));
+
+        xaresHolders.put(xaResource, new WeakReference(resHolder));
+      }
+
+      return resHolder;
+    }
+
+    private static class SimpleXAResourceHolder extends AbstractXAResourceHolder {
+      private final XAResource xares;
+
+      SimpleXAResourceHolder(XAResource xares) { this.xares = xares; }
+
+      public void       close()                { }
+      public Object     getConnectionHandle()  { return null; }
+      public Date       getLastReleaseDate()   { return null; }
+      public List       getXAResourceHolders() { return null; }
+      public boolean    isEmulatingXA()        { return false; }
+      public XAResource getXAResource()        { return xares; }
     }
   }
 }

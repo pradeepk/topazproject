@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.TransactionManager;
 
@@ -334,9 +335,20 @@ abstract class AbstractSession implements Session {
       TransactionManager tm = getSessionFactory().getTransactionManager();
 
       jtaTxn = tm.getTransaction();
-      if (jtaTxn == null) {
+      if (jtaTxn == null || !isAlive(jtaTxn.getStatus())) {
         if (!start)
           throw new OtmException("No active transaction");
+
+        // hack until http://jira.codehaus.org/browse/BTM-16 gets resolved
+        try {
+          if (jtaTxn != null && jtaTxn.getStatus() == Status.STATUS_COMMITTED)
+            tm.commit();
+          if (jtaTxn != null && jtaTxn.getStatus() == Status.STATUS_ROLLEDBACK)
+            tm.rollback();
+        } catch (Exception e) {
+          if (log.isDebugEnabled())
+            log.debug("Expected exception from duplicate commit/rollback", e);
+        }
 
         tm.setTransactionTimeout(txTimeout > 0 ? txTimeout : 0);
         tm.begin();
@@ -357,6 +369,20 @@ abstract class AbstractSession implements Session {
       throw oe;
     } catch (Exception e) {
       throw new OtmException("Error setting up transaction", e);
+    }
+  }
+
+  private static boolean isAlive(int txSts) {
+    switch (txSts) {
+      case Status.STATUS_ACTIVE:
+      case Status.STATUS_MARKED_ROLLBACK:
+      case Status.STATUS_PREPARING:
+      case Status.STATUS_PREPARED:
+      case Status.STATUS_COMMITTING:
+      case Status.STATUS_ROLLING_BACK:
+        return true;
+      default:
+        return false;
     }
   }
 

@@ -91,15 +91,6 @@ public class ItqlStore extends AbstractTripleStore {
     serverUri   = server;
     itqlFactory = icf;
 
-    /* hack to initialize db in case of an embedded instance: new Database() starts a tx
-     * in order to boostrap the system model, and that will conflict with an existing tx
-     * of ours because we both use JOTM and JOTM stores the transaction-for-thread info
-     * in a static variable, leading to a "Nested transactions not supported" exception.
-     * So we make sure initialization is done before we start any tx's.
-     */
-    if (server.getScheme().equals("local") || server.getScheme().equals("mem"))
-      returnItqlClient(getItqlClient(null, false));
-
     //XXX: configure these
     ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder();
     critBuilders.put("gt", cc);
