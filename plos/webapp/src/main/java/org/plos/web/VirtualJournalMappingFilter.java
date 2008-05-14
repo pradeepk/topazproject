@@ -38,11 +38,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.plos.configuration.ConfigurationStore;
 
 /**
  * A Filter that maps incoming URI Requests to an appropriate virtual journal resources.
@@ -53,9 +50,6 @@ import org.plos.configuration.ConfigurationStore;
  * resource and then passed to the FilterChain.
  */
 public class VirtualJournalMappingFilter implements Filter {
-
-  private static final Configuration configuration =
-                                              ConfigurationStore.getInstance().getConfiguration();
 
   private static ServletContext servletContext = null;
 
@@ -88,15 +82,6 @@ public class VirtualJournalMappingFilter implements Filter {
    * @see javax.servlet.Filter#init
    */
   public void init(final FilterConfig filterConfig) throws ServletException {
-
-    // settings & overrides are in the Configuration
-    if (configuration == null) {
-      // should never happen
-      final String errorMessage =
-          "No Configuration is available to set Virtual Journal mappingPrefix";
-      log.error(errorMessage);
-      throw new ServletException(errorMessage);
-    }
 
     // need ServletContext to get "real" path/file names
     servletContext = filterConfig.getServletContext();
