@@ -28,7 +28,7 @@ dojo.require("ambra.general");
 ambra.navigation = {
  buildTOC: function(tocObj){
    var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
-   if(!tocEl) return;
+   if(!tocObj || !tocEl) return;
    
    var ul = document.createElement('ul');
    
