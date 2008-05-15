@@ -20,15 +20,12 @@ package org.plos.rating.action;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.util.Date;
 import java.util.List;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
 import org.plos.model.article.ArticleType;
@@ -40,13 +37,13 @@ import org.plos.models.RatingSummaryContent;
 import org.plos.rating.service.RatingsPEP;
 import org.plos.user.PlosOneUser;
 import org.plos.util.ProfanityCheckingService;
-
-import org.topazproject.otm.Session;
-import org.topazproject.otm.criterion.Restrictions;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.criterion.Restrictions;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * General Rating action class to store and retrieve a users's rating
@@ -119,6 +116,29 @@ public class RateAction extends BaseActionSupport {
     }
 
     getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
+
+
+    // resolve article type and supported properties
+    Article artInfo;
+    try {
+      artInfo = fetchArticleService.getArticleInfo(articleURI);
+    }
+    catch(ApplicationException ae) {
+      log.info("Could not get article info for: " + articleURI, ae);
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+      return ERROR;
+    }
+    assert artInfo != null;
+    ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
+    assert articleType != null;
+    articleType = ArticleType.getDefaultArticleType();
+    for (URI artTypeUri : artInfo.getArticleType()) {
+      if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
+        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
+        break;
+      }
+    }
+    isResearchArticle = ArticleType.isResearchArticle(articleType);
 
     if (isResearchArticle) {
       // must rate at least one rating category
@@ -328,25 +348,11 @@ public class RateAction extends BaseActionSupport {
    *
    * @param articleURI The articleUri to set.
    */
-  public void setArticleURI(String articleURI) throws Exception {
+  public void setArticleURI(String articleURI) {
     if (articleURI != null && articleURI.equals(this.articleURI)) {
       return;
     }
     this.articleURI = articleURI;
-
-    // resolve article type and supported properties
-    Article artInfo = fetchArticleService.getArticleInfo(articleURI);
-    assert artInfo != null : "artInfo is null (Should have already been cached.)  Is the articleURI correct?)";
-    ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
-    assert articleType != null;
-    articleType = ArticleType.getDefaultArticleType();
-    for (URI artTypeUri : artInfo.getArticleType()) {
-      if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
-        break;
-      }
-    }
-    isResearchArticle = ArticleType.isResearchArticle(articleType);
   }
 
   /**
