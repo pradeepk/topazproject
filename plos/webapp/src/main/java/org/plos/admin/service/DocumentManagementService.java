@@ -30,7 +30,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +52,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.article.service.BrowseService;
 import org.plos.article.service.DuplicateArticleIdException;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.IngestException;

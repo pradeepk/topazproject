@@ -32,7 +32,6 @@ import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 
 import org.semanticweb.owl.apibinding.OWLManager;

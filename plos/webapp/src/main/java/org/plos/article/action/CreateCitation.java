@@ -34,7 +34,6 @@ import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
 import org.plos.models.Article;
 import org.plos.util.ArticleXMLUtils;
-import org.plos.util.CacheAdminHelper;
 import org.plos.util.CitationUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;

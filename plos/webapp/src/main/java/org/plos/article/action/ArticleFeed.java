@@ -52,7 +52,6 @@ import org.plos.models.DublinCore;
 import org.plos.models.Representation;
 import org.plos.models.UserProfile;
 import org.plos.util.ArticleXMLUtils;
-import org.plos.util.FileUtils;
 import org.plos.web.VirtualJournalContext;
 import org.springframework.transaction.annotation.Transactional;
 

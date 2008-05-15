@@ -36,7 +36,6 @@ import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.cond.EvaluationResult;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.Status;
-import com.sun.xacml.ctx.StatusDetail;
 
 /**
  * XACML related Utility functions.

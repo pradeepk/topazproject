@@ -49,8 +49,6 @@ import org.plos.permission.service.PermissionsService;
 
 import org.plos.user.PlosOneUser;
 
-import org.plos.util.CacheAdminHelper;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 

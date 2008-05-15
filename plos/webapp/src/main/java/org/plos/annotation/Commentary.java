@@ -115,7 +115,7 @@ public class Commentary implements Comparator<Commentary> {
     String theDate;
 
     if (lastModified == null) {
-      theDate = annotation.getCreated();;
+      theDate = annotation.getCreated();
     } else {
       theDate = lastModified;
     }

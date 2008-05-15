@@ -18,8 +18,6 @@
  */
 package org.plos.models;
 
-import java.io.Serializable;
-
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;

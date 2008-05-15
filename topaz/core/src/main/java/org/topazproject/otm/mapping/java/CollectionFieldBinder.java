@@ -24,8 +24,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
-import java.io.Serializable;
-
 import java.util.AbstractList;
 import java.util.AbstractSequentialList;
 import java.util.AbstractSet;

@@ -54,7 +54,6 @@ import org.plos.models.Article;
 import org.plos.models.Issue;
 import org.plos.models.Journal;
 import org.plos.models.Volume;
-import org.plos.util.CacheAdminHelper;
 import org.plos.web.VirtualJournalContext;
 
 import org.topazproject.otm.ClassMetadata;
@@ -349,7 +348,7 @@ public class BrowseService {
   /**
    * Returns a list of VolumeInfos for the given Journal.
    * VolumeInfos are sorted in reverse order to reflect most common usage.
-   * Uses the CacheAdminHelper pull-through cache. 
+   * Uses the pull-through cache. 
    * 
    * @param journal To find VolumeInfos for.
    * @return VolumeInfos for journal in reverse order.

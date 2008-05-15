@@ -18,11 +18,7 @@
  */
 package org.plos.models;
 
-import java.net.URI;
-
-import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Predicate;
 
 /**
  * Correction is an abstract Model class that represents types of correction annotation. 

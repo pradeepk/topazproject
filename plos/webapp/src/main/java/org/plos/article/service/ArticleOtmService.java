@@ -26,9 +26,6 @@ import java.net.URI;
 import java.text.ParseException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -42,16 +39,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 
-import org.plos.journal.JournalService;
 import org.plos.models.Article;
-import org.plos.models.Category;
-import org.plos.models.Citation;
-import org.plos.models.DublinCore;
-import org.plos.models.License;
 import org.plos.models.ObjectInfo;
 import org.plos.models.Representation;
-import org.plos.models.RelatedArticle;
-import org.plos.models.UserProfile;
 import org.plos.permission.service.PermissionsService;
 
 import org.springframework.beans.factory.annotation.Required;

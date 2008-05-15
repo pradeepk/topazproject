@@ -18,8 +18,6 @@
  */
 package org.plos.models;
 
-import java.net.URI;
-
 import org.topazproject.otm.annotations.Entity;
 
 /**

@@ -34,7 +34,6 @@ import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.criterion.DetachedCriteria;
-import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.filter.ConjunctiveFilterDefinition;
 import org.topazproject.otm.filter.CriteriaFilterDefinition;
 import org.topazproject.otm.filter.DisjunctiveFilterDefinition;
@@ -222,13 +221,14 @@ public class JournalFilterService {
     }
 
     /* disable for now 5/13/2008
-    if (addSelf) {      // FIXME: use the addSelf below instead when queries are fixed
-      // FIXME: note use of Journal v. Aggregation
-      DetachedCriteria dc =
-          new DetachedCriteria("Journal").add(new SubjectCriterion(a.getId().toString()));
-      put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
-    }
-    */
+     * FIXME: use the addSelf below instead when queries are fixed
+     * FIXME: note use of Journal v. Aggregation
+     * if (addSelf) {
+     *   DetachedCriteria dc =
+     *     new DetachedCriteria("Journal").add(new SubjectCriterion(a.getId().toString()));
+     *   put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
+     * }
+     */
 
     Map<String, FilterDefinition> smartFilterDefs = combineFilterDefs(sfd, pfx + "-af-");
 
