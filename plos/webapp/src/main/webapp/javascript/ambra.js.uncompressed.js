@@ -7896,7 +7896,7 @@ dojo.provide("ambra.navigation");
 ambra.navigation = {
  buildTOC: function(tocObj){
    var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
-   if(!tocEl) return;
+   if(!tocObj || !tocEl) return;
    
    var ul = document.createElement('ul');
    
@@ -7913,7 +7913,6 @@ ambra.navigation = {
      
      ul.appendChild(li);
    }
-   
    tocObj.appendChild(ul);
  } 
 }  
@@ -8980,8 +8979,8 @@ ambra.displayComment = {
    * @param   addPx         Integer         Pixel amount to adjust height.
    */
   adjustDialogHeight: function(container1, container2, addPx) {
-    var container1Mb = dojo._getMarginBox(container1).height;
-    var container2Mb = dojo._getMarginBox(container2).height;
+    var container1Mb = dojo._getMarginBox(container1).h;
+    var container2Mb = dojo._getMarginBox(container2).h;
     
     if (container1Mb > container2Mb) {
       container1.parentNode.style.height = (container1Mb + addPx) + "px";
