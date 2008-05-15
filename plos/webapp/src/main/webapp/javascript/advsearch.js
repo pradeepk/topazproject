@@ -272,9 +272,9 @@ ambra.advsearch = {
 
   // handles adding additional auth names 
   onClickAddAuthNameHandler: function(e) {
-    //dojo.fixEvent(e);
+    dojo.fixEvent(e);
     ambra.advsearch.addAuthName(e.target);
-    //dojo.stopEvent(e);
+    dojo.stopEvent(e);
   },
   
   // handles removing previously added auth names 
@@ -395,4 +395,6 @@ ambra.advsearch = {
   }
   
 };
-dojo.addOnLoad(ambra.advsearch.init);
+dojo.addOnLoad(function() {
+  setTimeout(ambra.advsearch.init, 200);
+});
