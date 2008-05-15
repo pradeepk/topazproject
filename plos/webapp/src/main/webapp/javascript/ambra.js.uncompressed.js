@@ -6947,35 +6947,33 @@ ambra.formUtil = {
   },
   
   /**
-   * ambra.formUtil.disableFormFields(Form formObj)
-   * 
-   * Method goes through all the elements of the form object formObj and disables all
-   * except hidden fields.
-   * 
-   * @param     formObj     Form object       Form object.
+   * Enables or disables all found form fields found under a given dom node except hidden fields.
    */
-  disableFormFields: function (formObj) {
-    for (var i=0; i<formObj.elements.length; i++) {
-      if (formObj.elements[i].type != 'hidden') {
-        formObj.elements[i].disabled = true;
-      } 
-    }
+  _tglFields: function(node, bEnable){
+    var n = bEnable? 'false' : 'true';
+    dojo.query("input[type=radio],input[type=checkbox],select,textarea", node).forEach('item.disabled='+n+';item.locked='+n+';');
   },
   
   /**
-   * ambra.formUtil.enableFormFields(Form formObj)
+   * ambra.formUtil.disableFormFields(node)
    * 
-   * Method goes through all the elements of the form object formObj and enables all
-   * except hidden fields.
+   * Disables all found child form fields under the given dom node.
    * 
-   * @param     formObj     Form object       Form object.
+   * @param     node     A dom node
    */
-  enableFormFields: function (formObj) {
-    for (var i=0; i<formObj.elements.length; i++) {
-      if (formObj.elements[i].type != 'hidden') {
-        formObj.elements[i].disabled = false;
-      } 
-    }
+  disableFormFields: function (node) {
+    ambra.formUtil._tglFields(node, false);
+  },
+  
+  /**
+   * ambra.formUtil.enableFormFields(node)
+   * 
+   * Enables all found child form fields under the given dom node.
+   * 
+   * @param     node     A dom node
+   */
+  enableFormFields: function (node) {
+    ambra.formUtil._tglFields(node, true);
   },
   
   /**
