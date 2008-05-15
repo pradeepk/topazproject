@@ -23,6 +23,11 @@
 
     <dependency>
       <groupId>org.topazproject</groupId>
+      <artifactId>all-journals</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
       <artifactId>trackback-util</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>

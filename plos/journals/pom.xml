@@ -2,37 +2,27 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
-  <artifactId>ambra</artifactId>
+  <artifactId>journals</artifactId>
   <packaging>pom</packaging>
   <version>0.9-SNAPSHOT</version>
-  <name>Ambra application</name>
+  <name>Parent POM for Journals</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
-    <artifactId>the-whole-shebang</artifactId>
+    <artifactId>ambra</artifactId>
     <relativePath>../pom.xml</relativePath>
     <version>0.9-SNAPSHOT</version>
   </parent>
 
   <modules>
-    <module>webapp</module>
-    <module>cas-mod</module>
-    <module>emailer</module>
-    <module>doi-resolver</module>
-    <module>libs</module>
-    <module>search</module>
-    <module>registration</module>
-    <module>ecqs-bundle</module>
-    <module>journals</module>
+    <module>all-journals</module>
+    <module>journal-clinicalTrials</module>
+    <module>journal-compbiol</module>
+    <module>journal-genetics</module>
+    <module>journal-ntd</module>
+    <module>journal-overlay</module>
+    <module>journal-pathogens</module>
+    <module>journal-plosone</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>it</id>
-      <modules>
-        <module>it</module>
-      </modules>
-    </profile>
-  </profiles>
 
 </project>
