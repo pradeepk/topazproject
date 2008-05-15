@@ -97,7 +97,6 @@ public class RateAction extends BaseActionSupport {
     final Date              now                = new Date(System.currentTimeMillis());
     final URI               annotatedArticle;
 
-
     try {
       annotatedArticle = new URI(articleURI);
     } catch (URISyntaxException ue) {
@@ -116,7 +115,6 @@ public class RateAction extends BaseActionSupport {
     }
 
     getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
-
 
     // resolve article type and supported properties
     Article artInfo;
@@ -195,7 +193,8 @@ public class RateAction extends BaseActionSupport {
       articleRating = ratingsList.get(0);
     } else {
       // should never happen
-      String errorMessage = "Multiple Ratings, " + ratingsList.size() + ", for Article, " + articleURI + ", for user, " + user.getUserId();
+      String errorMessage = "Multiple Ratings, " + ratingsList.size() + ", for Article, "
+        + articleURI + ", for user, " + user.getUserId();
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -217,7 +216,8 @@ public class RateAction extends BaseActionSupport {
       articleRatingSummary = summaryList.get(0);
     } else {
       // should never happen
-      String errorMessage = "Multiple RatingsSummary, " + summaryList.size() + ", for Article " + articleURI;
+      String errorMessage = "Multiple RatingsSummary, " + summaryList.size() + ", for Article "
+        + articleURI;
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
@@ -228,7 +228,8 @@ public class RateAction extends BaseActionSupport {
 
     // if they had a prior insight Rating, remove it from the RatingSummary
     if (articleRating.getBody().getInsightValue() > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE, articleRating.getBody().getInsightValue());
+      articleRatingSummary.getBody().
+        removeRating(Rating.INSIGHT_TYPE, articleRating.getBody().getInsightValue());
     }
 
     // update insight Article Rating, don't care if new, update or 0
@@ -241,7 +242,8 @@ public class RateAction extends BaseActionSupport {
 
     // if they had a prior reliability Rating, remove it from the RatingSummary
     if (articleRating.getBody().getReliabilityValue() > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE, articleRating.getBody().getReliabilityValue());
+      articleRatingSummary.getBody().
+        removeRating(Rating.RELIABILITY_TYPE, articleRating.getBody().getReliabilityValue());
     }
 
     // update reliability Article Rating, don't care if new, update or 0
@@ -254,7 +256,8 @@ public class RateAction extends BaseActionSupport {
 
     // if they had a prior style Rating, remove it from the RatingSummary
     if (articleRating.getBody().getStyleValue() > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE, articleRating.getBody().getStyleValue());
+      articleRatingSummary.getBody().
+        removeRating(Rating.STYLE_TYPE, articleRating.getBody().getStyleValue());
     }
 
     // update style Article Rating, don't care if new, update or 0
@@ -267,7 +270,8 @@ public class RateAction extends BaseActionSupport {
 
     // if they had a prior single Rating, remove it from the RatingSummary
     if (articleRating.getBody().getSingleRatingValue() > 0) {
-      articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE, articleRating.getBody().getSingleRatingValue());
+      articleRatingSummary.getBody().
+        removeRating(Rating.SINGLE_RATING_TYPE, articleRating.getBody().getSingleRatingValue());
     }
 
     // update single Article Rating, don't care if new, update or 0
@@ -284,7 +288,8 @@ public class RateAction extends BaseActionSupport {
 
     // if this is a new Rating, the summary needs to know
     if (newRating) {
-      articleRatingSummary.getBody().setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() + 1);
+      articleRatingSummary.getBody().
+        setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() + 1);
     }
 
     return SUCCESS;
@@ -307,10 +312,9 @@ public class RateAction extends BaseActionSupport {
     }
 
     getPEP().checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
-                                                    URI.create(articleURI));
+        URI.create(articleURI));
 
-    List<Rating> ratingsList = session
-      .createCriteria(Rating.class)
+    List<Rating> ratingsList = session.createCriteria(Rating.class)
       .add(Restrictions.eq("annotates", articleURI))
       .add(Restrictions.eq("creator", user.getUserId())).list();
 
@@ -367,8 +371,6 @@ public class RateAction extends BaseActionSupport {
    *
    * @return Returns the style.
    */
-
-  //@DoubleRangeFieldValidator(message = "Elegance must be <= 5 and greater than 0", key = "i18n.key", shortCircuit = true, minInclusive = "1.0", maxInclusive = "5.0")
   public double getStyle() {
     return style;
   }
@@ -387,8 +389,6 @@ public class RateAction extends BaseActionSupport {
    *
    * @return Returns the insight.
    */
-
-  //@DoubleRangeFieldValidator(message = "Insight must be <= 5 and greater than 0", key = "i18n.key", shortCircuit = true, minInclusive = "0.0", maxInclusive = "5.0")
   public double getInsight() {
     return insight;
   }
@@ -410,8 +410,6 @@ public class RateAction extends BaseActionSupport {
    *
    * @return Returns the security.
    */
-
-  //@DoubleRangeFieldValidator(message = "Reliability must be <= 5 and greater than 0", key = "i18n.key", shortCircuit = true, minInclusive = "1.0", maxInclusive = "5.0")
   public double getReliability() {
     return reliability;
   }
@@ -431,7 +429,6 @@ public class RateAction extends BaseActionSupport {
    * @return Returns the overall.
    */
   public double getOverall() {
-
     return RatingContent.calculateOverall(getInsight(), getReliability(), getStyle());
   }
 
@@ -501,7 +498,6 @@ public class RateAction extends BaseActionSupport {
    * @param profanityCheckingService profanityCheckingService
    */
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
-
     this.profanityCheckingService = profanityCheckingService;
   }
 }
