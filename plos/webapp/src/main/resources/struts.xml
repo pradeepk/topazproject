@@ -514,7 +514,7 @@
 
     <action name="getFormalCorrections" class="org.plos.annotation.action.ListAnnotationAction" method="fetchFormalCorrections">
       <result name="success" type="json">
-      	<param name="excludeProperties">annotations</param>
+      	<param name="excludeProperties">advisors, callbacks, annotations</param>
       </result>
     </action>
 
