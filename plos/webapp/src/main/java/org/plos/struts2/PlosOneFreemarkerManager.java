@@ -19,6 +19,10 @@
 
 package org.plos.struts2;
 
+import java.io.IOException;
+import java.io.Reader;
+
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,6 +30,8 @@ import org.apache.struts2.views.freemarker.FreemarkerManager;
 import org.apache.struts2.views.freemarker.ScopesHashModel;
 
 import com.opensymphony.xwork2.util.ValueStack;
+
+import freemarker.cache.TemplateLoader;
 
 /**
  * Custom Freemarker Manager to load up the configuration files for css, javascript, and titles of
@@ -50,10 +56,32 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
    *
    * @see org.apache.struts2.views.freemarker.FreemarkerManager
    */
-
   protected void populateContext(ScopesHashModel model, ValueStack stack, Object action,
                                  HttpServletRequest request, HttpServletResponse response) {
     super.populateContext(model, stack, action, request, response);
     model.put("freemarker_config", fmConfig);
+  }
+
+  protected TemplateLoader getTemplateLoader(ServletContext context) {
+    final TemplateLoader s = super.getTemplateLoader(context);
+    return new TemplateLoader() {
+      public void closeTemplateSource(Object source) throws IOException {
+        s.closeTemplateSource(source);
+      }
+      public Object findTemplateSource(String name) throws IOException {
+        Object r = s.findTemplateSource(name);
+        // FIXME: theme name and parent is hard coded
+        // NOTE: The real fix is in struts. See WW-1961
+        if (r == null)
+          r = s.findTemplateSource(name.replace("ambra-theme", "simple"));
+        return r;
+      }
+      public long getLastModified(Object source) {
+        return s.getLastModified(source);
+      }
+      public Reader getReader(Object source, String encoding) throws IOException {
+        return s.getReader(source, encoding);
+      }
+    };
   }
 }
