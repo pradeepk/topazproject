@@ -4,7 +4,7 @@
   <groupId>org.topazproject</groupId>
   <artifactId>journal-plosone</artifactId>
   <version>0.9-SNAPSHOT</version>
-  <name>PlosOne Journal Resources</name>
+  <name>PLoS ONE Journal Resources</name>
 
   <parent>
     <groupId>org.topazproject</groupId>

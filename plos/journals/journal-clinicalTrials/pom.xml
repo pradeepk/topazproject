@@ -4,7 +4,7 @@
   <groupId>org.topazproject</groupId>
   <artifactId>journal-clinicalTrials</artifactId>
   <version>0.9-SNAPSHOT</version>
-  <name>NTD Journal Resources</name>
+  <name>PLoS Clinical Trials Journal Resources</name>
 
   <parent>
     <groupId>org.topazproject</groupId>

@@ -4,7 +4,7 @@
   <groupId>org.topazproject</groupId>
   <artifactId>all-journals</artifactId>
   <version>0.9-SNAPSHOT</version>
-  <name>All Jorunals</name>
+  <name>All Journals</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
