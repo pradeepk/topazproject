@@ -48,19 +48,20 @@ public class PlosStreamResult extends StreamResult {
 
     try {
       // Find the inputstream from the invocation variable stack
-      oInput = (InputStream) invocation.getStack().findValue(
-          conditionalParse(this.inputName, invocation));
+      oInput = (InputStream)
+        invocation.getStack().findValue( conditionalParse(this.inputName, invocation));
 
       if (oInput == null) {
         String msg = ("Can not find a java.io.InputStream with the name [" + this.inputName
-            + "] in the invocation stack. " + "Check the <param name=\"inputName\"> tag specified for this action.");
+            + "] in the invocation stack. " +
+            "Check the <param name=\"inputName\"> tag specified for this action.");
         log.error(msg);
         throw new IllegalArgumentException(msg);
       }
 
       // Find the Response in context
-      HttpServletResponse oResponse = (HttpServletResponse) invocation.getInvocationContext().get(
-          HTTP_RESPONSE);
+      HttpServletResponse oResponse =
+        (HttpServletResponse) invocation.getInvocationContext().get(HTTP_RESPONSE);
 
       // Set the content type
       oResponse.setContentType(getProperty("contentType", this.contentType, invocation));
