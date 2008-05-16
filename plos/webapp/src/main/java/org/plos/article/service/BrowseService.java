@@ -37,7 +37,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.struts2.ServletActionContext;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +53,6 @@ import org.plos.models.Article;
 import org.plos.models.Issue;
 import org.plos.models.Journal;
 import org.plos.models.Volume;
-import org.plos.web.VirtualJournalContext;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
@@ -435,8 +433,7 @@ public class BrowseService {
   }
 
   private String getCurrentJournal() {
-    return ((VirtualJournalContext) ServletActionContext.getRequest().
-               getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
+    return journalService.getCurrentJournalKey();
   }
 
   /**

@@ -36,8 +36,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Session;
 
-import org.plos.web.VirtualJournalContext;
-
 /**
  * A webwork interceptor that sets up the set of filters to be used on the current otm session.
  * This is the glue between the virtual-journal-context and the virtual-journal definitions.
@@ -59,9 +57,7 @@ public class SessionFiltersInterceptor extends AbstractInterceptor {
     HttpServletRequest request =
         (HttpServletRequest) invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
 
-    String jName =
-        ((VirtualJournalContext)
-            request.getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
+    String jName = journalService.getCurrentJournalKey();
     if (jName == null)
       return;
 
