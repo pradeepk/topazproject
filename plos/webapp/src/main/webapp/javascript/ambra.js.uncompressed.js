@@ -6019,6 +6019,13 @@ function handleXhrError(response, ioArgs) {
   }
 }
 
+function jumpToElement(elNode) {
+  if (elNode) {
+    elLocation = ambra.domUtil.getCurrentOffset(elNode);
+    window.scrollTo(0, elLocation.top);
+  }
+}
+
 }
 
 if(!dojo._hasResource["ambra.domUtil"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.

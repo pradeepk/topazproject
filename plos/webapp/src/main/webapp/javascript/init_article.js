@@ -183,13 +183,6 @@ function jumpToAnnotation(annotationId) {
   jumpToElement(getAnnotationEl(annotationId));
 }
 
-function jumpToElement(elNode) {
-  if (elNode) {
-    elLocation = ambra.domUtil.getCurrentOffset(elNode);
-    window.scrollTo(0, elLocation.top);
-  }
-}
-
 function toggleExpand(obj, isOpen, textOn, textOff) {
   if (isOpen == false) {
     obj.className = obj.className.replace(/collapse/, "expand");
