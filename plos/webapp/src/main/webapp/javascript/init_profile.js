@@ -21,7 +21,6 @@ var _ldc;
 
 dojo.addOnLoad(function() {
   _ldc = dijit.byId("LoadingCycle");
-  
   _ldc.show();
 
   ambra.horizontalTabs.setTabPaneSet(dojo.byId(profileConfig.tabPaneSetId));
@@ -29,9 +28,7 @@ dojo.addOnLoad(function() {
   ambra.horizontalTabs.setTabsContainer(dojo.byId(profileConfig.tabsContainer));
   ambra.horizontalTabs.init(tabSelectId);
   
-  _ldc.hide();
-  
-  dojo.connect(document, "onunload", ambra.horizontalTabs.confirmChange(ambra.horizontalTabs.targetFormObj));
+  dojo.addOnUnload(ambra.horizontalTabs.confirmChange(ambra.horizontalTabs.targetFormObj));
   
   if (tabSelectId == "alerts") {
     var alertsForm = document.userAlerts;
@@ -39,4 +36,5 @@ dojo.addOnLoad(function() {
     ambra.formUtil.selectCheckboxPerCollection(alertsForm.checkAllMonthly, alertsForm.monthlyAlerts);
   }
   
+  _ldc.hide();
 });
