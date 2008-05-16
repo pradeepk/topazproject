@@ -19,7 +19,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
-import org.plos.article.service.ArticleOtmService;
+import org.plos.article.service.FetchArticleService;
 import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Rating;
@@ -44,7 +44,7 @@ import org.topazproject.otm.util.TransactionHelper;
 public class GetArticleRatingsAction extends BaseActionSupport {
 
   private Session session;
-  private ArticleOtmService articleOtmService;
+  private FetchArticleService fetchArticleService;
   private String articleURI;
   private String articleTitle;
   private String articleDescription;
@@ -76,8 +76,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
     assert articleURI != null : "An article URI must be specified";
     getPEP().checkAccess(RatingsPEP.GET_RATINGS, URI.create(articleURI));
 
-    // TODO, expose more of the Article metadata, need a articleOtmService.getArticleInfo(URI)
-    final Article article = articleOtmService.getArticle(URI.create(articleURI));
+    final Article article = fetchArticleService.getArticleInfo(articleURI);
     assert article != null : "article of URI: " + articleURI + " not found.";
     
     articleTitle = article.getDublinCore().getTitle();
@@ -259,15 +258,15 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Sets the ArticleOtmService.
-   * Use ArticleOtmService v native OTM as it's aware of Article semantics.
+   * Sets the FetchArticleService.
+   * Use FetchArticleService v native OTM for caching.
    * Called by Spring's bean wiring.
    * 
-   * @param ArticleOtmService to set.
+   * @param FetchArticleService to set.
    */
   @Required
-  public void setArticleOtmService(ArticleOtmService articleOtmService) {
-    this.articleOtmService = articleOtmService;
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 
   /**

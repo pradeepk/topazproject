@@ -1,6 +1,7 @@
 <div id="content" class="archive">
     <h1>Journal Archive</h1>
-    <p>This archive contains links to the full-text of all issues of <em>${journalName}</em>.</p>
+    <p>This archive contains links to the full-text of all issues of 
+    <em>${freemarker_config.getDisplayName(journalContext)}.</em></p>
   <!-- begin : search results -->
   <div id="browse-results">
     <h2>Current Issue</h2>

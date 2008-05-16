@@ -10,16 +10,14 @@
 
 package org.plos.article.action;
 
-import com.thoughtworks.xstream.XStream;
-
 import java.io.IOException;
+
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.CitationInfo;
@@ -27,10 +25,11 @@ import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CacheAdminHelper;
-
+import org.plos.util.CitationUtils;
 import org.springframework.beans.factory.annotation.Required;
-
 import org.xml.sax.SAXException;
+
+import com.thoughtworks.xstream.XStream;
 
 
 /**
@@ -39,6 +38,7 @@ import org.xml.sax.SAXException;
  * @author Stephen Cheng
  *
  */
+@SuppressWarnings("serial")
 public class CreateCitation extends BaseActionSupport {
 
   public static final String CITATION_KEY = "ArticleAnnotationCache-Citation-";
@@ -47,9 +47,9 @@ public class CreateCitation extends BaseActionSupport {
   private String articleURI;
   private ArticleXMLUtils citationService;
   private CitationInfo citation;
+  private String citationString;
   private Ehcache articleAnnotationCache;
 
-  private static final String CACHE_KEY_CITATION_INFO = "CITATION_INFO";
   private static final Log log = LogFactory.getLog(CreateCitation.class);
 
 
@@ -57,6 +57,7 @@ public class CreateCitation extends BaseActionSupport {
    * Generate citation information by first attempting to get from cache.  If not present,
    * will create a CitationInfo object.
    */
+  @Override
   public String execute () {
 
     // lock @ Article level
@@ -94,6 +95,9 @@ public class CreateCitation extends BaseActionSupport {
     }
 
     citation = (CitationInfo) result;
+    
+    citationString = CitationUtils.generateArticleCitationString(citation);
+    
     return SUCCESS;
   }
 
@@ -123,6 +127,13 @@ public class CreateCitation extends BaseActionSupport {
    */
   public CitationInfo getCitation() {
     return citation;
+  }
+  
+  /**
+   * @return The formatted citation String.
+   */
+  public String getCitationString() {
+    return citationString;
   }
 
   /**

@@ -2,7 +2,7 @@
 <div class="flag pane" id="FlaggingPanel" >
 	<div id="flagForm">
 		<h5>Why should this posting be reviewed?</h5>
-		<p>See also <a href="${freemarker_config.getContext()}/static/commentGuidelines.action" class="instructions">guidelines for commenting</a>.</p>
+		<p>See also <a href="${freemarker_config.getContext()}/static/commentGuidelines.action" class="instructions">Guidelines for Notes, Comments and Corrections</a>.</p>
 		<div class="close btn" id="btnCloseFlag"><a href="#" title="Close this dialogue box">Cancel</a></div>
 		<form name="discussionFlag" method="post" action="">
 			<input type="hidden" name="urlParam" value="" />

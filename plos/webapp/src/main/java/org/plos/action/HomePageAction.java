@@ -13,32 +13,25 @@ package org.plos.action;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.plos.article.service.BrowseService;
-import org.plos.model.article.ArticleInfo;
-
 import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author stevec
  */
+@SuppressWarnings("serial")
 public class HomePageAction extends BaseActionSupport {
-  private static final Log log = LogFactory.getLog(HomePageAction.class);
-
   private BrowseService                   browseService;
-  private List<ArticleInfo> recentArticles;
   private SortedMap<String, Integer>      categoryInfos;
 
   /**
    * This execute method always returns SUCCESS
    */
+  @Override
   public String execute() {
     Calendar startDate = Calendar.getInstance();
     startDate.set(Calendar.HOUR,        0);
@@ -50,20 +43,9 @@ public class HomePageAction extends BaseActionSupport {
     startDate.add(Calendar.DATE, -7);
     endDate.add(Calendar.DATE, 1);
 
-    recentArticles = browseService.getArticlesByDate(startDate, endDate, 0, -1, new int[1]);
-
     categoryInfos = browseService.getCategoryInfos();
 
     return SUCCESS;
-  }
-
-  /**
-   * Retrieves the most recently published articles in the last 7 days
-   *
-   * @return array of ArticleInfo objects
-   */
-  public List<ArticleInfo> getRecentArticles() {
-    return recentArticles;
   }
 
   /**

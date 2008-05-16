@@ -1,12 +1,10 @@
 dojo.provide("topaz.advsearch");
 
 /**
-  * topaz.advsearch
-  *
-  * Advanced search methods.
-  * 
-  * @author  jkirton            jopaki@gmail.com
-  **/
+ * topaz.advsearch
+ * Advanced search methods.
+ * @author jkirton (jopaki@gmail.com)
+ **/
 topaz.advsearch = new Object();
 
 // config
@@ -57,7 +55,9 @@ topaz.advsearch = {
     topaz.advsearch.liAuthNmesOpts = dojo.byId(advsrchConfig.idLiAuthNmesOpts);
 
     // dates section...
-    dojo.byId(advsrchConfig.idPubDateOptions).style.display = 'none';
+    var slct = dojo.byId(advsrchConfig.idPublishDate);
+    var showDates = (slct.options[slct.selectedIndex].value == 'range');
+    dojo.byId(advsrchConfig.idPubDateOptions).style.display = showDates ? '' : 'none';
     dojo.event.connect(dojo.byId(advsrchConfig.idPublishDate), "onchange", topaz.advsearch.onChangePublishDate);
 
     // date part comment cue event bindings...
@@ -104,6 +104,8 @@ topaz.advsearch = {
 
     topaz.advsearch.liAuthNmesOpts.style.display = 'none';
     topaz.advsearch.tglSubCategories();
+    
+    topaz.advsearch.explodeAuthNames();
   },
   
   onSubmitHandler: function(e) {
@@ -357,6 +359,23 @@ topaz.advsearch = {
     }
     
     this.liAuthNmesOpts.style.display = (num>0 ? '' : 'none');
+  },
+  
+  // auto-adds auth name edit fields based on the current value in the initial auth name edit field
+  explodeAuthNames: function() {
+    var fan = dojo.byId(this._assembleId(advsrchConfig.idInptAuthNme));
+    var auths = fan.value;
+    if(!auths || auths.length < 1) return;
+    var j, arr = auths.split(','), auth, lnkAdd;
+    if(arr.length > 1) {
+      for(var i=0; i<arr.length; i++) {
+        auth = arr[i];
+        j = i + 1;
+        if(i>0) this.addAuthName(lnkAdd);
+        lnkAdd = dojo.byId(this._assembleId(advsrchConfig.idLnkAddAuthNme, j));
+        dojo.byId(this._assembleId(advsrchConfig.idInptAuthNme, j)).value = auth;
+      }
+    }
   }
   
 };

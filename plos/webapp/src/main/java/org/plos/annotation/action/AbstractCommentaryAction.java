@@ -10,7 +10,6 @@
 
 package org.plos.annotation.action;
 
-import java.net.URI;
 import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
@@ -18,9 +17,10 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.service.WebAnnotation;
-import org.plos.article.service.ArticleOtmService;
+import org.plos.article.service.FetchArticleService;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.models.Article;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
@@ -41,7 +41,8 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
   private String target;
   private Commentary[] commentary;
   private Article articleInfo;
-  private ArticleOtmService articleOtmService;
+  //private ArticleOtmService articleOtmService;
+  FetchArticleService fetchArticleService;
   
   /**
    * @return Simple presentation worthy description 
@@ -70,7 +71,7 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
       if (log.isDebugEnabled()){
         log.debug("retrieving " + useCaseDsc + " for article id: " + target);
       }
-      articleInfo = getArticleOtmService().getArticle(new URI(target));
+      articleInfo = fetchArticleService.getArticleInfo(target);
       WebAnnotation[] annotations = getAnnotations();
       commentary = new Commentary[annotations.length];
       Commentary com = null;
@@ -103,7 +104,7 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
   }
 
   public final String getArticleMetaInfo () throws Exception {
-    articleInfo = getArticleOtmService().getArticle(new URI(target));
+    articleInfo = fetchArticleService.getArticleInfo(target);
     return SUCCESS;
   }
 
@@ -124,17 +125,11 @@ public abstract class AbstractCommentaryAction extends AnnotationActionSupport {
   }
 
   /**
-   * @return Returns the articleOtmService.
+   * @param fetchArticleService the fetchArticleService to set
    */
-  protected final ArticleOtmService getArticleOtmService() {
-    return articleOtmService;
-  }
-
-  /**
-   * @param articleOtmService The articleOtmService to set.
-   */
-  public final void setArticleOtmService(ArticleOtmService articleOtmService) {
-    this.articleOtmService = articleOtmService;
+  @Required
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 
   /**

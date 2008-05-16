@@ -40,7 +40,7 @@ public class BrowseVolumeAction extends BaseActionSupport {
     Collections.reverse(volumeInfos);
     currentVolume = volumeInfos.get(0);
 
-    currentIssue = browseService.getIssueInfo(currentJournal.getCurrentIssue());
+    currentIssue = browseService.getIssueInfo(currentJournal.getCurrentIssue(), false);
     if (currentIssue != null) {
       // Figure out what issue number the currentIssue is in its volume
       for (VolumeInfo vol : volumeInfos) {

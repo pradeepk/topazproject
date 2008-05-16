@@ -18,7 +18,11 @@
         <legend><b>${cacheName}</b> Keys</legend>
         <p>
           <#list cacheKeys as cacheKey>
-            ${cacheKey} <br/>
+            <@s.url id="remove" namespace="/admin" action="manageCaches"
+              cacheAction="remove" cacheName="${cacheName}" cacheKey="${cacheKey}"/>
+            <@s.url id="get" namespace="/admin" action="manageCaches"
+              cacheAction="get" cacheName="${cacheName}" cacheKey="${cacheKey}"/>
+            ${cacheKey} <@s.a href="%{remove}">remove()</@s.a> <@s.a href="%{get}">get()</@s.a><br/>
           </#list>
         </p>
       </fieldset>

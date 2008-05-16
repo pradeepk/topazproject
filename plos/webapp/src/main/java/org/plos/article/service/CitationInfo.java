@@ -22,6 +22,8 @@ import java.net.URLEncoder;
  *
  */
 public class CitationInfo {
+  private static final long serialVersionUID = 2798808464271769990L;
+  
   private String articleTitle;
   private Date publicationDate;
   private String journalName; 
