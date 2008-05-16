@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.plos.configuration.ConfigurationStore;
 
 @SuppressWarnings("serial")
@@ -39,8 +40,8 @@ public class ArticleType implements Serializable {
     configureArticleTypes(ConfigurationStore.getInstance().getConfiguration());
   }
 
-  private URI uri;
-  private String heading;
+  private final URI uri;
+  private final String heading;
   private String imageConfigName;
 
   private ArticleType(URI articleTypeUri, String displayHeading) {
@@ -67,10 +68,10 @@ public class ArticleType implements Serializable {
    * @return The ArticleType for the given URI
    */
   public static ArticleType getArticleTypeForURI(URI uri, boolean createIfAbsent) {
-    ArticleType at = _knownArticleTypes.get(uri.toString());
+    ArticleType at = uri == null ? null : _knownArticleTypes.get(uri.toString());
     if (at == null) {
       at = _newArticleTypes.get(uri.toString());
-      if ((at == null) && (uri != null)  && createIfAbsent) {
+      if ((at == null) && createIfAbsent) {
         String uriStr = uri.toString();
         if (uriStr.contains("/")) {
           uriStr = uriStr.substring(uriStr.indexOf('/'));
@@ -214,5 +215,10 @@ public class ArticleType implements Serializable {
       }
     }
     return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(getUri()).hashCode();
   }
 }

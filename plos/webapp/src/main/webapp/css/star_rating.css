@@ -8,7 +8,7 @@
 .star-rating a:active,
 .star-rating a:focus,
 .star-rating .current-rating{
-	background: url(star.gif) left -1000px repeat-x;
+	background: /*url(star.gif)*/ left -1000px repeat-x;
 }
 .star-rating{
 	position:relative;
@@ -83,7 +83,7 @@
 .small-star a:active,
 .small-star a:focus,
 .small-star .current-rating{
-	background-image: url(star_small.gif);
+	/*background-image: url(star_small.gif);*/
 	line-height: 10px;
 	height: 10px;
 }
