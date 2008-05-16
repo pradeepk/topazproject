@@ -10,4 +10,4 @@ ${url}${articleURI?replace("info:doi/","")}
 
 ${title}
 
-${description}
+${description!""}

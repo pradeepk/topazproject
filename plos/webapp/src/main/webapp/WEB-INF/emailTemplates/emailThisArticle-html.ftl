@@ -9,7 +9,7 @@ Read the open-access, full-text article here:<br/>
 ===================================================
 <br/>
 ${title} <br/>
-${description} 
+${description!""} 
 
 
 

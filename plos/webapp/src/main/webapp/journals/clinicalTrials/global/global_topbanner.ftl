@@ -38,7 +38,8 @@
   <!-- end : left banner slot -->
   <!-- begin : right banner slot -->
   <div class="right">
-    <script language='JavaScript' type='text/javascript'>
+   <script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+   <script language='JavaScript' type='text/javascript'>
     <!--
        if (!document.phpAds_used) document.phpAds_used = ',';
        phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);

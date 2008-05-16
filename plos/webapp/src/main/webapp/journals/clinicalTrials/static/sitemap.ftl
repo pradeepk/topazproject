@@ -40,13 +40,13 @@
     <li><@s.a href="${contactURL}" title="PLoS Hub | Contact">Contact Us</@s.a></li>
   </ul>
 
-  <h2>For Users</h2>
+  <h2>For Readers</h2>
   <ul>
     <@s.url action="commentGuidelines" namespace="/static" includeParams="none" id="commentURL"/>
     <@s.url action="ratingGuidelines" namespace="/static" includeParams="none" id="ratingURL"/>
     <@s.url action="help" namespace="/static" includeParams="none" id="helpURL"/>
-    <li><@s.a href="${commentURL}" title="PLoS Hub | Commenting Guidelines">Commenting Guidelines</@s.a></li>
-    <li><@s.a href="${ratingURL}" title="PLoS Hub | Rating Guidelines">Rating Guidelines</@s.a></li>
+    <li><@s.a href="${commentURL}" title="PLoS Hub | Guidelines for Notes, Comments, and Corrections">Guidelines for Notes, Comments, and Corrections</@s.a></li>
+    <li><@s.a href="${ratingURL}" title="PLoS Hub | Guidelines for Rating">Guidelines for Rating</@s.a></li>
     <li><@s.a href="${helpURL}" title="PLoS Hub | Help Using this Site">Help Using This Site</@s.a></li>
     <li>Site Map</li>
   </ul>

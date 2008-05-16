@@ -9,7 +9,7 @@
     <li><a href="#who">Who can Contribute?</a></li>
     <li><a href="#notes">How to Add and View Notes</a></li>
     <li><a href="#comments">How to Add and View Comments</a></li>
-	<li><a href="#corrections">How to Add and View Corrections</a></li>
+    <li><a href="#corrections">How to Add and View Corrections</a></li>
     <li><a href="#responding">Responding to Notes, Comments, and Corrections</a></li>
     <li><a href="#goodpractice">Good Practice</a></li>
     <li><a href="#inappropriatecontent">Requesting Review of Inappropriate Content</a></li>

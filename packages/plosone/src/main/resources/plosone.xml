@@ -230,7 +230,7 @@
       <!-- crossref information - set parameters and sendToXref to true to turn on -->
       <crossref>
         <plos>
-          <doiurl>http://.../</doiurl>        <!-- URL where your URIs can be found -->
+          <doiurl>http://dx-..../</doiurl>        <!-- URL where your URIs can be found -->
           <email>your@email.address</email>  <!-- email address to send info to -->
         </plos>
         <login>crossref-username</login>     <!-- crossref login -->

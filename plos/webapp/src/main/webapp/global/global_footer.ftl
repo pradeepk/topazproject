@@ -13,7 +13,7 @@
 	</ul>
 	<div class="powered">
 	<ul>
-		<li><a href="/static/releaseNotes.action" title="Topaz | Release Notes">RC 0.8 beta</a></li>
+		<li><a href="/static/releaseNotes.action" title="Topaz | Release Notes">RC 0.8.2.1 beta</a></li>
 		<li>Managed Colocation provided by <a href="http://www.unitedlayer.com/" title="UnitedLayer: Built on IP Services">UnitedLayer</a>.</li>
 
 	</ul>

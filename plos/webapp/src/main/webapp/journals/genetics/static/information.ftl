@@ -1,77 +1,48 @@
+<#include "journal_include.ftl">
+<#include "/static/cj_shared_blocks.ftl">
+
 <!-- begin : main content -->
 <div id="content" class="static">
 
-<h1><em>PLoS Neglected Tropical Diseases</em> Journal Information</h1>
+<h1>About <em>${journal_name}</em></h1>
 
-<h2>About <em>PLoS Neglected Tropical Diseases</em></h2>
+<p><em>PLoS Genetics</em> (eISSN 1553-7404, ISSN 1553-7390) is an open-access, peer-reviewed journal published weekly by the <a href="http://www.plos.org">Public Library of Science</a> (PLoS).</p>
 
-<p class="intro"><em>PLoS Neglected Tropical Diseases</em> (eISSN 1935-2735) is the first open-access journal devoted to the world's most <a href="scope.action">neglected tropical diseases</a> (NTDs), such as elephantiasis, river blindness, leprosy, hookworm, schistosomiasis, and African sleeping sickness. The journal publishes high-quality, peer-reviewed research on all scientific, medical, and public-health aspects of these forgotten diseases affecting the world's forgotten people.</p> 
+<p><em>PLoS Genetics</em> is run by an international Editorial Board, headed by the Editor-in-Chief, <a href="eic.action">Wayne Frankel</a> (The Jackson Laboratory, Bar Harbor, Maine, United States).</p>
 
-<p><em>PLoS Neglected Tropical Diseases</em> is particularly keen to publish research from authors in countries where the NTDs are endemic. It aims to:</p>
-
-<ul>
-	<li>Provide a forum for the NTDs community of scientific investigators, health practitioners, control experts, and advocates to publish their findings in an open-access format</li>
-	<li>Promote and profile the efforts of scientists, health practitioners, and public-health experts from <a href="http://medicine.plosjournals.org/perlserv/?request=slideshow&amp;type=figure&amp;doi=10.1371/journal.pmed.0020336" title="Geographic Overlap of the Neglected Tropical Diseases" target="_blank">endemic countries</a>, and build science and health capacity in those countries</li>
-	<li>Highlight the global public-health importance of the NTDs and advocate for the plight of the poor who suffer from these diseases in endemic countries</li>
-</ul>
-
-
-<p><em>PLoS Neglected Tropical Diseases</em> is published online by the Public Library of Science (PLoS), a nonprofit organization. The journal's start-up phase is supported by a grant from the <a href="http://www.gatesfoundation.org/GlobalHealth" title="Bill and Melinda Gates Foundation: Global Health Program">Bill and Melinda Gates Foundation</a>.</p>
+<p>Articles published in <em>PLoS Genetics</em> are deposited in <a href="http://www.pubmedcentral.nih.gov/">PubMed Central</a> and cited in <a href="http://www.ncbi.nih.gov/entrez/">PubMed</a>.</p>
 
 <h2>Scope</h2>
 
-<p><em>PLoS Neglected Tropical Diseases</em> is devoted to the pathology, epidemiology, treatment, control, and prevention of the NTDs, as well as public policy relevant to this group of diseases. </p>
+<p>Genetics and genomics research has grown at a bewildering pace in the past 15 years. The techniques of these fields are being applied to a wealth of biological questions and experimental systems. <em>PLoS Genetics</em> reflects the full breadth and interdisciplinary nature of this research by publishing outstanding original contributions in all areas of biology.</p>
+ 
+<p><em>PLoS Genetics</em> publishes human studies, as well as research on model organisms&#8212;from mice and flies, to plants and bacteria. Topics include (but are not limited to) gene discovery and function, population genetics, genome projects, comparative and functional genomics, medical genetics, cancer biology, evolution, gene expression, complex traits, chromosome biology, and epigenetics.</p>
 
-<p>The NTDs are defined as a group of poverty-promoting chronic infectious diseases, which primarily occur in rural areas and poor urban areas of low-income and middle-income countries. They are poverty-promoting because of their impact on child health and development, pregnancy, and worker productivity, as well as their stigmatizing features.</p>
+<p>Please refer to our <a href="guidelines.action">Author Guidelines</a> when you are preparing your manuscripts for submission. If you are unsure whether your paper is suitable for <em>PLoS Genetics</em>, you can send a <a href="guidelines.action#presubs">Presubmission Inquiry</a>.</p>
 
-<p>To see which diseases are included in the journal, please read the <a href="scope.action" title="Journal Scope">detailed scope</a>.</p>
-
-<h2>Content</h2>
-
-<h3>Original Research Papers</h3>
-
-<p>Research articles consider all aspects of the NTDs, including their pathogenesis, clinical features, pharmacology and treatment, diagnosis, epidemiology, vector biology, and vaccinology and prevention. Demographic, ecological and social determinants, public health, and policy aspects of these diseases (including cost-effectiveness analyses) are also a priority. <em>PLoS Neglected Tropical Diseases</em> is pleased to publish relevant in vitro and animal studies as well as human investigations. The journal is organized to provide additional support for authors from endemic countries, and such authors are particularly encouraged to submit their research to <em>PLoS Neglected Tropical Diseases</em>. Academic editors, supported by expert peer-reviewers, will select for publication those studies that drive their respective fields forward. </p>
-
-<p>Please refer to our <a href="guidelines.action" title="Guidelines for Authors">Author Guidelines</a> for instructions on preparing research manuscripts.</p>
-
-<h3>The Magazine Section</h3>
-
-<p>The <strong>Editorial</strong> is written by the Editor-in-Chief or a member of the Editorial Board. </p>
-
-<p>The <strong>Viewpoint</strong> section contains opinion pieces grounded in evidence on topics of broad interest to the journal's readership.</p>
-
-<p>The <strong>Debate</strong> section highlights controversial issues in the field of NTDs.</p>
-
-<p>The <strong>Policy Platform</strong> is for authors to discuss policies that could improve the lives of those at risk of, or affected by, the NTDs. </p>
-
-<p>The <strong>Reviews</strong> section is for authors to summarize the best available evidence on a topic relevant to the NTD community.  </p>
-
-<p>In an <strong>Expert Commentary</strong>, authors discuss the clinical, policy, public-health, or research implications of a freely available research article.</p>
-
-<p><strong>From Innovation to Application</strong> is a section in which authors discuss new technologies, including drugs, vaccines, and diagnostics.</p>
-
-<p>In the <strong>Symposium</strong> section, authors discuss a "real world" problem, from the clinic, laboratory, or community, and how best it can be tackled.</p>
-
-<p><strong>Historical Profiles &amp; Perspectives</strong> look back in history to discuss a notable figure or a control program that worked or failed.</p>
-
-<p><strong>Interviews</strong> highlight the work of a person who has made a notable contribution to controlling NTDs.</p>
+<h2>Features</h2>
+<ul>
+<li><em>Weekly Primary Research Articles</em>&#8212;high-quality, original contributions from a broad sweep of international researchers</li>
+<li><em>Reviews</em>&#8212;these invited pieces summarize particularly interesting, hot, or forward-looking aspects of genetics or genomics research from the authors' unique perspective</li>
+<li><em>Interviews</em>, occasionally accompanied by video clips&#8212;by Jane Gitschier, Interviews Editor</li>
+<li><em>Special Reports</em>&#8212;these occasional articles include short and engaging conference reports</li>
+<!-- <li><em>Correspondence</em>&#8212;up to 600 words in length and cited in PubMed</li> 
+<li><em>Reader Responses</em>&#8212;up to 750 words, promoting dialogue and shared information within the community</li>-->
+</ul>
 
 <h2>Open Access</h2>
-
-The Public Library of Science (PLoS) applies the <a href="license.action">Creative Commons Attribution License</a> (CCAL) to all works we publish. Under the CCAL, authors retain ownership of the copyright for their article, but authors allow anyone to download, reuse, reprint, modify, distribute, and/or copy articles in PLoS journals, so long as the original authors and source are cited. No permission is required from the authors or the publishers.
+${open_access}
 
 <h2>Publication Charges</h2>
+${publication_charges}
 
-<p>To provide open access, PLoS journals use a business model in which our expenses-including those of peer review, journal production, and online hosting and archiving-are recovered in part by charging a publication fee to the authors or research sponsors for each article they publish. For <em>PLoS Neglected Tropical Diseases</em> the publication fee is US$2100. Authors who are affiliated with one of our <a href="http://www.plos.org/support/instmembers.html" title="PLoS.org | Institutional Members">Institutional Members</a> are eligible for a discount on this fee.</p>
-
-<p>We offer a complete or partial fee waiver for authors who do not have funds to cover publication fees. Editors and reviewers have no access to payment information, and hence inability to pay will not influence the decision to publish a paper.</p>
-
-<p>For further information, see our <a href="http://www.plos.org/about/faq.html#pubquest" title="View Publication Fee FAQ on PLoS.org">Publication Fee FAQ</a>.</p>
-
+<a name="if" id="if"></a>
+<h2>Measuring Impact</h2>
+<p>The impact factor is calculated in large part by how often a journal's papers have been cited in a particular year. <em>${journal_name}</em> has received its first impact factor of ${impact_factor} from Thomson Scientific, a preliminary figure based on just six months of published work in 2005. Although the impact factor cannot fully measure the value of published work or its wider influence, we are delighted with the response from and support of the genetics and genomics community and remain focused on our principal goal of publishing high-quality, substantive science. We also encourage contributors and readers to consider the wider issues surrounding the impact factor (see, for example, the <a href="http://medicine.plosjournals.org/perlserv/?request=get-document&doi=10.1371/journal.pmed.0030291" title="Read the PLoS Medicine Editorial">June 2006 editorial</a> in <em>PLoS Medicine</em>) and to participate in efforts to develop alternative metrics.</p>
 
 <h2>About the Public Library of Science</h2>
+${about_plos}
 
-The Public Library of Science (PLoS) is a non-profit organization of scientists and physicians committed to making the world's scientific and medical literature a freely available public resource. For more information about PLoS, visit <a href="http://www.plos.org/">www.plos.org</a>.
 
 </div>
 <!-- end : main contents -->

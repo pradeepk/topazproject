@@ -8,7 +8,7 @@
   </p>
 
   <ul>
-    <li><a href="/feed/NewArticles">New Articles</a></li>
+    <li><a href="/article/feed">New Articles</a></li>
   </ul>
    
 </div>

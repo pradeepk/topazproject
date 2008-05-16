@@ -11,7 +11,7 @@
 	<li>Internet Explorer 7+ for Windows</li>
 	<li>Firefox 1.5+ for Windows and Mac OS X</li>
 	<li>Firefox 2+ for Windows</li>
-	<li>Safari 2.0.1 for Mac OS X</li>
+	<li>Safari 2.0.1+ for Mac OS X</li>
 </ul>
 
 <a id="account" name="account"></a>
@@ -23,6 +23,8 @@
 
 <h3>Login</h3>
 <p>The "Login" or "My Profile" is available near the top right corner of every journal page.</p>
+
+<p>The first time you log in, you are required to create a profile with basic information, with which you will be identified whenever you rate or comment on an article. As part of your profile, you must choose a username. Your username is attached to all commentary that you make on the PLoS web sites. This means that all your commentary is credited and attributed to you. <strong>You cannot change your username.</strong> It is possible to get a new username by registering for a whole new account, but anything you have done on your original account will not transfer to the new account with the new username.</p>
 
 <h3>Lost Password</h3>
 <p>If you have forgotten your password, go to <a href="http://register.plos.org/reminder" title="PLoS Journals Profile Password Reminder">http://register.plos.org/reminder</a>, enter your E-mail address, and click "Submit". An e-mail will be sent to the e-mail address you use to log in to your PLoS user account.  </p>

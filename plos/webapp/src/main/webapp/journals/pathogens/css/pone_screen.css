@@ -349,7 +349,11 @@ html>body div.content h4	{ margin-bottom:1em; } /* correct margin for all browse
 
 div.static h4,
 div.static h5,
-div.content h5	{ float:left; margin:0 0.5em 0 0; font-size: 1em; color: #333; }
+div.content h5	{ margin:0 0.5em 0 0; font-size: 1em; color: #333; }
+html>body div.static h4,
+html>body div.static h5,
+html>body div.content h5	{ float:left; } /* float allow headers to display inline with following paragraph except for IE6 */
+div.content h5+div { clear:left; }
 div.static h4+p,
 div.static h5+p,
 div.content h5+p	{ margin-top:0; }
@@ -360,6 +364,14 @@ div.content li	{ margin: 0; padding: 0; }
 
 div.static ul li,
 div.content	ul li{ list-style-type: none; background: url(../images/pone_sectionnav_li_bg.gif) no-repeat 0 6px; padding-left: 12px;}
+
+div.content dl { margin-left:0; }
+div.content dl dt:first-child { margin-top:0; } /*fixes vertical misalignment in Firefox and IE7*/
+div.content dt { float:left; font-weight:bold; margin-right:0.5em; }
+html>body div.content dt { margin-top:0.5em; } /*for all browsers except IE6*/
+div.content dd { padding:0; }
+html>body div.content dd { margin-top:0.5em; } /*for all browsers except IE6*/
+div.content dd p { margin:0; }
 
 div#contentHeader { /* open access image */ position: relative; top:0; height:34px; margin:0; background:#c60 url(../images/pone_content_oa.gif) no-repeat 100% 0; }
 div#contentHeader p { margin: 0; padding:0; text-indent: -9999px; }
@@ -468,6 +480,7 @@ div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; 
 
 div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/pone_toolbar_bg.gif) repeat-x top;}
 div.commentview	fieldset{ border: 1px solid #ccc; border-width: 1px 0; margin: 0 -5px 5px -5px; padding: 10px; background-color: #eee; position: relative;}
+html>body div.commentview	fieldset { width:214px; } /* for all browsers except IE6*/
 div.commentview	 li 	{ font-size: .9em; }
 div.commentview h6,
 div.rhcBox h6 { margin: 0; }

@@ -31,11 +31,24 @@
 	<li>Toxocariasis and other Larva Migrans</li>
 </ul> 
 
+<h2>Viral Infections</h2>
+<ul> 
+	<li>Dengue</li> 
+	<li>Japanese encephalitis</li> 
+	<li>Jungle yellow fever</li> 
+	<li>Other arboviral infections</li> 
+	<li>Rabies</li> 
+	<li>Rift Valley fever</li> 
+	<li>Viral hemorrhagic fevers</li>
+</ul> 
+
 <h2>Bacterial Infections</h2> 
 <ul> 
 	<li>Bartonella</li>
 	<li>Bovine Tuberculosis in Humans</li>
 	<li>Buruli Ulcer</li> 
+	<li>Cholera</li> 
+	<li>Enteric pathogens (Shigella, Salmonella, <em>E. coli</em>)</li> 
 	<li>Leprosy</li> 
 	<li>Leptospirosis</li> 
 	<li>Relapsing Fever</li>
@@ -68,9 +81,6 @@
 
 <h2>Fundamental Microbial Pathogenesis</h2>
 <p> It is recommended that papers on fundamental microbial pathogenesis and the molecular and cellular biology of the NTDs pathogens should be considered for <em>PLoS Pathogens</em>. Examples of papers that might be more appropriate for <em>PLoS Pathogens</em> would be papers on fundamental mechanisms of immune evasion by <em>Plasmodium</em>, blocking of apoptosis by <em>Salmonella</em>, population biology of <em>Candida</em>, or latency in herpes viruses. In contrast, papers examining molecular pathways as potential drug or vaccine targets would be more suitable for <em>PLoS Neglected Tropical Diseases</em>. As described above, other papers more suitable to <em>PLoS Neglected Tropical Diseases</em> are papers on health product (i.e., drug, diagnostic, and vaccine) development, human immunology, clinical manifestations, surveillance and epidemiologic research, public health control, and health policy aspects of the NTDs.</p> 
-
-<h2>Viral Infections</h2>
-<p>Because of their acute and emerging features, manuscripts on most of the viral infections will not usually be suitable for <em>PLoS Neglected Tropical Diseases</em>. However, the World Health Organization has added two specific poverty-promoting viral infections, dengue and rabies, to its list of NTDs, and we will consider papers on these topics on a case-by-case basis through a <a href="guidelines.action#presubmission" title="PLoS NTDs | Author Guidelines: Presubmission Inquiries">presubmission inquiry</a> to the editors. </p> 
 
 <h2>Other Infections</h2>
 <p>Other infectious diseases will also be considered on a case-by-case basis through a <a href="guidelines.action#presubmission" title="PLoS NTDs | Author Guidelines: Presubmission Inquiries">presubmission inquiry</a> to the editors. Authors should indicate in their pre-submission inquiry why they consider the infection to be a neglected tropical disease.</p> 

@@ -16,8 +16,6 @@
  
 <p><a href="http://www.plos.org/about/people/one.html#rwalton" title="PLoS | Rebecca Walton's Bio">Rebecca Walton</a>, +44(0)1223-463-333, <strong>rwalton [at] plos.org</strong></p>
 
-<p><a href="http://www.plos.org/about/people/one.html#skoppman" title="PLoS | Sharon Koppman's Bio">Sharon Koppman</a>, +1(415)568-3444, <strong>skoppman [at] plos.org</strong></p>
-
 <h2>Journal Advertising Sales</h2>
 <p>Patric Donaghy, +1(415)564-8612, <a href="http://www.plos.org/contact.php?recipient=adv" title="PLoS | E-mail Journal Advertising Sales">E-mail</a><br />
 <a href="http://www.plos.org/advertise" title="PLoS.org | Get our Media Kit">Get the PLoS Media Kit</a></p>

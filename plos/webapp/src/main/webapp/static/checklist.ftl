@@ -28,7 +28,7 @@
   <li>Is your summary no more than 300 words and divided into sections called Background, Methodology/Principal Findings, and Conclusions/Significance? </li>
   <li>Have you used standard nomenclature?</li>
   <li>Have your original figures been created as EPS or TIFF files in a high enough resolution to provide for adequate review?</li>
-  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS ONE | Figure and Table Guidelines">Guidelines for Figure and Table Preparation</a>? Has each multipanel figure been combined into a single file?</li>
+  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS ONE | Guidelines for Figure and Table Preparation">Guidelines for Figure and Table Preparation</a>? Has each multipanel figure been combined into a single file?</li>
   <li>Is the manuscript file created in Word or RTF?</li>
   <li>Are tables included at the end of the manuscript file? Is the table title no more than one sentence and has all the rest of the table legend been placed below the table itself?</li>
   <li>Are all figures and tables called out in the manuscript in proper order?</li>

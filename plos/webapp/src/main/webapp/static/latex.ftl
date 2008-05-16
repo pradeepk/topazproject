@@ -4,7 +4,7 @@
 
 <h1>Converting LaTeX files to Word or RTF format</h1>
 
-<p>Our production system can only accept text files in Word or RTF format. Here are instructions for converting LaTeX files to Word or RTF format. For further information on preparing files for submission, read our <a href="guidelines.action" title="PLoS ONE | Author Guidelines">author guidelines</a>.</p>
+<p>Our production system can only accept text files in Word or RTF format. Here are instructions for converting LaTeX files to Word or RTF format. For further information on preparing files for submission, read our <a href="guidelines.action" title="Author Guidelines">author guidelines</a>.</p>
 
 <h2>LaTex Converters</h2>
 <ul>

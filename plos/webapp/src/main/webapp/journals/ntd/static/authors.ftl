@@ -8,7 +8,7 @@
 <@s.url action="policies" namespace="/static" includeParams="none" id="policiesURL"/>
 <@s.url action="competing" namespace="/static" includeParams="none" id="competingURL"/>
 <@s.url action="guidelines" namespace="/static" includeParams="none" id="guidelinesURL"/>
-<@s.url action="latex" namespace="/static" includeParams="none" id="latexURL"/>
+<@s.url action="latexGuidelines" namespace="/static" includeParams="none" id="latexURL"/>
 <@s.url action="figureGuidelines" namespace="/static" includeParams="none" id="figureGuidelinesURL"/>
 <@s.url action="checklist" namespace="/static" includeParams="none" id="cklistURL"/>
 <@s.url action="revisedChecklist" namespace="/static" includeParams="none" id="revisedChecklistURL"/>
@@ -24,9 +24,9 @@
 	</li>
 	<li><@s.a href="${guidelinesURL}" title="PLoS NTDS | Guidelines for Authors">Author Guidelines</@s.a> - Guidelines for authors about the journal, open access, the editorial process, and the production process</li>
 		<ul>
-			<li><@s.a href="${latexURL}" title="PLoS NTDS | Converting LaTeX files to Word or RTF format">Converting LaTeX Files</@s.a> - How to convert LaTeX files to Word or RTF format</li>
+			<li><@s.a href="${latexURL}" title="PLoS Pathogens | LaTeX Guidelines">LaTeX Guidelines</@s.a> - Instructions for submitting LaTeX files</li>
 		</ul>
-	<li><@s.a href="${figureGuidelinesURL}" title="PLoS NTDS | Guidelines for Table and Figure Preparation">Table and Figure Preparation</@s.a> - Detailed guidelines to help you prepare your figures and tables for publication</li>
+	<li><@s.a href="${figureGuidelinesURL}" title="PLoS NTDS | Guidelines for Figure and Table Preparation">Figure and Table Guidelines</@s.a> - Detailed guidelines to help you prepare your figures and tables for publication</li>
 	<li><@s.a href="${cklistURL}" title="PLoS NTDS | Checklist for Manuscript Submission">Submit Your Manuscript</@s.a> - Ready to submit your manuscript? Please refer to our submission checklist first.
 		<ul>
 			<li><a href="http://ntds.plosjms.org/" title="PLoS NTDs | Online Manuscript Submission and Review System">Submit Manuscript</a> - Online Manuscript Submission and Review System</li>

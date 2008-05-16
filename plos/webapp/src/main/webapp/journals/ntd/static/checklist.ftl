@@ -28,9 +28,10 @@ In addition, all authors will be asked to specify the nature of their contributi
 <li>Have non-standard abbreviations been defined in the text?</li> 
 <li>Have you used <a href="http://www.gene.ucl.ac.uk/nomenclature/guidelines.html" title="HGNC Guidelines for Human Genome Nomenclature">standard nomenclature</a>?</li> 
 <li>Have you used <a href="http://www.bipm.org/en/si/" title="SI units">SI values</a>?</li>
-<li>Is the manuscript file in DOC or RTF?</li> 
+<li>Is the manuscript file in DOC or RTF? If you prepared your article using LaTeX, please refer to our <a href="latexGuidelines.action" title="PLoS NTDs | LaTeX Guidelines">LaTeX Guidelines</a> for details about file types.</li> 
+
 <li>Have your original figures been created as EPS or TIFF files in a high enough resolution to provide for adequate review? Please note that individual files should not exceed 5 MB in size.</li>
-<li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS NTDs | Table and Figure Guidelines">Guidelines for Figure Preparation</a>?</li>
+<li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS NTDs | Guidelines for Figure and Table Preparation">Guidelines for Figure and Table Preparation</a>?</li>
 <li>Are related manuscripts by any of the authors submitted or in press elsewhere? If so, are you prepared to provide PDFs as supporting information?</li> 
 <li>Have you identified potential reviewers whose e-mail addresses you can provide?</li> 
 </ul>
