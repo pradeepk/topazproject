@@ -55,7 +55,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.plos.util.CacheAdminHelper;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
