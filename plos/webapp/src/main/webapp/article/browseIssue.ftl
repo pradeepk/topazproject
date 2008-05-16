@@ -57,7 +57,7 @@
   </div><!-- end : right-hand column -->
   <!-- begin : primary content area -->
   <div class="content">
-  <h1>Table of Contents | ${issueInfo.displayName}</h1>
+  <h1>Table of Contents | ${issueInfo.displayName} ${volumeInfo.displayName}</h1>
     <#if issueInfo.imageArticle?has_content>
       <@s.url id="imageSmURL" action="fetchObject" namespace="/article" uri="${issueInfo.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
       <@s.url id="imageLgURL" action="slideshow" namespace="/article" uri="${issueInfo.imageArticle}" imageURI="${issueInfo.imageArticle}.g001" includeParams="none"/>
