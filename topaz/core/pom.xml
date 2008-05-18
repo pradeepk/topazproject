@@ -48,6 +48,18 @@
           <groupId>org.apache.geronimo.specs</groupId>
           <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jdmk</groupId>
+          <artifactId>jmxtools</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.jmx</groupId>
+          <artifactId>jmxri</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
