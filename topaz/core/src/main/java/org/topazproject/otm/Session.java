@@ -129,16 +129,18 @@ public interface Session {
    * @param txTimeout the transaction timeout, in seconds; if &lt;= 0 then use the default timeout
    * @return the transaction
    *
-   * @throws OtmException on an error
+   * @throws OtmException if a transaction is already active or if an error occurred starting
+   *                      a new transaction
    */
   public Transaction beginTransaction(boolean readOnly, int txTimeout) throws OtmException;
 
   /**
    * Gets the current transaction.
    *
-   * @return the transaction
+   * @return the transaction, or null if there is none
+   * @throws OtmException on an error
    */
-  public Transaction getTransaction();
+  public Transaction getTransaction() throws OtmException;
 
   /**
    * Close and release all resources.
