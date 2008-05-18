@@ -56,6 +56,10 @@ public class TransactionImpl implements org.topazproject.otm.Transaction {
     return session;
   }
 
+  public Transaction getJtaTransaction() {
+    return jtaTxn;
+  }
+
   public void setRollbackOnly() throws OtmException {
     if (log.isDebugEnabled())
       log.debug("Setting rollback-only on transaction " + this);

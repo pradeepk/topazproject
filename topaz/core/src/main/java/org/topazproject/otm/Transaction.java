@@ -47,6 +47,13 @@ public interface Transaction {
    */
   public Session getSession();
 
+  /**
+   * Gets the underling JTA transaction.
+   *
+   * @return the jta transaction
+   */
+  public javax.transaction.Transaction getJtaTransaction();
+
   /** 
    * Mark the transaction for rollback. 
    */

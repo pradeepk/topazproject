@@ -47,14 +47,14 @@ public abstract class AbstractConnection implements Connection {
   }
 
   /** 
-   * Enlist the given xa-resource with the session's transaction-manager.
+   * Enlist the given xa-resource with the session's transaction.
    * 
    * @param xaRes the xa-resource to enlist
    * @throws OtmException if an error occurred enlisting <var>xaRes</var>
    */
   protected void enlistResource(XAResource xaRes) throws OtmException {
     try {
-      sess.getSessionFactory().getTransactionManager().getTransaction().enlistResource(xaRes);
+      sess.getTransaction().getJtaTransaction().enlistResource(xaRes);
     } catch (Exception e) {
       throw new OtmException("Error enlisting resource", e);
     }
