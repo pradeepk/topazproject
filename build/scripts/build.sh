@@ -18,7 +18,6 @@
 # limitations under the License.
 
 # WARNING:
-#  ant must be in path and configured properly (ANT_HOME)
 #  mvn must be in path and configured properly
 #  JAVA_HOME must be set appropriately
 
@@ -29,6 +28,7 @@
 # TODO: Command line args to select what part of build to do? (for testing)
 
 [ -z "$MVN" ] && MVN=mvn
+[ -z "$JDK" ] && JDK=/home/tools/jdk
 
 MVN_FIRST_FAILURE=$HOME/.m2/first_failure
 MVN_LAST_SUCCESS=$HOME/.m2/last_success
@@ -45,6 +45,7 @@ MVNARGS=-Dsvnversion=${SVNVERSION}
 
 mvn --version
 java -version
+"$JDK" 1.6 java -version
 echo "pwd: "`pwd`
 [ -e ${MVN_FIRST_FAILURE} ] && echo "Initial failure: ${FIRST_FAILURE}"
 echo "svnversion: r$SVNVERSION (last success: r$LAST_SUCCESS / last build: r$LAST_BUILD)"
@@ -57,9 +58,17 @@ find $HOME/.m2/repository/org/topazproject/packages -name "*.rpm" -exec rm {} \;
 
 rm -f plos/it/install/*/installed
 set -e
+
+# compile under 1.5 and 1.6, and build packages under 1.5
 #${MVN} ${MVNARGS} -Pit clean install --batch-mode
+
+"$JDK" 1.6 env MAVEN_OPTS=-XX:MaxPermSize=128m ${MVN} ${MVNARGS} clean install --batch-mode
+N6=$?
+
 ${MVN} ${MVNARGS} clean install --batch-mode -Ppackages,rpm,distribution
-N=$?
+N5=$?
+
+[[ $N5 != 0 || $N6 != 0 ]] && N=1 || N=0
 
 # Build site info
 if [ ${N} -eq 0 ]; then
