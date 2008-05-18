@@ -72,6 +72,9 @@ public class ItqlStore extends AbstractTripleStore {
   private        final ItqlClientFactory itqlFactory;
   private        final URI               serverUri;
 
+  // temporary hack for problems with mulgara's blank-nodes (must be unique for whole tx)
+  private              int               bnCtr = 0;
+
   /** 
    * Create a new itql-store instance. 
    * 
@@ -162,7 +165,6 @@ public class ItqlStore extends AbstractTripleStore {
 
   private void buildInsert(StringBuilder buf, List<RdfMapper> pList, String id, Object o, Session sess)
       throws OtmException {
-    int i = ((TransactionImpl) sess.getTransaction()).ctr++;
     for (RdfMapper p : pList) {
       if (!p.isEntityOwned())
         continue;
@@ -174,12 +176,13 @@ public class ItqlStore extends AbstractTripleStore {
             addStmt(buf, id, k, v, null, false); // xxx: uri or literal?
       } else if (!p.isAssociation())
         addStmts(buf, id, p.getUri(), (List<String>) b.get(o) , p.getDataType(), p.typeIsUri(), 
-                 p.getColType(), "$s" + i++ + "i", p.hasInverseUri());
+                 p.getColType(), "$s" + bnCtr++ + "i", p.hasInverseUri());
       else
         addStmts(buf, id, p.getUri(), sess.getIds(b.get(o)) , null,true, p.getColType(), 
-                 "$s" + i++ + "i", p.hasInverseUri());
+                 "$s" + bnCtr++ + "i", p.hasInverseUri());
     }
-    ((TransactionImpl) sess.getTransaction()).ctr = i;
+    if (bnCtr > 1000000000)
+      bnCtr = 0;        // avoid negative numbers
   }
 
   private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs, 

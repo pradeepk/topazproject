@@ -38,8 +38,6 @@ public class TransactionImpl implements org.topazproject.otm.Transaction {
   private final Session     session;
   private final Transaction jtaTxn;
 
-  public int ctr = 0;           // temporary hack for problems with mulgara's blank-nodes
-
   /**
    * Creates a new Transaction object.
    *
