@@ -57,6 +57,19 @@ public class EmbeddedClient extends TIClient {
   static {
     shutdownHook = new Thread() {
       public void run() {
+        // close all session factories
+        for (Map<URI, SessionFactory> fl : allFactories.values()) {
+          for (SessionFactory sf : fl.values()) {
+            try {
+              sf.close();
+            } catch (Exception e) {
+              System.err.println("Error closing session-factory '" + sf + "': " + e);
+            }
+          }
+        }
+        allFactories.clear();
+
+        // delete all temporary db's
         for (File f : tempFiles) {
           try {
             if (f.exists())
@@ -65,6 +78,7 @@ public class EmbeddedClient extends TIClient {
             System.err.println("Error deleting '" + f + "': " + e);
           }
         }
+        tempFiles.clear();
       }
     };
 
@@ -74,7 +88,8 @@ public class EmbeddedClient extends TIClient {
   /** 
    * Release all static resources associated with this class. This is meant to be used in an
    * environment where classes are reloaded in order to make sure all references to this class
-   * or to related classes are removed.
+   * or to related classes are removed. Note that this closes all session-factories, so the
+   * caller must ensure they will not be needed anymore.
    */
   public static void releaseResources() {
     Runtime.getRuntime().removeShutdownHook(shutdownHook);
