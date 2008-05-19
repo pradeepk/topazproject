@@ -53,7 +53,6 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
-import org.topazproject.otm.impl.TransactionImpl;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.GenericQueryImpl;
