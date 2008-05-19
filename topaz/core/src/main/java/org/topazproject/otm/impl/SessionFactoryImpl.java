@@ -37,6 +37,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
 import bitronix.tm.BitronixTransactionManager;
+import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.internal.XAResourceHolderState;
 import bitronix.tm.resource.ResourceRegistrar;
 import bitronix.tm.resource.common.AbstractXAResourceHolder;
@@ -87,7 +88,8 @@ import org.topazproject.otm.Interceptor;
 public class SessionFactoryImpl implements SessionFactory {
   private static final Log log = LogFactory.getLog(SessionFactory.class);
 
-  private static TransactionManager defTxnMgr;
+  private static BitronixTransactionManager defTxnMgr;
+  private static Object                     txnMgrCleaner;
 
   /**
    * definition name to definition map
@@ -487,13 +489,10 @@ public class SessionFactoryImpl implements SessionFactory {
 
   private static synchronized TransactionManager getDefaultTransactionManager() {
     if (defTxnMgr == null) {
-      defTxnMgr = new BitronixTransactionManager() {
-        protected void finalize() throws Throwable {
-          try {
-            shutdown();
-          } finally {
-            super.finalize();
-          }
+      defTxnMgr = TransactionManagerServices.getTransactionManager();
+      txnMgrCleaner = new Object() {
+        protected void finalize() {
+          defTxnMgr.shutdown();
         }
       };
 
