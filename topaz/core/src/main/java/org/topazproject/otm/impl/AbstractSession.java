@@ -356,8 +356,8 @@ abstract class AbstractSession implements Session {
           if (jtaTxn != null && jtaTxn.getStatus() == Status.STATUS_ROLLEDBACK)
             tm.rollback();
         } catch (Exception e) {
-          if (log.isDebugEnabled())
-            log.debug("Expected exception from duplicate commit/rollback", e);
+          if (log.isTraceEnabled())
+            log.trace("Expected exception from duplicate commit/rollback", e);
         }
 
         tm.setTransactionTimeout(txTimeout > 0 ? txTimeout : 0);
