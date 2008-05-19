@@ -142,7 +142,7 @@ abstract class AbstractSession implements Session {
     if (jtaTxn == null) {
       try {
         jtaTxn = getSessionFactory().getTransactionManager().getTransaction();
-        if (!isAlive(jtaTxn.getStatus()))         // hack till BTM-16 is resolved
+        if (jtaTxn != null && !isAlive(jtaTxn.getStatus()))     // hack till BTM-16 is resolved
           jtaTxn = null;
       } catch (Exception e) {
         throw new OtmException("Error getting transaction", e);
