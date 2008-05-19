@@ -135,7 +135,6 @@ public class JournalService {
     return journalKeyService.getAllJournalKeys(session);
   }
 
-  @Transactional(readOnly = true)
   public String getCurrentJournalKey() {
     return journalKeyService.getCurrentJournalKey();
   }
