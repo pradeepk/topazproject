@@ -80,6 +80,7 @@
                 <h3><@s.a href="${featured1}" title="Read Open-Access Article">Velit Esse Molestie Consequat, vel Illum Dolore eu Feugiat Nulla Facilisis</@s.a></h3>
                 <img src="images/thumbPlaceholder_90x90.jpg" alt="article image" />
                 <p>At vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zril delenit augue duis dolore te feugait facilisi. Oppeto sino metuo premo regula reprobo utinam.</p>
+                <p class="imgCredit">Image Credit: Paul E. Roid, Paparazzi University</p>
                 <div class="clearer">&nbsp;</div>
               </div>
               <div class="article section lastSection">
