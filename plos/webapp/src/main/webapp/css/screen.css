@@ -213,7 +213,7 @@ div#topBanner div 	{ padding-top: 4px; } /* sets top padding on all banner slots
 
 div#hdr 			{ height: 150px; position: relative; z-index: 997;}
 #hdr #logo			{ background: transparent url(../images/hdr_logo.gif) no-repeat top left; color: #039; }
-#hdr #logo 			{ width: 501px; height: 128px; position: absolute; top: 26px; left: 8px; margin: 0; font-size: 1.6em; }
+#hdr #logo 			{ width: 501px; height: 128px; position: absolute; top: 16px; left: 8px; margin: 0; font-size: 1.6em; }
 #hdr #logo a 		{ width: 300px; height: 90px; display: block; position:relative; }
 #hdr #logo span,
 #hdr #tagline span 	{ display: block; width: 0; height: 0; overflow: hidden; }
