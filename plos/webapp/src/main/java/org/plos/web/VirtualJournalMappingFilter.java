@@ -16,11 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.plos.web;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.Serializable;
+
 import java.net.MalformedURLException;
 
 import javax.servlet.Filter;
@@ -33,58 +33,44 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
- * A Filter that maps incoming URI Requests to an appropriate virtual journal resources.
- *
- * If a virtual journal context is set, a lookup is done to see if an override for the requested
- * resource exists for the virtual journal.  If so, the Request is wrapped with the override values
- * and passed on to the FilterChain.  If not, the Request is wrapped with default values for the
- * resource and then passed to the FilterChain.
+ * A Filter that maps incoming URI Requests to an appropriate virtual journal resources. If a
+ * virtual journal context is set, a lookup is done to see if an override for the requested
+ * resource exists for the virtual journal.  If so, the Request is wrapped with the override
+ * values and passed on to the FilterChain.  If not, the Request is wrapped with default values
+ * for the resource and then passed to the FilterChain.
  */
 public class VirtualJournalMappingFilter implements Filter {
-
-  private static ServletContext servletContext = null;
-
-  private static final Log log = LogFactory.getLog(VirtualJournalMappingFilter.class);
-
-  private static Ehcache fileSystemCache  = null;
-  static {
-    try {
-      CacheManager cacheManager = CacheManager.getInstance();
-      fileSystemCache = cacheManager.getEhcache("VirtualJournalMappingFilter");
-    } catch (CacheException ce) {
-      log.error("Error getting cache-manager", ce);
-    } catch (IllegalStateException ise) {
-      log.error("Error getting cache", ise);
-    }
-
-    if (fileSystemCache == null) {
-      log.error("No cache configuration found for VirtualJournalMappingFilter");
-    } else {
-      log.info("Cache configuration found for VirtualJournalMappingFilter");
-    }
-  }
-
-  // Cache Element value to indicate resource exists
-  private static final String RESOURCE_EXISTS = "EXISTS";
-  // Cache Element value to indicate resource does not exists
-  private static final String RESOURCE_DOES_NOT_EXIST = "DOES NOT EXIST";
+  private static final Log log            = LogFactory.getLog(VirtualJournalMappingFilter.class);
+  private ServletContext   servletContext = null;
+  private Ehcache          cache          = null;
 
   /*
    * @see javax.servlet.Filter#init
    */
   public void init(final FilterConfig filterConfig) throws ServletException {
-
     // need ServletContext to get "real" path/file names
     servletContext = filterConfig.getServletContext();
+
+    try {
+      CacheManager cacheManager = CacheManager.getInstance();
+      cache = cacheManager.getEhcache("VirtualJournalMappingFilter");
+    } catch (CacheException ce) {
+      throw new ServletException("Error getting cache-manager", ce);
+    } catch (IllegalStateException ise) {
+      throw new ServletException("Error getting cache", ise);
+    }
+
+    if (cache == null)
+      throw new ServletException("No cache configuration found for VirtualJournalMappingFilter");
   }
 
   /*
@@ -98,141 +84,139 @@ public class VirtualJournalMappingFilter implements Filter {
    * @see javax.servlet.Filter#doFilter
    */
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
+                throws ServletException, IOException {
+    if (request instanceof HttpServletRequest) {
+      HttpServletRequest r      = (HttpServletRequest) request;
+      HttpServletRequest mapped = mapRequest(r);
 
-    // lookup virtual journal context, mapping, & modify URI of Request if necessary
-    final ServletRequest virtualJournalResource = lookupVirtualJournalResource((HttpServletRequest) request);
+      if (log.isDebugEnabled()) {
+        if (mapped == r)
+          log.debug("Passed thru unchanged " + r.getRequestURI());
+        else
+          log.debug("Mapped " + r.getRequestURI() + " to " + mapped.getRequestURI());
+      }
 
-    if (log.isDebugEnabled()) {
-      log.debug("virtual journal resource Request:"
-        + "  requestUri=\""  + ((HttpServletRequest) virtualJournalResource).getRequestURI() + "\""
-        + ", contextPath=\"" + ((HttpServletRequest) virtualJournalResource).getContextPath() + "\""
-        + ", servletPath=\"" + ((HttpServletRequest) virtualJournalResource).getServletPath() + "\""
-        + ", pathInfo=\""    + ((HttpServletRequest) virtualJournalResource).getPathInfo() + "\"");
+      request = mapped;
     }
 
-    // continue the Filter chain with virtual journal resource
-    filterChain.doFilter(virtualJournalResource, response);
+    filterChain.doFilter(request, response);
   }
 
   /**
-   * Lookup a virtual journal resource.
-   *
-   * If resource exists within the virtual journal context, return a WrappedRequest with the
-   * mappingPrefix,  else return a WrappedRequest for the default resource.
+   * Map the request to a resource in the journal context.. If resource exists within the
+   * virtual journal context, return a WrappedRequest with the mappingPrefix,  else return a
+   * WrappedRequest for the default resource.
    *
    * @param request <code>HttpServletRequest</code> to apply the lookup against.
+   *
    * @return WrappedRequest for the resource.
+   *
+   * @throws ServletException on an error
    */
-private HttpServletRequest lookupVirtualJournalResource(final HttpServletRequest request)
-  throws ServletException {
+  private HttpServletRequest mapRequest(HttpServletRequest request)
+                                 throws ServletException {
+    VirtualJournalContext context =
+      (VirtualJournalContext) request.getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
 
-    // lookup virtual journal context
-    final VirtualJournalContext virtualJournalContext = (VirtualJournalContext) request.getAttribute(
-      VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
-    if (virtualJournalContext == null) {
+    if (context == null)
       return request;
-    }
-    final String virtualJournal = virtualJournalContext.getJournal();
-    final String mappingPrefix  = virtualJournalContext.getMappingPrefix();
-    if (virtualJournal == null || mappingPrefix == null || mappingPrefix.length() == 0) {
+
+    String journal = context.getJournal();
+
+    if (journal == null)
       return request;
+
+    String mappingPrefix = context.getMappingPrefix();
+
+    if ((mappingPrefix == null) || (mappingPrefix.length() == 0))
+      return request;
+
+    String   key     = journal + "-" + request.getRequestURI();
+    Element  element = cache.get(key);
+    String[] mapped;
+
+    if (element != null)
+      mapped = ((CachedValue) element.getObjectValue()).getMapped();
+    else {
+      String cp      = request.getContextPath();
+      String sp      = request.getServletPath();
+      String pi      = request.getPathInfo();
+
+      mapped         = getMappedPaths(context, context.virtualizeUri(cp, sp, pi));
+
+      if (mapped == null)
+        mapped = getMappedPaths(context, context.defaultUri(cp, sp, pi));
+
+      if ((mapped != null) && mapped[3].equals(request.getRequestURI()))
+        mapped = null;
+
+      cache.put(element = new Element(key, new CachedValue(mapped)));
     }
 
-    if (log.isDebugEnabled()) {
-      log.debug("looking up virtual journal resource for virutalJournal: \"" + virtualJournal + "\""
-        + ", mappingPrefix: \"" + mappingPrefix + "\"");
-    }
+    return (mapped == null) ? request : wrapRequest(request, mapped);
+  }
 
-    // will need to examine Request Path Elements
-    // get virtualized URI values
-    final String[] virtualizedValues = virtualJournalContext.virtualizeUri(
-      request.getContextPath(), request.getServletPath(), request.getPathInfo());
-    final String virtualContextPath = virtualizedValues[0];
-    final String virtualServletPath = virtualizedValues[1];
-    final String virtualPathInfo    = virtualizedValues[2];
-    final String virtualRequestUri  = virtualizedValues[3];
-    // get defaulted URI values
-    final String[] defaultedValues = virtualJournalContext.defaultUri(
-      request.getContextPath(), request.getServletPath(), request.getPathInfo());
-    final String defaultContextPath = defaultedValues[0];
-    final String defaultServletPath = defaultedValues[1];
-    final String defaultPathInfo    = defaultedValues[2];
-    final String defaultRequestUri  = defaultedValues[3];
+  private String[] getMappedPaths(VirtualJournalContext context, String[] paths)
+                           throws ServletException {
+    String resource = paths[3].substring(paths[0].length());
 
-    // look in cache 1st for virtual resource
-    Element cachedVirtualResourceElement = fileSystemCache.get(virtualRequestUri);
-    if (cachedVirtualResourceElement == null) {
-      if (log.isDebugEnabled()) {
-        log.debug("cache miss for virtual resource: " + virtualRequestUri);
-      }
+    if (resourceExists(resource))
+      return paths;
 
-      // can the ServletContext find the virtual resource?
-      final URL virtualResourceURL;
-      try {
-        // path must begin with a "/" and is interpreted as relative to the current context root
-        virtualResourceURL = servletContext.getResource(virtualRequestUri.substring(virtualContextPath.length()));
-      } catch (MalformedURLException mre) {
-        // should never happen
-        log.error(mre);
-        throw new ServletException("virtualRequestUri=" + virtualRequestUri, mre);
-      }
-      if (virtualResourceURL != null) {
-        cachedVirtualResourceElement = new Element(virtualRequestUri, RESOURCE_EXISTS);
-      } else {
-        cachedVirtualResourceElement = new Element(virtualRequestUri, RESOURCE_DOES_NOT_EXIST);
-      }
-      // populate cache with existence
-      fileSystemCache.put(cachedVirtualResourceElement);
+    return null;
+  }
 
-      if (log.isDebugEnabled()) {
-        log.debug("ServletContext.getResource(" + virtualRequestUri + "): "
-          + cachedVirtualResourceElement.getObjectValue());
-      }
-    } else {
-      if (log.isDebugEnabled()) {
-        log.debug("cache hit for virtual resource: " + virtualRequestUri
-          + ", value: " + cachedVirtualResourceElement.getObjectValue());
-      }
-    }
-
-    // does resource override exist?
-    if (cachedVirtualResourceElement.getObjectValue().equals(RESOURCE_EXISTS)) {
-      // use virtual journal resource
-      return wrapRequest(request,
-        virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri);
-    } else {
-      // use default resource
-      return wrapRequest(request,
-        defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri);
+  private boolean resourceExists(String resource) throws ServletException {
+    try {
+      return servletContext.getResource(resource) != null;
+    } catch (MalformedURLException mre) {
+      throw new ServletException("Invalid resource path: " + resource, mre);
     }
   }
 
+  private static class CachedValue implements Serializable {
+    private String[] mapped;
+
+    public CachedValue(String[] mapped) {
+      this.mapped = mapped;
+    }
+
+    public String[] getMapped() {
+      return mapped;
+    }
+  }
 
   /**
    * Wrap an HttpServletRequest with arbitrary URI values.
+   *
+   * @param request the request to wrap
+   * @param paths the paths to substitute
+   *
+   * @return the wrapped request instance
+   *
+   * @throws IllegalArgumentException DOCUMENT ME!
    */
   public static HttpServletRequest wrapRequest(final HttpServletRequest request,
-    final String contextPath, final String servletPath, final String pathInfo,
-    final String requestUri) {
+                                               final String[] paths) {
+    if ((paths == null) || (paths.length != 4))
+      throw new IllegalArgumentException("Invalid path list");
 
     return new HttpServletRequestWrapper(request) {
+        public String getRequestURI() {
+          return paths[3];
+        }
 
-      public String getRequestURI() {
-        return requestUri;
-      }
+        public String getContextPath() {
+          return paths[0];
+        }
 
-      public String getContextPath() {
-        return contextPath;
-      }
+        public String getServletPath() {
+          return paths[1];
+        }
 
-      public String getServletPath() {
-        return servletPath;
-      }
-
-      public String getPathInfo() {
-        return pathInfo;
-      }
-    };
+        public String getPathInfo() {
+          return paths[2];
+        }
+      };
   }
 }

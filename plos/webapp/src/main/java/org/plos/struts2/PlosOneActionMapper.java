@@ -87,14 +87,10 @@ public class PlosOneActionMapper extends DefaultActionMapper {
       // will need to examine Request Path Elements, get virtualized URI values
       final String[] virtualizedValues = virtualJournalContext.virtualizeUri(
         request.getContextPath(), request.getServletPath(), request.getPathInfo());
-      final String virtualContextPath = virtualizedValues[0];
-      final String virtualServletPath = virtualizedValues[1];
-      final String virtualPathInfo    = virtualizedValues[2];
-      final String virtualRequestUri  = virtualizedValues[3];
 
       // get an ActionMapping for the re-written URI
       actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request,
-        virtualContextPath, virtualServletPath, virtualPathInfo, virtualRequestUri), configManager);
+         virtualizedValues), configManager);
 
       // does created ActionMapping actually exist in config?
       if (actionMapping != null) {
@@ -126,13 +122,9 @@ public class PlosOneActionMapper extends DefaultActionMapper {
         // get defaulted URI values
         final String[] defaultedValues = virtualJournalContext.defaultUri(
           request.getContextPath(), request.getServletPath(), request.getPathInfo());
-        final String defaultContextPath = defaultedValues[0];
-        final String defaultServletPath = defaultedValues[1];
-        final String defaultPathInfo    = defaultedValues[2];
-        final String defaultRequestUri  = defaultedValues[3];
 
-        actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request,
-          defaultContextPath, defaultServletPath, defaultPathInfo, defaultRequestUri), configManager);
+        actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request, 
+           defaultedValues), configManager);
         if (log.isDebugEnabled()) {
           log.debug("using default action for mappingPrefix: " + mappingPrefix
             + ", action: " + debugActionMapping(actionMapping));
