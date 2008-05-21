@@ -24,7 +24,7 @@
     <module>trackback-util</module>
     <module>dom-ranges-helper</module>
     <module>entity-resolver</module>
-    <module>js</module>
+    <!--  <module>js</module> -->
   </modules>
 
 </project>
