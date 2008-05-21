@@ -107,8 +107,8 @@ public class VirtualJournalContextFilter implements Filter {
         description    = ruleValues.getDescription();
         mappingPrefix  = ruleValues.getMappingPrefix();
         if (journalName != null) {
-          if (log.isDebugEnabled()) {
-            log.debug("virtual journal from rules: journal = \"" + journalName + "\""
+          if (log.isTraceEnabled()) {
+            log.trace("virtual journal from rules: journal = \"" + journalName + "\""
               + ", mappingPrefix = \"" + mappingPrefix + "\"");
           }
         }
@@ -121,8 +121,8 @@ public class VirtualJournalContextFilter implements Filter {
       description    = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".description");
       mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
 
-      if (log.isDebugEnabled()) {
-        log.debug("virtual journal from defaults: journal = \"" + journalName + "\""
+      if (log.isTraceEnabled()) {
+        log.trace("virtual journal from defaults: journal = \"" + journalName + "\""
           + ", mappingPrefix = \"" + mappingPrefix + "\"");
       }
     }
@@ -133,16 +133,17 @@ public class VirtualJournalContextFilter implements Filter {
       description    = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_DESCRIPTION;
       mappingPrefix  = VirtualJournalContext.PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX;
 
-      if (log.isDebugEnabled()) {
-        log.debug("setting virtual journal = \"" + journalName + "\""
+      if (log.isTraceEnabled()) {
+        log.trace("setting virtual journal = \"" + journalName + "\""
           + ", mappingPrefix = \"" + mappingPrefix + "\""
           + ", no <default> specified, no <rule>s match");
       }
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("setting virtual journal context to: journal = \"" + journalName + "\""
-        + ", mappingPrefix = \"" + mappingPrefix + "\"");
+      log.debug("journal = \"" + journalName + "\"" 
+          + ", mappingPrefix = \"" + mappingPrefix + "\" for " 
+          + ((HttpServletRequest)request).getRequestURL());
     }
 
     // put virtualJournal context in the ServletRequest for webapp to use
@@ -188,8 +189,8 @@ public class VirtualJournalContextFilter implements Filter {
       && virtualJournal == null) {
       final String journal = (String) onJournal.next();
 
-      if (log.isDebugEnabled()) {
-        log.debug("processing virtual journal: " + journal);
+      if (log.isTraceEnabled()) {
+        log.trace("processing virtual journal: " + journal);
       }
 
       // get the <rules> for this journal
@@ -201,14 +202,14 @@ public class VirtualJournalContextFilter implements Filter {
         final String httpHeader = rule.substring(rulesPrefix.length() + 1);
         final String httpValue  = configuration.getString(rule);
 
-        if (log.isDebugEnabled()) {
-          log.debug("processing rule: " + httpHeader + " = " + httpValue);
+        if (log.isTraceEnabled()) {
+          log.trace("processing rule: " + httpHeader + " = " + httpValue);
         }
 
         // test Request HTTP header value against match
         final String reqHttpValue = request.getHeader(httpHeader);
-        if (log.isDebugEnabled()) {
-          log.debug("testing Request: " + httpHeader + "=" + reqHttpValue);
+        if (log.isTraceEnabled()) {
+          log.trace("testing Request: " + httpHeader + "=" + reqHttpValue);
         }
         if (reqHttpValue == null) {
           if (httpValue == null) {
