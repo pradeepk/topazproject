@@ -25,9 +25,10 @@
   * Specifically, it performs the following:
   * 1) Perfoms a custom dojo build. 
   * 2) Applies ambra specific dojo library fixes to the built files.
-  * 3) Injects needed locale data into the built js file to the built files.
+  * 3) Injects interned locale data into the built js files.
   * 
   * IMPT: The invoking JVM's working directory is critical: it must be the js ancestor dir (the dir containing the pom.xml).
+  * IMPT: This script sadly depends on the gmaven plugin scripting context and therefore can NOT be run standalone!! 
   * 
   * @see http://dojotoolkit.org/book/dojo-book-0-9/part-4-meta-dojo/package-system-and-custom-builds
   */
@@ -37,7 +38,8 @@
  static final String locales =  
    "dojo.provide(\"dojo.nls.ambra_xx\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.xx\");dijit.nls.loading.xx={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.xx\");dijit.nls.common.xx={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};dojo.provide(\"dojo.nls.ambra_ROOT\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.ROOT\");dijit.nls.loading.ROOT={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.ROOT\");dijit.nls.common.ROOT={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};dojo.provide(\"dojo.nls.ambra_en\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.en\");dijit.nls.loading.en={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.en\");dijit.nls.common.en={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};dojo.provide(\"dojo.nls.ambra_en-us\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.en_us\");dijit.nls.loading.en_us={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.en_us\");dijit.nls.common.en_us={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};";
  
- def ant = new AntBuilder()
+ // NOTE: the gmaven plugin provides AntBuilder in the scripting context
+ if(!ant) ant = new AntBuilder()
 
  def fixDojoCore = { String fpath ->
    File f = new File(fpath)
@@ -70,16 +72,6 @@
    }
  }
  
- def copyToWebapp = {
-   String path = "../../webapp/src/main/webapp/javascript/dojo"
-   ant.mkdir(dir: path)
-   ant.copy(todir: path, preservelastmodified:true) {
-     fileset(dir: '../js/target/dojo') {
-       include(name: '**/*')
-     }
-   }
- }
-   
  // dojo build settings 
  // IMPT: paths in the following setting vars are relative to the 'dojo-release-xxx-src/util/buildscripts' dir
  final String profileFile = '../../../ambra.profile.js';
@@ -91,9 +83,12 @@
  final String layerOptimize = 'shrinksafe'
  final String copyTests = 'false'
  
+ final String rhinoJarPath = (project.basedir.toString() + '/' + project.build.scriptSourceDirectory + '/dojo/util/shrinksafe/custom_rhino.jar')
+ final String rhinoWorkingDir = (project.basedir.toString() + '/' + project.build.scriptSourceDirectory + '/dojo/util/buildscripts') 
+ 
  // java -jar ../shrinksafe/custom_rhino.jar build.js %*
- println 'Invoking ambra dojo build...' 
- ant.java(jar: 'src/main/scripts/dojo/util/shrinksafe/custom_rhino.jar', fork:true, dir:'src/main/scripts/dojo/util/buildscripts', resultproperty:'dojoBuildResult') {
+ println 'Invoking ambra dojo build (' + profileFile + ')...' 
+ ant.java(jar: rhinoJarPath, fork:true, dir: rhinoWorkingDir, resultproperty:'dojoBuildResult') {
    arg(value: 'build.js')
    arg(value: 'profileFile=' + profileFile)
    arg(value: 'action=' + action)
@@ -106,26 +101,20 @@
  }
  def dojoBuildResult = ant.project.properties.'dojoBuildResult';
  if(dojoBuildResult != '0') {
-   println 'dojo build error.  Aborting!'
+   println 'dojo build error (exit code: ' + dojoBuildResult+ ').  Aborting!'
    System.exit(1)
  }
- println 'dojo build complete (result: ' + dojoBuildResult + ')' 
- 
+ println 'dojo build complete' 
+
  // apply ambra specific dojo library fixes to the built files
  println 'Applying ambra specific dojo library fixes...'
- fixDojoCore('target/dojo/dojo/dojo.js')
- fixDojoCore('target/dojo/dojo/dojo.js.uncompressed.js')
- println 'Ambra specific dojo library fixes complete'
+ fixDojoCore(project.build.directory + '/dojo/dojo/dojo.js')
+ fixDojoCore(project.build.directory + '/dojo/dojo/dojo.js.uncompressed.js')
+ println 'Ambra specific dojo library fixes applied'
  
  // inject the locales to the built files
  println 'Injecting locale(s)...'
- injectLocales('target/dojo/dojo/ambra.js')
- injectLocales('target/dojo/dojo/ambra.js.uncompressed.js')
- println 'Locale(s) injected...'
-
- // copy to webapp
- //println 'Copying built files to the webapp...'
- //copyToWebapp();
- //println 'Webapp updated'
- 
+ injectLocales(project.build.directory + '/dojo/dojo/ambra.js')
+ injectLocales(project.build.directory + '/dojo/dojo/ambra.js.uncompressed.js')
+ println 'Locale(s) injected'
  
