@@ -158,13 +158,15 @@ public class VirtualJournalContextFilter implements Filter {
       NDC.push(journalName);
     }
 
-    // continue the Filter chain ...
-    filterChain.doFilter(request, response);
-
-    // cleanup "Nested Diagnostic Context" for logging
-    if (journalName != null) {
-      NDC.pop();
-      NDC.remove(); // TODO: appropriate place to cleanup for Thread?
+    try {
+      // continue the Filter chain ...
+      filterChain.doFilter(request, response);
+    } finally {
+      // cleanup "Nested Diagnostic Context" for logging
+      if (journalName != null) {
+        NDC.pop();
+        NDC.remove(); // TODO: appropriate place to cleanup for Thread?
+      }
     }
   }
 
