@@ -18,11 +18,16 @@
  */
 package org.plos.struts2;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.FilterConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -45,8 +50,8 @@ import org.plos.configuration.ConfigurationStore;
  * @author Pradeep Krishnan
  */
 public class PlosStruts2Dispatcher extends FilterDispatcher {
-  private static final Log      log  = LogFactory.getLog(PlosStruts2Dispatcher.class);
-  private static final String[] keys =
+  private static final Log      log          = LogFactory.getLog(PlosStruts2Dispatcher.class);
+  private static final String[] keys         =
     {
       StrutsConstants.STRUTS_DEVMODE, StrutsConstants.STRUTS_I18N_RELOAD,
       StrutsConstants.STRUTS_I18N_ENCODING, StrutsConstants.STRUTS_CONFIGURATION_XML_RELOAD,
@@ -72,12 +77,13 @@ public class PlosStruts2Dispatcher extends FilterDispatcher {
       StrutsConstants.STRUTS_XWORKCONVERTER, StrutsConstants.STRUTS_ALWAYS_SELECT_FULL_NAMESPACE,
       StrutsConstants.STRUTS_XWORKTEXTPROVIDER, StrutsConstants.STRUTS_ID_PARAMETER_NAME,
     };
+  private String[]              pathPrefixes;
 
   /*
    * inherited javadoc
    */
   protected Dispatcher createDispatcher(FilterConfig filterConfig) {
-    Map<String, String> params = new HashMap<String, String>();
+    Map<String, String> params               = new HashMap<String, String>();
 
     for (Enumeration e = filterConfig.getInitParameterNames(); e.hasMoreElements();) {
       String name  = (String) e.nextElement();
@@ -97,5 +103,57 @@ public class PlosStruts2Dispatcher extends FilterDispatcher {
     }
 
     return new Dispatcher(filterConfig.getServletContext(), params);
+  }
+
+  /**
+   * Create a string array from a comma-delimited list of packages.
+   *
+   * @param packages A comma-delimited String listing packages
+   *
+   * @return A string array of packages
+   */
+  protected String[] parse(String packages) {
+    pathPrefixes = super.parse(packages);
+
+    return pathPrefixes;
+  }
+
+  /**
+   * Locate a static resource and copy directly to the response, setting the appropriate
+   * caching headers.
+   *
+   * @param name The resource name
+   * @param request The request
+   * @param response The response
+   *
+   * @throws IOException If anything goes wrong
+   */
+  protected void findStaticResource(String name, HttpServletRequest request,
+                                    HttpServletResponse response)
+                             throws IOException {
+    if (!name.endsWith(".class")) {
+      for (String pathPrefix : pathPrefixes) {
+        InputStream is = findInputStream(name, pathPrefix);
+
+        if (is != null) {
+          // set the content-type header
+          String contentType = getContentType(name);
+
+          if (contentType != null) {
+            response.setContentType(contentType);
+          }
+
+          try {
+            copy(is, response.getOutputStream());
+          } finally {
+            is.close();
+          }
+
+          return;
+        }
+      }
+    }
+
+    response.sendError(HttpServletResponse.SC_NOT_FOUND);
   }
 }
