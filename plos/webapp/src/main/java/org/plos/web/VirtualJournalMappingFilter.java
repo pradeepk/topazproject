@@ -163,6 +163,11 @@ public class VirtualJournalMappingFilter implements Filter {
     if (resourceExists(resource))
       return paths;
 
+    String path = "/struts" + resource;
+
+    if (Thread.currentThread().getContextClassLoader().getResource("struts" + resource) != null)
+      return new String[] { paths[0], "", path, paths[0] + path };
+
     return null;
   }
 
@@ -183,6 +188,10 @@ public class VirtualJournalMappingFilter implements Filter {
 
     public String[] getMapped() {
       return mapped;
+    }
+
+    public String toString() {
+      return (mapped != null) ? mapped[3] : "Not Mapped";
     }
   }
 

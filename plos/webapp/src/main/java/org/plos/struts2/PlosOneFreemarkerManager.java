@@ -70,10 +70,14 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
       }
       public Object findTemplateSource(String name) throws IOException {
         Object r = s.findTemplateSource(name);
+        if (r == null)
+          r = s.findTemplateSource("struts/" + name);
+
         // FIXME: theme name and parent is hard coded
         // NOTE: The real fix is in struts. See WW-1961
         if (r == null)
           r = s.findTemplateSource(name.replace("ambra-theme", "simple"));
+
         return r;
       }
       public long getLastModified(Object source) {
