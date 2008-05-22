@@ -135,6 +135,7 @@
         <fileset refid="log4j.fileset"/>
       </extraClasspath>
       <syspropertyset file="${temp.file}"/>
+      <sysproperty key="ambra.configuration" value="${ambra.configuration}"/>
       <configuration home="${tomcatconfig.dir}">
         <property name="cargo.servlet.port" value="${port}"/>
         <property name="cargo.logging" value="high"/>
