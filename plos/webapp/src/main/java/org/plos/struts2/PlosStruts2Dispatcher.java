@@ -21,6 +21,8 @@ package org.plos.struts2;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.net.URL;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +38,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.StrutsConstants;
 import org.apache.struts2.dispatcher.Dispatcher;
 import org.apache.struts2.dispatcher.FilterDispatcher;
+import org.apache.struts2.util.ClassLoaderUtils;
 
 import org.plos.configuration.ConfigurationStore;
+
+import org.plos.web.HttpResourceServer;
 
 /**
  * Override the Struts Constants configurations from our Commons config files. This adds one
@@ -77,6 +82,7 @@ public class PlosStruts2Dispatcher extends FilterDispatcher {
       StrutsConstants.STRUTS_XWORKCONVERTER, StrutsConstants.STRUTS_ALWAYS_SELECT_FULL_NAMESPACE,
       StrutsConstants.STRUTS_XWORKTEXTPROVIDER, StrutsConstants.STRUTS_ID_PARAMETER_NAME,
     };
+  private HttpResourceServer    server       = new HttpResourceServer();
   private String[]              pathPrefixes;
 
   /*
@@ -133,21 +139,10 @@ public class PlosStruts2Dispatcher extends FilterDispatcher {
                              throws IOException {
     if (!name.endsWith(".class")) {
       for (String pathPrefix : pathPrefixes) {
-        InputStream is = findInputStream(name, pathPrefix);
+        URL url = findResource(name, pathPrefix);
 
-        if (is != null) {
-          // set the content-type header
-          String contentType = getContentType(name);
-
-          if (contentType != null) {
-            response.setContentType(contentType);
-          }
-
-          try {
-            copy(is, response.getOutputStream());
-          } finally {
-            is.close();
-          }
+        if (url != null) {
+          server.serveResource(request, response, url);
 
           return;
         }
@@ -155,5 +150,30 @@ public class PlosStruts2Dispatcher extends FilterDispatcher {
     }
 
     response.sendError(HttpServletResponse.SC_NOT_FOUND);
+  }
+
+  /**
+   * Look for a static resource in the classpath.
+   *
+   * @param name The resource name
+   * @param packagePrefix The package prefix to use to locate the resource
+   *
+   * @return The inputstream of the resource
+   *
+   * @throws IOException If there is a problem locating the resource
+   */
+  protected URL findResource(String name, String packagePrefix)
+                      throws IOException {
+    String resourcePath;
+
+    if (packagePrefix.endsWith("/") && name.startsWith("/")) {
+      resourcePath = packagePrefix + name.substring(1);
+    } else {
+      resourcePath = packagePrefix + name;
+    }
+
+    // Hmm. No need to decode again. Bug in struts?
+    //resourcePath = URLDecoder.decode(resourcePath, encoding);
+    return ClassLoaderUtils.getResource(resourcePath, getClass());
   }
 }
