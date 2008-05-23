@@ -35,6 +35,9 @@ import java.lang.reflect.Method;
  * Custom webwork result class to stream back objects from Fedora. Takes appropriate http headers
  * and sets them the response stream as well as taking in an optional parameter indicating whether
  * to set the content-diposition to an attachment.
+ * 
+ * Checks if the value inputByteArray is available. If so, this byte array is used directly 
+ * instead of the inputStream. 
  */
 
 public class PlosStreamResult extends StreamResult {
@@ -47,16 +50,23 @@ public class PlosStreamResult extends StreamResult {
     OutputStream oOutput = null;
 
     try {
-      // Find the inputstream from the invocation variable stack
-      oInput = (InputStream)
-        invocation.getStack().findValue( conditionalParse(this.inputName, invocation));
-
-      if (oInput == null) {
-        String msg = ("Can not find a java.io.InputStream with the name [" + this.inputName
-            + "] in the invocation stack. " +
-            "Check the <param name=\"inputName\"> tag specified for this action.");
-        log.error(msg);
-        throw new IllegalArgumentException(msg);
+      // If we find a byte[] representation, use that instead of the inputStream
+      byte[] objRep = null;
+      if (invocation.getStack().findValue("inputByteArray") instanceof byte[]) {
+        objRep = (byte[]) invocation.getStack().findValue("inputByteArray");
+      }
+      
+      if (objRep == null) {
+        // Find the inputstream from the invocation variable stack
+        oInput = (InputStream)
+          invocation.getStack().findValue( conditionalParse(this.inputName, invocation));
+        if (oInput == null) {
+          String msg = ("Can not find a java.io.InputStream with the name [" + this.inputName
+              + "] in the invocation stack. " +
+              "Check the <param name=\"inputName\"> tag specified for this action.");
+          log.error(msg);
+          throw new IllegalArgumentException(msg);
+        }
       }
 
       // Find the Response in context
@@ -98,23 +108,23 @@ public class PlosStreamResult extends StreamResult {
             + this.contentDisposition + "]");
       }
 
-      // Copy input to output
-      log.debug("Streaming to output buffer +++ START +++");
-      byte[] oBuff = new byte[this.bufferSize];
-      int iSize;
-      while (-1 != (iSize = oInput.read(oBuff))) {
-        oOutput.write(oBuff, 0, iSize);
+      if (oInput != null) {
+        // Copy input to output
+        log.debug("Streaming to output buffer +++ START +++");
+        byte[] oBuff = new byte[this.bufferSize];
+        int iSize;
+        while (-1 != (iSize = oInput.read(oBuff))) {
+          oOutput.write(oBuff, 0, iSize);
+        }
+        log.debug("Streaming to output buffer +++ END +++");
+  
+      } else if (objRep != null) {
+        oOutput.write(objRep);
       }
-      log.debug("Streaming to output buffer +++ END +++");
-
-      // Flush
+      
+      // Flush the output stream 
       oOutput.flush();
-
-      oOutput.close();
-      oOutput = null;
-
-      oInput.close();
-      oInput = null;
+      
     } finally {
       try {
         if (oInput != null)

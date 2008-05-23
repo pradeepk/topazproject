@@ -48,6 +48,7 @@ public class FetchObjectAction extends BaseActionSupport {
   private String contentDisposition;
   private static final Log log = LogFactory.getLog(FetchObjectAction.class);
   private String contentType;
+  private byte[] inputByteArray;
 
   /**
    * Return the object for a given uri and representation
@@ -104,7 +105,8 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   private void setOutputStreamAndAttributes(final Representation rep) throws IOException {
-    inputStream = new ByteArrayInputStream(rep.getBody());
+    inputByteArray = rep.getBody();
+    inputStream = new ByteArrayInputStream(inputByteArray);
     contentType = rep.getContentType();
     if (contentType == null)
       contentType = "application/octet-stream";
@@ -159,6 +161,14 @@ public class FetchObjectAction extends BaseActionSupport {
    */
   public InputStream getInputStream() {
     return inputStream;
+  }
+
+  /**
+   * Returns the byte[] of the Fedora object so it is not necessary to read from it using an InputStream
+   * @return the byte[] representation of the Fedora object. 
+   */
+  public byte[] getInputByteArray() {
+    return inputByteArray;
   }
 
   /**
