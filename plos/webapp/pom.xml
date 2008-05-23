@@ -292,6 +292,15 @@
       <artifactId>urlrewritefilter</artifactId>
       <version>3.0.4</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ambra-js</artifactId>
+      <version>${pom.parent.version}</version>
+      <type>zip</type>
+      <classifier>js</classifier>
+    </dependency>
+    
   </dependencies>
 
   <build>
