@@ -82,6 +82,7 @@
  final String optimize = ''
  final String layerOptimize = 'shrinksafe'
  final String copyTests = 'false'
+ final String version = project.version;
  
  final String rhinoJarPath = (project.basedir.toString() + '/' + project.build.scriptSourceDirectory + '/dojo/util/shrinksafe/custom_rhino.jar')
  final String rhinoWorkingDir = (project.basedir.toString() + '/' + project.build.scriptSourceDirectory + '/dojo/util/buildscripts') 
@@ -98,6 +99,7 @@
    arg(value: 'optimize=' + optimize)
    arg(value: 'layerOptimize=' + layerOptimize)
    arg(value: 'copyTests=' + copyTests)
+   arg(value: 'version=' + version)
  }
  def dojoBuildResult = ant.project.properties.'dojoBuildResult';
  if(dojoBuildResult != '0') {

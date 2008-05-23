@@ -3,10 +3,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ambra-js</artifactId>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <version>0.9-SNAPSHOT</version>
   <name>Ambra Javascript Libraries</name>
-  <description>Home for the dojo library and the custom dojo widets used by the web application.</description>
+  <description>
+    Home for the dojo library and the custom dojo widets used by the web application.
+  </description>
 
   <parent>
     <groupId>org.topazproject</groupId>
@@ -28,6 +30,23 @@
             <configuration>
               <source>${pom.basedir}/src/main/scripts/dojoBuild.groovy</source>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

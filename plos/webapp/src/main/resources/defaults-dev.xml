@@ -419,8 +419,8 @@
             <file>/css/iepc.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_default.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -435,8 +435,8 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_home.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -453,8 +453,8 @@
             <file>/css/iepc.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_article.js</file>
@@ -467,8 +467,8 @@
             <file>/css/iepc.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -481,8 +481,8 @@
             <file>/css/ambraTabs.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -490,8 +490,8 @@
         <page>
           <name>/discussion/discussion.ftl</name>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -501,8 +501,8 @@
         <page>
           <name>/discussion/startDiscussion.ftl</name>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -519,8 +519,8 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -533,8 +533,8 @@
             <file>/css/images.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/slideshowReference.ftl</file>
             <file>/javascript/config_slideshow.js</file>
             <file>/javascript/init_slideshow.js</file>
@@ -546,8 +546,8 @@
             <file>/css/images.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/dojoRequire_slideshow.ftl</file>
           </javascript>
         </page>
@@ -603,8 +603,8 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/advsearch.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -619,8 +619,8 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -628,8 +628,8 @@
         <page>
           <name>/user/createNewUser.ftl</name>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_newProfile.js</file>
@@ -644,8 +644,8 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_ambraAlerts.js</file>
@@ -660,8 +660,8 @@
             <file>/css/static.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_profile.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -964,8 +964,8 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
           </javascript>
@@ -1086,8 +1086,8 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_home.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -1258,8 +1258,8 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_home.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -1430,8 +1430,8 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_home.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
@@ -1641,8 +1641,8 @@
             <file>/css/article_markup.css</file>
           </css>
           <javascript>
-            <file>/javascript/dojo.js</file>
-            <file>/javascript/ambra.js</file>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_home.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>

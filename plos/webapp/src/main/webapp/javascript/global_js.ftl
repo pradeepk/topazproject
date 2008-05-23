@@ -38,7 +38,7 @@
   <#elseif x?contains("dojo.js")>
 <script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/dojo.js.uncompressed.js"></script>
 	<#elseif x?contains("ambra.js")>
-<script type="text/javascript" src="${freemarker_config.context}/javascript/ambra.js.uncompressed.js"></script>
+<script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/ambra.js.uncompressed.js"></script>
   <#else>
 <script type="text/javascript" src="${x}"></script>	
 	</#if>
