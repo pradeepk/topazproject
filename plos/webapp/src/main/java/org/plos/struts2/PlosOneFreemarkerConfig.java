@@ -48,6 +48,7 @@ public class PlosOneFreemarkerConfig {
   private static final String DEFAULT_TITLE = "Journal";
   private static String DEFAULT_JOURNAL_NAME_CONFIG_KEY = "ambra.platform.defaultJournalName";
 
+  private final boolean dojoDebug;
   private HashMap<String, JournalConfig> journals;
   private String dirPrefix;
   private String subdirPrefix;
@@ -70,6 +71,7 @@ public class PlosOneFreemarkerConfig {
     if (log.isDebugEnabled()) {
       log.debug("Reading FreeMarker configuration");
     }
+    dojoDebug = myConfig.getBoolean("ambra.freemarker.dojo.debug");
     dirPrefix = myConfig.getString("ambra.platform.appContext");
     subdirPrefix = myConfig.getString("ambra.platform.resourceSubDir");
     plosOneHost = myConfig.getString("ambra.platform.host");
@@ -374,8 +376,15 @@ public class PlosOneFreemarkerConfig {
           }
         }
     }
-    
+
     return retVal != null ? retVal : DEFAULT_TITLE;
+  }
+
+  /**
+   * @return <code>true</code> if the dojo debug flag is on.
+   */
+  public boolean isDojoDebug() {
+    return dojoDebug;
   }
 
   /**

@@ -397,6 +397,9 @@
     </articleTypeList>
 
     <freemarker>
+      <dojo>
+        <debug>false</debug>
+      </dojo>
       <!--PLoSONE-->
       <journal>
         <name>PLoSONE</name>

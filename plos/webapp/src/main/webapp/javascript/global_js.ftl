@@ -26,7 +26,7 @@
 	</#if>
 
   var djConfig = {
-		isDebug: false,
+		isDebug: ${freemarker_config.dojoDebug?string},
     parseOnLoad: true
 	};
 </script>
@@ -36,9 +36,17 @@
 <#include "${x}">
 </script>	
   <#elseif x?contains("dojo.js")>
+    <#if freemarker_config.dojoDebug>
 <script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/dojo.js.uncompressed.js"></script>
+    <#else>
+<script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/dojo.js"></script>
+    </#if>
 	<#elseif x?contains("ambra.js")>
+    <#if freemarker_config.dojoDebug>
 <script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/ambra.js.uncompressed.js"></script>
+    <#else>
+<script type="text/javascript" src="${freemarker_config.context}/javascript/dojo/dojo/ambra.js"></script>
+    </#if>
   <#else>
 <script type="text/javascript" src="${x}"></script>	
 	</#if>
