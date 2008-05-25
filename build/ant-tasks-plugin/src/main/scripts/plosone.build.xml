@@ -129,8 +129,7 @@
 
     <tempfile property="temp.file" prefix="plosone" suffix=".properties" destDir="${home}"/>
     <echo file="${temp.file}" message=""/>
-    <propertyselector property="prop.list" casesensitive="false"
-        match="(topaz|plosone|plos-registration|crossref|itql|log4j|com|ingest|server|service|hosts|ports|org|pub)\..*"/>
+    <propertyselector property="prop.list" casesensitive="false" match="(ambra|log4j|com)\..*"/>
     <if>
       <isset property="prop.list"/>
       <then>
@@ -152,7 +151,9 @@
       </extraClasspath>
       <!-- not supported yet by cargo...
       <syspropertyset>
-        <propertyref prefix="plosone."/>
+        <propertyref prefix="ambra."/>
+        <propertyref prefix="log4j."/>
+        <propertyref prefix="com."/>
       </syspropertyset>
       -->
       <syspropertyset file="${temp.file}"/>

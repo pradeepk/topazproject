@@ -83,7 +83,7 @@
       <arg value="${port}"/>
       <arg line="${logging}"/>
       <syspropertyset>
-        <propertyref prefix="topaz."/>
+        <propertyref prefix="ambra."/>
         <propertyref prefix="log4j."/>
         <propertyref prefix="com."/>
       </syspropertyset>
