@@ -209,13 +209,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.4</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-jxpath</groupId>
-            <artifactId>commons-jxpath</artifactId>
-          </exclusion>
-        </exclusions>
+        <version>1.5</version>
       </dependency>
 
       <dependency> <!-- It is important we get version 3.x to match commons-configuration -->
