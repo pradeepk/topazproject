@@ -100,7 +100,7 @@
     <module>mulgara</module>
     <module>fedora</module>
     <module>topaz</module>
-    <module>plos</module> 
+    <module>ambra</module> 
   </modules>
 
   <properties>
