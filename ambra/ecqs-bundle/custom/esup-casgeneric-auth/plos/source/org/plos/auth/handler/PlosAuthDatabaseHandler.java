@@ -19,9 +19,12 @@
 package org.plos.auth.handler;
 
 import org.dom4j.Element;
+
 import org.esupportail.cas.server.util.BasicHandler;
-import org.plos.auth.db.DatabaseContext;
-import org.plos.auth.db.DatabaseException;
+
+import org.topazproject.ambra.auth.db.DatabaseContext;
+import org.topazproject.ambra.auth.db.DatabaseException;
+
 import org.plos.service.password.PasswordDigestService;
 
 /**
