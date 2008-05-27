@@ -83,17 +83,73 @@ public class PlosOneFreemarkerConfig {
     defaultJournalName = myConfig.getString(DEFAULT_JOURNAL_NAME_CONFIG_KEY);
     journals = new HashMap<String, JournalConfig>();
 
-    int numConfigs = 1;
-    if (myConfig instanceof CombinedConfiguration) {
-      numConfigs = ((CombinedConfiguration)myConfig).getNumberOfConfigurations();
-    }
-    Configuration oneConfig;
-    for (int c = 0; c < numConfigs; c++) {
-      if (numConfigs > 1) {
-        oneConfig = ((CombinedConfiguration)myConfig).getConfiguration(c);
-      } else {
-        oneConfig = myConfig;
+    loadConfig(myConfig);
+
+    processVirtualJournalConfig(myConfig);
+
+    if (log.isTraceEnabled()){
+      Set<Entry<String, JournalConfig>> allJournals = journals.entrySet();
+      Iterator<Entry<String, JournalConfig>> iter = allJournals.iterator();
+      while (iter.hasNext()) {
+        Entry<String, JournalConfig> e = iter.next();
+        JournalConfig j = e.getValue();
+        log.trace("Journal: " + e.getKey());
+        log.trace("Journal url: " + j.getUrl());
+        log.trace("Default Title: " + j.getDefaultTitle());
+        log.trace("Default CSS: " + printArray(j.getDefaultCss()));
+        log.trace("Default JavaScript: " + printArray(j.getDefaultCss()));
+        HashMap<String, String[]> map = j.getCssFiles();
+        Set<String> pageNames = map.keySet();
+        Iterator<String> pgIter = pageNames.iterator();
+        while (pgIter.hasNext()) {
+          String name = pgIter.next();
+          log.trace("PageName: " + name);
+          log.trace("CSS FILES: " + printArray(map.get(name)));
+        }
+        map = j.getJavaScriptFiles();
+        pageNames = map.keySet();
+        pgIter = pageNames.iterator();
+        while (pgIter.hasNext()) {
+          String name = pgIter.next();
+          log.trace("PageName: " + name);
+          log.trace("JS FILES: " + printArray(map.get(name)));
+        }
+
+        HashMap<String, String> m = j.getTitles();
+        pageNames = m.keySet();
+        pgIter = pageNames.iterator();
+        while (pgIter.hasNext()) {
+          String name = pgIter.next();
+          log.trace("PageName: " + name);
+          log.trace("Title: " + m.get(name));
+        }
       }
+      log.trace("Dir Prefix: " + dirPrefix);
+      log.trace("SubDir Prefix: " + subdirPrefix);
+      log.trace("Pub host: " + plosOneHost);
+      log.trace("Cas url login: " + casLoginURL);
+      log.trace("Case url logout: " + casLogoutURL);
+      log.trace("Registration URL: " + registrationURL);
+      log.trace("Registration Change Pass URL: " + changePasswordURL);
+      log.trace("Registration Change EMail URL: " + changeEmailURL);
+      log.trace("Default Journal Name: " + defaultJournalName);
+    }
+    if(log.isDebugEnabled()) {
+      log.debug("End FreeMarker Configuration Reading");
+    }
+  }
+
+  private void loadConfig(Configuration myConfig) {
+    if (!(myConfig instanceof CombinedConfiguration))
+      loadConfig2(myConfig);
+    else {
+      int numConfigs = ((CombinedConfiguration)myConfig).getNumberOfConfigurations();
+      for (int c = 0; c < numConfigs; c++)
+        loadConfig(((CombinedConfiguration)myConfig).getConfiguration(c));
+    }
+  }
+
+  private void loadConfig2(Configuration oneConfig) {
       int numJournals = oneConfig.getList("ambra.freemarker.journal.name").size();
       for (int k = 0; k < numJournals; k++) {
         final String journal = "ambra.freemarker.journal(" + k + ")";
@@ -248,60 +304,7 @@ public class PlosOneFreemarkerConfig {
         jc.setJavaScriptFiles(javaScriptFiles);
         jc.setTitles(titles);
       }
-    }
 
-    processVirtualJournalConfig(myConfig);
-
-    if (log.isTraceEnabled()){
-      Set<Entry<String, JournalConfig>> allJournals = journals.entrySet();
-      Iterator<Entry<String, JournalConfig>> iter = allJournals.iterator();
-      while (iter.hasNext()) {
-        Entry<String, JournalConfig> e = iter.next();
-        JournalConfig j = e.getValue();
-        log.trace("Journal: " + e.getKey());
-        log.trace("Journal url: " + j.getUrl());
-        log.trace("Default Title: " + j.getDefaultTitle());
-        log.trace("Default CSS: " + printArray(j.getDefaultCss()));
-        log.trace("Default JavaScript: " + printArray(j.getDefaultCss()));
-        HashMap<String, String[]> map = j.getCssFiles();
-        Set<String> pageNames = map.keySet();
-        Iterator<String> pgIter = pageNames.iterator();
-        while (pgIter.hasNext()) {
-          String name = pgIter.next();
-          log.trace("PageName: " + name);
-          log.trace("CSS FILES: " + printArray(map.get(name)));
-        }
-        map = j.getJavaScriptFiles();
-        pageNames = map.keySet();
-        pgIter = pageNames.iterator();
-        while (pgIter.hasNext()) {
-          String name = pgIter.next();
-          log.trace("PageName: " + name);
-          log.trace("JS FILES: " + printArray(map.get(name)));
-        }
-
-        HashMap<String, String> m = j.getTitles();
-        pageNames = m.keySet();
-        pgIter = pageNames.iterator();
-        while (pgIter.hasNext()) {
-          String name = pgIter.next();
-          log.trace("PageName: " + name);
-          log.trace("Title: " + m.get(name));
-        }
-      }
-      log.trace("Dir Prefix: " + dirPrefix);
-      log.trace("SubDir Prefix: " + subdirPrefix);
-      log.trace("Pub host: " + plosOneHost);
-      log.trace("Cas url login: " + casLoginURL);
-      log.trace("Case url logout: " + casLogoutURL);
-      log.trace("Registration URL: " + registrationURL);
-      log.trace("Registration Change Pass URL: " + changePasswordURL);
-      log.trace("Registration Change EMail URL: " + changeEmailURL);
-      log.trace("Default Journal Name: " + defaultJournalName);
-    }
-    if(log.isDebugEnabled()) {
-      log.debug("End FreeMarker Configuration Reading");
-    }
   }
 
   private String printArray(String[] in) {

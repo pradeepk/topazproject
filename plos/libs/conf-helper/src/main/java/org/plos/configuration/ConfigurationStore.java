@@ -33,6 +33,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConfigurationUtils;
 import org.apache.commons.configuration.tree.OverrideCombiner;
+import org.apache.commons.configuration.tree.UnionCombiner;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -177,7 +178,9 @@ public class ConfigurationStore {
     }
 
     // Add defaults.xml found in classpath
-    addResources(root, DEFAULTS_RESOURCE);
+    CombinedConfiguration defaults = new CombinedConfiguration(new UnionCombiner());
+    addResources(defaults, DEFAULTS_RESOURCE);
+    root.addConfiguration(defaults);
 
     // Add global-defaults.xml (presumably found in this jar)
     addResources(root, GLOBAL_DEFAULTS_RESOURCE);
