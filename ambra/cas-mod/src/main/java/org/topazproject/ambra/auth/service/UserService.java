@@ -16,10 +16,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.auth.service;
+package org.topazproject.ambra.auth.service;
 
-import org.plos.auth.db.DatabaseException;
-import org.plos.auth.db.DatabaseContext;
+import org.topazproject.ambra.auth.db.DatabaseContext;
+import org.topazproject.ambra.auth.db.DatabaseException;
 
 import java.sql.SQLException;
 

@@ -16,11 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.auth.web;
+package org.topazproject.ambra.auth.web;
 
-import org.plos.auth.AuthConstants;
-import org.plos.auth.service.UserService;
-import org.plos.auth.db.DatabaseException;
+import org.topazproject.ambra.auth.AuthConstants;
+import org.topazproject.ambra.auth.db.DatabaseException;
+import org.topazproject.ambra.auth.service.UserService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

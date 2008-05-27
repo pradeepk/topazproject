@@ -16,12 +16,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.auth;
+package org.topazproject.ambra.auth.db;
 
 /**
- * Holds all the constants for the application.
+ * Database error.
  */
-public interface AuthConstants {
-  String DATABASE_CONTEXT = "DatabaseContext";
-  String USER_SERVICE = "UserService";
+public class DatabaseException extends Exception {
+  public DatabaseException(final String message, final Throwable throwable) {
+    super(message, throwable);
+  }
+
+  public DatabaseException(final String message) {
+    super(message);
+  }
 }
