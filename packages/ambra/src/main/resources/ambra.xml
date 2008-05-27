@@ -86,7 +86,7 @@
       <journals>PLoSClinicalTrials,PLoSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
       <PLoSClinicalTrials>
         <journal>PLoSClinicalTrials</journal>
-        <description>PloS Clinical Trials</description>
+        <description>PLoS Clinical Trials</description>
         <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
         <rules>
           <host>.*clinicaltrials.*</host>
@@ -103,7 +103,7 @@
       </PLoSClinicalTrials>
       <PLoSCompBiol>
         <journal>PLoSCompBiol</journal>
-        <description>PloS Computational Biology</description>
+        <description>PLoS Computational Biology</description>
         <mappingPrefix>/journals/compbiol</mappingPrefix>
         <rules>
           <host>.*ploscompbiol.*</host>
@@ -120,7 +120,7 @@
       </PLoSCompBiol>
       <PLoSGenetics>
         <journal>PLoSGenetics</journal>
-        <description>PloS Genetics</description>
+        <description>PLoS Genetics</description>
         <mappingPrefix>/journals/genetics</mappingPrefix>
         <rules>
           <host>.*plosgenetics.*</host>
@@ -137,7 +137,7 @@
       </PLoSGenetics>
       <PLoSNTD>
         <journal>PLoSNTD</journal>
-        <description>PloS Neglected Tropical Diseases</description>
+        <description>PLoS Neglected Tropical Diseases</description>
         <mappingPrefix>/journals/ntd</mappingPrefix>
         <rules>
           <host>.*plosntds.*</host>
@@ -154,7 +154,7 @@
       </PLoSNTD>
       <PLoSONE>
         <journal>PLoSONE</journal>
-        <description>PloS ONE</description>
+        <description>PLoS ONE</description>
         <mappingPrefix>/journals/plosone</mappingPrefix>
         <rules>
           <host>.*plosone.*</host>
@@ -171,7 +171,7 @@
       </PLoSONE>
       <PLoSPathogens>
         <journal>PLoSPathogens</journal>
-        <description>PloS Pathogens</description>
+        <description>PLoS Pathogens</description>
         <mappingPrefix>/journals/pathogens</mappingPrefix>
         <rules>
           <host>.*plospathogens.*</host>
