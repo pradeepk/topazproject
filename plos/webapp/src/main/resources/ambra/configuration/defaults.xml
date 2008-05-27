@@ -92,22 +92,6 @@
           </feed>
         </platform>
       </AmbraJournal>
-      <OverlayJournal>
-        <description>Overlay Journal</description>
-        <mappingPrefix>/journals/overlayJournal</mappingPrefix>
-        <rules>
-          <host>.*overlay.*</host>
-          <plosJournal>OverlayJournal</plosJournal>
-        </rules>
-        <url>http://overlay.example.org</url>
-        <!-- Atom feed overrides -->
-        <platform>
-          <feed>
-            <title>Overlay Journal</title>
-            <id>info:doi/10.1371/feed.ovrj</id>
-          </feed>
-        </platform>
-      </OverlayJournal>
     </virtualJournals>
 
     <topaz>
@@ -185,10 +169,6 @@
           <journalMapping>
             <url>http://${ambra.network.hosts.default}:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
             <regex>10\.1234/journal\.ambr\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>http://overly.example.org:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1234/journal\.ovrj\.\d{7}</regex>
           </journalMapping>
         </mappings>
       </doiResolver>
@@ -527,49 +507,6 @@
             <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_profile.js</file>
           </javascript>
-        </page>
-      </journal>
-
-      <!-- Overlay Journal. Anything you want to override must be listed here -->
-      <journal>
-        <name>OverlayJournal</name>
-        <metaKeywords>Overlay Journal\, Secondary\, Generic\, Default</metaKeywords>
-        <metaDescription>This is an example second journal on Ambra.</metaDescription>
-        <articleTitlePrefix>Overlay Journal:</articleTitlePrefix>
-        <displayName>Overlay Journal</displayName>
-        <default>
-          <title>
-            Overlay Journal: Serving as an Example for the Ambra Configuration community
-          </title>
-        </default>
-        <page>
-          <name>/journals/overlayJournal/index.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/home.css</file>
-            <file>/css/article_markup.css</file>
-          </css>
-          <javascript>
-            <file>/javascript/dojo/dojo/dojo.js</file>
-            <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/config_home.js</file>
-            <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
-            <file>/javascript/init_home.js</file>
-          </javascript>
-        </page>
-        <page>
-          <name>/article/article_body.ftl</name>
-          <title>CODE_ARTICLE_TITLE</title>
-        </page>
-        <page>
-          <name>/journals/overlayJournal/static/about.ftl</name>
-          <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/static.css</file>
-          </css>
         </page>
       </journal>
     </freemarker>
