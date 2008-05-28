@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import org.plos.configuration.ConfigurationStore; // Wraps commons-config initialization
+import org.plos.configuration.ConfigurationStore;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,26 +49,33 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
  */
 class TopazConfig {
   private static final Log   log        = LogFactory.getLog(TopazConfig.class);
-  
+
   static final Configuration CONF       = ConfigurationStore.getInstance().getConfiguration();
   static final String FEDORAOBJ_PATH    = CONF.getString("ambra.services.search.fedoraObjPath",   null);
   static final String INDEX_PATH;         // see static section below
   static final String INDEX_NAME        = CONF.getString("ambra.services.search.indexName",       "topaz");
   static final long   CACHE_EXPIRATION  = CONF.getLong(  "ambra.services.search.cacheExpiration", 600000L);
-  static final String FOXML2LUCENE_XSLT = CONF.getString("ambra.services.search.foxmlToLucene", "topazFoxmlToLucene");
+  static final String FOXML2LUCENE_XSLT =
+    CONF.getString("ambra.services.search.foxmlToLucene", "topazFoxmlToLucene");
   static final List<String> defFieldsList = Arrays.asList(new String[] { "description", "title", "body" });
-  static final List<String> DEFAULT_FIELDS = CONF.getList(  "ambra.services.search.defaultFields", defFieldsList);
-  
-  static final String FEDORA_BASE_URL   = CONF.getString("ambra.topaz.blobStore.fedora.baseUrl", null);
-  
-  static final String GFIND_XSLT = CONF.getString("ambra.services.search.xslt.gfind", "gfindObjectsToResultPage");
-  static final String BROWSE_XSLT = CONF.getString("ambra.services.search.xslt.browse", "browseIndexTResultPage");
+  static final List<String> DEFAULT_FIELDS =
+    CONF.getList(  "ambra.services.search.defaultFields", defFieldsList);
+
+  static final String FEDORA_BASE_URL   = CONF.getString("ambra.topaz.blobStore.fedora.base-url", null);
+
+  static final String GFIND_XSLT =
+    CONF.getString("ambra.services.search.xslt.gfind", "gfindObjectsToResultPage");
+  static final String BROWSE_XSLT =
+    CONF.getString("ambra.services.search.xslt.browse", "browseIndexTResultPage");
   static final String INDEXINFO_XSLT = CONF.getString("ambra.services.search.xslt.indexInfo", "copyXml");
-  static final String UPDATE_XSLT    = CONF.getString("ambra.services.search.xslt.", "updateIndexToResultPage");
-  
-  static final String INDEXINFO_XML = CONF.getString("ambra.services.search.xml.indexinfo", "indexInfo.xml");
-  static final String ANALYZER_NAME = CONF.getString("ambra.services.search.analyzerName", "org.apache.lucene.analysis.standard.StandardAnalyzer");
-  
+  static final String UPDATE_XSLT    =
+    CONF.getString("ambra.services.search.xslt.", "updateIndexToResultPage");
+
+  static final String INDEXINFO_XML =
+    CONF.getString("ambra.services.search.xml.indexinfo", "indexInfo.xml");
+  static final String ANALYZER_NAME = CONF.getString("ambra.services.search.analyzerName",
+      "org.apache.lucene.analysis.standard.StandardAnalyzer");
+
   private static Analyzer analyzer;
 
   // Log some errors if necessary
