@@ -100,7 +100,7 @@
     <services>
       <search>
         <!-- Path where lucene search index is stored -->
-        <indexpath>/var/lib/topaz/data/lucene</indexpath>
+        <indexPath>/var/lib/topaz/data/lucene</indexPath>
         <!-- Fields of lucene meta data that are searched by default -->
         <defaultfields>description,title,body,creator</defaultfields>
         <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->

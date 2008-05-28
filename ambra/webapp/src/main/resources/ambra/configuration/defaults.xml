@@ -108,7 +108,7 @@
         <cacheDuration>600000</cacheDuration><!-- Milliseconds to cache search results -->
         <pageSize>10</pageSize><!-- Number of results per page -->
         <fetchSize>10</fetchSize><!-- Number of results to fetch at a time -->
-        <indexpath>/var/lib/topaz/data/lucene</indexpath>
+        <indexPath>/var/lib/topaz/data/lucene</indexPath>
         <defaultfields>description,title,body,creator</defaultfields>
       </search>
 
