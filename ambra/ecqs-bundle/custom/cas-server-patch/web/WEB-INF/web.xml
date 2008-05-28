@@ -87,7 +87,7 @@
     <!--Filter class and mapping for username replacement with guid filter-->
     <filter>
       <filter-name>UsernameReplacementWithGuidFilter</filter-name>
-      <filter-class>org.plos.auth.web.UsernameReplacementWithGuidFilter</filter-class>
+      <filter-class>org.topazproject.ambra.auth.web.UsernameReplacementWithGuidFilter</filter-class>
     </filter>
     <filter-mapping>
       <filter-name>UsernameReplacementWithGuidFilter</filter-name>
@@ -106,7 +106,7 @@
     
     <!-- initialize the DatabaseContext and UserService -->
     <listener>
-      <listener-class>org.plos.auth.web.AuthServletContextListener</listener-class>
+      <listener-class>org.topazproject.ambra.auth.web.AuthServletContextListener</listener-class>
     </listener>
 
   <!-- Servlets -->
@@ -149,7 +149,7 @@
 		<!-- get email address for a given guid -->
     <servlet>
       <servlet-name>Email</servlet-name>
-      <servlet-class>org.plos.auth.web.GetEmailAddress</servlet-class>
+      <servlet-class>org.topazproject.ambra.auth.web.GetEmailAddress</servlet-class>
     </servlet>
 
     <!-- Servlet mappings to local URLs -->
