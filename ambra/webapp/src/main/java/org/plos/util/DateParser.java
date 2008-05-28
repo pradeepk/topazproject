@@ -228,8 +228,11 @@ public class DateParser {
    *              if the date is not valid
    */
   public static Date parse(String isodate) throws InvalidDateException {
-    Calendar calendar = getCalendar(isodate);
-    return calendar.getTime();
+    if (isodate == null) {
+      return null;
+    } else {
+      return getCalendar(isodate).getTime();
+    }
   }
 
   private static String twoDigit(int i) {
