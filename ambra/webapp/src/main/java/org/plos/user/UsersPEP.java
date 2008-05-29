@@ -146,6 +146,9 @@ public class UsersPEP extends AbstractSimplePEP {
   /** The action that represents a list-users-in-role operation in XACML policies. */
   public static final String LIST_USERS_IN_ROLE = "userRoles:listUsersInRole";
 
+  /** The action that represents a list-users-in-role operation in XACML policies. */
+  public static final String ADMIN_GUARD = "admin:Guard";
+
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
       // user-account perms
@@ -160,6 +163,8 @@ public class UsersPEP extends AbstractSimplePEP {
       SET_PREFERENCES, GET_PREFERENCES,
       // roles perms
       GET_ROLES, SET_ROLES,
+      // admin guards
+      ADMIN_GUARD
   };
 
   /** The list of all supported obligations */

@@ -40,8 +40,6 @@ public class EnsureRoleInterceptorTest extends BasePlosoneTestCase {
     ActionContext.getContext().setSession(map);
 
     final UserService userService = getUserServiceReturningRole("webUser");
-    interceptor.setUserService(userService);
-    interceptor.setRoleToCheck(Constants.ADMIN_ROLE);
 
     actionInvocation.setAction(null);
     final String result = interceptor.intercept(actionInvocation);
@@ -72,8 +70,6 @@ public class EnsureRoleInterceptorTest extends BasePlosoneTestCase {
     ActionContext.getContext().setSession(map);
 
     final UserService userService = getUserServiceReturningRole("webUser");
-    interceptor.setUserService(userService);
-    interceptor.setRoleToCheck(Constants.ADMIN_ROLE);
 
     actionInvocation.setAction(null);
     final String result = interceptor.intercept(actionInvocation);
@@ -106,8 +102,6 @@ public class EnsureRoleInterceptorTest extends BasePlosoneTestCase {
     };
 
     final UserService userService = getUserServiceReturningRole(Constants.ADMIN_ROLE);
-    interceptor.setUserService(userService);
-    interceptor.setRoleToCheck(Constants.ADMIN_ROLE);
 
     final String result = interceptor.intercept(actionInvocation);
     assertEquals(actionCalledStatus, result);

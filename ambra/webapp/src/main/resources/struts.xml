@@ -64,9 +64,7 @@
     <interceptors>
       <interceptor name="journalSessionSetup" class="org.plos.journal.SessionFiltersInterceptor"/>
       <interceptor name="ensureUserAccount" class="org.plos.user.EnsureUserAccountInterceptor"/>
-      <interceptor name="ensureAdmin" class="org.plos.user.EnsureRoleInterceptor">
-        <param name="roleToCheck">admin</param>
-      </interceptor>
+      <interceptor name="ensureAdmin" class="org.plos.user.EnsureRoleInterceptor"/>
       <interceptor name="plosUserLookup" class="org.plos.user.UserAccountsInterceptor"/>
       <interceptor name="json" class="com.googlecode.jsonplugin.JSONInterceptor"/>
       

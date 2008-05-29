@@ -626,6 +626,18 @@ public class UserService {
 
     return res;
   }
+  /**
+   * Checks the action guard.
+   */
+  @Transactional(readOnly = true)
+  public boolean allowAdminAction() {
+    try {
+      pep.checkAccess(pep.ADMIN_GUARD, pep.ANY_RESOURCE);
+      return true;
+    } catch (SecurityException e) {
+      return false;
+    }
+  }
 
   /**
    * @return Returns the appId.
