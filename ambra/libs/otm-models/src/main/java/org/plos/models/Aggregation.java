@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
@@ -52,7 +53,7 @@ public class Aggregation implements Serializable {
   private DublinCore        dublinCore;
   @Predicate(uri = Rdf.dc_terms + "hasPart")
   private List<URI>                      simpleCollection = new ArrayList();
-  @Predicate(uri = PLoS.plos + "smartCollectionRules")
+  @Predicate(uri = PLoS.plos + "smartCollectionRules", cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private List<DetachedCriteria>         smartCollectionRules = new ArrayList();
   @Predicate(uri = Rdf.dc_terms + "replaces")
   private Aggregation                    supersedes;
