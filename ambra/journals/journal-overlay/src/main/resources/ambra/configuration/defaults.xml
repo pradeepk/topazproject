@@ -7,6 +7,7 @@
     <!-- virtual journal config -->
     <virtualJournals>
       <OverlayJournal>
+        <eIssn>1111-3333</eIssn>
         <description>Overlay Journal</description>
         <mappingPrefix>/journals/overlayJournal</mappingPrefix>
         <rules>

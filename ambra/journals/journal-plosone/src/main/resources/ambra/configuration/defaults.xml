@@ -8,6 +8,7 @@
     <virtualJournals>
       <PLoSONE>
         <journal>PLoSONE</journal>
+        <eIssn>1932-6203</eIssn>
         <description>PLoS ONE</description>
         <mappingPrefix>/journals/plosone</mappingPrefix>
         <rules>

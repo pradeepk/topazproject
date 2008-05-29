@@ -33,7 +33,7 @@
         <journal>PLoSONE</journal>
         <mappingPrefix>/journals/plosone</mappingPrefix>
       </default>
-      <journals>PLoSClinicalTrials,PloSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
+      <journals>PLoSClinicalTrials,PLoSCompBiol,PLoSGenetics,PLoSNTD,PLoSONE,PLoSPathogens</journals>
     </virtualJournals>
 
     <articleTypeList>

@@ -8,6 +8,7 @@
     <virtualJournals>
       <PLoSNTD>
         <journal>PLoSNTD</journal>
+        <eIssn>1935-2735</eIssn>
         <description>PLoS Neglected Tropical Diseases</description>
         <mappingPrefix>/journals/ntd</mappingPrefix>
         <rules>

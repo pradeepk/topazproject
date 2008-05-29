@@ -8,7 +8,8 @@
     <virtualJournals>
       <PLoSGenetics>
         <journal>PLoSGenetics</journal>
-        <description>PloS Genetics</description>
+        <eIssn>1553-7404</eIssn>
+        <description>PLoS Genetics</description>
         <mappingPrefix>/journals/genetics</mappingPrefix>
         <rules>
           <host>.*plosgenetics.*</host>

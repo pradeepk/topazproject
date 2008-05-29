@@ -221,6 +221,9 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <listener-class>org.plos.bootstrap.migration.Migrator</listener-class>
   </listener>
   <listener>
+    <listener-class>org.plos.bootstrap.journal.JournalCreator</listener-class>
+  </listener>
+  <listener>
     <listener-class>org.plos.bootstrap.permissions.WebAppListenerInitPermissionsModel</listener-class>
   </listener>
 

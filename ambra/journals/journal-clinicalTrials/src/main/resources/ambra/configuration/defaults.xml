@@ -8,6 +8,7 @@
     <virtualJournals>
       <PLoSClinicalTrials>
         <journal>PLoSClinicalTrials</journal>
+        <eIssn>1555-5887</eIssn>
         <description>PLoS Clinical Trials</description>
         <mappingPrefix>/journals/clinicalTrials</mappingPrefix>
         <rules>

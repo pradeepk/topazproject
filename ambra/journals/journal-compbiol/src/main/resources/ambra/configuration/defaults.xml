@@ -8,6 +8,7 @@
     <virtualJournals>
       <PLoSCompBiol>
         <journal>PLoSCompBiol</journal>
+        <eIssn>1553-7358</eIssn>
         <description>PLoS Computational Biology</description>
         <mappingPrefix>/journals/compbiol</mappingPrefix>
         <rules>

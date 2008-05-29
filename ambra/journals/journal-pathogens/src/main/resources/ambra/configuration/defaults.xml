@@ -8,6 +8,7 @@
     <virtualJournals>
       <PLoSPathogens>
         <journal>PLoSPathogens</journal>
+        <eIssn>1553-7374</eIssn>
         <description>PLoS Pathogens</description>
         <mappingPrefix>/journals/pathogens</mappingPrefix>
         <rules>
