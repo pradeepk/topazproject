@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
+import org.plos.Constants;
 import org.plos.models.UserAccount;
 import org.plos.user.service.UserService;
 
@@ -139,10 +140,15 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
     HttpSession session = request.getSession(true);
     String      user    = (String) session.getAttribute(USER_KEY);
     String      authId  = getAuthenticatedUser(request);
+    String      current = (String) session.getAttribute(AUTH_KEY);
+    boolean     same    = (current == null) ? (authId == null) : current.equals(authId);
 
-    if ((user != null) && (authId == null)) {
+
+    if ((user != null) && same) {
       if (log.isDebugEnabled())
-        log.debug("Existing user '" + user + "' found in session-id: " + session.getId());
+        log.debug("Changed user to '" + user + "' using value found in session-id: "
+                  + session.getId());
+
       return user;
     }
 
@@ -174,16 +180,8 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
    * @return returns the authenticated-id
    */
   protected String getAuthenticatedUser(HttpServletRequest request) {
-    String authId = request.getRemoteUser();
-
-    if (authId == null) {
-      Principal p = request.getUserPrincipal();
-
-      if (p != null)
-        authId = p.getName();
-    }
-
-    return authId;
+    HttpSession session = request.getSession(true);
+    return (String)session.getAttribute(Constants.SINGLE_SIGNON_USER_KEY);
   }
 
   /**
