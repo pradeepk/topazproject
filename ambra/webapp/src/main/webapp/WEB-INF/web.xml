@@ -71,7 +71,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     </init-param>
     <init-param>
       <param-name>wrapRequest</param-name>
-      <param-value>true</param-value>
+      <param-value>false</param-value>
     </init-param>
   </filter>
 
@@ -92,7 +92,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>
-      <param-value>true</param-value>
+      <param-value>false</param-value>
     </init-param>
   </filter>
 
