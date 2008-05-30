@@ -19,68 +19,65 @@
   limitations under the License.
 -->
 <xsl:stylesheet version="2.0"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
-                xmlns:my="my:lucene.ingest#"
-                xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                xmlns:exts="xalan://dk.defxws.fedoragsearch.server.XsltExtensions"
-                exclude-result-prefixes="my exts"
-                xmlns:zs="http://www.loc.gov/zing/srw/"
-                xmlns:foxml="info:fedora/fedora-system:def/foxml#"
-                xmlns:dc="http://purl.org/dc/elements/1.1/"
-                xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
-                xmlns:uvalibdesc="http://dl.lib.virginia.edu/bin/dtd/descmeta/descmeta.dtd"
-                xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
+  xmlns:my="my:lucene.ingest#"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:exts="xalan://dk.defxws.fedoragsearch.server.XsltExtensions"
+  exclude-result-prefixes="my exts"
+  xmlns:zs="http://www.loc.gov/zing/srw/"
+  xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+  xmlns:uvalibdesc="http://dl.lib.virginia.edu/bin/dtd/descmeta/descmeta.dtd"
+  xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
-
-  <!--
-  <xsl:include href="@fedoragsearchPath@/WEB-INF/classes/config/index/DemoOnLucene/demoUvalibdescToLucene.xslt"/>
-  -->
 
   <xsl:param name="fedoraBaseURL"/>
   <xsl:param name="articleDS"/>
 
-    <xsl:template name="uvalibdesc">
-      <xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/uvalibdesc:desc/*">
-        <xsl:if test="name()='uvalibdesc:agent'">
-          <IndexField IFname="uva.agent" index="TOKENIZED" store="YES" termVector="NO">
-            <xsl:value-of select="text()"/>
-          </IndexField>
-        </xsl:if>
-        <xsl:if test="name()='uvalibdesc:culture'">
-          <IndexField IFname="uva.culture" index="TOKENIZED" store="YES" termVector="NO">
-            <xsl:value-of select="text()"/>
-          </IndexField>
-        </xsl:if>
-        <xsl:if test="name()='uvalibdesc:place'">
-          <IndexField IFname="uva.place" index="TOKENIZED" store="YES" termVector="NO">
-            <xsl:value-of select="./*/text()"/>
-          </IndexField>
-        </xsl:if>
-      </xsl:for-each>
-      
-    </xsl:template>
-  
-<!--
-   This xslt stylesheet generates the IndexDocument consisting of IndexFields
-     from a FOXML record. The IndexFields are:
-       - from the root element = PID
-       - from foxml:property   = type, state, contentModel, ...
-       - from oai_dc:dc        = title, creator, ...
-     Options for tailoring:
-       - IndexField types, see Lucene javadoc for Field.Store, Field.Index, Field.TermVector
-       - IndexField boosts, see Lucene documentation for explanation
-       - IndexDocument boosts, see Lucene documentation for explanation
-       - generation of IndexFields from other XML metadata streams than DC
-         - e.g. as for uvalibdesc included above and called below, the XML is inline
-         - for not inline XML, the datastream may be fetched with the document() function,
-           see the example below (however, none of the demo objects can test this)
-       - generation of IndexFields from other datastream types than XML
-         - from datastream by ID, text fetched, if mimetype can be handled
-         - from datastream by sequence of mimetypes, 
-           text fetched from the first mimetype that can be handled,
-           default sequence given in properties
-       - currently only the mimetype application/pdf can be handled.
--->
+  <xsl:template name="uvalibdesc">
+    <xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/uvalibdesc:desc/*">
+      <xsl:if test="name()='uvalibdesc:agent'">
+        <IndexField IFname="uva.agent" index="TOKENIZED" store="YES" termVector="NO">
+          <xsl:value-of select="text()"/>
+        </IndexField>
+      </xsl:if>
+      <xsl:if test="name()='uvalibdesc:culture'">
+        <IndexField IFname="uva.culture" index="TOKENIZED" store="YES" termVector="NO">
+          <xsl:value-of select="text()"/>
+        </IndexField>
+      </xsl:if>
+      <xsl:if test="name()='uvalibdesc:place'">
+        <IndexField IFname="uva.place" index="TOKENIZED" store="YES" termVector="NO">
+          <xsl:value-of select="./*/text()"/>
+        </IndexField>
+      </xsl:if>
+    </xsl:for-each>
+
+  </xsl:template>
+
+  <!--
+  This xslt stylesheet generates the IndexDocument consisting of IndexFields
+  from a FOXML record. The IndexFields are:
+  - from the root element = PID
+  - from foxml:property   = type, state, contentModel, ...
+  - from article:xml      = title, creator, ...
+
+  Options for tailoring:
+  - IndexField types, see Lucene javadoc for Field.Store, Field.Index, Field.TermVector
+  - IndexField boosts, see Lucene documentation for explanation
+  - IndexDocument boosts, see Lucene documentation for explanation
+  - generation of IndexFields from other XML metadata streams than DC
+  - e.g. as for uvalibdesc included above and called below, the XML is inline
+  - for not inline XML, the datastream may be fetched with the document() function,
+  see the example below (however, none of the demo objects can test this)
+  - generation of IndexFields from other datastream types than XML
+  - from datastream by ID, text fetched, if mimetype can be handled
+  - from datastream by sequence of mimetypes, 
+  text fetched from the first mimetype that can be handled,
+  default sequence given in properties
+  - currently only the mimetype application/pdf can be handled.
+  -->
 
   <xsl:variable name="PID" select="/foxml:digitalObject/@PID"/>
   <xsl:variable name="docBoost" select="1.4*2.5"/> <!-- or any other calculation, default boost is 1.0 -->
@@ -101,12 +98,12 @@
 
   <!-- Index the actual content -->
   <xsl:template match="/foxml:digitalObject" mode="activeFedoraObject">
-    
+
     <!-- The PID field must exist and be UN_TOKENIZED -->
     <IndexField IFname="PID" index="UN_TOKENIZED" store="YES" termVector="NO" boost="2.5">
       <xsl:value-of select="$PID"/>
     </IndexField>
-    
+
     <xsl:for-each select="foxml:objectProperties/foxml:property">
       <IndexField index="UN_TOKENIZED" store="YES" termVector="NO">
         <xsl:attribute name="IFname"> 
@@ -115,38 +112,16 @@
         <xsl:value-of select="@VALUE"/>
       </IndexField>
     </xsl:for-each>
-    
-    <!-- When dsMimetypes is present, then the datastream is fetched 
-         whose mimetype is found first in the list of mimeTypes.
-         If mimeTypes is empty, then it is taken from properties.
-         Use *either* this or the inline XML stuff below. -->
-    <!--
-    <IndexField IFname="DS.first.text" dsMimetypes="" index="TOKENIZED" store="YES" termVector="NO">
-    </IndexField>
-    -->
 
     <!-- For XML that is not inline, the datastream may be fetched with the document() function -->
     <xsl:call-template name="topaz-xml"/>
   </xsl:template>
-  
+
   <!-- Template to index our XML content -->
   <xsl:template name="topaz-xml">
     <xsl:apply-templates mode="topaz-xml"
       select="document(concat($fedoraBaseURL, 'get/', $PID, '/', $articleDS))"/>
   </xsl:template>
-
-  <!-- DEBUG -->
-  <!--
-  <xsl:template match="/">
-    <IndexDocument> 
-      <xsl:attribute name="boost">
-        <xsl:value-of select="$docBoost"/>
-      </xsl:attribute>
-
-      <xsl:apply-templates mode="topaz-xml"/>
-    </IndexDocument> 
-  </xsl:template>
-  -->
 
   <!-- topaz-xml templates to index Article -->
   <xsl:template match="article/front/journal-meta" mode="topaz-xml">
@@ -154,14 +129,32 @@
       <xsl:apply-templates select="journal-title" mode="value-of"/>
     </IndexField>
   </xsl:template>
-  
+
   <xsl:template match="article/front/article-meta" mode="topaz-xml">
     <IndexField IFname= "identifier" index="TOKENIZED" store="YES" termVector="NO">
       <xsl:value-of select="concat('info:doi/', article-id[@pub-id-type='doi'])"/>
     </IndexField>
-    <IndexField IFname= "title" index="TOKENIZED" store="YES" termVector="NO">
-      <xsl:value-of select="title-group/article-title"/>
-    </IndexField>
+    <xsl:for-each select="article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
+      <IndexField IFname= "subject" index="TOKENIZED" store="YES" termVector="NO">
+        <xsl:call-template name="xml-to-str">
+          <xsl:with-param name="xml" select="."/>
+        </xsl:call-template>
+      </IndexField>
+    </xsl:for-each>
+    <xsl:if test="title-group/article-title">
+      <IndexField IFname= "title" index="TOKENIZED" store="YES" termVector="NO">
+        <xsl:call-template name="xml-to-str">
+          <xsl:with-param name="xml" select="title-group/article-title"/>
+        </xsl:call-template>
+      </IndexField>
+    </xsl:if>
+    <xsl:if test="abstract">
+      <IndexField IFname= "abstract" index="TOKENIZED" store="YES" termVector="NO">
+        <xsl:call-template name="xml-to-str">
+          <xsl:with-param name="xml" select="my:select-abstract(abstract)"/>
+        </xsl:call-template>
+      </IndexField>
+    </xsl:if>
     <xsl:if test="pub-date">
       <IndexField IFname= "date" index="TOKENIZED" store="YES" termVector="NO">
         <xsl:value-of select="my:format-date(my:select-date(pub-date))"/>
@@ -233,7 +226,7 @@
       else $date[1]
       "/>
   </xsl:function>
-    
+
   <!-- pmc structured date to ISO-8601 (YYYY-MM-DD); seasons results in first day of the season,
   - or Jan 1st in the case of winter (to get the year right); missing fields are defaulted
   - from the current time -->
@@ -274,4 +267,63 @@
       if (string-length($s) = 1) then concat('0', $s) else $s
       "/>
   </xsl:function>
+
+  <!-- serialize an xml string -->
+  <xsl:template name="xml-to-str">
+    <xsl:param name="xml"/>
+    <xsl:apply-templates mode="serialize" select="$xml/node()"/>
+  </xsl:template>
+
+  <xsl:template match="*" mode="serialize">
+    <xsl:text/>&lt;<xsl:value-of select="name()"/>
+    <xsl:variable name="attr-ns-uris" as="xs:anyURI*"
+      select="for $attr in (@*) return namespace-uri($attr)"/>
+    <xsl:for-each select="namespace::*[name() != 'xml']">
+      <xsl:if test=". = namespace-uri(..) or . = $attr-ns-uris">
+        <xsl:text> xmlns</xsl:text>
+        <xsl:if test="name()">
+          <xsl:text />:<xsl:value-of select="name()" />
+        </xsl:if>
+        <xsl:value-of select="concat('=&quot;', ., '&quot;')"/>
+      </xsl:if>
+    </xsl:for-each>
+    <xsl:for-each select="@*">
+      <xsl:value-of select="concat(' ', name(), '=&quot;', my:xml-escape(.), '&quot;')"/>
+    </xsl:for-each>
+    <xsl:choose>
+      <xsl:when test="node()">
+        <xsl:text>></xsl:text>
+        <xsl:apply-templates select="node()" mode="serialize"/>
+        <xsl:text/>&lt;/<xsl:value-of select="name()"/><xsl:text>></xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>/></xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:function name="my:xml-escape" as="xs:string">
+    <xsl:param name="str" as="xs:string"/>
+    <xsl:value-of select="replace(replace(replace($str, '&amp;', '&amp;amp;'),
+      '&lt;', '&amp;lt;'), '&gt;', '&amp;gt;')"/>
+  </xsl:function>
+
+  <!-- Select the abstract to use for dc:description. The order of preference is:
+  - 'short', 'web-summary', 'toc', 'summary', 'ASCII', no-type, first -->
+  <xsl:function name="my:select-abstract" as="element(abstract)">
+    <xsl:param name="abstracts" as="element(abstract)+"/>
+
+    <xsl:variable name="pref-abstract" select="(
+      for $t in ('short', 'web-summary', 'toc', 'summary', 'ASCII')
+      return $abstracts[@abstract-type = $t]
+      )[1]"/>
+
+    <xsl:sequence select="
+      if ($pref-abstract) then $pref-abstract
+      else if ($abstracts[not(@abstract-type)])
+      then $abstracts[not(@abstract-type)]
+      else $abstracts[1]
+      "/>
+  </xsl:function>
+
 </xsl:stylesheet> 
