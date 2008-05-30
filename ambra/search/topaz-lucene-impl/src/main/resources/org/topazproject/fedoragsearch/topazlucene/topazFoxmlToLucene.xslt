@@ -20,8 +20,10 @@
 -->
 <xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
-        xmlns:exts="xalan://dk.defxws.fedoragsearch.server.XsltExtensions"
-                exclude-result-prefixes="exts"
+                xmlns:my="my:lucene.ingest#"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:exts="xalan://dk.defxws.fedoragsearch.server.XsltExtensions"
+                exclude-result-prefixes="my exts"
                 xmlns:zs="http://www.loc.gov/zing/srw/"
                 xmlns:foxml="info:fedora/fedora-system:def/foxml#"
                 xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -114,15 +116,6 @@
       </IndexField>
     </xsl:for-each>
     
-    <xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/oai_dc:dc/*">
-      <IndexField index="TOKENIZED" store="YES" termVector="YES">
-        <xsl:attribute name="IFname">
-          <xsl:value-of select="local-name()"/>
-        </xsl:attribute>
-        <xsl:value-of select="replace(text(), '&lt;.*?&gt;', ' ')"/>
-      </IndexField>
-    </xsl:for-each>
-      
     <!-- When dsMimetypes is present, then the datastream is fetched 
          whose mimetype is found first in the list of mimeTypes.
          If mimeTypes is empty, then it is taken from properties.
@@ -163,6 +156,22 @@
   </xsl:template>
   
   <xsl:template match="article/front/article-meta" mode="topaz-xml">
+    <IndexField IFname= "identifier" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:value-of select="concat('info:doi/', article-id[@pub-id-type='doi'])"/>
+    </IndexField>
+    <IndexField IFname= "title" index="TOKENIZED" store="YES" termVector="NO">
+      <xsl:value-of select="title-group/article-title"/>
+    </IndexField>
+    <xsl:if test="pub-date">
+      <IndexField IFname= "date" index="TOKENIZED" store="YES" termVector="NO">
+        <xsl:value-of select="my:format-date(my:select-date(pub-date))"/>
+      </IndexField>
+    </xsl:if>
+    <xsl:for-each select="contrib-group/contrib[@contrib-type = 'author']/name">
+      <IndexField IFname= "creator" index="TOKENIZED" store="YES" termVector="NO">
+        <xsl:value-of select="concat(given-names,' ',surname)"/>
+      </IndexField>
+    </xsl:for-each>
     <IndexField IFname="aff" index="TOKENIZED" store="YES" termVector="NO">
       <xsl:apply-templates select="aff" mode="value-of"/>
     </IndexField>
@@ -207,4 +216,62 @@
   <xsl:template match="text()" mode="value-of">
     <xsl:value-of select="."/>
   </xsl:template>
+
+  <!-- Select the date to use for dc:date. The order of preference is:
+  - 'epub', 'epub-ppub', 'ppub', 'ecorrected', 'pcorrected', no-type, first -->
+  <xsl:function name="my:select-date" as="element(pub-date)">
+    <xsl:param name="date" as="element(pub-date)+"/>
+
+    <xsl:variable name="pref-date" select="(
+      for $t in ('epub', 'epub-ppub', 'ppub', 'ecorrected', 'pcorrected')
+      return $date[@pub-type = $t]
+      )[1]"/>
+
+    <xsl:sequence select="
+      if ($pref-date) then $pref-date
+      else if ($date[not(@pub-type)]) then $date[not(@pub-type)]
+      else $date[1]
+      "/>
+  </xsl:function>
+    
+  <!-- pmc structured date to ISO-8601 (YYYY-MM-DD); seasons results in first day of the season,
+  - or Jan 1st in the case of winter (to get the year right); missing fields are defaulted
+  - from the current time -->
+  <xsl:function name="my:format-date" as="xs:string">
+    <xsl:param name="date" as="element()"/>
+
+    <xsl:variable name="year" as="xs:integer" select="
+      if ($date/year) then $date/year else year-from-date(current-date())"/>
+
+    <xsl:value-of select="concat(
+      $year,
+      '-',
+      if ($date/season) then
+      if (lower-case($date/season) = 'spring') then '03-21'
+      else if (lower-case($date/season) = 'summer') then '06-21'
+      else if (lower-case($date/season) = 'fall') then '09-23'
+      else if (lower-case($date/season) = 'winter') then '01-01'
+      else ''
+      else
+      concat(
+      my:twochar(if ($date/month) then $date/month
+      else if ($year != year-from-date(current-date())) then 1
+      else month-from-date(current-date())),
+      '-',
+      my:twochar(if ($date/day) then $date/day
+      else if ($year = year-from-date(current-date()) and
+      $date/month and $date/month = month-from-date(current-date())) then
+      day-from-date(current-date())
+      else 1)
+      )
+      )"/>
+  </xsl:function>
+
+  <xsl:function name="my:twochar" as="xs:string">
+    <xsl:param    name="str" as="xs:integer"/>
+    <xsl:variable name="s" select="xs:string($str)"/>
+    <xsl:value-of select="
+      if (string-length($s) = 1) then concat('0', $s) else $s
+      "/>
+  </xsl:function>
 </xsl:stylesheet> 
