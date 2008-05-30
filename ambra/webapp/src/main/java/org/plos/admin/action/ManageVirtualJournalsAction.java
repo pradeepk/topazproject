@@ -21,32 +21,91 @@ package org.plos.admin.action;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.journal.JournalService;
 import org.plos.models.Journal;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.topazproject.otm.Session;
+import org.topazproject.otm.criterion.DetachedCriteria;
 
 /**
  * Allow Admin to Manage virtual Journals.
  */
+@SuppressWarnings("serial")
 public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
-  private Journal journal;
+  /**
+   * JournalInfo - Value object holding Journal properties that require referencing in the view.
+   * @author jkirton
+   */
+  public static final class JournalInfo {
+    private String key, eissn;
+    private String smartCollectionRulesDescriptor;
+    private String imageUri, currentIssueUri;
+    private String volumes;
+    private List<String> simpleCollection;
+
+    public String getKey() {
+      return key;
+    }
+    public void setKey(String key) {
+      this.key = key;
+    }
+    public String getEissn() {
+      return eissn;
+    }
+    public void setEissn(String eissn) {
+      this.eissn = eissn;
+    }
+    public String getSmartCollectionRulesDescriptor() {
+      return smartCollectionRulesDescriptor;
+    }
+    public void setSmartCollectionRulesDescriptor(String smartCollectionRulesDescriptor) {
+      this.smartCollectionRulesDescriptor = smartCollectionRulesDescriptor;
+    }
+    public String getImageUri() {
+      return imageUri;
+    }
+    public void setImageUri(String imageUri) {
+      this.imageUri = imageUri;
+    }
+    public String getCurrentIssueUri() {
+      return currentIssueUri;
+    }
+    public void setCurrentIssueUri(String currentIssueUri) {
+      this.currentIssueUri = currentIssueUri;
+    }
+    public String getVolumes() {
+      return volumes;
+    }
+    public void setVolumes(String volumes) {
+      this.volumes = volumes;
+    }
+    public List<String> getSimpleCollection() {
+      return simpleCollection;
+    }
+    public void setSimpleCollection(List<String> simpleCollection) {
+      this.simpleCollection = simpleCollection;
+    }
+
+    @Override
+    public String toString() {
+      return key;
+    }
+  }
+
+  private JournalInfo journalInfo;
   private String journalToModify;
   private URI image;
   private URI currentIssue;
   private String volumes;
   private String articlesToAdd;
   private String[] articlesToDelete;
-  private Session session;
   private JournalService journalService;
 
   private static final Log log = LogFactory.getLog(ManageVirtualJournalsAction.class);
@@ -138,15 +197,42 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
       addActionMessage("Browse cache flush for: " + journal.getKey());
     }
 
-    // get current Journal
-    journal = journalService.getJournal();
-
-    if (log.isDebugEnabled()) {
-      log.debug("execute(): Journal: " + journal);
-    }
+    // [re-]create the journal info value object
+    createJournalInfo(journalService.getJournal());
 
     // default action is just to display the template
     return SUCCESS;
+  }
+
+  private void createJournalInfo(Journal journal) {
+    assert journal != null;
+
+    journalInfo = new JournalInfo();
+
+    journalInfo.setKey(journal.getKey());
+    journalInfo.setEissn(journal.getEIssn());
+    journalInfo.setCurrentIssueUri(journal.getCurrentIssue() == null ? null : journal.getCurrentIssue().toString());
+
+    List<URI> jscs = journal.getSimpleCollection();
+    if(jscs != null) {
+      List<String> slist = new ArrayList<String>(jscs.size());
+      for(URI uri : jscs) {
+        slist.add(uri.toString());
+      }
+      journalInfo.setSimpleCollection(slist);
+    }
+
+    final List<DetachedCriteria> dclist = journal.getSmartCollectionRules();
+    if(dclist != null && dclist.size() > 0) {
+      StringBuffer sb = new StringBuffer();
+      for(DetachedCriteria dc : journal.getSmartCollectionRules()) {
+        sb.append(", ");
+        sb.append(dc.toString());
+      }
+      journalInfo.setSmartCollectionRulesDescriptor(sb.substring(2));
+    }
+
+    if (log.isDebugEnabled()) log.debug("Journal info assembled");
   }
 
   private URI getURI(String uriStr) {
@@ -164,13 +250,13 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   }
 
   /**
-   * Gets current virtual Journal.
+   * Gets the JournalInfo value object for access in the view.
    *
-   * @return Current virtual Journal.
+   * @return Current virtual Journal value object.
    */
-  public Journal getJournal() {
+  public JournalInfo getJournal() {
 
-    return journal;
+    return journalInfo;
   }
 
   /**
@@ -243,16 +329,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
    */
   public void setArticlesToAdd(String articlesToAdd) {
     this.articlesToAdd = articlesToAdd;
-  }
-
-  /**
-   * Set the OTM Session.
-   *
-   * @param session The OTM Session to set.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
   }
 
   /**

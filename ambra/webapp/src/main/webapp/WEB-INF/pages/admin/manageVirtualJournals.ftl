@@ -17,19 +17,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#macro trimBrackets bracketedString>
-  <#if bracketedString??>
-    <#assign unbracketedString=bracketedString>
-    <#if unbracketedString?starts_with("[")>
-      <#assign unbracketedString=unbracketedString?substring(1)>
-    </#if>
-    <#if unbracketedString?ends_with("]")>
-      <#assign unbracketedString=unbracketedString?substring(0, unbracketedString?length - 1)>
-    </#if>
-  <#else>
-    <#assign unbracketedString="">
-  </#if>
-</#macro>
 <html>
   <head>
     <title>Ambra: Administration: Manage Virtual Journals</title>
@@ -44,14 +31,14 @@
 
     <#include "templates/messages.ftl">
 
-    <h2>${journal.key} (${journal.getEIssn()!""})</h2>
+    <h2>${journal.key} (${journal.eissn!""})</h2>
 
     <@s.url id="manageVolumesIssues" namespace="/admin" action="manageVolumesIssues"
-      journalKey="${journal.key}" journalEIssn="${journal.getEIssn()}"/>
+      journalKey="${journal.key}" journalEIssn="${journal.eissn}"/>
     <@s.a href="${manageVolumesIssues}">Manage Volumes and Issues</@s.a><br />
     <br />
     <!-- TODO: display rules in a meaningful way  -->
-    Smart Collection Rules: ${journal.smartCollectionRules!""}<br />
+    Smart Collection Rules: ${journal.smartCollectionRulesDescriptor!""}<br />
     <br />
     <@s.form id="manageVirtualJournals_${journal.key}"
       name="manageVirtualJournals_${journal.key}" action="manageVirtualJournals" method="post"
@@ -84,9 +71,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <@trimBrackets journal.volumes!'' />
-            <@s.textfield name="volumes" label="Volumes" size="96"
-              value="${unbracketedString}"/>
+            <@s.textfield name="volumes" label="Volumes" size="96" value="${journal.volumes!''}"/>
           </td>
         </tr>
         <tr><th colspan="2">Articles</th></tr>
@@ -94,8 +79,7 @@
           <td colspan="2"><@s.textfield name="articlesToAdd" label="Add" size="100"/></td>
         </tr>
         <#list journal.simpleCollection as articleUri>
-          <@s.url id="fetchArticle" namespace="/article" action="fetchArticle"
-            articleURI="${articleUri}"/>
+          <@s.url id="fetchArticle" namespace="/article" action="fetchArticle" articleURI="${articleUri}"/>
           <tr>
             <td>
               <@s.checkbox label="Delete" name="articlesToDelete" fieldValue="${articleUri}"/>
