@@ -18,6 +18,8 @@
  */
 package org.plos.xacml.cond;
 
+import java.io.Serializable;
+
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -160,7 +162,7 @@ public class CachedBagFunction implements Function {
     Element element = cache.get(key);
 
     if (element != null) {
-      result = makeResult((String[]) element.getValue());
+      result = makeResult((Value) element.getValue());
 
       if (log.isDebugEnabled())
         log.debug(name + " cache hit(" + key + ")");
@@ -232,11 +234,12 @@ public class CachedBagFunction implements Function {
   /**
    * Create an <code>EvaluationResult</code> that contains the results from the cache.
    *
-   * @param results an array of result strings
+   * @param value a value object containing an array of result strings
    *
    * @return the desired <code>EvaluationResult</code>
    */
-  protected EvaluationResult makeResult(String[] results) {
+  protected EvaluationResult makeResult(Value value) {
+    String[] results = value.getResults();
     ArrayList bag = new ArrayList(results.length);
 
     for (int i = 0; i < results.length; i++)
@@ -252,9 +255,9 @@ public class CachedBagFunction implements Function {
    *
    * @param result the <code>EvaluationResult</code>
    *
-   * @return returns an array of result strings
+   * @return returns a Value object containing an array of result strings
    */
-  protected String[] makeValue(EvaluationResult result) {
+  protected Value makeValue(EvaluationResult result) {
     BagAttribute attr    = (BagAttribute) result.getAttributeValue();
     String[]     results = new String[attr.size()];
     Iterator     it      = attr.iterator();
@@ -262,6 +265,30 @@ public class CachedBagFunction implements Function {
     for (int i = 0; i < results.length; i++)
       results[i] = ((AttributeValue) it.next()).encode();
 
-    return results;
+    return new Value(results);
+  }
+
+  protected static class Value implements Serializable {
+    private String[] results;
+
+    public Value(String[] results) {
+      this.results = results;
+    }
+
+    public String[] getResults() {
+      return results;
+    }
+
+    public String toString() {
+      String ret = "[";
+
+      if (results.length > 0)
+        ret += results[0];
+
+      for (int i = 1; i < results.length; i++)
+        ret += ", " + results[i];
+
+      return ret + "]";
+    }
   }
 }
