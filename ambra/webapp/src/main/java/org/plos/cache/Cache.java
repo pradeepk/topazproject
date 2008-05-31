@@ -135,6 +135,10 @@ public interface Cache {
     public int hashCode() {
       return 0;
     }
+
+    public String toString() {
+      return "Pending-Delete";
+    }
   }
 
   /**
@@ -149,6 +153,10 @@ public interface Cache {
 
     public Object getValue() {
       return value;
+    }
+
+    public String toString() {
+      return (value == null) ? "NULL" : value.toString();
     }
   }
 

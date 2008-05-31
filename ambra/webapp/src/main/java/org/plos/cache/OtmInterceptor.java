@@ -392,5 +392,9 @@ public class OtmInterceptor implements Interceptor {
 
       return def.getName();
     }
+
+    public String toString() {
+      return "types = " + types + ", values = " + values;
+    }
   }
 }
