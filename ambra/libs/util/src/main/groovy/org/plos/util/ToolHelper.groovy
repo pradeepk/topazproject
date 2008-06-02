@@ -64,10 +64,10 @@ static Configuration loadConfiguration(xmlConfigFileOverride) {
  * @param maxLen maximum lenght of integer string
  */
 static String[] findInt(value, minLen, maxLen) {
- def matches = []
- (value?.toString() =~ "[0-9]{$minLen,$maxLen}").each { match ->
-  matches.add(match)
- }
+  def matches = []
+  (value?.toString() =~ "[0-9]{$minLen,$maxLen}").each { match ->
+    matches.add(match)
+  }
 
- matches.size() == 0 ? null : matches
+  matches.size() == 0 ? null : matches
 }
