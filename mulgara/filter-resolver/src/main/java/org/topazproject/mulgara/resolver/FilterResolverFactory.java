@@ -36,6 +36,7 @@ import org.mulgara.resolver.spi.ResolverFactory;
 import org.mulgara.resolver.spi.ResolverFactoryException;
 import org.mulgara.resolver.spi.ResolverFactoryInitializer;
 import org.mulgara.resolver.spi.ResolverSession;
+import org.mulgara.server.SessionFactory;
 
 /** 
  * The factory for {@link FilterResolver}s.
@@ -124,13 +125,15 @@ public class FilterResolverFactory implements ResolverFactory {
     config = config.subset(base);
 
     // Set up the filter handlers
+    SessionFactory sf = resolverFactoryInitializer.getSessionFactory();
+
     List<FilterHandler> hList = new ArrayList<FilterHandler>();
     for (int idx = 0; ; idx++) {
       String handlerClsName = config.getString("filterHandler.class_" + idx, null);
       if (handlerClsName == null)
         break;
 
-      hList.add(instantiateHandler(handlerClsName, config, base, dbURI));
+      hList.add(instantiateHandler(handlerClsName, config, base, sf, dbURI));
       logger.info("Loaded handler '" + handlerClsName + "'");
     }
 
@@ -141,18 +144,19 @@ public class FilterResolverFactory implements ResolverFactory {
   }
 
   private static FilterHandler instantiateHandler(String clsName, Configuration config, String base,
-                                                  URI dbURI)
+                                                  SessionFactory sf, URI dbURI)
       throws InitializerException {
     try {
-      Class clazz;
+      Class<FilterHandler> clazz;
       try {
-        clazz = Class.forName(clsName, true, Thread.currentThread().getContextClassLoader());
+        clazz = (Class<FilterHandler>)
+            Class.forName(clsName, true, Thread.currentThread().getContextClassLoader());
       } catch (Exception e) {
-        clazz = Class.forName(clsName);
+        clazz = (Class<FilterHandler>) Class.forName(clsName);
       }
-      Constructor c =
-          clazz.getConstructor(new Class[] { Configuration.class, String.class, URI.class });
-      return (FilterHandler) c.newInstance(new Object[] { config, base, dbURI });
+      Constructor<FilterHandler> c =
+          clazz.getConstructor(Configuration.class, String.class, SessionFactory.class, URI.class);
+      return c.newInstance(config, base, sf, dbURI);
     } catch (Exception e) {
       throw new InitializerException("Error creating handler instance for '" + clsName + "'", e);
     }

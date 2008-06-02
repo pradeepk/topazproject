@@ -52,7 +52,6 @@ import org.mulgara.resolver.spi.ResolverSession;
 import org.mulgara.resolver.spi.Statements;
 import org.mulgara.server.Session;
 import org.mulgara.server.SessionFactory;
-import org.mulgara.server.driver.SessionFactoryFinder;
 
 import org.xml.sax.InputSource;
 import org.w3c.dom.Element;
@@ -187,10 +186,12 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
    * 
    * @param config  the configuration to use
    * @param base    the prefix under which the current <var>config</var> was retrieved
+   * @param sf      the session-factory we belong to
    * @param dbURI   the uri of our database
    * @throws Exception 
    */
-  public CacheInvalidator(Configuration config, String base, URI dbURI) throws Exception {
+  public CacheInvalidator(Configuration config, String base, SessionFactory sf, URI dbURI)
+      throws Exception {
     super(0, getInvIval(config), "CacheInvalidator-Worker", false, logger);
     xaResource = new CIXAResource();
 
@@ -235,12 +236,7 @@ class CacheInvalidator extends QueueingFilterHandler<CacheInvalidator.ModItem> {
       logger.info("No cache named '" + qcName + "' found - disabling query caching");
 
     // delay session creation because at this point we're already in a session-creation call
-    /* This makes a whole bunch of assumptions regarding how LocalSessionFactory works and
-     * under what environment we're being used. Basically we assume that A) all
-     * LocalSessionFactory instances really use the same underlying SessionFactory, and B) that
-     * somebody else has already set this up.
-     */
-    sessFactory = SessionFactoryFinder.newSessionFactory(dbURI);
+    sessFactory = sf;
 
     // we're ready
     worker.start();

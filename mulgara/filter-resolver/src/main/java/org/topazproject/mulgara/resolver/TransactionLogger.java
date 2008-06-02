@@ -43,6 +43,7 @@ import org.mulgara.resolver.spi.GlobalizeException;
 import org.mulgara.resolver.spi.ResolverException;
 import org.mulgara.resolver.spi.ResolverSession;
 import org.mulgara.resolver.spi.Statements;
+import org.mulgara.server.SessionFactory;
 
 /** 
  * This logs all transactions (committed statements) to a log file. The format is that of itql
@@ -78,10 +79,12 @@ class TransactionLogger extends QueueingFilterHandler<String> {
    * 
    * @param config  the configuration to use
    * @param base    the prefix under which the current <var>config</var> was retrieved
+   * @param sf      ignored
    * @param dbURI   ignored
    * @throws IOException 
    */
-  public TransactionLogger(Configuration config, String base, URI dbURI) throws IOException {
+  public TransactionLogger(Configuration config, String base, SessionFactory sf, URI dbURI)
+      throws IOException {
     super(getFlushIval(config), 0, "TransactionLogger-Worker", true, logger);
 
     config = config.subset("transactionLogger");
