@@ -55,7 +55,7 @@ import org.topazproject.otm.serializer.Serializer;
 @Entity(type = Criterion.RDF_TYPE, model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
 public abstract class Criterion {
-  private static final URI PFX_MODEL = URI.create("http://mulgara.org/mulgara#PrefixModel");
+  private static final URI PFX_MODEL = URI.create("http://mulgara.org/mulgara#PrefixGraph");
 
   /**
    * The graph/model alias for persistence. Unused otherwise.

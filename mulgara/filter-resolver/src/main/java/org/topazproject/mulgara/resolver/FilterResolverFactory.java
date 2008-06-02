@@ -158,6 +158,9 @@ public class FilterResolverFactory implements ResolverFactory {
     }
   }
 
+  public Graph[] getDefaultGraphs() {
+    return null;
+  }
 
   /**
    * Close the session factory.

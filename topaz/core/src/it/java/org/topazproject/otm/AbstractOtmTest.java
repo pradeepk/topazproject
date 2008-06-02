@@ -88,7 +88,7 @@ public abstract class AbstractOtmTest {
       new ModelConfig("str", URI.create("local:///topazproject#str"),
                                       URI.create("http://topazproject.org/models#StringCompare")),
       new ModelConfig("prefix", URI.create("local:///topazproject#prefix"),
-                                      URI.create("http://mulgara.org/mulgara#PrefixModel")),
+                                      URI.create("http://mulgara.org/mulgara#PrefixGraph")),
     };
     URI storeUri = URI.create("local:///topazproject");
     DefaultItqlClientFactory cf = new DefaultItqlClientFactory();

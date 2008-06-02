@@ -101,7 +101,7 @@ tokens {
 
 {
     private static final URI PREFIX_MODEL_TYPE =
-                                            URI.create("http://mulgara.org/mulgara#PrefixModel");
+                                            URI.create("http://mulgara.org/mulgara#PrefixGraph");
 
     private Session          sess;
     private String           tmpVarPfx;

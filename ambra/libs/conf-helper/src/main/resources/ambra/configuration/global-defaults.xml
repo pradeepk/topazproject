@@ -141,7 +141,7 @@
       <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">
         ${ambra.topaz.tripleStore.mulgara.modelPrefix}xsd
       </xsd>
-      <prefix type="http://mulgara.org/mulgara#PrefixModel">
+      <prefix type="http://mulgara.org/mulgara#PrefixGraph">
         ${ambra.topaz.tripleStore.mulgara.modelPrefix}prefix
       </prefix>
     </models>

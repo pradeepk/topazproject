@@ -76,6 +76,10 @@ public class StringCompareResolverFactory implements ResolverFactory {
     }
   }
 
+  public Graph[] getDefaultGraphs() {
+    return null;
+  }
+
   public void close() {
   }
 
