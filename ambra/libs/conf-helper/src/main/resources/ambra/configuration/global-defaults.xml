@@ -162,13 +162,13 @@
 
       <tripleStore>
         <mulgara>
-          <!-- The base uri of all the models that we create in mulgara.-->
           <scheme>rmi:</scheme>
           <baseuri>
             ${ambra.topaz.tripleStore.mulgara.scheme}//${ambra.network.hosts.mulgara}/topazproject
           </baseuri>
+          <!-- The base uri of all the models that we create in mulgara.-->
           <modelPrefix>
-            ${ambra.topaz.tripleStore.mulgara.baseuri}#
+            local:///topazproject#
           </modelPrefix>
           <!-- Configuration to talk to Mulgara -->
           <itql>

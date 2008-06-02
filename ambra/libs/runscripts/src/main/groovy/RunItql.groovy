@@ -92,7 +92,7 @@ help[".quit"] = """.quit - Exit the interpreter"""
 help["variables"] = '''Variables can be used for a number of things:
   - Controlling features of the interpreter (see list of variables below)
   - As place holders in itql. 
-    e.g. itql> %modelX = "<rmi://localhost/topazproject#foo>"
+    e.g. itql> %modelX = "<local:///topazproject#foo>"
          itql> select $s $p $o from ${modelX} where $s $p $o;
 
 If a %-character is the first character of the line, the rest of the line is 

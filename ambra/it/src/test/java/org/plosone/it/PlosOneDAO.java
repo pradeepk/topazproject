@@ -131,7 +131,7 @@ public class PlosOneDAO {
 
     for (String model : models)
       factory.addModel(new ModelConfig(model,
-                                       URI.create("rmi://localhost/topazproject#filter:model=" + model),
+                                       URI.create("local:///topazproject#filter:model=" + model),
                                        URI.create("http://topazproject.org/models#filter")));
 
     URI storeUri = URI.create("rmi://localhost/topazproject");

@@ -54,7 +54,7 @@ public class DOITypeResolver {
   /**
    * The default GRAPH  that will be searched.
    */
-  public static final String GRAPH = "rmi://localhost/topazproject#filter:model=ri";
+  public static final String GRAPH = "local:///topazproject#filter:model=ri";
   private static final Log log = LogFactory.getLog(DOITypeResolver.class);
 
   //

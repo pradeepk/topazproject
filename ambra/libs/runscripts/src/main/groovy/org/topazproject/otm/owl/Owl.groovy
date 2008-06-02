@@ -45,7 +45,7 @@ class Owl {
   static GroovyClassLoader gcl = new GroovyClassLoader()
   static SessionFactory factory = new SessionFactoryImpl()
 
-  static String MODEL_PREFIX = "rmi://localhost/topazproject#"
+  static String MODEL_PREFIX = "local:///topazproject#"
 
   /**
    * Given a list of directories and/or jar files, generate metadata.

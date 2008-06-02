@@ -27,7 +27,7 @@ import org.apache.commons.lang.text.StrTokenizer;
 MULGARA_BASE = "localhost"
 MULGARA_LOC = "/topazproject"
 FEDORA_BASE = "localhost:9090"
-PREFS       = "<rmi://localhost/topazproject#filter:model=preferences>"
+PREFS       = "<local:///topazproject#filter:model=preferences>"
 LIMIT       = 50000
 MAX         = 10000000
 EMAIL       = 'alertsEmailAddress'
@@ -59,8 +59,8 @@ if (verbose) {
 }
 
 // Globals
-RI_MODEL='<rmi://localhost/topazproject#ri>'
-STR_MODEL='<rmi://localhost/topazproject#str>'
+RI_MODEL='<local:///topazproject#ri>'
+STR_MODEL='<local:///topazproject#str>'
 DATETIME='<http://www.w3.org/2001/XMLSchema#dateTime>'
 
 sf = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
