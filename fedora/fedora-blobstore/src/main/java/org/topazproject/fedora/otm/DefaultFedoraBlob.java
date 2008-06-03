@@ -120,14 +120,24 @@ public class DefaultFedoraBlob implements FedoraBlob {
     try {
       String ref = upld.upload(blob);
 
-      if (existsDs(con))
+      if (existsDs(con)) {
+        if (log.isDebugEnabled())
+          log.debug("Modifying data-stream(by reference) '" + dsId + "' for '" + pid + "'");
+
         apim.modifyDatastreamByReference(pid, dsId, new String[0], getDatastreamLabel(), false,
                                          getContentType(), null, ref, "A", "updated", false);
-      else if (existsPid(con))
+      } else if (existsPid(con)) {
+        if (log.isDebugEnabled())
+          log.debug("Adding data-stream '" + dsId + "' for '" + pid + "'");
+
         newDs = apim.addDatastream(pid, dsId, new String[0], getDatastreamLabel(), false,
                                    getContentType(), null, ref, "M", "A", "created");
-      else
+      } else {
+        if (log.isDebugEnabled())
+          log.debug("Ingesting '" + pid + "' with data-stream '" + dsId + "'");
+
         newPid = apim.ingest(getFoxml(ref), "foxml1.0", "created");
+      }
     } catch (Exception e) {
       if (e instanceof OtmException)
         throw (OtmException) e;
@@ -258,9 +268,9 @@ public class DefaultFedoraBlob implements FedoraBlob {
   }
 
   /**
-   * Checks if the Fedora object itself can be purged. In general an object can be
-   * purged if the remaining data-streams on it are not significant. Override it
-   * in sub-classes to handle app specific processing.
+   * Checks if the Fedora object itself can be purged. In general an object can be purged if
+   * the remaining data-streams on it are not significant. Override it in sub-classes to handle
+   * app specific processing.
    *
    * @param con the connection handle
    *
@@ -278,9 +288,9 @@ public class DefaultFedoraBlob implements FedoraBlob {
   }
 
   /**
-   * Checks if the data-streams on this object are significant enough so as not to
-   * purge this. In general, if the only data-stream remaining is the "DC", then the object
-   * can be purged. Override it in sub-classes to handle app specific processing.
+   * Checks if the data-streams on this object are significant enough so as not to purge
+   * this. In general, if the only data-stream remaining is the "DC", then the object can be
+   * purged. Override it in sub-classes to handle app specific processing.
    *
    * @param con the connection handle
    * @param ds the current list of data-streams
@@ -302,16 +312,16 @@ public class DefaultFedoraBlob implements FedoraBlob {
 
     try {
       if (existsDs(con)) {
+        if (log.isDebugEnabled())
+          log.debug("Purging Datastream " + blobId + " at " + pid + "/" + dsId);
+
         apim.purgeDatastream(pid, dsId, null, "deleted", false);
 
-        if (log.isDebugEnabled())
-          log.debug("Purged Datastream " + blobId + " at " + pid + "/" + dsId);
-
         if (canPurgeObject(con)) {
-          apim.purgeObject(pid, "deleted", false);
-
           if (log.isDebugEnabled())
-            log.debug("Purged Object " + blobId + " at " + pid + "/" + dsId);
+            log.debug("Purging Object " + blobId + " at " + pid + "/" + dsId);
+
+          apim.purgeObject(pid, "deleted", false);
         }
       }
     } catch (Exception e) {
