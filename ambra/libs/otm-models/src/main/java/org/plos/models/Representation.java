@@ -33,11 +33,11 @@ import org.topazproject.otm.annotations.Predicate;
 public class Representation extends Blob {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/representation/")
   private String                                                           id;
-  @Predicate(uri = Rdf.topaz + "representation/name")
+  @Predicate(uri = Rdf.dc_terms + "identifier")
   private String                                                           name;
-  @Predicate(uri = Rdf.topaz + "representation/contentType")
+  @Predicate(uri = Rdf.topaz + "contentType")
   private String                                                           contentType;
-  @Predicate(uri = Rdf.topaz + "representation/objectSize")
+  @Predicate(uri = Rdf.topaz + "objectSize")
   private long                                                             size;
   @Predicate(uri = Rdf.topaz + "hasRepresentation", inverse=true)
   private ObjectInfo                                                       object;

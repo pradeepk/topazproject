@@ -216,10 +216,10 @@ public class Migrator implements ServletContextListener {
         String rid = id + "/" + rep.name;
         b.append("<" + id + "> <" + Rdf.topaz + "hasRepresentation> <" + rid + "> ");
         b.append("<" + rid + "> <rdf:type> <" + Rdf.topaz + "Representation> ");
-        b.append("<" + rid + "> <" + Rdf.topaz + "representation/name> '" + rep.name + "' ");
+        b.append("<" + rid + "> <" + Rdf.dc_terms + "identifier> '" + rep.name + "' ");
 
         if (rep.contentType != null) {
-          b.append("<" + rid + "> <" + Rdf.topaz + "representation/contentType> '"
+          b.append("<" + rid + "> <" + Rdf.topaz + "contentType> '"
                    + RdfUtil.escapeLiteral(rep.contentType.getValue()) + "'");
 
           if (rep.contentType.getDatatype() != null)
@@ -229,7 +229,7 @@ public class Migrator implements ServletContextListener {
         }
 
         if (rep.objectSize != null) {
-          b.append("<" + rid + "> <" + Rdf.topaz + "representation/objectSize> '"
+          b.append("<" + rid + "> <" + Rdf.topaz + "objectSize> '"
                    + RdfUtil.escapeLiteral(rep.objectSize.getValue()) + "'");
 
           if (rep.objectSize.getDatatype() != null)
