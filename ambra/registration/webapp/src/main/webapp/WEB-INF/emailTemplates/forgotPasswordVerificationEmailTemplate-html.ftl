@@ -23,10 +23,10 @@ Thank you <b>${user.loginName}</b> for requesting to reset your PLoS password.<b
 
 Please click on this link to reset your password:
 
-<a href="${url}?loginName=${user.loginName}&resetPasswordToken=${user.resetPasswordToken}">Reset password</a>
+<a href="${url}?loginName=${user.loginName}&amp;resetPasswordToken=${user.resetPasswordToken}">Reset password</a>
 <br/><br/>
 or copy and paste this link if you have problems:<br/>
-${url}?loginName=${user.loginName}&resetPasswordToken=${user.resetPasswordToken}
+${url}?loginName=${user.loginName}&amp;resetPasswordToken=${user.resetPasswordToken}
 
 </body>
 </html>
