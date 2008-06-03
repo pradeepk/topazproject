@@ -139,7 +139,7 @@ public class FilterResolver implements Resolver {
     URI filterModelURI = toURI(model);
     URI realModelURI   = toRealModelURI(filterModelURI);
     if (logger.isDebugEnabled())
-      logger.debug("Creating model '" + realModelURI + "'");
+      logger.debug("Creating model '" + realModelURI + "' for '" + filterModelURI + "'");
 
     // create the real model (a no-op if it already exists)
     try {
@@ -350,7 +350,9 @@ public class FilterResolver implements Resolver {
    */
   private URI toRealModelURI(URI model) throws ResolverException {
     // Note: URI.resolve() collapses the slashes on local:///foo, so we do this thing by hand
-    String u = dbURI.getScheme() + ':' + dbURI.getRawSchemeSpecificPart() +
+    String u = model.getScheme() + "://" +
+               (model.getRawAuthority() != null ? model.getRawAuthority() : "") +
+               model.getRawPath() +
                '#' + getModelName(model);
     return URI.create(u);
   }
