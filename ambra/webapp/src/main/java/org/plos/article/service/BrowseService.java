@@ -495,12 +495,12 @@ public class BrowseService {
   }
 
   /**
-   * Notify this service that articles have been added to the system. This should be invoked
+   * Notify this service that articles have been added or updated. This should be invoked
    * after the journal-service is updated.
    *
-   * @param uris the list of id's of the added articles
+   * @param uris the list of id's of the affected articles
    */
-  private void notifyArticlesAdded(String[] uris) {
+  private void notifyArticlesUpdated(String[] uris) {
     // create list of articles for each journal
     Map<String, Set<String>> artMap = getArticlesByJournal(uris);
 
@@ -518,7 +518,10 @@ public class BrowseService {
           if (arts == null) {
             artByCat.put(nai.category, arts = new ArrayList<URI>());
           }
-          arts.add(0, nai.id);
+          //XXX: This should really be a TreeSet with NAI so that 
+          //     "desc date, asc id" ordering is preserved.
+          if (!arts.contains(nai.id))
+            arts.add(0, nai.id);
         }
 
         updateCategoryCaches(artByCat, jnlName);
@@ -620,7 +623,9 @@ public class BrowseService {
       if (ids == null) {
         artByCat.put(cat, ids = new ArrayList<URI>());
       }
-      ids.add(r.getURI(1));
+      URI id = r.getURI(1);
+      if (ids.contains(id))
+       ids.add(id);
     }
 
     updateCategoryCaches(artByCat, jnlName);
@@ -819,8 +824,8 @@ public class BrowseService {
         Updates updates) {
       if (o instanceof Article) {
         if (log.isDebugEnabled())
-          log.debug("Updating browsecache for the article that was added.");
-        notifyArticlesAdded(new String[]{id});
+          log.debug("Updating browsecache for the article that was updated.");
+        notifyArticlesUpdated(new String[]{id});
       }
       if (o instanceof Journal) {
         String key = ((Journal)o).getKey();
