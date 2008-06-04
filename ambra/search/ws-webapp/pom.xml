@@ -17,6 +17,12 @@
       <artifactId>${pom.parent.artifactId}-server</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
+    <!-- Please keep the scope 'provided' to avoid packaging in the war -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>

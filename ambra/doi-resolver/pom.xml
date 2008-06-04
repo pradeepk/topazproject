@@ -66,6 +66,13 @@
       <artifactId>string-compare-resolver</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <!-- Please keep the scope 'provided' to avoid packaging in the war -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
