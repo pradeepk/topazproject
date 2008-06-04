@@ -624,7 +624,7 @@ public class BrowseService {
         artByCat.put(cat, ids = new ArrayList<URI>());
       }
       URI id = r.getURI(1);
-      if (ids.contains(id))
+      if (!ids.contains(id))
        ids.add(id);
     }
 
