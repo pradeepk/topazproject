@@ -30,7 +30,6 @@
         <!-- begin : col 2 -->
           <div class="col last">
           <!-- SWT removed horizontalTabs -->
-            <p style="position:relative; zoom:1; font-size:0.9em; margin: 25px 0 0px; padding:3px 10px; border:1px dashed red; background-color:#ffc;"><strong>Note to our readers:</strong> We apologize for the recent slowness and intermittent downtime for this journal website. Please bear with us as we work to improve the website performance and stability. <a href="http://www.plos.org/cms/node/334">More information</a></p>
             <div id="info" class="block">
              <@s.url action="information" namespace="/static" includeParams="none" id="info"/>
               <h2>What is the PLoS Hub for Clinical Trials?</h2>

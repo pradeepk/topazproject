@@ -61,8 +61,8 @@ div.contentwrap{ padding: 10px; background-color: #fff; margin: 0; border: 1px s
 div.contentwrap p { margin:0; }
 
 /*corrections varients*/
-div#cmtContainer.frmlcrctn h6 a:link,
-div#cmtContainer.minrcrctn h6 a:link { background:url(../images/icon_correction.gif) left 0% no-repeat; color:#ff0000; }
+div#cmtContainer.frmlcrctn h6 a,
+div#cmtContainer.minrcrctn h6 a { background:url(../images/icon_correction.gif) left 0% no-repeat; color:#ff0000; !important }
 div#cmtContainer.frmlcrctn div.contentwrap,
 div#cmtContainer.frmlcrctn h6#viewCmtTitle,
 div#cmtContainer.minrcrctn div.contentwrap,

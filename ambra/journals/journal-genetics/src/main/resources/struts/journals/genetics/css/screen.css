@@ -61,6 +61,7 @@ a:hover {
 a:active {
 	
 }
+:active, :focus { outline-style: none; -moz-outline-style:none; }
 
 blockquote {
 	font-size: .9em;
@@ -937,7 +938,7 @@ div#ftr p {
 
 div#ftr p span {
 	display: inline;
-	background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left
+	background: #FFF url(../images/user_ftr_cc_logo.png) no-repeat left
 		center;
 	padding: 8px 8px 8px 25px;
 }

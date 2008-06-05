@@ -29,7 +29,6 @@
         <!-- SWT removed col 1 -->
         <!-- begin : col 2 -->
           <div class="col last">
-		  <p style="position:relative; zoom:1; font-size:0.9em; margin-bottom:10px; padding:3px 10px; border:1px dashed red; background-color:#ffc;"><strong>Note to our readers:</strong> We apologize for the recent slowness and intermittent downtime for this journal website. Please bear with us as we work to improve the website performance and stability. <a href="http://www.plos.org/cms/node/334">More information</a></p>
             <div id="importantStuff" class="block">
              <@s.url id="newNoted01" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001780"/>
               <@s.url id="newNoted02" namespace="/article" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0001743"/>

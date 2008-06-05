@@ -35,6 +35,7 @@ a:link		{ color: #900; text-decoration: underline; }
 a:visited 	{ color: #600; }
 a:hover		{ color: #f00; text-decoration: none;}
 a:active	{ }
+:active, :focus { outline-style: none; -moz-outline-style:none; }
 
 blockquote	{ font-size: .9em; margin: 0 20px;}
 div.quotes { margin:20px 0; }
@@ -319,7 +320,7 @@ div#ftr ul li 	{ margin: 0 5px; display: inline; }
 /*div#ftr ul a, div#ftr ul a:visited { color: #c00;}*/
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p 		{ margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #003956; white-space: nowrap; }
-div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
+div#ftr p span 	{ display: inline; background: #FFF url(../images/user_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
 div#ftr div.powered { background-color: #202020; color: #bbb; font-size: .9em; padding: 10px 0 4px 0; letter-spacing: .03em; margin-top: 10px; border-top: 1px solid #fff;}
 div.powered a:link,
 div.powered a:visited,
