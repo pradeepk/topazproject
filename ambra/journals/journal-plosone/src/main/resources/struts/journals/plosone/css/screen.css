@@ -395,7 +395,7 @@ p.affiliations	{ font-size: .85em; margin: 0; }
 
 div.abstract	{ margin: 15px 0; }
 div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #DBDBDB url(../images/abstract_bg.gif) repeat-x top; }
-div.contributions { font-size: .9em; }
+div.contributions { }
 div.articleinfo p
 /*div.abstract p -this is causing bad spacing between h2 and abstract on article pages. Not sure why this is in here.*/	{ margin: 0 0 1em 0; }
 div.abstract h2 { font-size: 1.6em; font-style: normal; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
