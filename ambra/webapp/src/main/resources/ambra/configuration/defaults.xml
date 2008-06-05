@@ -242,9 +242,6 @@
       # element tag with no value, e.g. <javascript></javascript>
     -->
     <freemarker>
-      <dojo>
-        <debug>false</debug>
-      </dojo>
       <journal>
         <name>AmbraJournal</name>
         <metaKeywords>Ambra\, RDF</metaKeywords>

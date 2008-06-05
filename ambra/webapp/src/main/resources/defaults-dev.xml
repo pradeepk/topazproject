@@ -256,12 +256,6 @@
         <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>
-
-    <freemarker>
-      <dojo>
-        <debug>false</debug>
-      </dojo>
-    </freemarker>
   </ambra>
 
   <!-- See the PlosStruts2Filter dispatcher on how struts constants are configured -->

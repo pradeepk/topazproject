@@ -71,7 +71,7 @@ public class PlosOneFreemarkerConfig {
     if (log.isDebugEnabled()) {
       log.debug("Reading FreeMarker configuration");
     }
-    dojoDebug = myConfig.getBoolean("ambra.freemarker.dojo.debug");
+    dojoDebug = myConfig.getBoolean("struts.devMode");
     dirPrefix = myConfig.getString("ambra.platform.appContext");
     subdirPrefix = myConfig.getString("ambra.platform.resourceSubDir");
     plosOneHost = myConfig.getString("ambra.platform.host");
