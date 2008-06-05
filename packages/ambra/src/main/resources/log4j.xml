@@ -81,11 +81,6 @@
     <level value="debug"/>
   </logger-->
 
-  <!-- uncomment for mulgara transaction debugging -->
-  <!--logger name="org.topazproject.mulgara.itql.ItqlHelper">
-    <level value="debug"/>
-  </logger-->
-
   <root>
     <priority value ="info" />
     <appender-ref ref="rolling" />
