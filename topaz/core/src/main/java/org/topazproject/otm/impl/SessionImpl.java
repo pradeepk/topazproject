@@ -127,12 +127,12 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public void flush() throws OtmException {
+    if (flushing)
+      return;
     try {
       // prevent re-entrant flushing. (Occurs if interceptor attempts a query)
-      if (!flushing) {
-        flushing = true;
-        doFlush();
-      }
+      flushing = true;
+      doFlush();
     } finally {
       flushing = false;
     }
