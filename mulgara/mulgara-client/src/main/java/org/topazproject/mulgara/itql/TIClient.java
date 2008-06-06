@@ -208,7 +208,7 @@ abstract class TIClient implements ItqlClient {
     }
 
     try {
-      con.close();
+      con.dispose();
     } catch (QueryException qe) {
       log.warn("Error closing connection", qe);
     }
