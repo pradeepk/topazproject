@@ -251,6 +251,7 @@ public class SessionImpl extends AbstractSession {
 
       cleanMap.remove(id);
       dirtyMap.remove(id);
+      proxies.remove(id);
 
       ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
