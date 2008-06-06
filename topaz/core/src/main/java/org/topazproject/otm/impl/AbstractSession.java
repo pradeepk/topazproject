@@ -367,12 +367,20 @@ abstract class AbstractSession implements Session {
 
       jtaTxn.registerSynchronization(new Synchronization() {
         public void beforeCompletion() {
-          if (getFlushMode().implies(FlushMode.commit))
+          if (getFlushMode().implies(FlushMode.commit) && !isRollback())
             flush();
         }
 
         public void afterCompletion(int status) {
           endTransaction();
+        }
+
+        private boolean isRollback() throws OtmException {
+          try {
+            return (jtaTxn.getStatus() == Status.STATUS_MARKED_ROLLBACK);
+          } catch (Exception e) {
+            throw new OtmException("Error getting rollback-only status", e);
+          }
         }
       });
     } catch (OtmException oe) {
