@@ -35,6 +35,7 @@ import java.util.WeakHashMap;
 import javax.naming.Reference;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.TransactionManagerServices;
@@ -635,7 +636,9 @@ public class SessionFactoryImpl implements SessionFactory {
     public void init()                           { }
     public void close()                          { }
     public String getUniqueName()                { return "OTM-Simple-Resource-Producer"; }
-    public XAResourceHolderState startRecovery() { return null; }
+    public XAResourceHolderState startRecovery() {
+      return createResHolder(new RecoveryXAResource()).getXAResourceHolderState();
+    }
     public void endRecovery()                    { }
     public Reference getReference()              { return null; }
     public XAStatefulHolder createPooledConnection(Object xaFactory, ResourceBean bean) {
@@ -646,17 +649,21 @@ public class SessionFactoryImpl implements SessionFactory {
       WeakReference<XAResourceHolder> resHolderRef = xaresHolders.get(xaResource);
       XAResourceHolder resHolder = (resHolderRef != null) ? resHolderRef.get() : null;
 
-      if (resHolder == null) {
-        ResourceBean rb = new ResourceBean() {
-          public XAResourceProducer createResource() { return null; }
-        };
-        rb.setUniqueName(xaResource.getClass().getName() + System.identityHashCode(xaResource));
+      if (resHolder == null)
+        xaresHolders.put(xaResource, new WeakReference(resHolder = createResHolder(xaResource)));
 
-        resHolder = new SimpleXAResourceHolder(xaResource);
-        resHolder.setXAResourceHolderState(new XAResourceHolderState(resHolder, rb));
+      return resHolder;
+    }
 
-        xaresHolders.put(xaResource, new WeakReference(resHolder));
-      }
+    private static XAResourceHolder createResHolder(XAResource xaResource) {
+      ResourceBean rb = new ResourceBean() {
+        public XAResourceProducer createResource() { return null; }
+      };
+      rb.setUniqueName(xaResource.getClass().getName() + System.identityHashCode(xaResource));
+      rb.setApplyTransactionTimeout(true);
+
+      XAResourceHolder resHolder = new SimpleXAResourceHolder(xaResource);
+      resHolder.setXAResourceHolderState(new XAResourceHolderState(resHolder, rb));
 
       return resHolder;
     }
@@ -672,6 +679,19 @@ public class SessionFactoryImpl implements SessionFactory {
       public List       getXAResourceHolders() { return null; }
       public boolean    isEmulatingXA()        { return false; }
       public XAResource getXAResource()        { return xares; }
+    }
+
+    private static class RecoveryXAResource implements XAResource {
+      public void start(Xid xid, int flags) { }
+      public void end(Xid xid, int flags) { }
+      public int prepare(Xid xid) { return XA_OK; }
+      public void commit(Xid xid, boolean onePhase) { }
+      public void rollback(Xid xid) { }
+      public Xid[] recover(int flag) { return null; /* recovery not supported (yet) */ }
+      public void forget(Xid xid) { }
+      public int getTransactionTimeout() { return 10; }
+      public boolean setTransactionTimeout(int transactionTimeout) { return false; }
+      public boolean isSameRM(XAResource xaResource) { return xaResource == this; }
     }
   }
 }

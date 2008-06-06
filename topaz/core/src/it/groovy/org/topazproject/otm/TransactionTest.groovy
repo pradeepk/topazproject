@@ -175,7 +175,28 @@ public class TransactionTest extends AbstractTest {
 
     Thread.sleep(2500);
 
-    // JOTM sets this, BTM 1.2 doesn't (but 1.3 does): assertTrue(s.transaction.isRollbackOnly())
+    assertTrue(s.transaction.isRollbackOnly())
+    shouldFail(OtmException.class) { s.transaction.commit() }
+
+    // explicit timeout, wait for timeout to trigger, verify triple-store releases lock
+    s.clear()
+    s.beginTransaction(false, 2)
+    res = s.get(Article.class, o1.uri.toString())
+    assertEquals(o1.uri, res.uri)
+    res.title = "The end of things"
+
+    def t1 = doInThread {
+      doInTx { s2 -> assertEquals(o1.uri, s2.get(Article.class, o1.uri.toString()).uri) }
+    }
+    t1.join(2500)
+
+    if (t1.isAlive()) {
+      s.transaction.rollback();
+      assertFalse(t1.isAlive())
+    }
+
+    Thread.sleep(500);
+    assertTrue(s.transaction.isRollbackOnly())
     shouldFail(OtmException.class) { s.transaction.commit() }
 
     // no timeout, make sure it goes back to default
@@ -185,7 +206,7 @@ public class TransactionTest extends AbstractTest {
     assertEquals(o1.uri, res.uri)
     res.title = "The end of things"
 
-    Thread.sleep(2000);
+    Thread.sleep(2500);
 
     assertFalse(s.transaction.isRollbackOnly())
     s.transaction.commit()
