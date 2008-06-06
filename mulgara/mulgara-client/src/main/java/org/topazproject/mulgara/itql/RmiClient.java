@@ -20,7 +20,10 @@
 package org.topazproject.mulgara.itql;
 
 import java.net.URI;
+import java.util.Map;
+import java.util.WeakHashMap;
 
+import org.mulgara.connection.Connection;
 import org.mulgara.connection.ConnectionException;
 import org.mulgara.connection.SessionConnection;
 
@@ -30,6 +33,39 @@ import org.mulgara.connection.SessionConnection;
  * @author Ronald Tschalär
  */
 public class RmiClient extends TIClient {
+  private static final Map<RmiClient, Connection> liveConnections =
+                                                      new WeakHashMap<RmiClient, Connection>();
+  private static final Thread shutdownHook;
+
+  static {
+    shutdownHook = new Thread() {
+      public void run() {
+        // close all session factories
+        for (Connection c : liveConnections.values()) {
+          try {
+            c.dispose();
+          } catch (Exception e) {
+            System.err.println("Error closing connection '" + c + "': " + e);
+          }
+        }
+        liveConnections.clear();
+      }
+    };
+
+    Runtime.getRuntime().addShutdownHook(shutdownHook);
+  }
+
+  /** 
+   * Release all static resources associated with this class. This is meant to be used in an
+   * environment where classes are reloaded in order to make sure all references to this class
+   * or to related classes are removed. Note that this closes all session-factories, so the
+   * caller must ensure they will not be needed anymore.
+   */
+  public static void releaseResources() {
+    Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    shutdownHook.run();
+  }
+
   /** 
    * Create a new instance pointed at the given database.
    * 
@@ -39,5 +75,6 @@ public class RmiClient extends TIClient {
    */
   public RmiClient(URI database, ItqlClientFactory icf) throws ConnectionException {
     super(new SessionConnection(database));
+    liveConnections.put(this, con);
   }
 }
