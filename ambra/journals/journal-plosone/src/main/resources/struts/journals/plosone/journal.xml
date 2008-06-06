@@ -282,10 +282,9 @@
           <javascript>
             <file>/javascript/dojo.js</file>
             <file>/javascript/ambra.js</file>
-            <file>/javascript/config_profile.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_navigation.js</file>
-            <file>/javascript/init_profile.js</file>
+            <file>/javascript/user_profile.js</file>
           </javascript>
         </page>
 

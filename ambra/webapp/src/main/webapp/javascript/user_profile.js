@@ -17,8 +17,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var _ldc;
 
+var _ldc;
+var tabsListMap = new Array();
+var querystring = ambra.htmlUtil.getQuerystring();
+var tabSelectId = "";
+
+tabsListMap[tabsListMap.length] = {
+  tabKey:   "preferences",
+  title:    "Preferences",
+  formName: "userForm",
+  urlLoad:  "/user/secure/editAjaxProfile.action",
+  urlSave:  "/user/secure/saveAjaxProfile.action"
+};
+
+tabsListMap[tabsListMap.length] = {
+  tabKey:   "alerts",
+  title:    "Alerts",
+  formName: "userAlerts",
+  urlLoad:  "/user/secure/editAjaxAlerts.action",
+  urlSave:  "/user/secure/saveAjaxAlerts.action"
+};
+
+for (var i=0; i<querystring.length; i++) {
+  if (querystring[i].param == "tabId") {
+    tabSelectId = querystring[i].value;
+  }
+}
+
+var profileConfig = {
+  tabPaneSetId: "tabPaneSet",
+  tabsContainer: "tabsContainer",
+  tabSelectId: tabSelectId
+}                                 
+  
 dojo.addOnLoad(function() {
   _ldc = dijit.byId("LoadingCycle");
   _ldc.show();
@@ -28,7 +60,8 @@ dojo.addOnLoad(function() {
   ambra.horizontalTabs.setTabsContainer(dojo.byId(profileConfig.tabsContainer));
   ambra.horizontalTabs.init(tabSelectId);
   
-  dojo.addOnUnload(ambra.horizontalTabs.confirmChange(ambra.horizontalTabs.targetFormObj));
+  //dojo.addOnUnload(ambra.horizontalTabs.confirmChange(ambra.horizontalTabs.targetFormObj));
+  ambra.horizontalTabs.confirmChange(ambra.horizontalTabs.targetFormObj);
   
   if (tabSelectId == "alerts") {
     var alertsForm = document.userAlerts;
