@@ -41,7 +41,7 @@ LAST_BUILD=`cat ${MVN_LAST_BUILD} 2>/dev/null`
 set +e
 
 SVNVERSION=`svnversion`
-MVNARGS=-Dsvnversion=${SVNVERSION}
+MVNARGS="-Dsvnversion=${SVNVERSION} -U"
 
 mvn --version
 java -version
