@@ -101,6 +101,8 @@ public interface Zip {
    * An implementation of {@link Zip Zip} where the zip archive is available from a stream.
    */
   public static abstract class StreamZip implements Zip {
+    private ZipInputStream curStream = null;
+
     protected abstract InputStream getStream() throws IOException;
 
     public Enumeration getEntries() throws IOException {
@@ -134,19 +136,35 @@ public interface Zip {
     }
 
     public InputStream getStream(String name, long[] size) throws IOException {
-      final ZipInputStream zis = new ZipInputStream(getStream());
+      boolean restart = loadStream();
 
       ZipEntry ze;
-      while ((ze = zis.getNextEntry()) != null) {
-        if (ze.getName().equals(name)) {
-          size[0] = ze.getSize();
-          return zis;
+      while (true) {
+        while ((ze = curStream.getNextEntry()) != null) {
+          if (ze.getName().equals(name)) {
+            size[0] = ze.getSize();
+            return curStream;
+          }
         }
+
+        curStream.close();
+        curStream = null;
+        if (restart)
+          restart = loadStream();
+        else
+          break;
       }
 
-      zis.close();
       size[0] = -1;
       return null;
+    }
+
+    private boolean loadStream() throws IOException {
+      if (curStream != null)
+        return true;
+
+      curStream = new ZipInputStream(getStream());
+      return false;
     }
   }
 
