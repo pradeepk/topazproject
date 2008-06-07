@@ -60,7 +60,7 @@
     </entry>
     <entry>
       <alias>model</alias>
-      <value>${dbUri}#</value>
+      <value>local:///topazproject#</value>
     </entry>
   </aliasMap>
 
