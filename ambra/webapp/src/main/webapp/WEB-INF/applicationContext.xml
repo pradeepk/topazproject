@@ -383,6 +383,7 @@
   <bean id="txManager" class="org.topazproject.otm.spring.OtmTransactionManager">
     <property name="otmSession" ref="otmSession"/>
     <property name="defaultTimeout" value="600"/>
+    <property name="clearSessionOnRollback" value="true"/>
   </bean>
 
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
