@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.logging.Log;
@@ -90,9 +91,15 @@ public class ArticleOtmService {
 
     // ingest article
     Ingester ingester = new Ingester(session, permissionsService);
-    Article art = ingester.ingest(new Zip.DataSourceZip(article), force);
+    Article art = ingester.ingest(createZip(article), force);
 
     return art;
+  }
+
+  private static Zip createZip(DataSource article) throws IOException {
+    if (article instanceof FileDataSource)
+      return new Zip.FileZip(((FileDataSource) article).getFile().toString());
+    return new Zip.DataSourceZip(article);
   }
 
   /**
