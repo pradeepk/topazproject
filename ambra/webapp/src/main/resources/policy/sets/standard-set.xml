@@ -35,6 +35,8 @@
 
   <PolicyIdReference>permit-admin</PolicyIdReference>
 
+  <PolicyIdReference>permit-bootstrap</PolicyIdReference>
+
   <PolicyIdReference>deny-inactive</PolicyIdReference>
 
   <PolicyIdReference>permit-irrevokables</PolicyIdReference>
@@ -48,8 +50,6 @@
   <PolicyIdReference>permitted-anonymous-operations</PolicyIdReference>
 
   <PolicyIdReference>permit-grants</PolicyIdReference>
-
-  <PolicyIdReference>permit-bootstrap</PolicyIdReference>
 
   <PolicyIdReference>deny-anonymous</PolicyIdReference>
   

@@ -34,8 +34,10 @@
   <PolicyIdReference>deny-disabled</PolicyIdReference>
 
   <PolicyIdReference>permit-admin</PolicyIdReference>
+  
+  <PolicyIdReference>permit-bootstrap</PolicyIdReference>
 
-  <!-- <PolicyIdReference>deny-inactive</PolicyIdReference> -->
+  <PolicyIdReference>deny-inactive</PolicyIdReference>
 
   <PolicyIdReference>permit-irrevokables</PolicyIdReference>
 
@@ -50,8 +52,6 @@
   <PolicyIdReference>permitted-anonymous-operations</PolicyIdReference>
  
   <PolicyIdReference>permitted-user-operations</PolicyIdReference>
-
-  <PolicyIdReference>permit-bootstrap</PolicyIdReference>
 
   <PolicyIdReference>permit-all</PolicyIdReference>
 
