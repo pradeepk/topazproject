@@ -214,7 +214,7 @@ public class DOITypeResolver {
   public static class Resource {
     @Id
     public String                                        id;
-    @Predicate(uri = Rdf.rdf + "type")
+    @Predicate(uri = Rdf.rdf + "type", fetch = FetchType.eager)
     public Set<String>                                   types;
   }
 
