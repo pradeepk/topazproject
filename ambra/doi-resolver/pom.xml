@@ -16,12 +16,12 @@
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-client</artifactId>
+      <artifactId>otm</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>otm</artifactId>
+      <groupId>org.mulgara</groupId>
+      <artifactId>driver</artifactId>
     </dependency>
 
     <dependency>
