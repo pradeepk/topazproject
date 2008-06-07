@@ -55,6 +55,7 @@ import org.springframework.transaction.support.SmartTransactionObject;
  */
 public class OtmTransactionManager extends AbstractPlatformTransactionManager {
   private Session session;
+  private boolean clearSessionOnRB = false;
 
   /** 
    * Create a new otm-transaction-manager instance. 
@@ -106,6 +107,9 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
       tx.rollback();
     } catch (OtmException oe) {
       throw new TransactionSystemException("error rolling back transaction", oe);
+    } finally {
+      if (clearSessionOnRB)
+        txObj.getSession().clear();
     }
   }
 
@@ -132,6 +136,16 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  /**
+   * Set the clear-session-on-rollback flag.
+   *
+   * @param clearSessionOnRB true if the session should be <var>clear()'d</var> on transaction
+   *                         rollback
+   */
+  public void setClearSessionOnRollback(boolean clearSessionOnRB) {
+    this.clearSessionOnRB = clearSessionOnRB;
   }
 
   /**
