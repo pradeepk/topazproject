@@ -53,7 +53,7 @@
   </logger>
 
   <!-- change to 'debug' for troubleshooting -->
-  <logger name="org.topazproject.mulgara.ws">
+  <logger name="org.topazproject.mulgara">
     <level value="info" /> 
   </logger>
 
