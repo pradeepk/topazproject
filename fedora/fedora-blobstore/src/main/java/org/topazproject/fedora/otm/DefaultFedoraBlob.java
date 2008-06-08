@@ -237,8 +237,7 @@ public class DefaultFedoraBlob implements FedoraBlob {
 
       return (streams != null) && (streams.length != 0);
     } catch (Exception e) {
-      if ((e.getMessage().indexOf("Server.userException") < 0)
-           || (e.getMessage().indexOf("no path in db registry for") < 0))
+      if (ignoreException(e))
         return false;
 
       throw new OtmException("Error while checking existence of pid: " + pid, e);
@@ -259,12 +258,27 @@ public class DefaultFedoraBlob implements FedoraBlob {
     try {
       return con.getAPIM().getDatastream(pid, dsId, null);
     } catch (Exception e) {
-      if ((e.getMessage().indexOf("Server.userException") < 0)
-           || (e.getMessage().indexOf("no path in db registry for") < 0))
+      if (ignoreException(e))
         return null;
 
       throw new OtmException("Error while getting the data-stream for " + pid + "/" + dsId, e);
     }
+  }
+
+  private boolean ignoreException(Exception e) {
+    //XXX: "Uncaught exception" is a hack to work around a timing related bug in Fedora. After
+    //     a purge, for a short window things are a bit inconsitent in Fedora. We'll ignore this
+    //     and treat this as the object does not exist.
+    if ((e.getMessage().indexOf("Uncaught exception from Fedora Server") >= 0)
+         || (e.getMessage().indexOf("fedora.server.errors.ObjectNotInLowlevelStorageException") >= 0)) {
+      if (log.isDebugEnabled())
+        log.debug("Ignoring this error from fedora as due to non existent datastream " + pid
+                  + "/" + dsId, e);
+
+      return true;
+    }
+
+    return false;
   }
 
   /**
