@@ -28,11 +28,16 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.article.service.DuplicateArticleIdException;
 import org.plos.article.service.SearchUtil;
+import org.plos.models.Article;
+
+import org.topazproject.otm.Session;
+import org.springframework.beans.factory.annotation.Required;
 
 public class IngestArchivesAction extends BaseAdminActionSupport {
   private static final Log log = LogFactory.getLog(IngestArchivesAction.class);
   private String[] filesToIngest;
   private boolean  force = false;
+  private Session session;
 
   public void setFilesToIngest(String[] files) {
     filesToIngest = files;
@@ -42,13 +47,19 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
     force = flag;
   }
 
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
+  }
+
   public String execute() throws RemoteException, ApplicationException {
     if (filesToIngest != null) {
       for (String filename : filesToIngest) {
         filename = filename.trim();
         try {
           File file = new File(getDocumentManagementService().getDocumentDirectory(), filename);
-          String id = getDocumentManagementService().ingest(file, force).getId().toString();
+          Article article = getDocumentManagementService().ingest(file, force);
+          String id = article.getId().toString();
           addActionMessage("Ingested: " + filename);
 
           // FIXME: hack until ingest can directly put into search
@@ -57,6 +68,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
           } catch (Exception e) {
             addActionError("Error updating search index for '" + id + "': " + getMessages(e));
           }
+          session.evict(article);  // purely for performance. Subsequent flush()es will be faster.
         } catch (DuplicateArticleIdException de) {
           addActionError("Error ingesting: " + filename + " - " + getMessages(de));
           log.error("Error ingesting article: " + filename , de);
