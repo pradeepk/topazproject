@@ -194,14 +194,10 @@ public class DocumentManagementService {
 
       try {
         if (log.isDebugEnabled())
-          log.debug("Copying '" + fromFile + "' to '" + toFile + "'");
-        FileUtils.copyFile(fromFile, toFile);
-
-        if (log.isDebugEnabled())
-          log.debug("Deleting '" + fromFile + "'");
-        FileUtils.forceDelete(fromFile);
+          log.debug("Moving '" + fromFile + "' to '" + toFile + "'");
+        FileUtils.moveFile(fromFile, toFile);
       } catch (FileNotFoundException fnfe) {
-        log.info("Could not copy '" + fromFile + "' to '" + toFile + "': ", fnfe);
+        log.info("Could not move '" + fromFile + "' to '" + toFile + "': ", fnfe);
       }
     }
   }
@@ -257,10 +253,7 @@ public class DocumentManagementService {
       log.info("Generated Xref for article " + article.getId() + " ingested from '" + file + "'");
     }
 
-    File ingestedDir = new File(ingestedDocumentDirectory);
-    if (!file.renameTo(new File(ingestedDir, file.getName()))) {
-      throw new IOException("Cannot relocate ingested sip " + file.getName());
-    }
+    FileUtils.moveFileToDirectory(file, new File(ingestedDocumentDirectory), true);
 
     if (log.isInfoEnabled()) {
       log.info("Ingested and relocated " + file + ":" + article.getId());
