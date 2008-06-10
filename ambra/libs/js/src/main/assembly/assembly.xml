@@ -32,6 +32,8 @@
         <include>**/dojo/dojo.js*</include> 
         <include>**/dojo/_firebug/**</include> 
         <include>**/dojo/resources/**</include> 
+        <include>**/dijit/themes/dijit.css</include> 
+        <include>**/dijit/themes/tundra/**</include> 
       </includes>
     </fileSet>
   </fileSets>

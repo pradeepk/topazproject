@@ -23,7 +23,7 @@
 <head>
 <#include "/global/global_head.ftl">
 </head>
-<body>
+<body class="tundra">
 
 <!-- begin : container -->
 <div id="container">

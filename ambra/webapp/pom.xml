@@ -395,7 +395,7 @@
         <version>2.0</version>
         <executions>
           <execution>
-            <id>unpack</id>
+            <id>unpack dojo js</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>unpack</goal>
@@ -411,6 +411,31 @@
                   <outputDirectory>src/main/webapp/javascript</outputDirectory>
                 </artifactItem>
               </artifactItems>
+              <includes>
+                **\/dojo\/dojo\/**\/*.*
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack dojo css</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.topazproject</groupId>
+                  <artifactId>ambra-js</artifactId>
+                  <version>${pom.parent.version}</version>
+                  <type>zip</type>
+                  <classifier>js</classifier>
+                  <outputDirectory>src/main/webapp/css</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <includes>
+                **\/themes\/**\/*.*
+              </includes>
             </configuration>
           </execution>
         </executions>

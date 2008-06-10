@@ -137,6 +137,7 @@
         <page>
           <name>/article/browseVolume.ftl</name>
           <css>
+            <file>dojo.css</file>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
             <file>/css/ambraTabs.css</file>

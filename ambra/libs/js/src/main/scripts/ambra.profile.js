@@ -7,6 +7,7 @@ dependencies = {
       dependencies: [
         "dijit.layout.ContentPane",
         "dijit.Dialog",
+        "dijit.layout.TabContainer",
         "dojox.data.dom",
         "ambra.general",
         "ambra.domUtil",

@@ -22,7 +22,7 @@
 <#list freemarker_config.getCss(templateFile, journalContext) as x>
   <#if x?contains("dojo.css")>
 <style type="text/css" media="screen">
-@import "${freemarker_config.context}/css/dojo/dijit.css";
+@import "${freemarker_config.context}/css/dojo/dijit/themes/tundra/tundra.css";
 </style>
   <#else>
 <style type="text/css" media="all"> @import "${x}";</style>
