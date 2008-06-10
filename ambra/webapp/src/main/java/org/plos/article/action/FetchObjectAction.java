@@ -18,6 +18,7 @@
  */
 package org.plos.article.action;
 
+import java.util.Date;
 import java.util.Set;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -44,11 +45,11 @@ public class FetchObjectAction extends BaseActionSupport {
   private String uri;
   private String representation;
 
-  private InputStream inputStream;
   private String contentDisposition;
   private static final Log log = LogFactory.getLog(FetchObjectAction.class);
   private String contentType;
   private byte[] inputByteArray;
+  private Date lastModified;
 
   /**
    * Return the object for a given uri and representation
@@ -106,10 +107,12 @@ public class FetchObjectAction extends BaseActionSupport {
 
   private void setOutputStreamAndAttributes(final Representation rep) throws IOException {
     inputByteArray = rep.getBody();
-    inputStream = new ByteArrayInputStream(inputByteArray);
     contentType = rep.getContentType();
     if (contentType == null)
       contentType = "application/octet-stream";
+    lastModified = rep.getObject().getDublinCore().getDate();
+    if (lastModified == null)
+      log.warn("Missing modification date for " + uri);
     final String fileExt = getFileExtension(contentType);
     contentDisposition = getContentDisposition(fileExt);
   }
@@ -157,13 +160,6 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   /**
-   * @return get the input stream
-   */
-  public InputStream getInputStream() {
-    return inputStream;
-  }
-
-  /**
    * Returns the byte[] of the Fedora object so it is not necessary to read from it using an InputStream
    * @return the byte[] representation of the Fedora object. 
    */
@@ -183,5 +179,12 @@ public class FetchObjectAction extends BaseActionSupport {
    */
   public String getContentType() {
     return contentType;
+  }
+
+  /**
+   * @return Return the last modified time for the object
+   */
+  public Date getLastModified() {
+    return lastModified;
   }
 }
