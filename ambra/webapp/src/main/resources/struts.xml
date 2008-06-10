@@ -541,14 +541,14 @@
       </result>
     </action>
 
-    <action name="getCommentary" class="org.plos.annotation.action.GetCommentaryAction">
+    <action name="getCommentary" class="org.plos.annotation.action.GetCommentaryAction" method="listComments">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/commentary.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="getCorrectionsCommentary" class="org.plos.annotation.action.GetCorrectionsCommentaryAction">
+    <action name="getCorrectionsCommentary" class="org.plos.annotation.action.GetCommentaryAction" method="listCorrections">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/corrections.ftl</param>
         <param name="noCache">true</param>
