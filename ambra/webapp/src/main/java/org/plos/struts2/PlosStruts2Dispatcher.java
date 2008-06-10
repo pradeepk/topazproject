@@ -142,7 +142,7 @@ public class PlosStruts2Dispatcher extends FilterDispatcher {
         URL url = findResource(name, pathPrefix);
 
         if (url != null) {
-          server.serveResource(request, response, url);
+          server.serveResource(request, response, new HttpResourceServer.URLResource(url));
 
           return;
         }

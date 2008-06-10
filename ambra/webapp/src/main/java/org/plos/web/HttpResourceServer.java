@@ -88,7 +88,7 @@ public class HttpResourceServer {
    *
    * @exception IOException if an input/output error occurs
    */
-  public void serveResource(HttpServletRequest request, HttpServletResponse response, URL resource)
+  public void serveResource(HttpServletRequest request, HttpServletResponse response, Resource resource)
                      throws IOException {
     boolean head               = "HEAD".equals(request.getMethod());
     serveResource(request, response, !head, resource);
@@ -100,15 +100,13 @@ public class HttpResourceServer {
    * @param request The servlet request we are processing
    * @param response The servlet response we are creating
    * @param content Should the content be included?
-   * @param resourceURL The resource to send
+   * @param resource The resource to send
    *
    * @exception IOException if an input/output error occurs
    */
   public void serveResource(HttpServletRequest request, HttpServletResponse response,
-                            boolean content, URL resourceURL)
+                            boolean content, Resource resource)
                      throws IOException {
-    Resource resource = new Resource(resourceURL);
-
     // Check if the conditions specified in the optional If headers are
     // satisfied.
     if (!checkIfHeaders(request, response, resource))
@@ -1049,24 +1047,18 @@ public class HttpResourceServer {
     return exception;
   }
 
-  protected static class Resource {
-    private final URL url;
-    private long      contentLength;
-    private long      lastModified;
-    private String    contentType;
-    private String    lastModifiedHttp;
+  public static abstract class Resource {
+    private final String name;
+    private final long      contentLength;
+    private final long      lastModified;
+    private final String    contentType;
+    private final String    lastModifiedHttp;
 
-    public Resource(URL url) throws IOException {
-      this.url = url;
-
-      URLConnection con = url.openConnection();
-      contentType = guessContentType(url.toString());
-
-      if (contentType == null)
-        contentType = con.getContentType();
-
-      contentLength   = con.getContentLength();
-      lastModified    = con.getLastModified();
+    public Resource(String name, String contentType, long contentLength, long lastModified) {
+      this.name = name;
+      this.contentType = (contentType == null) ? guessContentType(name) : contentType;
+      this.contentLength = contentLength;
+      this.lastModified = lastModified;
 
       //RFC 1123 date. eg. Tue, 20 May 2008 13:45:26 GMT and always in English
       SimpleDateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
@@ -1105,13 +1097,9 @@ public class HttpResourceServer {
       return contentLength;
     }
 
-    public InputStream streamContent() throws IOException {
-      return url.openStream();
-    }
+    public abstract InputStream streamContent() throws IOException;
 
-    public byte[] getContent() {
-      return null;
-    }
+    public abstract byte[] getContent();
 
     public long getLastModified() {
       return lastModified;
@@ -1122,8 +1110,37 @@ public class HttpResourceServer {
     }
 
     public String toString() {
-      return "Resource[URL=" + url + ", contentType=" + contentType + ", contentLength="
+      return "Resource[name=" + name + ", contentType=" + contentType + ", contentLength="
              + contentLength + ",lastModified=" + lastModified + "(" + lastModifiedHttp + ")]";
+    }
+  }
+
+  public static class URLResource extends Resource {
+    private final URL url;
+
+    public URLResource(URL url) throws IOException {
+      this(url, url.openConnection());
+    }
+
+    private URLResource(URL url, URLConnection con) {
+      super(url.toString(), urlContentType(url, con), con.getContentLength(), con.getLastModified());
+      this.url = url;
+    }
+
+    private static String urlContentType(URL url, URLConnection con) {
+      //XXX: guess first and then look in con
+      String contentType = guessContentType(url.toString());
+      if (contentType == null)
+        contentType = con.getContentType();
+      return contentType;
+    }
+
+    public InputStream streamContent() throws IOException {
+      return url.openStream();
+    }
+
+    public byte[] getContent() {
+      return null;
     }
   }
 
