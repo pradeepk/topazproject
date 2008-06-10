@@ -1,9 +1,9 @@
 /*
  * $HeadURL::                                                                            $ $Id:
  * PlosStreamResult.java 946 2006-11-03 22:23:42Z viru $
- * 
+ *
  * Copyright (c) 2006-2007 by Topaz, Inc. http://topazproject.org
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,52 +18,57 @@
  */
 package org.plos.struts2;
 
-import org.apache.struts2.dispatcher.StreamResult;
-import com.opensymphony.xwork2.ActionInvocation;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import org.apache.struts2.dispatcher.StreamResult;
+
+import com.opensymphony.xwork2.ActionInvocation;
 
 /**
- * Custom webwork result class to stream back objects from Fedora. Takes appropriate http headers
- * and sets them the response stream as well as taking in an optional parameter indicating whether
- * to set the content-diposition to an attachment.
- * 
- * Checks if the value inputByteArray is available. If so, this byte array is used directly 
- * instead of the inputStream. 
+ * Custom webwork result class to stream back objects from Fedora. Takes appropriate http
+ * headers and sets them the response stream as well as taking in an optional parameter indicating
+ * whether to set the content-diposition to an attachment.  Checks if the value inputByteArray is
+ * available. If so, this byte array is used directly  instead of the inputStream.
  */
-
 public class PlosStreamResult extends StreamResult {
-  private boolean isAttachment = false;
+  private boolean          isAttachment = false;
+  private static final Log log          = LogFactory.getLog(PlosStreamResult.class);
 
-  private static final Log log = LogFactory.getLog(PlosStreamResult.class);
-
-  protected void doExecute(String finalLocation, ActionInvocation invocation) throws Exception {
-    InputStream oInput = null;
+  /*
+   * inherited javadoc
+   */
+  protected void doExecute(String finalLocation, ActionInvocation invocation)
+                    throws Exception {
+    InputStream  oInput  = null;
     OutputStream oOutput = null;
 
     try {
       // If we find a byte[] representation, use that instead of the inputStream
       byte[] objRep = null;
+
       if (invocation.getStack().findValue("inputByteArray") instanceof byte[]) {
         objRep = (byte[]) invocation.getStack().findValue("inputByteArray");
       }
-      
+
       if (objRep == null) {
         // Find the inputstream from the invocation variable stack
-        oInput = (InputStream)
-          invocation.getStack().findValue( conditionalParse(this.inputName, invocation));
+        oInput = (InputStream) invocation.getStack()
+                                          .findValue(conditionalParse(this.inputName, invocation));
+
         if (oInput == null) {
-          String msg = ("Can not find a java.io.InputStream with the name [" + this.inputName
-              + "] in the invocation stack. " +
-              "Check the <param name=\"inputName\"> tag specified for this action.");
+          String msg =
+            ("Can not find a java.io.InputStream with the name [" + this.inputName
+            + "] in the invocation stack. "
+            + "Check the <param name=\"inputName\"> tag specified for this action.");
           log.error(msg);
           throw new IllegalArgumentException(msg);
         }
@@ -78,23 +83,26 @@ public class PlosStreamResult extends StreamResult {
 
       // Set the content length
       if (this.contentLength != null) {
-        String _contentLength = conditionalParse(this.contentLength, invocation);
-        int _contentLengthAsInt = -1;
+        String _contentLength      = conditionalParse(this.contentLength, invocation);
+        int    _contentLengthAsInt = -1;
+
         try {
           _contentLengthAsInt = Integer.parseInt(_contentLength);
+
           if (_contentLengthAsInt >= 0) {
             oResponse.setContentLength(_contentLengthAsInt);
           }
         } catch (NumberFormatException e) {
           log.warn("failed to recognize " + _contentLength
-              + " as a number, contentLength header will not be set", e);
+                   + " as a number, contentLength header will not be set", e);
         }
       }
 
       // Set the content-disposition
       if (this.contentDisposition != null) {
-        oResponse.addHeader("Content-disposition", (isAttachment ? "attachment; " : "")
-            + getProperty("contentDisposition", this.contentDisposition, invocation));
+        oResponse.addHeader("Content-disposition",
+                            (isAttachment ? "attachment; " : "")
+                            + getProperty("contentDisposition", this.contentDisposition, invocation));
       } else if (isAttachment) {
         oResponse.addHeader("Content-disposition", "attachment;");
       }
@@ -104,27 +112,28 @@ public class PlosStreamResult extends StreamResult {
 
       if (log.isDebugEnabled()) {
         log.debug("Streaming result [" + this.inputName + "] type=[" + this.contentType
-            + "] length=[" + this.contentLength + "] content-disposition=["
-            + this.contentDisposition + "]");
+                  + "] length=[" + this.contentLength + "] content-disposition=["
+                  + this.contentDisposition + "]");
       }
 
       if (oInput != null) {
         // Copy input to output
         log.debug("Streaming to output buffer +++ START +++");
+
         byte[] oBuff = new byte[this.bufferSize];
-        int iSize;
+        int    iSize;
+
         while (-1 != (iSize = oInput.read(oBuff))) {
           oOutput.write(oBuff, 0, iSize);
         }
+
         log.debug("Streaming to output buffer +++ END +++");
-  
       } else if (objRep != null) {
         oOutput.write(objRep);
       }
-      
+
       // Flush the output stream 
       oOutput.flush();
-      
     } finally {
       try {
         if (oInput != null)
@@ -133,6 +142,7 @@ public class PlosStreamResult extends StreamResult {
         if (log.isDebugEnabled())
           log.debug("Failed to close input stream", t);
       }
+
       try {
         if (oOutput != null)
           oOutput.close();
@@ -144,14 +154,16 @@ public class PlosStreamResult extends StreamResult {
   }
 
   private String getProperty(final String propertyName, final String param,
-      final ActionInvocation invocation) throws NoSuchMethodException, IllegalAccessException,
-      InvocationTargetException {
+                             final ActionInvocation invocation)
+                      throws NoSuchMethodException, IllegalAccessException,
+                             InvocationTargetException {
     final Object action = invocation.getAction();
-    final String methodName = "get" + propertyName.substring(0, 1).toUpperCase()
-        + propertyName.substring(1);
+    final String methodName =
+      "get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
     final Method method = action.getClass().getMethod(methodName);
-    final Object o = method.invoke(action);
+    final Object o   = method.invoke(action);
     final String propertyValue = o.toString();
+
     if (null == propertyValue) {
       return conditionalParse(param, invocation);
     }
@@ -160,6 +172,8 @@ public class PlosStreamResult extends StreamResult {
   }
 
   /**
+   * Tests if the content disposition-type is "attachment". 
+   *
    * @return Returns the isAttachment.
    */
   public boolean isAttachment() {
@@ -168,9 +182,8 @@ public class PlosStreamResult extends StreamResult {
 
   /**
    * If set to true, will add attachment to content disposition
-   * 
-   * @param isAttachment
-   *          The isAttachment to set.
+   *
+   * @param isAttachment The isAttachment to set.
    */
   public void setIsAttachment(boolean isAttachment) {
     this.isAttachment = isAttachment;
