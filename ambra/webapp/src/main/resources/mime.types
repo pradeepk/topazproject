@@ -230,6 +230,7 @@ application/futuresplash		spl
 application/mbedlet			mbd
 # PowerMedia multimedia (RadMedia)
 application/x-rad-powermedia		rad
+application/x-shockwave-flash		swf
 
 # PRESENTATION
 
