@@ -198,8 +198,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/slideshowReference.ftl</file>
-            <file>/javascript/config_slideshow.js</file>
-            <file>/javascript/init_slideshow.js</file>
           </javascript>
         </page>
         <page>
@@ -210,7 +208,6 @@
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/dojoRequire_slideshow.ftl</file>
           </javascript>
         </page>
         <page>

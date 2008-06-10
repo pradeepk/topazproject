@@ -75,3 +75,18 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+dojo.addOnLoad(function() {
+  dojo.connect(window, "resize", function() {
+    ambra.slideshow.adjustViewerHeight();
+  });
+  ambra.slideshow.setLinkView(dojo.byId("viewL"));
+  ambra.slideshow.setLinkTiff(dojo.byId("downloadTiff"));
+  ambra.slideshow.setLinkPpt(dojo.byId("downloadPpt"));
+  ambra.slideshow.setFigImg(dojo.byId("figureImg"));
+  ambra.slideshow.setFigTitle(dojo.byId("figureTitle"));
+  ambra.slideshow.setFigCaption(dojo.byId("figure-window-description"));
+  ambra.slideshow.setInitialThumbnailIndex();
+  ambra.slideshow.adjustViewerHeight();
+});
+</script>

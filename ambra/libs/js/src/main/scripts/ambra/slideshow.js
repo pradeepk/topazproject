@@ -32,6 +32,8 @@ dojo.provide("ambra.slideshow");
 dojo.require("ambra.general");
 dojo.require("ambra.domUtil");
 ambra.slideshow = {
+  slides:[],
+  
   imgS: "PNG_S",
   
   imgM: "PNG_M",
@@ -96,18 +98,18 @@ ambra.slideshow = {
   },
   
   show: function (obj, index) {
-    if (this.linkView) this.linkView.href = slideshow[index].imageLargeUri + "&representation=" + this.imgL;
-    if (this.linkTiff) this.linkTiff.href = slideshow[index].imageAttachUri + "&representation=" + this.imgTif;
-    if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageAttachUri + "&representation=" + this.imgM;
+    if (this.linkView) this.linkView.href = this.slides[index].imageLargeUri + "&representation=" + this.imgL;
+    if (this.linkTiff) this.linkTiff.href = this.slides[index].imageAttachUri + "&representation=" + this.imgTif;
+    if (this.linkPpt) this.linkPpt.href  = this.slides[index].imageAttachUri + "&representation=" + this.imgM;
     
     if (this.figImg) {
-      this.figImg.src = slideshow[index].imageUri + "&representation=" + this.imgM;
-      this.figImg.title = slideshow[index].titlePlain;
+      this.figImg.src = this.slides[index].imageUri + "&representation=" + this.imgM;
+      this.figImg.title = this.slides[index].titlePlain;
     }
     
-    if (this.figTitle) this.figTitle.innerHTML = slideshow[index].title;
+    if (this.figTitle) this.figTitle.innerHTML = this.slides[index].title;
     
-    if (this.figCaption) this.figCaption.innerHTML = slideshow[index].description;
+    if (this.figCaption) this.figCaption.innerHTML = this.slides[index].description;
     
     var tbCurrent = document.getElementsByTagAndClassName('div', 'current');
     
@@ -139,18 +141,18 @@ ambra.slideshow = {
   },
   
   showSingle: function (obj, index) {
-    if (this.linkView) this.linkView.href = slideshow[index].imageLargeUri + "&representation=" + this.imgL;
-    if (this.linkTiff) this.linkTiff.href = slideshow[index].imageAttachUri + "&representation=" + this.imgTif;
-    if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageAttachUri + "&representation=" + this.imgM;
+    if (this.linkView) this.linkView.href = this.slides[index].imageLargeUri + "&representation=" + this.imgL;
+    if (this.linkTiff) this.linkTiff.href = this.slides[index].imageAttachUri + "&representation=" + this.imgTif;
+    if (this.linkPpt) this.linkPpt.href  = this.slides[index].imageAttachUri + "&representation=" + this.imgM;
     
     if (this.figImg) {
-      this.figImg.src = slideshow[index].imageUri + "&representation=" + this.imgM;
-      this.figImg.title = slideshow[index].titlePlain;
+      this.figImg.src = this.slides[index].imageUri + "&representation=" + this.imgM;
+      this.figImg.title = this.slides[index].titlePlain;
     }
     
-    if (this.figTitle) this.figTitle.innerHTML = slideshow[index].title;
+    if (this.figTitle) this.figTitle.innerHTML = this.slides[index].title;
     
-    if (this.figCaption) this.figCaption.innerHTML = slideshow[index].description;
+    if (this.figCaption) this.figCaption.innerHTML = this.slides[index].description;
     
     var tbCurrent = document.getElementsByTagAndClassName('div', 'figure-window-nav-item-current');
     
@@ -205,11 +207,8 @@ ambra.slideshow = {
     var viewport = dijit.getViewport();
     
     // get the offset of the container
-		var objOffset = ambra.domUtil.getCurrentOffset(obj);
-		
-		// find the size of the container
-		var objMb = dojo._getMarginBox(obj);
-
+    var objOffset = ambra.domUtil.getCurrentOffset(obj);
+    
     var maxContainerHeight = viewport.h - (10 * objOffset.top);
     //alert("objOffset.top = " + objOffset.top + "\nviewport.h = " + viewport.h + "\nmaxContainerHeight = " + maxContainerHeight);
     
@@ -220,8 +219,8 @@ ambra.slideshow = {
   adjustViewerHeight: function() {
     var container1 = dojo.byId("figure-window-nav");
     var container2 = dojo.byId("figure-window-container");
-    var container1Mb = dojo._getMarginBox(container1).height;
-    var container2Mb = dojo._getMarginBox(container2).height;
+    var container1Mb = dojo._getMarginBox(container1).h;
+    var container2Mb = dojo._getMarginBox(container2).h;
     
     if (container1Mb > container2Mb) {
       container2.parentNode.style.height = container1Mb + "px";
@@ -236,9 +235,7 @@ ambra.slideshow = {
   },
   
   adjustViewerWidth: function(figureWindow, maxWidth) {
-    var imageMarginBox = dojo._getMarginBox(ambra.slideshow.figureImg);
-    imageWidth = imageMarginBox.width;
-    ambra.domUtil.setContainerWidth(figureWindow, imageWidth, maxWidth, 1);
+    ambra.domUtil.setContainerWidth(figureWindow, dojo._getMarginBox(ambra.slideshow.figureImg).w, maxWidth, 1);
   },
 
   showPrevious: function(obj) {
@@ -289,4 +286,4 @@ ambra.slideshow = {
     self.close();
     window.opener.focus();
   }
-}  
+}
