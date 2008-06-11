@@ -69,6 +69,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
             addActionError("Error updating search index for '" + id + "': " + getMessages(e));
           }
           session.evict(article);  // purely for performance. Subsequent flush()es will be faster.
+          getDocumentManagementService().generateIngestedData(file, article);
         } catch (DuplicateArticleIdException de) {
           addActionError("Error ingesting: " + filename + " - " + getMessages(de));
           log.error("Error ingesting article: " + filename , de);

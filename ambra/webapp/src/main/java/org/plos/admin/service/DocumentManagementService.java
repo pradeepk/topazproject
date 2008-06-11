@@ -159,19 +159,19 @@ public class DocumentManagementService {
    * @throws ServiceException
    * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI)
-        throws RemoteException, ServiceException, NoSuchArticleIdException {
+  @Transactional(rollbackFor = { Throwable.class })
+  public void delete(String objectURI) throws RemoteException, ServiceException, NoSuchArticleIdException {
     articleOtmService.delete(objectURI);
-
-    try {
-      cleanSpoolDirectories(objectURI);
-    } catch (IOException ioe) {
-      log.warn("Error cleaning up spool directories for '" + objectURI +
-               "' - manual cleanup required", ioe);
-    }
   }
 
-  private void cleanSpoolDirectories(String uri) throws IOException {
+  /**
+   * Revert the data out of the ingested queue
+   *
+   * @param uri the article uri
+   * 
+   * @throws IOException
+   */
+  public void revertIngestedQueue(String uri) throws IOException {
     // delete any crossref submission file
     File queueDir        = new File(documentDirectory);
     File ingestedDir     = new File(ingestedDocumentDirectory);
@@ -226,8 +226,8 @@ public class DocumentManagementService {
   }
 
   /**
-   * Ingest the file. If successful move it to the ingestedDocumentDirectory then create the
-   * Transformed CrossRef xml file and deposit that in the Directory as well.
+   * Ingest the file. If successful create the Transformed CrossRef xml file and deposit that in the
+   * Directory as well.
    *
    * @param file  file to be ingested
    * @param force if true don't check for duplicate and instead always (re-)ingest
@@ -235,28 +235,19 @@ public class DocumentManagementService {
    * @throws IngestException
    * @throws DuplicateArticleIdException
    * @throws IOException
-   * @throws TransformerException
    * @throws ServiceException
    */
   @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(File file, boolean force)
-      throws IngestException, DuplicateArticleIdException, IOException, TransformerException,
-             SAXException, ServiceException {
+      throws IngestException, DuplicateArticleIdException, IOException, ServiceException {
     if (log.isDebugEnabled()) {
       log.debug("Ingesting: " + file);
     }
 
     Article article = articleOtmService.ingest(new FileDataSource(file), force);
 
-    generateCrossRefInfoDoc(article);
     if (log.isInfoEnabled()) {
-      log.info("Generated Xref for article " + article.getId() + " ingested from '" + file + "'");
-    }
-
-    FileUtils.moveFileToDirectory(file, new File(ingestedDocumentDirectory), true);
-
-    if (log.isInfoEnabled()) {
-      log.info("Ingested and relocated " + file + ":" + article.getId());
+      log.info("Ingested " + file + ":" + article.getId());
     }
 
     return article;
@@ -278,6 +269,30 @@ public class DocumentManagementService {
 
     Collections.sort(documents);
     return documents;
+  }
+
+  /**
+   * Move the file to the ingested directory
+   *
+   * @param file the file to move
+   * @param article the associated article
+   *
+   * @throws IOException
+   * @throws TransformerException
+   * @throws SAXException
+   */
+  public void generateIngestedData(File file, Article article)
+    throws IOException, TransformerException, SAXException {
+    FileUtils.moveFileToDirectory(file, new File(ingestedDocumentDirectory), true);
+    generateCrossRefInfoDoc(article);
+
+    if (log.isInfoEnabled()) {
+      log.info("Generated Xref for article " + article.getId() + " ingested from '" + file + "'");
+    }
+
+    if (log.isInfoEnabled()) {
+      log.info("Relocated " + file + ":" + article.getId());
+    }
   }
 
   /**
