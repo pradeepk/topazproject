@@ -26,18 +26,9 @@
     <org.plos.article.service.CitationInfo>
       <DOI><xsl:value-of select="//article-id[@pub-id-type='doi'][1]"/></DOI>
       <publicationDate>
-        <xsl:choose>
-          <xsl:when test="article/front/article-meta/pub-date[@pub-type='ppub']/year">
-            <xsl:call-template name="makeDate">
-              <xsl:with-param name="dateSelector">ppub</xsl:with-param>
-            </xsl:call-template>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:call-template name="makeDate">
-              <xsl:with-param name="dateSelector">epub</xsl:with-param>
-            </xsl:call-template>
-          </xsl:otherwise>
-        </xsl:choose>
+        <xsl:call-template name="makeDate">
+          <xsl:with-param name="dateSelector">epub</xsl:with-param>
+        </xsl:call-template>
       </publicationDate>
       <articleTitle><xsl:value-of select="article/front/article-meta/title-group/article-title"/></articleTitle>
       <journalName><xsl:value-of select="article/front/journal-meta/journal-id[@journal-id-type='nlm-ta']"/></journalName>
