@@ -160,7 +160,8 @@ public class DocumentManagementService {
    * @throws NoSuchArticleIdException
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void delete(String objectURI) throws RemoteException, ServiceException, NoSuchArticleIdException {
+  public void delete(String objectURI)
+      throws RemoteException, ServiceException, NoSuchArticleIdException {
     articleOtmService.delete(objectURI);
   }
 
@@ -284,14 +285,13 @@ public class DocumentManagementService {
   public void generateIngestedData(File file, Article article)
     throws IOException, TransformerException, SAXException {
     FileUtils.moveFileToDirectory(file, new File(ingestedDocumentDirectory), true);
-    generateCrossRefInfoDoc(article);
-
-    if (log.isInfoEnabled()) {
-      log.info("Generated Xref for article " + article.getId() + " ingested from '" + file + "'");
-    }
-
     if (log.isInfoEnabled()) {
       log.info("Relocated " + file + ":" + article.getId());
+    }
+
+    generateCrossRefInfoDoc(article);
+    if (log.isInfoEnabled()) {
+      log.info("Generated Xref for article " + article.getId() + " ingested from '" + file + "'");
     }
   }
 
