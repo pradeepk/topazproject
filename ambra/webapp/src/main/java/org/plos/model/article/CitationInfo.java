@@ -18,6 +18,8 @@
  */
 package org.plos.model.article;
 
+import java.io.Serializable;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  * Just the list of authors.
  */
 @Entity(type = PLoS.bibtex + "Entry", model = "ri")
-public class CitationInfo {
+public class CitationInfo implements Serializable {
   @Id
   public URI id;
 
