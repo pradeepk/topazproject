@@ -80,9 +80,25 @@
                                 <xsl:value-of select="article/front/article-meta/title-group/article-title"/>
                             </title>
                         </titles>
-                        <contributors>
+			<xsl:if test="article/front/article-meta/contrib-group">
+                          <contributors>
                             <xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='author']">
-                                <person_name contributor_role="author">
+                              <xsl:choose>
+                                <xsl:when test="collab">
+                                  <organization contributor_role="author">
+                                    <xsl:choose>
+                                      <xsl:when test="position() = 1">
+                                        <xsl:attribute name="sequence">first</xsl:attribute>
+                                      </xsl:when>
+                                      <xsl:otherwise>
+                                        <xsl:attribute name="sequence">additional</xsl:attribute>
+                                      </xsl:otherwise>
+                                    </xsl:choose>
+                                    <xsl:value-of select="collab"/>
+                                  </organization>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                  <person_name contributor_role="author">
                                     <xsl:choose>
                                         <xsl:when test="position() = 1 or @equal-contrib='yes'">
                                             <xsl:attribute name="sequence">first</xsl:attribute>
@@ -93,7 +109,9 @@
                                     </xsl:choose>
                                     <given_name><xsl:value-of select="name/given-names"/></given_name>
                                     <surname><xsl:value-of select="name/surname"/></surname>
-                                </person_name>
+                                  </person_name>
+                                </xsl:otherwise>
+                              </xsl:choose>
                             </xsl:for-each>
                             <xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='editor']">
                                 <person_name contributor_role="editor">
@@ -123,7 +141,8 @@
                                     <surname><xsl:value-of select="name/surname"/></surname>
                                 </person_name>
                             </xsl:for-each>
-                        </contributors>
+                          </contributors>
+                        </xsl:if>
                         <publication_date media_type="online">
                             <month>
                                 <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/month"/>
@@ -149,7 +168,7 @@
                         <component_list>
                             <xsl:for-each select="//fig">
                                 <component parent_relation="isPartOf">
-                                    <description><xsl:for-each select="caption"/></description>
+                                    <description><xsl:for-each select="label"/></description>
                                     <doi_data>
                                         <doi><xsl:value-of select="object-id[@pub-id-type='doi']"/></doi>
                                         <resource><xsl:value-of select="$plosDoiUrl"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
@@ -158,7 +177,7 @@
                             </xsl:for-each>
                             <xsl:for-each select="//table-wrap[@id]">
                                 <component parent_relation="isPartOf">
-                                    <description><xsl:for-each select="caption/title"/></description>
+                                    <description><xsl:for-each select="label"/></description>
                                     <doi_data>
                                         <doi><xsl:value-of select="object-id[@pub-id-type='doi']"/></doi>
                                         <resource><xsl:value-of select="$plosDoiUrl"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
