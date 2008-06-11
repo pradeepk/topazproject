@@ -39,7 +39,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @UriPrefix(Rdf.foaf)
 @Entity(type = Rdf.foaf + "Person")
-public class FoafPerson implements Serializable {
+public class FoafPerson implements Serializable, Cloneable {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/profile/")
   private URI      id;
 
@@ -78,6 +78,16 @@ public class FoafPerson implements Serializable {
   /** a list of urls pointing to stuff representing their interests */
   @Predicate(uri = Rdf.foaf + "interest")
   private Set<URI> interests = new HashSet<URI>();
+
+  public FoafPerson clone() {
+    try {
+      FoafPerson copy =  (FoafPerson) super.clone();
+      copy.setInterests(new HashSet<URI>(getInterests()));
+      return copy;
+    } catch (CloneNotSupportedException e) {
+      throw new Error("", e);
+    }
+  }
 
   /**
    * @return the id

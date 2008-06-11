@@ -213,8 +213,6 @@ public class UserService {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
 
     UserAccount ua = getUserAccount(topazUserId);
-    if (ua.getProfile() != null)
-      session.evict(ua.getProfile());
     return new PlosOneUser(ua, applicationId, pep);
   }
 
@@ -230,9 +228,6 @@ public class UserService {
     UserAccount ua = getUserAccountByAuthId(authId);
     if (ua == null)
       return null;
-
-    if (ua.getProfile() != null)
-      session.evict(ua.getProfile());
 
     return new PlosOneUser(ua, applicationId, pep);
   }

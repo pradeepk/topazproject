@@ -78,11 +78,10 @@ public class PlosOneUser {
     this.userId   = ua.getId().toString();
     this.authId   = ua.getAuthIds().iterator().next().getValue();
 
-    userProfile = ua.getProfile();
-    if (userProfile == null)
+    if (ua.getProfile() == null)
       userProfile = new UserProfile();
     else
-      filterProfile(userProfile, ua.getId(), pep);
+      filterProfile(userProfile = ua.getProfile().clone(), ua.getId(), pep);
 
     UserPreferences p;
     try {

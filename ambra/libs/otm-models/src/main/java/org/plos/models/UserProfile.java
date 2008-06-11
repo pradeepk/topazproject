@@ -89,6 +89,10 @@ public class UserProfile extends FoafPerson {
 
 static final long serialVersionUID = -1224761277569005857L;
 
+  public UserProfile clone() {
+    return (UserProfile) super.clone();
+  }
+
   /**
    * Get the name to use for display on the site.
    *
