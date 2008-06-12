@@ -133,6 +133,10 @@ public class FilterResolverFactory implements ResolverFactory {
       if (handlerClsName == null)
         break;
 
+      handlerClsName = handlerClsName.trim();
+      if (handlerClsName.length() == 0)
+        continue;
+
       hList.add(instantiateHandler(handlerClsName, config, base, sf, dbURI));
       logger.info("Loaded handler '" + handlerClsName + "'");
     }
