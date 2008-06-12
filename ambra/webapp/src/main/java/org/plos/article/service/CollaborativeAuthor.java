@@ -19,13 +19,15 @@
 
 package org.plos.article.service;
 
+import java.io.Serializable;
+
 /**
  * CollaborativeAuthor - Simple class to represent the collaborative author(s) for citation
  * purposes.
  * 
  * @author jkirton
  */
-public class CollaborativeAuthor {
+public class CollaborativeAuthor implements Serializable {
 
   /**
    * The collective single name given for the collaborative author(s). Ref:

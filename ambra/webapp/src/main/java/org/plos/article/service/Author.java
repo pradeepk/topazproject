@@ -19,13 +19,15 @@
 
 package org.plos.article.service;
 
+import java.io.Serializable;
+
 /**
  * Simple class to represent an individual author for citation purposes
  * 
  * @author Stephen Cheng
  *
  */
-public class Author {
+public class Author implements Serializable {
 
   private String givenNames;
   private String surname;
