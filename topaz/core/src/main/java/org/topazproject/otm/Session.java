@@ -82,8 +82,9 @@ import org.topazproject.otm.query.Results;
  */
 public interface Session {
   /**
-   * Represents a flushing strategy. 'always' will flush before queries. 'commit' will flush
-   * on a transaction commit. 'manual' will require the user to call flush. Default is 'always'.
+   * Represents a flushing strategy. 'always' will flush before queries and transaction commit.
+   * 'commit' will flush on a transaction commit only. 'manual' will require the user to call
+   * flush.
    */
   public static enum FlushMode {
     always {
@@ -150,7 +151,7 @@ public interface Session {
   public void close() throws OtmException;
 
   /**
-   * Sets the FlushMode for this session.
+   * Sets the FlushMode for this session. If not set, the default is 'always'.
    *
    * @param flushMode the FlushMode value to set
    */
@@ -168,6 +169,7 @@ public interface Session {
    * transaction commit.
    *
    * @throws OtmException on an error
+   * @see #setFlushMode
    */
   public void flush() throws OtmException;
 
