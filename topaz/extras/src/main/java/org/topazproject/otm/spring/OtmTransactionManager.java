@@ -56,6 +56,7 @@ import org.springframework.transaction.support.SmartTransactionObject;
 public class OtmTransactionManager extends AbstractPlatformTransactionManager {
   private Session session;
   private boolean clearSessionOnRB = false;
+  private boolean skipFlushForRoTx = false;
 
   /** 
    * Create a new otm-transaction-manager instance. 
@@ -73,8 +74,13 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
   public void doBegin(Object transaction, TransactionDefinition definition)
       throws TransactionException {
     try {
-      Transaction tx = ((TransactionObject) transaction).getSession().
-                            beginTransaction(definition.isReadOnly(), determineTimeout(definition));
+      Session s = ((TransactionObject) transaction).getSession();
+      s.beginTransaction(definition.isReadOnly(), determineTimeout(definition));
+
+      if (definition.isReadOnly() && skipFlushForRoTx) {
+        ((TransactionObject) transaction).savedFlushMode = s.getFlushMode();
+        s.setFlushMode(Session.FlushMode.commit);
+      }
     } catch (OtmException oe) {
       throw new TransactionSystemException("error beginning transaction", oe);
     }
@@ -92,6 +98,9 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
       tx.commit();
     } catch (OtmException oe) {
       throw new TransactionSystemException("error committing transaction", oe);
+    } finally {
+      if (txObj.savedFlushMode != null)
+        txObj.getSession().setFlushMode(txObj.savedFlushMode);
     }
   }
 
@@ -110,6 +119,8 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
     } finally {
       if (clearSessionOnRB)
         txObj.getSession().clear();
+      if (txObj.savedFlushMode != null)
+        txObj.getSession().setFlushMode(txObj.savedFlushMode);
     }
   }
 
@@ -153,10 +164,27 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
   }
 
   /**
+   * Set the skip-flush-on-readonly-transaction flag. If there are a large number of objects in
+   * the session, a {@link Session#flush flush()} can take significant time. Since no modifications
+   * should be done in a read-only transaction, this check can be skipped when in one. However,
+   * disabling this check does mean that inadvertant modifications will be silently dropped (as
+   * opposed to having an exception thrown). For this reason this flag currently sets the
+   * flush-mode to <var>commit</var>, i.e. it just skips the flushes done before queries.
+   *
+   * <p>Changing this flag does not affect any current transaction, only new ones.
+   *
+   * @param clearSessionOnRB true if Session.flush's should skipped in read-only transactions
+   */
+  public void setSkipFlushOnReadonlyTx(boolean skipFlushForRoTx) {
+    this.skipFlushForRoTx = skipFlushForRoTx;
+  }
+
+  /**
    * Implement SmartTransactionObject so spring can do proper rollback-only handling.
    */
   private class TransactionObject implements SmartTransactionObject {
     private final Session session;
+    public Session.FlushMode savedFlushMode = null;
 
     public TransactionObject(Session session) {
       this.session = session;
