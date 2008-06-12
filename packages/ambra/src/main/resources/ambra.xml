@@ -117,51 +117,6 @@
         <appContext>/ambra-registration</appContext><!-- Name of expanded webapp -->
       </registration>
 
-      <doiResolver>
-        <!-- 
-          This is used to define which DOI regular expression maps to which URL in the DOI  resolver.
-          The rules are applied sequentially from top to bottom and the first matching one will execute.
-          If an error is encountered, or the article is not found, it will use the ambra.network.hosts.default,
-          ambra.network.ports.default, and ambra.platform.appContext to construct the page not found url.
-        -->
-        <mappings>
-          <journalMapping>
-            <url>http://www.plosone.org:${ambra.network.ports.default}${ambra.platform.appContext}/</url>
-            <regex>10\.1371/journal\.pone\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://clinicaltrials.ploshubs.org:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pctr\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://www.ploscompbiol.org:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://www.plosgenetics.org:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pgen\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://www.plosntds.org:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.pntd\.\d{7}</regex>
-          </journalMapping>
-          <journalMapping>
-            <url>
-              http://www.plospathogens.org:${ambra.network.ports.default}${ambra.platform.appContext}/
-            </url>
-            <regex>10\.1371/journal\.ppat\.\d{7}</regex>
-          </journalMapping>
-        </mappings>
-      </doiResolver>
-
       <!-- defaults for generating an Atom Feed -->
       <feed>
         <title>PLoS ONE</title>
