@@ -19,7 +19,7 @@
 -->
 <!-- begin : main content wrapper -->
 <div id="content"  class="static">
-<h2>Ambra Profiles: Create a Profile</h2>
+<h2>${orgName} Profiles: Create a Profile</h2>
 	<p><strong>Create or Update Your Profile</strong></p>
 	<p>Fields marked with an <span class="required">*</span> are required. </p>
 

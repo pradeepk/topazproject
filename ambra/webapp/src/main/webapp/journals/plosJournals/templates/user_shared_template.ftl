@@ -17,6 +17,8 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<#assign orgName = "PLoS">
+<#assign privacyStatement = "<p><em>Your E-mail address will always be kept private. See the the <a href=\"http://www.plos.org/privacy.html\" title=\"PLoS Privacy Statement\">PLoS Privacy Statement</a> for more information.</em></p>">
 <#include "/journals/plosJournals/global/user_top.ftl">
 
 <!-- begin : main content -->

@@ -37,6 +37,7 @@
   <fieldset>
   <legend>${addressingUser} Private Information</legend>
   <ol>
+    <li>${privacyStatement}
     <strong>${email}</strong><br />
 <a href="${freemarker_config.changeEmailURL}" title="Click here to change your e-mail address">Change your e-mail address</a><br/>
 <a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your password</a>

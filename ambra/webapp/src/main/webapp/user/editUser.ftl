@@ -30,7 +30,7 @@
 
 
 <div id="content">
-	<h1>Ambra Profile: ${username}</h1>
+	<h1>${orgName} Profile: ${username}</h1>
 	
 	<div class="horizontalTabs">
 		<ul id="tabsContainer">
