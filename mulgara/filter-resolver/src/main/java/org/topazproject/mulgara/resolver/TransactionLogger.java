@@ -116,7 +116,7 @@ class TransactionLogger extends QueueingFilterHandler<String> {
 
   public void modelModified(URI filterModel, URI realModel, Statements stmts, boolean occurs,
                             ResolverSession resolverSession) throws ResolverException {
-    StringBuffer sb = new StringBuffer(500);
+    StringBuilder sb = new StringBuilder(500);
     sb.append(occurs ? "insert " : "delete ");
 
     try {
