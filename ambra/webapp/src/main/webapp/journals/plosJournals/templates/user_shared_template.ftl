@@ -17,7 +17,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#assign orgName = "PLoS">
 <#include "/journals/plosJournals/global/user_top.ftl">
 
 <!-- begin : main content -->

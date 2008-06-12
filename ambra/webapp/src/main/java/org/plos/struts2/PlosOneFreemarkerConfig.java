@@ -52,13 +52,14 @@ public class PlosOneFreemarkerConfig {
   private HashMap<String, JournalConfig> journals;
   private String dirPrefix;
   private String subdirPrefix;
-  private String plosOneHost;
+  private String host;
   private String casLoginURL;
   private String casLogoutURL;
   private String registrationURL;
   private String changePasswordURL;
   private String changeEmailURL;
   private String defaultJournalName;
+  private String orgName;
 
   /**
    * Constructor that loads the list of css and javascript files and page titles for pages which
@@ -74,7 +75,7 @@ public class PlosOneFreemarkerConfig {
     dojoDebug = myConfig.getBoolean("struts.devMode");
     dirPrefix = myConfig.getString("ambra.platform.appContext");
     subdirPrefix = myConfig.getString("ambra.platform.resourceSubDir");
-    plosOneHost = myConfig.getString("ambra.platform.host");
+    host = myConfig.getString("ambra.platform.host");
     casLoginURL = myConfig.getString("ambra.services.cas.url.login");
     casLogoutURL = myConfig.getString("ambra.services.cas.url.logout");
     registrationURL = myConfig.getString("ambra.services.registration.url.registration");
@@ -82,6 +83,7 @@ public class PlosOneFreemarkerConfig {
     changeEmailURL = myConfig.getString("ambra.services.registration.url.change-email");
     defaultJournalName = myConfig.getString(DEFAULT_JOURNAL_NAME_CONFIG_KEY);
     journals = new HashMap<String, JournalConfig>();
+    orgName = myConfig.getString("ambra.platform.name");
 
     loadConfig(myConfig);
 
@@ -126,7 +128,7 @@ public class PlosOneFreemarkerConfig {
       }
       log.trace("Dir Prefix: " + dirPrefix);
       log.trace("SubDir Prefix: " + subdirPrefix);
-      log.trace("Pub host: " + plosOneHost);
+      log.trace("Host: " + host);
       log.trace("Cas url login: " + casLoginURL);
       log.trace("Case url logout: " + casLogoutURL);
       log.trace("Registration URL: " + registrationURL);
@@ -610,17 +612,17 @@ public class PlosOneFreemarkerConfig {
   }
 
   /**
-   * @return Returns the plosOneHostname.
+   * @return Returns the host.
    */
-  public String getPlosOneHost() {
-    return plosOneHost;
+  public String getHost() {
+    return host;
   }
 
   /**
-   * @param plosOneHost The plosOneHostname to set.
+   * @param host The plosOneHostname to set.
    */
-  public void setPlosOneHost( String plosOneHost) {
-    this.plosOneHost = plosOneHost;
+  public void setHost( String host) {
+    this.host = host;
   }
 
   /**
@@ -864,4 +866,19 @@ public class PlosOneFreemarkerConfig {
       this.url = url;
     }
   }
+
+  /**
+   * @return the orgName
+   */
+  public String getOrgName() {
+    return orgName;
+  }
+
+  /**
+   * @param orgName the orgName to set
+   */
+  public void setOrgName(String orgName) {
+    this.orgName = orgName;
+  }
+
 }

@@ -22,7 +22,6 @@
 <#else>
   <#assign journalContext = "">
 </#if>
-<#assign orgName = "Ambra">
 
 <#include "/global/global_config.ftl">
 

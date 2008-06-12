@@ -20,7 +20,7 @@
 <ul id="nav">
 	<!--<li class="none"><a href="http://www.plosjournals.org" title="PLoS Journals Home Page" tabindex="101">Home</a></li>-->
   <li><a href="${homeURL}" tabindex="101">Home</a></li>
-	<li class="none"><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}/user/secure/editProfile.action?tabId=preferences" title="My Profile" tabindex="102">My Profile</a></li>
+	<li class="none"><a href="http://${freemarker_config.host}${freemarker_config.context}/user/secure/editProfile.action?tabId=preferences" title="My Profile" tabindex="102">My Profile</a></li>
 	<li class="journalnav"><a href="#" title="Overlay Journals" tabindex="109" class="drop">Overlay Journals</a>
 	<ul>
 			<li><a href="#" title="Ambra Overlay Journal">Ambra Overlay Journal</a></li>
