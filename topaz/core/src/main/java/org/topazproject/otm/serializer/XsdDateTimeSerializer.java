@@ -50,7 +50,7 @@ public class XsdDateTimeSerializer<T> implements Serializer<T> {
     if ((Rdf.xsd + "date").equals(dataType)) {
       zparser   = new SimpleDateFormat("yyyy-MM-ddZ");
       sparser   = new SimpleDateFormat("yyyy-MM-dd");
-      fmt       = new SimpleDateFormat("yyyy-MM-dd'Z'");
+      fmt       = new SimpleDateFormat("yyyy-MM-dd");
       hasTime   = false;
     } else if ((Rdf.xsd + "dateTime").equals(dataType)) {
       zparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSSZ");

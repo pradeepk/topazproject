@@ -1606,7 +1606,7 @@ public class OqlTest extends AbstractTest {
       assertEquals("auth", dc.getParameterNames().iterator().next())
 
       FilterDefinition cfd = new CriteriaFilterDefinition("critF", dc);
-      assertEquals("select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := cast(o.parts, ObjectInfo) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
+      assertEquals("select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := cast(o.parts, ObjectInfo) and ((v1.date != '2007-07-08'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
       // referrer criteria -> oql
       dc = new DetachedCriteria("Article")
@@ -1628,7 +1628,7 @@ public class OqlTest extends AbstractTest {
       assertEquals("auth", dc.getParameterNames().iterator().next())
 
       cfd = new CriteriaFilterDefinition("critFR", dc)
-      assertEquals("select o from Article o, ObjectInfo v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.isPartOf, Article) and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
+      assertEquals("select o from Article o, ObjectInfo v1 where ((o.title = 'foo' or o.authors = 'blah')) and (o = cast(v1.isPartOf, Article) and ((v1.date != '2007-07-08'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := cast(v1.nextObject, ObjectInfo) and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));", cfd.createFilter(s).setParameter('auth', 'blah').getQuery().toString())
 
       // cast criteria -> oql
       dc = new DetachedCriteria("Article")
