@@ -37,7 +37,7 @@
   <fieldset>
   <legend>${addressingUser} Private Information</legend>
   <ol>
-    <li>${privacyStatement}
+    <li><p><em>Your E-mail address will always be kept private. See the the <a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
     <strong>${email}</strong><br />
 <a href="${freemarker_config.changeEmailURL}" title="Click here to change your e-mail address">Change your e-mail address</a><br/>
 <a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your password</a>

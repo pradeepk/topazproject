@@ -18,7 +18,6 @@
   limitations under the License.
 -->
 <#assign orgName = "Ambra">
-<#assign privacyStatement = "<p><em>Your E-mail address will always be kept private.</em></p>">
 <#include "/global/user_top.ftl">
 
 <!-- begin : main content -->
