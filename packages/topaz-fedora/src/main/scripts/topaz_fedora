@@ -39,9 +39,6 @@ TRUST_STORE=/etc/topaz/keystore.jks
 [ -e /etc/sysconfig/topaz-common ] && . /etc/sysconfig/topaz-common
 [ -e /etc/sysconfig/topaz-fedora ] && . /etc/sysconfig/topaz-fedora
 
-# Start multicast for ecache
-/usr/local/topaz/bin/multicast
-
 # Try to set JAVA_HOME if not set
 [ -z "$JAVA_HOME" ] && JAVA_HOME=`find /opt -maxdepth 1 -name 'jdk*' -a \! -type f | head -1`
 export JAVA_HOME
