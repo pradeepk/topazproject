@@ -195,10 +195,6 @@
                 </mapping>
               </mappings>
 
-              <requires>
-                <require>ambra-tools</require>
-              </requires>
-              
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>
               <postinstallScript>src/main/scripts/postinstall</postinstallScript>
               <preremoveScript>src/main/scripts/preremove</preremoveScript>
