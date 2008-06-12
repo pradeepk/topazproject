@@ -85,6 +85,16 @@ public interface TripleStore extends Store {
                          Connection con) throws OtmException;
 
   /**
+   * Signals that the triple store should flush any buffered operations to the underlying store.
+   * This is useful for implementations that want to collect inserts and deletes and send them
+   * in one go for efficiency.
+   *
+   * @param con the connection to use
+   * @throws OtmException on an error
+   */
+  public void flush(Connection con) throws OtmException;
+
+  /**
    * Gets an object from the triple store.
    *
    * @param cm the class metadata for the object

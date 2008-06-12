@@ -122,6 +122,9 @@ public class FedoraBlobStore extends AbstractStore implements BlobStore {
     fc.delete(cm, id, blob);
   }
 
+  public void flush(Connection con) throws OtmException {
+  }
+
   /*
    * inherited javadoc
    */

@@ -151,6 +151,9 @@ public abstract class AbstractTripleStore extends AbstractStore implements Tripl
     delete(cm, cm.getRdfMappers(), id, o, con);
   }
 
+  public void flush(Connection con) throws OtmException {
+  }
+
   /*
    * inherited javadoc
    */

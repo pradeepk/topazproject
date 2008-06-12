@@ -110,12 +110,12 @@ public class ItqlStore extends AbstractTripleStore {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
 
     Map<String, List<RdfMapper>> mappersByModel = groupMappersByModel(cm, fields);
-    StringBuilder insert = new StringBuilder(500);
 
     // for every model create an insert statement
     for (String m : mappersByModel.keySet()) {
-      insert.append("insert ");
-      int startLen = insert.length();
+      StringBuilder insert = isc.inserts.get(m);
+      if (insert == null)
+        isc.inserts.put(m, insert = new StringBuilder(500));
 
       if (m.equals(cm.getModel())) {
         for (String type : cm.getTypes())
@@ -123,15 +123,26 @@ public class ItqlStore extends AbstractTripleStore {
       }
 
       buildInsert(insert, mappersByModel.get(m), id, o, isc.getSession());
+    }
+  }
 
-      if (insert.length() > startLen)
-        insert.append("into <").append(getModelUri(m, isc)).append(">;");
-      else
-        insert.setLength(insert.length() - 7);
+  public void flush(Connection con) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
+    StringBuilder insert = new StringBuilder(500);
+
+    for (String m : isc.inserts.keySet()) {
+      StringBuilder stmts = isc.inserts.get(m);
+      if (stmts.length() == 0)
+        continue;
+
+      insert.append("insert ").append(stmts).
+             append("into <").append(getModelUri(m, isc)).append(">;");
     }
 
+    isc.inserts.clear();
+
     if (log.isDebugEnabled())
-      log.debug("insert: " + insert);
+      log.debug("flush: " + insert);
 
     if (insert.length() == 0)
       return;
@@ -139,7 +150,7 @@ public class ItqlStore extends AbstractTripleStore {
     try {
       isc.getItqlClient().doUpdate(insert.toString());
     } catch (IOException ioe) {
-      throw new OtmException("error performing update", ioe);
+      throw new OtmException("error performing flush", ioe);
     }
   }
 
@@ -933,6 +944,7 @@ public class ItqlStore extends AbstractTripleStore {
 
   private class ItqlStoreConnection extends AbstractConnection {
     private ItqlClient   itql;
+    public  Map<String, StringBuilder> inserts = new HashMap<String, StringBuilder>();
 
     public ItqlStoreConnection(Session sess, boolean readOnly) throws OtmException {
       super(sess);

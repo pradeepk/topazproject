@@ -168,6 +168,11 @@ public class SessionImpl extends AbstractSession {
       dirtyMap.keySet().removeAll(workDirty.keySet());
       cleanMap.putAll(workDirty);
     } while ((deleteMap.size() > 0) || (dirtyMap.size() > 0));
+
+    if (tsCon != null)
+      sessionFactory.getTripleStore().flush(tsCon);
+    if (bsCon != null)
+      sessionFactory.getBlobStore().flush(bsCon);
   }
 
   /*

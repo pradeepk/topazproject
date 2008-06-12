@@ -179,6 +179,9 @@ public class SimpleBlobStore extends AbstractStore implements BlobStore {
     ebsc.delete(id);
   }
 
+  public void flush(Connection con) throws OtmException {
+  }
+
   /*
    * inherited javadoc
    */
