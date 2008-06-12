@@ -48,8 +48,8 @@ import org.springframework.transaction.support.SmartTransactionObject;
  * <p>Note that {@link #doGetTransaction doGetTransaction}, {@link #doBegin doBegin},
  * {@link #doCommit doCommit}, and {@link #doRollback doRollback} should really all be
  * <var>protected</var>, but are <var>public</var> instead to allow for the necessary tx stop/start
- * hacks in the publishing app. Once Mulgara supports multiple parallel transactions we can/should
- * change this back.
+ * hacks in ambra. Once Mulgara supports multiple parallel transactions we can/should change this
+ * back.
  *
  * @author Ronald Tschalär
  */
@@ -139,9 +139,13 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
   }
 
   /**
-   * Set the clear-session-on-rollback flag.
+   * Set the clear-session-on-rollback flag. Because after a rollback the state of the objects in
+   * the session does not match the state of the database, it's usually prudent to clear the
+   * session after a rollback to prevent the application from continuing with stale objects.
    *
-   * @param clearSessionOnRB true if the session should be <var>clear()'d</var> on transaction
+   * <p>Changing this flag will affect the current transaction, if there is one.
+   *
+   * @param clearSessionOnRB true if the session should be <code>clear()</code>'d on transaction
    *                         rollback
    */
   public void setClearSessionOnRollback(boolean clearSessionOnRB) {
