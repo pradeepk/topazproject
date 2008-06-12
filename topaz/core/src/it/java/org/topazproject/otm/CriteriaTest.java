@@ -448,7 +448,7 @@ public class CriteriaTest extends AbstractOtmTest {
 
           Annotation a1 = (Annotation) l.get(0);
 
-          assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()));
+          assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()) || id4.equals(a1.getId()));
         }
       });
   }
