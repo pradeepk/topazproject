@@ -23,6 +23,7 @@
 
 # Validate valid configuration files
 [ -e /etc/topaz/ambra.xml ] && ! xmllint --noout /etc/topaz/ambra.xml && exit 1
+[ -e /etc/topaz/doiResolver.xml ] && ! xmllint --noout /etc/topaz/doiResolver.xml && exit 1
 
 # Source function library (not really used but seems standard on redhat)
 . /etc/init.d/functions

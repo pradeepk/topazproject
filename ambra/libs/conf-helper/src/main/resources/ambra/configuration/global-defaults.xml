@@ -99,6 +99,7 @@
       <figureAction1>article/slideshow.action?uri=</figureAction1> <!-- with figure-action2, constructs url for graphics and table display -->
       <figureAction2>&amp;imageURI=</figureAction2>
       <errorPage>static/pageNotFound.action</errorPage> <!-- error page to redirect to in pub app if article not found -->
+      <appContext></appContext> <!-- web-app context path of ambra. Leave empty for ROOT context. -->
     </platform>
     
     <!-- The list of models in mulgara that we depend on/create -->

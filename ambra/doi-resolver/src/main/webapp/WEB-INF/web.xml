@@ -5,6 +5,10 @@
     version="2.4">
 
   <display-name>PLoS ONE DOI Resolver</display-name>
+  <context-param>
+    <param-name>ambra.configuration</param-name>
+    <param-value>file:///etc/topaz/doiResolver.xml</param-value>
+  </context-param>
 
   <listener>
     <listener-class>org.plos.configuration.WebAppListener</listener-class>
