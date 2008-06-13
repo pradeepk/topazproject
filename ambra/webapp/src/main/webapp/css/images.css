@@ -168,7 +168,7 @@ a:active	{ }
 #figure-window-hdr-links a {
 	margin-right: 10px;
 }
-#figureTitle 		{ display: block; font-size: .85em;  margin-top: 10px;}
+#figureTitle 		{ display: block; font-size: .85em;  margin-top: 25px;}
 div.btn.close		{ display: inline; margin: 0; text-transform: uppercase; font-size: .9em;}
 div.btn	*			{ vertical-align: middle; padding: 4px; font-weight: bold; cursor: pointer;}
 
