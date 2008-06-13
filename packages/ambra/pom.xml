@@ -148,6 +148,18 @@
                   <groupname>topaz</groupname>
                 </mapping>
                 <mapping>
+                  <directory>/var/lib/topaz</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                </mapping>
+                <mapping>
+                  <directory>/var/lib/topaz/data</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                </mapping>
+                <mapping>
                   <directory>/etc/topaz</directory>
                   <configuration>true</configuration>
                   <filemode>644</filemode>
