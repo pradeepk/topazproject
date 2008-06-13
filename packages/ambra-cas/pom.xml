@@ -19,20 +19,25 @@
       <version>${pom.version}</version>
       <type>war</type>
     </dependency>
-
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>ecqs</artifactId>
       <version>${pom.version}</version>
       <type>jar</type>
     </dependency>
-
     <dependency>
       <groupId>org.topazproject.packages</groupId>
       <artifactId>packages</artifactId>
       <version>${pom.version}</version>
       <type>tar.gz</type>
       <classifier>tomcat-common</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.packages</groupId>
+      <artifactId>ambra-common</artifactId>
+      <version>${pom.version}</version>
+      <type>tar.gz</type>
+      <classifier>ambra_scripts</classifier>
     </dependency>
   </dependencies>
 
@@ -117,7 +122,18 @@
                   </sources>
                 </mapping>
                 <mapping>
-                  <directory>/usr/share/doc/topaz</directory>
+                  <directory>/usr/local/ambra-cas/bin</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                  <sources>
+                    <source>
+                      <location>${project.build.directory}/${project.build.finalName}-tomcat.dir/scripts</location>
+                    </source>
+                  </sources>
+                </mapping>
+                <mapping>
+                  <directory>/usr/share/doc/ambra-cas</directory>
                   <documentation>true</documentation>
                   <filemode>755</filemode>
                   <username>topaz</username>
@@ -161,10 +177,6 @@
                   </sources>
                 </mapping>
               </mappings>
-
-              <requires>
-                <require>ambra-tools</require>
-              </requires>
 
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>
               <postinstallScript>src/main/scripts/postinstall</postinstallScript>

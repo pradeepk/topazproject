@@ -38,6 +38,13 @@
       <type>tar.gz</type>
       <classifier>tomcat-common</classifier>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject.packages</groupId>
+      <artifactId>ambra-common</artifactId>
+      <version>${pom.version}</version>
+      <type>tar.gz</type>
+      <classifier>ambra_scripts</classifier>
+    </dependency>
   </dependencies>
 
   <build>
@@ -123,7 +130,18 @@
                   </sources>
                 </mapping>
                 <mapping>
-                  <directory>/usr/share/doc/topaz</directory>
+                  <directory>/usr/local/ambra/bin</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                  <sources>
+                    <source>
+                      <location>${project.build.directory}/${project.build.finalName}-tomcat.dir/scripts</location>
+                    </source>
+                  </sources>
+                </mapping>
+                <mapping>
+                  <directory>/usr/share/doc/ambra</directory>
                   <documentation>true</documentation>
                   <filemode>755</filemode>
                   <username>topaz</username>
@@ -147,18 +165,6 @@
                 <mapping>
                   <directory>/etc/topaz</directory>
                   <configuration>true</configuration>
-                  <filemode>755</filemode>
-                  <username>topaz</username>
-                  <groupname>topaz</groupname>
-                </mapping>
-                <mapping>
-                  <directory>/var/lib/topaz</directory>
-                  <filemode>755</filemode>
-                  <username>topaz</username>
-                  <groupname>topaz</groupname>
-                </mapping>
-                <mapping>
-                  <directory>/var/lib/topaz/data</directory>
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
@@ -193,10 +199,6 @@
                   </sources>
                 </mapping>
               </mappings>
-
-              <requires>
-                <require>ambra-tools</require>
-              </requires>
 
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>
               <postinstallScript>src/main/scripts/postinstall</postinstallScript>

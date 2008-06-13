@@ -79,7 +79,7 @@
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.topazproject.packages:*</include>
+        <include>org.topazproject.packages:*:*</include>
       </includes>
     </dependencySet>
   </dependencySets>

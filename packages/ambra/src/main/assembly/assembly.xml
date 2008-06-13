@@ -73,7 +73,7 @@ WARNING: See overrides/defaults in parent common.xml (head/packages/src/main/ass
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.topazproject.packages:*</include>
+        <include>org.topazproject.packages:*:*</include>
       </includes>
     </dependencySet>
   </dependencySets>

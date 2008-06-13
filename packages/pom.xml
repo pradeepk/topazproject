@@ -32,6 +32,7 @@
 
   <modules>
     <module>ambra</module>
+    <module>ambra-common</module>
     <module>ambra-tools</module>
     <module>ambra-cas</module>
     <module>topaz-mulgara</module>
