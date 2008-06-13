@@ -23,13 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.action.BaseActionSupport;
-import org.plos.article.service.FetchArticleService;
-import org.plos.model.article.ArticleType;
 import org.plos.models.Article;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
@@ -45,14 +41,14 @@ import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * Rating action class to retrieve all ratings for an Article.
- * 
+ *
  * @author Jeff Suttor
  */
 @SuppressWarnings("serial")
-public class GetArticleRatingsAction extends BaseActionSupport {
+public class GetArticleRatingsAction extends AbstractRatingAction {
+  protected static final Log log = LogFactory.getLog(GetArticleRatingsAction.class);
 
   private Session session;
-  private FetchArticleService fetchArticleService;
   private String articleURI;
   private String articleTitle;
   private String articleDescription;
@@ -61,7 +57,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   private final List<ArticleRatingSummary> articleRatingSummaries = new ArrayList<ArticleRatingSummary>();
   private double articleOverall = 0;
   private double articleSingleRating = 0;
-  private static final Log log = LogFactory.getLog(GetArticleRatingsAction.class);
   private RatingsPEP pep;
 
   private RatingsPEP getPEP() {
@@ -76,32 +71,23 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Execute the ratings action.
-   * 
+   *
    * @return WebWork action status
    */
   @Override
   @Transactional(readOnly = true)
+  @SuppressWarnings("unchecked")
   public String execute() throws Exception {
     assert articleURI != null : "An article URI must be specified";
     getPEP().checkAccess(RatingsPEP.GET_RATINGS, URI.create(articleURI));
 
     final Article article = fetchArticleService.getArticleInfo(articleURI);
     assert article != null : "article of URI: " + articleURI + " not found.";
-    
+
     articleTitle = article.getDublinCore().getTitle();
     articleDescription = article.getDublinCore().getDescription();
 
-    // resolve the article type and related properties
-    List<ArticleType> list = new ArrayList<ArticleType>();
-    Set<URI> set = article.getArticleType();
-    if(set != null) {
-      for(URI uri : set) {
-        ArticleType at = ArticleType.getArticleTypeForURI(uri, false);
-        assert at != null : "Unknown article type URI: " + uri;
-        list.add(at);
-      }
-    }
-    isResearchArticle = ArticleType.isResearchArticle(list);
+    isResearchArticle = isResearchArticle(articleURI);
 
     // assume if valid RatingsPEP.GET_RATINGS, OK to GET_STATS
     // RatingSummary for this Article
@@ -162,7 +148,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Gets the URI of the article being rated.
-   * 
+   *
    * @return Returns the articleURI.
    */
   public String getArticleURI() {
@@ -171,7 +157,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Sets the URI of the article being rated.
-   * 
+   *
    * @param articleURI The articleUri to set.
    */
   public void setArticleURI(String articleURI) {
@@ -180,7 +166,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Gets the Overall rounded rating of the article being rated.
-   * 
+   *
    * @return Overall rounded rating.
    */
   public double getArticleOverallRounded() {
@@ -190,7 +176,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Gets the single rounded rating of the article being rated.
-   * 
+   *
    * @return Single rounded rating.
    */
   public double getArticleSingleRatingRounded() {
@@ -200,7 +186,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Gets the title of the article being rated.
-   * 
+   *
    * @return Returns the articleTitle.
    */
   public String getArticleTitle() {
@@ -215,7 +201,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Sets the title of the article being rated.
-   * 
+   *
    * @param articleTitle The article's title.
    */
   public void setArticleTitle(String articleTitle) {
@@ -224,7 +210,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Gets the description of the Article being rated.
-   * 
+   *
    * @return Returns the articleDescription.
    */
   public String getArticleDescription() {
@@ -253,7 +239,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Set the OTM session. Called by spring's bean wiring.
-   * 
+   *
    * @param session The otm session to set.
    */
   @Required
@@ -262,20 +248,8 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Sets the FetchArticleService.
-   * Use FetchArticleService v native OTM for caching.
-   * Called by Spring's bean wiring.
-   * 
-   * @param FetchArticleService to set.
-   */
-  @Required
-  public void setFetchArticleService(FetchArticleService s) {
-    this.fetchArticleService = s;
-  }
-
-  /**
    * Tests if this article has been rated.
-   * 
+   *
    * @return Returns the hasRated.
    */
   public boolean isHasRated() {
@@ -284,7 +258,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Sets a flag to indicate that an article has been rated.
-   * 
+   *
    * @param hasRated The hasRated to set.
    */
   public void setHasRated(boolean hasRated) {
@@ -293,7 +267,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
   /**
    * Gets all ratings for the Article.
-   * 
+   *
    * @return Returns Ratings for the Article.
    */
   public Collection<ArticleRatingSummary> getArticleRatingSummaries() {

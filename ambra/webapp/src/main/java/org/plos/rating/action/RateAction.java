@@ -26,10 +26,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.action.BaseActionSupport;
-import org.plos.article.service.FetchArticleService;
-import org.plos.model.article.ArticleType;
-import org.plos.models.Article;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
@@ -51,7 +47,9 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
  * @author Stephen Cheng
  */
 @SuppressWarnings("serial")
-public class RateAction extends BaseActionSupport {
+public class RateAction extends AbstractRatingAction {
+  private static final Log log = LogFactory.getLog(RateAction.class);
+
   private double           insight;
   private double           reliability;
   private double           style;
@@ -62,10 +60,7 @@ public class RateAction extends BaseActionSupport {
   private String           comment;
   private Session          session;
   private RatingsPEP       pep;
-  private FetchArticleService fetchArticleService;
-
   private ProfanityCheckingService profanityCheckingService;
-  private static final Log log = LogFactory.getLog(RateAction.class);
 
   private RatingsPEP getPEP() {
     try {
@@ -78,19 +73,12 @@ public class RateAction extends BaseActionSupport {
   }
 
   /**
-   * @param fetchArticleService the fetchArticleService to set
-   */
-  @Required
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
-  }
-
-  /**
    * Rates an article for the currently logged in user.  Will look to see if there are
    * existing rating. If so, will update the ratings, otherwise will insert new ones.
    *
    * @return WebWork action status
    */
+  @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
   public String rateArticle() {
     final PlosOneUser       user               = PlosOneUser.getCurrentUser();
@@ -116,27 +104,13 @@ public class RateAction extends BaseActionSupport {
 
     getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
 
-    // resolve article type and supported properties
-    Article artInfo;
     try {
-      artInfo = fetchArticleService.getArticleInfo(articleURI);
-    }
-    catch(ApplicationException ae) {
+      isResearchArticle = isResearchArticle(articleURI);
+    } catch (ApplicationException ae) {
       log.info("Could not get article info for: " + articleURI, ae);
       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
-    assert artInfo != null;
-    ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
-    assert articleType != null;
-    articleType = ArticleType.getDefaultArticleType();
-    for (URI artTypeUri : artInfo.getArticleType()) {
-      if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
-        break;
-      }
-    }
-    isResearchArticle = ArticleType.isResearchArticle(articleType);
 
     if (isResearchArticle) {
       // must rate at least one rating category
@@ -300,6 +274,7 @@ public class RateAction extends BaseActionSupport {
    *
    * @return WebWork action status
    */
+  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public String retrieveRatingsForUser() {
     final PlosOneUser user = PlosOneUser.getCurrentUser();

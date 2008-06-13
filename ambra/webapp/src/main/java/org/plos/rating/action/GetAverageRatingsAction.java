@@ -18,18 +18,9 @@
  */
 package org.plos.rating.action;
 
-import java.net.URI;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.plos.action.BaseActionSupport;
-import org.plos.article.service.FetchArticleService;
-import org.plos.model.article.ArticleType;
-import org.plos.models.Article;
 import org.plos.rating.service.RatingsService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.otm.Session;
 
 /**
  * General Rating action class to store and retrieve summary ratings on an article.
@@ -37,10 +28,7 @@ import org.topazproject.otm.Session;
  * @author stevec
  */
 @SuppressWarnings("serial")
-public class GetAverageRatingsAction extends BaseActionSupport {
-  private static final Log log      = LogFactory.getLog(GetAverageRatingsAction.class);
-  private Session          session;
-  private FetchArticleService fetchArticleService;
+public class GetAverageRatingsAction extends AbstractRatingAction {
   private RatingsService ratingsService;
   private RatingsService.AverageRatings   avg;
   private String           articleURI;
@@ -54,10 +42,10 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    */
   @Override
   @Transactional(readOnly = true)
-  public String execute() {
+  public String execute() throws Exception {
     avg = ratingsService.getAverageRatings(articleURI);
     hasRated = ratingsService.hasRated(articleURI);
-
+    isResearchArticle = isResearchArticle(articleURI);
     return SUCCESS;
   }
 
@@ -72,49 +60,12 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Set the fetch article service
-   *
-   * @param fetchArticleService fetchArticleService
-   */
-  @Required
-  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
-  }
-
-  /**
-   * Set the OTM session. Called by spring's bean wiring.
-   *
-   * @param session The otm session to set.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-
-  /**
    * Sets the URI of the article being rated.
    *
    * @param articleURI The articleUri to set.
    */
   public void setArticleURI(String articleURI) throws Exception {
-    if(articleURI != null && articleURI.equals(this.articleURI)) {
-      return;
-    }
     this.articleURI = articleURI;
-
-    // resolve article type and supported properties
-    Article artInfo = fetchArticleService.getArticleInfo(articleURI);
-    assert artInfo != null : "artInfo is null (Should have already been cached.  Is the articleURI correct?)";
-    ArticleType articleType = ArticleType.getKnownArticleTypeForURI(URI.create(articleURI));
-    assert articleType != null;
-    articleType = ArticleType.getDefaultArticleType();
-    for (URI artTypeUri : artInfo.getArticleType()) {
-      if (ArticleType.getKnownArticleTypeForURI(artTypeUri)!= null) {
-        articleType = ArticleType.getKnownArticleTypeForURI(artTypeUri);
-        break;
-      }
-    }
-    isResearchArticle = ArticleType.isResearchArticle(articleType);
   }
 
   /**

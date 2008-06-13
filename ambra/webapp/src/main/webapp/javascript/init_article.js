@@ -41,8 +41,7 @@ var _ldc;
 var ratingConfig =  {
   insight:  "rateInsight",
   reliability: "ratingReliability",
-  style: "rateStyle",
-  ratingContainer: "ratingRhc"
+  style: "rateStyle"
 };
 var _ratingDlg;
 var _ratingsForm;
@@ -271,7 +270,7 @@ function validateNewComment() {
  * Re-fetches the article from the server 
  * refreshing the article content area(s) of the page.
  */
-function getArticle(refreshType) {
+function getArticle() {
   var refreshArea = dojo.byId(annotationConfig.articleContainer);
   var targetUri = _annotationForm.target.value;
   _ldc.show();
@@ -282,20 +281,12 @@ function getArticle(refreshType) {
       handleXhrError(response);
     },
     load: function(response, ioArgs){
+      // refresh article HTML content
       refreshArea.innerHTML = response;
-      
-      if (refreshType  == "rating") {
-        refreshRating(targetUri);
-      }
-      else {
-        getAnnotationCount();
-      }
-      
+      // re-apply article "decorations"
+      getAnnotationCount();
       ambra.displayComment.processBugCount();
-      
-      // re-apply corrections
       ambra.corrections.apply();
-      
       _ldc.hide();
     }
   });
@@ -399,10 +390,6 @@ dojo.addOnLoad(function() {
     _ratingDlg.hide();
     ambra.formUtil.enableFormFields(_ratingsForm);
     ambra.rating.resetDialog();
-    /* don't re-fetch article on cancel
-    getArticle("rating");
-    ambra.displayComment.processBugCount();
-    */
     e.preventDefault();
   });
   
@@ -520,7 +507,7 @@ dojo.addOnLoad(function() {
   ambra.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
   
   _annotationDlg = dijit.byId("AnnotationDialog");
-  var dlgCancel = dojo.byId('btn_cancel');
+  //var dlgCancel = dojo.byId('btn_cancel');
   //_annotationDlg.setCloseControl(dlgCancel);
   _annotationDlg.setTipDown(dojo.byId(annotationConfig.tipDownDiv));
   _annotationDlg.setTipUp(dojo.byId(annotationConfig.tipUpDiv));

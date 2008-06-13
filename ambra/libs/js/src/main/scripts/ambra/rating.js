@@ -221,28 +221,23 @@ function updateRating() {
      }
      else {
        _ratingDlg.hide();
-       getArticle("rating");
        ambra.formUtil.enableFormFields(_ratingsForm);
+       refreshRating(articleUri);
+       _ldc.hide();
      }
    }
   });
 }
 
 function refreshRating(uri) {
-	var refreshArea1 = dojo.byId(ratingConfig.ratingContainer + "1");
-	var refreshArea2 = dojo.byId(ratingConfig.ratingContainer + "2");
   dojo.xhrGet({
     url: _namespace + "/rate/getUpdatedRatings.action?articleURI=" + uri,
-    handleAs:'json',
+    handleAs:'text',
     error: function(response, ioArgs){
      handleXhrError(response, ioArgs);
     },
     load: function(response, ioArgs){
-     var jsonObj = response;
-     var docFragment = document.createDocumentFragment();
-     docFragment = data;
-     refreshArea1.innerHTML = docFragment;
-     refreshArea2.innerHTML = docFragment;
+     dojo.byId(dojo.isSafari ? 'ratingRhc2' : 'ratingRhc1').innerHTML = response;
     }
   });
 }
