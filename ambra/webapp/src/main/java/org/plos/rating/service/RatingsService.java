@@ -21,6 +21,7 @@ package org.plos.rating.service;
 import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
 import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Calendar;
@@ -30,6 +31,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.cache.Cache;
+import org.plos.cache.ObjectListener;
+import org.plos.models.Article;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
@@ -39,9 +43,12 @@ import org.plos.user.PlosOneUser;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.Interceptor.Updates;
 
 /**
  * This service allows client code to operate on ratings objects.
@@ -50,8 +57,11 @@ import org.topazproject.otm.criterion.Restrictions;
  */
 public class RatingsService {
   private static final Log     log = LogFactory.getLog(RatingsService.class);
+  private static final String AVG_RATINGS_KEY = "Avg-Ratings-";
   private Session              session;
   private RatingsPEP           pep;
+  private Cache articleAnnotationCache;
+  private Invalidator          invalidator;
   private String               applicationId;
 
   public RatingsService() {
@@ -179,7 +189,7 @@ public class RatingsService {
         articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE,oldSingle);
       }
     }
-          final int oldSingle = values.getBody().getSingleRatingValue();
+    final int oldSingle = values.getBody().getSingleRatingValue();
 
     // update the Rating object with those values provided by the caller
     final int insight = values.getBody().getInsightValue();
@@ -199,6 +209,9 @@ public class RatingsService {
     articleRatingSummary.getBody().addRating(Rating.RELIABILITY_TYPE,reliability);
     articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE,style);
     articleRatingSummary.getBody().addRating(Rating.SINGLE_RATING_TYPE,single);
+
+    articleAnnotationCache.put(AVG_RATINGS_KEY + articleURI,
+        new AverageRatings(articleRatingSummary));
   }
 
   /**
@@ -264,6 +277,8 @@ public class RatingsService {
       articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE,single);
     }
 
+    articleAnnotationCache.put(AVG_RATINGS_KEY + articleURI,
+        new AverageRatings(articleRatingSummary));
     session.delete(articleRating);
   }
 
@@ -336,6 +351,46 @@ public class RatingsService {
     return (Rating[]) c.list().toArray(new Rating[0]);
   }
 
+  @Transactional(readOnly = true)
+  public AverageRatings getAverageRatings(final String articleURI) {
+    pep.checkAccess(RatingsPEP.GET_STATS, URI.create(articleURI));
+
+    return articleAnnotationCache.get(AVG_RATINGS_KEY  + articleURI, -1,
+            new Cache.SynchronizedLookup<AverageRatings, OtmException>(articleURI.intern()) {
+              public AverageRatings lookup() throws OtmException {
+                if (log.isDebugEnabled())
+                  log.debug("retrieving rating summaries for: " + articleURI);
+                List<RatingSummary> summaryList = session
+                                    .createCriteria(RatingSummary.class)
+                                    .add(Restrictions.eq("annotates", articleURI))
+                                    .list();
+                return (summaryList.size() > 0) ? new AverageRatings(summaryList.get(0)) : new AverageRatings();
+              }
+            });
+  }
+
+  @Transactional(readOnly = true)
+  public boolean hasRated(String articleURI) {
+    final PlosOneUser   user               = PlosOneUser.getCurrentUser();
+
+    if (user != null) {
+      if (log.isDebugEnabled()) {
+        log.debug("retrieving list of user ratings for article: " + articleURI + " and user: "
+                + user.getUserId());
+      }
+
+      List ratingsList =
+        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
+              .add(Restrictions.eq("creator", user.getUserId())).list();
+
+      if (ratingsList.size() > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
   /**
    * Set the OTM session. Called by spring's bean wiring.
    *
@@ -355,6 +410,18 @@ public class RatingsService {
     this.applicationId = applicationId;
   }
 
+  /**
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
+   */
+  @Required
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
+    if (invalidator == null) {
+      invalidator = new Invalidator();
+      articleAnnotationCache.getCacheManager().registerListener(invalidator);
+    }
+  }
 
   /**
    * @return the application id
@@ -363,4 +430,76 @@ public class RatingsService {
     return applicationId;
   }
 
+  public static class Average implements Serializable {
+    public final double total;
+    public final int    count;
+    public final double average;
+    public final double rounded;
+
+    Average(double total, int count) {
+      this.total = total;
+      this.count = count;
+      average = (count == 0) ? 0 : total/count;
+      rounded = RatingContent.roundTo(average, 0.5);
+    }
+
+    public String toString() {
+      return "total = " + total + ", count = " + count + ", average = " + average
+        + ", rounded = " + rounded;
+    }
+  }
+
+  public static class AverageRatings implements Serializable {
+    public final Average style;
+    public final Average insight;
+    public final Average reliability;
+    public final Average single;
+    public final int numUsersThatRated;
+    public final double overall;
+    public final double roundedOverall;
+
+    AverageRatings() {
+      style = new Average(0, 0);
+      insight = new Average(0, 0);
+      reliability = new Average(0, 0);
+      single = new Average(0, 0);
+      numUsersThatRated = 0;
+      overall = 0;
+      roundedOverall = 0;
+    }
+
+    AverageRatings(RatingSummary ratingSummary) {
+      insight = new Average(ratingSummary.getBody().getInsightTotal(),
+         ratingSummary.getBody().getInsightNumRatings());
+      reliability = new Average(ratingSummary.getBody().getReliabilityTotal(),
+         ratingSummary.getBody().getReliabilityNumRatings());
+      style = new Average(ratingSummary.getBody().getStyleTotal(),
+         ratingSummary.getBody().getStyleNumRatings());
+      single = new Average(ratingSummary.getBody().getSingleRatingTotal(),
+         ratingSummary.getBody().getSingleRatingNumRatings());
+
+      numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
+      overall = RatingContent.calculateOverall(insight.average, reliability.average, style.average);
+      roundedOverall = RatingContent.roundTo(overall, 0.5);
+    }
+
+    public String toString() {
+      return "style = [" + style + "], insight = [" + insight + "], reliability = [" + reliability
+        + "], single = [" + single + "], numUsersThatRated = " + numUsersThatRated + ", overall = "
+        + overall + ", roundedOverall = " + roundedOverall;
+    }
+  }
+
+  private class Invalidator implements ObjectListener {
+    public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
+        Updates updates) {
+    }
+    public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
+      if (o instanceof Article) {
+        if (log.isDebugEnabled())
+          log.debug("Invalidating ratings-summary for the article that was deleted.");
+        articleAnnotationCache.remove(AVG_RATINGS_KEY + id);
+      }
+    }
+  }
 }
