@@ -102,7 +102,7 @@ ambra.formUtil = {
    */
   _tglFields: function(node, bEnable){
     var n = bEnable? 'false' : 'true';
-    dojo.query("input[type=radio],input[type=checkbox],select,textarea", node).forEach('item.disabled='+n+';item.locked='+n+';');
+    dojo.query("input[type!=hidden],select,textarea", node).forEach('item.disabled='+n+';item.locked='+n+';');
   },
   
   /**

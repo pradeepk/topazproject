@@ -37,58 +37,6 @@ dojo.require("ambra.domUtil");
 dojo.require("ambra.formUtil");
 dojo.require("ambra.displayComment");
 ambra.annotation = {
-  /** 
-   * ambra.annotation._createAnnotationOnkeyup(event)
-   * 
-	 * Method triggered when the event is tied to the document and the user presses a key.
-	 * If the key pressed is ENTER, creates an annotation using the currently-selected text.
-	 * Parameter 'event' is a key press event.
-	 * 
-   * @param  event      Event object         Event triggered by the keypress of the "ENTER" 
-   * 																				  button.
-   * 
-	 * @return true														 Success.
-	 */
-  _createAnnotationOnkeyup: function (event) {
-  	if ( keyname(event) == ENTER ) {
-      var captureText = this.createNewAnnotation();
-  		
-      if ( captureText ) {
-      	if (!event) var event = window.event;
-      	event.cancelBubble = true;
-      	if (event.stopPropagation) event.stopPropagation();
-      }
-    }
-    return true;
-  },
-  
-  /** 
-   * ambra.annotation.createAnnotationOnMouseDown()
-   * 
-   * Method triggered on onmousedown or onclick event of a tag.  When this method is 
-   * triggered, it initiates an annotation creation using the currently-selected text.
-	 * 
-	 * @return true														 Success.
-   */
-  createAnnotationOnMouseDown: function () {
-	  ambra.formUtil.textCues.reset(_commentTitle, _titleCue); 
-	  ambra.formUtil.textCues.reset(_comments, _commentCue); 
-	  _annotationForm.commentTitle.value = "";
-	  _annotationForm.comment.value = "";
-	  
-    var captureText = this.createNewAnnotation();
-		
-/*    if ( captureText ) {
-    	if (!event) var event = window.event;
-    	event.cancelBubble = true;
-    	if (event.stopPropagation) event.stopPropagation();
-    }
-*/
-    //dojo.event.browser.preventDefault();
-
-    return false;
-  },
-
   handleUserSelectionError: function() {
     var msg = annotationConfig.annSelErrMsg ? 
       annotationConfig.annSelErrMsg : annotationConfig.dfltAnnSelErrMsg;

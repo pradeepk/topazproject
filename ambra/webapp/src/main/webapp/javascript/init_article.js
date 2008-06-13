@@ -82,9 +82,6 @@ var formalCorrectionConfig = {
 };
 var _annotationDlg;
 var _annotationForm;
-var _noteType;
-var _commentTitle;
-var _comments;
 
 // comment/multi-comment globals
 var commentConfig = {
@@ -200,7 +197,7 @@ function toggleExpand(obj, isOpen, textOn, textOff) {
 
 function showAnnotationDialog() {
    // reset
-  _noteType.selectedIndex = 0;
+  _annotationForm.cNoteType.selectedIndex = 0;
   dojo.byId('cdls').style.visibility = 'hidden';
   _annotationDlg.show();
 }
@@ -209,6 +206,8 @@ function validateNewComment() {
   var submitMsg = dojo.byId('submitMsg');
   ambra.domUtil.removeChildren(submitMsg);
   ambra.formUtil.disableFormFields(_annotationForm);
+  
+  _annotationForm.noteType.value = _annotationForm.cNoteType.value;
   
   _ldc.show();
   dojo.xhrPost({
@@ -255,8 +254,8 @@ function validateNewComment() {
        else {
          getArticle();
          _annotationDlg.hide();
-         ambra.formUtil.textCues.reset(_commentTitle, _titleCue);
-         ambra.formUtil.textCues.reset(_comments, _commentCue);
+         ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue);
+         ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue);
          ambra.formUtil.enableFormFields(_annotationForm);
        }
        _ldc.hide();
@@ -309,6 +308,23 @@ function getAnnotationCount() {
       refreshArea2.innerHTML = docFragment;
     }
   });
+}
+
+/** 
+ * createAnnotationOnMouseDown()
+ * 
+ * Method triggered on onmousedown or onclick event of a tag.  When this method is 
+ * triggered, it initiates an annotation creation using the currently-selected text.
+ */
+function createAnnotationOnMouseDown() {
+  // reset form
+  ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue); 
+  ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue); 
+  _annotationForm.noteType.value = "";
+  _annotationForm.commentTitle.value = "";
+  _annotationForm.comment.value = "";
+  // create it
+  ambra.annotation.createNewAnnotation();
 }
 
 dojo.addOnLoad(function() {
@@ -376,7 +392,7 @@ dojo.addOnLoad(function() {
       fldTitle.value = "";
     }
     ambra.formUtil.textCues.on(_ratingComments, _ratingCommentCue); 
-    //ambra.formUtil.checkFieldStrLength(_ratingComments);
+    ambra.formUtil.checkFieldStrLength(_ratingComments, 500);
   });
   
   dojo.connect(dojo.byId("btn_post_rating"), "onclick", function(e) {
@@ -397,23 +413,16 @@ dojo.addOnLoad(function() {
   // annotation (note) dialog related
   // --------------------------------
   _annotationForm = document.createAnnotation;
-  _noteType = _annotationForm.cNoteType;
-  _commentTitle    = _annotationForm.cTitle;
-  _comments        = _annotationForm.cArea;
-  //var privateFlag  = _annotationForm.privateFlag;
-  //var publicFlag   = _annotationForm.publicFlag;
-  //var btnSave      = dojo.byId("btn_save");  
   
-  dojo.connect(_noteType, "onchange", function () {
-    dojo.byId('cdls').style.visibility = _noteType.value == 'correction' ? 'visible' : 'hidden';
-    _annotationForm.noteType.value = _noteType.value;
+  dojo.connect(_annotationForm.cNoteType, "change", function () {
+    dojo.byId('cdls').style.visibility = _annotationForm.cNoteType.value == 'correction' ? 'visible' : 'hidden';
   });
   
-  dojo.connect(_commentTitle, "onfocus", function () { 
-    ambra.formUtil.textCues.off(_commentTitle, _titleCue); 
+  dojo.connect(_annotationForm.cTitle, "focus", function () { 
+    ambra.formUtil.textCues.off(_annotationForm.cTitle, _titleCue); 
   });
   
-  dojo.connect(_commentTitle, "onchange", function () {
+  dojo.connect(_annotationForm.cTitle, "change", function () {
     var fldTitle = _annotationForm.commentTitle;
     if(_annotationForm.cTitle.value != "" && _annotationForm.cTitle.value != _titleCue) {
       fldTitle.value = _annotationForm.cTitle.value;
@@ -423,7 +432,7 @@ dojo.addOnLoad(function() {
     }
   });
 
-  dojo.connect(_commentTitle, "onblur", function () { 
+  dojo.connect(_annotationForm.cTitle, "onblur", function () { 
     var fldTitle = _annotationForm.commentTitle;
     if(_annotationForm.cTitle.value != "" && _annotationForm.cTitle.value != _titleCue) {
       fldTitle.value = _annotationForm.cTitle.value;
@@ -431,14 +440,14 @@ dojo.addOnLoad(function() {
     else {
       fldTitle.value = "";
     }
-    ambra.formUtil.textCues.on(_commentTitle, _titleCue); 
+    ambra.formUtil.textCues.on(_annotationForm.cTitle, _titleCue); 
   });
   
-  dojo.connect(_comments, "onfocus", function () {
-    ambra.formUtil.textCues.off(_comments, _commentCue);
+  dojo.connect(_annotationForm.cArea, "onfocus", function () {
+    ambra.formUtil.textCues.off(_annotationForm.cArea, _commentCue);
   });
 
-  dojo.connect(_comments, "onchange", function () {
+  dojo.connect(_annotationForm.cArea, "onchange", function () {
     var fldTitle = _annotationForm.comment;
     if(_annotationForm.cArea.value != "" && _annotationForm.cArea.value != _commentCue) {
       fldTitle.value = _annotationForm.cArea.value;
@@ -448,7 +457,7 @@ dojo.addOnLoad(function() {
     }
   });
   
-  dojo.connect(_comments, "onblur", function () {
+  dojo.connect(_annotationForm.cArea, "onblur", function () {
     var fldTitle = _annotationForm.comment;
     if(_annotationForm.cArea.value != "" && _annotationForm.cArea.value != _commentCue) {
       fldTitle.value = _annotationForm.cArea.value;
@@ -456,15 +465,15 @@ dojo.addOnLoad(function() {
     else {
       fldTitle.value = "";
     }
-    ambra.formUtil.textCues.on(_comments, _commentCue); 
-    //ambra.formUtil.checkFieldStrLength(_comments);
+    ambra.formUtil.textCues.on(_annotationForm.cArea, _commentCue); 
+    //ambra.formUtil.checkFieldStrLength(_annotationForm.cArea);
   });
   
   /*
   dojo.connect(privateFlag, "onclick", function() {
     ambra.formUtil.toggleFieldsByClassname('commentPrivate', 'commentPublic'); 
     _annotationDlg.placeModalDialog();
-    //var btn = btnSave;
+    //var btn = btnAnnotationSave;
     //__annotationDlg.setCloseControl(btn);
   });
   dojo.connect(publicFlag, "onclick", function() {
@@ -474,7 +483,7 @@ dojo.addOnLoad(function() {
   });
   
   // Annotation Dialog Box: Save button
-  dojo.connect(btnSave, "onclick", function(e) {
+  dojo.connect(btnAnnotationSave, "onclick", function(e) {
     //getCommentValues();
     validateNewComment();
     e.preventDefault();
@@ -482,7 +491,6 @@ dojo.addOnLoad(function() {
   */
   
   dojo.connect(dojo.byId("btn_post"), "onclick", function(e) {
-    //getCommentValues();
     validateNewComment();
     e.preventDefault();
   });
