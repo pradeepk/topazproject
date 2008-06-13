@@ -29,7 +29,7 @@ usage: $1 [options] start|stop|restart|status|report|dump
 
 Options:
   -h, --help    Usage information (this message)
-  -b basename   The name of the program. i.e. cas, mulgara, fedora, ambra
+  -b basename   The name of the program. i.e. ambra_cas, ambra
   -n timeout    The number of seconds to wait after starting or stopping
                 (default=45)
   -f            If we can't stop in <timeout>, send TERM signal
@@ -71,17 +71,14 @@ JVM="server"
 verbose=
 
 # Overrides: basename_CATALINA_HOME, basename_TOMCAT_OPTS, basename_USER
-SERVERS="ambra_cas topaz_mulgara topaz_fedora ambra"
+SERVERS="ambra_cas ambra"
 ambra_cas_CATALINA_HOME="$TOPAZ_LOCAL/ambra-cas"
-topaz_mulgara_CATALINA_HOME="$TOPAZ_LOCAL/topaz-mulgara"
 ambra_CATALINA_HOME="$TOPAZ_LOCAL/ambra"
 
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
 ambra_cas_PORT=7443
-topaz_mulgara_PORT=1099
 ambra_PORT=8080
-topaz_fedora_PORT=9090
 
 #
 # Should not need to modify stuff below here
