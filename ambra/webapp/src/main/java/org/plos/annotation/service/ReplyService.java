@@ -308,8 +308,12 @@ public class ReplyService extends BaseAnnotationService {
   @Transactional(readOnly = true)
   public Reply[] listAllReplies(final String root, final String inReplyTo)
                              throws OtmException, SecurityException {
-    List<Reply> all =
-      session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
+    List<Reply> all;
+
+    if (inReplyTo.equals(root))
+      all = session.createCriteria(Reply.class).add(Restrictions.eq("root", root)).list();
+    else
+      all = session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
               .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
 
     List<Reply> l   = new ArrayList(all.size());
