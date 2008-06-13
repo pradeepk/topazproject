@@ -19,6 +19,7 @@
 package org.plos.model;
 
 import java.net.URI;
+import java.io.Serializable;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
@@ -29,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  * Just the full name.
  */
 @Entity(type = Rdf.foaf + "Person", model = "profiles")
-public class UserProfileInfo {
+public class UserProfileInfo implements Serializable {
   @Id
   public URI id;
 
