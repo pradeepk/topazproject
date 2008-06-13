@@ -7,7 +7,7 @@ PKG=topaz-fedora
 chmod a+x /usr/local/topaz/$PKG*/*/bin/*
 
 # Register the service
-/sbin/chkconfig --add topaz_fedora
+/sbin/chkconfig --add topaz-fedora
 
 # Create symbolic link in /usr/local/topaz
 LINK=/usr/local/topaz/$PKG

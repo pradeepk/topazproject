@@ -174,7 +174,7 @@ debug() {
 }
 
 # Expand configuration (use appropriate overrides or defaults if no overrides)
-expand () { eval "$1=\${${BASENAME}_$1:-\$$1}"; }
+expand () { eval "$1=\${${BASENAME//-/_}_$1:-\$$1}"; }
 expand JAVA_OPTS
 expand SU_USER
 expand PORT

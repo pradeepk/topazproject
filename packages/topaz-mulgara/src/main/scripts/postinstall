@@ -4,7 +4,7 @@
 PKG=topaz-mulgara
 
 # Register the mulgara service
-/sbin/chkconfig --add topaz_mulgara
+/sbin/chkconfig --add topaz-mulgara
 
 # Create symbolic link in /usr/local/topaz
 LINK=/usr/local/topaz/$PKG

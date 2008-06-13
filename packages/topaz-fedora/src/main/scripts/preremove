@@ -1,4 +1,4 @@
 if [ $1 = 0 ]; then
-    service topaz_fedora stop > /dev/null 2>&1
-    /sbin/chkconfig --del topaz_fedora || :
+    service topaz-fedora stop > /dev/null 2>&1
+    /sbin/chkconfig --del topaz-fedora || :
 fi

@@ -1,4 +1,4 @@
 if [ $1 = 0 ]; then
-    service topaz_mulgara stop > /dev/null 2>&1
-    /sbin/chkconfig --del topaz_mulgara || :
+    service topaz-mulgara stop > /dev/null 2>&1
+    /sbin/chkconfig --del topaz-mulgara || :
 fi

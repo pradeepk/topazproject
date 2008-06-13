@@ -169,7 +169,8 @@ if [ -n "$TRUST_STORE" -a "$TRUST_STORE" != "default" ]; then
 fi
 
 # Expand configuration (use appropriate overrides or defaults if no overrides)
-expand () { eval "$1=\${${BASENAME}_$1:-\$$1}"; }
+# NOTE: Replace all occurence of '-' with '_' in variable name first
+expand () { eval "$1=\${${BASENAME//-/_}_$1:-\$$1}"; }
 expand CATALINA_HOME
 expand TOMCAT_OPTS
 expand SU_USER

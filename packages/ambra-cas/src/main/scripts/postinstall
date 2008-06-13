@@ -4,7 +4,7 @@
 PKG=ambra-cas
 
 # Register the mulgara service
-/sbin/chkconfig --add ambra_cas
+/sbin/chkconfig --add ambra-cas
 
 # Create symbolic link in /usr/local/topaz
 LINK=/usr/local/topaz/$PKG
