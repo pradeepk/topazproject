@@ -39,37 +39,22 @@
    "dojo.provide(\"dojo.nls.ambra_xx\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.xx\");dijit.nls.loading.xx={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.xx\");dijit.nls.common.xx={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};dojo.provide(\"dojo.nls.ambra_ROOT\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.ROOT\");dijit.nls.loading.ROOT={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.ROOT\");dijit.nls.common.ROOT={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};dojo.provide(\"dojo.nls.ambra_en\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.en\");dijit.nls.loading.en={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.en\");dijit.nls.common.en={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};dojo.provide(\"dojo.nls.ambra_en-us\");dojo.provide(\"dijit.nls.loading\");dijit.nls.loading._built=true;dojo.provide(\"dijit.nls.loading.en_us\");dijit.nls.loading.en_us={\"loadingState\":\"Loading...\",\"errorState\":\"Sorry, an error occurred\"};dojo.provide(\"dijit.nls.common\");dijit.nls.common._built=true;dojo.provide(\"dijit.nls.common.en_us\");dijit.nls.common.en_us={\"buttonOk\":\"OK\",\"buttonCancel\":\"Cancel\",\"buttonSave\":\"Save\",\"itemClose\":\"Close\"};";
  
  // NOTE: the gmaven plugin provides AntBuilder in the scripting context
- if(!ant) ant = new AntBuilder()
+ if (!ant) ant = new AntBuilder()
 
  def fixDojoCore = { String fpath ->
    File f = new File(fpath)
-   StringBuilder sbuf = new StringBuilder(900000)
-   f.eachLine{ line -> 
-     sbuf.append(line)
-     sbuf.append(NL)
-   }
-   final String str = "setTimeout(dojo._scopeName + \".loaded();\", 0);";
-   int index = sbuf.indexOf(str)
-   if(index >= 0) {
-     sbuf.replace(index, index + str.length(), "/*AMBRA TWEAK*/setTimeout(dojo._scopeName + \".loaded();\", (dojo.isIE && typeof articlePage != 'undefined') ? 1000 : 0);/*END AMBRA TWEAK*/")
-     f.delete();
-     f.write(sbuf.toString());
-   }
+   String fbuf = f.getText()
+   fbuf = fbuf.replaceFirst("setTimeout\\(dojo._scopeName ?\\+ ?\".loaded\\(\\);\", ?0\\);", 
+       "/*AMBRA TWEAK*/setTimeout(dojo._scopeName + \".loaded();\", (dojo.isIE && typeof articlePage != 'undefined') ? 1000 : 0);/*END AMBRA TWEAK*/")
+   f.write(fbuf)
  }
- 
+
  def injectLocales = { String fpath ->
    File f = new File(fpath)
-   StringBuilder sbuf = new StringBuilder(900000)
-   f.eachLine{ line -> 
-     sbuf.append(line)
-     sbuf.append(NL)
-   }
-   int index = sbuf.lastIndexOf('dojo.i18n._preloadLocalizations')
-   if(index >= 0) {
-     sbuf.insert(index, locales)
-     f.delete();
-     f.write(sbuf.toString());
-   }
+   String fbuf = f.getText()
+   int index = fbuf.lastIndexOf('dojo.i18n._preloadLocalizations')
+   if (index >= 0)
+     f.write(fbuf.substring(0, index) + locales + fbuf.substring(index))
  }
  
  // dojo build settings 
