@@ -113,9 +113,9 @@ public class ItqlStore extends AbstractTripleStore {
 
     // for every model create an insert statement
     for (String m : mappersByModel.keySet()) {
-      StringBuilder insert = isc.inserts.get(m);
+      StringBuilder insert = isc.getInserts().get(m);
       if (insert == null)
-        isc.inserts.put(m, insert = new StringBuilder(500));
+        isc.getInserts().put(m, insert = new StringBuilder(500));
 
       if (m.equals(cm.getModel())) {
         for (String type : cm.getTypes())
@@ -130,8 +130,8 @@ public class ItqlStore extends AbstractTripleStore {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
     StringBuilder insert = new StringBuilder(500);
 
-    for (String m : isc.inserts.keySet()) {
-      StringBuilder stmts = isc.inserts.get(m);
+    for (String m : isc.getInserts().keySet()) {
+      StringBuilder stmts = isc.getInserts().get(m);
       if (stmts.length() == 0)
         continue;
 
@@ -139,7 +139,7 @@ public class ItqlStore extends AbstractTripleStore {
              append("into <").append(getModelUri(m, isc)).append(">;");
     }
 
-    isc.inserts.clear();
+    isc.getInserts().clear();
 
     if (log.isDebugEnabled())
       log.debug("flush: " + insert);
@@ -944,7 +944,7 @@ public class ItqlStore extends AbstractTripleStore {
 
   private class ItqlStoreConnection extends AbstractConnection {
     private ItqlClient   itql;
-    public  Map<String, StringBuilder> inserts = new HashMap<String, StringBuilder>();
+    private Map<String, StringBuilder> inserts = new HashMap<String, StringBuilder>();
 
     public ItqlStoreConnection(Session sess, boolean readOnly) throws OtmException {
       super(sess);
@@ -959,6 +959,10 @@ public class ItqlStore extends AbstractTripleStore {
 
     public ItqlClient getItqlClient() throws OtmException {
       return itql;
+    }
+
+    public Map<String, StringBuilder> getInserts() {
+      return inserts;
     }
 
     public void close() {
