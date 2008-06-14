@@ -889,27 +889,48 @@ public class ItqlStore extends AbstractTripleStore {
 
   private ItqlClient getItqlClient(Map<String, String> aliases, boolean useCache)
       throws OtmException {
-    synchronized (conCache) {
-      ItqlClient res;
+    ItqlClient res = null;
 
-      if (useCache && !conCache.isEmpty()) {
-        res = conCache.remove(conCache.size() - 1);
-      } else {
-        try {
-          res = itqlFactory.createClient(serverUri);
-        } catch (Exception e) {
-          throw new OtmException("Error talking to '" + serverUri + "'", e);
-        }
+    while (useCache && (res = removeTopEntry()) != null) {
+      try {
+        res.ping();
+
+        if (log.isDebugEnabled())
+          log.debug("Got itql-client from connection-cache: " + res);
+        break;
+      } catch (IOException ioe) {
+        res.close();
+        if (log.isDebugEnabled())
+          log.debug("Discarding failed itql-client: " + res, ioe);
       }
+    }
 
-      if (aliases != null)
-        res.setAliases(aliases);
+    if (res == null) {
+      try {
+        res = itqlFactory.createClient(serverUri);
+        if (log.isDebugEnabled())
+          log.debug("Created new itql-client: " + res);
+      } catch (Exception e) {
+        throw new OtmException("Error talking to '" + serverUri + "'", e);
+      }
+    }
 
-      return res;
+    if (aliases != null)
+      res.setAliases(aliases);
+
+    return res;
+  }
+
+  private ItqlClient removeTopEntry() {
+    synchronized (conCache) {
+      return conCache.isEmpty() ? null : conCache.remove(conCache.size() - 1);
     }
   }
 
   private void returnItqlClient(ItqlClient itql) {
+    if (log.isDebugEnabled())
+      log.debug("Returning itql-client to connection-cache: " + itql);
+
     synchronized (conCache) {
       conCache.add(itql);
     }
@@ -949,6 +970,7 @@ public class ItqlStore extends AbstractTripleStore {
     public ItqlStoreConnection(Session sess, boolean readOnly) throws OtmException {
       super(sess);
       itql = ItqlStore.this.getItqlClient(sess.getSessionFactory().listAliases(), true);
+      itql.clearLastError();
 
       try {
         enlistResource(readOnly ? itql.getReadOnlyXAResource() : itql.getXAResource());
@@ -966,7 +988,11 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     public void close() {
-      returnItqlClient(itql);
+      Exception e = itql.getLastError();
+      if (!(e instanceof IOException || e != null && e.getCause() instanceof IOException))
+        returnItqlClient(itql);
+      else
+        itql.close();
       itql = null;
     }
   }
