@@ -190,6 +190,18 @@ abstract class TIClient implements ItqlClient {
     return a;
   }
 
+  public void ping() throws IOException {
+    try {
+      if (!con.getSession().ping()) {
+        lastErr = new IOException("Ping returned falsed");
+        throw (IOException) lastErr;
+      }
+    } catch (QueryException qe) {
+      lastErr = qe;
+      throw (IOException) new IOException("Error pinging server").initCause(qe);
+    }
+  }
+
   public Exception getLastError() {
     return lastErr;
   }

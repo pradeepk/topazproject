@@ -276,6 +276,18 @@ public class SoapClient implements ItqlClient {
     return new HashMap<String, String>(aliases);
   }
 
+  public void ping() throws IOException {
+    try {
+      interpreter.executeQueryToString("");
+    } catch (ItqlInterpreterException iie) {
+      lastError = iie;
+      throw (IOException) new IOException("Error pinging server").initCause(iie);
+    } catch (RemoteException e) {
+      lastError = e;
+      throw e;
+    }
+  }
+
   public Exception getLastError() {
     return lastError;
   }

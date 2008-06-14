@@ -163,6 +163,9 @@ abstract class IIBClient implements ItqlClient {
     return a;
   }
 
+  public void ping() {
+  }
+
   public Exception getLastError() {
     return iib.getLastError();
   }

@@ -106,6 +106,13 @@ public interface ItqlClient {
   public Map<String, String> getAliases();
 
   /**
+   * Test if the connection is still alive and valid.
+   *
+   * @throws IOException if the connection has failed.
+   */
+  public void ping() throws IOException;
+
+  /**
    * Returns the last error from a mulgara operation.
    * 
    * @return the error or null
