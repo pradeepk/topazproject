@@ -107,16 +107,18 @@ public class FetchObjectAction extends BaseActionSupport {
 
   private void setOutputStreamAndAttributes(final Representation rep) throws IOException {
     inputByteArray = rep.getBody();
+
     contentType = rep.getContentType();
     if (contentType == null)
       contentType = "application/octet-stream";
+
     lastModified = rep.getLastModified();
     if (lastModified == null)
       lastModified = rep.getObject().getDublinCore().getDate();
     if (lastModified == null)
       log.warn("Missing modification date for " + uri);
-    final String fileExt = getFileExtension(contentType);
-    contentDisposition = getContentDisposition(fileExt);
+
+    contentDisposition = getContentDisposition(getFileExtension(contentType));
   }
 
   private String getContentDisposition(final String fileExt) {
