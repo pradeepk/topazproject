@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.article.service.FetchArticleService;
+import org.plos.cache.Cache;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.ObjectInfo;
 import org.plos.models.Trackback;
@@ -44,7 +46,9 @@ import org.plos.web.VirtualJournalContext;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.query.Results;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 
@@ -60,6 +64,7 @@ import org.apache.roller.util.LinkbackExtractor;
 public class TrackbackAction extends BaseActionSupport {
 
   private static final Log log = LogFactory.getLog(TrackbackAction.class);
+  private static final String TRACK_BACKS_KEY = "Trackbacks-";
   private int error = 0;
   private String errorMessage = "";
   private String title;
@@ -71,6 +76,7 @@ public class TrackbackAction extends BaseActionSupport {
   private List<Trackback> trackbackList;
   private VirtualJournalContext journalContext;
   private ObjectInfo articleObj;
+  private Cache articleAnnotationCache;
 
   private FetchArticleService fetchArticleService;
   private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
@@ -143,6 +149,7 @@ public class TrackbackAction extends BaseActionSupport {
       tb.setCreated(new Date());
 
       session.saveOrUpdate(tb);
+      articleAnnotationCache.remove(TRACK_BACKS_KEY +  trackbackId);
       inserted = true;
     }
 
@@ -212,20 +219,38 @@ public class TrackbackAction extends BaseActionSupport {
   }
 
   private String getTrackbacks (final boolean getBodies) {
-    if (log.isDebugEnabled()) {
-      log.debug("retrieving trackbacks for: " + trackbackId);
+    List<String> ids = articleAnnotationCache.get(TRACK_BACKS_KEY  + trackbackId, -1,
+            new Cache.SynchronizedLookup<List<String>, OtmException>(trackbackId.intern()) {
+              public List<String> lookup() throws OtmException {
+                return getIds();
+              }
+            });
+
+    trackbackList = new ArrayList<Trackback>(ids.size());
+
+    for (String id : ids) {
+      Trackback t = session.get(Trackback.class, id);
+      trackbackList.add(t);
+
+      if (getBodies)
+        t.getBlog_name(); // for lazy load
     }
 
-    trackbackList = session
-      .createCriteria(Trackback.class)
-      .add(Restrictions.eq("annotates", trackbackId))
-      .addOrder(Order.desc("created"))
-      .list();
-
-    if (getBodies)
-      for (Trackback t : trackbackList)
-         t.getBlog_name(); // for lazy load
     return SUCCESS;
+  }
+
+  private List<String> getIds() throws OtmException {
+    if (log.isDebugEnabled())
+      log.debug("retrieving trackbacks for: " + trackbackId);
+
+    List<String> ids = new ArrayList<String>();
+    Results r = session.createQuery("select t.id, t.created created from Trackback t where "
+       + "t.annotates = :id order by created desc;").setParameter("id", trackbackId).execute();
+
+    while (r.next())
+      ids.add(r.getString(0));
+
+    return ids;
   }
 
   private String returnError (String errMsg) {
@@ -343,6 +368,15 @@ public class TrackbackAction extends BaseActionSupport {
   }
 
   /**
+   * @param articleAnnotationCache The Article(transformed)/ArticleInfo/Annotation/Citation cache
+   *   to use.
+   */
+  @Required
+  public void setArticleAnnotationCache(Cache articleAnnotationCache) {
+    this.articleAnnotationCache = articleAnnotationCache;
+  }
+
+  /**
    * @return Returns the trackbackList.
    */
   public List<Trackback> getTrackbackList() {
@@ -363,14 +397,14 @@ public class TrackbackAction extends BaseActionSupport {
     } catch (UnsupportedEncodingException ue) {
       escapedURI = articleURI;
     }
-    
+
     StringBuilder url = new StringBuilder(baseURL).append("/").append (myConfig.getString("ambra.platform.articleAction"))
     .append(escapedURI);
-    
+
     if (log.isDebugEnabled()) {
       log.debug("article url to find is: " + url.toString());
     }
-    
+
     return url.toString();
   }
 
