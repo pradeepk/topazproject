@@ -408,7 +408,7 @@
                   <version>${pom.parent.version}</version>
                   <type>zip</type>
                   <classifier>js</classifier>
-                  <outputDirectory>src/main/webapp/javascript</outputDirectory>
+                  <outputDirectory>${project.build.directory}/ambra/javascript</outputDirectory>
                 </artifactItem>
               </artifactItems>
               <includes>
@@ -430,7 +430,7 @@
                   <version>${pom.parent.version}</version>
                   <type>zip</type>
                   <classifier>js</classifier>
-                  <outputDirectory>src/main/webapp/css</outputDirectory>
+                  <outputDirectory>${project.build.directory}/ambra/css</outputDirectory>
                 </artifactItem>
               </artifactItems>
               <includes>
