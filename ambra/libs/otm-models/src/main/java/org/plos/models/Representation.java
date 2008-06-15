@@ -18,11 +18,16 @@
  */
 package org.plos.models;
 
+import java.util.Date;
+
 import org.topazproject.otm.Rdf;
+import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.event.PostLoadEventListener;
+import org.topazproject.otm.event.PreInsertEventListener;
 
 /**
  * This holds the information returned about a representation of an object.
@@ -30,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 @Entity(model = "ri", type = Rdf.topaz + "Representation")
-public class Representation extends Blob {
+public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
   @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/representation/")
   private String                                                           id;
   @Predicate(uri = Rdf.dc_terms + "identifier")
@@ -39,8 +44,12 @@ public class Representation extends Blob {
   private String                                                           contentType;
   @Predicate(uri = Rdf.topaz + "objectSize")
   private long                                                             size;
+  @Predicate(uri = Rdf.dc_terms + "modified", dataType = Rdf.xsd + "dateTime")
+  private Date                                                             lastModified;
   @Predicate(uri = Rdf.topaz + "hasRepresentation", inverse=true)
   private ObjectInfo                                                       object;
+
+  private transient boolean modified = true;
 
   /**
    * No argument constructor for OTM to instantiate.
@@ -77,6 +86,7 @@ public class Representation extends Blob {
    */
   public void setName(String name) {
     this.name = name;
+    modified = true;
   }
 
   /**
@@ -95,6 +105,7 @@ public class Representation extends Blob {
    */
   public void setObject(ObjectInfo object) {
     this.object = object;
+    modified = true;
   }
 
   /**
@@ -113,6 +124,7 @@ public class Representation extends Blob {
    */
   public void setContentType(String contentType) {
     this.contentType = contentType;
+    modified = true;
   }
 
   /**
@@ -131,6 +143,26 @@ public class Representation extends Blob {
    */
   public void setSize(long size) {
     this.size = size;
+    modified = true;
+  }
+
+  /**
+   * Return the last-modified date.
+   *
+   * @return the last-modified date
+   */
+  public Date getLastModified() {
+    return lastModified;
+  }
+
+  /**
+   * Set the last-modified date.
+   *
+   * @param lastModified the date the object was last modified
+   * @see #getModified
+   */
+  public void setLastModified(Date lastModified) {
+    this.lastModified = lastModified;
   }
 
   /**
@@ -149,5 +181,22 @@ public class Representation extends Blob {
    */
   public void setId(String id) {
     this.id = id;
+    modified = true;
+  }
+
+  public void setBody(byte[] body) {
+    super.setBody(body);
+    modified = true;
+  }
+
+  public void onPostLoad(Session session, Object object) {
+    modified = false;
+  }
+
+  public void onPreInsert(Session session, Object object) {
+    if (modified) {
+      setLastModified(new Date());
+      modified = false;
+    }
   }
 }

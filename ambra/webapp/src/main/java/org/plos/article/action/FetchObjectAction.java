@@ -110,7 +110,9 @@ public class FetchObjectAction extends BaseActionSupport {
     contentType = rep.getContentType();
     if (contentType == null)
       contentType = "application/octet-stream";
-    lastModified = rep.getObject().getDublinCore().getDate();
+    lastModified = rep.getLastModified();
+    if (lastModified == null)
+      lastModified = rep.getObject().getDublinCore().getDate();
     if (lastModified == null)
       log.warn("Missing modification date for " + uri);
     final String fileExt = getFileExtension(contentType);
