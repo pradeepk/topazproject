@@ -209,7 +209,6 @@ function validateNewComment() {
   
   _annotationForm.noteType.value = _annotationForm.cNoteType.value;
   
-  _ldc.show();
   dojo.xhrPost({
      url: _namespace + "/annotation/secure/createAnnotationSubmit.action",
      handleAs:'json',
@@ -258,7 +257,6 @@ function validateNewComment() {
          ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue);
          ambra.formUtil.enableFormFields(_annotationForm);
        }
-       _ldc.hide();
      }//load
   });
 }  
@@ -432,7 +430,7 @@ dojo.addOnLoad(function() {
     }
   });
 
-  dojo.connect(_annotationForm.cTitle, "onblur", function () { 
+  dojo.connect(_annotationForm.cTitle, "blur", function () { 
     var fldTitle = _annotationForm.commentTitle;
     if(_annotationForm.cTitle.value != "" && _annotationForm.cTitle.value != _titleCue) {
       fldTitle.value = _annotationForm.cTitle.value;
@@ -443,11 +441,11 @@ dojo.addOnLoad(function() {
     ambra.formUtil.textCues.on(_annotationForm.cTitle, _titleCue); 
   });
   
-  dojo.connect(_annotationForm.cArea, "onfocus", function () {
+  dojo.connect(_annotationForm.cArea, "focus", function () {
     ambra.formUtil.textCues.off(_annotationForm.cArea, _commentCue);
   });
 
-  dojo.connect(_annotationForm.cArea, "onchange", function () {
+  dojo.connect(_annotationForm.cArea, "change", function () {
     var fldTitle = _annotationForm.comment;
     if(_annotationForm.cArea.value != "" && _annotationForm.cArea.value != _commentCue) {
       fldTitle.value = _annotationForm.cArea.value;
@@ -457,7 +455,7 @@ dojo.addOnLoad(function() {
     }
   });
   
-  dojo.connect(_annotationForm.cArea, "onblur", function () {
+  dojo.connect(_annotationForm.cArea, "blur", function () {
     var fldTitle = _annotationForm.comment;
     if(_annotationForm.cArea.value != "" && _annotationForm.cArea.value != _commentCue) {
       fldTitle.value = _annotationForm.cArea.value;
@@ -466,7 +464,7 @@ dojo.addOnLoad(function() {
       fldTitle.value = "";
     }
     ambra.formUtil.textCues.on(_annotationForm.cArea, _commentCue); 
-    //ambra.formUtil.checkFieldStrLength(_annotationForm.cArea);
+    ambra.formUtil.checkFieldStrLength(_annotationForm.cArea, 500);
   });
   
   /*
@@ -490,12 +488,12 @@ dojo.addOnLoad(function() {
   });
   */
   
-  dojo.connect(dojo.byId("btn_post"), "onclick", function(e) {
+  dojo.connect(dojo.byId("btn_post"), "click", function(e) {
     validateNewComment();
     e.preventDefault();
   });
 
-  dojo.connect(dojo.byId("btn_cancel"), "onclick", function(e) {
+  dojo.connect(dojo.byId("btn_cancel"), "click", function(e) {
     ambra.domUtil.removeChildren(dojo.byId('submitMsg'));
     _annotationDlg.hide();
     ambra.formUtil.enableFormFields(_annotationForm);
@@ -530,11 +528,8 @@ dojo.addOnLoad(function() {
   _commentDlg.setTipDown(dojo.byId(commentConfig.tipDownDiv));
   _commentDlg.setTipUp(dojo.byId(commentConfig.tipUpDiv));
   
-  dojo.connect(commentDlgClose, 'onclick', function(e) {
+  dojo.connect(commentDlgClose, 'click', function(e) {
     _commentDlg.hide();
-    ambra.displayComment.mouseoutComment(ambra.displayComment.target);
-  });
-  dojo.connect(commentDlgClose, 'onblur', function(e) {
     ambra.displayComment.mouseoutComment(ambra.displayComment.target);
   });
   
@@ -547,11 +542,8 @@ dojo.addOnLoad(function() {
   _commentMultiDlg.setTipDown(dojo.byId(multiCommentConfig.tipDownDiv));
   _commentMultiDlg.setTipUp(dojo.byId(multiCommentConfig.tipUpDiv));
   
-  dojo.connect(popupCloseMulti, 'onclick', function(e) {
+  dojo.connect(popupCloseMulti, 'click', function(e) {
     _commentMultiDlg.hide();
-    ambra.displayComment.mouseoutComment(ambra.displayComment.target);
-  });
-  dojo.connect(popupCloseMulti, 'onblur', function(e) {
     ambra.displayComment.mouseoutComment(ambra.displayComment.target);
   });
   

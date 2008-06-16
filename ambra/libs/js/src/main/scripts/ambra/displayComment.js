@@ -512,17 +512,13 @@ ambra.displayComment = {
     }
     else
       container1.parentNode.style.height = (container2Mb + addPx) + "px";
-      
-    // TODO jpk dojo1.1 - do we need this?
-    //_commentMultiDlg.placeModalDialog();
+      // TODO jpk dojo1.1 - do we need this?
+      //_commentMultiDlg.placeModalDialog();
   }
 }
 
 function getComment(obj) {
-    _ldc.show();
-    
     var targetUri = ambra.domUtil.getDisplayId(obj);
-          
     var uriArray = targetUri.split(",");
 
     if (uriArray.length > 1) {
@@ -571,7 +567,6 @@ function getComment(obj) {
          }
          else {
          	 var isMulti = (uriArray.length > 1);
-         	 var dlg;
            if(isMulti) {             
              ambra.displayComment.buildDisplayViewMultiple(jsonObj, targetContainer.childNodes.length, targetContainer, targetContainerSecondary);
              
@@ -582,23 +577,13 @@ function getComment(obj) {
 
                ambra.displayComment.adjustDialogHeight(targetContainer, targetContainerSecondary, 50);
              }
-             dlg = _commentMultiDlg;
            }
            else {
              ambra.displayComment.buildDisplayView(jsonObj);
              ambra.displayComment.mouseoverComment(ambra.displayComment.target);
              _commentDlg.show();
-             dlg = _commentDlg;
            }
-	         // ensure the dialog is scrolled into view
-           // TODO jpk dojo1.1 - we are now doing this in RegionalDialog.show()
-			     /*
-           if(dlg && dlg.domNode) {
-             window.scrollTo(0, ambra.domUtil.getCurrentOffset(dlg.domNode).top);
-			     }
-           */
          }
-         _ldc.hide();
         }
        });
     }

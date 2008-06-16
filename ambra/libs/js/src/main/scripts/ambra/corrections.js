@@ -199,9 +199,12 @@ ambra.corrections = {
     e.preventDefault();
     var fcn = ambra.corrections._findFrmlCrctnByAnnId(annId);
     if(fcn) {
-	    var annAnchor = ambra.corrections._getAnnAnchor(fcn);
-	    if(!annAnchor) throw 'Unable to resolve annotation anchor!';
-	    ambra.displayComment.show(annAnchor);
-	  }
+      var annAnchor = ambra.corrections._getAnnAnchor(fcn);
+      if(!annAnchor) throw 'Unable to resolve annotation anchor!';
+      ambra.displayComment.show(annAnchor);
+      // ensure the dialog is scrolled into view
+      window.scrollTo(0, ambra.domUtil.getCurrentOffset(fcn).top);
+    }
+    return false;
   }
 }

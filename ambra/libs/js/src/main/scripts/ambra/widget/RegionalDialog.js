@@ -29,6 +29,9 @@ dojo.declare(
 	"ambra.widget.RegionalDialogBase", 
 	[dijit.Dialog],
 {
+  duration: 250,
+  refocus: false,
+
 	_changeTipDirection: function(isTipDown, xShift) {
 		var dTip = this.tipDownNode;
 		var dTipu = this.tipUpNode;
@@ -183,24 +186,9 @@ dojo.declare(
 {
   templatePath: dojo.moduleUrl('ambra.widget', 'templates/RegionalDialog.html'),
 	
-  /*
-  postMixInProperties: function(){
-		//ambra.widget.RegionalDialog.superclass.postMixInProperties.apply(this, arguments);
-    this.inherited(arguments);
-	},
-  
-	postCreate: function(){
-		//ambra.widget.RegionalDialog.superclass.postCreate.apply(this, arguments);
-		//ambra.widget.RegionalDialogBase.prototype.postCreate.apply(this, arguments);
-    this.inherited(arguments);
-	},
-  */
-  
   show: function() {
     console.debug('RegionalDialog.show()');
     this.inherited(arguments);
-    window.scrollTo(0, ambra.domUtil.getCurrentOffset(this.domNode).top);
-    this.placeModalDialog();
 	},
   
   // onscroll hook
@@ -212,7 +200,6 @@ dojo.declare(
   onLoad: function(){
     console.debug('RegionalDialog.onLoad()');
     this.inherited(arguments);
-    this.placeModalDialog();
   },
   
 	setMarker: function(node) {

@@ -859,9 +859,9 @@ ambra.annotation = {
 	  //link.id = markerId;
 	  link.title = 'Click to preview this note';
 	  link.displayId = "";
-	  link.onclick = function() { ambra.displayComment.show(this); }
-	  link.onmouseover = function() { ambra.displayComment.mouseoverComment(this); }
-	  link.onmouseout = function() { ambra.displayComment.mouseoutComment(this); }
+	  link.onclick = function() { ambra.displayComment.show(this); return false; }
+	  link.onmouseover = function() { ambra.displayComment.mouseoverComment(this); return false; }
+	  link.onmouseout = function() { ambra.displayComment.mouseoutComment(this); return false; }
 	  link.appendChild(document.createTextNode('1'));
 
     // Insertion for IE
