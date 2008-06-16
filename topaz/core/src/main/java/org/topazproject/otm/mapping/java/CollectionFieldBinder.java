@@ -217,7 +217,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
         return loaded;
       }
       public RawFieldData getRawFieldData() {
-        return new RawFieldData() {
+        return loaded ? null : new RawFieldData() {
           public List<String> getValues() { return values; }
           public Map<String, Set<String>> getTypeLookAhead() { return types; }
         };

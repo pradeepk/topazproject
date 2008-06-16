@@ -32,6 +32,6 @@ public class SampleEmbeddable {
 
   public String foo;
   public String bar;
-  public Set<String> set = new HashSet<String>();
+  public Set<Annotation> set = new HashSet<Annotation>();
 
 }

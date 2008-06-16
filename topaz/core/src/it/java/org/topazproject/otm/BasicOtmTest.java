@@ -32,6 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
@@ -113,7 +114,7 @@ public class BasicOtmTest extends AbstractOtmTest {
 
           a.foobar.foo   = "FOO";
           a.foobar.bar = "BAR";
-          a.foobar.set.add("FOO-BAR");
+          a.foobar.set.add(a);
         }
       });
     doInSession(new Action() {
@@ -132,8 +133,16 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals(blob, a.getBody().getBlob());
           assertEquals("FOO", a.foobar.foo);
           assertEquals("BAR", a.foobar.bar);
+
+
+          Binder b = session.getSessionFactory().getClassMetadata(Annotation.class)
+                                     .getMapperByName("foobar.set").getBinder(session);
+          assertFalse(b.isLoaded(a));
+          assertNotNull(b.getRawFieldData(a));
           assertEquals(1, a.foobar.set.size());
-          assertEquals("FOO-BAR", a.foobar.set.iterator().next());
+          assertEquals(a, a.foobar.set.iterator().next());
+          assertTrue(b.isLoaded(a));
+          assertNull(b.getRawFieldData(a));
 
           session.delete(a);
 
