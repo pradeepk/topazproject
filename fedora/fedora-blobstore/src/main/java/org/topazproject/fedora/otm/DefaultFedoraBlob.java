@@ -135,14 +135,14 @@ public class DefaultFedoraBlob implements FedoraBlob {
 
               newPid = apim.ingest(getFoxml(ref), "foxml1.0", "created");
               op = null;
-            } catch (RemoteException re) {
+            } catch (Exception e) {
               if (log.isDebugEnabled())
-                log.debug("ingest failed: ", re);
+                log.debug("ingest failed: ", e);
 
-              if (isObjectExistsException(re))
+              if (isObjectExistsException(e))
                 op = INGEST_OP.AddDs;
               else
-                throw re;
+                throw e;
             }
             break;
 
@@ -154,16 +154,16 @@ public class DefaultFedoraBlob implements FedoraBlob {
               newDs = apim.addDatastream(pid, dsId, new String[0], getDatastreamLabel(), false,
                                          getContentType(), null, ref, "M", "A", "created");
               op = null;
-            } catch (RemoteException re) {
+            } catch (Exception e) {
               if (log.isDebugEnabled())
-                log.debug("add datastream failed: ", re);
+                log.debug("add datastream failed: ", e);
 
-              if (isNoSuchObjectException(re))
+              if (isNoSuchObjectException(e))
                 op = INGEST_OP.AddObj;
-              else if (isDatastreamExistsException(re))
+              else if (isDatastreamExistsException(e))
                 op = INGEST_OP.ModDs;
               else
-                throw re;
+                throw e;
             }
             break;
 
@@ -176,16 +176,16 @@ public class DefaultFedoraBlob implements FedoraBlob {
                                                false, getContentType(), null, ref, "A", "updated",
                                                false);
               op = null;
-            } catch (RemoteException re) {
+            } catch (Exception e) {
               if (log.isDebugEnabled())
-                log.debug("ds-modify failed: ", re);
+                log.debug("ds-modify failed: ", e);
 
-              if (isNoSuchObjectException(re))
+              if (isNoSuchObjectException(e))
                 op = INGEST_OP.AddObj;
-              else if (isNoSuchDatastreamException(re))
+              else if (isNoSuchDatastreamException(e))
                 op = INGEST_OP.AddDs;
               else
-                throw re;
+                throw e;
             }
             break;
 
@@ -232,23 +232,27 @@ public class DefaultFedoraBlob implements FedoraBlob {
   }
 
   /* WARNING: this is fedora version specific! */
-  private static boolean isNoSuchObjectException(RemoteException re) {
-    return re.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException");
+  private static boolean isNoSuchObjectException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException");
   }
 
   /* WARNING: this is fedora version specific! */
-  private static boolean isNoSuchDatastreamException(RemoteException re) {
-    return re.getMessage().startsWith("java.lang.Exception: Uncaught exception from Fedora Server");
+  private static boolean isNoSuchDatastreamException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("java.lang.Exception: Uncaught exception from Fedora Server");
   }
 
   /* WARNING: this is fedora version specific! */
-  private static boolean isObjectExistsException(RemoteException re) {
-    return re.getMessage().startsWith("fedora.server.errors.ObjectExistsException");
+  private static boolean isObjectExistsException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("fedora.server.errors.ObjectExistsException");
   }
 
   /* WARNING: this is fedora version specific! */
-  private static boolean isDatastreamExistsException(RemoteException re) {
-    return re.getMessage().startsWith("fedora.server.errors.GeneralException: A datastream already exists");
+  private static boolean isDatastreamExistsException(Exception e) {
+    return e instanceof RemoteException &&
+           e.getMessage().startsWith("fedora.server.errors.GeneralException: A datastream already exists");
   }
 
   /**
@@ -292,53 +296,6 @@ public class DefaultFedoraBlob implements FedoraBlob {
   }
 
   /**
-   * Checks the existence of this data-stream in Fedora.
-   *
-   * @param con the connection to Fedora
-   *
-   * @return true if it exists, false otherwise
-   *
-   * @throws OtmException on an error
-   */
-  protected boolean existsDs(FedoraConnection con) throws OtmException {
-    if (getDatastream(con) == null)
-      return false;
-
-    // XXX: Bug in Fedora. Check if the object really exists
-    URL location = con.getDatastreamLocation(pid, dsId);
-
-    try {
-      location.openStream().close();
-
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  /**
-   * Checks the existenece of this pid in Fedora.
-   *
-   * @param con the connection to Fedora
-   *
-   * @return true if it exists, false otherwise
-   *
-   * @throws OtmException on an error
-   */
-  protected boolean existsPid(FedoraConnection con) throws OtmException {
-    try {
-      Datastream[] streams = con.getAPIM().getDatastreams(pid, null, null);
-
-      return (streams != null) && (streams.length != 0);
-    } catch (Exception e) {
-      if (ignoreException(e))
-        return false;
-
-      throw new OtmException("Error while checking existence of pid: " + pid, e);
-    }
-  }
-
-  /**
    * Gets the data-stream meta object from Fedora.
    *
    * @param con the Fedora APIM stub to use
@@ -352,27 +309,11 @@ public class DefaultFedoraBlob implements FedoraBlob {
     try {
       return con.getAPIM().getDatastream(pid, dsId, null);
     } catch (Exception e) {
-      if (ignoreException(e))
+      if (isNoSuchObjectException(e) || isNoSuchDatastreamException(e))
         return null;
 
       throw new OtmException("Error while getting the data-stream for " + pid + "/" + dsId, e);
     }
-  }
-
-  private boolean ignoreException(Exception e) {
-    //XXX: "Uncaught exception" is a hack to work around a timing related bug in Fedora. After
-    //     a purge, for a short window things are a bit inconsitent in Fedora. We'll ignore this
-    //     and treat this as the object does not exist.
-    if ((e.getMessage().indexOf("Uncaught exception from Fedora Server") >= 0)
-         || (e.getMessage().indexOf("fedora.server.errors.ObjectNotInLowlevelStorageException") >= 0)) {
-      if (log.isDebugEnabled())
-        log.debug("Ignoring this error from fedora as due to non existent datastream " + pid
-                  + "/" + dsId, e);
-
-      return true;
-    }
-
-    return false;
   }
 
   /**
@@ -391,7 +332,7 @@ public class DefaultFedoraBlob implements FedoraBlob {
     try {
       return canPurgeObject(con, con.getAPIM().getDatastreams(pid, null, null));
     } catch (Exception e) {
-      if (e instanceof RemoteException && isNoSuchObjectException((RemoteException) e)) {
+      if (isNoSuchObjectException(e)) {
         if (log.isDebugEnabled())
           log.debug("Object " + blobId + " at " + pid + " doesn't exist in blob-store", e);
         return null;
@@ -453,7 +394,7 @@ public class DefaultFedoraBlob implements FedoraBlob {
         apim.purgeDatastream(pid, dsId, null, "deleted", false);
       }
     } catch (Exception e) {
-      if (!(e instanceof RemoteException && isNoSuchObjectException((RemoteException) e)))
+      if (!isNoSuchObjectException(e))
         throw new OtmException("Purge failed", e);
 
       if (log.isDebugEnabled())
