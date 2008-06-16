@@ -411,9 +411,7 @@
                   <outputDirectory>${project.build.directory}/ambra/javascript</outputDirectory>
                 </artifactItem>
               </artifactItems>
-              <includes>
-                **\/dojo\/dojo\/**\/*.*
-              </includes>
+              <includes>**\/dojo\/dojo\/**\/*.*</includes>
             </configuration>
           </execution>
           <execution>
@@ -433,9 +431,7 @@
                   <outputDirectory>${project.build.directory}/ambra/css</outputDirectory>
                 </artifactItem>
               </artifactItems>
-              <includes>
-                **\/themes\/**\/*.*
-              </includes>
+              <includes>**\/themes\/**\/*.*</includes>
             </configuration>
           </execution>
         </executions>
