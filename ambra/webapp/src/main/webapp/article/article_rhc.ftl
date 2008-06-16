@@ -113,7 +113,7 @@
       <h6>Start a discussion on this article</h6>
       <ol>
         <#if Session[freemarker_config.userAttributeKey]?exists>
-            <li><a href="#" id="addAnnotation" class="addannotation icon" title="First select text, then click here" onmousedown="ambra.annotation.createAnnotationOnMouseDown();">Add a note to the text</a></li>
+            <li><a href="#" id="addAnnotation" class="addannotation icon" title="First select text, then click here" onmousedown="createAnnotationOnMouseDown();">Add a note to the text</a></li>
         <#else>
             <li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation icon">Add a note to the text</a></li>
         </#if>
