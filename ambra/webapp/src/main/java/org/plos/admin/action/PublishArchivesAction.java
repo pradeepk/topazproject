@@ -94,6 +94,16 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
     List<String> msgs = getDocumentManagementService().delete(articlesToDelete);
     for (String msg : msgs)
       addActionMessage(msg);
+
+    for (String article : articlesToDelete) {
+      try {
+        getDocumentManagementService().revertIngestedQueue(article);
+      } catch (Exception ioe) {
+        log.warn("Error cleaning up spool directories for '" + article +
+                 "' - manual cleanup required", ioe);
+        addActionMessage("Failed to move " + article + " back to ingestion queue: " + ioe);
+      }
+    }
   }
 
   /**
