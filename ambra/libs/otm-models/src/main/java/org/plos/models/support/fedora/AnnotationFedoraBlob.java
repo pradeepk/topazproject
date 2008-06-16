@@ -25,6 +25,7 @@ import org.plos.models.AnnotationBlob;
 import org.plos.models.ReplyBlob;
 
 import org.topazproject.fedora.otm.DefaultFedoraBlob;
+import org.topazproject.fedora.otm.FedoraConnection;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
@@ -102,5 +103,16 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
 
     throw new Error("Expecting " + AnnotationBlob.class + " or " + ReplyBlob.class
                     + " only. Instead found " + c);
+  }
+
+  protected INGEST_OP getFirstIngestOp() {
+    return INGEST_OP.AddObj;
+  }
+
+  /**
+   * @return true, because we only use a single datastream per object
+   */
+  protected Boolean canPurgeObject(FedoraConnection con) {
+    return true;
   }
 }

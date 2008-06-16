@@ -25,6 +25,8 @@ import java.io.UnsupportedEncodingException;
 
 import java.net.URL;
 
+import java.rmi.RemoteException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +65,8 @@ public class DefaultFedoraBlob implements FedoraBlob {
   private final String        blobId;
   private final String        pid;
   private final String        dsId;
+
+  protected enum INGEST_OP { AddObj, AddDs, ModDs };
 
   /**
    * Creates a new DefaultFedoraBlob object.
@@ -120,24 +124,80 @@ public class DefaultFedoraBlob implements FedoraBlob {
     try {
       String ref = upld.upload(blob);
 
-      if (existsDs(con)) {
-        if (log.isDebugEnabled())
-          log.debug("Modifying data-stream(by reference) '" + dsId + "' for '" + pid + "'");
+      INGEST_OP op = getFirstIngestOp();
+      int maxIter = 3;
+      while (op != null && maxIter-- > 0) {
+        switch (op) {
+          case AddObj:
+            try {
+              if (log.isDebugEnabled())
+                log.debug("Ingesting '" + pid + "' with data-stream '" + dsId + "'");
 
-        apim.modifyDatastreamByReference(pid, dsId, new String[0], getDatastreamLabel(), false,
-                                         getContentType(), null, ref, "A", "updated", false);
-      } else if (existsPid(con)) {
-        if (log.isDebugEnabled())
-          log.debug("Adding data-stream '" + dsId + "' for '" + pid + "'");
+              newPid = apim.ingest(getFoxml(ref), "foxml1.0", "created");
+              op = null;
+            } catch (RemoteException re) {
+              if (log.isDebugEnabled())
+                log.debug("ingest failed: ", re);
 
-        newDs = apim.addDatastream(pid, dsId, new String[0], getDatastreamLabel(), false,
-                                   getContentType(), null, ref, "M", "A", "created");
-      } else {
-        if (log.isDebugEnabled())
-          log.debug("Ingesting '" + pid + "' with data-stream '" + dsId + "'");
+              if (isObjectExistsException(re))
+                op = INGEST_OP.AddDs;
+              else
+                throw re;
+            }
+            break;
 
-        newPid = apim.ingest(getFoxml(ref), "foxml1.0", "created");
+          case AddDs:
+            try {
+              if (log.isDebugEnabled())
+                log.debug("Adding data-stream '" + dsId + "' for '" + pid + "'");
+
+              newDs = apim.addDatastream(pid, dsId, new String[0], getDatastreamLabel(), false,
+                                         getContentType(), null, ref, "M", "A", "created");
+              op = null;
+            } catch (RemoteException re) {
+              if (log.isDebugEnabled())
+                log.debug("add datastream failed: ", re);
+
+              if (isNoSuchObjectException(re))
+                op = INGEST_OP.AddObj;
+              else if (isDatastreamExistsException(re))
+                op = INGEST_OP.ModDs;
+              else
+                throw re;
+            }
+            break;
+
+          case ModDs:
+            try {
+              if (log.isDebugEnabled())
+                log.debug("Modifying data-stream(by reference) '" + dsId + "' for '" + pid + "'");
+
+              apim.modifyDatastreamByReference(pid, dsId, new String[0], getDatastreamLabel(),
+                                               false, getContentType(), null, ref, "A", "updated",
+                                               false);
+              op = null;
+            } catch (RemoteException re) {
+              if (log.isDebugEnabled())
+                log.debug("ds-modify failed: ", re);
+
+              if (isNoSuchObjectException(re))
+                op = INGEST_OP.AddObj;
+              else if (isNoSuchDatastreamException(re))
+                op = INGEST_OP.AddDs;
+              else
+                throw re;
+            }
+            break;
+
+          default:
+            throw new Error("Internal error: unexpected op " + op);
+        }
       }
+
+      if (op != null)
+        throw new OtmException("Loop detected: failed to ingest " + blobId + ", pid=" + pid +
+                               ", dsId=" + dsId + ", op=" + op);
+
     } catch (Exception e) {
       if (e instanceof OtmException)
         throw (OtmException) e;
@@ -155,6 +215,40 @@ public class DefaultFedoraBlob implements FedoraBlob {
 
     if (log.isDebugEnabled())
       log.debug("Wrote " + blobId + " as " + pid + "/" + dsId);
+  }
+
+  /**
+   * Get the first operation to try when ingesting blob. Subclasses that know something of
+   * their use can override this to reduce the number of calls made to fedora. E.g. if some class
+   * never has it's contents updated and only ever has one datastream per object, then it would
+   * return <var>AddObj</var> here.
+   *
+   * <p>By default this returns <var>AddDs</var>.
+   *
+   * @return the first operation to try
+   */
+  protected INGEST_OP getFirstIngestOp() {
+    return INGEST_OP.AddDs;
+  }
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isNoSuchObjectException(RemoteException re) {
+    return re.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException");
+  }
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isNoSuchDatastreamException(RemoteException re) {
+    return re.getMessage().startsWith("java.lang.Exception: Uncaught exception from Fedora Server");
+  }
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isObjectExistsException(RemoteException re) {
+    return re.getMessage().startsWith("fedora.server.errors.ObjectExistsException");
+  }
+
+  /* WARNING: this is fedora version specific! */
+  private static boolean isDatastreamExistsException(RemoteException re) {
+    return re.getMessage().startsWith("fedora.server.errors.GeneralException: A datastream already exists");
   }
 
   /**
@@ -288,34 +382,49 @@ public class DefaultFedoraBlob implements FedoraBlob {
    *
    * @param con the connection handle
    *
-   * @return true if it can be purged, false otherwise
+   * @return true if it can be purged, false if only the datastream should be purged, or null
+   *         if nothing should be done (e.g. because the object doesn't exist in the first place)
    *
    * @throws OtmException on an error
    */
-  protected boolean canPurgeObject(FedoraConnection con)
-                            throws OtmException {
+  protected Boolean canPurgeObject(FedoraConnection con) throws OtmException {
     try {
       return canPurgeObject(con, con.getAPIM().getDatastreams(pid, null, null));
     } catch (Exception e) {
+      if (e instanceof RemoteException && isNoSuchObjectException((RemoteException) e)) {
+        if (log.isDebugEnabled())
+          log.debug("Object " + blobId + " at " + pid + " doesn't exist in blob-store", e);
+        return null;
+      }
+
       throw new OtmException("Error in obtaining the list of data-streams on " + pid, e);
     }
   }
 
   /**
    * Checks if the data-streams on this object are significant enough so as not to purge
-   * this. In general, if the only data-stream remaining is the "DC", then the object can be
-   * purged. Override it in sub-classes to handle app specific processing.
+   * this. In general, if the only data-stream remaining is the "DC", "RELS-EXT", or current
+   * datastream, then the whole object can be purged; otherwise only the datastream is purged.
+   * Override it in sub-classes to handle app specific processing.
    *
    * @param con the connection handle
    * @param ds the current list of data-streams
    *
-   * @return if the object can be purged, false otherwise
+   * @return true if it can be purged, false if only the datastream should be purged, or null
+   *         if nothing should be done (e.g. because the object doesn't exist in the first place)
    *
    * @throws OtmException on an error
    */
-  protected boolean canPurgeObject(FedoraConnection con, Datastream[] ds)
-                            throws OtmException {
-    return (ds == null) || (ds.length == 0) || ((ds.length == 1) && "DC".equals(ds[0].getID()));
+  protected Boolean canPurgeObject(FedoraConnection con, Datastream[] ds) throws OtmException {
+    if (ds == null)
+      return true;
+
+    for (Datastream d : ds) {
+      if (!d.getID().equals("DC") && !d.getID().equals("RELS-EXT") && !d.getID().equals(dsId))
+        return false;
+    }
+
+    return true;
   }
 
   /*
@@ -325,21 +434,31 @@ public class DefaultFedoraBlob implements FedoraBlob {
     FedoraAPIM apim = con.getAPIM();
 
     try {
-      if (existsDs(con)) {
+      Boolean canPurgeObject = canPurgeObject(con);
+      if (canPurgeObject == null) {
+        if (log.isDebugEnabled())
+          log.debug("Not purging Object or datastram for " + blobId + " at " + pid + "/" + dsId);
+        return;
+      }
+
+      if (canPurgeObject) {
+        if (log.isDebugEnabled())
+          log.debug("Purging Object " + blobId + " at " + pid + "/" + dsId);
+
+        apim.purgeObject(pid, "deleted", false);
+      } else {
         if (log.isDebugEnabled())
           log.debug("Purging Datastream " + blobId + " at " + pid + "/" + dsId);
 
         apim.purgeDatastream(pid, dsId, null, "deleted", false);
-
-        if (canPurgeObject(con)) {
-          if (log.isDebugEnabled())
-            log.debug("Purging Object " + blobId + " at " + pid + "/" + dsId);
-
-          apim.purgeObject(pid, "deleted", false);
-        }
       }
     } catch (Exception e) {
-      throw new OtmException("Purge failed", e);
+      if (!(e instanceof RemoteException && isNoSuchObjectException((RemoteException) e)))
+        throw new OtmException("Purge failed", e);
+
+      if (log.isDebugEnabled())
+        log.debug("Datastream " + blobId + " at " + pid + "/" + dsId +
+                  " doesn't exist in blob-store", e);
     }
   }
 
