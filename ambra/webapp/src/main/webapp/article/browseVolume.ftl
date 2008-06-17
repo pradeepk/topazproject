@@ -44,7 +44,7 @@
     
 <#if volumeInfos?exists>
   <#assign numThumbsPerRow = 6 />
-  <#assign numEmsPerRow = 17 />
+  <#assign numEmsPerRow = 20.1 />
   <#assign maxNumThumbs = 0 />
   <#list volumeInfos as volumeInfo>
     <#if (volumeInfo.issueInfos?size > maxNumThumbs)>
@@ -56,25 +56,26 @@
   
     <h2>All Issues</h2>
     <div class="ambraTabsContainer" style="height:${tabEmsContainerHeight}em;">
-    <div dojoType="dijit.layout.TabContainer" style="width:892px;">
-    <#list volumeInfos as volumeInfo>
+    <div dojoType="dijit.layout.TabContainer" style="height:100%; width:892px;">
+      <#list volumeInfos as volumeInfo>
       <div dojoType="dijit.layout.ContentPane" title="${volumeInfo.displayName}" id="${volumeInfo.displayName}">
-      <#list volumeInfo.issueInfos as issueInfo>
+        <#list volumeInfo.issueInfos as issueInfo>
         <@s.url id="issueURL" action="browseIssue" namespace="/article" issue="${issueInfo.id}" includeParams="none"/>
         <div class="thumbnail">
 <#if issueInfo.imageArticle?exists>
           <@s.url id="issueImgURL" action="fetchObject" namespace="/article" 
                   uri="${issueInfo.imageArticle}.g001" representation="PNG_S" includeParams="none"/>
           <a href="${issueURL}"><img alt="Issue Image" src="${issueImgURL}" width="120" height="120"/></a>
-          <div class="clearer">&nbsp;</div>
 </#if>
           <a href="${issueURL}">${issueInfo.displayName}</a>
         </div>
-      </#list>
+        </#list>
+        <div class="clearer">&nbsp;</div>
       </div>
-    </#list>
+      </#list>
     </div><!-- end: TabContainer -->
     </div><!-- end: ambraTabsContainer -->
+    <!--<div class="clearer">&nbsp;</div>-->
 </#if><!-- end : volumeInfos?exists -->
 
   </div><!-- end: browse-results -->

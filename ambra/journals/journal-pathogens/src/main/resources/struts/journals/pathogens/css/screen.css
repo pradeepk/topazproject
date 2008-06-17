@@ -684,26 +684,16 @@ div.toc h1,
 div.archive h1  { width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #f60; }
 div#issueImage { margin:30px 0 15px 0; }
 div#issueImage h4 { display:inline; font-size:0.9em; font-style:italic; font-family:Verdana, Arial, Helvetica, sans-serif; margin:0; padding:0; }
-div#issueImage p,
-.horizontalTabs .contentwrap div#thumbnail p  { margin:0 0 10px 0; font-size:.9em; line-height:1.5em; display:inline; padding:0 .5em 0 0; }
+div#issueImage p  { margin:0 0 10px 0; font-size:.9em; line-height:1.5em; display:inline; padding:0 .5em 0 0; }
 div#issueImage span#title { font-weight:bold; font-style:italic; }
 div#issueImage span#creator { font-weight:bold; }
 div#issueImage p#credit,
 div#issueImage p#credit a { font-style:italic; }
-div#issueImage div#thumbnail,
-.horizontalTabs .contentwrap div#thumbnail  { width:122px; float:left; margin-right:15px; text-align:center; }
-.horizontalTabs .contentwrap div#thumbnail  { margin:0 22px 20px 0; }
-div#issueImage div#thumbnail img,
-.horizontalTabs .contentwrap div#thumbnail img  { width:120px; height:120px;/*sizes temp*/ margin:0; border: 1px solid #999; display:block; }
+div#issueImage div#thumbnail { width:122px; float:left; margin-right:15px; text-align:center; }
+div#issueImage div#thumbnail img { width:120px; height:120px;/*sizes temp*/ margin:0; border: 1px solid #999; display:block; }
 div#issueImage div#thumbnail a:link,
-div#issueImage div#thumbnail a:visited,
-.horizontalTabs .contentwrap div#thumbnail a:link,
-.horizontalTabs .contentwrap div#thumbnail a:visited { font-size:.9em; margin:0; padding:0; }
-div.archive div#issueImage div#thumbnail a,
-.horizontalTabs .contentwrap div#thumbnail a  { font-size:100%; font-weight:bold; }
+div#issueImage div#thumbnail a:visited { font-size:.9em; font-weight:bold; margin:0; padding:0; }
 div#issueImage div#thumbnail p,
-.horizontalTabs .contentwrap div#thumbnail p  { display:block; }
-/*.horizontalTabs .contentwrap div#thumbnail { float:left; width:122px; }*/
 div.toc #search-results { margin-top:0; padding:0; }
 div.toc h2,
 div.archive h2  { margin:15px 0 0 0; font-size:170%; font-style:normal; border-bottom:1px solid #c60 }
