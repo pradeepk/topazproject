@@ -73,148 +73,6 @@ public class RatingsService {
   }
 
   /**
-   * Create or update a Rating.
-   *
-   * @param user          the user on whose behalf this operation is performed.
-   * @param articleURIStr the URI of the article to be rated.
-   * @param values        the values with which to initialize the rating
-   *                      whether it is new or to be updated.
-   * @throws ApplicationException
-   */
-  @Transactional(rollbackFor = { Throwable.class })
-  public void saveOrUpdateRating(final PlosOneUser user,
-                                 final String articleURIStr,
-                                 final Rating values) throws ApplicationException {
-    final URI articleURI;
-
-    try {
-      articleURI = new URI(articleURIStr);
-    } catch (URISyntaxException e) {
-      throw new ApplicationException("", e);
-    }
-
-    final Date now = Calendar.getInstance().getTime();
-    final Rating articleRating;
-    final RatingSummary articleRatingSummary;
-
-    if (log.isDebugEnabled()) {
-      log.debug("Retrieving user Ratings for article: " + articleURIStr +
-                " and user: " + user.getUserId());
-    }
-
-    final List<Rating> ratingsList = session.createCriteria(Rating.class)
-                                            .add(Restrictions.eq("annotates",articleURIStr))
-                                            .add(Restrictions.eq("creator",user.getUserId()))
-                                            .list();
-    final boolean newRating;
-
-    if (ratingsList.size() == 0) {
-      newRating = true;
-
-      articleRating = new Rating();
-      articleRating.setMediator(getApplicationId());
-      articleRating.setAnnotates(articleURI);
-      articleRating.setContext("");
-      articleRating.setCreator(user.getUserId());
-      articleRating.setCreated(now);
-      articleRating.setBody(new RatingContent());
-
-      session.saveOrUpdate(articleRating);
-    } else {
-      newRating = false;
-
-      if (ratingsList.size() == 1) {
-        articleRating = ratingsList.get(0);
-      } else {
-        throw new ApplicationException("Multiple Ratings for Article " + articleURIStr +
-                                    " and user: " + user.getUserId());
-      }
-    }
-
-    final List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class)
-                                           .add(Restrictions.eq("annotates",articleURIStr))
-                                           .list();
-    final boolean newRatingSummary;
-
-    if (summaryList.size() == 0) {
-      newRatingSummary = true;
-
-      articleRatingSummary = new RatingSummary();
-      articleRating.setMediator(getApplicationId());
-      articleRatingSummary.setAnnotates(articleURI);
-      articleRatingSummary.setContext("");
-      articleRatingSummary.setCreated(now);
-      articleRatingSummary.setBody(new RatingSummaryContent());
-
-      session.saveOrUpdate(articleRatingSummary);
-    } else {
-      newRatingSummary = false;
-
-      if (summaryList.size() == 1) {
-        articleRatingSummary = summaryList.get(0);
-      } else {
-        throw new ApplicationException("Multiple RatingsSummary for Article " + articleURIStr +
-                                    " and user: " + user.getUserId());
-      }
-    }
-
-    if (!newRating && newRatingSummary) {
-      throw new ApplicationException("No RatingsSummary exists for extant rating: " +
-                                  "(Article: " + articleURIStr + ",User: " + user.getUserId());
-    }
-
-    if (newRating) {
-      // if this is a new Rating, then the summary needs to be updated with
-      // the number of users that rated the article.
-      final int newNumberOfRatings = articleRatingSummary.getBody().getNumUsersThatRated() + 1;
-      articleRatingSummary.getBody().setNumUsersThatRated(newNumberOfRatings);
-    } else {
-      // if this is a revised Rating, then the count remains the same, but
-      // the old rating values must be removed.
-      final int oldInsight = values.getBody().getInsightValue();
-      final int oldReliability = values.getBody().getReliabilityValue();
-      final int oldStyle = values.getBody().getStyleValue();
-      final int oldSingle = values.getBody().getSingleRatingValue();
-
-      if (oldInsight > 0) {
-        articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE,oldInsight);
-      }
-      if (oldReliability > 0) {
-        articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE,oldReliability);
-      }
-      if (oldStyle > 0) {
-        articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE,oldStyle);
-      }
-      if (oldSingle > 0) {
-        articleRatingSummary.getBody().removeRating(Rating.SINGLE_RATING_TYPE,oldSingle);
-      }
-    }
-    final int oldSingle = values.getBody().getSingleRatingValue();
-
-    // update the Rating object with those values provided by the caller
-    final int insight = values.getBody().getInsightValue();
-    final int reliability = values.getBody().getReliabilityValue();
-    final int style = values.getBody().getStyleValue();
-    final int single = values.getBody().getSingleRatingValue();
-    final String commentTitle = values.getBody().getCommentTitle();
-    final String commentValue = values.getBody().getCommentValue();
-    articleRating.getBody().setInsightValue(insight);
-    articleRating.getBody().setReliabilityValue(reliability);
-    articleRating.getBody().setStyleValue(style);
-    articleRating.getBody().setSingleRatingValue(single);
-    articleRating.getBody().setCommentTitle(commentTitle);
-    articleRating.getBody().setCommentValue(commentValue);
-
-    articleRatingSummary.getBody().addRating(Rating.INSIGHT_TYPE,insight);
-    articleRatingSummary.getBody().addRating(Rating.RELIABILITY_TYPE,reliability);
-    articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE,style);
-    articleRatingSummary.getBody().addRating(Rating.SINGLE_RATING_TYPE,single);
-
-    articleAnnotationCache.put(AVG_RATINGS_KEY + articleURI,
-        new AverageRatings(articleRatingSummary));
-  }
-
-  /**
    * Unflag a Rating
    *
    * @param ratingId the identifier of the Rating object to be unflagged
@@ -493,12 +351,22 @@ public class RatingsService {
   private class Invalidator implements ObjectListener {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
+      if (o instanceof RatingSummary) {
+        if (log.isDebugEnabled())
+          log.debug("Updating ratings-summary cache entry to reflect the change");
+        articleAnnotationCache.put(AVG_RATINGS_KEY + ((RatingSummary)o).getAnnotates(),
+           new AverageRatings((RatingSummary)o));
+      }
     }
     public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
       if (o instanceof Article) {
         if (log.isDebugEnabled())
-          log.debug("Invalidating ratings-summary for the article that was deleted.");
+          log.debug("Invalidating ratings-summary cache entry for the article that was deleted.");
         articleAnnotationCache.remove(AVG_RATINGS_KEY + id);
+      } else if (o instanceof RatingSummary) {
+        if (log.isDebugEnabled())
+          log.debug("Invalidating ratings-summary cache entry that was deleted.");
+        articleAnnotationCache.remove(AVG_RATINGS_KEY + ((RatingSummary)o).getAnnotates());
       }
     }
   }
