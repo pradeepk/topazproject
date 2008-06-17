@@ -62,16 +62,6 @@
           </ul>
         </div><!-- end : sectionNav -->
       </div>
-      <div id="postcommentfloat" class="fixed">
-        <div id="sectionNavTopFloat" class="tools">
-          <ul>
-            <li><a class="first" href="#top">Top</a></li>
-            <#list articleGroups as articleGrp>
-              <li><a href="#${articleGrp.id}">${articleGrp.heading}</a></li>
-            </#list>
-          </ul>
-        </div>
-      </div><!-- end : postcomment -->
     </div><!-- end : sideNav -->
   </div><!-- end : right-hand column -->
   <!-- begin : primary content area -->

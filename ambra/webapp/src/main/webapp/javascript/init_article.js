@@ -330,7 +330,7 @@ dojo.addOnLoad(function() {
   _ldc = dijit.byId("LoadingCycle");
   
   // build RHC table of contents
-  var tocObj = dojo.byId(dojo.isSafari ? 'sectionNavTopFloat' : 'sectionNavTop');
+  var tocObj = dojo.byId('sectionNavTop');
   if(tocObj) ambra.navigation.buildTOC(tocObj);
   
   // ---------------------

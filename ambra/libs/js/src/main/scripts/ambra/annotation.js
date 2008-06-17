@@ -449,28 +449,7 @@ ambra.annotation = {
       console.debug("Inside findMozillaRange");
       var startRange;
       
-      // Firefox
-      if (typeof rangeSelection.getRangeAt != "undefined") {
-         startRange = rangeSelection.getRangeAt(0);
-      }
-      // Safari
-      else if (typeof rangeSelection.baseNode != "undefined") {
-        console.debug(
-       		"rangeSelection.baseNode = '"     + rangeSelection.baseNode + "'\n" +
-            "rangeSelection.baseOffset = '"   + rangeSelection.baseOffset + "'\n" +
-            "rangeSelection.extentNode = '"   + rangeSelection.extentNode + "'\n" +
-            "rangeSelection.extentOffset  = " + rangeSelection.extentOffset);
-        
-        startRange = window.createRange ? window.createRange() :
-                     document.createRange ? document.createRange() : 0;
-        startRange.setStart(rangeSelection.baseNode, rangeSelection.baseOffset);
-        startRange.setEnd(rangeSelection.extentNode, rangeSelection.extentOffset);
-        
-        if (startRange.collapsed) {
-          startRange.setStart(rangeSelection.extentNode, rangeSelection.extentOffset);
-          startRange.setEnd(rangeSelection.baseNode, rangeSelection.baseOffset);
-        }
-      }
+      startRange = rangeSelection.getRangeAt(0);
 
       // textualize selection range if not already 
       // and do element-based selection range validation if applicable 
@@ -925,14 +904,7 @@ ambra.annotation = {
       document.selection.empty();
     }
     else {
-      if (dojo.isSafari) {  //Insertion for Safari
-          contents = rangeObj.range.cloneContents();
-          rangeObj.range.deleteContents();
-      }
-      else {  // Insertion for Firefox
-        contents = rangeObj.range.extractContents();
-      }
-
+      contents = rangeObj.range.extractContents();
       console.debug("== Calling modifySelection ===");
       
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
@@ -1181,15 +1153,6 @@ ambra.annotation = {
     var startTime = new Date();
     var ieDocFrag = document.createDocumentFragment();
     
-    if (dojo.isSafari) {
-      if (multiPosition == null) {
-        nodelistLength = childContents.length - 1;
-      }
-      else if (multiPosition == 1) {
-        //nodelistLength = childContents.length + 1;
-      } 
-    }
-    
     // populate the span with the content extracted from the range
     for (var i = 0; i < nodelistLength; i++) {
       var xpathloc = (childContents[i].getAttribute) ? childContents[i].getAttribute("xpathlocation") : null;
@@ -1267,13 +1230,7 @@ ambra.annotation = {
           }
           else {
             var elToInsert = document.createDocumentFragment();
-            if (dojo.isSafari && multiPosition == 1 && i == (childContents.length-1)) {
-              ambra.domUtil.copyChildren(spanToInsert, elToInsert);
-            }
-            else {
-              elToInsert = spanToInsert;
-            }
-
+            elToInsert = spanToInsert;
             if (dojo.isIE && insertIndex == 0) {
               ieDocFrag.appendChild(elToInsert);
               ambra.domUtil.removeNode(tempPointEnd.previousSibling);

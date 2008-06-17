@@ -237,7 +237,7 @@ function refreshRating(uri) {
      handleXhrError(response, ioArgs);
     },
     load: function(response, ioArgs){
-     dojo.byId(dojo.isSafari ? 'ratingRhc2' : 'ratingRhc1').innerHTML = response;
+     dojo.byId('ratingRhc1').innerHTML = response;
     }
   });
 }
