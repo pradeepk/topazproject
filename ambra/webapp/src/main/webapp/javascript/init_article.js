@@ -291,7 +291,6 @@ function getArticle() {
 
 function getAnnotationCount() {
   var refreshArea1 = dojo.byId(annotationConfig.rhcCount + "1");
-  var refreshArea2 = dojo.byId(annotationConfig.rhcCount + "2");
   var targetUri = _annotationForm.target.value;
   dojo.xhrGet({
     url: _namespace + "/article/fetchArticleRhc.action?articleURI=" + targetUri,
@@ -303,7 +302,6 @@ function getAnnotationCount() {
       var docFragment = document.createDocumentFragment();
       docFragment = response;
       refreshArea1.innerHTML = docFragment;
-      refreshArea2.innerHTML = docFragment;
     }
   });
 }
