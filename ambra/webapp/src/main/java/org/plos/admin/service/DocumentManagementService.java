@@ -215,8 +215,8 @@ public class DocumentManagementService {
       try {
         delete(objectURI);
         msgs.add("Deleted: " + objectURI);
-        if (log.isDebugEnabled())
-          log.debug("deleted article: " + objectURI);
+        if (log.isInfoEnabled())
+          log.info("Deleted article: " + objectURI);
       } catch (Exception e) {
         log.error("Could not delete article: " + objectURI, e);
         msgs.add("Error deleting: " + objectURI + " - " + e);
@@ -241,8 +241,8 @@ public class DocumentManagementService {
   @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(File file, boolean force)
       throws IngestException, DuplicateArticleIdException, IOException, ServiceException {
-    if (log.isDebugEnabled()) {
-      log.debug("Ingesting: " + file);
+    if (log.isInfoEnabled()) {
+      log.info("Ingesting: " + file);
     }
 
     Article article = articleOtmService.ingest(new FileDataSource(file), force);
@@ -369,8 +369,8 @@ public class DocumentManagementService {
         // mark article as active
         articleOtmService.setState(article, Article.STATE_ACTIVE);
         msgs.add("Published: " + article);
-        if (log.isDebugEnabled())
-          log.debug("published article: '" + article + "'");
+        if (log.isInfoEnabled())
+          log.info("Published article: '" + article + "'");
 
         // register with journals
         Set<String> vjs = vjMap.get(article);
@@ -386,10 +386,10 @@ public class DocumentManagementService {
             journal.getSimpleCollection().add(URI.create(article));
 
             final String message =
-              "Article '" + article + "' was published in the journal '" + virtualJournal + "'";
+              "Article '" + article + "' was also added to journal '" + virtualJournal + "'";
             msgs.add(message);
-            if (log.isDebugEnabled())
-              log.debug(message);
+            if (log.isInfoEnabled())
+              log.info(message);
           }
         }
       } catch (Exception e) {
