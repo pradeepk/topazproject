@@ -155,7 +155,6 @@
             http://${ambra.network.hosts.fedora}:${ambra.network.ports.fedora}/fedora/
           </base-url>
           <uri>${ambra.topaz.blobStore.fedora.base-url}services/management</uri>
-          <auth-method>BASIC</auth-method>
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
         </fedora>
@@ -174,7 +173,6 @@
           <!-- Configuration to talk to Mulgara -->
           <itql>
             <uri>${ambra.topaz.tripleStore.mulgara.baseuri}</uri>
-            <auth-method>NONE</auth-method>
           </itql>
         </mulgara>
       </tripleStore>

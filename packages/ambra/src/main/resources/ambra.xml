@@ -91,7 +91,6 @@
       <blobStore>
       <!-- Configuration to talk to Fedora -->
         <fedora>
-          <auth-method>BASIC</auth-method>
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
         </fedora>

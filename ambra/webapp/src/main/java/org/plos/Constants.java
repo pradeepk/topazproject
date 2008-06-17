@@ -33,7 +33,6 @@ public interface Constants {
   String SINGLE_SIGNON_EMAIL_KEY = "org.plos.sso.email";
   /** Authentication method used for anonymous user, otherwise it is normally CAS */
   String ANONYMOUS_USER_AUTHENTICATION = "ANONYMOUS_USER_AUTHENTICATION";
-  String AUTH_METHOD_KEY = "auth-method";
   String ROOT_PACKAGE = "org.plos";
   String ADMIN_ROLE = "admin";
 
