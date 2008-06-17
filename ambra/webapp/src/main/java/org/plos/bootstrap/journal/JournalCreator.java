@@ -91,7 +91,7 @@ public class JournalCreator implements ServletContextListener {
 
     try {
       URI            service =
-        new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql-admin.uri"));
+        new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
 
       SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, new WebappItqlClientFactory()));

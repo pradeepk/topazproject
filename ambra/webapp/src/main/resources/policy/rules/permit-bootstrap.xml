@@ -43,7 +43,7 @@
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">permit-bootstrap</AttributeValue>  
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">admins</AttributeValue>  
           <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:oql">
-            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
               select u.id from UserAccount u where u.roles.role = 'admin';
             </AttributeValue>

@@ -38,7 +38,7 @@
     </Target>
 
     <Condition FunctionId="urn:topazproject:names:tc:xacml:1.0:function:is-granted">
-      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
+      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
       <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
         <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
           AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>   

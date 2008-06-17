@@ -47,7 +47,7 @@
                 AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>
             </Apply>
             <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:oql">
-              <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
+              <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
               <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
                 select art.state from Article art where
                   art.id = :p1 or cast(art, PermissionsPropagator).propPermsTo = :p1;
@@ -72,7 +72,7 @@
                   AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>
               </Apply>
               <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:oql">
-                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
                 <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
                   select art.state from Article art where
                     art.id = :p1 or cast(art, PermissionsPropagator).propPermsTo = :p1;

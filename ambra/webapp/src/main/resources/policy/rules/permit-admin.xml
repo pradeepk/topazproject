@@ -46,7 +46,7 @@
               AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
           </Apply>
           <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:oql">
-            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
               select u.id from UserAccount u where u.id = :p1 and u.roles.role = 'admin';
             </AttributeValue>

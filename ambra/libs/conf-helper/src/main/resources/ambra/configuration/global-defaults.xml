@@ -176,10 +176,6 @@
             <uri>${ambra.topaz.tripleStore.mulgara.baseuri}</uri>
             <auth-method>NONE</auth-method>
           </itql>
-          <itql-admin>
-            <uri>${ambra.topaz.tripleStore.mulgara.itql.uri}</uri>
-            <auth-method>NONE</auth-method>
-          </itql-admin>
         </mulgara>
       </tripleStore>
     </topaz>

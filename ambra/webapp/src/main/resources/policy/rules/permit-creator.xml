@@ -47,7 +47,7 @@
             AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>   
         </Apply>
         <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
             select $s from &lt;?&gt;
             where ($r &lt;dc:creator&gt; $s or $r &lt;topaz:anonymousCreator&gt; $s) 
