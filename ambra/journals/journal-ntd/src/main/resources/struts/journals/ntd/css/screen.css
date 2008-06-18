@@ -483,25 +483,23 @@ div.tools li			{ list-style-type: none; margin: 0; padding: 0; }
 div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; margin:0; padding:0; }
 
 div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/toolbar_bg.gif) repeat-x top;}
-div.commentview	fieldset{ border: 1px solid #ccc; border-width: 1px 0; margin: 0 -5px 5px -5px; padding: 10px; background-color: #eee; position: relative;}
-html>body div.commentview	fieldset { width:214px; } /* for all browsers except IE6*/
+div.commentview	div#ratingAverages { border: 1px solid #ccc; border-width: 1px 0; margin: 5px -5px; padding: 10px; background-color: #eee; position: relative; width:214px; }
 div.commentview	 li 	{ font-size: .9em; }
 div.commentview h6,
 div.rhcBox h6 { margin: 0; }
 div.commentview ol,
 div.commentview li		{ margin: 0; padding: 0; list-style-type: none; }
-div.commentview fieldset li	{ font-weight: bold; width: 100%; position: relative; }
+div.commentview  div#ratingAverages li	{ font-weight: bold; position: relative; }
 div.commentview label	{ font-weight: normal; }
-div.commentview div		{ display: inline; position: absolute; right: 40px;}
 div.commentview li ul 	{ margin: 0; padding: 0; list-style-type: none; }
 div.commentview li ul li	{ background: url(../images/tools_li.gif) no-repeat 0 2px; font-weight: bold; padding-left: 14px; margin-left: 20px; font-size: 1em; color: #666;}
 
 ol.ratingAvgs { padding: 0; margin: 0; }
 ol.ratingAvgs,
 ol.ratingAvgs ul { list-style: none; }
-ol.ratingAvgs li { padding: 0 0 0 10px; margin: 0; height: 2em;}
+ol.ratingAvgs li { padding: 0 0 0 10px; margin: 0; height: 2em; } 
 ol.ratingAvgs label {  }
-ol.ratingAvgs ul { left: 8em; top: -2em;;}
+ol.ratingAvgs ul { left: 8em; top: -2em;}
 ol.ratingAvgs li ul li { display: inline; background: none; margin: 0; padding: 0; width: auto;}
 
 #postcomment, #postcommentfloat { width: 240px; top: 0; position: relative; }

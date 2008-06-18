@@ -32,7 +32,7 @@
                     <li class="current-rating overall-rating pct${overallPct}">Currently ${overallRoundedAverage?string("0.#")}/5 Stars.</li>
                 </ul>
                 <a href="javascript:void(0);" onclick="return ambra.domUtil.swapDisplayTextMode(this, 'ratingAverages', null, 'Hide all categories', 'See all categories');" class="rating catAvg">See all categories</a>
-                <fieldset id="ratingAverages">
+                <div id="ratingAverages">
                   <ol class="ratingAvgs">
                     <li><label for="insight">Insight</label>
                       <ul class="star-rating rating" title="insight">
@@ -53,7 +53,7 @@
                       </ul>
                     </li>
                   </ol>
-                </fieldset>
+                </div>
                 <#else>
                 <ul class="star-rating rating inline-rating-rhc" title="average">
                     <#assign averagePct = (20 * singleRatingRoundedAverage)?string("##0")>

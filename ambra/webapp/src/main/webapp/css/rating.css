@@ -45,7 +45,7 @@ span.inline-rating ul.rating { left:0; top:0; } /* This is specifically for the 
 .rating .pct90 { width: 90%;	}
 .rating .pct100 { width: 100%;	}
 span.inlineRatingEnd { position:relative; left:0!important; top:0!important; /* "!important" declarations needed for IE6 */ }
-*:first-child+html span.inlineRatingEnd { left:8em; top:-1.25em; } /* IE7 only hack */
+*:first-child+html span.inlineRatingEnd { left:8em; top:-1.25em; background:none; background-color:transparent; } /* IE7 only hack */
 
 /* apply class original to the original posting of either a discussio or annotation on the directory page */
 div.ratingComment	{ margin: 20px 0 5px 0!important; border-top-width: 1px; margin-top:20px!important; }
