@@ -248,7 +248,7 @@ public class DocumentManagementService {
     Article article = articleOtmService.ingest(new FileDataSource(file), force);
 
     if (log.isInfoEnabled()) {
-      log.info("Ingested " + file + ":" + article.getId());
+      log.info("Ingested: " + file + ":" + article.getId());
     }
 
     return article;
@@ -286,12 +286,12 @@ public class DocumentManagementService {
     throws IOException, TransformerException, SAXException {
     FileUtils.moveFileToDirectory(file, new File(ingestedDocumentDirectory), true);
     if (log.isInfoEnabled()) {
-      log.info("Relocated " + file + ":" + article.getId());
+      log.info("Relocated: " + file + ":" + article.getId());
     }
 
     generateCrossRefInfoDoc(article);
     if (log.isInfoEnabled()) {
-      log.info("Generated Xref for article " + article.getId() + " ingested from '" + file + "'");
+      log.info("Generated Xref: " + article.getId() + " ingested from '" + file + "'");
     }
   }
 
