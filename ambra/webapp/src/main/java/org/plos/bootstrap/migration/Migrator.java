@@ -120,9 +120,90 @@ public class Migrator implements ServletContextListener {
   public int migrate(Session sess) throws OtmException {
     log.info("Checking and performing data-migrations ...");
 
-    return migrateReps(sess) +
+    return migrateArticleParts(sess) +
+           migratePIDs(sess) +
+           migrateReps(sess) +
            addObjInfoType(sess) +
            removeObsoleteStates(sess);
+  }
+
+  /**
+   * Migrate the Article parts from a topaz-defined linked list to an RdfSeq. See rev 5594.
+   *
+   * @param sess the otm session to use
+   * @return the number of migrations performed
+   * @throws OtmException on an error
+   */
+  public int migrateArticleParts(Session sess) throws OtmException {
+    log.info("Checking if Article-parts need data-migration ...");
+    int artCnt = 0;
+    int objCnt = 0;
+
+    Results r =
+      sess.doNativeQuery("select $a $f subquery " +
+                         "  (select $s <topaz:nextObject> $o from <" + RI + "> " +
+                         "   where $s <topaz:nextObject> $o and $a <dcterms:hasPart> $s) " +
+                         "from <" + RI + "> where $a <rdf:type> <topaz:Article> and " +
+                         "$a <topaz:nextObject> $f;");
+
+    while (r.next()) {
+      artCnt++;
+
+      String  art   = r.getString("a");
+      String  first = r.getString("f");
+      Results sub   = r.getSubQueryResults(2);
+
+      Map<String, String> links = new HashMap<String, String>();
+      while (sub.next())
+        links.put(sub.getString("s"), sub.getString("o"));
+
+      objCnt += links.size();
+
+      StringBuilder del = new StringBuilder(100 + links.size() * 200);
+      StringBuilder ins = new StringBuilder(200 + links.size() * 100);
+
+      del.append("delete ");
+      ins.append("insert ");
+
+      ins.append("<").append(art).append("> <dcterms:hasPart> $seq $seq <rdf:type> <rdf:Seq> ");
+
+      int idx = 1;
+      for (String p = first, prev = art; p != null; prev = p, p = links.get(p)) {
+        del.append("<").append(art).append("> <dcterms:hasPart> <").append(p).append("> ");
+        del.append("<").append(prev).append("> <topaz:nextObject> <").append(p).append("> ");
+        ins.append("$seq <rdf:_").append(idx++).append("> <").append(p).append("> ");
+      }
+
+      del.append("from <").append(RI).append(">;");
+      ins.append("into <").append(RI).append(">;");
+
+      sess.doNativeUpdate(del.toString());
+      sess.doNativeUpdate(ins.toString());
+    }
+
+    if (artCnt == 0)
+      log.info("Did not find any article that required data-migration for its parts.");
+    else
+      log.warn("Finished data-migration of Article parts. " + artCnt + " Articles and " +
+               objCnt + " ObjectInfo objects migrated.");
+
+    return artCnt + objCnt;
+  }
+
+
+  /**
+   * Remove any isPID statements. See rev 5594.
+   *
+   * @param sess the otm session to use
+   * @return 0
+   * @throws OtmException on an error
+   */
+  public int migratePIDs(Session sess) throws OtmException {
+    log.info("Removing all <topaz:isPID> statements");
+    sess.doNativeUpdate("delete select $s <topaz:isPID> $o from <" + RI +
+                        "> where $s <topaz:isPID> $o from <" + RI + ">;");
+
+    return 0;
   }
 
   /**
