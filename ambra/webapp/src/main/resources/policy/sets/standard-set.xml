@@ -43,11 +43,11 @@
 
   <PolicyIdReference>deny-revokes</PolicyIdReference>
 
+  <PolicyIdReference>permitted-anonymous-operations</PolicyIdReference>
+
   <PolicyIdReference>permit-creator</PolicyIdReference>
   
   <PolicyIdReference>permit-self</PolicyIdReference>
-
-  <PolicyIdReference>permitted-anonymous-operations</PolicyIdReference>
 
   <PolicyIdReference>permit-grants</PolicyIdReference>
 
