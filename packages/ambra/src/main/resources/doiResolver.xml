@@ -17,7 +17,9 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
+-->
 
+<!--
   This file contains most of the defaults for the doi-resolver. However, there may be additional
   defaults in the conf-helper library's global-defaults.xml.
 
