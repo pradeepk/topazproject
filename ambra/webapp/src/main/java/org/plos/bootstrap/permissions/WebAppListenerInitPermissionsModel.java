@@ -66,7 +66,7 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
 
       SessionFactory factory = new SessionFactoryImpl();
-      factory.setTripleStore(new ItqlStore(service, new WebappItqlClientFactory()));
+      factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
 
       sess = factory.openSession();
       TransactionHelper.doInTx(sess, new TransactionHelper.Action<Void>() {

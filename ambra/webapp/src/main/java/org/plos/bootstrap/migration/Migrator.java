@@ -80,7 +80,7 @@ public class Migrator implements ServletContextListener {
       RI                    = conf.getString("ambra.models.ri");
 
       SessionFactory factory = new SessionFactoryImpl();
-      factory.setTripleStore(new ItqlStore(service, new WebappItqlClientFactory()));
+      factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
 
       sess = factory.openSession();
 

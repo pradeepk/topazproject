@@ -421,13 +421,13 @@
   </build>
 
   <profiles>
-    <!-- config webapp to use embedded, local:, Mulgara: mvn -Dambra.topaz.tripleStore.mulgara.scheme=local: -->
+    <!-- config webapp to use embedded, local:, Mulgara -->
     <profile>
       <id>mulgara-local</id>
       <activation>
         <property>
-          <name>ambra.topaz.tripleStore.mulgara.scheme</name>
-          <value>local:</value>
+          <name>ambra.topaz.tripleStore.mulgara.baseuri</name>
+          <value>local:///topazproject</value>
         </property>
       </activation>
       <dependencies>

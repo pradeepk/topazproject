@@ -33,6 +33,23 @@ import org.topazproject.mulgara.itql.DefaultItqlClientFactory;
  */
 public class WebappItqlClientFactory extends DefaultItqlClientFactory {
   private static final String DEF_WEB_CONF = "mulgara-web-config.xml";
+  private static WebappItqlClientFactory singleton;
+
+  /**
+   * Because mulgara does not currently support multiple embedded instances, we must ensure
+   * that only a single instance is used.
+   *
+   * @return the singleton instance
+   */
+  public static synchronized WebappItqlClientFactory getInstance() {
+    if (singleton == null)
+      singleton = new WebappItqlClientFactory();
+    return singleton;
+  }
+
+  private WebappItqlClientFactory() {
+    setDbDir(System.getProperty("ambra.topaz.tripleStore.mulgara.dbDir"));
+  }
 
   @Override
   public URL getLocalConf(URI uri) {
