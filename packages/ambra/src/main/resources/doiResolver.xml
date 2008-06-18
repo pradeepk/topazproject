@@ -25,6 +25,12 @@
 -->
 <config>
   <ambra>
+    <network>
+      <hosts>
+        <mulgara>localhost</mulgara>
+      </hosts>
+    </network>
+
     <platform>
       <webserverUrl>http://www.plosone.org/</webserverUrl>
       <errorPage>static/pageNotFound.action</errorPage> 
