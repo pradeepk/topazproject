@@ -1,37 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
-  This file is the Ambra template for the Public Library of Science site. 
--->
+
+<!-- Ambra Configuration file -->
 <config>
   <ambra>
     <network>
-      <!-- This network section defines the hosts and ports used to talk to the services
-        the publishing system uses.
-        
-        Note to developers: Please do not use anything from the network section directly
-        in code. Instead define something in your own namespace and reference that. Doing
-        so allows more flexibility if re-factoring the network topology later.
-        
-        With the exception of the "webhead", most services run as web-applications within
-        a J2EE container (usually tomcat). Multiple containers can run on the same host
-        by listening on different ports. In fact, the default configuration is to run
-        each container on different ports regardless so that additional configuration
-        change is not required when running containers separately or on the same host.
-        The publishing system uses the following web-applications:
-        * cas          - Handles user authentication for the publishing system
-        * registration - Registers and logs in users (usually runs in the same
-        container that cas runs in.
-        * fedora       - The blob store used to store ingested articles
-        * mulgara      - The triple store.
-        * ambra      - The publishing system
-        * search       - The lucene full-text search engine. (No configuration in the
-        network section yet. Shares the ambra container.)
-        * doi-resolver - Resolves DOIs. (Also no configuration here yet. Shares
-        ambra container.)
-        * default      - This is the webhead that runs apache. See wiki for more info.
-        * mailhost     - The machine to send mail via. Usually just localhost if a
-        mail server is running.
-      -->
       <hosts>
         <!-- Set hosts.default to FQHN (not localhost) if installing all components on one host
           (or to webhead FQHN for multiple host installation) -->
@@ -43,22 +15,11 @@
         <fedora>${ambra.network.hosts.default}</fedora>
         <mulgara>${ambra.network.hosts.default}</mulgara>
         <ambra>${ambra.network.hosts.default}</ambra>
-        <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
       </hosts>
+
+      <!-- Ports for the various components. Default for HTTP and HTTPS can be left out -->
       <ports>
-        <!-- There are 4 protocols that the publishing system uses:
-          * http    - The default protocol
-          * TLS/SSL - When communication needs to be secure
-          * RMI     - An java specific RPC protocol (to be uses soon)
-          * mail    - The SMTP protocol
-          
-          Ports are defined as either "host-protocol" or just "host" if the protocol is http.
-          If defining a port that is http, if the value would be 80, leave it blank.
-          If defining a port that is https, if the value would be 443, leave it blank.
-        -->
-        <!-- If using port 80, set default to empty (not 80) -->
         <default>${ambra.network.ports.ambra}</default>
-        <!-- If using port 443, set cas-ssl to empty -->
         <cas-ssl>7443</cas-ssl>
       </ports>
     </network>
@@ -78,7 +39,7 @@
       </copyright>
     </platform>
 
-    <!-- virtual journal config -->
+    <!-- Overlay journal config -->
     <virtualJournals>
       <default>
         <journal>PLoSONE</journal>
@@ -89,7 +50,6 @@
 
     <topaz>
       <blobStore>
-      <!-- Configuration to talk to Fedora -->
         <fedora>
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
@@ -103,17 +63,22 @@
         <indexPath>/var/lib/topaz/data/lucene</indexPath>
         <!-- Fields of lucene meta data that are searched by default -->
         <defaultfields>description,title,body,creator</defaultfields>
-        <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->
-        <fieldMaxLength>50</fieldMaxLength><!-- Max chars per indexed field? -->
-        <cacheDuration>600000</cacheDuration><!-- Milliseconds to cache search results -->
-        <pageSize>10</pageSize><!-- Number of results per page -->
-        <fetchSize>10</fetchSize><!-- Number of results to fetch at a time -->
+        <!-- Number of snippets to show per document -->
+        <snippetsMax>3</snippetsMax>
+        <!-- Max chars per indexed field? -->
+        <fieldMaxLength>50</fieldMaxLength>
+        <!-- Milliseconds to cache search results -->
+        <cacheDuration>600000</cacheDuration>
+        <!-- Number of results per page -->
+        <pageSize>10</pageSize>
+        <!-- Number of results to fetch at a time -->
+        <fetchSize>10</fetchSize>
       </search>
 
       <registration>
-        <!-- It is assumed plos-registartion webapp is running on cas. However that can be changed
-          by changing the following settings. -->
-        <appContext>/ambra-registration</appContext><!-- Name of expanded webapp -->
+        <!-- Default assumption is that the registration application is running on ambra-cas. If the
+        configuration is different, please set here -->
+        <appContext>/ambra-registration</appContext>
       </registration>
 
       <!-- defaults for generating an Atom Feed -->
@@ -121,16 +86,24 @@
         <title>PLoS ONE</title>
         <tagline>Publishing science, accelerating research</tagline>
         <icon>${webserver-url}images/favicon.ico</icon>
-        <id>info:doi/1371/feed.pone</id><!-- Unique id. Should change for different criteria -->
-        <extended><!-- Configuration of extended atom feeds -->
-          <prefix>plos</prefix><!-- namespace prefix for custom elements -->
-          <namespace>http://www.plos.org/atom/ns#plos</namespace><!-- custom element namespace -->
+        <!-- Unique id. Should change for different criteria -->
+        <id>info:doi/1371/feed.pone</id>
+        <extended>
+          <!-- namespace prefix for custom elements -->
+          <prefix>plos</prefix>
+          <!-- custom element namespace -->
+          <namespace>http://www.plos.org/atom/ns#plos</namespace>
         </extended>
-        <basePath>/article/</basePath><!-- Path to rss feeds after journal context -->
-        <defaultFile>feed</defaultFile><!-- Default rss feed if none other specified -->
-        <categoryPrefix>feed?category=</categoryPrefix><!-- File prefix for a specific category -->
-        <defaultName>New Articles</defaultName><!-- Name of default feed (prefixed by journal) -->
-        <defaultDuration>3</defaultDuration><!-- Default duration in months -->
+        <!-- Path to rss feeds after journal context -->
+        <basePath>/article/</basePath>
+        <!-- Default rss feed if none other specified -->
+        <defaultFile>feed</defaultFile>
+        <!-- File prefix for a specific category -->
+        <categoryPrefix>feed?category=</categoryPrefix>
+        <!-- Name of default feed (prefixed by journal) -->
+        <defaultName>New Articles</defaultName>
+        <!-- Default duration in months -->
+        <defaultDuration>3</defaultDuration>
       </feed>
 
       <documentManagement>
@@ -156,13 +129,16 @@
           <doiurl>
             http://${ambra.network.hosts.default}:${ambra.network.ports.default}/doi-resolver/
           </doiurl>
-          <!-- URL where your URIs can be found -->
-          <email>webmaster@example.org</email><!-- email address to send info to -->
+          <!-- email address to send info to -->
+          <email>webmaster@example.org</email>
         </plos>
-        <login>crossref-username</login><!-- crossref login -->
-        <password>your-password</password><!-- crossref password -->
+        <!-- crossref login -->
+        <login>crossref-username</login>
+        <!-- crossref password -->
+        <password>your-password</password>
         <area>test</area>
-        <sendToXref>false</sendToXref><!-- Set to true to turn on crossref posting -->
+        <!-- Set to true to turn on crossref posting -->
+        <sendToXref>false</sendToXref>
       </crossref>
     </services>
 
@@ -177,9 +153,7 @@
         <typeHeading>Message from the Founders</typeHeading>
       </articleType>
       <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Message%20from%20the%20PLoS%20Founders
-        </typeUri>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20the%20PLoS%20Founders</typeUri>
         <typeHeading>Message from the PLoS Founders</typeHeading>
       </articleType>
       <articleType>
@@ -259,9 +233,7 @@
         <typeHeading>Book Review</typeHeading>
       </articleType>
       <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Book%20Review/Science%20in%20the%20Media
-        </typeUri>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review/Science%20in%20the%20Media</typeUri>
         <typeHeading>Book Review/Science in the Media</typeHeading>
       </articleType>
       <articleType>
@@ -297,9 +269,7 @@
         <typeHeading>Guidelines and Guidance</typeHeading>
       </articleType>
       <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Historical%20Profiles%20and%20Perspectives
-        </typeUri>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Historical%20Profiles%20and%20Perspectives</typeUri>
         <typeHeading>Historical Profiles and Perspectives</typeHeading>
       </articleType>
       <articleType>
@@ -347,9 +317,7 @@
         <typeHeading>Correspondence</typeHeading>
       </articleType>
       <articleType>
-        <typeUri>
-          http://rdf.plos.org/RDF/articleType/Correspondence%20and%20Other%20Communications
-        </typeUri>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Correspondence%20and%20Other%20Communications</typeUri>
         <typeHeading>Correspondence and Other Communications</typeHeading>
       </articleType>
       <articleType>
