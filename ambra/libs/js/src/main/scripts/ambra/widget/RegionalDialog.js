@@ -174,8 +174,6 @@ dojo.declare(
 		
   // override position as we want control over dialog placement!
   _position: function() {
-    console.debug("RegionalDialogBase._position");
-    //this.inherited(arguments);
     this.placeModalDialog();
   }
 });
@@ -190,13 +188,17 @@ dojo.declare(
     console.debug('RegionalDialog.show()');
     this.inherited(arguments);
 	},
-  
+
   // onscroll hook
+  // NOTE: we must override this method to avoid infinite looping in Safari (v3.1.1)!! 
   layout: function() {
-    console.debug('RegionalDialog.layout()');
-    this.inherited(arguments);
+    // summary: position the Dialog and the underlay
+    if(this.domNode.style.visibility != "hidden"){
+      this._underlay.layout();
+      if(!dojo.isSafari) this._position();
+    }
   },
-  
+
   onLoad: function(){
     console.debug('RegionalDialog.onLoad()');
     this.inherited(arguments);
