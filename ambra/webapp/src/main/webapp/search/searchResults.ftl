@@ -150,8 +150,7 @@
             <span class="date">Published ${hit.date?string("dd MMM yyyy")}</span>
             <span class="article">
               <#if hit.contentModel == "PlosArticle">
-                <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.pid}" includeParams="none"/>
-                <@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${hit.title}</@s.a></span>
+                <a href="http://dx.doi.org/${hit.pid?replace('info:doi/','')}">${hit.title}</a>
               <#else>
                 <a href="#">${hit.title}</a>
               </#if>
