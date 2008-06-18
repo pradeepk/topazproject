@@ -17,6 +17,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div dojoType="dijit.Dialog" id="LoadingCycle" class="loadingCycler">
+<div dojoType="ambra.widget.LoadingCycle" id="LoadingCycle" class="loadingCycler">
 	<img src="${freemarker_config.getContext()}/images/loading.gif" width="58" height="58" title="Loading..." />
 </div>

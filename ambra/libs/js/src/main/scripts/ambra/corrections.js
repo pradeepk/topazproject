@@ -203,7 +203,7 @@ ambra.corrections = {
       if(!annAnchor) throw 'Unable to resolve annotation anchor!';
       ambra.displayComment.show(annAnchor);
       // ensure the dialog is scrolled into view
-      window.scrollTo(0, ambra.domUtil.getCurrentOffset(fcn).top);
+      jumpToAnnotation(annId);
     }
     return false;
   }

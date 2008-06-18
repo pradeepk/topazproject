@@ -159,24 +159,24 @@ function toggleAnnotation(obj, userType) {
 
 function getAnnotationEl(annotationId) {
   var elements = document.getElementsByTagAndAttributeName('a', 'displayid');
-     
-  var targetEl
+  var targetEl;
   for (var i=0; i<elements.length; i++) {
     var elDisplay = ambra.domUtil.getDisplayId(elements[i]);
     var displayList = elDisplay.split(',');
-
     for (var n=0; n<displayList.length; n++) {
       if (displayList[n] == annotationId) {
         targetEl = elements[i];
         return targetEl;
       }
     }
-    
   }
+  return null;
 }
 
 function jumpToAnnotation(annotationId) {
-  jumpToElement(getAnnotationEl(annotationId));
+  if(!annotationId) return;
+  var anNode = getAnnotationEl(annotationId);
+  if(anNode) jumpToElement(anNode);
 }
 
 function toggleExpand(obj, isOpen, textOn, textOff) {
@@ -251,11 +251,14 @@ function validateNewComment() {
          _annotationDlg.placeModalDialog();
        }
        else {
-         getArticle();
          _annotationDlg.hide();
          ambra.formUtil.textCues.reset(_annotationForm.cTitle, _titleCue);
          ambra.formUtil.textCues.reset(_annotationForm.cArea, _commentCue);
          ambra.formUtil.enableFormFields(_annotationForm);
+         // remember the newly added annotation
+         document.articleInfo.annotationId.value = jsonObj.annotationId;
+         // re-fetch article body
+         getArticle();
        }
      }//load
   });
@@ -284,6 +287,7 @@ function getArticle() {
       getAnnotationCount();
       ambra.displayComment.processBugCount();
       ambra.corrections.apply();
+      document.articleInfo.annotationId.value = ''; // reset
       _ldc.hide();
     }
   });
@@ -321,6 +325,7 @@ function createAnnotationOnMouseDown() {
   _annotationForm.comment.value = "";
   // create it
   ambra.annotation.createNewAnnotation();
+  return false;
 }
 
 dojo.addOnLoad(function() {
@@ -395,6 +400,7 @@ dojo.addOnLoad(function() {
     updateRating();
     ambra.rating.resetDialog();
     e.preventDefault();
+    return false;
   });
 
   dojo.connect(dojo.byId("btn_cancel_rating"), "onclick", function(e) {
@@ -403,6 +409,7 @@ dojo.addOnLoad(function() {
     ambra.formUtil.enableFormFields(_ratingsForm);
     ambra.rating.resetDialog();
     e.preventDefault();
+    return false;
   });
   
   // --------------------------------
@@ -489,6 +496,7 @@ dojo.addOnLoad(function() {
   dojo.connect(dojo.byId("btn_post"), "click", function(e) {
     validateNewComment();
     e.preventDefault();
+    return false;
   });
 
   dojo.connect(dojo.byId("btn_cancel"), "click", function(e) {
@@ -499,13 +507,13 @@ dojo.addOnLoad(function() {
       // we are in an INDETERMINISTIC state for annotation markup
       // Article re-fetch is necessary to maintain the integrity of the existing annotation markup
       getArticle();
-      ambra.displayComment.processBugCount();
     }
     else {
       // we can safely rollback the pending annotation markup from the dom
       ambra.annotation.undoPendingAnnotation();
     }
     e.preventDefault();
+    return false;
   });
 
   ambra.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
@@ -529,6 +537,7 @@ dojo.addOnLoad(function() {
   dojo.connect(commentDlgClose, 'click', function(e) {
     _commentDlg.hide();
     ambra.displayComment.mouseoutComment(ambra.displayComment.target);
+    return false;
   });
   
   // -------------------------
@@ -543,6 +552,7 @@ dojo.addOnLoad(function() {
   dojo.connect(popupCloseMulti, 'click', function(e) {
     _commentMultiDlg.hide();
     ambra.displayComment.mouseoutComment(ambra.displayComment.target);
+    return false;
   });
   
   // init routines
@@ -552,6 +562,5 @@ dojo.addOnLoad(function() {
   ambra.corrections.apply();
 
   // jump to annotation?
-  var anId = document.articleInfo.annotationId.value;
-  if(anId) jumpToAnnotation(anId);
+  jumpToAnnotation(document.articleInfo.annotationId.value);
 });

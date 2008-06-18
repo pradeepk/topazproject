@@ -13,6 +13,7 @@ dependencies = {
         "ambra.domUtil",
         "ambra.htmlUtil",
         "ambra.formUtil",
+        "ambra.widget.LoadingCycle",
         "ambra.widget.RegionalDialog",
         "ambra.navigation",
         "ambra.horizontalTabs",
