@@ -26,7 +26,8 @@
 	</#if>
 
   var djConfig = {
-		isDebug: ${freemarker_config.dojoDebug?string},
+    // don't debug for IE - as dojo's firebug lite module is error prone in IE
+		isDebug: ${freemarker_config.dojoDebug?string} && !(parseFloat(navigator.appVersion.split("MSIE ")[1]) || 0),
     parseOnLoad: true
 	};
 </script>
