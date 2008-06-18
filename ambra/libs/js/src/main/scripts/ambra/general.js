@@ -143,7 +143,7 @@ String.prototype.replaceStringArray = function(delimiter, strMatch, newStr) {
  */
 function handleXhrError(response, ioArgs) {
   if(response instanceof Error){
-    _ldc.hide();
+    if(_ldc) _ldc.hide();
     if(response.dojoType == "cancel"){
       //The request was canceled by some other JavaScript code.
       console.debug("Request canceled.");
