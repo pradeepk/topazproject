@@ -119,8 +119,8 @@ dojo.declare(
     }
 		
 		// Default values put the box generally above and to the right of the annotation "bug"
-    var xTip = markerOffset.left - (tipWidth / 2);
-    var yTip = markerOffset.top - tipHeight - (tipHeight/4);
+    var xTip = markerOffset.left - (tipWidth / 2) + 4;
+    var yTip = markerOffset.top - tipHeight - (tipHeight/4) + 8;
     
     var x = xTip - tipMarginLeft;
     var y = yTip - mbHeight;
