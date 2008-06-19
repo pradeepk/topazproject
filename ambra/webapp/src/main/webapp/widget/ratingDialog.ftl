@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<div dojoType="dijit.Dialog" id="Rating" class="loadingCycler">
+<div dojoType="dijit.Dialog" id="Rating">
   <div class="dialog annotate">
     <div class="tipu" id="dTipu"></div>
     <div class="btn close" title="Click to close and cancel"><a id="btn_cancel_rating" title="Click to close and cancel">Cancel</a></div>
