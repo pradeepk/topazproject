@@ -52,16 +52,24 @@ if (opt.h || otherArgs.size() != 1) {
 
 def config = ToolHelper.loadConfiguration(opt.c)
 
-new AddManifest().addManifest(otherArgs[0], opt.o ?: null)
-println "manifest added"
+println("SIP for " + otherArgs[0])
 
-new FixArticle().fixLinks(opt.o ?: otherArgs[0], null)
-println "article links fixed"
+try {
+  new AddManifest().addManifest(otherArgs[0], opt.o ?: null)
+  println "  manifest added"
+  
+  new FixArticle().fixLinks(opt.o ?: otherArgs[0], null)
+  println "  article links fixed"
+  
+  new ProcessImages(config, opt.v).processImages(opt.o ?: otherArgs[0], null)
+  println "  images processed"
+  
+  new ValidateSIP().validate(opt.o ?: otherArgs[0])
+  println "  validation: No problems found"
+  println "done"
 
-new ProcessImages(config, opt.v).processImages(opt.o ?: otherArgs[0], null)
-println "images processed"
-
-new ValidateSIP().validate(opt.o ?: otherArgs[0])
-println "SIP validation: No problems found"
-
-println "done"
+  System.exit(0)
+} catch (Exception e) {
+  println("  error: " + e)
+  System.exit(1)
+}
