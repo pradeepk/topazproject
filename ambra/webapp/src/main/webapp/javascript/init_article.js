@@ -398,16 +398,12 @@ dojo.addOnLoad(function() {
   
   dojo.connect(dojo.byId("btn_post_rating"), "onclick", function(e) {
     updateRating();
-    ambra.rating.resetDialog();
     e.preventDefault();
     return false;
   });
 
   dojo.connect(dojo.byId("btn_cancel_rating"), "onclick", function(e) {
-    ambra.domUtil.removeChildren(dojo.byId('submitMsg'));
-    _ratingDlg.hide();
-    ambra.formUtil.enableFormFields(_ratingsForm);
-    ambra.rating.resetDialog();
+    ambra.rating.hide();
     e.preventDefault();
     return false;
   });

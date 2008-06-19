@@ -31,6 +31,7 @@ dojo.declare(
 {
   duration: 250,
   refocus: false,
+  _onKey:function(e){}, // disable key shortcuts (for now) as the necessary ambra override methods will *NOT* be called!
 
 	_changeTipDirection: function(isTipDown, xShift) {
 		var dTip = this.tipDownNode;

@@ -41,11 +41,14 @@ ambra.rating = {
       getRatingsForUser();
     }
     else {
+      this.resetDialog();
       _ratingDlg.show();
     }
     
     return false;
   },
+  
+  hide: function() { _ratingDlg.hide(); },
   
   buildCurrentRating: function(liNode, rateIndex) {
 		var ratedValue = (parseInt(rateIndex)/this.rateScale)*100;
@@ -110,6 +113,7 @@ ambra.rating = {
   },
   
   resetDialog: function() {
+    ambra.domUtil.removeChildren(dojo.byId('submitMsg'));
     var ratingList = document.getElementsByTagAndClassName('li', 'current-rating');
     
     // build rating stars
