@@ -19,6 +19,8 @@
 
 package org.plos.journal;
 
+import java.net.URI;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +36,7 @@ import org.topazproject.otm.criterion.Restrictions;
 
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
+import org.plos.models.Article;
 import org.plos.models.Journal;
 import org.plos.web.VirtualJournalContext;
 
@@ -68,6 +71,17 @@ public class JournalKeyService {
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
         if (o instanceof Journal)
           journalRemoved(((Journal)o).getKey(), s);
+        if (o instanceof Article) {
+          for (Journal j : getAllJournals(s)) {
+            List<URI> col = j.getSimpleCollection();
+            URI u = URI.create(id);
+            while ((col != null) && col.contains(u)) {
+              col.remove(u);
+              if (log.isDebugEnabled())
+                log.debug("Removed " + u + " from simple collection in " + j);
+            }
+          }
+        }
       }
     });
   }
