@@ -22,7 +22,7 @@
   <p>This archive contains links to the full-text of all issues of 
   <em>${freemarker_config.getDisplayName(journalContext)}.</em></p>
   
-  <div id="browse-results">
+  <div id="browse-results" class="tundra">
     
     <h2>Current Issue</h2>
     <div id="issueImage">
