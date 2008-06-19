@@ -417,6 +417,7 @@
                 </artifactItem>
               </artifactItems>
               <includes>**/themes/**</includes>
+              <excludes>**/dijit.css</excludes>
             </configuration>
           </execution>
         </executions>
