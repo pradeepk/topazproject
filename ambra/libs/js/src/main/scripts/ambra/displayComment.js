@@ -518,6 +518,7 @@ ambra.displayComment = {
 }
 
 function getComment(obj) {
+    _ldc.show();
     var targetUri = ambra.domUtil.getDisplayId(obj);
     var uriArray = targetUri.split(",");
 
@@ -545,6 +546,7 @@ function getComment(obj) {
           handleXhrError(response, ioArgs);
         },
         load: function(response, ioArgs){
+         _ldc.hide();
          var jsonObj = response;
          if (jsonObj.actionErrors.length > 0) {
            var errorMsg = "";
