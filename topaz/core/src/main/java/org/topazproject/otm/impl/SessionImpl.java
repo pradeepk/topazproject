@@ -127,15 +127,20 @@ public class SessionImpl extends AbstractSession {
    * inherited javadoc
    */
   public void flush() throws OtmException {
-    if (flushing)
-      return;
-    try {
-      // prevent re-entrant flushing. (Occurs if interceptor attempts a query)
-      flushing = true;
-      doFlush();
-    } finally {
-      flushing = false;
+    if (!flushing) {
+      try {
+        // prevent re-entrant flushing. (Occurs if interceptor attempts a query)
+        flushing = true;
+        doFlush();
+      } finally {
+        flushing = false;
+      }
     }
+
+    if (tsCon != null)
+      sessionFactory.getTripleStore().flush(tsCon);
+    if (bsCon != null)
+      sessionFactory.getBlobStore().flush(bsCon);
   }
 
   private void doFlush() throws OtmException {
@@ -168,11 +173,6 @@ public class SessionImpl extends AbstractSession {
       dirtyMap.keySet().removeAll(workDirty.keySet());
       cleanMap.putAll(workDirty);
     } while ((deleteMap.size() > 0) || (dirtyMap.size() > 0));
-
-    if (tsCon != null)
-      sessionFactory.getTripleStore().flush(tsCon);
-    if (bsCon != null)
-      sessionFactory.getBlobStore().flush(bsCon);
   }
 
   /*
