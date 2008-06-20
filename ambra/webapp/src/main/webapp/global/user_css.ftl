@@ -19,6 +19,7 @@
 -->
 <!-- user_css.ftl -->
 
+<style type="text/css" media="screen"> @import "${freemarker_config.context}/css/dojo/dijit/themes/tundra/tundra.css"; </style>
 <style type="text/css" media="all"> @import "${freemarker_config.context}/css/user_screen.css";</style>
 <style type="text/css" media="all"> @import "${freemarker_config.context}/css/user_iepc.css";</style>
 <style type="text/css" media="all"> @import "${freemarker_config.context}/css/user_forms.css";</style>

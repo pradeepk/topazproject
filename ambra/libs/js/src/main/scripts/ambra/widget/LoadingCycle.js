@@ -25,7 +25,9 @@ dojo.declare(
   "ambra.widget.LoadingCycle", 
   [dijit.Dialog],
 {
+  templateString:"<div class=\"dijitDialog\"><div dojoAttachPoint=\"containerNode\" class=\"dijitDialogPaneContent\"></div></div>",
   duration: 250,
   refocus: false,
-  _getFocusItems: function(arg){}
+  _getFocusItems: function(arg){},
+  _onKey:function(e){}
 });
