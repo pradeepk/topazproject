@@ -353,9 +353,8 @@ public class RatingsService {
         Updates updates) {
       if (o instanceof RatingSummary) {
         if (log.isDebugEnabled())
-          log.debug("Updating ratings-summary cache entry to reflect the change");
-        articleAnnotationCache.put(AVG_RATINGS_KEY + ((RatingSummary)o).getAnnotates(),
-           new AverageRatings((RatingSummary)o));
+          log.debug("Invalidating ratings-summary cache entry since it changed");
+        articleAnnotationCache.remove(AVG_RATINGS_KEY + ((RatingSummary)o).getAnnotates());
       }
     }
     public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {

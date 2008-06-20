@@ -52,10 +52,6 @@ import org.plos.models.Journal;
  * <p>There should be exactly one instance of this class per {@link
  * org.topazproject.otm.SessionFactory SessionFactory} instance.
  *
- * <p>This services does extensive caching of journal objects, the filters associated with each
- * journal, and the list of journals each object (article) belongs to (according to the filters).
- * For this reason it must be notified any time a journal or article is added, removed, or changed.
- *
  * @author Ronald Tschalär
  */
 public class JournalCarrierService {
@@ -66,7 +62,6 @@ public class JournalCarrierService {
   private final Cache                    objectCarriers;        // obj-id -> Set<journal-key>
   private final JournalKeyService        journalKeyService;
   private final JournalFilterService     journalFilterService;
-  private ObjectListener                 browseServiceObjectListener;
 
   /**
    * Create a new journal-service instance. One and only one of these should be created for evey
@@ -84,7 +79,6 @@ public class JournalCarrierService {
     this.journalFilterService = journalFilterService;
 
     addObjectClassToSf();
-    initialize();
 
     objectCarriers.getCacheManager().registerListener(new ObjectListener() {
       public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
@@ -98,47 +92,19 @@ public class JournalCarrierService {
              && ((updates == null)
                  || updates.isChanged("smartCollectionRules")
                  || updates.isChanged("simpleCollection")))
-            updateCarrierMap(((Journal)o).getKey(), false, s);
+          objectCarriers.removeAll();
 
         if (o instanceof Article)
-          objectWasAdded(((Article) o).getId(), s);
-
-        if (browseServiceObjectListener != null)
-          browseServiceObjectListener.objectChanged(s, cm, id, o, updates);
-         
+          objectCarriers.remove(((Article) o).getId());
       }
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
-        if (browseServiceObjectListener != null)
-          browseServiceObjectListener.objectRemoved(s, cm, id, o);
-
         if (o instanceof Journal)
-            updateCarrierMap(((Journal)o).getKey(), true, s);
+          objectCarriers.removeAll();
 
         if (o instanceof Article)
-          objectWasDeleted(((Article) o).getId());
+          objectCarriers.remove(((Article) o).getId());
       }
     });
-  }
-
-  private void initialize() {
-    /* spring initializes singletons at startup, so no session is available yet, and hence
-     * we create our own and create our own transaction. Alternatively, we could use
-     * lazy-init="true".
-     */
-    Session s = sf.openSession();
-    try {
-      TransactionHelper.doInTx(s, new TransactionHelper.Action<Void>() {
-        public Void run(Transaction tx) {
-          Map<URI, Set<Journal>> cl = buildCarrierMap(null, tx.getSession());
-          for (Map.Entry<URI, Set<Journal>> e : cl.entrySet())
-            objectCarriers.put(e.getKey(), getKeys(e.getValue()));
-
-          return null;
-        }
-      });
-    } finally {
-      s.close();
-    }
   }
 
   private void addObjectClassToSf() {
@@ -161,36 +127,6 @@ public class JournalCarrierService {
     for (Journal j: jList)
       keys.add(j.getKey());
     return keys;
-  }
-
-
-  /* must be invoked with journalCache monitor held and active tx on session */
-  private void updateCarrierMap(String jName, boolean deleted, Session s) {
-    Map<URI, Set<Journal>> carriers = new HashMap<URI, Set<Journal>>();
-
-    Set<URI> obj = deleted ? Collections.EMPTY_SET : getObjects(jName, null, s);
-
-    int count = 0;
-    for (URI o : (Set<URI>) objectCarriers.getKeys()) {
-      Cache.Item e = objectCarriers.get(o);
-      if (e == null)
-        continue;
-      Set<String> keys = (Set<String>)e.getValue();
-
-      boolean mod = keys.remove(jName);
-      if (obj.remove(o)) {
-        keys.add(jName);
-        mod ^= true;
-      }
-
-      if (mod) {
-        objectCarriers.put(o, keys);
-        count++;
-      }
-    }
-    if (log.isDebugEnabled())
-      log.debug("journal '" + jName + "' was " + (deleted ? "deleted" : "updated")
-          + " and as a result carriers for " + count + " objects have been updated.");
   }
 
   /* must be invoked with journalCache monitor held and active tx on session and in local context */
@@ -258,34 +194,5 @@ public class JournalCarrierService {
     return jnlList;
   }
 
-  /**
-   * Notify the journal service of a newly added object (e.g. an article). This assumes an active
-   * transaction on the session.
-   *
-   * @param oid the info:&lt;oid&gt; uri of the object
-   */
-  private void objectWasAdded(URI oid, Session s) {
-    objectCarriers.remove(oid);
-    Set<String> keys = getJournalKeysForObject(oid, s);
-
-    if (log.isDebugEnabled())
-      log.debug("object '" + oid + "' was added and belongs to journals: " + keys);
-  }
-
-  /**
-   * Notify the journal service of a recently deleted object (e.g. article).
-   *
-   * @param oid the info:&lt;oid&gt; uri of the object
-   */
-  private void objectWasDeleted(URI oid) {
-    objectCarriers.remove(oid);
-
-    if (log.isDebugEnabled())
-      log.debug("object '" + oid + "' was removed");
-  }
-
-  public void setBrowseServiceObjectListener(ObjectListener listener) {
-    browseServiceObjectListener = listener;
-  }
 
 }

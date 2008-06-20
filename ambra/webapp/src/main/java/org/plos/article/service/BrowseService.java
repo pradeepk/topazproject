@@ -437,110 +437,23 @@ public class BrowseService {
   }
 
   /**
-   * Notify this service that articles have been deleted from the system. This should be invoked
-   * before the journal-service is updated.
+   * Notify this service that articles have been changed.
    *
-   * @param uris the list of id's of the deleted articles
+   * @param uris the list of id's of changed articles
    */
-  private void notifyArticlesDeleted(String[] uris) {
-    // create list of articles for each journal
-    Map<String, Set<String>> artMap = getArticlesByJournal(uris);
+  private void notifyArticlesChanged(String[] uris) {
 
-    // process each journal
-    for (String jnlName : artMap.keySet()) {
-      // update category lists
-      SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
-          getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
-      if (artByCat != null) {
-        Set<URI> uriSet = new HashSet<URI>();
-        for (String uri : artMap.get(jnlName)) {
-          uriSet.add(URI.create(uri));
-        }
-
-        cat: for (Iterator<List<URI>> catIter = artByCat.values().iterator(); catIter.hasNext(); ) {
-          List<URI> articles = catIter.next();
-          for (Iterator<URI> artIter = articles.iterator(); artIter.hasNext(); ) {
-            URI art = artIter.next();
-            if (uriSet.remove(art)) {
-              artIter.remove();
-
-              if (articles.isEmpty()) {
-                catIter.remove();
-              }
-
-              if (uriSet.isEmpty()) {
-                break cat;
-              }
-            }
-          }
-        }
-
-        updateCategoryCaches(artByCat, jnlName);
-      }
-
-      // update date lists
-      browseCache.remove(DATE_LIST_KEY + jnlName);
-
-      for (Object key : browseCache.getKeys()) {
-        if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
-          browseCache.remove(key);
-        }
-      }
+    for (Object key : browseCache.getKeys()) {
+      if ((key instanceof String) && 
+             (((String)key).startsWith(ARTBYDATE_LIST_KEY) ||
+              ((String)key).startsWith(DATE_LIST_KEY) ||
+              ((String)key).startsWith(ARTBYCAT_LIST_KEY) ||
+              ((String)key).startsWith(CAT_INFO_KEY)))
+         browseCache.remove(key);
     }
-
     // update article cache
     for (String uri : uris) {
       browseCache.remove(ARTICLE_KEY + uri);
-    }
-  }
-
-  /**
-   * Notify this service that articles have been added or updated. This should be invoked
-   * after the journal-service is updated.
-   *
-   * @param uris the list of id's of the affected articles
-   */
-  private void notifyArticlesUpdated(String[] uris) {
-    // create list of articles for each journal
-    Map<String, Set<String>> artMap = getArticlesByJournal(uris);
-
-    // process each journal
-    for (String jnlName : artMap.keySet()) {
-      // get some info about the new articles
-      List<NewArtInfo> nais = getNewArticleInfos(artMap.get(jnlName));
-
-      // update category lists
-      final SortedMap<String, List<URI>> artByCat = (SortedMap<String, List<URI>>)
-                            getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", false, jnlName);
-      if (artByCat != null) {
-        for (NewArtInfo nai: nais) {
-          List<URI> arts = artByCat.get(nai.category);
-          if (arts == null) {
-            artByCat.put(nai.category, arts = new ArrayList<URI>());
-          }
-          //XXX: This should really be a TreeSet with NAI so that 
-          //     "desc date, asc id" ordering is preserved.
-          if (!arts.contains(nai.id))
-            arts.add(0, nai.id);
-        }
-
-        updateCategoryCaches(artByCat, jnlName);
-      }
-
-      // update date lists
-      Years dates = getArticleDates(false, jnlName);
-      if (dates != null) {
-        for (NewArtInfo nai: nais) {
-          insertDate(dates, nai.date);
-        }
-        updateArticleDates(dates, jnlName);
-      }
-
-      for (Object key : browseCache.getKeys()) {
-        if ((key instanceof String) && ((String) key).startsWith(ARTBYDATE_LIST_KEY + jnlName)) {
-          browseCache.remove(key);
-        }
-      }
     }
   }
 
@@ -786,10 +699,6 @@ public class BrowseService {
   @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
-
-    // We are order dependent on what the journal service does. So register the listener there.
-    if (journalService != null)
-      journalService.getJournalCarrierService().setBrowseServiceObjectListener(new Invalidator());
   }
 
   /**
@@ -798,6 +707,9 @@ public class BrowseService {
   @Required
   public void setBrowseCache(Cache browseCache) {
     this.browseCache = browseCache;
+    // We are order dependent on what the journal service does. So register the listener there.
+    if (invalidator == null)
+      browseCache.getCacheManager().registerListener(invalidator = new Invalidator());
   }
 
   /**
@@ -825,7 +737,7 @@ public class BrowseService {
       if (o instanceof Article) {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was updated.");
-        notifyArticlesUpdated(new String[]{id});
+        notifyArticlesChanged(new String[]{id});
       }
       if (o instanceof Journal) {
         String key = ((Journal)o).getKey();
@@ -841,7 +753,7 @@ public class BrowseService {
       if (o instanceof Article) {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was deleted.");
-        notifyArticlesDeleted(new String[]{id});
+        notifyArticlesChanged(new String[]{id});
       }
       if (o instanceof Journal) {
         if (log.isDebugEnabled())

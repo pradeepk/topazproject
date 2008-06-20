@@ -99,18 +99,12 @@ public class JournalFilterService {
         if ((o instanceof Journal)
              && ((updates == null)
                  || updates.isChanged("smartCollectionRules")
-                 || updates.isChanged("simpleCollection"))) {
-          synchronized(monitor) {
-            updateJournalFilters((Journal)o, s);
-          }
-        }
+                 || updates.isChanged("simpleCollection")))
+          invalidateFilterCache((Journal)o);
       }
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
-        if (o instanceof Journal) {
-          synchronized(monitor) {
-            removeJournalFilters(((Journal)o).getKey(), s);
-          }
-        }
+        if (o instanceof Journal)
+          invalidateFilterCache((Journal)o);
       }
     });
   }
@@ -122,14 +116,15 @@ public class JournalFilterService {
     values.add(value);
   }
 
-  /* Must be invoked with journalCache monitor held and active tx on session */
-  private boolean updateJournalFilters(Journal j, Session s) {
+  private void invalidateFilterCache(Journal j) {
     if (log.isDebugEnabled())
-      log.debug("updating journal '" + j.getKey() + "'");
+      log.debug("invalidating filter cache for journal '" + j.getKey() + "'");
 
-    loadJournalFilters(j, s);
+    filterCache.remove(keyPrefix + j.getKey());
+  }
 
-    return true;
+  private String getFilterPrefix(String jName) {
+    return jName + "-" + System.currentTimeMillis();
   }
 
   /* Must be invoked with journalCache monitor held and active tx on session */
@@ -142,7 +137,7 @@ public class JournalFilterService {
       for (String fn : oldDefs)
         sf.removeFilterDefinition(fn);
     }
-    filterCache.rawPut(keyPrefix + jName, Cache.DELETED);
+    filterCache.remove(keyPrefix + jName);
   }
 
   /* must be invoked with journalCache monitor held and active tx on session */
@@ -152,7 +147,7 @@ public class JournalFilterService {
 
     // create the filter definitions
     Map<String, FilterDefinition> jfds =
-        getAggregationFilters(j, j.getKey(), s,
+        getAggregationFilters(j, getFilterPrefix(j.getKey()), s,
                               new HashSet<Aggregation>(), true);
 
     if (log.isDebugEnabled())
@@ -174,6 +169,8 @@ public class JournalFilterService {
     if (!journalFilters.containsKey(j.getKey()))
       journalFilters.put(j.getKey(), Collections.EMPTY_SET);
 
+    // Note: We are using rawPut instead of the transactional put since 'load' is
+    //       considered a 'populate' operation. ie. it is not a result of a write
     filterCache.rawPut(keyPrefix + j.getKey(), new Cache.Item(journalFilters.get(j.getKey())));
 
     return journalFilters.get(j.getKey());

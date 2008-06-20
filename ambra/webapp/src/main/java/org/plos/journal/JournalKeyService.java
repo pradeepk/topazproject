@@ -69,30 +69,14 @@ public class JournalKeyService {
       public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
       }
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
-        if (o instanceof Journal)
+        if (o instanceof Journal) 
           journalRemoved(((Journal)o).getKey(), s);
-        if (o instanceof Article) {
-          for (Journal j : getAllJournals(s)) {
-            List<URI> col = j.getSimpleCollection();
-            URI u = URI.create(id);
-            while ((col != null) && col.contains(u)) {
-              col.remove(u);
-              if (log.isDebugEnabled())
-                log.debug("Removed " + u + " from simple collection in " + j);
-            }
-          }
-        }
       }
     });
   }
 
   private void journalRemoved(String jName, Session sess) {
-    Set<String> keys = getAllJournalKeys(sess);
-    if (keys.contains(jName)) {
-      keys = new HashSet<String>(keys);
-      keys.remove(jName);
-      journalCache.put(keyPrefix, keys);
-    }
+    journalCache.remove(keyPrefix);
     journalCache.remove(keyPrefix + jName);
   }
 
