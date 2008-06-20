@@ -126,10 +126,6 @@
         <param name="actionName">prePopulateNewUser</param>
         <param name="namespace">/user</param>
       </result>
-      <result name="invalidProxyTicket" type="redirect">
-        <param name="location">${startingUrl}</param>
-        <param name="prependServletContext">false</param>
-      </result>
       <result name="role-insufficient" type="ambraFreemarker">
         <param name="templateFile">/user/inSufficientRole.ftl</param>
       </result>
@@ -139,7 +135,6 @@
     </global-results>
 
     <global-exception-mappings >
-      <exception-mapping exception="org.plos.service.InvalidProxyTicketException" result="invalidProxyTicket"/>
       <exception-mapping exception="java.lang.Exception" result="error"/>
     </global-exception-mappings>
 

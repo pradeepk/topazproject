@@ -19,7 +19,6 @@
 package org.plos.action;
 
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.views.util.UrlHelper;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -76,32 +75,6 @@ public abstract class BaseActionSupport extends ActionSupport {
    */
   public int getNumFieldErrors() {
     return getFieldErrors().size();
-  }
-
-  /**
-   * Return the url for this request, which could be used to redirect the user to it in case of failure
-   * @return the start url for this request
-   */
-  public String getStartingUrl() {
-    final HttpServletRequest servletRequest = getRequest();
-    final StringBuilder urlBuilder = new StringBuilder();
-    final String method = servletRequest.getMethod();
-    if (method.equals("POST")) {
-      final String referer = servletRequest.getHeader("referer");
-      urlBuilder.append(
-              StringUtils.isBlank(referer)? "/"
-                                          :referer);
-    } else {
-      urlBuilder.append(UrlHelper.buildUrl(null, servletRequest, getResponse(), null, null, false, true));
-      final String queryString = servletRequest.getQueryString();
-      if (null != queryString) {
-        urlBuilder.append("?")
-                  .append(queryString);
-      }
-    }
-    final String url = urlBuilder.toString();
-    log.debug("Url for redirection (on getting proxy invalidation!?) = " + url);
-    return url;
   }
 
   /**
