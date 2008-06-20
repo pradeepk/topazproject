@@ -246,7 +246,6 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_default.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
           </javascript>
         </default>
         <page>
@@ -262,7 +261,6 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_home.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
           </javascript>
         </page>
         <page>
@@ -279,7 +277,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_article.js</file>
           </javascript>
         </page>
@@ -293,7 +290,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
           </javascript>
         </page>
         <page>
@@ -308,7 +304,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
           </javascript>
         </page>
         <page>
@@ -318,7 +313,6 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_discussion.js</file>
           </javascript>
         </page>
@@ -329,7 +323,6 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_newDiscussion.js</file>
           </javascript>
         </page>
@@ -347,7 +340,6 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_discussion.js</file>
           </javascript>
         </page>
@@ -428,7 +420,6 @@
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/advsearch.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
           </javascript>
         </page>
         <page>
@@ -443,7 +434,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
           </javascript>
         </page>
         <page>
@@ -452,7 +442,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_newProfile.js</file>
           </javascript>
         </page>
@@ -468,7 +457,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
             <file>/javascript/init_ambraAlerts.js</file>
           </javascript>
         </page>
@@ -484,7 +472,6 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
-            <file>/javascript/init_navigation.js</file>
             <file>/javascript/config_profile.js</file>
           </javascript>
         </page>

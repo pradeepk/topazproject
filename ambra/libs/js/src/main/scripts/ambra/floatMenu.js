@@ -63,21 +63,19 @@ ambra.floatMenu = {
 }
 
 dojo.addOnLoad(function() {
-  dojo.connect(window, "onscroll", function() {
-     ambra.floatMenu.doFloat();
-  });
-  
-  dojo.connect(window, "onresize", function() {
-    ambra.floatMenu.doFloat();
-  });
-
-  dojo.connect(dojo.doc, "onscroll", function() {
+  if(dojo.byId('floatMarker')) {
+    dojo.connect(window, "onscroll", function() {
+       ambra.floatMenu.doFloat();
+    });
+    dojo.connect(window, "onresize", function() {
       ambra.floatMenu.doFloat();
-  });
-  
-  dojo.connect(dojo.doc, "onkey", function() {
+    });
+    dojo.connect(dojo.doc, "onscroll", function() {
+        ambra.floatMenu.doFloat();
+    });
+    dojo.connect(dojo.doc, "onkey", function() {
+      ambra.floatMenu.doFloat();
+    });
     ambra.floatMenu.doFloat();
-  });
-  
-  ambra.floatMenu.doFloat();
+  }
 });

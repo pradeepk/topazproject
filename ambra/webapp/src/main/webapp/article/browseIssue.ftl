@@ -54,7 +54,7 @@
       <div id="floatMarker">&nbsp;</div>
       <div id="postcomment">
         <div id="sectionNavTop" class="tools">
-          <ul>
+          <ul id="tocUl">
             <li><a class="first" href="#top">Top</a></li>
             <#list articleGroups as articleGrp>
               <li><a href="#${articleGrp.id}">${articleGrp.heading}</a></li>

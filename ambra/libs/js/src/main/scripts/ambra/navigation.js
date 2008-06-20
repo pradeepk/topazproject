@@ -26,11 +26,14 @@
 dojo.provide("ambra.navigation");
 dojo.require("ambra.general");
 ambra.navigation = {
- buildTOC: function(tocObj){
+ buildTOC: function(tocParentNode){
+   var ul = dojo.byId('tocUl');
+   if(ul) return; // presume we already have the list built
    var tocEl = document.getElementsByTagAndAttributeName(null, 'toc');
-   if(!tocObj || !tocEl) return;
+   if(!tocParentNode || !tocEl) return;
    
    var ul = document.createElement('ul');
+   ul.setAttribute('id','tocUl');
    
    for (var i=0; i<tocEl.length; i++) {
      var li = document.createElement('li');
@@ -46,6 +49,9 @@ ambra.navigation = {
      ul.appendChild(li);
    }
    
-   tocObj.appendChild(ul);
- } 
-}  
+   tocParentNode.appendChild(ul);
+ }
+}
+dojo.addOnLoad(function() {
+  ambra.navigation.buildTOC(dojo.byId('sectionNavTop'));
+});

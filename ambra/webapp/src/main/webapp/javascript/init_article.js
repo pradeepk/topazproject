@@ -332,10 +332,6 @@ dojo.addOnLoad(function() {
   // int loading "throbber"
   _ldc = dijit.byId("LoadingCycle");
   
-  // build RHC table of contents
-  var tocObj = dojo.byId('sectionNavTop');
-  if(tocObj) ambra.navigation.buildTOC(tocObj);
-  
   // ---------------------
   // rating dialog related
   // ---------------------
