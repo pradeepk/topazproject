@@ -19,7 +19,7 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
@@ -77,7 +77,7 @@ public class ChangePasswordAction extends BaseAction {
   /**
    * @return loginName
    */
-  @EmailValidator(message="You must enter a valid e-mail")
+  @RegexFieldValidator(message = "You must enter a valid e-mail", expression = EMAIL_REGEX)
   @RequiredStringValidator(message="You must enter an e-mail address")
   public String getLoginName() {
     return loginName;

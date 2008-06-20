@@ -37,9 +37,6 @@ import static org.plos.Constants.Length.PASSWORD_MIN;
  * Uses use this to register as a new user. Verification stage is separate from this.
  */
 public class RegisterAction extends BaseAction {
-  private static final String EMAIL_REGEX =
-    "^[a-zA-Z0-9!#$%&?'`{|/}*+=^._~-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-
   private String loginName1;
   private String loginName2;
   private String password1;

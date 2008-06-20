@@ -29,7 +29,7 @@ import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
 import org.plos.service.password.PasswordServiceException;
 
-import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
@@ -100,7 +100,7 @@ public class ChangeEmailAction extends BaseAction {
   /**
    * @return Returns the newLogin1.
    */
-  @EmailValidator(message="You must enter a valid e-mail address")
+  @RegexFieldValidator(message = "You must enter a valid e-mail", expression = EMAIL_REGEX)
   @RequiredStringValidator(message="You must enter an e-mail address")
   @FieldExpressionValidator(fieldName="newLogin2", expression = "newLogin1==newLogin2",
       message="E-mail addresses must match")

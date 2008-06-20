@@ -18,7 +18,7 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
@@ -93,7 +93,8 @@ public class ConfirmationAction extends BaseAction {
   /**
    * @return loginName
    */
-  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid e-mail address")
+  @RegexFieldValidator(message = "You must enter a valid e-mail", fieldName="loginName",
+      expression = EMAIL_REGEX)
   @RequiredStringValidator(message="E-mail address not specified")
   public String getLoginName() {
     return loginName;
