@@ -1,49 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
-  This file is a template. It contains many configuration parameters you may want to change.
-  However, there are even more configuration parameters that can be tuned. To get a list of
-  all of these, see documentation. (Or, failing that, most defaults are configured in
-  webapps at WEB-INF/classes/defaults.xml. Though it is possible that there are
-  even more - see ConfigurationStore documentation.)
+  $HeadURL::                                                                                     $
+  $Id$
+
+  Copyright (c) 2007-2008 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
 -->
+
+<!-- CAS and Ambra Registration configuration file. -->
 <config>
   <network>
-    <!-- This network section defines the hosts and ports used to talk to the services
-         the publishing system uses.
-
-         Note to developers: Please do not use anything from the network section directly
-         in code. Instead define something in your own namespace and reference that. Doing
-         so allows more flexibility if re-factoring the network topology later.
-
-         With the exception of the "webhead", most services run as web-applications within
-         a J2EE container (usually tomcat). Multiple containers can run on the same host
-         by listening on different ports. In fact, the default configuration is to run
-         each container on different ports regardless so that additional configuration
-         change is not required when running containers separately or on the same host.
-         The publishing system uses the following web-applications:
-          * cas          - Handles user authentication for the publishing system
-          * default      - This is the webhead that runs apache. See wiki for more info.
-          * mailhost     - The machine to send mail via. Usually just localhost if a
-                           mail server is running.
-    -->
     <hosts>
-      <!-- Set hosts.default to FQHN (not localhost) for a singleboxinstall
-           (or to webhead FQHN for multibox install) -->
-      <cas>localhost</cas> <!-- could set <default> instead, but this is more specific -->
+      <!--
+      Set hosts.default to FQHN (not localhost) for a singleboxinstall (or to webhead FQHN for
+      multibox install) -->
+      <cas>localhost</cas>
+      <!-- Mail host to send registration emails -->
       <mailhost>localhost</mailhost>
-      <default>localhost</default> <!-- Address of webhead (or ambra if no webhead) -->
+      <!-- Address of webhead (or ambra if no webhead) -->
+      <default>localhost</default>
     </hosts>
     <ports>
-      <!-- There are 4 protocols that the publishing system uses:
-            * http    - The default protocol
-            * TLS/SSL - When communication needs to be secure
-            * RMI     - An java specific RPC protocol (to be uses soon)
-            * mail    - The SMTP protocol
-
-          Ports are defined as either "host-protocol" or just "host" if the protocol is http.
-          If defining a port that is http, if the value would be 80, leave it blank.
-          If defining a port that is https, if the value would be 443, leave it blank.
-      -->
       <!-- If using port 443, set cas-ssl to empty -->
       <cas-ssl>7443</cas-ssl>
       <!-- If 80, set default to empty (and/or update registration.ambra.url below) -->
@@ -54,23 +43,33 @@
   <ambra>
     <services>
       <cas>
-        <!-- The following entries defnine how the java webapp talk to the database.
-             For example, talking to postgresql, you need the database name at the end of the url
-             The user and password are for the database as well. -->
+        <!--
+        The following entries define how the webapp talk to the database.  For example, talking to
+        postgresql, you need the database name at the end of the url The user and password are for
+        the database as well. -->
         <db>
-          <user>casuser</user>                         <!-- database user name -->
-          <password>caspass</password>                 <!-- database user password -->
-          <url>jdbc:postgresql://localhost/casdb</url> <!-- jdbc url - VERIFY DB NAME at end -->
-          <driver>org.postgresql.Driver</driver>       <!-- jdbc driver to use -->
+          <!-- Database user name -->
+          <user>casuser</user>
+          <!-- Database user password -->
+          <password>caspass</password>
+          <!-- JDBC URL -->
+          <url>jdbc:postgresql://localhost/casdb</url>
+          <!-- JDBS driver -->
+          <driver>org.postgresql.Driver</driver>
         </db>
       </cas>
 
       <registration>
-        <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
-        <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
-        <context>/ambra-registration</context>          <!-- Directory of webapp -->
-        <ambra> <!-- Location of publishing app so links in registration work -->
-          <context></context> <!-- directory of publishing app -->
+        <!-- From address in registration emails -->
+        <from-email>registration@your-org</from-email>
+        <!-- Name of user in registration emails -->
+        <from-name>My Org Registration</from-name>
+        <!-- Directory for registration web-app -->
+        <context>/ambra-registration</context>
+        <!-- Information on Ambra needed -->
+        <ambra>
+          <!-- directory of publishing app -->
+          <context></context>
           <!-- URL of publicly accessible publishing app (webhead if there is one) -->
           <url>http://${ambra.network.hosts.default}:${ambra.network.ports.default}</url>
         </ambra>
