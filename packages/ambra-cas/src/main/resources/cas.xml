@@ -21,26 +21,26 @@
 
 <!-- CAS and Ambra Registration configuration file. -->
 <config>
-  <network>
-    <hosts>
-      <!--
-      Set hosts.default to FQHN (not localhost) for a singleboxinstall (or to webhead FQHN for
-      multibox install) -->
-      <cas>localhost</cas>
-      <!-- Mail host to send registration emails -->
-      <mailhost>localhost</mailhost>
-      <!-- Address of webhead (or ambra if no webhead) -->
-      <default>localhost</default>
-    </hosts>
-    <ports>
-      <!-- If using port 443, set cas-ssl to empty -->
-      <cas-ssl>7443</cas-ssl>
-      <!-- If 80, set default to empty (and/or update registration.ambra.url below) -->
-      <default>8080</default>
-    </ports>
-  </network>
-
   <ambra>
+    <network>
+      <hosts>
+        <!--
+        Set hosts.default to FQHN (not localhost) for a singleboxinstall (or to webhead FQHN for
+        multibox install) -->
+        <default>localhost</default>
+        <!-- FQHN of the machine -->
+        <cas>localhost</cas>
+        <!-- Mail host to send registration emails -->
+        <mailhost>localhost</mailhost>
+      </hosts>
+      <ports>
+        <!-- If using port 443, set cas-ssl to empty -->
+        <cas-ssl>7443</cas-ssl>
+        <!-- If 80, set default to empty (and/or update registration.ambra.url below) -->
+        <default>8080</default>
+      </ports>
+    </network>
+
     <services>
       <cas>
         <!--
