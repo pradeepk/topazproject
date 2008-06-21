@@ -91,18 +91,27 @@ public class JournalCarrierService {
         if ((o instanceof Journal)
              && ((updates == null)
                  || updates.isChanged("smartCollectionRules")
-                 || updates.isChanged("simpleCollection")))
+                 || updates.isChanged("simpleCollection"))) {
+          if (log.isDebugEnabled())
+            log.debug("Dumping the carrier-cache because the journal rules/collection changed");
           objectCarriers.removeAll();
+        }
 
-        if (o instanceof Article)
+        if (o instanceof Article) {
+          if (log.isDebugEnabled())
+            log.debug("Invalidating the cache entry for the article that was changed");
           objectCarriers.remove(((Article) o).getId());
+        }
       }
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
         if (o instanceof Journal)
           objectCarriers.removeAll();
 
-        if (o instanceof Article)
+        if (o instanceof Article) {
+          if (log.isDebugEnabled())
+            log.debug("Invalidating the cache entry for the article that was deleted");
           objectCarriers.remove(((Article) o).getId());
+        }
       }
     });
   }
