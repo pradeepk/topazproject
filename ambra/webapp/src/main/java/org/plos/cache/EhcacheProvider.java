@@ -183,6 +183,12 @@ public class EhcacheProvider implements Cache {
     TxnContext ctx = cacheManager.getTxnContext();
     ctx.getLocal(getName()).clear();
     ctx.setRemovedAll(getName(), true);
+    ctx.enqueueHead(new CacheEvent() {
+        public void execute(TxnContext ctx, boolean commit) {
+          if (commit)
+            EhcacheProvider.this.commitRemoveAll(ctx);
+        }
+      });
     cacheManager.cacheCleared(this);
   }
 
@@ -203,6 +209,12 @@ public class EhcacheProvider implements Cache {
     }
 
     return keys;
+  }
+
+  private void commitRemoveAll(TxnContext ctx) {
+    cache.removeAll();
+    if (log.isDebugEnabled())
+      log.debug(getName() + ".removeAll()");
   }
 
   private void commit(TxnContext ctx, Object key) {

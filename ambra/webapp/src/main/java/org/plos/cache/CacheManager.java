@@ -186,8 +186,8 @@ public class CacheManager implements CacheListener, ObjectListener {
   }
 
   public class TxnContext implements Synchronization {
-    private final Transaction          txn;
-    private final Queue<CacheEvent>    queue           = new LinkedList<CacheEvent>();
+    private final Transaction             txn;
+    private final LinkedList<CacheEvent>  queue        = new LinkedList<CacheEvent>();
     private final Map<String, Map<Object, Cache.CachedItem>> locals
                                        = new HashMap<String, Map<Object, Cache.CachedItem>>();
     private final Map<String, Boolean> removedAll      = new HashMap<String, Boolean>();
@@ -263,6 +263,10 @@ public class CacheManager implements CacheListener, ObjectListener {
 
     public void enqueue(CacheEvent ev) {
       queue.add(ev);
+    }
+
+    public void enqueueHead(CacheEvent ev) {
+      queue.addFirst(ev);
     }
 
     public Map<Object, Cache.CachedItem> getLocal(String cache) {
