@@ -45,7 +45,7 @@
    File f = new File(fpath)
    String fbuf = f.getText()
    fbuf = fbuf.replaceFirst("setTimeout\\(dojo._scopeName ?\\+ ?\".loaded\\(\\);\", ?0\\);", 
-       "/*AMBRA TWEAK*/setTimeout(dojo._scopeName + \".loaded();\", (dojo.isIE && typeof articlePage != 'undefined') ? 1000 : 0);/*END AMBRA TWEAK*/")
+       "/*AMBRA TWEAK*/setTimeout(dojo._scopeName + \".loaded();\", dojo.isIE ? 250 : 0);/*END AMBRA TWEAK*/")
    f.write(fbuf)
  }
 

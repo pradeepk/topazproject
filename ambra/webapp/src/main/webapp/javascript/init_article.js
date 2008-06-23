@@ -18,22 +18,6 @@
  * limitations under the License.
  */
 
-/* 
-  ------------- 
-  IE only hack (by jkirton):
-  ------------- 
-  use global var to indicate we are loading the article page 
-  so we can force a delay in the loading of this page.
-  
-  dojo.js and dojo.uncompressed.js are modified to factor in this hack
-  
-  When this hack is not in place, there is strong liklihood that the 
-  the dojo widgets will NOT be available by dijit.byId()
-  
-  this *always* the case on my dev machine. 
-*/
-var articlePage = 1;
-
 // the "loading..." widget
 var _ldc;
 
