@@ -92,16 +92,16 @@
         <legend><span>Search Article Text</span></legend>
         <ol>
           <li>
+            <label for="textSearch-atLeastOne">for <em>at least one</em> of the words: </label>
+            <input type="text" name="textSearchAtLeastOne" size="50" value="${textSearchAtLeastOne!""}" id="textSearch-atLeastOne"/>
+          </li>
+          <li>
             <label for="textSearch-all">for <em>all</em> the words: </label>
             <input type="text" name="textSearchAll" size="50" value="${textSearchAll!""}" id="textSearch-all"/>
           </li>
           <li>
             <label for="textSearch-exactPhrase">for the <em>exact phrase</em>: </label>
             <input type="text" name="textSearchExactPhrase" size="50" value="${textSearchExactPhrase!""}" id="textSearch-exactPhrase"/>
-          </li>
-          <li>
-            <label for="textSearch-atLeastOne">for <em>at least one</em> of the words: </label>
-            <input type="text" name="textSearchAtLeastOne" size="50" value="${textSearchAtLeastOne!""}" id="textSearch-atLeastOne"/>
           </li>
           <li>
             <label for="textSearch-without"><em>without</em> the words: </label>
