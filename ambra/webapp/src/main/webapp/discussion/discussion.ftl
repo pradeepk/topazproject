@@ -18,9 +18,10 @@
   limitations under the License.
 -->
 <div id="discussionContainer">
-	<#include "/discussion/threaded_replies.ftl">
+<#include "/discussion/threaded_replies.ftl">
 </div>
-
+<div style="visibility:hidden">
 <#include "/widget/discussionResponse.ftl">
 <#include "/widget/discussionFlag.ftl">
 <#include "/widget/loadingCycle.ftl">
+</div>
