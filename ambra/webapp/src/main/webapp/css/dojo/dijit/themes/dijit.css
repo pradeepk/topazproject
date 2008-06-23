@@ -1151,8 +1151,8 @@ img.dijitColorPaletteUnder {
 
 /* make the underlay clear (invisible) for viewing inlined comments/corrections for backwards consistency. */
 #CommentDialog_underlay, #CommentDialogMultiple_underlay {
-  opacity: 0;
-  filter: alpha(opacity=0);
+  opacity: .1;
+  filter: alpha(opacity=10);
 }
 
 /* images off, high-contrast mode styles */
