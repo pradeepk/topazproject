@@ -43,9 +43,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.plos.models.Article;
 import org.plos.models.ObjectInfo;
 import org.plos.models.Representation;
-import org.plos.models.Journal;
 import org.plos.permission.service.PermissionsService;
-import org.plos.journal.JournalService;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +69,6 @@ public class ArticleOtmService {
   private ArticlePEP         pep;
   private Session            session;
   private PermissionsService permissionsService;
-  private JournalService     journalService;
 
   public ArticleOtmService() throws IOException {
     pep = new ArticlePEP();
@@ -145,13 +142,6 @@ public class ArticleOtmService {
       throw new NoSuchArticleIdException(article);
 
     session.delete(a);
-    for (Journal j : journalService.getAllJournals()) {
-      List<URI> col = j.getSimpleCollection();
-      URI id = a.getId();
-      if (col != null)
-        while (col.contains(id))
-          col.remove(id);
-    }
     SearchUtil.delete(article);
 
     // TODO: find a better way to know what needs to be deleted, rather than "hardcoding" it here
@@ -599,14 +589,6 @@ public class ArticleOtmService {
   @Required
   public void setPermissionsService(PermissionsService permissionsService) {
     this.permissionsService = permissionsService;
-  }
-
-  /**
-   * @param journalService the journal service to use
-   */
-  @Required
-  public void setJournalService(JournalService journalService) {
-    this.journalService = journalService;
   }
 
   /**

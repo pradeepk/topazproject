@@ -163,6 +163,13 @@ public class DocumentManagementService {
   public void delete(String objectURI)
       throws RemoteException, ServiceException, NoSuchArticleIdException {
     articleOtmService.delete(objectURI);
+    URI id = URI.create(objectURI);
+    for (Journal j : journalService.getAllJournals()) {
+      List<URI> col = j.getSimpleCollection();
+      if (col != null)
+        while (col.contains(id))
+          col.remove(id);
+    }
   }
 
   /**
