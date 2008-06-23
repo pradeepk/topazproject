@@ -56,6 +56,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.criterion.Restrictions;
 
@@ -369,6 +370,12 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   private List<ArticleAnnotation> listAnnotationsForTarget(final String target,
       Set<Class<?extends ArticleAnnotation>> annotationClassTypes) throws OtmException {
+
+    // This flush is so that our own query cache reflects change.
+    // TODO : implement query caching in OTM and let it manage this cached query
+    if (session.getFlushMode().implies(FlushMode.always))
+      session.flush();
+
     // lock @ Article level
     final Object     lock           = (FetchArticleService.ARTICLE_LOCK + target).intern();
     List<ArticleAnnotation> allAnnotations =
@@ -692,7 +699,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       } else if (o instanceof ArticleAnnotation) {
         if (log.isDebugEnabled())
           log.debug("ArticleAnnotation changed/deleted. Invalidating annotation list " + 
-              " for the article this was annotating or is about to annotate.");
+              " for the target this was annotating or is about to annotate.");
         articleAnnotationCache.remove(ANNOTATED_KEY + ((ArticleAnnotation)o).getAnnotates().toString());
         if ((updates != null) && updates.isChanged("annotates")) {
            List<String> v = updates.getOldValue("annotates");
