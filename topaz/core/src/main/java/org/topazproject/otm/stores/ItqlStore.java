@@ -866,7 +866,9 @@ public class ItqlStore extends AbstractTripleStore {
 
     if (ans.get(0).getMessage() != null)
       throw new QueryException("error performing query '" + query + "' - message was: " +
-                               ans.get(0).getMessage());
+                               ans.get(0).getMessage() +
+                               "\nDid you attempt to use doNativeQuery for a non-query command?" +
+                               " If so, please use doNativeUpdate instead");
 
     return new ItqlNativeResults(ans.get(0), isc.getSession());
   }
