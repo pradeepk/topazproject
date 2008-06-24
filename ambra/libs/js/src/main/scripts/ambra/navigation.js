@@ -54,4 +54,20 @@ ambra.navigation = {
 }
 dojo.addOnLoad(function() {
   ambra.navigation.buildTOC(dojo.byId('sectionNavTop'));
+  if(dojo.isIE) {
+    var navContainer = dojo.byId("nav");
+    if(!navContainer) return;
+    for (var i=0; i<navContainer.childNodes.length; i++) {
+      if (navContainer.childNodes[i].nodeName == "LI") {
+        var navLi = navContainer.childNodes[i];
+        navLi.onmouseover = function() {
+         this.className = this.className.concat(" over");
+        }
+        navLi.onmouseout = function() {
+          this.className = this.className.replace(/\sover/, "");
+          this.className = this.className.replace(/over/, "");
+        }
+      }
+    }
+  }
 });
