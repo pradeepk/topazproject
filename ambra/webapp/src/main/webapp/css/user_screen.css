@@ -175,8 +175,7 @@ div.horizontalTabs	{ position: relative; border-width: 0;}
 .horizontalTabs ul	{ 
 	display: block; 
 	z-index: 10; 
-	margin-bottom: 4px;
-	padding-bottom: 7px;
+	line-height:2.65em;
 	background: url(../images/user_tab_underline.gif) repeat-x bottom; 
 	}
 .horizontalTabs ul li	{ 
@@ -191,22 +190,12 @@ div.horizontalTabs	{ position: relative; border-width: 0;}
 	border-left: 1px solid #069; 
 	border-bottom: 4px solid #069; 
 	margin: 0 10px; 
-	padding: 5px 10px; 
+	padding:5px 10px; 
 	}
+
 .horizontalTabs ul li.active	{
 	background-color: #FFF; 
-	border-bottom: 4px solid #FFF; 
+	border-bottom: 4px solid #fff; 
 	}
 
 .horizontalTabs .contentwrap 	{margin: 30px 0 0 0; padding: 0; position: relative; }
-
-
-/* ORIGINAL TABS
-div.horizontalTabs	{ position: relative; border-width: 0;}
-.horizontalTabs ul,
-.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; color: #069;}
-.horizontalTabs ul	{ display: block; margin-bottom: 5px; z-index: 10; border-bottom: 2px solid #ACF1FF; }
-.horizontalTabs ul li	{ cursor: pointer; padding: 5px 10px 5px 10px; background-color: transparent; margin: 5px 2px 3px 2px; display: inline; }
-.horizontalTabs ul li.active	{ font-weight: bold;background: url(../images/forms_bg.gif) repeat-x bottom; border-bottom-color: #fff; text-decoration: none; color: #000;}
-.horizontalTabs .contentwrap 	{margin: 0; border: 2px solid #fff; padding: 0;position: relative; }
-*/
