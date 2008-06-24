@@ -163,7 +163,6 @@ def expand(s) {
 }
 
 def showResults(result) {
-    println result
   if (result instanceof String) {
     if (echo) println result
   } else if (result instanceof Results) {
