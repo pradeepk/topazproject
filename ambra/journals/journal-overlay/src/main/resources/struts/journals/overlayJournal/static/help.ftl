@@ -28,9 +28,9 @@
 <ul>
 	<li>Internet Explorer 6+ for Windows</li>
 	<li>Internet Explorer 7+ for Windows</li>
-	<li>Firefox 1.5+ for Windows and Mac OS X</li>
-	<li>Firefox 2+ for Windows</li>
-	<li>Safari 2.0.1+ for Mac OS X</li>
+	<li>Firefox 2+ for Windows and Mac OS X</li>
+	<li>Firefox 3+ for Windows and Mac OS X</li>
+	<li>Safari 3+ for Windows and Mac OS X</li>
 </ul>
 
 <a id="account" name="account"></a>
