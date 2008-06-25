@@ -1242,10 +1242,7 @@ Make article meta data
   <xsl:for-each select="front/article-meta">
     <xsl:apply-templates select="title-group" mode="front"/>
 <!--    <xsl:variable name="matchto" select="author"/>-->
-    <p class="authors">
-      <xsl:call-template name="makeXpathLocation" >
-        <!-- <xsl:with-param name="node" select="."/> -->
-      </xsl:call-template>
+    <p class="authors" xpathLocation="noSelect">
       <xsl:for-each select="contrib-group/contrib[@contrib-type='author']">
         <xsl:choose>
         
@@ -1295,10 +1292,7 @@ Make article meta data
                              mode="front"/>
       </xsl:for-each> <!-- end of contrib -->
     </p>
-    <p class="affiliations">
-      <xsl:call-template name="makeXpathLocation" >
-        <!-- <xsl:with-param name="node" select="."/> -->
-      </xsl:call-template>
+    <p class="affiliations" xpathLocation="noSelect">
       <xsl:for-each select="contrib-group/aff | contrib-group/contrib[@contrib-type='author']/aff">
         <xsl:apply-templates select="label"/>
         <xsl:if test="label">
@@ -2804,10 +2798,7 @@ Make article meta data
 </xsl:template>
 
 <xsl:template match="article-title" mode="front">
-  <h1>
-    <xsl:call-template name="makeXpathLocation" >
-      <!-- <xsl:with-param name="node" select="."/> -->
-    </xsl:call-template>
+  <h1 xpathLocation="noSelect">
     <xsl:apply-templates/>
   </h1>
   <xsl:call-template name="nl-1"/>
@@ -4108,10 +4099,7 @@ Make article meta data
   <ol class="references" xpathLocation="noSelect">
     <xsl:for-each select="ref">
     <xsl:sort data-type="number" select="label"/>
-      <li>
-        <xsl:call-template name="makeElementXpathLocation" >
-          <!-- <xsl:with-param name="node" select="."/> -->
-        </xsl:call-template>
+      <li xpathLocation="noSelect">
         <a>
           <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
           <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
