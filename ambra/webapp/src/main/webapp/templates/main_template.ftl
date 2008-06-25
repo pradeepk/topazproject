@@ -25,22 +25,11 @@
 
 <#include "/global/global_config.ftl">
 
-<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-<#if journalContext = "OverlayJournal" >
-    <#include "/journals/overlayJournal/global/global_top.ftl">
-<#else>
-  <#include "/global/global_top.ftl">
-</#if>
-<#-- END MAJOR HACK -->
+<#include "/global/global_top.ftl">
 
 <!-- begin : main content -->
 <#include "${templateFile}">
 <!-- end : main contents -->
 
-<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-<#if journalContext = "OverlayJournal" >
-  <#include "/journals/overlayJournal/global/global_bottom.ftl">
-<#else>
-  <#include "/global/global_bottom.ftl">
-</#if>
-<#-- END MAJOR HACK -->
+<#include "/global/global_bottom.ftl">
+

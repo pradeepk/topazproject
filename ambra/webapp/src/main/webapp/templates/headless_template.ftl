@@ -30,12 +30,4 @@
 <#include "${templateFile}">
 <!-- end : main contents -->
 
-<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-<#if journalContext = "AmbraJournal" >
-  <#include "/journals/ambraJournal/global/global_bottom.ftl">
-<#elseif journalContext = "OverlayJournal" >
-  <#include "/journals/overlayJournal/global/global_bottom.ftl">
-<#else>
-  <#include "/global/global_bottom.ftl">
-</#if>
-<#-- END MAJOR HACK -->
+<#include "/global/global_bottom_footerless.ftl">

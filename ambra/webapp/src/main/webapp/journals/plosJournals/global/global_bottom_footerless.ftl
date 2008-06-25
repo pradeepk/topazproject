@@ -20,11 +20,20 @@
 </div>
 <!-- end : container -->	
 
-<!-- begin : footer -->
-<div id="ftr">
-<#include "/journals/plosJournals/global/global_footer.ftl">
-</div>
-<!-- end : footer -->
-<#include "google.ftl">
+  <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
+  <#if journalContext = "PLoSClinicalTrials" >
+    <#include "/journals/clinicalTrials/global/google.ftl">
+  <#elseif journalContext = "PLoSCompBiol" >
+    <#include "/journals/compbiol/global/google.ftl">
+  <#elseif journalContext = "PLoSGenetics" >
+    <#include "/journals/genetics/global/google.ftl">
+  <#elseif journalContext = "PLoSNTD" >
+    <#include "/journals/ntd/global/google.ftl">
+  <#elseif journalContext = "PLoSONE" >
+    <#include "/journals/plosone/global/google.ftl">
+  <#elseif journalContext = "PLoSPathogens" >
+    <#include "/journals/pathogens/global/google.ftl">
+  </#if>
+  <#-- END MAJOR HACK -->
 </body>
 </html>
