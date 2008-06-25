@@ -22,7 +22,7 @@ audio/basic				au
 audio/midi				midi mid
 audio/x-aifc				aifc
 audio/x-aiff				aif aiff
-audio/x-mpeg				mpeg mpg
+audio/x-mpeg				mpeg mpg mp2
 audio/x-wav				wav
 video/mpeg				mpeg mpg mpe
 video/quicktime				qt mov
@@ -108,6 +108,8 @@ audio/x-mpeg				mpa abs mpega
 audio/x-mpeg-2				mp2a mpa2
 # compressed speech (Echo Speech Corp.)
 audio/echospeech			es
+# mp3
+audio/x-mpeg3				mp3
 # Toolvox speech audio (Voxware)
 audio/voxware				vox
 # RapidTransit compressed audio (Fast Man)
