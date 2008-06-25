@@ -188,6 +188,10 @@
         <typeHeading>Online Only: Editorial</typeHeading>
       </articleType>
       <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Overview</typeUri>
+        <typeHeading>Overview</typeHeading>
+      </articleType>
+      <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Message%20from%20ISCB</typeUri>
         <typeHeading>Message from ISCB</typeHeading>
       </articleType>
