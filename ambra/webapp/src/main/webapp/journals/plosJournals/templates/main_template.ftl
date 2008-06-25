@@ -25,23 +25,7 @@
 
 <#include "/global/global_config.ftl">
 
-<#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
-<#if journalContext = "PLoSClinicalTrials" >
-  <#include "/journals/clinicalTrials/global/global_top.ftl">
-<#elseif journalContext = "PLoSCompBiol" >
-  <#include "/journals/compbiol/global/global_top.ftl">
-<#elseif journalContext = "PLoSGenetics" >
-  <#include "/journals/genetics/global/global_top.ftl">
-<#elseif journalContext = "PLoSNTD" >
-  <#include "/journals/ntd/global/global_top.ftl">
-<#elseif journalContext = "PLoSONE" >
-  <#include "/journals/plosone/global/global_top.ftl">
-<#elseif journalContext = "PLoSPathogens" >
-  <#include "/journals/pathogens/global/global_top.ftl">
-<#else>
-  <#include "/global/global_top.ftl">
-</#if>
-<#-- END MAJOR HACK -->
+<#include "/journals/plosJournals/global/global_top.ftl">
 
 <!-- begin : main content -->
 <#include "${templateFile}">
