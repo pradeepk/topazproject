@@ -46,7 +46,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
   public static final class JournalInfo {
     private String key, eissn;
     private String smartCollectionRulesDescriptor;
-    private String imageUri, currentIssueUri;
+    private String image, currentIssue;
     private String volumes;
     private List<String> simpleCollection;
 
@@ -68,17 +68,17 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
     public void setSmartCollectionRulesDescriptor(String smartCollectionRulesDescriptor) {
       this.smartCollectionRulesDescriptor = smartCollectionRulesDescriptor;
     }
-    public String getImageUri() {
-      return imageUri;
+    public String getImage() {
+      return image;
     }
-    public void setImageUri(String imageUri) {
-      this.imageUri = imageUri;
+    public void setImage(String image) {
+      this.image = image;
     }
-    public String getCurrentIssueUri() {
-      return currentIssueUri;
+    public String getCurrentIssue() {
+      return currentIssue;
     }
-    public void setCurrentIssueUri(String currentIssueUri) {
-      this.currentIssueUri = currentIssueUri;
+    public void setCurrentIssue(String currentIssue) {
+      this.currentIssue = currentIssue;
     }
     public String getVolumes() {
       return volumes;
@@ -210,7 +210,8 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
 
     journalInfo.setKey(journal.getKey());
     journalInfo.setEissn(journal.getEIssn());
-    journalInfo.setCurrentIssueUri(journal.getCurrentIssue() == null ? null : journal.getCurrentIssue().toString());
+    journalInfo.setCurrentIssue(journal.getCurrentIssue() == null ? null : journal.getCurrentIssue().toString());
+    journalInfo.setImage(journal.getImage() == null ? null : journal.getImage().toString());
 
     List<URI> jscs = journal.getSimpleCollection();
     if(jscs != null) {
