@@ -373,7 +373,7 @@ dojo.addOnLoad(function() {
       fldTitle.value = "";
     }
     ambra.formUtil.textCues.on(_ratingComments, _ratingCommentCue); 
-    ambra.formUtil.checkFieldStrLength(_ratingComments, 500);
+    //ambra.formUtil.checkFieldStrLength(_ratingComments, 500);
   });
   
   dojo.connect(dojo.byId("btn_post_rating"), "onclick", function(e) {
@@ -445,7 +445,7 @@ dojo.addOnLoad(function() {
       fldTitle.value = "";
     }
     ambra.formUtil.textCues.on(_annotationForm.cArea, _commentCue); 
-    ambra.formUtil.checkFieldStrLength(_annotationForm.cArea, 500);
+    //ambra.formUtil.checkFieldStrLength(_annotationForm.cArea, 500);
   });
   
   /*
