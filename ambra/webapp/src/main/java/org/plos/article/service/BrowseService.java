@@ -57,6 +57,7 @@ import org.plos.models.Volume;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -82,8 +83,6 @@ public class BrowseService {
 
   private static final String ISSUE_LOCK        = "IssueLock-";
   private static final String ISSUE_KEY         = "Issue-";
-
-  public static final String VOL_INFOS_FOR_JOURNAL_KEY = "VolInfos_";
 
   private final ArticlePEP     pep;
   private       Session        session;
@@ -227,6 +226,10 @@ public class BrowseService {
    */
   @Transactional(readOnly = true)
   public IssueInfo getIssueInfo(final URI doi) {
+    // This flush is so that our own query cache reflects change.
+    // TODO : implement query caching in OTM and let it manage this cached query
+    if (session.getFlushMode().implies(FlushMode.always))
+      session.flush();
     return browseCache.get(ISSUE_KEY + doi, -1,
         new Cache.SynchronizedLookup<IssueInfo, RuntimeException>((ISSUE_LOCK + doi).intern()) {
           public IssueInfo lookup() throws RuntimeException {
@@ -353,17 +356,10 @@ public class BrowseService {
    */
   @Transactional(readOnly = true)
   public List<VolumeInfo> getVolumeInfosForJournal(final Journal journal) {
-
-    String key = (VOL_INFOS_FOR_JOURNAL_KEY + (journal.getKey())).intern();
-
-    return browseCache.get(key, -1,
-                              new Cache.SynchronizedLookup<List<VolumeInfo>, RuntimeException>(key) {
-       public List<VolumeInfo> lookup() throws RuntimeException {
-         final List<URI> volumeDois = journal.getVolumes();
-         List<VolumeInfo> volumeInfos = loadVolumeInfos(volumeDois);
-         Collections.reverse(volumeInfos);
-         return volumeInfos;
-       }});
+    final List<URI> volumeDois = journal.getVolumes();
+    List<VolumeInfo> volumeInfos = loadVolumeInfos(volumeDois);
+    Collections.reverse(volumeInfos);
+    return volumeInfos;
   }
 
   /**
@@ -373,12 +369,7 @@ public class BrowseService {
    * @param volumeDois to look up.
    * @return volumeInfos.
    */
-  @Transactional(readOnly = true)
-  public List<VolumeInfo> loadVolumeInfos(final List<URI> volumeDois) {
-    // XXX look up VolumeInfos in Cache
-
-    // TODO should all of this be in a tx???
-
+  private List<VolumeInfo> loadVolumeInfos(final List<URI> volumeDois) {
     List<VolumeInfo> volumeInfos = new ArrayList<VolumeInfo>();
     // get the Volumes
     for (int onVolumeDoi = 0; onVolumeDoi < volumeDois.size(); onVolumeDoi++) {
@@ -491,8 +482,6 @@ public class BrowseService {
     browseCache.remove(CAT_INFO_KEY + jnlName);
     browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
 
-    clearVolumeInfoCacheForJournal(jnlName);
-
     browseCache.remove(DATE_LIST_KEY + jnlName);
 
     for (Object key : browseCache.getKeys()) {
@@ -500,20 +489,6 @@ public class BrowseService {
         browseCache.remove(key);
       }
     }
-  }
-
-  /**
-   * Clears any currently cached list of VolumeInfo objects for this Journal. Note that we cache a
-   * list of the VolumeInfo objects since there are few of them. The VolumeInfo objects only contain
-   * a list of Issue DOI's for the issues they contain, so updates to an issue only require updating
-   * or removing cached issue. The issues themselves are cached individually based on their DOI's. 
-   * It is only necessary to clear the VolumeInfos from the cache for a Journal if a Volume
-   * is added or removed from a journal, or if an Issue within a Volume is added or removed from a Volume.
-   *  
-   * @param jnlName the name of the journal as returned by Journal.getKey()
-   */
-  public void clearVolumeInfoCacheForJournal(final String jnlName) {
-    browseCache.remove(BrowseService.VOL_INFOS_FOR_JOURNAL_KEY + jnlName);
   }
 
   /**
@@ -738,14 +713,28 @@ public class BrowseService {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was updated.");
         notifyArticlesChanged(new String[]{id});
-      }
-      if (o instanceof Journal) {
+      } else if (o instanceof Journal) {
         String key = ((Journal)o).getKey();
-        if (browseCache.getCacheManager().getTxnContext().getChangedJournals().contains(key)) {
+        if ((updates == null)
+                 || updates.isChanged("smartCollectionRules")
+                 || updates.isChanged("simpleCollection")) {
           if (log.isDebugEnabled())
             log.debug("Updating browsecache for the journal that was modified.");
           notifyJournalModified(key);
         }
+      } else if (o instanceof Volume) {
+        if ((updates != null) && updates.isChanged("issueList")) {
+          if (log.isDebugEnabled())
+            log.debug("Updating issue-infos for the Volume that was modified.");
+          for (URI issue : ((Volume)o).getIssueList())
+            clearIssueInfoCache(issue);
+          for (String v : updates.getOldValue("issueList"))
+            clearIssueInfoCache(URI.create(v));
+        }
+      } else if (o instanceof Issue) {
+        if (log.isDebugEnabled())
+          log.debug("Updating issue-info for the Issue that was modified.");
+        clearIssueInfoCache(((Issue)o).getId());
       }
     }
 
@@ -754,11 +743,14 @@ public class BrowseService {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was deleted.");
         notifyArticlesChanged(new String[]{id});
-      }
-      if (o instanceof Journal) {
+      } else if (o instanceof Journal) {
         if (log.isDebugEnabled())
-          log.debug("Updating browsecache for the journal that was modified.");
+          log.debug("Updating browsecache for the journal that was deleted.");
         notifyJournalModified(((Journal)o).getKey());
+      } else if (o instanceof Issue) {
+          if (log.isDebugEnabled())
+            log.debug("Updating issue-info for the issue that was deleted.");
+          clearIssueInfoCache(((Issue)o).getId());
       }
     }
   }

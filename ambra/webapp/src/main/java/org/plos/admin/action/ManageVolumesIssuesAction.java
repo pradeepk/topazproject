@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.models.DublinCore;
 import org.plos.models.Issue;
@@ -63,7 +62,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
   private Session session;
   private JournalService journalService;
-  private BrowseService browseService;
 
   private static final Log log = LogFactory.getLog(ManageVolumesIssuesAction.class);
 
@@ -218,8 +216,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     }
     volume.setIssueList(volumeIssues);
 
-    browseService.clearVolumeInfoCacheForJournal(currentJournal.getKey());
-
     addActionMessage("Updated Volume: " + volume.toString());
 
     return SUCCESS;
@@ -316,8 +312,6 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     issue.setSimpleCollection(issueArticles);
 
     addActionMessage("Updated Issue: " + issue.toString());
-
-    browseService.clearIssueInfoCache(doi);
 
     return SUCCESS;
   }
@@ -451,12 +445,4 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     this.journalService = journalService;
   }
 
-  /**
-   * Spring injected method to set the BrowseService
-   * @param bs
-   */
-  @Required
-  public void setBrowseService(BrowseService bs) {
-    this.browseService = bs;
-  }
 }
