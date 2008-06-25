@@ -194,7 +194,6 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
       // new Journal Articles
       journal.setSimpleCollection(articles);
 
-      addActionMessage("Browse cache flush for: " + journal.getKey());
     }
 
     // [re-]create the journal info value object
@@ -230,6 +229,16 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
         sb.append(dc.toString());
       }
       journalInfo.setSmartCollectionRulesDescriptor(sb.substring(2));
+    }
+
+    final List<URI> volumes = journal.getVolumes();
+    if(volumes != null && volumes.size() > 0) {
+      StringBuffer sb = new StringBuffer();
+      for(URI v : volumes) {
+        sb.append(", ");
+        sb.append(v.toString());
+      }
+      journalInfo.setVolumes(sb.substring(2));
     }
 
     if (log.isDebugEnabled()) log.debug("Journal info assembled");
