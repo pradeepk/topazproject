@@ -123,7 +123,6 @@ public abstract class CitationUtils {
   /**
    * Generates the citation string.
    * @param ci The {@link CitationInfo}
-   * @param foramt The desired citation string format.
    * @return String
    */
   public static String generateArticleCitationString(CitationInfo ci) {
