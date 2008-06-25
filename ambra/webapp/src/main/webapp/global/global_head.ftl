@@ -34,7 +34,6 @@
   href="${Request[freemarker_config.journalContextAttributeKey].baseUrl}${rssPath}" />
 
 <#include "../css/global_css.ftl">
-<#include "../javascript/global_js.ftl">
 
 <meta name="description" content="${freemarker_config.getMetaDescription(journalContext)}" />
 

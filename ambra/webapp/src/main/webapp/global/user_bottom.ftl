@@ -25,5 +25,6 @@
 <#include "user_footer.ftl">
 </div>
 <!-- end : footer -->
+<#include "/javascript/global_js.ftl">
 </body>
 </html>

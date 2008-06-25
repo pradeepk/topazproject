@@ -25,4 +25,5 @@
 </head>
 <body>
 <!-- begin : container -->
-	
+<!-- NOTE: js needs to be here (not at bottom of page like usual) for slideshow to work -->
+<#include "/javascript/global_js.ftl">

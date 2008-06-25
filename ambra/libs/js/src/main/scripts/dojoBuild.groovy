@@ -24,8 +24,7 @@
   * This script performs a dojo custom build of the dojo library and the defined ambra dojo widgets.
   * Specifically, it performs the following:
   * 1) Perfoms a custom dojo build. 
-  * 2) Applies ambra specific dojo library fixes to the built files.
-  * 3) Injects interned locale data into the built js files.
+  * 2) Injects interned locale data into the built js files.
   * 
   * IMPT: The invoking JVM's working directory is critical: it must be the js ancestor dir (the dir containing the pom.xml).
   * IMPT: This script sadly depends on the gmaven plugin scripting context and therefore can NOT be run standalone!! 
@@ -40,14 +39,6 @@
  
  // NOTE: the gmaven plugin provides AntBuilder in the scripting context
  if (!ant) ant = new AntBuilder()
-
- def fixDojoCore = { String fpath ->
-   File f = new File(fpath)
-   String fbuf = f.getText()
-   fbuf = fbuf.replaceFirst("setTimeout\\(dojo._scopeName ?\\+ ?\".loaded\\(\\);\", ?0\\);", 
-       "/*AMBRA TWEAK*/setTimeout(dojo._scopeName + \".loaded();\", dojo.isIE ? 250 : 0);/*END AMBRA TWEAK*/")
-   f.write(fbuf)
- }
 
  def injectLocales = { String fpath ->
    File f = new File(fpath)
@@ -93,12 +84,6 @@
  }
  println 'dojo build complete' 
 
- // apply ambra specific dojo library fixes to the built files
- println 'Applying ambra specific dojo library fixes...'
- fixDojoCore(project.build.directory + '/dojo/dojo/dojo.js')
- fixDojoCore(project.build.directory + '/dojo/dojo/dojo.js.uncompressed.js')
- println 'Ambra specific dojo library fixes applied'
- 
  // inject the locales to the built files
  println 'Injecting locale(s)...'
  injectLocales(project.build.directory + '/dojo/dojo/ambra.js')

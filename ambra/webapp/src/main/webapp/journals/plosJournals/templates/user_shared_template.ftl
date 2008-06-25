@@ -31,6 +31,7 @@
 <#include "/journals/plosJournals/global/user_footer.ftl">
 </div>
 <!-- end : footer -->
+<#include "/javascript/global_js.ftl">
 <#-- BEGIN MAJOR HACK FOR CONDITIONAL JOURNAL INCLUDE -->
 <#if journalContext = "PLoSClinicalTrials" >
   <#include "/journals/clinicalTrials/global/google.ftl">

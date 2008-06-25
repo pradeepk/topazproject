@@ -19,5 +19,6 @@
 -->
 <!-- end : container -->	
 
+<#include "/javascript/global_js.ftl">
 </body>
 </html>

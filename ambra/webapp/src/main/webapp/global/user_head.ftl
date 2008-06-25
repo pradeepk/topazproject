@@ -29,7 +29,6 @@
 <@s.url id="homeURL" includeParams="none" includeContext="true" namespace="/" action="home"/>
 <link rel="home" title="home" href="${homeURL}" />
 <#include "user_css.ftl">
-<#include "../javascript/global_js.ftl">
 
 <meta name="keywords" content="Ambra, RDF" />
 

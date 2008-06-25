@@ -31,7 +31,6 @@
 <link rel="home" title="home" href="http://www.plosjournals.org"></link>
 
 <#include "/global/user_css.ftl">
-<#include "/javascript/global_js.ftl">
 
 <meta name="keywords" content="PLoS, Public Library of Science, Open Access, Open-Access, Science, Medicine, Biology, Research, Peer-review, Inclusive, Interdisciplinary, Ante-disciplinary, Physics, Chemistry, Engineering" />
 
