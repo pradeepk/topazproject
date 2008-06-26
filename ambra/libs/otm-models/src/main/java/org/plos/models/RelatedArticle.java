@@ -41,7 +41,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
  */
 @Entity(type = PLoS.plos + "RelatedArticle", model = "ri")
 public class RelatedArticle  implements Serializable {
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/relatedArticle/")
+  @Id @GeneratedValue(uriPrefix = "id:relatedArticle/")
   private URI id;
 
   @Predicate(uri = Rdf.dc_terms + "references")

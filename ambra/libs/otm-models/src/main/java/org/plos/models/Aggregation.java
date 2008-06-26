@@ -45,7 +45,7 @@ import org.topazproject.otm.criterion.DetachedCriteria;
 @Entity(type = "http://purl.org/dc/dcmitype/Collection", model = "ri")
 public class Aggregation implements Serializable {
   @Id
-  @GeneratedValue(uriPrefix = "info:doi/10.1371/aggregation/")
+  @GeneratedValue(uriPrefix = "id:aggregation/")
   private URI                            id;
   @Predicate(uri = PLoS.plos + "editorialBoard")
   private EditorialBoard                 editorialBoard;

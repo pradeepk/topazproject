@@ -40,7 +40,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix(Rdf.foaf)
 @Entity(type = Rdf.foaf + "Person")
 public class FoafPerson implements Serializable, Cloneable {
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/profile/")
+  @Id @GeneratedValue(uriPrefix = "id:profile/")
   private URI      id;
 
   /** Their real name, usually as &lt;first&gt; &lt;last&gt; */

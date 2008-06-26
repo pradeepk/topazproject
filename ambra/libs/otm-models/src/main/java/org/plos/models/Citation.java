@@ -42,7 +42,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @Entity(type = PLoS.bibtex + "Entry", model = "ri")
 @UriPrefix(Rdf.topaz)
 public class Citation implements Serializable {
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/citation/")
+  @Id @GeneratedValue(uriPrefix = "id:citation/")
   private URI   id;
 
   @Predicate(uri = PLoS.bibtex + "hasKey", dataType = Rdf.xsd + "string")

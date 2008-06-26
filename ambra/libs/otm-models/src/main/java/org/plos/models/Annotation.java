@@ -34,7 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = Annotation.RDF_TYPE)
 public abstract class Annotation extends Annotea {
   @Id
-  @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
+  @GeneratedValue(uriPrefix = "id:annotation/")
   private URI                                                               id;
   private URI                                                               annotates;
   private String                                                            context;

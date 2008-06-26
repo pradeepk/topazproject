@@ -39,7 +39,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @Entity(model = "ri", type = Rdf.topaz + "RatingSummaryContent")
 public class RatingSummaryContent implements Serializable {
   @Id
-  @GeneratedValue(uriPrefix = "info:doi/10.1371/ratingSummaryContent/")
+  @GeneratedValue(uriPrefix = "id:ratingSummaryContent/")
   private String id;
 
   private int    insightNumRatings;

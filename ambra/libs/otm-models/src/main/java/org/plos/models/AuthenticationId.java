@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.Predicate;
 public class AuthenticationId implements Serializable {
   private static final String DEF_REALM = "local";
 
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/authids/")
+  @Id @GeneratedValue(uriPrefix = "id:authids/")
   private URI id;
   @Predicate(uri = Rdf.topaz + "realm")
   private String realm = DEF_REALM;

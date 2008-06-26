@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "users")
 public class UserRole implements Serializable {
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/roles/")
+  @Id @GeneratedValue(uriPrefix = "id:roles/")
   private URI    id;
   @Predicate(uri = Rdf.topaz + "role")
   private String role;

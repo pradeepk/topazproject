@@ -89,7 +89,7 @@
         <platform>
           <feed>
             <title>Ambra Journal</title>
-            <id>info:doi/10.1371/feed.ambj</id>
+            <id>${ambra.aliases.id}feed.ambj</id>
           </feed>
         </platform>
       </AmbraJournal>
@@ -134,7 +134,7 @@
         <title>Ambra Journal</title>
         <tagline>Publishing science, accelerating research</tagline>
         <icon>${webserver-url}images/favicon.ico</icon>
-        <id>info:doi/1371/feed.ambr</id><!-- Unique id. Should change for different criteria -->
+        <id>${ambra.aliases.id}feed.ambr</id><!-- Unique id. Should change for different criteria -->
         <extended><!-- Configuration of extended atom feeds -->
           <prefix>plos</prefix><!-- namespace prefix for custom elements -->
           <namespace>http://www.plos.org/atom/ns#plos</namespace><!-- custom element namespace -->
@@ -166,6 +166,7 @@
         <ingestDestinationDir>
           /var/spool/ambra/ingested
         </ingestDestinationDir>
+        <documentPrefix>${ambra.aliases.id}journal.</documentPrefix>
       </documentManagement>
       
       <!-- crossref information - set parameters and sendToXref to true to turn on -->

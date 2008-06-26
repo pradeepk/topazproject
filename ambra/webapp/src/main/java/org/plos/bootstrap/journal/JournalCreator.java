@@ -20,6 +20,7 @@ package org.plos.bootstrap.journal;
 import java.net.URI;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletContextEvent;
@@ -101,6 +102,17 @@ public class JournalCreator implements ServletContextListener {
                                        URI.create(conf.getString("ambra.models.profiles")), null));
       factory.addModel(new ModelConfig("criteria",
                                        URI.create(conf.getString("ambra.models.criteria")), null));
+
+      Configuration aliases = conf.subset("ambra.aliases");
+      Iterator it           = aliases.getKeys();
+      while (it.hasNext()) {
+        String key = (String) it.next();
+
+        if ((key.indexOf("[") >= 0) || (key.indexOf(".") >= 0))
+          continue;
+
+        factory.addAlias(key, aliases.getString(key));
+      }
 
       factory.preload(DetachedCriteria.class);
       factory.preload(EQCriterion.class);

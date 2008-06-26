@@ -43,7 +43,7 @@ public class UserAccount implements Serializable {
   /** the state indicating the user account is suspended: {@value} */
   public static final int ACNT_SUSPENDED = 1;
 
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/account/")
+  @Id @GeneratedValue(uriPrefix = "id:account/")
   private URI id;
   @Predicate(uri = Rdf.topaz + "accountState")
   private int state = ACNT_ACTIVE;

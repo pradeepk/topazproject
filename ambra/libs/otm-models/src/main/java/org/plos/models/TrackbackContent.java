@@ -40,7 +40,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 public class TrackbackContent implements Serializable {
 
   @Id
-  @GeneratedValue(uriPrefix = "info:doi/10.1371/trackbackContent/")
+  @GeneratedValue(uriPrefix = "id:trackbackContent/")
   private String id;
 
   private String title;

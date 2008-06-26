@@ -58,6 +58,16 @@
       </copyright>
     </platform>
 
+    <!-- 
+      URI aliases. eg. id:annotation/... can be used in place of info:doi/10.1371/ 
+      The main use for this is to define aliases that are used by id generators
+      and such that are configured with OTM. But could be used in other config
+      file sections to consolidate identifier prefix usages.
+    -->
+    <aliases>
+      <id>info:doi/10.1371/</id>
+    </aliases>
+
     <!-- Overlay journal config -->
     <virtualJournals>
       <default>

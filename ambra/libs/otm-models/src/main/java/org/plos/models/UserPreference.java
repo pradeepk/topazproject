@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "preferences")
 public class UserPreference implements Serializable {
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/preferences/")
+  @Id @GeneratedValue(uriPrefix = "id:preferences/")
   private URI    id;
   /** The name of the preference. */
   @Predicate(uri = Rdf.topaz + "prefName")

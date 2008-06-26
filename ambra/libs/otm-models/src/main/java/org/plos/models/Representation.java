@@ -36,7 +36,7 @@ import org.topazproject.otm.event.PreInsertEventListener;
  */
 @Entity(model = "ri", type = Rdf.topaz + "Representation")
 public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/representation/")
+  @Id @GeneratedValue(uriPrefix = "id:representation/")
   private String                                                           id;
   @Predicate(uri = Rdf.dc_terms + "identifier")
   private String                                                           name;

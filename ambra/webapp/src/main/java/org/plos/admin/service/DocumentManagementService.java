@@ -71,12 +71,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @author alan Manage documents on server. Ingest and access ingested documents.
  */
 public class DocumentManagementService {
-  public static final String BASE_CONFIG_KEY = "ambra.services.documentManagement";
   private static final Log log = LogFactory.getLog(DocumentManagementService.class);
   private ArticleOtmService articleOtmService;
   private FetchArticleService fetchArticleService;
   private String documentDirectory;
   private String ingestedDocumentDirectory;
+  private String documentPrefix;
   private CrossRefPosterService crossRefPosterService;
   private File xslTemplate;
   private JournalService journalService;
@@ -110,6 +110,11 @@ public class DocumentManagementService {
   @Required
   public void setDocumentDirectory(final String documentDirectory) {
     this.documentDirectory = documentDirectory;
+  }
+
+  @Required
+  public void setDocumentPrefix(final String documentPrefix) {
+    this.documentPrefix = documentPrefix;
   }
 
   public String getDocumentDirectory() {
@@ -196,7 +201,7 @@ public class DocumentManagementService {
 
     // move zip back to ingestion queue
     if (!queueDir.equals(ingestedDir)) {
-      String fname = uri.substring(25) + ".zip";        // strip 'info:doi/10.1371/journal.'
+      String fname = uri.substring(documentPrefix.length()) + ".zip";        // strip 'info:doi/10.1371/journal.'
       File fromFile = new File(ingestedDir, fname);
       File toFile   = new File(queueDir,    fname);
 

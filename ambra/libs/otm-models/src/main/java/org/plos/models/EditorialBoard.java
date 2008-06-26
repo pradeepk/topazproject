@@ -39,7 +39,7 @@ import org.topazproject.otm.annotations.Predicate;
 @Entity(type = PLoS.plos + "EditorialBoard", model = "ri")
 public class EditorialBoard implements Serializable {
   @Id
-  @GeneratedValue(uriPrefix = "info:doi/10.1371/editorialBoard/")
+  @GeneratedValue(uriPrefix = "id:editorialBoard/")
   private URI            id;
   @Predicate(uri = Rdf.dc_terms + "replaces")
   private EditorialBoard supersedes;

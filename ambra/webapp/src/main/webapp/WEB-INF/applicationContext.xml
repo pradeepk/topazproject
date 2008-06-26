@@ -91,6 +91,7 @@
     <!-- These pathnames are absolute -->
     <property name="documentDirectory" value="${ambra.services.documentManagement.ingestSourceDir}"/>
     <property name="ingestedDocumentDirectory" value="${ambra.services.documentManagement.ingestDestinationDir}"/>
+    <property name="documentPrefix" value="${ambra.services.documentManagement.documentPrefix}"/>
     <!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>
     <property name="plosDoiUrl" value="${ambra.services.crossref.plos.doiurl}"/>
@@ -299,6 +300,12 @@
           <constructor-arg index="2" value="${ambra.models.prefix[@type]}"/>
         </bean>
       </list>
+    </property>
+
+    <property name="aliases">
+      <map>
+        <entry key="id" value="${ambra.aliases.id}"/>
+      </map>
     </property>
 
     <property name="preloadClasses">

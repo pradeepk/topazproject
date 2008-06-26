@@ -45,7 +45,7 @@ public class RatingContent implements Serializable {
   public static final int STYLE_WEIGHT = 4;
 
   @Id
-  @GeneratedValue(uriPrefix = "info:doi/10.1371/ratingContent/")
+  @GeneratedValue(uriPrefix = "id:ratingContent/")
   private String id;
 
   private int insightValue;

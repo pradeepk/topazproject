@@ -42,7 +42,7 @@ public class Reply extends Annotea {
    */
   public static final String NS = "http://www.w3.org/2001/03/thread#";
   @Id
-  @GeneratedValue(uriPrefix = "info:doi/10.1371/reply/")
+  @GeneratedValue(uriPrefix = "id:reply/")
   private URI                                                           id;
   @Predicate(type=PropType.OBJECT)
   private String                                                       root;
