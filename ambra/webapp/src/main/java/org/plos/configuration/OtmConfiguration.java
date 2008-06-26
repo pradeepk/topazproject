@@ -138,9 +138,6 @@ public class OtmConfiguration {
    * @param aliases the aliases to set.
    */
   public void setAliases(Map<String, String> aliases) {
-    for (String alias : factory.listAliases().keySet())
-      factory.removeAlias(alias);
-
     for (Map.Entry<String, String> alias : aliases.entrySet())
       factory.addAlias(alias.getKey(), alias.getValue());
   }
