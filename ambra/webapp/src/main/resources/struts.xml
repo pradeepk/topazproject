@@ -660,15 +660,6 @@
       <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
     </action>
 
-    <action name="editAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
-      <result name="success" type="user">
-        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
-      </result>
-      <result name="input" type="user">
-        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
-      </result>
-    </action>
-
     <action name="editAjaxAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success"  type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
