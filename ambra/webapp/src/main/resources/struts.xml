@@ -680,15 +680,6 @@
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
     </action>
 
-    <action name="saveAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="saveAlerts">
-      <result name="success" type="user">
-        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
-      </result>
-      <result name="input" type="user">
-        <param name="templateFile">/user/editAmbraAlerts.ftl</param>
-      </result>
-    </action>
-
     <action name="saveAjaxAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="saveAlerts">
       <result name="success"  type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
