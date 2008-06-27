@@ -69,7 +69,7 @@ public class FlagManagementService {
 
     final Rating[] ratings = annotationService.listFlaggedRatings();
     annotations = articleAnnotationService.listAnnotations(null, FLAG_MASK | PUBLIC_MASK);
-    replies = replyService.listReplies(null, FLAG_MASK | PUBLIC_MASK ); // Bug - not marked with public flag for now
+    replies = replyService.listReplies(null, FLAG_MASK); // Bug - not marked with public flag for now
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratings.length + " ratings with flags");
       log.debug("There are " + annotations.length + " annotations with flags");

@@ -304,17 +304,18 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
   private void deleteFlag(String target, String flag, String targetType)
     throws ApplicationException {
     // Delete flag
+    if (log.isDebugEnabled())
+      log.debug("Deleting flag: " + flag + " on target: " + target);
     annotationService.deleteFlag(flag);
     /*
      * TODO: The Action shouldn't have to worry about this kind of housekeeping. Move this to the
      * service!  Deal with 'flagged' status
      */
     Flag[] flags = annotationService.listFlags(target);
-    if (log.isDebugEnabled()) {
-      log.debug("Deleting flag: " + flag + " on target: " + target);
+    if (log.isDebugEnabled())
       log.debug("Checking for flags on target: " + target + ". There are " + flags.length +
                 " flags remaining");
-    }
+
     if (flags.length == 0) {
       if (log.isDebugEnabled()) {
         log.debug("Setting status to unflagged");

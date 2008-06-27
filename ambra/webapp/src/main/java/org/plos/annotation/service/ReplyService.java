@@ -345,7 +345,7 @@ public class ReplyService extends BaseAnnotationService {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a = session.get(Reply.class, replyId);
-    a.setState(0);
+    a.setState(a.getState() & ~FLAG_MASK);
   }
 
   /**
@@ -361,7 +361,7 @@ public class ReplyService extends BaseAnnotationService {
     pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a = session.get(Reply.class, replyId);
-    a.setState(FLAG_MASK | PUBLIC_MASK);
+    a.setState(a.getState() | FLAG_MASK);
   }
 
   /**
