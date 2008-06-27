@@ -20,5 +20,5 @@
 # Load the common functions
 . /usr/local/topaz/bin/tools
 
-java -cp `getJars` RunItql "$@"
+java -Dbitronix.tm.timer.defaultTransactionTimeout=6000 -cp `getJars` RunItql "$@"
 exit $?
