@@ -34,10 +34,11 @@ csv = "csv" // In case somebody runs %mode = csv instead of %mode = "csv"
 table = "table reduce quote" // Allows %mode = table
 
 // Parse command line
-def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-itpvN]')
+def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-irtpvN]')
 cli.h(longOpt:'help', 'usage information')
 cli.v(longOpt:'verbose', 'turn on verbose mode')
 cli.e(longOpt:'echo', 'echo script file when running')
+cli.r(longOpt:'read-only', 'use read-only transactions')
 cli.M(args:1, 'Mulgara host:port')
 cli.f(args:1, 'script file')
 cli.p(longOpt:'prompt', 'show the prompt even for a script file')
@@ -60,6 +61,7 @@ pp = !opt.N
 mode = opt.m ?: table
 echo = opt.v || opt.e || !opt.f
 trunc = opt.t
+readOnly = opt.r
 running = true
 def writer = echo ? new OutputStreamWriter(System.out) : new StringWriter()
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
@@ -269,7 +271,11 @@ def execute(query) {
 }
 
 def doQuery(query) {
-  def tx = session.beginTransaction()
+  def tx
+  if (readOnly)
+    tx = session.beginTransaction(true,0)
+  else
+    tx = session.beginTransaction()
   try {
     if (!query.trim().endsWith(';'))
       query <<= ';'
