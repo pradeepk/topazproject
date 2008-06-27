@@ -687,10 +687,10 @@ div#issueImage span#title { font-weight:bold; font-style:italic; }
 div#issueImage span#creator { font-weight:bold; }
 div#issueImage p#credit,
 div#issueImage p#credit a { font-style:italic; }
-div#issueImage div#thumbnail { width:122px; float:left; margin-right:15px; text-align:center; }
+div#issueImage div#thumbnail { width:122px; float:left; margin-right:15px; text-align:center; margin-bottom:1em; }
 div#issueImage div#thumbnail img { width:120px; height:120px;/*sizes temp*/ margin:0; border: 1px solid #999; display:block; }
 div#issueImage div#thumbnail a:link,
-div#issueImage div#thumbnail a:visited { font-size:.9em; font-weight:bold; margin:0; padding:0; }
+div#issueImage div#thumbnail a:visited { font-size:.9em; font-weight:bold; margin:0; padding:0; line-height:1.5em; }
 div#issueImage div#thumbnail p,
 div.toc #search-results { margin-top:0; padding:0; }
 div.toc h2,
