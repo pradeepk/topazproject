@@ -164,7 +164,7 @@ public class Statement {
             if (fragments != null && fragments.length > 0) {
               StringBuffer sb = new StringBuffer(snippetsMax * (fieldMaxLength + 25));
               for (int i = 0; i < fragments.length; i++) {
-                sb.append(stripTrailingEntity(fragments[0]));
+                sb.append(stripTrailingEntity(fragments[i]));
                 if (i < (fragments.length - 1))
                   sb.append(" ... ");
               }
