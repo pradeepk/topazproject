@@ -79,48 +79,49 @@ public class OtmInterceptor implements Interceptor {
     if (cm.isView())
       return null;
 
-    String journal = getCurrentJournal();
+    if (isFiltered(session, cm)) {
+      String journal = getCurrentJournal();
 
-    if (getChangedJournals().contains(journal)) {
-      // Note: This is only in this transaction context. ie. Pending commit.
-      if (log.isDebugEnabled())
-        log.debug(cm.getName() + " with id <" + id
-                  + "> must be loaded from the database since the journal '" + journal
-                  + "' is marked as changed.");
+      if (getChangedJournals().contains(journal)) {
+        // Note: This is only in this transaction context. ie. Pending commit.
+        if (log.isDebugEnabled())
+          log.debug(cm.getName() + " with id <" + id
+                    + "> must be loaded from the database since the journal '" + journal
+                    + "' is marked as changed.");
 
-      return null;
-    }
+        return null;
+      }
 
-    Cache.Item o = cache.get(journal + "-" + id);
+      Cache.Item o = cache.get(journal + "-" + id);
 
-    if (o == null) {
-      if (log.isDebugEnabled())
-        log.debug(cm.getName() + " with id <" + id + "> is not in the cache for journal '"
-                  + journal + "'");
+      if (o == null) {
+        if (log.isDebugEnabled())
+          log.debug(cm.getName() + " with id <" + id + "> is not in the cache for journal '"
+                    + journal + "'");
 
-      return null;
-    }
+        return null;
+      }
 
-    if (o.getValue() == null) {
-      if (log.isDebugEnabled())
-        log.debug(cm.getName() + " with id <" + id + "> is marked in cache as 'non-existant'."
-                  + " Forcing OTM to return a 'null'");
+      if (o.getValue() == null) {
+        if (log.isDebugEnabled())
+          log.debug(cm.getName() + " with id <" + id + "> is marked in cache as 'non-existant'."
+                    + " Forcing OTM to return a 'null'");
 
-      return NULL;
+        return NULL;
+      }
     }
 
     Cache.Item val = cache.get(id);
 
     if (val == null) {
       if (log.isDebugEnabled())
-        log.debug(cm.getName() + " with id <" + id
-                  + "> is not in the cache but the journal entry was present for '" + journal + "'");
+        log.debug(cm.getName() + " with id <" + id + "> is not in the cache");
 
       return null;
     }
 
     if (log.isDebugEnabled())
-      log.debug(cm.getName() + " with id <" + id + "> is found in the cache for " + journal);
+      log.debug(cm.getName() + " with id <" + id + "> is found in the cache");
 
     /* Note: Assumes get filtering produces identical results.
      * This assumption currently holds because filters are
@@ -136,24 +137,26 @@ public class OtmInterceptor implements Interceptor {
 
     if (instance != null) {
       Cache.Item item = cache.get(id);
-      Object val = (item == null) ? null : item.getValue();
-      Entry e;
+      Object     val  = (item == null) ? null : item.getValue();
+      Entry      e;
 
       if (val instanceof Entry)
         e = new Entry((Entry) val);
       else {
-        e        = new Entry();
-        fields   = cm.getRdfMappers();
-        blob     = cm.getBlobField();
+        e             = new Entry();
+        fields        = cm.getRdfMappers();
+        blob          = cm.getBlobField();
       }
 
       e.set(session, cm, id, instance, fields, blob);
       cache.put(id, e);
     }
 
-    String journal = getCurrentJournal();
+    if (isFiltered(session, cm)) {
+      String journal = getCurrentJournal();
 
-    cache.put(journal + "-" + id, (instance == null) ? null : id);
+      cache.put(journal + "-" + id, (instance == null) ? null : id);
+    }
   }
 
   /*
@@ -162,7 +165,8 @@ public class OtmInterceptor implements Interceptor {
   public void onPostRead(Session session, ClassMetadata cm, String id, Object instance) {
     if (log.isDebugEnabled())
       log.debug(cm.getName() + " with id <" + id + "> is "
-          + ((instance != null) ? "loaded" : "null"));
+                + ((instance != null) ? "loaded" : "null"));
+
     /*
      * Note: this will have to be also transactionally added - since the read
      * may have depended on prior writes that we are not aware of.
@@ -208,16 +212,31 @@ public class OtmInterceptor implements Interceptor {
 
     cache.remove(id);
 
-    for (String journal : journalService.getAllJournalKeys())
-      if (!"".equals(journal))
-        cache.remove(journal + "-" + id);
+    if (isFiltered(session, cm)) {
+      for (String journal : journalService.getAllJournalKeys())
+        if (!"".equals(journal))
+          cache.remove(journal + "-" + id);
 
-    cache.remove(NO_JOURNAL + "-" + id);
+      cache.remove(NO_JOURNAL + "-" + id);
+    }
 
     if (instance instanceof Journal)
       journalChanged(((Journal) instance).getKey(), true);
 
     cacheManager.objectRemoved(session, cm, id, instance);
+  }
+
+  private boolean isFiltered(Session session, ClassMetadata test) {
+    for (String f : session.listFilters()) {
+      ClassMetadata cm =
+        session.getSessionFactory()
+                .getClassMetadata(session.enableFilter(f).getFilterDefinition().getFilteredClass());
+
+      if ((cm != null) && cm.isAssignableFrom(test))
+        return true;
+    }
+
+    return false;
   }
 
   private void journalChanged(String journal, boolean deleted) {
