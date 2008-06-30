@@ -47,7 +47,7 @@ class StateCache {
   private static final Log                       log    = LogFactory.getLog(StateCache.class);
   private Map<ObjectReference<?>, InstanceState> states =
     new HashMap<ObjectReference<?>, InstanceState>(1001);
-  private ReferenceQueue<ObjectReference<?>>     queue  = new ReferenceQueue<ObjectReference<?>>();
+  private ReferenceQueue<Object>                 queue  = new ReferenceQueue<Object>();
 
   static enum BlobChange {noChange, insert, update, delete};
 
