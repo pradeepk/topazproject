@@ -20,8 +20,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.mulgara</groupId>
-      <artifactId>driver</artifactId>
+      <groupId>org.topazproject</groupId>
+      <artifactId>mulgara-driver</artifactId>
+      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
