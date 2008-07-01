@@ -395,6 +395,4 @@ ambra.advsearch = {
   }
   
 };
-dojo.addOnLoad(function() {
-  setTimeout(ambra.advsearch.init, 200);
-});
+dojo.addOnLoad(function() { ambra.advsearch.init(); });
