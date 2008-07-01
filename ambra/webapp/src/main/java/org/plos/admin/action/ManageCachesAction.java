@@ -27,6 +27,7 @@ import java.util.TreeMap;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
 import net.sf.ehcache.Statistics;
 
 import org.apache.commons.logging.Log;
@@ -76,7 +77,8 @@ public class ManageCachesAction extends BaseActionSupport {
       addActionMessage(cacheName + ".clearStatistics() executed.");
     } else if ("get".equals(cacheAction) && cacheName != null && cacheKey != null) {
       Ehcache cache = cacheManager.getEhcache(cacheName);
-      final Object objectValue = cache.get(cacheKey).getObjectValue();
+      Element elem = cache.get(cacheKey);
+      final Object objectValue = (elem == null) ? null : elem.getObjectValue();
       addActionMessage(cacheName + ".get(" + cacheKey + ") = " + objectValue);
     } else if ("getKeys".equals(cacheAction) && cacheName != null) {
       Ehcache cache = cacheManager.getEhcache(cacheName);
