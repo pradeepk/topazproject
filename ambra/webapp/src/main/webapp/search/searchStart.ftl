@@ -109,12 +109,11 @@
           </li>
           <li>
             <label for="textSearch-where"><em>where</em> my words occur: </label>
-            <!-- TODO: this is NOT wired up to the back end!!!!! -->
-            <select name="" id="textSearch-where">
-              <option value="anywhere" selected="selected">Anywhere in the article</option>
-              <option value="abstract">In the abstract</option>
-              <option value="refs">In references</option>
-              <option value="title">In the title</option>
+            <select name="textSearchOption" id="textSearch-where">
+              <option value="anywhere" <@slctd tstr="" str=(textSearchOption!"")/>>Anywhere in the article</option>
+              <option value="abstract" <@slctd tstr="abstract" str=(textSearchOption!"")/>>In the abstract</option>
+              <option value="refs" <@slctd tstr="refs" str=(textSearchOption!"")/>>In references</option>
+              <option value="title" <@slctd tstr="title" str=(textSearchOption!"")/>>In the title</option>
             </select>
           </li>
         </ol>

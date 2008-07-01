@@ -196,10 +196,10 @@ public class SearchAction extends BaseActionSupport {
       if ("abstract".equals(textSearchOption)) {
         textSearchField = "description:";
       }
-      if ("refs".equals(textSearchField)) {
+      else if ("refs".equals(textSearchOption)) {
         textSearchField = "citation:";
       }
-      if ("title".equals(textSearchField)) {
+      else if ("title".equals(textSearchOption)) {
         textSearchField = "title:";
       }
     }
