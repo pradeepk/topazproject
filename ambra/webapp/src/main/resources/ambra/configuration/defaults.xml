@@ -106,11 +106,11 @@
       <search>
         <snippetsMax>3</snippetsMax><!-- Number of snippets to show per document -->
         <fieldMaxLength>50</fieldMaxLength><!-- Max chars per indexed field? -->
-        <cacheDuration>600000</cacheDuration><!-- Milliseconds to cache search results -->
+        <cacheExpiration>600000</cacheExpiration><!-- Milliseconds to cache search results -->
         <pageSize>10</pageSize><!-- Number of results per page -->
         <fetchSize>10</fetchSize><!-- Number of results to fetch at a time -->
         <indexPath>/var/lib/topaz/data/lucene</indexPath>
-        <defaultfields>description,title,body,creator</defaultfields>
+        <defaultFields>description,title,body,creator</defaultFields>
       </search>
 
       <!-- URLs to access the CAS Single Signon Server.
