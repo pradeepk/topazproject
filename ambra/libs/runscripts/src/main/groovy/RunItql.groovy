@@ -287,7 +287,7 @@ def doQuery(query) {
   } finally {
     if (tx.isRollbackOnly()) {
       println "Rolling back transaction..."
-      tx.rollback()
+      try { tx.rollback() } catch (Throwable t) { if (verbose) t.printStackTrace() }
     } else {
       tx.commit()
     }
