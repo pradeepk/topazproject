@@ -34,11 +34,11 @@ csv = "csv" // In case somebody runs %mode = csv instead of %mode = "csv"
 table = "table reduce quote" // Allows %mode = table
 
 // Parse command line
-def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-irtpvN]')
+def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-iwtpvN]')
 cli.h(longOpt:'help', 'usage information')
 cli.v(longOpt:'verbose', 'turn on verbose mode')
 cli.e(longOpt:'echo', 'echo script file when running')
-cli.r(longOpt:'read-only', 'use read-only transactions')
+cli.w(longOpt:'write-lock', 'transactions should grab a write-lock')
 cli.M(args:1, 'Mulgara host:port')
 cli.f(args:1, 'script file')
 cli.p(longOpt:'prompt', 'show the prompt even for a script file')
@@ -61,7 +61,7 @@ pp = !opt.N
 mode = opt.m ?: table
 echo = opt.v || opt.e || !opt.f
 trunc = opt.t
-readOnly = opt.r
+writeLock = opt.w
 running = true
 def writer = echo ? new OutputStreamWriter(System.out) : new StringWriter()
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
@@ -270,20 +270,21 @@ def execute(query) {
   }
 }
 
-def doQuery(query) {
-  def tx = session.beginTransaction(readOnly, 0)
+void doQuery(query) {
+  def tx = session.beginTransaction(!writeLock, 0)
   try {
     if (!query.trim().endsWith(';'))
       query <<= ';'
-    return session.doNativeQuery(query.toString())
+    showResults session.doNativeQuery(query.toString())
   } catch (Throwable e) {
     // really hacky...
     def m = e.getMessage() =~ /error performing query .* message was: (.*)/
     if (m.count)
-      return m[0][1]
-
-    tx.setRollbackOnly()
-    throw e
+      showResults m[0][1]
+    else {
+      tx.setRollbackOnly()
+      throw e
+    }
   } finally {
     if (tx.isRollbackOnly()) {
       println "Rolling back transaction..."
