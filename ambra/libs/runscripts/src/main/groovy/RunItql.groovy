@@ -271,11 +271,7 @@ def execute(query) {
 }
 
 def doQuery(query) {
-  def tx
-  if (readOnly)
-    tx = session.beginTransaction(true,0)
-  else
-    tx = session.beginTransaction()
+  def tx = session.beginTransaction(readOnly, 0)
   try {
     if (!query.trim().endsWith(';'))
       query <<= ';'
