@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,27 +59,30 @@ public class EmbeddedClient extends TIClient {
     shutdownHook = new Thread() {
       public void run() {
         // close all session factories
-        for (Map<URI, SessionFactory> fl : allFactories.values()) {
-          for (SessionFactory sf : fl.values()) {
-            try {
-              sf.close();
-            } catch (Exception e) {
-              System.err.println("Error closing session-factory '" + sf + "': " + e);
+        synchronized (EmbeddedClient.class) {
+          for (Map<URI, SessionFactory> fl :
+                                  new ArrayList<Map<URI, SessionFactory>>(allFactories.values())) {
+            for (SessionFactory sf : fl.values()) {
+              try {
+                sf.close();
+              } catch (Exception e) {
+                System.err.println("Error closing session-factory '" + sf + "': " + e);
+              }
             }
           }
-        }
-        allFactories.clear();
+          allFactories.clear();
 
-        // delete all temporary db's
-        for (File f : tempFiles) {
-          try {
-            if (f.exists())
-              FileUtils.forceDelete(f);
-          } catch (Exception e) {
-            System.err.println("Error deleting '" + f + "': " + e);
+          // delete all temporary db's
+          for (File f : tempFiles) {
+            try {
+              if (f.exists())
+                FileUtils.forceDelete(f);
+            } catch (Exception e) {
+              System.err.println("Error deleting '" + f + "': " + e);
+            }
           }
+          tempFiles.clear();
         }
-        tempFiles.clear();
       }
     };
 

@@ -20,6 +20,7 @@
 package org.topazproject.mulgara.itql;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -41,14 +42,16 @@ public class RmiClient extends TIClient {
     shutdownHook = new Thread() {
       public void run() {
         // close all session factories
-        for (Connection c : liveConnections.values()) {
-          try {
-            c.dispose();
-          } catch (Exception e) {
-            System.err.println("Error closing connection '" + c + "': " + e);
+        synchronized (liveConnections) {
+          for (Connection c : new ArrayList<Connection>(liveConnections.values())) {
+            try {
+              c.dispose();
+            } catch (Exception e) {
+              System.err.println("Error closing connection '" + c + "': " + e);
+            }
           }
+          liveConnections.clear();
         }
-        liveConnections.clear();
       }
     };
 
@@ -75,6 +78,8 @@ public class RmiClient extends TIClient {
    */
   public RmiClient(URI database, ItqlClientFactory icf) throws ConnectionException {
     super(new SessionConnection(database));
-    liveConnections.put(this, con);
+    synchronized (liveConnections) {
+      liveConnections.put(this, con);
+    }
   }
 }
