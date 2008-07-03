@@ -5,6 +5,7 @@ dependencies = {
       layerDependencies: [
       ],
       dependencies: [
+        "dojo.cookie",
         "dijit.layout.ContentPane",
         "dijit.Dialog",
         "dijit.layout.TabContainer",

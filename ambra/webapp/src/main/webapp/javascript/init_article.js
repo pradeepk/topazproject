@@ -243,10 +243,28 @@ function validateNewComment() {
          document.articleInfo.annotationId.value = jsonObj.annotationId;
          // re-fetch article body
          getArticle();
+         markDirty(true); // set dirty flag (this ensures a later re-visit of this page will pull fresh article data from the server rather than relying on the browser cache) 
        }
      }//load
   });
-}  
+}
+
+/**
+ * Quasi-unique cookie name to use for storing article dirty flag.
+ */
+var dirtyToken = '@__sra__@';
+
+/**
+ * Determines whether the article was marked as dirty or not.
+ * @return true/false
+ */
+function shouldRefresh() { return (dojo.cookie(dirtyToken) == 'a'); }
+
+/**
+ * Marks or un-marks the article as "dirty" via a temporary browser cookie.
+ * @param dirty true/false  
+ */
+function markDirty(dirty) { dojo.cookie(dirtyToken,dirty?'a':'b'); }
 
 /**
  * getArticle
@@ -255,18 +273,17 @@ function validateNewComment() {
  * refreshing the article content area(s) of the page.
  */
 function getArticle() {
-  var refreshArea = dojo.byId(annotationConfig.articleContainer);
-  var targetUri = _annotationForm.target.value;
   _ldc.show();
   dojo.xhrGet({
-    url: _namespace + "/article/fetchBody.action?articleURI=" + targetUri,
+    url: _namespace + "/article/fetchBody.action?articleURI=" + _annotationForm.target.value,
     handleAs:'text',
     error: function(response, ioArgs){
       handleXhrError(response);
     },
+    
     load: function(response, ioArgs){
       // refresh article HTML content
-      refreshArea.innerHTML = response;
+      dojo.byId(annotationConfig.articleContainer).innerHTML = response;
       // re-apply article "decorations"
       getAnnotationCount();
       ambra.displayComment.processBugCount();
@@ -539,4 +556,9 @@ dojo.addOnLoad(function() {
 
   // jump to annotation?
   jumpToAnnotation(document.articleInfo.annotationId.value);
+
+  // re-fetch article if "dirty" for firefox only as their page cache is not updated via xhr based dom alterations. 
+  if(dojo.isFF && shouldRefresh()) getArticle();
+  
+  markDirty(false);	// unset dirty flag
 });
