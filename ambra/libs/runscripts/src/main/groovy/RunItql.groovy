@@ -22,16 +22,22 @@ import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.query.Results;
+
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
+
 import jline.ConsoleReader;
 import jline.History;
 
 // Constants
 MULGARA_BASE = "localhost"
 MULGARA_LOC = "/topazproject"
-csv = "csv" // In case somebody runs %mode = csv instead of %mode = "csv"
-table = "table reduce quote" // Allows %mode = table
+
+// In case somebody runs %mode = csv instead of %mode = "csv"
+csv = "csv"
+
+// Allows %mode = table
+table = "table reduce quote"
 
 // Parse command line
 def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-T timeout] [-iwtpvN]')
@@ -53,8 +59,9 @@ if (args != null && args.length == 1)
   args = new StrTokenizer(args[0], StrMatcher.trimMatcher(), StrMatcher.quoteMatcher()).tokenArray
 
 def opt = cli.parse(args)
-if (!opt) return
+if (!opt) { cli.usage(); return }
 if (opt.h) { cli.usage(); return }
+
 def file = (opt.f) ? new File(opt.f).newInputStream() : System.in
 bPrompt = (opt.p || !opt.f)
 bInit   = (opt.i || !opt.f)
@@ -72,7 +79,7 @@ if (verbose) {
   println "Mulgara URI: $mulgaraUri"
 }
 if (opt.T)
-  System.setProperty("bitronix.tm.timer.defaultTransactionTimeout",opt.T)
+  System.setProperty("bitronix.tm.timer.defaultTransactionTimeout", opt.T)
 
 factory = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
 session = factory.openSession()
@@ -340,16 +347,19 @@ def handleCmd(s) {
 query = ""
 
 def processLine(line, console, showPrompt) {
+  // strip comments
   if (line != "" && line[0] == '#') 
-    line = '' // strip comments
-  else if (line != "" && (line[0] == '%' || line[0] == '@')) { // @ is for backward compatibility
+    line = ''
+  // @ is for backward compatibility
+  else if (line != "" && (line[0] == '%' || line[0] == '@')) {
     eval(line.substring(1))
     console?.getHistory()?.addToHistory(line)
     line = '' // strip expression
   } else if (line != "" && line[0] == '.') {
     handleCmd(line.substring(1))
     console?.getHistory()?.addToHistory(line)
-    line = '' // strip expression
+    // strip expression
+    line = ''
   }    
 
   while (line.indexOf(';') != -1) {
@@ -391,8 +401,8 @@ try {
   println "Error loading history: $e"
 }
 
-//file.eachLine { line -> // Old way (without jline)
-while (running && (line = cr.readLine()) != null) { // Loop over lines with jline
+// Loop over lines with jline
+while (running && (line = cr.readLine()) != null) {
   processLine(line, cr, true)
 }
 
