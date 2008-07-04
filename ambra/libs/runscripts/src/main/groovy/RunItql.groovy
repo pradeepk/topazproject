@@ -34,16 +34,17 @@ csv = "csv" // In case somebody runs %mode = csv instead of %mode = "csv"
 table = "table reduce quote" // Allows %mode = table
 
 // Parse command line
-def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-iwtpvN]')
+def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-T timeout] [-iwtpvN]')
 cli.h(longOpt:'help', 'usage information')
 cli.v(longOpt:'verbose', 'turn on verbose mode')
 cli.e(longOpt:'echo', 'echo script file when running')
 cli.w(longOpt:'write-lock', 'transactions should grab a write-lock')
-cli.M(args:1, 'Mulgara host:port')
-cli.f(args:1, 'script file')
 cli.p(longOpt:'prompt', 'show the prompt even for a script file')
 cli.N(longOpt:'noprettyprint', 'Do not pretty-print results')
 cli.i(longOpt:'runinit', 'Run ~/.runitql even if running a script')
+cli.M(args:1, 'Mulgara host:port')
+cli.T(args:1, 'Transaction timeout in seconds [default: 60]')
+cli.f(args:1, 'script file')
 cli.m(args:1, 'mode')
 cli.t(args:1, 'number of characters to truncate literals to')
 
@@ -70,6 +71,8 @@ verbose = opt.v
 if (verbose) {
   println "Mulgara URI: $mulgaraUri"
 }
+if (opt.T)
+  System.setProperty("bitronix.tm.timer.defaultTransactionTimeout",opt.T)
 
 factory = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
 session = factory.openSession()
