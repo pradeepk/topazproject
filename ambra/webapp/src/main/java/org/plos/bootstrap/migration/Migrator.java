@@ -361,7 +361,8 @@ public class Migrator implements ServletContextListener {
 
     Results r = sess.doNativeQuery(
           "select count(select $s from <" + RI + "> where " +
-          "             $s <dcterms:isPartOf> $o minus $s <rdf:type> <topaz:ObjectInfo>) " +
+          "             ($s <dcterms:isPartOf> $o or $s <rdf:type> <topaz:Article>) " +
+          "             minus $s <rdf:type> <topaz:ObjectInfo>) " +
           "from <" + RI + "> where $dummy <mulgara:is> 'ignored';");
     r.next();
     int cnt = (int) Double.parseDouble(r.getString(0));
@@ -370,7 +371,8 @@ public class Migrator implements ServletContextListener {
       log.info("Did not find any ObjectInfo that required an rdf:type to be added.");
     } else {
       sess.doNativeUpdate("insert select $s <rdf:type> <topaz:ObjectInfo> from <" + RI +
-                          "> where $s <dcterms:isPartOf> $o into <" + RI + ">;");
+                          "> where $s <dcterms:isPartOf> $o " + 
+                          " or $s <rdf:type> <topaz:Article> into <" + RI + ">;");
       log.warn("Added rdf:type to " + cnt + " ObjectInfo's.");
     }
 
