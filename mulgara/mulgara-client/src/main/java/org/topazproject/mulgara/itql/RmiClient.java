@@ -20,7 +20,6 @@
 package org.topazproject.mulgara.itql;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -43,7 +42,7 @@ public class RmiClient extends TIClient {
       public void run() {
         // close all session factories
         synchronized (liveConnections) {
-          for (Connection c : new ArrayList<Connection>(liveConnections.values())) {
+          for (Connection c : (Connection[]) liveConnections.values().toArray()) {
             try {
               c.dispose();
             } catch (Exception e) {

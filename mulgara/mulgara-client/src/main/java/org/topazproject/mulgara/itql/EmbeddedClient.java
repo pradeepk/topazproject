@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class EmbeddedClient extends TIClient {
         // close all session factories
         synchronized (EmbeddedClient.class) {
           for (Map<URI, SessionFactory> fl :
-                                  new ArrayList<Map<URI, SessionFactory>>(allFactories.values())) {
+                                  (Map<URI, SessionFactory>[]) allFactories.values().toArray()) {
             for (SessionFactory sf : fl.values()) {
               try {
                 sf.close();
