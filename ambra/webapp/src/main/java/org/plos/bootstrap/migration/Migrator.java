@@ -20,6 +20,7 @@ package org.plos.bootstrap.migration;
 
 import java.net.URI;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,33 +73,60 @@ public class Migrator implements ServletContextListener {
    * @throws Error to abort
    */
   public void contextInitialized(ServletContextEvent event) {
+    try {
+      migrate();
+    } catch (Exception e) {
+      throw new Error("A data-migration operation failed. Aborting ...", e);
+    }
+  }
+
+  /**
+   * Apply all migrations.
+   *
+   * @throws Exception on an error
+   */
+  public void migrate() throws Exception {
     Session sess            = null;
+    Transaction tx          = null;
 
     try {
       Configuration conf    = ConfigurationStore.getInstance().getConfiguration();
       URI           service = new URI(conf.getString("ambra.topaz.tripleStore.mulgara.itql.uri"));
-      RI                    = conf.getString("ambra.models.ri");
+      RI                    = stripFilterResolver(conf.getString("ambra.models.ri"));
 
+      log.info("Checking and performing data-migrations ...");
       SessionFactory factory = new SessionFactoryImpl();
       factory.setTripleStore(new ItqlStore(service, WebappItqlClientFactory.getInstance()));
 
       sess = factory.openSession();
-
-      Integer count =
-        TransactionHelper.doInTxE(sess,
-                                  new TransactionHelper.ActionE<Integer, Exception>() {
-            public Integer run(Transaction tx) throws Exception {
-              return migrate(tx.getSession());
-            }
-          });
-
+      // Adding new statements (these shouldn't affect old app)
+      tx = sess.beginTransaction(false, 30*60*1000);
+      int count = addObjInfoType(sess);
+      tx.commit();
+      tx = null;
+      // Now do the main stuff (switch over to new)
+      tx = sess.beginTransaction(false, 30*60*1000);
+      count += migrateArticleParts(sess) +
+        migrateReps(sess);
+      tx.commit();
+      tx = null;
+      // Now do the cleanup of stuff that new app doesn't care about
+      tx = sess.beginTransaction(false, 30*60*1000);
+      count += removePIDs(sess) +
+         removeObsoleteStates(sess);
+      tx.commit();
+      tx = null;
       if (count == 0)
         log.info("Nothing to do. Everything was already migrated.");
       else
         log.warn("Committed " + count + " data-migrations.");
-    } catch (Exception e) {
-      throw new Error("A data-migration operation failed. Aborting ...", e);
     } finally {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (Throwable t) {
+        log.warn("Error in rollback", t);
+      }
       try {
         if (sess != null)
           sess.close();
@@ -108,23 +136,13 @@ public class Migrator implements ServletContextListener {
     }
   }
 
-  /**
-   * Apply all migrations.
-   *
-   * @param sess the otm session to use
-   *
-   * @return the number of migrations performed
-   *
-   * @throws OtmException on an error
-   */
-  public int migrate(Session sess) throws OtmException {
-    log.info("Checking and performing data-migrations ...");
-
-    return migrateArticleParts(sess) +
-           migratePIDs(sess) +
-           migrateReps(sess) +
-           addObjInfoType(sess) +
-           removeObsoleteStates(sess);
+  private String stripFilterResolver(String model) {
+    int pos = model.indexOf("filter:model=");
+    if (pos > 0) {
+      model = model.substring(0, pos) + model.substring(pos + 13);
+      log.warn("By-passing filter resolver. Updates will be to  <" + model + ">");
+    }
+    return model;
   }
 
   /**
@@ -136,6 +154,7 @@ public class Migrator implements ServletContextListener {
    */
   public int migrateArticleParts(Session sess) throws OtmException {
     log.info("Checking if Article-parts need data-migration ...");
+
     int artCnt = 0;
     int objCnt = 0;
 
@@ -146,11 +165,14 @@ public class Migrator implements ServletContextListener {
                          "from <" + RI + "> where $a <rdf:type> <topaz:Article> and " +
                          "$a <topaz:nextObject> $f;");
 
+    ArrayList<String> arts = new ArrayList<String>(7000);
+    ArrayList<String> firsts = new ArrayList<String>(7000);
+    ArrayList<Map<String,String>> linkss = new ArrayList<Map<String,String>>(7000);
     while (r.next()) {
       artCnt++;
 
-      String  art   = r.getString("a");
-      String  first = r.getString("f");
+      arts.add(r.getString("a"));
+      firsts.add(r.getString("f"));
       Results sub   = r.getSubQueryResults(2);
 
       Map<String, String> links = new HashMap<String, String>();
@@ -159,31 +181,77 @@ public class Migrator implements ServletContextListener {
 
       objCnt += links.size();
 
-      StringBuilder del = new StringBuilder(100 + links.size() * 200);
-      StringBuilder ins = new StringBuilder(200 + links.size() * 100);
+      linkss.add(links);
+    }
 
-      del.append("delete ");
-      ins.append("insert ");
+    if (artCnt == 0) {
+      log.info("Did not find any article that required data-migration for its parts.");
+      return 0;
+    }
 
-      ins.append("<").append(art).append("> <dcterms:hasPart> $seq $seq <rdf:type> <rdf:Seq> ");
+    log.info("Deleting topaz:nextObject statements for " + objCnt + " objects ...");
+    StringBuilder del = new StringBuilder(5000);
+    for (int i = 0; i < artCnt; i++) {
+
+      String art = arts.get(i);
+      String first = firsts.get(i);
+      Map<String, String> links = linkss.get(i);
+
+      if (del.length() == 0)
+        del.append("delete ");
 
       int idx = 1;
       for (String p = first, prev = art; p != null; prev = p, p = links.get(p)) {
         del.append("<").append(art).append("> <dcterms:hasPart> <").append(p).append("> ");
         del.append("<").append(prev).append("> <topaz:nextObject> <").append(p).append("> ");
-        ins.append("$seq <rdf:_").append(idx++).append("> <").append(p).append("> ");
       }
 
-      del.append("from <").append(RI).append(">;");
-      ins.append("into <").append(RI).append(">;");
-
-      sess.doNativeUpdate(del.toString());
-      sess.doNativeUpdate(ins.toString());
+      if (del.length() > 3000) {
+        del.append("from <").append(RI).append(">;");
+        sess.doNativeUpdate(del.toString());
+        del.setLength(0);
+      }
     }
 
-    if (artCnt == 0)
-      log.info("Did not find any article that required data-migration for its parts.");
-    else
+    if (del.length() > 0) {
+      del.append("from <").append(RI).append(">;");
+      sess.doNativeUpdate(del.toString());
+      del.setLength(0);
+    }
+
+    log.info("Inserting dcterms:hasPart as an rdf:Seq for " + artCnt + " articles ...");
+    StringBuilder ins = del; // re-use
+    for (int i = 0; i < artCnt; i++) {
+
+      String art = arts.get(i);
+      String first = firsts.get(i);
+      Map<String, String> links = linkss.get(i);
+
+      if (ins.length() == 0)
+        ins.append("insert ");
+
+      String seq = " $seq" + i;
+      ins.append("<").append(art).append("> <dcterms:hasPart>" + seq + seq + " <rdf:type> <rdf:Seq> ");
+
+      int idx = 1;
+      for (String p = first, prev = art; p != null; prev = p, p = links.get(p)) {
+        ins.append(seq).append(" <rdf:_").append(idx++).append("> <").append(p).append("> ");
+      }
+
+      if (ins.length() > 3000) {
+        ins.append("into <").append(RI).append(">;");
+        sess.doNativeUpdate(ins.toString());
+        ins.setLength(0);
+      }
+    }
+
+    if (ins.length() > 0) {
+      ins.append("into <").append(RI).append(">;");
+      sess.doNativeUpdate(ins.toString());
+      ins.setLength(0);
+    }
+
+    if (artCnt > 0)
       log.warn("Finished data-migration of Article parts. " + artCnt + " Articles and " +
                objCnt + " ObjectInfo objects migrated.");
 
@@ -198,7 +266,7 @@ public class Migrator implements ServletContextListener {
    * @return 0
    * @throws OtmException on an error
    */
-  public int migratePIDs(Session sess) throws OtmException {
+  public int removePIDs(Session sess) throws OtmException {
     log.info("Removing all <topaz:isPID> statements");
     sess.doNativeUpdate("delete select $s <topaz:isPID> $o from <" + RI +
                         "> where $s <topaz:isPID> $o from <" + RI + ">;");
@@ -221,17 +289,15 @@ public class Migrator implements ServletContextListener {
     log.info("Checking if Representations need data-migration ...");
 
     Results                                 r       =
-      sess.doNativeQuery("select $s subquery (select $p $o from <" + RI
-                         + "> where $s $p $o) from <" + RI + "> where ($s <rdf:type> <" + Rdf.topaz
-                         + "Article> or " + "($a <rdf:type> <" + Rdf.topaz + "Article> and $a <"
-                         + Rdf.dc_terms + "hasPart> $x and $x <rdf:type> <rdf:Seq> and $x $li $s))"
-                         + " minus ($s <" + Rdf.topaz
-                         + "hasRepresentation> $rep and $rep <rdf:type> <" + Rdf.topaz
-                         + "Representation>);");
+      sess.doNativeQuery("select $s subquery (select $p $o from <" + RI + "> where $s $p $o) "
+                         + " from <" + RI + "> where "
+                         + " ($s <rdf:type> <topaz:Article>"
+                         + "   or ($a <rdf:type> <topaz:Article> and $a <dcterms:hasPart> $x " 
+                         + "       and $x <rdf:type> <rdf:Seq> and $x $li $s))"
+                         + " minus ($s <topaz:hasRepresentation> $rep "
+                         + "       and $rep <rdf:type> <topaz:Representation>);");
 
-    Map<String, Collection<Representation>> objs    =
-      new HashMap<String, Collection<Representation>>();
-    Set<String>                             allReps = new HashSet<String>();
+    Map<String, Collection<Representation>> objs = new HashMap<String, Collection<Representation>>();
 
     while (r.next()) {
       String                      id   = r.getString(0);
@@ -255,80 +321,116 @@ public class Migrator implements ServletContextListener {
         }
       }
 
-      if (reps.size() > 0)      // happens for $li=<rdf:type> $s=<rdf:Seq>
+      if (reps.size() > 0)     // happens for $li=<rdf:type> $s=<rdf:Seq>
         objs.put(id, reps.values());
-      allReps.addAll(reps.keySet());
     }
 
-    if (objs.isEmpty()) {
+    if (objs.size() == 0) {
       log.info("Did not find any object that required data-migration for its Representations.");
-
       return 0;
     }
 
-    log.info("" + objs.size() + " objects have representations that require data-migration ...");
-
-    StringBuilder b = new StringBuilder();
-    b.append("delete select $s $p $o from <" + RI + "> where $s $p $o and (");
-
-    for (String id : objs.keySet())
-      b.append("$s <mulgara:is> <" + id + "> or ");
-
-    b.setLength(b.length() - 3);
-    b.append(") and (");
-
-    for (String rep : allReps) {
-      b.append("$p <mulgara:is> <" + Rdf.topaz + rep + C_T + "> or ");
-      b.append("$p <mulgara:is> <" + Rdf.topaz + rep + O_S + "> or ");
-    }
-
-    b.append("$p <mulgara:is> <" + Rdf.topaz + "hasRepresentation>)");
-    b.append(" from <" + RI + ">;");
-
-    log.warn("Deleting old representations: " + b.toString());
-
-    sess.doNativeUpdate(b.toString());
-
+    log.info("Deleting old Representations ...");
+    StringBuilder b = new StringBuilder(5000);
     for (String id : objs.keySet()) {
-      b = new StringBuilder();
-      b.append("insert ");
-
-      for (Representation rep : objs.get(id)) {
-        String rid = id + "/" + rep.name;
-        b.append("<" + id + "> <" + Rdf.topaz + "hasRepresentation> <" + rid + "> ");
-        b.append("<" + rid + "> <rdf:type> <" + Rdf.topaz + "Representation> ");
-        b.append("<" + rid + "> <" + Rdf.dc_terms + "identifier> '" + rep.name + "' ");
-
-        if (rep.contentType != null) {
-          b.append("<" + rid + "> <" + Rdf.topaz + "contentType> '"
-                   + RdfUtil.escapeLiteral(rep.contentType.getValue()) + "'");
-
-          if (rep.contentType.getDatatype() != null)
-            b.append("^^<" + rep.contentType.getDatatype() + ">");
-
-          b.append(" ");
-        }
-
-        if (rep.objectSize != null) {
-          b.append("<" + rid + "> <" + Rdf.topaz + "objectSize> '"
-                   + RdfUtil.escapeLiteral(rep.objectSize.getValue()) + "'");
-
-          if (rep.objectSize.getDatatype() != null)
-            b.append("^^<" + rep.objectSize.getDatatype() + ">");
-
-          b.append(" ");
-        }
+      buildDeleteReps(id, objs.get(id), b);
+      if (b.length() > 3000) {
+        b.append("from <" + RI + ">;");
+        sess.doNativeUpdate(b.toString());
+        b.setLength(0);
       }
-
-      b.append(" into <" + RI + ">;");
-      log.warn("Inserting new representations for '" + id + "' : " + b.toString());
-      sess.doNativeUpdate(b.toString());
     }
+
+    if (b.length() > 0 ) {
+      b.append("from <" + RI + ">;");
+      sess.doNativeUpdate(b.toString());
+      b.setLength(0);
+    }
+
+    log.info("Inserting new Representations ...");
+    for (String id : objs.keySet()) {
+      buildInsertReps(id, objs.get(id), b);
+      if (b.length() > 3000) {
+        b.append("into <" + RI + ">;");
+        sess.doNativeUpdate(b.toString());
+        b.setLength(0);
+      }
+    }
+
+    if (b.length() > 0 ) {
+      b.append("into <" + RI + ">;");
+      sess.doNativeUpdate(b.toString());
+      b.setLength(0);
+    }
+
 
     log.warn("Finished data-migration of Representations. " + objs.size()
              + " ObjectInfo objects migrated.");
 
     return objs.size();
+  }
+
+  private void buildDeleteReps(String id, Collection<Representation> reps, StringBuilder b) {
+    final String C_T = "-contentType";
+    final String O_S = "-objectSize";
+
+    if (b.length() == 0)
+      b.append("delete ");
+
+    for (Representation rep : reps) {
+      b.append("<" + id + "> <topaz:hasRepresentation> '" + rep.name + "' ");
+      if (rep.contentType != null) {
+        b.append("<" + id + "> <topaz:" +  rep.name + C_T + "> '"
+                   + RdfUtil.escapeLiteral(rep.contentType.getValue()) + "'");
+
+        if (rep.contentType.getDatatype() != null)
+          b.append("^^<" + rep.contentType.getDatatype() + ">");
+
+        b.append(" ");
+      }
+
+      if (rep.objectSize != null) {
+        b.append("<" + id + "> <topaz:" + rep.name + O_S + "> '"
+                   + RdfUtil.escapeLiteral(rep.objectSize.getValue()) + "'");
+
+        if (rep.objectSize.getDatatype() != null)
+          b.append("^^<" + rep.objectSize.getDatatype() + ">");
+
+        b.append(" ");
+      }
+    }
+  }
+
+  private void buildInsertReps(String id, Collection<Representation> reps, StringBuilder b) {
+    if (b.length() == 0)
+      b.append("insert ");
+
+    for (Representation rep : reps) {
+      String rid = id + "/" + rep.name;
+      b.append("<" + id + "> <" + Rdf.topaz + "hasRepresentation> <" + rid + "> ");
+      b.append("<" + rid + "> <rdf:type> <" + Rdf.topaz + "Representation> ");
+      b.append("<" + rid + "> <" + Rdf.dc_terms + "identifier> '" + rep.name + "' ");
+
+      if (rep.contentType != null) {
+        b.append("<" + rid + "> <" + Rdf.topaz + "contentType> '"
+                   + RdfUtil.escapeLiteral(rep.contentType.getValue()) + "'");
+
+        if (rep.contentType.getDatatype() != null)
+          b.append("^^<" + rep.contentType.getDatatype() + ">");
+
+        b.append(" ");
+      }
+
+      if (rep.objectSize != null) {
+        b.append("<" + rid + "> <" + Rdf.topaz + "objectSize> '"
+                   + RdfUtil.escapeLiteral(rep.objectSize.getValue()) + "'");
+
+        if (rep.objectSize.getDatatype() != null)
+          b.append("^^<" + rep.objectSize.getDatatype() + ">");
+
+        b.append(" ");
+      }
+    }
   }
 
   private Representation getRep(Map<String, Representation> reps, String rep) {
