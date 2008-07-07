@@ -291,13 +291,12 @@ public class Migrator implements ServletContextListener {
     Results                                 r       =
       sess.doNativeQuery("select $s subquery (select $p $o from <" + RI + "> where $s $p $o) "
                          + " from <" + RI + "> where "
-                         + " ($s <rdf:type> <topaz:Article>"
-                         + "   or ($a <rdf:type> <topaz:Article> and $a <dcterms:hasPart> $x " 
-                         + "       and $x <rdf:type> <rdf:Seq> and $x $li $s))"
-                         + " minus ($s <topaz:hasRepresentation> $rep "
-                         + "       and $rep <rdf:type> <topaz:Representation>);");
+                         + " $s <topaz:hasRepresentation> $rep "
+                         + " minus $rep <rdf:type> <topaz:Representation>;");
 
     Map<String, Collection<Representation>> objs = new HashMap<String, Collection<Representation>>();
+
+    int repCnt = 0;
 
     while (r.next()) {
       String                      id   = r.getString(0);
@@ -321,16 +320,17 @@ public class Migrator implements ServletContextListener {
         }
       }
 
-      if (reps.size() > 0)     // happens for $li=<rdf:type> $s=<rdf:Seq>
+      repCnt += reps.size();
+      if (reps.size() > 0)
         objs.put(id, reps.values());
     }
 
-    if (objs.size() == 0) {
+    if (repCnt == 0) {
       log.info("Did not find any object that required data-migration for its Representations.");
       return 0;
     }
 
-    log.info("Deleting old Representations ...");
+    log.info("Deleting " + repCnt + " old Representations ...");
     StringBuilder b = new StringBuilder(5000);
     for (String id : objs.keySet()) {
       buildDeleteReps(id, objs.get(id), b);
@@ -347,7 +347,7 @@ public class Migrator implements ServletContextListener {
       b.setLength(0);
     }
 
-    log.info("Inserting new Representations ...");
+    log.info("Inserting " + repCnt + " new Representations ...");
     for (String id : objs.keySet()) {
       buildInsertReps(id, objs.get(id), b);
       if (b.length() > 3000) {
@@ -364,10 +364,10 @@ public class Migrator implements ServletContextListener {
     }
 
 
-    log.warn("Finished data-migration of Representations. " + objs.size()
+    log.warn("Finished data-migration of " + repCnt + " Representations. " + objs.size()
              + " ObjectInfo objects migrated.");
 
-    return objs.size();
+    return repCnt;
   }
 
   private void buildDeleteReps(String id, Collection<Representation> reps, StringBuilder b) {
