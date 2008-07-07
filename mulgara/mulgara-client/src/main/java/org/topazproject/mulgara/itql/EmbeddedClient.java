@@ -59,8 +59,9 @@ public class EmbeddedClient extends TIClient {
       public void run() {
         // close all session factories
         synchronized (EmbeddedClient.class) {
-          for (Map<URI, SessionFactory> fl :
-                                  (Map<URI, SessionFactory>[]) allFactories.values().toArray()) {
+          // Note: need to make a copy of the values here so we don't get values removed
+          // from out under us; we also need to make sure the copy is "atomic"
+          for (Map<URI, SessionFactory> fl : allFactories.values().toArray(new Map[0])) {
             for (SessionFactory sf : fl.values()) {
               try {
                 sf.close();
