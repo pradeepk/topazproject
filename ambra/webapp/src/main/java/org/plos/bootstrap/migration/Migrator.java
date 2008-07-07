@@ -100,18 +100,18 @@ public class Migrator implements ServletContextListener {
 
       sess = factory.openSession();
       // Adding new statements (these shouldn't affect old app)
-      tx = sess.beginTransaction(false, 30*60*1000);
+      tx = sess.beginTransaction(false, 15*60);
       int count = addObjInfoType(sess);
       tx.commit();
       tx = null;
       // Now do the main stuff (switch over to new)
-      tx = sess.beginTransaction(false, 30*60*1000);
+      tx = sess.beginTransaction(false, 60*60);
       count += migrateArticleParts(sess) +
         migrateReps(sess);
       tx.commit();
       tx = null;
       // Now do the cleanup of stuff that new app doesn't care about
-      tx = sess.beginTransaction(false, 30*60*1000);
+      tx = sess.beginTransaction(false, 15*60);
       count += removePIDs(sess) +
          removeObsoleteStates(sess);
       tx.commit();
