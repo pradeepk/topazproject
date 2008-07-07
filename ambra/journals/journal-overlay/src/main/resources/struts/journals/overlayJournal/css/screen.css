@@ -418,8 +418,8 @@ dl#relatedArticles { margin:0 0 20px 0; padding:9px 0 .5em 0; border-bottom:1px 
 dl#relatedArticles dt { font-size:1em; color:#303030; margin-bottom:.5em; }
 dl#relatedArticles dd { line-height:1.2em; margin-bottom:.5em; }
 dl#relatedArticles dd a:link,
-dl#relatedArticles dd a:visited { font-size:.95em; color:#069; text-decoration:none; }
-dl#relatedArticles dd a:hover { color:#008ED5; text-decoration:underline; }
+dl#relatedArticles dd a:visited { font-size:.95em; text-decoration:none; }
+dl#relatedArticles dd a:hover { text-decoration:underline; }
 
 #rhc ul li a,
 #rhc ul li a:visited	{ display: block; font-size: .85em; padding: 0 5px; text-decoration: none; color: #333; }

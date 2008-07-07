@@ -420,8 +420,8 @@ div#sideNav dl.related dt { font-size:1em; text-transform:uppercase; color:#3030
 div#sideNav dl.related dt em { text-transform:none; font-style:normal }
 div#sideNav dl.related dd { line-height:1.2em; margin-bottom:.5em; }
 div#sideNav dl.related dd a:link,
-div#sideNav dl.related dd a:visited { font-size:.95em; color:#c60; text-decoration:none; }
-div#sideNav dl.related dd a:hover { color:#008ED5; text-decoration:underline; }
+div#sideNav dl.related dd a:visited { font-size:.95em; text-decoration:none; }
+div#sideNav dl.related dd a:hover { text-decoration:underline; }
 
 #rhc ul li a,
 #rhc ul li a:visited	{ display: block; font-size: .85em; padding: 0 5px; text-decoration: none; color: #333; }
