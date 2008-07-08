@@ -393,6 +393,7 @@ cr.setDefaultPrompt("itql> ")
 try {
   histfile = new File(System.getProperty("user.home"), ".runitql_history")
   cr.setHistory(new History(histfile))
+  cr.setUseHistory(false)  // we add to history ourself
 } catch (IOException e) {
   println "Error loading history: $e"
 }
