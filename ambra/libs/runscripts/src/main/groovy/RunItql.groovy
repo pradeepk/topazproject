@@ -70,6 +70,7 @@ mode = opt.m ?: table
 echo = opt.v || opt.e || !opt.f
 trunc = opt.t
 writeLock = opt.w
+timeout = opt.T ?: 0
 running = true
 def writer = echo ? new OutputStreamWriter(System.out) : new StringWriter()
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
@@ -78,8 +79,6 @@ verbose = opt.v
 if (verbose) {
   println "Mulgara URI: $mulgaraUri"
 }
-if (opt.T)
-  System.setProperty("bitronix.tm.timer.defaultTransactionTimeout", opt.T)
 
 factory = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
 session = factory.openSession()
@@ -280,7 +279,7 @@ def execute(query) {
 }
 
 void doQuery(query) {
-  def tx = session.beginTransaction(!writeLock, 0)
+  def tx = session.beginTransaction(!writeLock, timeout)
   try {
     showResults session.doNativeQuery(query.toString())
   } catch (Throwable e) {
