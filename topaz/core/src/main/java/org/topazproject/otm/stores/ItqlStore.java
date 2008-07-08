@@ -411,35 +411,33 @@ public class ItqlStore extends AbstractTripleStore {
     Map<String, List<String>> fvalues = new HashMap<String, List<String>>();
     Map<String, List<String>> rvalues = new HashMap<String, List<String>>();
     Map<String, Set<String>> types = new HashMap<String, Set<String>>();
+
+
     try {
+      Map<String, List<String>> values = fvalues;
       for (Answer qa : ans) {
         if (qa.getVariables() == null)
           throw new OtmException("query failed: " + qa.getMessage());
 
+        if (values == null)
+          throw new OtmException("query failed: expecting 2 answers. got " + ans.size());
+
         // collect the results, grouping by predicate
         qa.beforeFirst();
         while (qa.next()) {
-          String s = qa.getString("s");
-          String p = qa.getString("p");
-          String o = qa.getString("o");
-          boolean inverse = (!id.equals(s) && id.equals(o));
+          String p = qa.getString(0);
+          String o = qa.getString(1);
 
-          if (!inverse) {
-            List<String> v = fvalues.get(p);
-            if (v == null)
-              fvalues.put(p, v = new ArrayList<String>());
-            v.add(o);
-          } else {
-            List<String> v = rvalues.get(p);
-            if (v == null)
-              rvalues.put(p, v = new ArrayList<String>());
-            v.add(s);
-          }
+          List<String> v = values.get(p);
+          if (v == null)
+            values.put(p, v = new ArrayList<String>());
+          v.add(o);
 
-          updateTypeMap(qa.getSubQueryResults(3), inverse ? s : o, types);
+          updateTypeMap(qa.getSubQueryResults(2), o, types);
         }
-
         qa.close();
+        // prepare to read inverse query results (if not already done)
+        values = (values == rvalues) ? null : rvalues;
       }
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
@@ -510,18 +508,20 @@ public class ItqlStore extends AbstractTripleStore {
 
     StringBuilder qry = new StringBuilder(500);
 
-    qry.append("select $s $p $o subquery (select $t from ").append(tmdls).append(" where ");
+    qry.append("select $p $o subquery (select $t from ").append(tmdls).append(" where ");
     qry.append("$o <rdf:type> $t) ");
     qry.append("from ").append(models).append(" where ");
-    qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">");
+    qry.append("<").append(id).append("> $p $o");
+    qry.append(" and $s <mulgara:is> <").append(id).append(">");
     if (filterObj)
       applyObjectFilters(qry, cm, "$s", filters, sf);
     applyFieldFilters(qry, assoc, true, id, filters, sf);
 
-    qry.append("; select $s $p $o subquery (select $t from ").append(models).append(" where ");
+    qry.append("; select $p $s subquery (select $t from ").append(models).append(" where ");
     qry.append("$s <rdf:type> $t) ");
     qry.append("from ").append(models).append(" where ");
-    qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
+    qry.append("$s $p <").append(id).append(">");
+    qry.append(" and $o <mulgara:is> <").append(id).append(">");
     if (filterObj)
       applyObjectFilters(qry, cm, "$o", filters, sf);
     applyFieldFilters(qry, assoc, false, id, filters, sf);
