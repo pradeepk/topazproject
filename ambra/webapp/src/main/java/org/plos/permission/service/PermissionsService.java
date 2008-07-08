@@ -87,15 +87,15 @@ public class PermissionsService implements Permissions {
     "select $o from ${MODEL} where <${s}> <${p}> $o;".replaceAll("\\Q${MODEL}", PP_MODEL);
   private static final String ITQL_LIST_PP_TRANS        =
     ("select $o from ${MODEL} where <${s}> <${p}> $o "
-    + " or (trans($s <${p}> $o) and $s <mulgara:is> <${s}>);").replaceAll("\\Q${MODEL}", PP_MODEL);
+    + " or trans(<${s}> <${p}> $o and $s <${p}> $o);").replaceAll("\\Q${MODEL}", PP_MODEL);
   private static final String ITQL_INFER_PERMISSION     =
     ("select $s from ${PP_MODEL} where $s $p $o in ${MODEL} "
     + "and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>)) "
+    + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))"
     + "and ($p <mulgara:is> <${permission}> or $p <mulgara:is> <${ALL}> "
     + "      or $p <${IMPLIES}> <${permission}> "
-    + "      or (trans($p <${IMPLIES}> $perm) and $perm <mulgara:is> <${permission}>)) "
+    + "      or trans($p <${IMPLIES}> <${permission}> and $p <${IMPLIES}> $perm)) "
     + "and ($o <mulgara:is> <${principal}> or $o <mulgara:is> <${ALL}>);" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
@@ -103,13 +103,13 @@ public class PermissionsService implements Permissions {
     ("select $p $o from ${PP_MODEL} where ($s $p $o in ${MODEL} " //
     + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>))"
+    + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))"
     + ") or ($s $impliedBy $o in ${MODEL} " //
     + "   and ($impliedBy <${IMPLIES}> $p " //
     + "      or trans($impliedBy <${IMPLIES}> $p)) " //
     + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>))" + ");" //
+    + "      or trans($s <${PP}> <${resource}> and $s <${PP}> $res))" + ");" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 
