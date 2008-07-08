@@ -283,8 +283,6 @@ def execute(query) {
 void doQuery(query) {
   def tx = session.beginTransaction(!writeLock, 0)
   try {
-    if (!query.trim().endsWith(';'))
-      query <<= ';'
     showResults session.doNativeQuery(query.toString())
   } catch (Throwable e) {
     // really hacky...
@@ -364,10 +362,10 @@ def processLine(line, console, showPrompt) {
 
   while (line.indexOf(';') != -1) {
     pos = line.indexOf(';')
-    query += " " + line[0..pos-1].trim()
-    if (query.trim() != "") {
-      execute query.trim()
-      console?.getHistory()?.addToHistory(query.trim() + ";")
+    query = (query + " " + line.substring(0, pos)).trim() + ";"
+    if (query != ";") {
+      execute query
+      console?.getHistory()?.addToHistory(query)
     }
     query = ""
     line = line.substring(pos+1)
