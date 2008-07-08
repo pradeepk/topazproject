@@ -281,7 +281,10 @@ def execute(query) {
 void doQuery(query) {
   def tx = session.beginTransaction(!writeLock, timeout)
   try {
+    long t0 = System.currentTimeMillis();
     showResults session.doNativeQuery(query.toString())
+    if (verbose)
+      println "Query took ${System.currentTimeMillis() - t0} ms"
   } catch (Throwable e) {
     // really hacky...
     def m = e.getMessage() =~ /error performing query .* message was: (.*)/
