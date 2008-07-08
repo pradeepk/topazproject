@@ -77,6 +77,8 @@ abstract class TIClient implements ItqlClient {
           new ArrayList<org.topazproject.mulgara.itql.Answer>();
 
       for (Command c : ti.parseCommands(itql)) {
+        if (c == null)
+          continue;     // usually an extra ';' at the end
         Object o = c.execute(con);
 
         if (o instanceof Answer)
