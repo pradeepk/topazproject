@@ -20,27 +20,25 @@
 var _containerDiv;
 var _topBannerDiv;
 
-dojo.addOnLoad(function() {
-  if (dojo.isIE) {
+dojo.addOnLoad( function() {
+  if(dojo.isIE) {
     _containerDiv = dojo.byId("container");
     _topBannerDiv = dojo.byId("topBanner");
-    
-    if (_containerDiv) {
+
+    if(_containerDiv) {
       ambra.domUtil.setContainerWidth(_containerDiv, 675, 940);
-      
+
       dojo.connect(window, "onresize", function() {
-          setTimeout("ambra.domUtil.setContainerWidth(_containerDiv, 675, 940)", 100);
-        }
-      );
+        setTimeout("ambra.domUtil.setContainerWidth(_containerDiv, 675, 940)", 100);
+      });
     }
-    
-    if (_topBannerDiv) {
+
+    if(_topBannerDiv) {
       ambra.domUtil.setContainerWidth(_topBannerDiv, 942, 944);
-      
+
       dojo.connect(window, "onresize", function() {
-          setTimeout("ambra.domUtil.setContainerWidth(_topBannerDiv, 942, 944)", 100);
-        }
-      );
+        setTimeout("ambra.domUtil.setContainerWidth(_topBannerDiv, 942, 944)", 100);
+      });
     }
   }
 });

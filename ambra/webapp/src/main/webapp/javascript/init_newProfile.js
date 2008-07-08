@@ -20,16 +20,12 @@
 var _ldc;
 var _profileForm;
 
-dojo.addOnLoad(function() {
+dojo.addOnLoad( function() {
   _ldc = dijit.byId("LoadingCycle");
-  
   _profileForm = document.userForm;
-//  alert ("setting form action to createNewUser.action");
   _profileForm.action = _namespace + "/user/createNewUser.action";
   dojo.connect(_profileForm.formSubmit, "onclick", function() {
-      _profileForm.submit(); 
-      return true;
-    }
-  );
-  
+    _profileForm.submit();
+    return true;
+  });
 });
