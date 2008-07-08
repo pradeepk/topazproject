@@ -132,7 +132,6 @@
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_discussion.js</file>
           </javascript>
@@ -142,7 +141,6 @@
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_newDiscussion.js</file>
           </javascript>
@@ -159,7 +157,6 @@
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
-            <file>/javascript/config_discussion.js</file>
             <file>/javascript/init_global.js</file>
             <file>/javascript/init_discussion.js</file>
           </javascript>

@@ -19,7 +19,47 @@
  */
 var _ldc;
 
-dojo.addOnLoad(function() {
+var homeConfig = {
+  tabPaneSetId :"tabPaneSet",
+  tabsContainer :"tabsContainer",
+  tabSelectId :tabSelectId
+}
+
+var tabsListMap = new Array();
+
+tabsListMap[tabsListMap.length] = {
+  tabKey :"recentContent",
+  title :"Recently Published",
+  className :"published",
+  urlLoad :"/article/recentArticles.action",
+  urlSave :""
+};
+
+tabsListMap[tabsListMap.length] = {
+  tabKey :"featuredDiscussions",
+  title :"Featured Discussions",
+  className :"annotated",
+  urlLoad :"/article/mostCommented.action",
+  urlSave :""
+};
+
+tabsListMap[tabsListMap.length] = {
+  tabKey :"mostViewed",
+  title :"Most Viewed",
+  className :"viewed",
+  urlLoad :"/article/mostViewed.action",
+  urlSave :""
+};
+
+var querystring = ambra.htmlUtil.getQuerystring();
+var tabSelectId = "";
+
+for( var i = 0; i < querystring.length; i++) {
+  if(querystring[i].param == "tabId") {
+    tabSelectId = querystring[i].value;
+  }
+}
+dojo.addOnLoad( function() {
   ambra.horizontalTabs.setTabPaneSet(dojo.byId(homeConfig.tabPaneSetId));
   ambra.horizontalTabs.setTabsListObject(tabsListMap);
   ambra.horizontalTabs.setTabsContainer(dojo.byId(homeConfig.tabsContainer));
