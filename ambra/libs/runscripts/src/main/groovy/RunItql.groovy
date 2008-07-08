@@ -267,8 +267,7 @@ def execute(query) {
     query = expandVars(query)
     if (verbose)
       println query
-    def result = doQuery(query)
-    showResults result
+    doQuery(query)
   } catch (Throwable e) {
     println "Error running query '${query}':"
     Throwable c = e;
