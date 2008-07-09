@@ -21,11 +21,11 @@ var _containerDiv;
 var _topBannerDiv;
 
 dojo.addOnLoad( function() {
-  if(dojo.isIE) {
+  if (dojo.isIE) {
     _containerDiv = dojo.byId("container");
     _topBannerDiv = dojo.byId("topBanner");
 
-    if(_containerDiv) {
+    if (_containerDiv) {
       ambra.domUtil.setContainerWidth(_containerDiv, 675, 940);
 
       dojo.connect(window, "onresize", function() {
@@ -33,7 +33,7 @@ dojo.addOnLoad( function() {
       });
     }
 
-    if(_topBannerDiv) {
+    if (_topBannerDiv) {
       ambra.domUtil.setContainerWidth(_topBannerDiv, 942, 944);
 
       dojo.connect(window, "onresize", function() {

@@ -57,7 +57,7 @@ dojo.addOnLoad( function() {
 
   dojo.connect(responseTitle, "onblur", function(e) {
     var fldResponseTitle = _dcr.form.commentTitle;
-    if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
+    if (responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
       fldResponseTitle.value = responseTitle.value;
     } else {
       fldResponseTitle.value = "";
@@ -67,7 +67,7 @@ dojo.addOnLoad( function() {
 
   dojo.connect(responseArea, "onblur", function(e) {
     var fldResponse = _dcr.form.comment;
-    if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
+    if (responseArea.value != "" && responseArea.value != _dcr.responseCue) {
       fldResponse.value = responseArea.value;
     } else {
       fldResponse.value = "";
@@ -77,7 +77,7 @@ dojo.addOnLoad( function() {
 
   dojo.connect(responseTitle, "onchange", function(e) {
     var fldResponseTitle = _dcr.form.commentTitle;
-    if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
+    if (responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
       fldResponseTitle.value = responseTitle.value;
     } else {
       fldResponseTitle.value = "";
@@ -86,7 +86,7 @@ dojo.addOnLoad( function() {
 
   dojo.connect(responseArea, "onchange", function(e) {
     var fldResponse = _dcr.form.comment;
-    if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
+    if (responseArea.value != "" && responseArea.value != _dcr.responseCue) {
       fldResponse.value = responseArea.value;
     } else {
       fldResponse.value = responseArea.value;

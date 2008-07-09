@@ -54,8 +54,8 @@ tabsListMap[tabsListMap.length] = {
 var querystring = ambra.htmlUtil.getQuerystring();
 var tabSelectId = "";
 
-for( var i = 0; i < querystring.length; i++) {
-  if(querystring[i].param == "tabId") {
+for ( var i = 0; i < querystring.length; i++) {
+  if (querystring[i].param == "tabId") {
     tabSelectId = querystring[i].value;
   }
 }
