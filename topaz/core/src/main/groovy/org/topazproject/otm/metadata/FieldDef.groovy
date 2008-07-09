@@ -58,7 +58,7 @@ public class FieldDef {
   String   name
   /** the rdf predicate to store this under; if not specified, defaults to uriPrefix + name  */
   String   pred
-  /** the model to store the statements in */
+  /** the model to store the statements in; if not specified, use {@link ClassDef#model}. */
   String   model
   /**
    * the rdf type. If null, this is an untyped literal; if it's an xsd type, this is a typed
@@ -80,22 +80,27 @@ public class FieldDef {
   boolean  unique      = false
   /** true if this field should be not be persisted (or loaded) */
   boolean  isTransient = false
-  /** if maxCard &gt; 1, the field's type - must be one of 'Set', 'List', or 'Array' */
+  /**
+   * If maxCard &gt; 1, the field's type - must be one of 'Set', 'List', or 'Array'.
+   * If null it defaults to {@link RdfBuilder#defColType}
+   */
   String   colType
   /**
    * if maxCard &gt; 1, how the collection is stored in rdf - must be one of 'Predicate',
-   * 'RdfList', 'RdfSeq', 'RdfBag', or 'RdfAlt'.
+   * 'RdfList', 'RdfSeq', 'RdfBag', or 'RdfAlt'. If null it defaults to {@link
+   * RdfBuilder#defColMapping}
    */
   String   colMapping
-  /** the cascading options */
+  /** the cascading options; default is 'all' */
   String[] cascade = ['all']
-  /** the fetch options */
+  /** the fetch options; default is 'lazy' */
   String fetch = 'lazy'
-  /** if false this field is never saved, only loaded */
+  /** if false this field is never saved, only loaded; defaults to 'true' */
   boolean  owned       = true
   /**
    * true if the class instance this field points to should have it's fields stored as though they
    * were part of this instance instead of as a separate instance. Only valid for class types.
+   * Defaults to 'false'.
    */
   boolean  embedded    = false
   /**

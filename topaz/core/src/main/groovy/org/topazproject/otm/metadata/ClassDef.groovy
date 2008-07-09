@@ -44,11 +44,17 @@ public class ClassDef {
    * superclass; if still unset, it's set to uriPrefix + className; set to null for no type.
    */
   String   type = ""
-  /** the default model for properties in this class */
+  /**
+   * the default model for properties in this class. If unset, it defaults to {@link
+   * RdfBuilder#defModel}.
+   */
   String   model
-  /** the uri prefix to use to create absolute uri's from names */
+  /**
+   * the uri prefix to use to create absolute uri's from names. If unset, it defaults to {@link
+   * RdfBuilder#defUriPrefix}.
+   */
   String   uriPrefix
-  /** the className of the class being extended */
+  /** the className of the class being extended. Extends Object by default. */
   String   extendsClass
   /** true if this should be an abstract class; no id-field is generated if missing in this case */
   boolean  isAbstract
