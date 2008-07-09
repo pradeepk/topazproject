@@ -65,7 +65,7 @@ query = """
   select \$user \$email
     subquery( select \$item from ${PREFS_MODEL}
                where \$user <topaz:hasPreferences> \$pref
-                 and \$pref <dc_terms:mediator> 'topaz-plosone'
+                 and \$pref <dcterms:mediator> 'topaz-ambra'
                  and \$pref <topaz:preference> \$prefn
                  and \$prefn <topaz:prefName> '${itemType}'
                  and \$prefn <topaz:prefValue> \$item )
