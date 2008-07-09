@@ -113,6 +113,7 @@ public class ResolverServlet extends HttpServlet {
 
     try {
       resolver = new DOITypeResolver(new URI(myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri")));
+      resolver.setGraph(myConfig.getString("ambra.models.ri"));
       log.trace("Created resolver, server='" + myConfig.getString("ambra.topaz.tripleStore.mulgara.itql.uri") + "'");
     } catch (Exception e) {
       log.error("Error creating doi-type-resolver, server='"
