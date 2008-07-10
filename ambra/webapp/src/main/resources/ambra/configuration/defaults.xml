@@ -51,8 +51,8 @@
       <resourceSubDir></resourceSubDir><!-- used only if web resources like images/css are deployed in a separate directory; rarely used  -->
       <defaultJournalName>AmbraJournal</defaultJournalName>
       
-      <!-- The DOI alias to use for this server -->
-      <doiAlias>dx.doi.org</doiAlias>
+      <!-- The DOI url prefix to use for this server -->
+      <doiUrlPrefix>http://dx.doi.org/</doiUrlPrefix>
       
       <!-- Action for retrieving an article where doi is appended to this string -->
       <articleAction>article/</articleAction>

@@ -198,10 +198,10 @@ public class Ingester {
     t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
     t.setURIResolver(new ZipURIResolver(zip));
 
-    // override the doi name if one is specified in the config
-    final String doiAlias = ConfigurationStore.getInstance().getConfiguration().getString(
-        "ambra.platform.doiAlias");
-    if (doiAlias != null) t.setParameter("doi-url-prefix", doiAlias);
+    // override the doi url prefix if one is specified in the config
+    final String doiUrlPrefix = ConfigurationStore.getInstance().getConfiguration().getString(
+        "ambra.platform.doiUrlPrefix");
+    if (doiUrlPrefix != null) t.setParameter("doi-url-prefix", doiUrlPrefix);
 
     /* Note: it would be preferable (and correct according to latest JAXP specs) to use
      * t.setErrorListener(), but Saxon does not forward <xls:message>'s to the error listener.

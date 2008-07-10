@@ -185,8 +185,8 @@ public abstract class CitationUtils {
     sb.append(": ");
 
     // annotation URI
-    sb.append("http://");
-    sb.append(ConfigurationStore.getInstance().getConfiguration().getString("ambra.platform.doiAlias"));
+    sb.append(ConfigurationStore.getInstance().getConfiguration().getString(
+        "ambra.platform.doiUrlPrefix"));
     sb.append(StringUtils.replace(wa.getId(), "info:doi", ""));
 
     return sb.toString();

@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.net.URLEncoder;
 import java.sql.Date;
 
+import org.plos.configuration.ConfigurationStore;
+
 
 /**
  * Simple class that represents the citation information necesssary to generate most citation file types.
@@ -204,8 +206,10 @@ public class CitationInfo implements Serializable {
    */
   public String getURL() {
     try {
-      return "http://dx.doi.org/" + URLEncoder.encode(DOI, "UTF-8");
-    } catch (Exception e) {
+      return ConfigurationStore.getInstance().getConfiguration().getString(
+          "ambra.platform.doiUrlPrefix")
+          + URLEncoder.encode(DOI, "UTF-8");
+    } catch (Throwable e) {
       return "";
     }
   }
