@@ -55,8 +55,8 @@
   <#assign tabEmsContainerHeight = maxTabRows * numEmsPerRow />
   
     <h2>All Issues</h2>
-    <div class="ambraTabsContainer" style="height:${tabEmsContainerHeight}em;">
-    <div dojoType="dijit.layout.TabContainer" style="height:100%; width:892px;">
+    <div id="theTabContainer" class="ambraTabsContainer" style="height:${tabEmsContainerHeight}em;visibility:hidden;">
+    <div id="jatw" dojoType="dijit.layout.TabContainer" style="height:100%; width:892px;">
       <#list volumeInfos as volumeInfo>
       <div dojoType="dijit.layout.ContentPane" title="${volumeInfo.displayName}" id="${volumeInfo.displayName}">
         <#list volumeInfo.issueInfos as issueInfo>

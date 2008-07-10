@@ -125,6 +125,7 @@
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
             <file>/javascript/init_global.js</file>
+            <file>/javascript/init_jaTabs.js</file>
           </javascript>
         </page>
         <page>
