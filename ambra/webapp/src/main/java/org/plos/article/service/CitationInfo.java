@@ -206,9 +206,9 @@ public class CitationInfo implements Serializable {
    */
   public String getURL() {
     try {
-      return URLEncoder.encode(ConfigurationStore.getInstance().getConfiguration().getString(
+      return ConfigurationStore.getInstance().getConfiguration().getString(
           "ambra.platform.doiUrlPrefix")
-          + DOI, "UTF-8");
+          + URLEncoder.encode(DOI, "UTF-8");
     } catch (Throwable e) {
       return "";
     }
