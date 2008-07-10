@@ -51,7 +51,7 @@
 
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 
-  <xsl:param name="doi-url-prefix"   select="'http://dx.plos.org/'" as="xs:string"/>
+  <xsl:param name="doi-url-prefix"   select="'http://dx.doi.org/'" as="xs:string"/>
   <xsl:param name="initial-state"    select="1" as="xs:integer"/>
 
   <xsl:variable name="zip-entries"   select="/ZipInfo/ZipEntry" as="element(ZipEntry)*"/>

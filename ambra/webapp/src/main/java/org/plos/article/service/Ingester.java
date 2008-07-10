@@ -76,6 +76,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.permission.service.PermissionsService;
 import org.topazproject.xml.transform.EntityResolvingSource;
@@ -196,6 +197,11 @@ public class Ingester {
     Transformer t = tFactory.newTransformer(new StreamSource(handler));
     t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
     t.setURIResolver(new ZipURIResolver(zip));
+
+    // override the doi name if one is specified in the config
+    final String doiAlias = ConfigurationStore.getInstance().getConfiguration().getString(
+        "ambra.platform.doiAlias");
+    if (doiAlias != null) t.setParameter("doi-url-prefix", doiAlias);
 
     /* Note: it would be preferable (and correct according to latest JAXP specs) to use
      * t.setErrorListener(), but Saxon does not forward <xls:message>'s to the error listener.
@@ -438,18 +444,18 @@ public class Ingester {
    *   <li>
    *     <pre>
    *     &lt;authors&gt;
-   *       &lt;org.plos.models.UserProfile&gt; 
+   *       &lt;org.plos.models.UserProfile&gt;
    *         ...
-   *       &lt;/org.plos.models.UserProfile&gt; 
+   *       &lt;/org.plos.models.UserProfile&gt;
    *     &lt;/authors&gt;
    *     </pre>
    *   </li>
    *   <li>
    *     <pre>
    *     &lt;authors&gt;
-   *       &lt;UserProfile&gt; 
+   *       &lt;UserProfile&gt;
    *         ...
-   *       &lt;/UserProfile&gt; 
+   *       &lt;/UserProfile&gt;
    *     &lt;/authors&gt;
    *     </pre>
    *   </li>
