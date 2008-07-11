@@ -21,47 +21,53 @@ var _ldc;
 
 var homeConfig = {
   tabPaneSetId :"tabPaneSet",
-  tabsContainer :"tabsContainer",
-  tabSelectId :tabSelectId
+  tabsContainer :"tabsContainer"
 }
 
-var tabsListMap = new Array();
+var tabsListMap = null;
 
-tabsListMap[tabsListMap.length] = {
-  tabKey :"recentContent",
-  title :"Recently Published",
-  className :"published",
-  urlLoad :"/article/recentArticles.action",
-  urlSave :""
-};
-
-tabsListMap[tabsListMap.length] = {
-  tabKey :"featuredDiscussions",
-  title :"Featured Discussions",
-  className :"annotated",
-  urlLoad :"/article/mostCommented.action",
-  urlSave :""
-};
-
-tabsListMap[tabsListMap.length] = {
-  tabKey :"mostViewed",
-  title :"Most Viewed",
-  className :"viewed",
-  urlLoad :"/article/mostViewed.action",
-  urlSave :""
-};
-
-var querystring = ambra.htmlUtil.getQuerystring();
-var tabSelectId = "";
-
-for ( var i = 0; i < querystring.length; i++) {
-  if (querystring[i].param == "tabId") {
-    tabSelectId = querystring[i].value;
-  }
-}
 dojo.addOnLoad( function() {
-  ambra.horizontalTabs.setTabPaneSet(dojo.byId(homeConfig.tabPaneSetId));
-  ambra.horizontalTabs.setTabsListObject(tabsListMap);
-  ambra.horizontalTabs.setTabsContainer(dojo.byId(homeConfig.tabsContainer));
-  ambra.horizontalTabs.initSimple(tabSelectId);
+
+  // widget-ize tab control if present
+  var tabNode = dojo.byId(homeConfig.tabPaneSetId);
+  if(tabNode) {
+    tabsListMap = [];
+    tabsListMap[tabsListMap.length] = {
+      tabKey :"recentContent",
+      title :"Recently Published",
+      className :"published",
+      urlLoad :"/article/recentArticles.action",
+      urlSave :""
+    };
+    tabsListMap[tabsListMap.length] = {
+      tabKey :"featuredDiscussions",
+      title :"Featured Discussions",
+      className :"annotated",
+      urlLoad :"/article/mostCommented.action",
+      urlSave :""
+    };
+    tabsListMap[tabsListMap.length] = {
+      tabKey :"mostViewed",
+      title :"Most Viewed",
+      className :"viewed",
+      urlLoad :"/article/mostViewed.action",
+      urlSave :""
+    };
+
+    var tabSelectId = "";
+    
+    // resolve user tab selection
+    var querystring = ambra.htmlUtil.getQuerystring();
+    for ( var i = 0; i < querystring.length; i++) {
+      if (querystring[i].param == "tabId") {
+        tabSelectId = querystring[i].value;
+        break;
+      }
+    }
+
+    ambra.horizontalTabs.setTabPaneSet();
+    ambra.horizontalTabs.setTabsListObject(tabsListMap);
+    ambra.horizontalTabs.setTabsContainer(dojo.byId(homeConfig.tabsContainer));
+    ambra.horizontalTabs.initSimple(tabSelectId);
+  }
 });

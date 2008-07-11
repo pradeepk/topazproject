@@ -115,7 +115,7 @@ ambra.horizontalTabs = {
       targetObj = this.getMapObject();
     
     this.buildTabsHome(targetObj);
-    this.setTargetObj(targetObj);
+    if(targetObj != null) this.setTargetObj(targetObj);
   },
   
   tabSetup: function (targetObj) {
@@ -279,8 +279,7 @@ ambra.horizontalTabs = {
       var li = document.createElement("li");
       li.id = this.tabsListObject[i].tabKey;
       if (this.tabsListObject[i].className) li.className = this.tabsListObject[i].className;
-      if (this.tabsListObject[i].tabKey == obj.tabKey) {
-        //li.className = li.className.concat(" active");
+      if (obj != null && this.tabsListObject[i].tabKey == obj.tabKey) {
         dojo.addClass(li, "active");
       }
       li.onclick = function () { 
