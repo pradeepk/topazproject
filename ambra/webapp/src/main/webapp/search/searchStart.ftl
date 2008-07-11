@@ -81,8 +81,8 @@
                   <#assign anyChecked = ""> 
                   <#assign allChecked = checkedstr> 
                 </#if>
-                <li><label><input type="radio" name="authorNameOption" value="any" ${anyChecked} /> <em>Any</em> of these authors</label></li>
-                <li><label><input type="radio" name="authorNameOption" value="all" ${allChecked} /> <em>All</em> of these</label></li>
+                <li><label><input type="radio" name="authorNameOp" value="any" ${anyChecked} /> <em>Any</em> of these authors</label></li>
+                <li><label><input type="radio" name="authorNameOp" value="all" ${allChecked} /> <em>All</em> of these</label></li>
               </ol>
             </fieldset>
           </li>
