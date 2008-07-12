@@ -52,6 +52,10 @@
     <level value="warn" />
   </logger>
 
+  <logger name="org.mulgara.store.xa.BlockCacheLine">
+    <level value="warn" />
+  </logger>
+
   <!-- change to 'debug' for troubleshooting -->
   <logger name="org.topazproject.mulgara">
     <level value="info" /> 
