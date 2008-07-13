@@ -120,7 +120,10 @@ public class ArticleOtmService {
 
     Representation r = oi.getRepresentation(rep);
     if (r == null)
-      throw new NoSuchObjectIdException(rep);
+      throw new NoSuchObjectIdException(obj, "No such Representation: " + rep);
+
+    if (r.getBody() == null)
+      throw new NoSuchObjectIdException(obj, "Missing body for Representation: " + rep);
 
     return new ByteArrayDataSource(r);
   }
