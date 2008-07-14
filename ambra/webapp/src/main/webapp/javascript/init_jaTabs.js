@@ -5,6 +5,7 @@ function jatwResize() {
       tabPane.style.height = '';
       var mb = dojo.marginBox(tabPane);
       mb.h += 50;
+      mb.w = 892;
       dijit.byId('jatw').resize(mb);
       tabPane.style.overflow = 'hidden';
     }
@@ -16,6 +17,7 @@ dojo.addOnLoad( function() {
   jatw.style.visibility = 'visible';
   dojo.connect(jatw, 'onclick', function(e) {
     jatwResize();
+    return false;
   });
   jatwResize();
 });
