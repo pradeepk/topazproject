@@ -32,6 +32,7 @@ import org.apache.struts2.views.freemarker.ScopesHashModel;
 import com.opensymphony.xwork2.util.ValueStack;
 
 import freemarker.cache.TemplateLoader;
+import freemarker.cache.StatefulTemplateLoader;
 
 /**
  * Custom Freemarker Manager to load up the configuration files for css, javascript, and titles of
@@ -64,7 +65,7 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
 
   protected TemplateLoader getTemplateLoader(ServletContext context) {
     final TemplateLoader s = super.getTemplateLoader(context);
-    return new TemplateLoader() {
+    return new StatefulTemplateLoader() {
       public void closeTemplateSource(Object source) throws IOException {
         s.closeTemplateSource(source);
       }
@@ -85,6 +86,11 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
       }
       public Reader getReader(Object source, String encoding) throws IOException {
         return s.getReader(source, encoding);
+      }
+
+      public void resetState() {
+        if (s instanceof StatefulTemplateLoader)
+          ((StatefulTemplateLoader) s).resetState();
       }
     };
   }
