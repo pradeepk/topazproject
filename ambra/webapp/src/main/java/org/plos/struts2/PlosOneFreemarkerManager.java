@@ -69,6 +69,7 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
       public void closeTemplateSource(Object source) throws IOException {
         s.closeTemplateSource(source);
       }
+
       public Object findTemplateSource(String name) throws IOException {
         Object r = s.findTemplateSource(name);
         if (r == null)
@@ -81,9 +82,11 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
 
         return r;
       }
+
       public long getLastModified(Object source) {
         return s.getLastModified(source);
       }
+
       public Reader getReader(Object source, String encoding) throws IOException {
         return s.getReader(source, encoding);
       }
