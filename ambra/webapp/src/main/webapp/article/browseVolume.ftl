@@ -43,20 +43,8 @@
     </div>
     
 <#if volumeInfos?exists>
-  <#assign numThumbsPerRow = 6 />
-  <#assign numEmsPerRow = 20.1 />
-  <#assign maxNumThumbs = 0 />
-  <#list volumeInfos as volumeInfo>
-    <#if (volumeInfo.issueInfos?size > maxNumThumbs)>
-      <#assign maxNumThumbs = volumeInfo.issueInfos?size />
-    </#if>
-  </#list>
-  <#assign maxTabRows = ((maxNumThumbs / numThumbsPerRow) + 0.5)?round />
-  <#assign tabEmsContainerHeight = maxTabRows * numEmsPerRow />
-  
     <h2>All Issues</h2>
-    <div id="theTabContainer" class="ambraTabsContainer" style="height:${tabEmsContainerHeight}em;visibility:hidden;">
-    <div id="jatw" dojoType="dijit.layout.TabContainer" style="height:100%; width:892px;">
+    <div id="jatw" dojoType="dijit.layout.TabContainer" style="width:892px;height:370px;margin-top:30px;visibility:hidden;">
       <#list volumeInfos as volumeInfo>
       <div dojoType="dijit.layout.ContentPane" title="${volumeInfo.displayName}" id="${volumeInfo.displayName}">
         <#list volumeInfo.issueInfos as issueInfo>
@@ -73,11 +61,7 @@
         <div class="clearer">&nbsp;</div>
       </div>
       </#list>
-    </div><!-- end: TabContainer -->
     </div><!-- end: ambraTabsContainer -->
-    <!--<div class="clearer">&nbsp;</div>-->
 </#if><!-- end : volumeInfos?exists -->
-
   </div><!-- end: browse-results -->
-
 </div><!--content-->
