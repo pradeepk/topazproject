@@ -445,6 +445,7 @@ div#discussionContainer div.corrections td.title { background-color: #fff4f0; }/
 div#discussionContainer div.corrections div.original div.hd h3 { text-indent:20px; color:#ff0000; } 
 
 div.corrections td.title a,
+div.corrections td.title a:visited,
 div.fch p.fch strong { color:#ff0000; }
 div.fch p.fch em { font-weight:bold; font-style:normal; }
 div.fch { margin: 15px 0; padding:0; border: 1px solid #ff0000; background-color: #fff4f0; }
