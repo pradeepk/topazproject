@@ -414,6 +414,14 @@
        <ref bean="objectEhcache"/>
     </constructor-arg>
   </bean>
+  <bean id="repCache" class="org.plos.cache.EhcacheProvider">
+    <constructor-arg index="0">
+       <ref bean="txCacheManager"/>
+    </constructor-arg>
+    <constructor-arg index="1">
+       <ref bean="repEhcache"/>
+    </constructor-arg>
+  </bean>
   <bean id="otmInterceptor" class="org.plos.cache.OtmInterceptor">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
@@ -422,6 +430,9 @@
        <ref bean="objectCache"/>
     </constructor-arg>
     <constructor-arg index="2">
+       <ref bean="repCache"/>
+    </constructor-arg>
+    <constructor-arg index="3">
        <ref bean="journalService"/>
     </constructor-arg>
   </bean>
@@ -531,6 +542,10 @@
 
   <bean id="objectEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
     <property name="cacheName" value="ObjectCache"/>
+  </bean>
+
+  <bean id="repEhcache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <property name="cacheName" value="RepresentationCache"/>
   </bean>
 
   <bean id="virtualJournalMappingFilterCache"

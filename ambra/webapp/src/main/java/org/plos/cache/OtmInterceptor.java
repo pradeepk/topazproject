@@ -57,7 +57,8 @@ public class OtmInterceptor implements Interceptor {
   private static final Log     log            = LogFactory.getLog(OtmInterceptor.class);
   private static final String  NO_JOURNAL     = "__NO_JOURNAL__";
   private final CacheManager   cacheManager;
-  private final Cache          cache;
+  private final Cache          objCache;
+  private final Cache          repCache;
   private final JournalService journalService;
 
   /**
@@ -66,9 +67,11 @@ public class OtmInterceptor implements Interceptor {
    * @param objCache the object cache 
    * @param journalService the journal service  
    */
-  public OtmInterceptor(CacheManager cacheManager, Cache objCache, JournalService journalService) {
+  public OtmInterceptor(CacheManager cacheManager, Cache objCache, Cache repCache, 
+                        JournalService journalService) {
     this.cacheManager                         = cacheManager;
-    this.cache                                = objCache;
+    this.objCache                             = objCache;
+    this.repCache                             = repCache;
     this.journalService                       = journalService;
   }
 
@@ -92,7 +95,7 @@ public class OtmInterceptor implements Interceptor {
         return null;
       }
 
-      Cache.Item o = cache.get(journal + "-" + id);
+      Cache.Item o = objCache.get(journal + "-" + id);
 
       if (o == null) {
         if (log.isDebugEnabled())
@@ -111,7 +114,7 @@ public class OtmInterceptor implements Interceptor {
       }
     }
 
-    Cache.Item val = cache.get(id);
+    Cache.Item val = getCache(cm).get(id);
 
     if (val == null) {
       if (log.isDebugEnabled())
@@ -136,6 +139,7 @@ public class OtmInterceptor implements Interceptor {
       return; // since we can't safely invalidate
 
     if (instance != null) {
+      Cache cache = getCache(cm);
       Cache.Item item = cache.get(id);
       Object     val  = (item == null) ? null : item.getValue();
       Entry      e;
@@ -155,7 +159,7 @@ public class OtmInterceptor implements Interceptor {
     if (isFiltered(session, cm)) {
       String journal = getCurrentJournal();
 
-      cache.put(journal + "-" + id, (instance == null) ? null : id);
+      objCache.put(journal + "-" + id, (instance == null) ? null : id);
     }
   }
 
@@ -210,14 +214,14 @@ public class OtmInterceptor implements Interceptor {
     if (log.isDebugEnabled())
       log.debug(cm.getName() + " with id <" + id + "> is deleted.");
 
-    cache.remove(id);
+    getCache(cm).remove(id);
 
     if (isFiltered(session, cm)) {
       for (String journal : journalService.getAllJournalKeys())
         if (!"".equals(journal))
-          cache.remove(journal + "-" + id);
+          objCache.remove(journal + "-" + id);
 
-      cache.remove(NO_JOURNAL + "-" + id);
+      objCache.remove(NO_JOURNAL + "-" + id);
     }
 
     if (instance instanceof Journal)
@@ -239,21 +243,25 @@ public class OtmInterceptor implements Interceptor {
     return false;
   }
 
+  private Cache getCache(ClassMetadata cm) {
+    return "Representation".equals(cm.getName()) ? repCache : objCache;
+  }
+
   private void journalChanged(String journal, boolean deleted) {
     getChangedJournals().add(journal);
 
     String prefix = journal + "-";
     int    count  = 0;
 
-    for (String key : (Collection<String>) cache.getKeys()) {
+    for (String key : (Collection<String>) objCache.getKeys()) {
       if (key.startsWith(prefix)) {
-        cache.remove(key);
+        objCache.remove(key);
         count++;
       }
     }
 
     if (count > 0)
-      log.warn("Removed(pending-commit) " + count + " entries from '" + cache.getName()
+      log.warn("Removed(pending-commit) " + count + " entries from '" + objCache.getName()
                + "' because the journal '" + journal + "' was "
                + (deleted ? "deleted." : "updated."));
   }
