@@ -95,7 +95,10 @@ public class BrowseArticlesAction extends BaseActionSupport {
     if (catName != null) {
       int[] numArt = new int[1];
       articleList = browseService.getArticlesByCategory(catName, startPage, pageSize, numArt);
-      Collections.sort(articleList, new ArticleInfoMostRecentDateComparator());
+      if (articleList == null)
+        articleList = Collections.<ArticleInfo>emptyList();
+      else
+        Collections.sort(articleList, new ArticleInfoMostRecentDateComparator());
       totalArticles = numArt[0];
     } else {
       articleList = Collections.<ArticleInfo>emptyList();
