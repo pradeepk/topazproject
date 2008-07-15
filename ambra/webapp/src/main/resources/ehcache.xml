@@ -281,7 +281,7 @@
             overflowToDisk="false"
             diskPersistent="false"
             diskExpiryThreadIntervalSeconds="120"
-            memoryStoreEvictionPolicy="LRU">
+            memoryStoreEvictionPolicy="LFU">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -388,7 +388,8 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -404,7 +405,8 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -421,7 +423,8 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -437,7 +440,8 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -453,7 +457,8 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -465,11 +470,12 @@
     It also bootstraps from the cluster, using default properties.
     -->
     <cache name="article-state"
-           maxElementsInMemory="100000"
+           maxElementsInMemory="10000"
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -485,7 +491,7 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -517,7 +523,8 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
-           overflowToDisk="false">
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -532,11 +539,12 @@
         - replicate puts & updates
     -->
     <cache name="ArticleAnnotationCache"
-           maxElementsInMemory="10000"
-           eternal="false"
-           timeToIdleSeconds="0"
-           timeToLiveSeconds="86400"
-           overflowToDisk="false">
+           maxElementsInMemory="20000"
+           eternal="true"
+           timeToIdleSeconds="1800"
+           timeToLiveSeconds="1800"
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -551,7 +559,7 @@
            eternal="false"
            timeToIdleSeconds="86400"
            timeToLiveSeconds="0"
-           overflowToDisk="false">
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -564,9 +572,10 @@
     <cache name="BrowseCache"
            maxElementsInMemory="10000"
            eternal="true"
-           timeToIdleSeconds="86400"
-           timeToLiveSeconds="86400"
-           overflowToDisk="false">
+           timeToIdleSeconds="1800"
+           timeToLiveSeconds="1800"
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -581,8 +590,9 @@
            maxElementsInMemory="10000"
            eternal="false"
            timeToIdleSeconds="0"
-           timeToLiveSeconds="86400"
-           overflowToDisk="false">
+           timeToLiveSeconds="86400" 
+           diskPersistent="true"
+           overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
         <cacheEventListenerFactory
@@ -608,6 +618,7 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
+           diskPersistent="true"
            overflowToDisk="false">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -619,6 +630,7 @@
            eternal="true"
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
+           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
