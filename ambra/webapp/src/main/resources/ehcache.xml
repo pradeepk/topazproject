@@ -389,7 +389,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -407,7 +406,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -426,7 +424,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -444,7 +441,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -462,7 +458,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -480,7 +475,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -532,7 +526,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -553,7 +546,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -586,7 +578,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -604,7 +595,6 @@
            timeToIdleSeconds="0"
            timeToLiveSeconds="86400" 
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -633,7 +623,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="false">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
@@ -646,7 +635,6 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            memoryStoreEvictionPolicy="LFU"
-           diskPersistent="true"
            overflowToDisk="true">
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
