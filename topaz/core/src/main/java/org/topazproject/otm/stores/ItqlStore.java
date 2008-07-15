@@ -512,29 +512,31 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append("$o <rdf:type> $t) ");
     qry.append("from ").append(models).append(" where ");
     qry.append("<").append(id).append("> $p $o");
-    qry.append(" and $s <mulgara:is> <").append(id).append(">");
-    if (filterObj)
-      applyObjectFilters(qry, cm, "$s", filters, sf);
+    if (filterObj) {
+      if (applyObjectFilters(qry, cm, "$s", filters, sf))
+        qry.append(" and $s <mulgara:is> <").append(id).append(">");
+    }
     applyFieldFilters(qry, assoc, true, id, filters, sf);
 
     qry.append("; select $p $s subquery (select $t from ").append(models).append(" where ");
     qry.append("$s <rdf:type> $t) ");
     qry.append("from ").append(models).append(" where ");
     qry.append("$s $p <").append(id).append(">");
-    qry.append(" and $o <mulgara:is> <").append(id).append(">");
-    if (filterObj)
-      applyObjectFilters(qry, cm, "$o", filters, sf);
+    if (filterObj) {
+      if (applyObjectFilters(qry, cm, "$o", filters, sf))
+        qry.append(" and $o <mulgara:is> <").append(id).append(">");
+    }
     applyFieldFilters(qry, assoc, false, id, filters, sf);
     qry.append(";");
 
     return qry.toString();
   }
 
-  private void applyObjectFilters(StringBuilder qry, ClassMetadata cm, String var, List<Filter> filters,
-                                  SessionFactory sf) throws OtmException {
+  private boolean applyObjectFilters(StringBuilder qry, ClassMetadata cm, String var,
+                                     List<Filter> filters, SessionFactory sf) throws OtmException {
     // avoid work if possible
     if (filters == null || filters.size() == 0)
-      return;
+      return false;
 
     // find applicable filters
     filters = new ArrayList<Filter>(filters);
@@ -546,7 +548,7 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     if (filters.size() == 0)
-      return;
+      return false;
 
     // apply filters
     qry.append(" and (");
@@ -560,6 +562,8 @@ public class ItqlStore extends AbstractTripleStore {
 
     qry.setLength(qry.length() - 4);
     qry.append(")");
+
+    return true;
   }
 
   private void applyFieldFilters(StringBuilder qry, List<RdfMapper> assoc, boolean fwd, String id,
