@@ -720,12 +720,19 @@ public class ItqlStore extends AbstractTripleStore {
     String tmodel = modelUri;
     if (m.isAssociation())
       tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), isc);
+
+    /* Optimization note: using
+     *   ($s $p $o and <foo> <bar> $s) minus ($s <rdf:type> $o and <foo> <bar> $s)
+     * is (more than 30 times) faster than the more succinct
+     *   ($s $p $o minus $s <rdf:type> $o) and <foo> <bar> $s
+     */
     StringBuilder qry = new StringBuilder(500);
     qry.append("select $o $p subquery (select $t from <").append(tmodel)
        .append("> where $o <rdf:type> $t) from <")
        .append(modelUri).append("> where ")
-       .append("($s $p $o minus $s <rdf:type> $o) and <")
-       .append(sub).append("> <").append(pred).append("> $s");
+       .append("(($s $p $o and <").append(sub).append("> <").append(pred).append("> $s) minus ")
+       .append("($s <rdf:type> $o and <").append(sub).append("> <").append(pred).append("> $s)) ");
+
     if (m.isAssociation())
       applyObjectFilters(qry, sf.getClassMetadata(m.getAssociatedEntity()), "$o", filters, sf);
     qry.append(";");
