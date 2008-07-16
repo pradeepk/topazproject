@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>fedora-blobstore</artifactId>
   <packaging>jar</packaging>
-  <version>0.9-SNAPSHOT</version>
+  <version>0.9-rc1</version>
   <name>Fedora as an OTM blobstore</name>
   <description>A wrapper around Fedora so it can be used as an OTM blobstore.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>fedora-libs</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9-rc1</version>
   </parent>
   
   <dependencies>

@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.topazproject.packages</groupId>
     <artifactId>packages</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9-rc1</version>
   </parent>
 
   <dependencies>
@@ -58,7 +58,7 @@
                   <filemode>755</filemode>
                   <username>topaz</username>
                   <groupname>topaz</groupname>
-                  <dependency/>
+                  <dependency />
                   <sources>
                     <source>
                       <location>src/main/resources/log4j.xml</location>
