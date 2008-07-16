@@ -4,14 +4,14 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>ambra-emailer</artifactId>
   <packaging>jar</packaging>
-  <version>0.9-rc1</version>
+  <version>0.9-rc2-SNAPSHOT</version>
   <name>Ambra module for Email</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.9-rc1</version>
+    <version>0.9-rc2-SNAPSHOT</version>
   </parent>
 
   <dependencies>

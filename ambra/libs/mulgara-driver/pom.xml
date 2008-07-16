@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>mulgara-driver</artifactId>
   <packaging>jar</packaging>
-  <version>0.9-rc1</version>
+  <version>0.9-rc2-SNAPSHOT</version>
   <name>Ambra Mulgara RMI driver</name>
   <description>A Mulgara RMI client library with log4j classes stripped.</description>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra-libs</artifactId>
-    <version>0.9-rc1</version>
+    <version>0.9-rc2-SNAPSHOT</version>
   </parent>
 
   <build>

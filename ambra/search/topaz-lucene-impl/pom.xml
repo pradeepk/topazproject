@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ambra-lucene-impl</artifactId>
   <packaging>jar</packaging>
-  <version>0.9-rc1</version>
+  <version>0.9-rc2-SNAPSHOT</version>
   <name>Ambra Fedoragsearch search implementation</name>
   
   <parent>
     <groupId>org.topazproject.ws</groupId>
     <artifactId>ws-search</artifactId>
-    <version>0.9-rc1</version>
+    <version>0.9-rc2-SNAPSHOT</version>
   </parent>
 
   <dependencies>

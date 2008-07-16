@@ -3,14 +3,14 @@
   <groupId>info.fedora</groupId>
   <artifactId>fedoragsearch-server</artifactId>
   <packaging>jar</packaging>
-  <version>0.9-rc1</version>
+  <version>0.9-rc2-SNAPSHOT</version>
   <name>fedoragsearch server implementation</name>
   <url>http://defxws2006.cvt.dk/fedoragsearch/</url>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>
     <artifactId>ws-search</artifactId>
-    <version>0.9-rc1</version>
+    <version>0.9-rc2-SNAPSHOT</version>
   </parent>
 
   <dependencies>

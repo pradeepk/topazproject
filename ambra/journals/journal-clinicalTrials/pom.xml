@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>journal-clinicalTrials</artifactId>
-  <version>0.9-rc1</version>
+  <version>0.9-rc2-SNAPSHOT</version>
   <name>PLoS Clinical Trials Journal Resources</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>journals</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.9-rc1</version>
+    <version>0.9-rc2-SNAPSHOT</version>
   </parent>
 
 </project>
