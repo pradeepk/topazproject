@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.9-SNAPSHOT</version>
+  <version>0.9-rc1</version>
   <packaging>pom</packaging>
   <name>Topaz Project</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -90,9 +90,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.topazproject.org/svn/head/</developerConnection>
-    <connection>scm:svn:http://svn.topazproject.org/svn-pub/head/</connection>
-    <url>http://www.topazproject.org/trac/browser</url>
+    <developerConnection>scm:svn:http://svn.topazproject.org/svn/tags/the-whole-shebang-0.9-rc1</developerConnection>
+    <connection>scm:svn:http://svn.topazproject.org/svn-pub/tags/the-whole-shebang-0.9-rc1</connection>
+    <url>scm:svn:http://svn.topazproject.org/svn/tags/the-whole-shebang-0.9-rc1</url>
   </scm>
 
   <modules>
@@ -258,12 +258,12 @@
       <dependency>
         <groupId>org.mulgara</groupId>
         <artifactId>mulgara</artifactId>
-        <version>2.0-beta-SNAPSHOT</version>
+        <version>2.0-beta-t1</version>
       </dependency>
       <dependency>
         <groupId>org.mulgara</groupId>
         <artifactId>driver</artifactId>
-        <version>2.0-beta-SNAPSHOT</version>
+        <version>2.0-beta-t1</version>
       </dependency>
       <dependency>
         <groupId>info.fedora</groupId>
@@ -880,7 +880,7 @@
         <plugin>
           <groupId>org.topazproject.plugins</groupId>
           <artifactId>integration-tests-plugin</artifactId>
-          <version>0.9-SNAPSHOT</version>
+          <version>0.9-rc1</version>
           <executions>
             <execution>
               <goals>
