@@ -61,6 +61,13 @@ public class OtmInterceptor implements Interceptor {
   private final Cache          repCache;
   private final JournalService journalService;
 
+  // FIXME: remove once reference annotations are added in OTM
+  private static final Map<String, String> aliases = new HashMap<String, String>();
+  static {
+    aliases.put("CitationInfo:authors", "Citation:authors");
+    aliases.put("UserProfileInfo:realName", "FoafPerson:realName");
+  }
+
   /**
    * Creates a new OtmInterceptor object.
    *
@@ -323,8 +330,9 @@ public class OtmInterceptor implements Interceptor {
         else {
           List<String> val = values.get(getName(mapper, sess));
 
-          if (val != null)
-            mapper.getBinder(sess).load(instance, val, tla, mapper, sess);
+          if (val == null)
+            return null;    // Not all properties for this are in cache. Fetch the rest.
+          mapper.getBinder(sess).load(instance, val, tla, mapper, sess);
         }
       }
 
@@ -417,7 +425,10 @@ public class OtmInterceptor implements Interceptor {
       if (def instanceof Reference)
         return getName(sess.getSessionFactory().getDefinition(((Reference) def).getReferred()), sess);
 
-      return def.getName();
+      // FIXME: remove once reference annotations are added in OTM
+      String name = def.getName();
+      String alias = aliases.get(name);
+      return (alias != null) ? alias : name;
     }
 
     public String toString() {
