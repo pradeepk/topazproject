@@ -213,6 +213,7 @@ public class JournalFilterService {
     Map<String, Set<FilterDefinition>> sfd = new HashMap<String, Set<FilterDefinition>>();
     int idx = 0;
     for (DetachedCriteria dc : a.getSmartCollectionRules()) {
+      s.evict(dc);      // we don't want to save the possible alias change b/c we're in a r/o txn
       dc.setAlias(normalize(dc.getAlias(), sf));
       put(sfd, dc.getAlias(), new CriteriaFilterDefinition(pfx + "-rf-" + idx++, dc));
     }
