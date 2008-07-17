@@ -221,13 +221,14 @@ public class CacheManager implements CacheListener, ObjectListener {
         log.debug("afterCompletion: processing event-queue with " + queue.size() + " entries for "
                   + txn);
 
-      if (locked == false)
+      boolean committed = (status == Status.STATUS_COMMITTED);
+      if ((locked == false) && committed)
         log.warn("afterCompletion: called without acquiring the update-lock");
 
       CacheEvent ev;
 
       while ((ev = queue.poll()) != null)
-        ev.execute(this, status == Status.STATUS_COMMITTED);
+        ev.execute(this, committed);
 
       if (locked) {
         updateLock.unlock();
