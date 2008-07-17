@@ -59,19 +59,17 @@ public class FetchObjectAction extends BaseActionSupport {
   @Transactional(readOnly = true)
   public String execute() throws Exception {
     if (StringUtils.isEmpty(representation)) {
-      addFieldError("representation", "Object representation is required");
-      return INPUT;
+      addActionMessage("No representation specified");
+      return ERROR;
     }
 
-    final ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
-
+    ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
     if (null == objectInfo) {
       addActionMessage("No object found for uri: " + uri);
       return ERROR;
     }
 
     Representation rep = objectInfo.getRepresentation(representation);
-
     if (null == rep) {
       addActionMessage("No such representation '" + representation + "' for uri: " + uri);
       return ERROR;
