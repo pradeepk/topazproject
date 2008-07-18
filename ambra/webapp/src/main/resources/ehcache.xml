@@ -629,16 +629,25 @@
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
+    <!--
+    OTM Second-Level cache for Representation objects (article blobs). 
+    This cache does not replicate or bootstrap from peers. But changes are 
+    notified to the peers. (eg. from re-ingest or delete of Articles).
+    This is also not an eternal cache. That was done to make sure that
+    the cache doesn't fill up the disk with large blobs. An idle timeout
+    is added so that frequently used blobs will always remain in cache.
+    Adjust this timer to control the size of the cache. 
+    -->
     <cache name="RepresentationCache"
            maxElementsInMemory="2000"
-           eternal="true"
+           eternal="false"
            timeToIdleSeconds="1800"
-           timeToLiveSeconds="1800"
+           timeToLiveSeconds="0"
            memoryStoreEvictionPolicy="LFU"
-           overflowToDisk="true">
-        <bootstrapCacheLoaderFactory
-                class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+           overflowToDisk="true"
+           diskPersistent="false">
         <cacheEventListenerFactory
-                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+                class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                properties="replicatePuts=false,replicateUpdatesViaCopy=false"/>
     </cache>
 </ehcache>
