@@ -126,6 +126,7 @@
       </xsl:for-each>
 
       <xsl:for-each select="$manifest/articleBundle/object">
+        <xsl:sort select="(index-of($sec-obj-refs/@xlink:href, @uri), 999999)[1]"/>
         <parts id="{@uri}">
           <xsl:call-template name="sec-obj"/>
         </parts>
