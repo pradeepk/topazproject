@@ -44,6 +44,7 @@ class AnswerAnswer extends AbstractAnswer {
   private final Object[]       rowCache;
   private final AnswerAnswer[] ansCache;
   private final boolean[]      needsClose;
+  private       boolean        closed;
 
   /** 
    * Create a query answer.
@@ -103,11 +104,16 @@ class AnswerAnswer extends AbstractAnswer {
   }
 
   public void close() {
+    if (closed)
+      return;
+
     try {
       clearRowCache();
       ans.close();
     } catch (TuplesException te) {
       log.error("Error closing answer", te);
+    } finally {
+      closed = true;
     }
   }
 
