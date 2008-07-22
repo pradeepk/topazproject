@@ -116,8 +116,12 @@ public class UserService {
     Results r = session.
         createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
         setParameter("id", authId).execute();
-    if (!r.next() || !r.next())
-      return ua.getId().toString();
+    try {
+      if (!r.next() || !r.next())
+        return ua.getId().toString();
+    } finally {
+      r.close();
+    }
 
     session.delete(ua);
     txManager.doCommit(
@@ -182,9 +186,13 @@ public class UserService {
     Results r = session.
         createQuery("select ua.profile.displayName from UserAccount ua where ua = :id;").
         setParameter("id", topazUserId).execute();
-    if (!r.next())
-      throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
-    return r.getString(0);
+    try {
+      if (!r.next())
+        throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
+      return r.getString(0);
+    } finally {
+      r.close();
+    }
   }
 
   /**
@@ -247,7 +255,11 @@ public class UserService {
         createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
         setParameter("id", authId).execute();
 
-    return r.next() ? (UserAccount) r.get(0) : null;
+    try {
+      return r.next() ? (UserAccount) r.get(0) : null;
+    } finally {
+      r.close();
+    }
   }
 
   /**
@@ -309,9 +321,13 @@ public class UserService {
     Results r = session.
         createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
         setParameter("id", authId).execute();
-    if (!r.next())
-      return null;
-    return r.getString(0);
+    try {
+      if (!r.next())
+        return null;
+      return r.getString(0);
+    } finally {
+      r.close();
+    }
   }
 
   /**
@@ -332,9 +348,13 @@ public class UserService {
     Results r = session.
         createQuery("select ua.id from UserAccount ua where ua.profile." + field + " = :v;").
         setParameter("v", value).execute();
-    if (!r.next())
-      return null;
-    return r.getString(0);
+    try {
+      if (!r.next())
+        return null;
+      return r.getString(0);
+    } finally {
+      r.close();
+    }
   }
 
   /**

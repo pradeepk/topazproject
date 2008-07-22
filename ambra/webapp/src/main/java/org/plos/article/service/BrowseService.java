@@ -275,11 +275,12 @@ public class BrowseService {
     // Results results = session.createQuery(oqlQuery).execute();
 
     Results results = session.createQuery("select v from Volume v where v.issueList = :doi ;")
-    .setParameter("doi", issueDOI).execute();
+                             .setParameter("doi", issueDOI).execute();
 
     results.beforeFirst();
     if (results.next()) {
       parentVolume = (Volume)results.get("v");
+      results.close();
     }
     if (parentVolume != null) {
       final List<URI> issues = parentVolume.getIssueList();

@@ -569,7 +569,11 @@ public class PermissionsService implements Permissions {
     String  query = RdfUtil.bindValues(ITQL_INFER_PERMISSION, values);
     Results ans   = getCurrentSession().doNativeQuery(query);
 
-    return ans.next();
+    try {
+      return ans.next();
+    } finally {
+      ans.close();
+    }
   }
 
   private String[] validateUriList(String[] list, String name, boolean nullOk) {
