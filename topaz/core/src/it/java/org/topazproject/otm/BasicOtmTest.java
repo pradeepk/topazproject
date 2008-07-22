@@ -354,13 +354,141 @@ public class BasicOtmTest extends AbstractOtmTest {
       });
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
   @Test(dependsOnMethods =  {
     "testImplicitDelete"}
+  )
+  public void testMergeAddAssoc() throws OtmException {
+    log.info("Testing merge() - addition of associations...");
+
+    // see testInverse for the data setup
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation o = session.get(Annotation.class, "http://localhost/annotation/1");
+          assertNotNull(o);
+
+          Annotation  a  = new PublicAnnotation(URI.create("http://localhost/annotation/1"));
+          ReplyThread r  = new ReplyThread(URI.create("http://localhost/reply/1"));
+          ReplyThread rr = new ReplyThread(URI.create("http://localhost/reply/1/1"));
+
+          a.addReply(r);
+          r.addReply(rr);
+
+          // test to see if merge adds the data
+          Annotation n = session.merge(a);
+
+          assertTrue(n == o);  // instance should match
+
+          assertEquals(URI.create("http://localhost/annotation/1"), n.getId());
+          List<ReplyThread> replies = n.getReplies();
+          assertNotNull(replies);
+          assertEquals(1, replies.size());
+
+          ReplyThread nr = replies.get(0);
+          assertNotNull(nr);
+          assertEquals(URI.create("http://localhost/reply/1"), nr.getId());
+
+          replies = nr.getReplies();
+          assertNotNull(replies);
+          assertEquals(1, replies.size());
+
+          nr = replies.get(0);
+          assertNotNull(nr);
+          assertEquals(URI.create("http://localhost/reply/1/1"), nr.getId());
+        }
+      });
+  }
+
+  @Test(dependsOnMethods =  {
+    "testMergeAddAssoc"}
+  )
+  public void testMergeDelAssoc() throws OtmException {
+    log.info("Testing merge() - deletion of associations...");
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+          assertNotNull(a);
+
+          List<ReplyThread> replies = a.getReplies();
+          assertNotNull(replies);
+          assertEquals(1, replies.size());
+
+          ReplyThread r = replies.get(0);
+          assertNotNull(r);
+          assertEquals(URI.create("http://localhost/reply/1"), r.getId());
+
+          replies = r.getReplies();
+          assertNotNull(replies);
+          assertEquals(1, replies.size());
+
+          r = replies.get(0);
+          assertNotNull(r);
+          assertEquals(URI.create("http://localhost/reply/1/1"), r.getId());
+
+          Annotation  n  = session.merge(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
+          assertTrue(n == a);
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+
+          assertNotNull(a);
+
+          List<ReplyThread> replies = a.getReplies();
+          assertNotNull(replies);
+          assertEquals(0, replies.size());
+
+          ReplyThread r = session.get(ReplyThread.class, "http://localhost/reply/1");
+          assertNull(r);
+          r = session.get(ReplyThread.class, "http://localhost/reply/1/1");
+          assertNull(r);
+        }
+      });
+  }
+
+  @Test(dependsOnMethods =  {
+    "testMergeDelAssoc"}
+  )
+  public void testMergeNew() throws OtmException {
+    log.info("Testing merge() - creating new instance ...");
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = new PublicAnnotation(URI.create("http://localhost/annotation/2"));
+          ReplyThread r  = new ReplyThread(URI.create("http://localhost/reply/2"));
+          ReplyThread rr = new ReplyThread(URI.create("http://localhost/reply/2/1"));
+
+          a.addReply(r);
+          r.addReply(rr);
+          session.merge(a);
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = session.get(Annotation.class, "http://localhost/annotation/2");
+
+          assertNotNull(a);
+          
+          List<ReplyThread> replies = a.getReplies();
+          assertNotNull(replies);
+          assertEquals(1, replies.size());
+
+          ReplyThread r = replies.get(0);
+          assertNotNull(r);
+          assertEquals(URI.create("http://localhost/reply/2"), r.getId());
+
+          replies = r.getReplies();
+          assertNotNull(replies);
+          assertEquals(1, replies.size());
+
+          r = replies.get(0);
+          assertNotNull(r);
+          assertEquals(URI.create("http://localhost/reply/2/1"), r.getId());
+        }
+      });
+  }
+
+  @Test(dependsOnMethods =  {
+    "testMergeNew"}
   )
   public void testSpecialMappers() throws OtmException {
     log.info("Testing special mappers (rdf:list etc.) ...");
