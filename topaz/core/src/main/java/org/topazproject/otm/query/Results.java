@@ -38,6 +38,7 @@ public abstract class Results {
   protected       boolean  eor = false;
   protected       Type[]   types;
   protected final Object[] curRow;
+  protected       boolean  autoClose = true;
 
   /** possible result types */
   public enum Type { CLASS, LITERAL, URI, BLANK_NODE, SUBQ_RESULTS, UNKNOWN };
@@ -131,6 +132,16 @@ public abstract class Results {
   }
 
   /** 
+   * Set the auto-close flag. This flag is true by default.
+   * 
+   * @param flag true if this result should be closed automatically upon reaching the end of the
+   *             results; false if the result should be left open.
+   */
+  public void setAutoClose(boolean flag) {
+    autoClose = flag;
+  }
+
+  /** 
    * Position cursor before the first row. 
    * 
    * @throws OtmException 
@@ -153,11 +164,15 @@ public abstract class Results {
     pos++;
     loadRow();
 
+    if (eor && autoClose)
+      close();
+
     return !eor;
   }
 
   /** 
-   * Close the results. 
+   * Close the results. No other methods may be invoked once the result has been closed, and in
+   * particular {@link #beforeFirst} cannot be used to restart the results after this.
    */
   public void close() {
   }

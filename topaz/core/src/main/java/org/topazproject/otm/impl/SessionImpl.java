@@ -682,6 +682,7 @@ public class SessionImpl extends AbstractSession {
         List<Object> vals = new ArrayList<Object>();
 
         Results sr = r.getSubQueryResults(idx);
+        sr.setAutoClose(false);
 
         sr.beforeFirst();
         while (sr.next())
