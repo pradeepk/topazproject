@@ -804,7 +804,7 @@ public class SessionImpl extends AbstractSession {
     ClassMetadata ocm = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
                             getEntityMode(), other);
     ClassMetadata cm  = sessionFactory.getInstanceMetadata(id.getClassMetadata(),
-                            getEntityMode(), other);
+                            getEntityMode(), o);
 
     if (!cm.isAssignableFrom(ocm))
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
@@ -841,6 +841,14 @@ public class SessionImpl extends AbstractSession {
 
         b.set(o, cc);
       }
+    }
+
+    if (cm.getIdField() != null)
+      cm.getIdField().getBinder(getEntityMode()).set(o, Collections.singletonList(id.getId()));
+
+    if ((cm.getBlobField() != null) && (ocm.getBlobField() != null)) {
+      List blob = ocm.getBlobField().getBinder(getEntityMode()).get(other);
+      cm.getBlobField().getBinder(getEntityMode()).set(o, blob);
     }
 
     return o;
