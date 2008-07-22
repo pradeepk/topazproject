@@ -360,6 +360,9 @@ public class CASFilter implements Filter {
       // unknown state... redirect to CAS
       session.setAttribute(CAS_FILTER_GATEWAYED, "true");
       redirectToCAS((HttpServletRequest) request, (HttpServletResponse) response);
+
+      // abort chain
+      return;
     }
 
     try {
