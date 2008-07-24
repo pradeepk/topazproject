@@ -20,7 +20,7 @@ package org.plos.xacml;
 
 import java.io.IOException;
 
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;

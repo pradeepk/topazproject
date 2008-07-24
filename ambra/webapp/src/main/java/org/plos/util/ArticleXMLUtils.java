@@ -49,10 +49,10 @@ import org.plos.ApplicationException;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.article.service.NoSuchObjectIdException;
-import org.plos.configuration.ConfigurationStore;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import org.w3c.dom.Document;

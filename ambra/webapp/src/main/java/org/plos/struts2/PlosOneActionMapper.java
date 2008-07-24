@@ -33,9 +33,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.dispatcher.mapper.ActionMapping;
 import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
-import org.plos.configuration.ConfigurationStore;
 import org.plos.web.VirtualJournalContext;
 import org.plos.web.VirtualJournalMappingFilter;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 /**
  * Custom WebWork ActionMapper.

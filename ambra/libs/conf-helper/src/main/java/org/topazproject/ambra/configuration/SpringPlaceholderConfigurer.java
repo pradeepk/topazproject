@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.configuration;
+package org.topazproject.ambra.configuration;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.apache.commons.configuration.Configuration;

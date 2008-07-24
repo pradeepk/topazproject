@@ -33,12 +33,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.BrowseService;
-import org.plos.configuration.ConfigurationStore;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleInfoMostRecentDateComparator;
 import org.plos.model.article.Years;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 /**
  * @author stevec

@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

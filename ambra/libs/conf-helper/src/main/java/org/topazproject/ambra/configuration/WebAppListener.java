@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.configuration;
+package org.topazproject.ambra.configuration;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,7 +52,7 @@ public class WebAppListener implements ServletContextListener {
    *
    * By default, WebAppListener uses the default ConfigurationStore initialization. This
    * usually means using /etc/.../ambra.xml. This can be overridden by setting the
-   * org.plos.configuration system property or webapp context variable to a URL or a name
+   * org.topazproject.ambra.configuration system property or webapp context variable to a URL or a name
    * resolvable as a resource.
    *
    * @param event The servlet event associated with initializing this context

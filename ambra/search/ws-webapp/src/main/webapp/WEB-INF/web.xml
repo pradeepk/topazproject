@@ -25,7 +25,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   <display-name>Axis Archetype Web Service</display-name>
 
   <listener>
-    <listener-class>org.plos.configuration.WebAppListener</listener-class>
+    <listener-class>org.topazproject.ambra.configuration.WebAppListener</listener-class>
   </listener>
   
   <!-- Axis Web Service -->

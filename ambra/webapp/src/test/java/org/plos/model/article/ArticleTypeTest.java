@@ -28,7 +28,7 @@ import java.net.URI;
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 import junit.framework.TestCase;
 

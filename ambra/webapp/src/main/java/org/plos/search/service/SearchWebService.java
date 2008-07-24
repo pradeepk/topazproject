@@ -18,9 +18,9 @@
  */
 package org.plos.search.service;
 
-import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.ws.search.SearchClientFactory;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 
 import javax.xml.rpc.ServiceException;

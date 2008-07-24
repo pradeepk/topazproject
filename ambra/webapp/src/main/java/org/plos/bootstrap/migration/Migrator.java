@@ -23,10 +23,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -34,9 +31,9 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.configuration.ConfigurationStore;
 import org.plos.configuration.WebappItqlClientFactory;
 
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
@@ -46,7 +43,6 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.stores.ItqlStore;
-import org.topazproject.otm.util.TransactionHelper;
 
 /**
  * A listener class for doing migrations on startup.
@@ -473,7 +469,7 @@ public class Migrator implements ServletContextListener {
       log.info("Did not find any ObjectInfo that required an rdf:type to be added.");
     } else {
       sess.doNativeUpdate("insert select $s <rdf:type> <topaz:ObjectInfo> from <" + RI +
-                          "> where $s <dcterms:isPartOf> $o " + 
+                          "> where $s <dcterms:isPartOf> $o " +
                           " or $s <rdf:type> <topaz:Article> into <" + RI + ">;");
       log.warn("Added rdf:type to " + cnt + " ObjectInfo's.");
     }

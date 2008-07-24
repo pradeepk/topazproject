@@ -23,8 +23,8 @@ import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.configuration.ConfigurationStore;
 import org.plos.web.VirtualJournalContextFilter;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.net.URLEncoder;
 import java.sql.Date;
 
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 
 /**

@@ -29,7 +29,7 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
   <!-- Allow overrides from conf-helper -->
-  <bean id="propertyConfigurer" class="org.plos.configuration.SpringPlaceholderConfigurer"/>
+  <bean id="propertyConfigurer" class="org.topazproject.ambra.configuration.SpringPlaceholderConfigurer"/>
 
   <!--Ambra developer beans here -->
   <bean id="serviceFactory" class="org.plos.service.ServiceFactory">

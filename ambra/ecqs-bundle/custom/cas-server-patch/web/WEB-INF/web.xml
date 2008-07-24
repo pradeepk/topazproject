@@ -96,7 +96,7 @@
 
     <!-- Initialize common-config -->
     <listener>
-      <listener-class>org.plos.configuration.WebAppListener</listener-class>
+      <listener-class>org.topazproject.ambra.configuration.WebAppListener</listener-class>
     </listener>
 
     <!-- Sets up ticket caches -->

@@ -233,7 +233,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <!-- The configuration WebAppListner to pull in the configuration stuff automatically. -->
   <listener>
-    <listener-class>org.plos.configuration.WebAppListener</listener-class>
+    <listener-class>org.topazproject.ambra.configuration.WebAppListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.plos.bootstrap.WebAppListenerInitModels</listener-class>

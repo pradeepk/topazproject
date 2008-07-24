@@ -27,12 +27,12 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
 import org.plos.cache.Cache;
-import org.plos.configuration.ConfigurationStore;
 import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 /**
  * Service to provide search capabilities for the application

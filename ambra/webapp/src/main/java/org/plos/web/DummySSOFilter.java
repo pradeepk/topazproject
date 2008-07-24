@@ -41,7 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.Constants;
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 import edu.yale.its.tp.cas.client.CASReceipt;
 

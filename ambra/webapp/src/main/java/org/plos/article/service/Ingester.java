@@ -76,11 +76,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.permission.service.PermissionsService;
 import org.topazproject.xml.transform.EntityResolvingSource;
 import org.topazproject.xml.transform.cache.CachedSource;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 

@@ -40,9 +40,9 @@ import org.apache.struts2.dispatcher.Dispatcher;
 import org.apache.struts2.dispatcher.FilterDispatcher;
 import org.apache.struts2.util.ClassLoaderUtils;
 
-import org.plos.configuration.ConfigurationStore;
 
 import org.plos.web.HttpResourceServer;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 /**
  * Override the Struts Constants configurations from our Commons config files. This adds one

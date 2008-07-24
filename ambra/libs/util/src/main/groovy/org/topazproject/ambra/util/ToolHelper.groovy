@@ -25,7 +25,7 @@ import org.apache.commons.configuration.Configuration
 import org.apache.commons.configuration.CompositeConfiguration
 import org.apache.commons.configuration.XMLConfiguration
 
-import org.plos.configuration.ConfigurationStore
+import org.topazproject.ambra.configuration.ConfigurationStore
 
 /**
  * Fix mave java:exec command line parsing. Should not impact args run outside

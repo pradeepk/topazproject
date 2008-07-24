@@ -39,12 +39,12 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.NoSuchArticleIdException;
-import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.search.SearchResultPage;
 import org.plos.search.SearchUtil;
 import org.plos.xacml.AbstractSimplePEP;
 import org.plos.xacml.XacmlUtil;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 /**
  * Store the progress of a search. That is, when a search is done, we get the first N results

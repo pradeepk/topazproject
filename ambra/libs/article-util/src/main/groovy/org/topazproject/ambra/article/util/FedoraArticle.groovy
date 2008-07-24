@@ -19,7 +19,7 @@
 package org.topazproject.ambra.article.util
 
 import org.topazproject.ambra.util.ToolHelper
-import org.plos.configuration.ConfigurationStore
+import org.topazproject.ambra.configuration.ConfigurationStore
 import org.topazproject.xml.transform.cache.CachedSource
 
 /**

@@ -43,7 +43,6 @@ import org.jdom.Element;
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.configuration.ConfigurationStore;
 import org.plos.cache.Cache;
 import org.plos.models.Article;
 import org.plos.models.Category;
@@ -54,6 +53,7 @@ import org.plos.models.UserProfile;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.web.VirtualJournalContext;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.feed.atom.Content;

@@ -25,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.service.Author;
 import org.plos.article.service.CitationInfo;
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 /**
  * CitationUtils - General citation related utility methods.

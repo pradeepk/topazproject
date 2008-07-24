@@ -25,8 +25,8 @@ import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
 
-import org.plos.configuration.ConfigurationStore;
 import org.plos.xacml.Util;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.AttributeDesignator;

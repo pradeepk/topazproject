@@ -30,11 +30,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.configuration.ConfigurationStore;
 
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;

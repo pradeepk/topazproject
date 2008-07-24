@@ -30,9 +30,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.configuration.ConfigurationStore;
 import org.plos.configuration.WebappItqlClientFactory;
-
 import org.plos.models.Article;
 import org.plos.models.DublinCore;
 import org.plos.models.EditorialBoard;
@@ -40,6 +38,7 @@ import org.plos.models.Issue;
 import org.plos.models.Journal;
 import org.plos.models.Volume;
 
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;

@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.commons.configuration.Configuration;
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.auth.AuthConstants;
 import org.topazproject.ambra.auth.db.DatabaseContext;
 import org.topazproject.ambra.auth.db.DatabaseException;

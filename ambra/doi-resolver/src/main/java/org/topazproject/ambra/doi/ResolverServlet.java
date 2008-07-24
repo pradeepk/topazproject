@@ -36,7 +36,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 
 /**
  * The ResolverServlet attempts to translate the DOI in the incoming request into a URI on the ambra

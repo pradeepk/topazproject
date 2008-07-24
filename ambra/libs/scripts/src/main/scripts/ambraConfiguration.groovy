@@ -1,7 +1,7 @@
 import org.apache.commons.lang.text.StrMatcher
 import org.apache.commons.lang.text.StrTokenizer
 
-import org.plos.configuration.ConfigurationStore;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.apache.commons.configuration.ConfigurationUtils
 
 DEFAULT_CONFIG_URL = "file:///etc/topaz/ambra.xml"

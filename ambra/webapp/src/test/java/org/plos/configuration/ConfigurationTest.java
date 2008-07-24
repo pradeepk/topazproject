@@ -26,6 +26,8 @@ import org.apache.commons.configuration.ConfigurationException;
 
 import junit.framework.TestCase;
 
+import org.topazproject.ambra.configuration.ConfigurationStore;
+
 /**
  * Test the configuration store.
  *
@@ -46,6 +48,7 @@ public class ConfigurationTest extends TestCase {
   /**
    * Sets up the test.
    */
+  @Override
   protected void setUp() {
   }
 
@@ -85,6 +88,6 @@ public class ConfigurationTest extends TestCase {
     it = conf.getKeys();
     assertTrue("Configuration has page.* keys", it.hasNext());
 
-    
+
   }
 }

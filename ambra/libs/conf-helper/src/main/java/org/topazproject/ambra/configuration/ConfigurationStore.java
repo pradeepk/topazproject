@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.configuration;
+package org.topazproject.ambra.configuration;
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
  * <ul>
  *   <li>/global-defaults.xml - A resource in this library
  *   <li>/defaults.xml - A resource or resources on libraries and webapps using this lib
- *   <li>org.plos.configuration.overrides - If set, this defines a named resource or URL
+ *   <li>org.topazproject.ambra.configuration.overrides - If set, this defines a named resource or URL
  *        of a resource that is added to the configuration tree - usually supplementing
  *        and overriding settings in /global-defaults.xml and /defaults.xml.
  *   <li>file:/etc/topaz/ambra.xml (or ambra.configuration) - A set of user overrides

@@ -213,7 +213,7 @@
   <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore">
     <constructor-arg index="0" value="${java.io.tmpdir}/blob-store"/>
   </bean>
-  <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration">
+  <bean id="otmFactory" class="org.topazproject.ambra.configuration.OtmConfiguration">
     <constructor-arg index="0" value="${ambra.topaz.tripleStore.mulgara.itql.uri}" />
     <constructor-arg index="1">
      <!-- must be one of fedoraBlobStore or simpleBlobStore -->
