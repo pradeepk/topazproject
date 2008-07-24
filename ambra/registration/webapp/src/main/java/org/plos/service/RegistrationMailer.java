@@ -21,8 +21,8 @@ package org.plos.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.email.impl.FreemarkerTemplateMailer;
 import org.plos.registration.User;
+import org.topazproject.ambra.email.impl.FreemarkerTemplateMailer;
 
 import java.util.Map;
 import java.util.Collections;
