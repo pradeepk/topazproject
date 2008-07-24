@@ -18,7 +18,7 @@
  */
 package org.plos.service;
 
-import org.plos.email.impl.FreemarkerTemplateMailer;
+import org.topazproject.ambra.email.impl.FreemarkerTemplateMailer;
 
 import java.util.Collections;
 import java.util.HashMap;
