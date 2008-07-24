@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plos.article.util
+package org.topazproject.ambra.article.util
 
 import org.plos.util.ToolHelper
 

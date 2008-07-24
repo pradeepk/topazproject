@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.plos.article.util;
+package org.topazproject.ambra.article.util;
 
 /**
  * ImageProcessingException.
