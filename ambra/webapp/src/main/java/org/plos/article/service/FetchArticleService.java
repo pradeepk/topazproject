@@ -43,11 +43,11 @@ import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Annotator;
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
-import org.plos.models.Article;
-import org.plos.models.ArticleAnnotation;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.TextUtils;
 
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Interceptor.Updates;

@@ -29,6 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
@@ -36,8 +38,6 @@ import org.topazproject.otm.criterion.Restrictions;
 
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
-import org.plos.models.Article;
-import org.plos.models.Journal;
 import org.plos.web.VirtualJournalContext;
 
 

@@ -35,21 +35,21 @@ import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.FlagUtil;
-import org.plos.models.Annotation;
-import org.plos.models.ArticleAnnotation;
-import org.plos.models.Annotea;
-import org.plos.models.Comment;
-import org.plos.models.Correction;
-import org.plos.models.FormalCorrection;
-import org.plos.models.MinorCorrection;
-import org.plos.models.Rating;
-import org.plos.models.Reply;
 import org.plos.permission.service.PermissionsService;
 import org.plos.rating.service.RatingsService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.Annotea;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.Comment;
+import org.topazproject.ambra.models.Correction;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.Rating;
+import org.topazproject.ambra.models.Reply;
 
 /**
  * Used for both annotation and reply services.
@@ -645,7 +645,7 @@ public class AnnotationService {
     if (ann.getType().equals(Rating.RDF_TYPE)) {
       return AnnotationService.WEB_TYPE_RATING;
     }
-    if (ann.getType().equals(org.plos.models.Reply.RDF_TYPE)) {
+    if (ann.getType().equals(org.topazproject.ambra.models.Reply.RDF_TYPE)) {
       return AnnotationService.WEB_TYPE_REPLY;
     }
     if (ann.getType().equals(Comment.RDF_TYPE)) {

@@ -49,11 +49,11 @@ import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.NewArtInfo;
 import org.plos.model.article.Years;
-import org.plos.models.Article;
-import org.plos.models.Issue;
-import org.plos.models.Journal;
-import org.plos.models.Volume;
 
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Issue;
+import org.topazproject.ambra.models.Journal;
+import org.topazproject.ambra.models.Volume;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;

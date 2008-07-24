@@ -33,9 +33,9 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.dom.ranges.SelectionRange;
 import org.topazproject.dom.ranges.SelectionRangeList;
-import org.plos.models.ArticleAnnotation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

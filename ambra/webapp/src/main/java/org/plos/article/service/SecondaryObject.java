@@ -21,8 +21,8 @@ package org.plos.article.service;
 import java.io.Serializable;
 import java.util.Set;
 
-import org.plos.models.ObjectInfo;
-import org.plos.models.Representation;
+import org.topazproject.ambra.models.ObjectInfo;
+import org.topazproject.ambra.models.Representation;
 
 /**
  * Wrapper around topaz's ObjectInfo.
@@ -65,7 +65,7 @@ public class SecondaryObject implements Serializable {
   }
 
   /**
-   * @see org.plos.models.DublinCore#getTitle()
+   * @see org.topazproject.ambra.models.DublinCore#getTitle()
    */
   public String getTitle() {
     String title = objectInfo.getDublinCore().getTitle();
@@ -73,7 +73,7 @@ public class SecondaryObject implements Serializable {
   }
 
   /**
-   * @see org.plos.models.DublinCore#getDescription()
+   * @see org.topazproject.ambra.models.DublinCore#getDescription()
    */
   public String getDescription() {
     String description = objectInfo.getDublinCore().getDescription();

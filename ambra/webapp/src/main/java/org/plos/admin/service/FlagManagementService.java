@@ -35,13 +35,13 @@ import org.plos.annotation.service.ArticleAnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyService;
 import org.plos.user.service.UserService;
-import org.plos.models.Annotation;
-import org.plos.models.Reply;
-import org.plos.models.Rating;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.Rating;
+import org.topazproject.ambra.models.Reply;
 import org.topazproject.otm.Session;
 
 /**

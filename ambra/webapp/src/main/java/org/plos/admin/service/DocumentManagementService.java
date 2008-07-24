@@ -57,9 +57,9 @@ import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.IngestException;
 import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.journal.JournalService;
-import org.plos.models.Article;
-import org.plos.models.Journal;
 
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.Session;
 import org.topazproject.xml.transform.cache.CachedSource;
 

@@ -21,9 +21,9 @@ package org.plos.rating.action;
 import java.net.URI;
 import java.util.Date;
 
-import org.plos.models.Rating;
-import org.plos.models.RatingContent;
 import org.plos.util.TextUtils;
+import org.topazproject.ambra.models.Rating;
+import org.topazproject.ambra.models.RatingContent;
 
 /**
  * Article ratings &amp; comments by user.

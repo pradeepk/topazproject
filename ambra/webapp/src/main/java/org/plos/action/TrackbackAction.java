@@ -37,15 +37,15 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.article.service.FetchArticleService;
 import org.plos.cache.Cache;
-import org.plos.models.ObjectInfo;
-import org.plos.models.Trackback;
-import org.plos.models.TrackbackContent;
 import org.plos.web.VirtualJournalContext;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.ambra.models.ObjectInfo;
+import org.topazproject.ambra.models.Trackback;
+import org.topazproject.ambra.models.TrackbackContent;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;

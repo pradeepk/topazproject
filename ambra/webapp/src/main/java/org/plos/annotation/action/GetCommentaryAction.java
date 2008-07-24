@@ -24,13 +24,13 @@ import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Article;
 
 import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.service.WebAnnotation;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.NoSuchArticleIdException;
-import org.plos.models.Article;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 

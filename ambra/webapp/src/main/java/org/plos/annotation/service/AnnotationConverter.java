@@ -21,8 +21,6 @@ package org.plos.annotation.service;
 import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.user.service.UserService;
-import org.plos.models.ArticleAnnotation;
-import org.plos.models.Reply;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -30,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.Reply;
 
 /**
  * A kind of utility class to convert types between topaz and plosone types fro Annotations and Replies

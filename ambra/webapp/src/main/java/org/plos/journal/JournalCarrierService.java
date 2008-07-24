@@ -30,6 +30,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Interceptor.Updates;
@@ -43,8 +45,6 @@ import org.topazproject.otm.mapping.java.ClassBinder;
 
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
-import org.plos.models.Article;
-import org.plos.models.Journal;
 
 /**
  * This service manages the reverse mapping from an object to the set of journals it appears in.

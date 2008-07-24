@@ -27,12 +27,12 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.journal.JournalService;
-import org.plos.models.DublinCore;
-import org.plos.models.Issue;
-import org.plos.models.Journal;
-import org.plos.models.Volume;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.DublinCore;
+import org.topazproject.ambra.models.Issue;
+import org.topazproject.ambra.models.Journal;
+import org.topazproject.ambra.models.Volume;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
 

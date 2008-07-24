@@ -28,8 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.article.service.DuplicateArticleIdException;
 import org.plos.article.service.SearchUtil;
-import org.plos.models.Article;
 
+import org.topazproject.ambra.models.Article;
 import org.topazproject.otm.Session;
 import org.springframework.beans.factory.annotation.Required;
 

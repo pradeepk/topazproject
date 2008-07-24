@@ -34,8 +34,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.journal.JournalService;
 
-import org.plos.models.Journal;
 
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.Session;

@@ -24,10 +24,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.email.impl.FreemarkerTemplateMailer;
+import org.topazproject.ambra.models.ObjectInfo;
 
 import org.plos.ApplicationException;
 import org.plos.article.service.FetchArticleService;
-import org.plos.models.ObjectInfo;
 import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
 import org.plos.user.action.UserActionSupport;

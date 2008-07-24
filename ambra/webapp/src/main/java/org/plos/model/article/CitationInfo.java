@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.plos.model.UserProfileInfo;
-import org.plos.models.PLoS;
+import org.topazproject.ambra.models.PLoS;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;

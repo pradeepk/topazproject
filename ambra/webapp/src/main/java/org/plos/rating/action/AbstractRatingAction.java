@@ -26,8 +26,8 @@ import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
 import org.plos.model.article.ArticleType;
-import org.plos.models.Article;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.models.Article;
 
 /**
  * AbstractRatingAction - Common base class to rating related actions.

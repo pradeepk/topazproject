@@ -76,11 +76,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.models.Article;
 import org.plos.permission.service.PermissionsService;
 import org.topazproject.xml.transform.EntityResolvingSource;
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.ambra.models.Article;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 
@@ -445,9 +445,9 @@ public class Ingester {
    *   <li>
    *     <pre>
    *     &lt;authors&gt;
-   *       &lt;org.plos.models.UserProfile&gt;
+   *       &lt;org.topazproject.ambra.models.UserProfile&gt;
    *         ...
-   *       &lt;/org.plos.models.UserProfile&gt;
+   *       &lt;/org.topazproject.ambra.models.UserProfile&gt;
    *     &lt;/authors&gt;
    *     </pre>
    *   </li>

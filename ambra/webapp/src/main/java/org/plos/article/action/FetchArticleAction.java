@@ -34,10 +34,10 @@ import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.journal.JournalService;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleType;
-import org.plos.models.Article;
-import org.plos.models.Journal;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.Session;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;

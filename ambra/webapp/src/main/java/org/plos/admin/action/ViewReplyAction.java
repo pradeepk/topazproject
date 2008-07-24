@@ -23,7 +23,7 @@ package org.plos.admin.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.ReplyService;
-import org.plos.models.Reply;
+import org.topazproject.ambra.models.Reply;
 
 public class ViewReplyAction extends BaseAdminActionSupport {
 

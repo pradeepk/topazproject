@@ -24,10 +24,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.FormalCorrection;
 
 import org.plos.ApplicationException;
 import org.plos.annotation.service.WebAnnotation;
-import org.plos.models.FormalCorrection;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 

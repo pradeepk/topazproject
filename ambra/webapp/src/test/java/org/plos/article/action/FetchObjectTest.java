@@ -26,8 +26,8 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.SecondaryObject;
 import org.plos.article.service.NoSuchArticleIdException;
-import org.plos.models.ObjectInfo;
-import org.plos.models.Representation;
+import org.topazproject.ambra.models.ObjectInfo;
+import org.topazproject.ambra.models.Representation;
 
 import java.net.URL;
 import java.util.Set;

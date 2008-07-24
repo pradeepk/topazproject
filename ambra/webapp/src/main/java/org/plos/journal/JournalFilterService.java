@@ -28,6 +28,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.ambra.models.Aggregation;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Interceptor.Updates;
@@ -44,8 +46,6 @@ import org.topazproject.otm.mapping.java.ClassBinder;
 
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
-import org.plos.models.Aggregation;
-import org.plos.models.Journal;
 
 /**
  * This service manages the journal filters that are to be applied to the Session. The filter

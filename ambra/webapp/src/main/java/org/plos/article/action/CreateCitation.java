@@ -32,7 +32,6 @@ import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
-import org.plos.models.Article;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CitationUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -41,6 +40,7 @@ import org.xml.sax.SAXException;
 
 import com.thoughtworks.xstream.XStream;
 
+import org.topazproject.ambra.models.Article;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;

@@ -27,13 +27,13 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyService;
-import org.plos.models.Comment;
-import org.plos.models.FormalCorrection;
-import org.plos.models.MinorCorrection;
-import org.plos.models.Reply;
 import org.plos.rating.service.RatingsService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.topazproject.ambra.models.Comment;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.MinorCorrection;
+import org.topazproject.ambra.models.Reply;
 
 public class ProcessFlagsAction extends BaseAdminActionSupport {
 

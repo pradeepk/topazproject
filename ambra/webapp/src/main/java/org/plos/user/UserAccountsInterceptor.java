@@ -31,12 +31,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.ambra.models.UserAccount;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 import org.plos.Constants;
-import org.plos.models.UserAccount;
 import org.plos.user.service.UserService;
 
 /**

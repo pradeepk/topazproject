@@ -26,11 +26,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.ObjectInfo;
+import org.topazproject.ambra.models.Representation;
 
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.models.ObjectInfo;
-import org.plos.models.Representation;
 import org.plos.util.FileUtils;
 
 import java.io.IOException;

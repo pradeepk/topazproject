@@ -27,9 +27,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.journal.JournalService;
-import org.plos.models.Journal;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.DetachedCriteria;
 

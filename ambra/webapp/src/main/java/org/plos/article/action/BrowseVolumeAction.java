@@ -29,10 +29,10 @@ import org.plos.article.service.BrowseService;
 import org.plos.journal.JournalService;
 import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
-import org.plos.models.Journal;
 import org.plos.util.ArticleXMLUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.Session;
 
 public class BrowseVolumeAction extends BaseActionSupport {

@@ -33,10 +33,10 @@ import org.plos.model.IssueInfo;
 import org.plos.model.VolumeInfo;
 import org.plos.model.article.ArticleInfo;
 import org.plos.model.article.ArticleType;
-import org.plos.models.Journal;
 import org.plos.util.ArticleXMLUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.Session;
 
 /**

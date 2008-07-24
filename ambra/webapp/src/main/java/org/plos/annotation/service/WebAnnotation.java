@@ -22,11 +22,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.user.service.UserService;
 
-import org.plos.models.Annotation;
-import org.plos.models.ArticleAnnotation;
-import org.plos.models.Correction;
-import org.plos.models.FormalCorrection;
-import org.plos.models.MinorCorrection;
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.Correction;
+import org.topazproject.ambra.models.FormalCorrection;
+import org.topazproject.ambra.models.MinorCorrection;
 
 import com.googlecode.jsonplugin.annotations.JSON;
 

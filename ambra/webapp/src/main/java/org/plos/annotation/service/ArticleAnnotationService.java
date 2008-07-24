@@ -40,10 +40,6 @@ import org.plos.article.service.FetchArticleService;
 import org.plos.cache.Cache;
 import org.plos.cache.ObjectListener;
 
-import org.plos.models.AnnotationBlob;
-import org.plos.models.Article;
-import org.plos.models.ArticleAnnotation;
-import org.plos.models.Comment;
 
 import org.plos.permission.service.PermissionsService;
 
@@ -52,6 +48,10 @@ import org.plos.user.PlosOneUser;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.ambra.models.AnnotationBlob;
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.ArticleAnnotation;
+import org.topazproject.ambra.models.Comment;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;

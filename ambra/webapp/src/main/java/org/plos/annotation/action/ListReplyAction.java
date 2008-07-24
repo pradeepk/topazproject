@@ -32,11 +32,11 @@ import org.plos.article.service.CitationInfo;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.cache.Cache;
-import org.plos.models.Article;
 import org.plos.util.ArticleXMLUtils;
 import org.plos.util.CitationUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Article;
 import org.xml.sax.SAXException;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;

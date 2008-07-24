@@ -22,9 +22,9 @@ package org.plos.admin.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.models.Rating;
 
 import org.plos.action.BaseActionSupport;
-import org.plos.models.Rating;
 import org.plos.rating.service.RatingsService;
 
 public class ViewRatingAction extends BaseActionSupport {

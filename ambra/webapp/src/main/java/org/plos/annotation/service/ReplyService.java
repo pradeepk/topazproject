@@ -32,9 +32,6 @@ import static org.plos.annotation.service.BaseAnnotation.DELETE_MASK;
 import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
 import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
-import org.plos.models.Reply;
-import org.plos.models.ReplyBlob;
-import org.plos.models.ReplyThread;
 
 import org.plos.permission.service.PermissionsService;
 
@@ -43,6 +40,9 @@ import org.plos.user.PlosOneUser;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.ambra.models.Reply;
+import org.topazproject.ambra.models.ReplyBlob;
+import org.topazproject.ambra.models.ReplyThread;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;

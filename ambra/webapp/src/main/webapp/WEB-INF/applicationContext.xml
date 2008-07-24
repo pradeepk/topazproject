@@ -222,9 +222,9 @@
     <property name="fedoraBlobFactories">
       <list>
         <bean name="annotationFedoraBlobFactory" 
-            class="org.plos.models.support.fedora.AnnotationFedoraBlobFactory"/>
+            class="org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlobFactory"/>
         <bean name="representationFedoraBlobFactory" 
-            class="org.plos.models.support.fedora.RepresentationFedoraBlobFactory"/>
+            class="org.topazproject.ambra.models.support.fedora.RepresentationFedoraBlobFactory"/>
       </list>
     </property>
     <property name="models">
@@ -310,45 +310,45 @@
 
     <property name="preloadClasses">
       <list>
-        <value>org.plos.models.Aggregation</value>
-        <value>org.plos.models.Annotation</value>
-        <value>org.plos.models.Annotea</value>
-        <value>org.plos.models.Article</value>
-        <value>org.plos.models.AuthenticationId</value>
-        <value>org.plos.models.Category</value>
-        <value>org.plos.models.Citation</value>
-        <value>org.plos.models.Comment</value>
-        <value>org.plos.models.Correction</value>
-        <value>org.plos.models.FormalCorrection</value>
-        <value>org.plos.models.MinorCorrection</value>
-        <value>org.plos.models.DublinCore</value>
-        <value>org.plos.models.EditorialBoard</value>
-        <value>org.plos.models.FoafPerson</value>
-        <value>org.plos.models.Issue</value>
-        <value>org.plos.models.Journal</value>
-        <value>org.plos.models.License</value>
-        <value>org.plos.models.ObjectInfo</value>
-        <value>org.plos.models.PermissionsPropagator</value>
-        <value>org.plos.models.PLoS</value>
-        <value>org.plos.models.Rating</value>
-        <value>org.plos.models.RatingContent</value>
-        <value>org.plos.models.RatingSummary</value>
-        <value>org.plos.models.RatingSummaryContent</value>
-        <value>org.plos.models.RelatedArticle</value>
-        <value>org.plos.models.Reply</value>
-        <value>org.plos.models.ReplyThread</value>
-        <value>org.plos.models.Representation</value>
-        <value>org.plos.models.Trackback</value>
-        <value>org.plos.models.TrackbackContent</value>
-        <value>org.plos.models.UserAccount</value>
-        <value>org.plos.models.UserPreference</value>
-        <value>org.plos.models.UserPreferences</value>
-        <value>org.plos.models.UserProfile</value>
-        <value>org.plos.models.UserRole</value>
-        <value>org.plos.models.Volume</value>
-        <value>org.plos.models.Blob</value>
-        <value>org.plos.models.AnnotationBlob</value>
-        <value>org.plos.models.ReplyBlob</value>
+        <value>org.topazproject.ambra.models.Aggregation</value>
+        <value>org.topazproject.ambra.models.Annotation</value>
+        <value>org.topazproject.ambra.models.Annotea</value>
+        <value>org.topazproject.ambra.models.Article</value>
+        <value>org.topazproject.ambra.models.AuthenticationId</value>
+        <value>org.topazproject.ambra.models.Category</value>
+        <value>org.topazproject.ambra.models.Citation</value>
+        <value>org.topazproject.ambra.models.Comment</value>
+        <value>org.topazproject.ambra.models.Correction</value>
+        <value>org.topazproject.ambra.models.FormalCorrection</value>
+        <value>org.topazproject.ambra.models.MinorCorrection</value>
+        <value>org.topazproject.ambra.models.DublinCore</value>
+        <value>org.topazproject.ambra.models.EditorialBoard</value>
+        <value>org.topazproject.ambra.models.FoafPerson</value>
+        <value>org.topazproject.ambra.models.Issue</value>
+        <value>org.topazproject.ambra.models.Journal</value>
+        <value>org.topazproject.ambra.models.License</value>
+        <value>org.topazproject.ambra.models.ObjectInfo</value>
+        <value>org.topazproject.ambra.models.PermissionsPropagator</value>
+        <value>org.topazproject.ambra.models.PLoS</value>
+        <value>org.topazproject.ambra.models.Rating</value>
+        <value>org.topazproject.ambra.models.RatingContent</value>
+        <value>org.topazproject.ambra.models.RatingSummary</value>
+        <value>org.topazproject.ambra.models.RatingSummaryContent</value>
+        <value>org.topazproject.ambra.models.RelatedArticle</value>
+        <value>org.topazproject.ambra.models.Reply</value>
+        <value>org.topazproject.ambra.models.ReplyThread</value>
+        <value>org.topazproject.ambra.models.Representation</value>
+        <value>org.topazproject.ambra.models.Trackback</value>
+        <value>org.topazproject.ambra.models.TrackbackContent</value>
+        <value>org.topazproject.ambra.models.UserAccount</value>
+        <value>org.topazproject.ambra.models.UserPreference</value>
+        <value>org.topazproject.ambra.models.UserPreferences</value>
+        <value>org.topazproject.ambra.models.UserProfile</value>
+        <value>org.topazproject.ambra.models.UserRole</value>
+        <value>org.topazproject.ambra.models.Volume</value>
+        <value>org.topazproject.ambra.models.Blob</value>
+        <value>org.topazproject.ambra.models.AnnotationBlob</value>
+        <value>org.topazproject.ambra.models.ReplyBlob</value>
         <value>org.plos.model.article.CitationInfo</value>
         <value>org.plos.model.UserProfileInfo</value>
         <value>org.plos.model.article.ArticleInfo</value>

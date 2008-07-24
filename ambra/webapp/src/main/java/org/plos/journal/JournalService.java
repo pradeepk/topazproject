@@ -25,11 +25,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 
 import org.plos.cache.Cache;
-import org.plos.models.Journal;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;

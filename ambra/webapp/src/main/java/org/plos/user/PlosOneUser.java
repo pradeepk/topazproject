@@ -25,9 +25,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
-import org.plos.models.UserAccount;
-import org.plos.models.UserPreferences;
-import org.plos.models.UserProfile;
+
+import org.topazproject.ambra.models.UserAccount;
+import org.topazproject.ambra.models.UserPreferences;
+import org.topazproject.ambra.models.UserProfile;
 
 import java.net.URI;
 import java.util.HashMap;

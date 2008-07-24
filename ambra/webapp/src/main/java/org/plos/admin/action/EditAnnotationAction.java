@@ -86,7 +86,7 @@ public class EditAnnotationAction extends BaseActionSupport {
     // ask PEP if allowed
     getPEP().checkAccess(AnnotationsPEP.UPDATE_ANNOTATION, URI.create(saveAnnotationId));
 
-    org.plos.models.Annotation a = session.get(org.plos.models.Annotation.class, saveAnnotationId);
+    org.topazproject.ambra.models.Annotation a = session.get(org.topazproject.ambra.models.Annotation.class, saveAnnotationId);
     if (a == null) {
       throw new NoSuchObjectIdException(saveAnnotationId);
     }

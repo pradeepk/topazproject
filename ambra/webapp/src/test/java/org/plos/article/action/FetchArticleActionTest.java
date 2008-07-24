@@ -26,7 +26,7 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.article.service.NoSuchArticleIdException;
 import org.plos.article.service.DuplicateArticleIdException;
 import org.plos.annotation.action.BodyFetchAction;
-import org.plos.models.Article;
+import org.topazproject.ambra.models.Article;
 
 import javax.activation.URLDataSource;
 import javax.xml.rpc.ServiceException;

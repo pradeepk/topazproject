@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.plos.models.Category;
+import org.topazproject.ambra.models.Category;
 /**
  * Article meta data.
  *

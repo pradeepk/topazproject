@@ -40,14 +40,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
 
-import org.plos.models.Article;
-import org.plos.models.ObjectInfo;
-import org.plos.models.Representation;
 import org.plos.permission.service.PermissionsService;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.ObjectInfo;
+import org.topazproject.ambra.models.Representation;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Disjunction;

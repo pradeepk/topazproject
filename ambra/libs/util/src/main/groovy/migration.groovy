@@ -17,11 +17,11 @@
  * limitations under the License.
  */
 import org.topazproject.ambra.util.ToolHelper
-import org.plos.models.Article
-import org.plos.models.Category
-import org.plos.models.Citation
-import org.plos.models.PLoS
-import org.plos.models.UserProfile
+import org.topazproject.ambra.models.Article
+import org.topazproject.ambra.models.Category
+import org.topazproject.ambra.models.Citation
+import org.topazproject.ambra.models.PLoS
+import org.topazproject.ambra.models.UserProfile
 import org.topazproject.otm.SessionFactory
 import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.ModelConfig
@@ -365,11 +365,11 @@ def dump(obj, prefix, indent, width) {
         case java.net.URI:
           println "<" + trunc(prop.value, width - keyLength - indent - 4) + ">"
           break
-        case org.plos.models.DublinCore:
-        case org.plos.models.Citation:
-        case org.plos.models.UserProfile:
-        case org.plos.models.Category:
-        case org.plos.models.ObjectInfo:
+        case org.topazproject.ambra.models.DublinCore:
+        case org.topazproject.ambra.models.Citation:
+        case org.topazproject.ambra.models.UserProfile:
+        case org.topazproject.ambra.models.Category:
+        case org.topazproject.ambra.models.ObjectInfo:
           println prop.value.class.name + ":"
           def abbrev = abbreviate(prop.key) + '.' + abbreviateClass(prop.value.class.name)
           dump(prop.value, prefix + abbrev + ':', indent + 2, width)
