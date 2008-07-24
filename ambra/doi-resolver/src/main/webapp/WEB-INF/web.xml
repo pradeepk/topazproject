@@ -4,19 +4,19 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
     version="2.4">
 
-  <display-name>PLoS ONE DOI Resolver</display-name>
+  <display-name>Ambra DOI Resolver</display-name>
   <context-param>
     <param-name>ambra.configuration</param-name>
     <param-value>file:///etc/topaz/doiResolver.xml</param-value>
   </context-param>
 
   <listener>
-    <listener-class>org.plos.configuration.WebAppListener</listener-class>
+    <listener-class>org.topazproject.ambra.configuration.WebAppListener</listener-class>
   </listener>
 
   <servlet>
     <servlet-name>DoiResolver</servlet-name>
-    <servlet-class>org.plos.doi.ResolverServlet</servlet-class>
+    <servlet-class>org.topazproject.ambra.doi.ResolverServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>

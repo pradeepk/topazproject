@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.doi;
+package org.topazproject.ambra.doi;
 
 import java.net.URI;
 
@@ -28,6 +28,7 @@ import java.util.HashMap;
 import static org.testng.AssertJUnit.*;
 import org.testng.annotations.Test;
 
+import org.topazproject.ambra.doi.DOITypeResolver;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
