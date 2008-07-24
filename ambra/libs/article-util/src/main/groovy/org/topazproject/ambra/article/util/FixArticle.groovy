@@ -33,7 +33,7 @@ import groovy.xml.FactorySupport
 
 import net.sf.saxon.TransformerFactoryImpl
 
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 import org.topazproject.xml.transform.cache.CachedSource
 import org.xml.sax.InputSource
 import org.xml.sax.XMLReader

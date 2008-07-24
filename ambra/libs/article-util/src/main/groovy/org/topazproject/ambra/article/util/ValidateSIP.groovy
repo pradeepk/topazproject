@@ -25,7 +25,7 @@ import java.util.zip.ZipFile
 import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
 
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 
 /**
  * Validate the SIP.

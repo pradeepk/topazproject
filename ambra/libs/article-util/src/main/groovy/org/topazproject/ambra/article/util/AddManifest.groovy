@@ -22,7 +22,7 @@ package org.topazproject.ambra.article.util
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 
 /**
  * Add a manifest to a SIP. This tries to guess which entry is the main article xml,

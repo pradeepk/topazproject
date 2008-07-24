@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 import org.plos.models.Article
 import org.plos.models.Category
 import org.plos.models.Citation

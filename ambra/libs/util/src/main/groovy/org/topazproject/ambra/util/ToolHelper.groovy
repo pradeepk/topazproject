@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.util
+package org.topazproject.ambra.util
 
 import org.apache.commons.lang.text.StrMatcher
 import org.apache.commons.lang.text.StrTokenizer

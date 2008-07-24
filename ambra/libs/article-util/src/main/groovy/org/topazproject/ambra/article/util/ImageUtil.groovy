@@ -20,7 +20,7 @@
 package org.topazproject.ambra.article.util
 
 import org.apache.commons.configuration.Configuration
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 
 /**
  * Create scaled down versions of all images and add them as additional representations

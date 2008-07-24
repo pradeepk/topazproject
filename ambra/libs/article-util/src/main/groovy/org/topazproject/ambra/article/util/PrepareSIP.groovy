@@ -19,7 +19,7 @@
 
 package org.topazproject.ambra.article.util
 
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 
 /*
  * Prepare a SIP from an AP zip. This goes through the following steps:
