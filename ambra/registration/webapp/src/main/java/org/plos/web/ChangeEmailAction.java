@@ -27,7 +27,7 @@ import org.plos.service.PasswordInvalidException;
 import org.plos.service.RegistrationMailer;
 import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
-import org.plos.service.password.PasswordServiceException;
+import org.topazproject.ambra.service.password.PasswordServiceException;
 
 import com.opensymphony.xwork2.validator.annotations.RegexFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;

@@ -32,9 +32,9 @@ import org.plos.service.UserAlreadyVerifiedException;
 import org.plos.service.UserDAO;
 import org.plos.service.UserNotVerifiedException;
 import org.plos.service.VerificationTokenInvalidException;
-import org.plos.service.password.PasswordDigestService;
-import org.plos.service.password.PasswordServiceException;
 import org.plos.util.TokenGenerator;
+import org.topazproject.ambra.service.password.PasswordDigestService;
+import org.topazproject.ambra.service.password.PasswordServiceException;
 
 /**
  * Ambra registration service implementation.

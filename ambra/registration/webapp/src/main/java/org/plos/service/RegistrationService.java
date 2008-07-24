@@ -19,7 +19,7 @@
 package org.plos.service;
 
 import org.plos.registration.User;
-import org.plos.service.password.PasswordServiceException;
+import org.topazproject.ambra.service.password.PasswordServiceException;
 
 /**
  * Provides a means for a user account creation, password change, user verification, user activation
@@ -31,7 +31,7 @@ public interface RegistrationService {
    * @param password password
    * @return created user
    * @throws UserAlreadyExistsException UserAlreadyExistsException
-   * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
+   * @throws org.topazproject.ambra.service.password.PasswordServiceException PasswordServiceException
    */
   User createUser(final String loginName, final String password) throws UserAlreadyExistsException,
        PasswordServiceException;
@@ -43,7 +43,7 @@ public interface RegistrationService {
    * @param newLogin newLogin
    * @throws PasswordInvalidException PasswordInvalidException
    * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
-   * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
+   * @throws org.topazproject.ambra.service.password.PasswordServiceException PasswordServiceException
    * @throws UserAlreadyExistsException UserAlreadyExistsException
    */
   void changeLogin (final String loginName, final String password, final String newLogin)
@@ -118,7 +118,7 @@ public interface RegistrationService {
    * @throws PasswordInvalidException PasswordInvalidException
    * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
    * @throws UserNotVerifiedException UserNotVerifiedException
-   * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
+   * @throws org.topazproject.ambra.service.password.PasswordServiceException PasswordServiceException
    */
   void changePassword(final String loginName, final String oldPassword, final String newPassword)
     throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException,
@@ -131,7 +131,7 @@ public interface RegistrationService {
    * @param newPassword new password
    * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
    * @throws VerificationTokenInvalidException VerificationTokenInvalidException
-   * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
+   * @throws org.topazproject.ambra.service.password.PasswordServiceException PasswordServiceException
    */
   void resetPassword(final String loginName, final String resetPasswordToken, final String newPassword)
     throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException,

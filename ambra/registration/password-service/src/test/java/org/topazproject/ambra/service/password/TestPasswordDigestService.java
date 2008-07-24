@@ -17,9 +17,12 @@
  * limitations under the License.
  */
 
-package org.plos.service.password;
+package org.topazproject.ambra.service.password;
 
 import java.util.Random;
+
+import org.topazproject.ambra.service.password.PasswordDigestService;
+import org.topazproject.ambra.service.password.PasswordServiceException;
 
 import junit.framework.TestCase;
 

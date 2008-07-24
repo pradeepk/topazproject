@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plos.service.password;
+package org.topazproject.ambra.service.password;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

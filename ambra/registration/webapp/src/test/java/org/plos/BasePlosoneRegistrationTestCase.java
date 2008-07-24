@@ -19,12 +19,12 @@
 package org.plos;
 
 import org.plos.service.RegistrationService;
-import org.plos.service.password.PasswordDigestService;
 import org.plos.web.ChangePasswordAction;
 import org.plos.web.ConfirmationAction;
 import org.plos.web.ForgotPasswordAction;
 import org.plos.web.RegisterAction;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.topazproject.ambra.service.password.PasswordDigestService;
 
 /**
  * Base test case for the registration unit tests. It provides spring injection from one of its
