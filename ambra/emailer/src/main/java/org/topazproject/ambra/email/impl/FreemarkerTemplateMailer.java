@@ -16,19 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.email.impl;
+package org.topazproject.ambra.email.impl;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.email.TemplateMailer;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.topazproject.ambra.email.TemplateMailer;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -143,7 +143,7 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   }
 
   /**
-   * @see org.plos.email.TemplateMailer#massMail(java.util.Map, java.lang.String, java.lang.String, java.lang.String)
+   * @see org.topazproject.ambra.email.TemplateMailer#massMail(java.util.Map, java.lang.String, java.lang.String, java.lang.String)
    */
   public void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject, final String textTemplateFilename, final String htmlTemplateFilename) {
     for (final Map.Entry<String, Map<String, Object>> entry : emailAddressContextMap.entrySet()) {

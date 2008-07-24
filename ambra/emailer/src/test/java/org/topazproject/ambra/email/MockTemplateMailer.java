@@ -17,10 +17,12 @@
  * limitations under the License.
  */
 
-package org.plos.email;
+package org.topazproject.ambra.email;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+import org.topazproject.ambra.email.MailerUser;
+import org.topazproject.ambra.email.TemplateMailer;
 
 import java.util.Map;
 

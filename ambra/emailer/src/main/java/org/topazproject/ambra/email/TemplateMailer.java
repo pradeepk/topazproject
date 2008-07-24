@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plos.email;
+package org.topazproject.ambra.email;
 
 import java.util.Map;
 
