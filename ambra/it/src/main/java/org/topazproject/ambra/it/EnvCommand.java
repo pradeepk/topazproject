@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plosone.it;
+package org.topazproject.ambra.it;
 
 /**
  * A command line wrapper for Env.groovy
@@ -34,7 +34,7 @@ public class EnvCommand {
   public static void main(String[] args) throws Exception {
     if (args.length < 1) {
       System.out.println("Usage: EnvCommand <install-location> [start/stop/install/restore] " + 
-          "[data-artifact (eg. org.plosone:plosone-it-data:07)]");
+          "[data-artifact (eg. org.topazproject.ambra:plosone-it-data:07)]");
       return;
     }
       

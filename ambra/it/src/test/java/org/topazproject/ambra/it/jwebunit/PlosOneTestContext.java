@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plosone.it.jwebunit;
+package org.topazproject.ambra.it.jwebunit;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plosone.it
+package org.topazproject.ambra.it
 
 import org.apache.tools.ant.taskdefs.Antlib;
 import org.topazproject.fedora.client.FedoraAPIM;

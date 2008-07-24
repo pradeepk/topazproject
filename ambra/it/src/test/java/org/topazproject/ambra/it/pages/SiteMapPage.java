@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 
-package org.plosone.it.pages;
+package org.topazproject.ambra.it.pages;
 
-import org.plosone.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
 
 public class SiteMapPage extends CommonBasePage {
 

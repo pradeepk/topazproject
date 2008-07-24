@@ -17,14 +17,14 @@
  * limitations under the License.
  */
 
-package org.plosone.it;
+package org.topazproject.ambra.it;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plosone.it.jwebunit.PlosOneWebTester;
-import org.plosone.it.pages.SiteMapPage;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.pages.SiteMapPage;
 
 
 public class SiteMapTest extends AbstractPlosOneTest {

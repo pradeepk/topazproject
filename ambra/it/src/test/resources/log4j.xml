@@ -36,11 +36,11 @@
     <level value="warn" />
   </logger>
 
-  <logger name="org.plosone.it">
+  <logger name="org.topazproject.ambra.it">
     <level value="debug" />
   </logger>
   
-  <logger name="org.plosone.it.PlosOneHtmlUnitDialog">
+  <logger name="org.topazproject.ambra.it.PlosOneHtmlUnitDialog">
     <level value="debug" />
   </logger>
   

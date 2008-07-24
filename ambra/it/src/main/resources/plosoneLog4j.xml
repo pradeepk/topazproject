@@ -40,10 +40,6 @@
     <level value="info"/>
   </logger>
 
-  <logger name="org.plos">
-    <level value="debug"/>
-  </logger>
-
   <logger name="edu.yale">
     <level value="debug"/>
   </logger>

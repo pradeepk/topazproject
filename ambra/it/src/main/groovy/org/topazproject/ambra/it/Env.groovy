@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plosone.it;
+package org.topazproject.ambra.it;
 
 /**
  * An integration test environment for PlosOne. The environment runs
@@ -65,7 +65,7 @@ public class Env {
   *  Construct a test environment.
   *
   *  @param install the installation directory
-  *  @param data the mvn dependency spec for data (eg. 'org.plosone:plosone-it-data:0.7')
+  *  @param data the mvn dependency spec for data (eg. 'org.topazproject.ambra:plosone-it-data:0.7')
   */
   public Env(String install, String data) {
     File f = new File(install);

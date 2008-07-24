@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plosone.it;
+package org.topazproject.ambra.it;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,11 +28,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plosone.it.jwebunit.PlosOneTestContext;
-import org.plosone.it.jwebunit.PlosOneWebTester;
-import org.plosone.it.pages.AbstractPage;
-import org.plosone.it.pages.HomePage;
 import org.testng.annotations.DataProvider;
+import org.topazproject.ambra.it.jwebunit.PlosOneTestContext;
+import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.pages.AbstractPage;
+import org.topazproject.ambra.it.pages.HomePage;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 
@@ -89,7 +89,7 @@ public abstract class AbstractPlosOneTest {
    */
   private final Env[] envs =
     new Env[] {
-                new Env("install/basic", "org.plosone:plosone-it-data-basic:0.81.5"),
+                new Env("install/basic", "org.topazproject.ambra:plosone-it-data-basic:0.81.5"),
                 new Env("install/empty", null)
     };
 

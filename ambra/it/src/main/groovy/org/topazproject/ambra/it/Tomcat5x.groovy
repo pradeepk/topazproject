@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plosone.it
+package org.topazproject.ambra.it
 
 import org.codehaus.cargo.container.installer.Installer
 import org.codehaus.cargo.container.installer.ZipURLInstaller

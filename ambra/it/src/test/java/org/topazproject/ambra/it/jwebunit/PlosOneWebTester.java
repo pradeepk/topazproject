@@ -16,11 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plosone.it.jwebunit;
+package org.topazproject.ambra.it.jwebunit;
 
 import net.sourceforge.jwebunit.junit.WebTester;
 
-import org.plosone.it.PlosOneDAO;
+import org.topazproject.ambra.it.PlosOneDAO;
 
 /**
  * An extension for WebTester for keeping some plosone specific states.

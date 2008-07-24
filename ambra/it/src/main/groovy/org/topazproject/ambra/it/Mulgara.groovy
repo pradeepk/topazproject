@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plosone.it
+package org.topazproject.ambra.it
 
 /**
  * Mulgara service manager.

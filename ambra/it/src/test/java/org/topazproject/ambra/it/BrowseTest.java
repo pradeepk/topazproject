@@ -17,15 +17,15 @@
  * limitations under the License.
  */
 
-package org.plosone.it;
+package org.topazproject.ambra.it;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plosone.it.jwebunit.PlosOneWebTester;
-import org.plosone.it.pages.AbstractPage;
-import org.plosone.it.pages.HomePage;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.pages.AbstractPage;
+import org.topazproject.ambra.it.pages.HomePage;
 
 public class BrowseTest extends AbstractPlosOneTest {
   public static final Log log = LogFactory.getLog(BrowseTest.class);

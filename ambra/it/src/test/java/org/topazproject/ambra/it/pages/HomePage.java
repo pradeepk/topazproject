@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plosone.it.pages;
+package org.topazproject.ambra.it.pages;
 
 
 
@@ -25,7 +25,7 @@ import static org.testng.AssertJUnit.*;
 
 
 
-import org.plosone.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
 
 /**
  * PlosOne Home page

@@ -16,12 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plosone.it.pages;
+package org.topazproject.ambra.it.pages;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plosone.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
 
 /**
  * A base class for pages that contain the most common page elements.

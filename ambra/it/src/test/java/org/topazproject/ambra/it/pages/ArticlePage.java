@@ -16,13 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plosone.it.pages;
+package org.topazproject.ambra.it.pages;
 
 import java.net.URLEncoder;
 
-import org.plosone.it.jwebunit.PlosOneWebTester;
 
 import org.plos.models.Article;
+import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
 
 /**
  * PlosOne Article Display Page

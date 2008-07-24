@@ -3,7 +3,7 @@
  * Distributed open-source, see full license under LICENCE.txt                *
  ******************************************************************************/
 
-package org.plosone.it;
+package org.topazproject.ambra.it;
 
 import net.sourceforge.jwebunit.htmlunit.ImmediateRefreshHandler;
 
@@ -94,7 +94,7 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.jaxen.JaxenException;
 
-import org.plosone.it.jwebunit.PlosOneTestContext;
+import org.topazproject.ambra.it.jwebunit.PlosOneTestContext;
 
 /**
  * Acts as the wrapper for HtmlUnit access. A dialog is initialized with a given URL, and maintains conversational state

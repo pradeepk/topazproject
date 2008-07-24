@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package org.plosone.it
+package org.topazproject.ambra.it
 
 /**
  * A base class for all services managed by the test environment.
