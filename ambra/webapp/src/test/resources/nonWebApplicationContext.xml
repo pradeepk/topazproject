@@ -32,7 +32,7 @@
   <!--<aop:aspectj-autoproxy/>-->
 
   <!--Ambra developer beans here -->
-  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" init-method="init">
+  <bean id="fetchArticleService" class="org.topazproject.ambra.article.service.FetchArticleService" init-method="init">
     <property name="articleRep" value="XML"/>
     <!-- Note: remember to prefix the filename with a "/" -->
     <property name="secondaryObjectXslTemplate" value="/objInfo.xsl"/>
@@ -54,7 +54,7 @@
   </util:map>
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
-  <bean id="articleWebService" class="org.plos.article.service.ArticleWebService">
+  <bean id="articleWebService" class="org.topazproject.ambra.article.service.ArticleWebService">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -85,9 +85,9 @@
     <constructor-arg value="TEST"/>
   </bean>
 
-  <bean id="userContext" class="org.plos.web.MockUserContext"/>
+  <bean id="userContext" class="org.topazproject.ambra.web.MockUserContext"/>
 
-  <bean id="permissionsService" class="org.plos.permission.service.PermissionsService">
+  <bean id="permissionsService" class="org.topazproject.ambra.permission.service.PermissionsService">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -97,13 +97,13 @@
     </property>
   </bean>
 
-  <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory"/>
+  <bean id="lazyLoaderFactory" class="org.topazproject.ambra.annotation.service.AnnotationLazyLoaderFactory"/>
 
-  <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter">
+  <bean id="annotationConverter" class="org.topazproject.ambra.annotation.service.AnnotationConverter">
     <property name="lazyLoaderFactory" ref="lazyLoaderFactory"/>
   </bean>
 
-  <bean id="replyService" class="org.plos.annotation.service.ReplyService">
+  <bean id="replyService" class="org.topazproject.ambra.annotation.service.ReplyService">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -116,7 +116,7 @@
     </property>
   </bean>
 
-  <bean id="articleAnnotationService" class="org.plos.annotation.service.ArticleAnnotationService">
+  <bean id="articleAnnotationService" class="org.topazproject.ambra.annotation.service.ArticleAnnotationService">
     <property name="userContext" ref="userContext"/>
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
@@ -130,7 +130,7 @@
     </property>
   </bean>
 
-  <bean id="annotationService" class="org.plos.annotation.service.AnnotationService">
+  <bean id="annotationService" class="org.topazproject.ambra.annotation.service.AnnotationService">
     <property name="userContext" ref="userContext"/>
     <property name="converter" ref="annotationConverter"/>
     <property name="articleAnnotationService" ref="articleAnnotationService"/>
@@ -138,7 +138,7 @@
     <property name="permissionsService" ref="permissionsService"/>
   </bean>
 
-  <bean id="userWebService" class="org.plos.user.service.UserWebService">
+  <bean id="userWebService" class="org.topazproject.ambra.user.service.UserWebService">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
@@ -149,7 +149,7 @@
     </property>
   </bean>
 
-  <bean id="userRoleWebService" class="org.plos.user.service.UserRoleWebService">
+  <bean id="userRoleWebService" class="org.topazproject.ambra.user.service.UserRoleWebService">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -159,7 +159,7 @@
     </property>
   </bean>
 
-  <bean id="preferencesWebService" class="org.plos.user.service.PreferencesWebService">
+  <bean id="preferencesWebService" class="org.topazproject.ambra.user.service.PreferencesWebService">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -169,7 +169,7 @@
     </property>
   </bean>
 
-  <bean id="profileWebService" class="org.plos.user.service.ProfileWebService" >
+  <bean id="profileWebService" class="org.topazproject.ambra.user.service.ProfileWebService" >
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -179,7 +179,7 @@
     </property>
   </bean>
 
-  <bean id="userService" class="org.plos.user.service.UserService">
+  <bean id="userService" class="org.topazproject.ambra.user.service.UserService">
     <property name="userContext" ref="userContext"/>
     <property name="userWebService" ref="userWebService"/>
     <property name="userRoleWebService" ref="userRoleWebService"/>
@@ -224,7 +224,7 @@
     </property>
   </bean>
 
-  <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
+  <bean id="profanityCheckingService" class="org.topazproject.ambra.util.ProfanityCheckingService">
     <property name="profaneWords">
       <list>
         <value>bush</value>
@@ -232,7 +232,7 @@
     </property>
   </bean>
 
-  <bean id="searchService" class="org.plos.search.service.SearchService">
+  <bean id="searchService" class="org.topazproject.ambra.search.service.SearchService">
     <property name="snippetsMax" value="3"/>
     <property name="fieldMaxLength" value="50"/>
     <property name="indexName" value="TopazIndex"/>
@@ -240,7 +240,7 @@
     <property name="searchWebService" ref="searchWebService"/>
   </bean>
 
-  <bean id="searchWebService" class="org.plos.search.service.SearchWebService">
+  <bean id="searchWebService" class="org.topazproject.ambra.search.service.SearchWebService">
     <property name="configurationMap">
       <map>
         <entry key="uri" value="${ambra.spring.service.search}"/>
@@ -277,7 +277,7 @@
     <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
-  <bean id="plosoneMailer" class="org.plos.service.PlosoneMailer">
+  <bean id="plosoneMailer" class="org.topazproject.ambra.service.PlosoneMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="application@plosone.org"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
@@ -307,7 +307,7 @@
        </aop:aspect>
     </aop:config>
 
-    <bean id="helloFromSpringAOP" class="org.plos.BeforeLogAspect"/>
+    <bean id="helloFromSpringAOP" class="org.topazproject.ambra.BeforeLogAspect"/>
   -->
 
 </beans>

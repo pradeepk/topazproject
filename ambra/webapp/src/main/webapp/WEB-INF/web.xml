@@ -10,7 +10,7 @@
 
   <filter>
     <filter-name>MultipleRequestFilter</filter-name>
-    <filter-class>org.plos.web.MultipleRequestFilter</filter-class>
+    <filter-class>org.topazproject.ambra.web.MultipleRequestFilter</filter-class>
     <init-param>
       <param-name>includePattern_fetchArticle</param-name>
       <param-value>.*\/article\/info.*</param-value>
@@ -34,7 +34,7 @@
     <description>Sets the virtual journal context.
 Should be 1st in the chain as other Filters, e.g. caching, may rely on the journal context.</description>
     <filter-name>VirtualJournalContextFilter</filter-name>
-    <filter-class>org.plos.web.VirtualJournalContextFilter</filter-class>
+    <filter-class>org.topazproject.ambra.web.VirtualJournalContextFilter</filter-class>
   </filter>
 
   <filter>
@@ -42,19 +42,19 @@ Should be 1st in the chain as other Filters, e.g. caching, may rely on the journ
 If a virtual journal context is set, check to see if requested resource has a virtual journal override.
 If so, wrap request with virtual journal override values in FilterChain.</description>
     <filter-name>VirtualJournalMappingFilter</filter-name>
-    <filter-class>org.plos.web.VirtualJournalMappingFilter</filter-class>
+    <filter-class>org.topazproject.ambra.web.VirtualJournalMappingFilter</filter-class>
   </filter>
 
   <!--
   <filter>
     <filter-name>DebuggingFilter</filter-name>
-    <filter-class>org.plos.web.DebuggingFilter</filter-class>
+    <filter-class>org.topazproject.ambra.web.DebuggingFilter</filter-class>
   </filter>
   -->
 
   <filter>
     <filter-name>DummySSOFilter</filter-name>
-    <filter-class>org.plos.web.DummySSOFilter</filter-class>
+    <filter-class>org.topazproject.ambra.web.DummySSOFilter</filter-class>
     <!-- uncomment these if you want to be logged in by default when you start the server
     <init-param>
       <param-name>auth.id</param-name>
@@ -77,7 +77,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <filter>
     <filter-name>CAS Filter</filter-name>
-    <filter-class>org.plos.cas.client.filter.CASFilterWrapper</filter-class>
+    <filter-class>org.topazproject.ambra.cas.client.filter.CASFilterWrapper</filter-class>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
       <param-value>https://localhost:7443/cas/login</param-value>
@@ -114,7 +114,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <!--
     <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
     -->
-    <filter-class>org.plos.struts2.PlosStruts2Dispatcher</filter-class>
+    <filter-class>org.topazproject.ambra.struts2.PlosStruts2Dispatcher</filter-class>
     <init-param>
       <param-name>packages</param-name>
       <param-value>struts</param-value>
@@ -236,16 +236,16 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <listener-class>org.topazproject.ambra.configuration.WebAppListener</listener-class>
   </listener>
   <listener>
-    <listener-class>org.plos.bootstrap.WebAppListenerInitModels</listener-class>
+    <listener-class>org.topazproject.ambra.bootstrap.WebAppListenerInitModels</listener-class>
   </listener>
   <listener>
-    <listener-class>org.plos.bootstrap.migration.Migrator</listener-class>
+    <listener-class>org.topazproject.ambra.bootstrap.migration.Migrator</listener-class>
   </listener>
   <listener>
-    <listener-class>org.plos.bootstrap.journal.JournalCreator</listener-class>
+    <listener-class>org.topazproject.ambra.bootstrap.journal.JournalCreator</listener-class>
   </listener>
   <listener>
-    <listener-class>org.plos.bootstrap.permissions.WebAppListenerInitPermissionsModel</listener-class>
+    <listener-class>org.topazproject.ambra.bootstrap.permissions.WebAppListenerInitPermissionsModel</listener-class>
   </listener>
 
   <!-- to hook in the spring container -->

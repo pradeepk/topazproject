@@ -28,27 +28,27 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
   <!--Ambra developer beans here -->
-  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService">
+  <bean id="fetchArticleService" class="org.topazproject.ambra.article.service.FetchArticleService">
     <property name="articleAnnotationService" ref="articleAnnotationService"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="articleXmlUtils" ref="articleXmlUtils"/>
   </bean>
 
-  <bean id="articleXmlUtils" class="org.plos.util.ArticleXMLUtils" init-method="init">
+  <bean id="articleXmlUtils" class="org.topazproject.ambra.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
   </bean>
 
-  <bean id="citationService" class="org.plos.util.ArticleXMLUtils" init-method="init">
+  <bean id="citationService" class="org.topazproject.ambra.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/citation.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
   </bean>
 
-  <bean id="secondaryObjectService" class="org.plos.util.ArticleXMLUtils" init-method="init">
+  <bean id="secondaryObjectService" class="org.topazproject.ambra.util.ArticleXMLUtils" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/objInfo.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
@@ -66,7 +66,7 @@
   </util:map>
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
-  <bean id="articleOtmService" class="org.plos.article.service.ArticleOtmService">
+  <bean id="articleOtmService" class="org.topazproject.ambra.article.service.ArticleOtmService">
  <!--   <property name="smallImageRep" value="TIF"/>
     <property name="mediumImageRep" value="TIF"/>
     <property name="largeImageRep" value="TIF"/>
@@ -76,7 +76,7 @@
     <property name="largeImageRep" value="PNG_L"/>
    </bean>
 
-   <bean id="crossRefPosterService" class="org.plos.admin.service.CrossRefPosterService">
+   <bean id="crossRefPosterService" class="org.topazproject.ambra.admin.service.CrossRefPosterService">
     <!-- following is the URL for the CrossRef service. The three parameters which should be set are
         * area=  test or live. Decides if the cross ref is actually 'posted'. area=test for testing, area=live for deployment
         * login_id=crossref user name
@@ -85,9 +85,9 @@
     <property name="doiXrefUrl" value="${ambra.services.crossref.post.url}"/>
   </bean>
 
-  <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService"/>
+  <bean id="flagManagementService" class="org.topazproject.ambra.admin.service.FlagManagementService"/>
 
-  <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService">
+  <bean id="documentManagementService" class="org.topazproject.ambra.admin.service.DocumentManagementService">
     <!-- These pathnames are absolute -->
     <property name="documentDirectory" value="${ambra.services.documentManagement.ingestSourceDir}"/>
     <property name="ingestedDocumentDirectory" value="${ambra.services.documentManagement.ingestDestinationDir}"/>
@@ -107,20 +107,20 @@
     <constructor-arg value="topaz-ambra"/>
   </bean>
 
-  <bean id="userContext" class="org.plos.web.UserContext"/>
+  <bean id="userContext" class="org.topazproject.ambra.web.UserContext"/>
 
-  <bean id="permissionsService" class="org.plos.permission.service.PermissionsService"/>
+  <bean id="permissionsService" class="org.topazproject.ambra.permission.service.PermissionsService"/>
 
-  <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter"/>
+  <bean id="annotationConverter" class="org.topazproject.ambra.annotation.service.AnnotationConverter"/>
 
-  <bean id="replyService" class="org.plos.annotation.service.ReplyService">
+  <bean id="replyService" class="org.topazproject.ambra.annotation.service.ReplyService">
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="permissionsService" ref="permissionsService"/>
   </bean>
 
-  <bean id="articleAnnotationService" class="org.plos.annotation.service.ArticleAnnotationService">
+  <bean id="articleAnnotationService" class="org.topazproject.ambra.annotation.service.ArticleAnnotationService">
     <property name="articleAnnotationCache" ref="articleAnnotationCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -128,17 +128,17 @@
     <property name="permissionsService" ref="permissionsService"/>
   </bean>
 
-  <bean id="ratingsService" class="org.plos.rating.service.RatingsService">
+  <bean id="ratingsService" class="org.topazproject.ambra.rating.service.RatingsService">
     <property name="applicationId" ref="applicationId"/>
   </bean>
 
-  <bean id="annotationService" class="org.plos.annotation.service.AnnotationService">
+  <bean id="annotationService" class="org.topazproject.ambra.annotation.service.AnnotationService">
     <property name="converter" ref="annotationConverter"/>
     <property name="replyService" ref="replyService"/>
     <property name="permissionsService" ref="permissionsService"/>
   </bean>
 
-  <bean id="userService" class="org.plos.user.service.UserService">
+  <bean id="userService" class="org.topazproject.ambra.user.service.UserService">
     <property name="userContext" ref="userContext"/>
     <property name="permissionsService" ref="permissionsService"/>
     <property name="userCache" ref="userCache"/>
@@ -182,11 +182,11 @@
     </property>
   </bean>
 
-  <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
+  <bean id="profanityCheckingService" class="org.topazproject.ambra.util.ProfanityCheckingService">
     <property name="profaneWords" ref="profaneWords"/>
   </bean>
 
-  <bean id="browseService" class="org.plos.article.service.BrowseService">
+  <bean id="browseService" class="org.topazproject.ambra.article.service.BrowseService">
     <property name="browseCache" ref="browseCache"/>
   </bean>
 
@@ -195,14 +195,14 @@
     <entry key="countries" value-ref="countries"/>
   </util:map>
 
-  <bean id="searchService" class="org.plos.search.service.SearchService">
+  <bean id="searchService" class="org.topazproject.ambra.search.service.SearchService">
     <property name="searchWebService" ref="searchWebService"/>
     <property name="searchCache" ref="searchCache"/>
   </bean>
 
-  <bean id="searchWebService" class="org.plos.search.service.SearchWebService"/>
+  <bean id="searchWebService" class="org.topazproject.ambra.search.service.SearchWebService"/>
 
-  <bean id="journalService" class="org.plos.journal.JournalService" init-method="init"/>
+  <bean id="journalService" class="org.topazproject.ambra.journal.JournalService" init-method="init"/>
 
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore">
@@ -349,11 +349,11 @@
         <value>org.topazproject.ambra.models.Blob</value>
         <value>org.topazproject.ambra.models.AnnotationBlob</value>
         <value>org.topazproject.ambra.models.ReplyBlob</value>
-        <value>org.plos.model.article.CitationInfo</value>
-        <value>org.plos.model.UserProfileInfo</value>
-        <value>org.plos.model.article.ArticleInfo</value>
-        <value>org.plos.model.article.NewArtInfo</value>
-        <value>org.plos.model.article.RelatedArticleInfo</value>
+        <value>org.topazproject.ambra.model.article.CitationInfo</value>
+        <value>org.topazproject.ambra.model.UserProfileInfo</value>
+        <value>org.topazproject.ambra.model.article.ArticleInfo</value>
+        <value>org.topazproject.ambra.model.article.NewArtInfo</value>
+        <value>org.topazproject.ambra.model.article.RelatedArticleInfo</value>
         <value>org.topazproject.otm.criterion.Conjunction</value>
         <value>org.topazproject.otm.criterion.Criterion</value>
         <value>org.topazproject.otm.criterion.DetachedCriteria</value>
@@ -397,7 +397,7 @@
   <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
 
   <!-- cache manager configs -->
-  <bean id="txCacheManagerFactory" class="org.plos.cache.CacheManagerFactory">
+  <bean id="txCacheManagerFactory" class="org.topazproject.ambra.cache.CacheManagerFactory">
     <constructor-arg index="0">
        <ref bean="otmSessionFactory"/>
     </constructor-arg>
@@ -406,7 +406,7 @@
       factory-bean="txCacheManagerFactory" factory-method="createCacheManager">
     <constructor-arg index="0" value="20"/> <!-- seconds to wait for the write lock -->
   </bean>
-  <bean id="objectCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="objectCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -414,7 +414,7 @@
        <ref bean="objectEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="repCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="repCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -422,7 +422,7 @@
        <ref bean="repEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="otmInterceptor" class="org.plos.cache.OtmInterceptor">
+  <bean id="otmInterceptor" class="org.topazproject.ambra.cache.OtmInterceptor">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -436,7 +436,7 @@
        <ref bean="journalService"/>
     </constructor-arg>
   </bean>
-  <bean id="browseCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="browseCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -444,7 +444,7 @@
        <ref bean="browseEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="userCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="userCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -452,7 +452,7 @@
        <ref bean="userEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="feedCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="feedCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -460,7 +460,7 @@
        <ref bean="feedEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="searchCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="searchCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -468,7 +468,7 @@
        <ref bean="searchEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="articleAnnotationCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="articleAnnotationCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -476,7 +476,7 @@
        <ref bean="articleAnnotationEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="journalCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="journalCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -484,7 +484,7 @@
        <ref bean="journalEhcache"/>
     </constructor-arg>
   </bean>
-  <bean id="carrierCache" class="org.plos.cache.EhcacheProvider">
+  <bean id="carrierCache" class="org.topazproject.ambra.cache.EhcacheProvider">
     <constructor-arg index="0">
        <ref bean="txCacheManager"/>
     </constructor-arg>
@@ -494,13 +494,13 @@
   </bean>
   
   <!-- freemarker configs -->
-  <bean id="plosOneFreemarkerManager" class="org.plos.struts2.PlosOneFreemarkerManager">
+  <bean id="plosOneFreemarkerManager" class="org.topazproject.ambra.struts2.PlosOneFreemarkerManager">
     <constructor-arg index="0">
       <ref bean="plosOneFreemarkerConfig" />
     </constructor-arg>
   </bean>
 
-  <bean id="plosOneFreemarkerConfig" class="org.plos.struts2.PlosOneFreemarkerConfig" />
+  <bean id="plosOneFreemarkerConfig" class="org.topazproject.ambra.struts2.PlosOneFreemarkerConfig" />
 
   <!-- Caches -->
   <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
@@ -579,7 +579,7 @@
     <property name="autodetect" value="true"/>
   </bean>
 
-  <bean name="org.plos.logging:name=log4j" class="org.apache.log4j.jmx.HierarchyDynamicMBean"/>
+  <bean name="org.topazproject.ambra.logging:name=log4j" class="org.apache.log4j.jmx.HierarchyDynamicMBean"/>
 
   <!-- email configuration -->
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
@@ -591,7 +591,7 @@
     <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
-  <bean id="plosoneMailer" class="org.plos.service.PlosoneMailer">
+  <bean id="plosoneMailer" class="org.topazproject.ambra.service.PlosoneMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="application@plosone.org"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>

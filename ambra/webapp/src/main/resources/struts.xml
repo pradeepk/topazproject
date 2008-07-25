@@ -33,7 +33,7 @@
   allow the mapping of friendly URIs, 
   e.g. "/article/feed" v. requiring "/article/articleFeed.action?parms"
   -->
-  <constant name="struts.mapper.class" value="org.plos.struts2.PlosOneActionMapper"/>
+  <constant name="struts.mapper.class" value="org.topazproject.ambra.struts2.PlosOneActionMapper"/>
 
   <include file="struts-default.xml" />
 
@@ -42,36 +42,36 @@
       <result-type name="freemarker"
         class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true">
       </result-type>
-      <result-type name="ambraFreemarker" class="org.plos.struts2.PlosOneFreemarkerResult">
+      <result-type name="ambraFreemarker" class="org.topazproject.ambra.struts2.PlosOneFreemarkerResult">
         <param name="location">/journals/plosJournals/templates/main_template.ftl</param>
       </result-type>
-      <result-type name="headless" class="org.plos.struts2.PlosOneFreemarkerResult">
+      <result-type name="headless" class="org.topazproject.ambra.struts2.PlosOneFreemarkerResult">
         <param name="location">/journals/plosJournals/templates/headless_template.ftl</param>
       </result-type>
-      <result-type name="user" class="org.plos.struts2.PlosOneFreemarkerResult">
+      <result-type name="user" class="org.topazproject.ambra.struts2.PlosOneFreemarkerResult">
         <param name="location">/journals/plosJournals/templates/user_shared_template.ftl</param>
       </result-type>
-      <result-type name="plosStream" class="org.plos.struts2.PlosStreamResult" />
-      <result-type name="json" class="org.plos.struts2.JsonResult">
+      <result-type name="plosStream" class="org.topazproject.ambra.struts2.PlosStreamResult" />
+      <result-type name="json" class="org.topazproject.ambra.struts2.JsonResult">
         <param name="excludeProperties">advisors, callbacks</param>
         <param name="ignoreHierarchy">false</param>
         <param name="noCache">true</param>
       </result-type>
-      <result-type name="feed" class="org.plos.struts2.PlosOneFeedResult"/>
-      <result-type name="citation" class="org.plos.struts2.CitationResult"/>
+      <result-type name="feed" class="org.topazproject.ambra.struts2.PlosOneFeedResult"/>
+      <result-type name="citation" class="org.topazproject.ambra.struts2.CitationResult"/>
     </result-types>
 
     <interceptors>
-      <interceptor name="journalSessionSetup" class="org.plos.journal.SessionFiltersInterceptor"/>
-      <interceptor name="ensureUserAccount" class="org.plos.user.EnsureUserAccountInterceptor"/>
-      <interceptor name="ensureAdmin" class="org.plos.user.EnsureRoleInterceptor"/>
-      <interceptor name="plosUserLookup" class="org.plos.user.UserAccountsInterceptor"/>
+      <interceptor name="journalSessionSetup" class="org.topazproject.ambra.journal.SessionFiltersInterceptor"/>
+      <interceptor name="ensureUserAccount" class="org.topazproject.ambra.user.EnsureUserAccountInterceptor"/>
+      <interceptor name="ensureAdmin" class="org.topazproject.ambra.user.EnsureRoleInterceptor"/>
+      <interceptor name="plosUserLookup" class="org.topazproject.ambra.user.UserAccountsInterceptor"/>
       <interceptor name="json" class="com.googlecode.jsonplugin.JSONInterceptor"/>
       
       <interceptor-stack name="strutsBaseStack">
         <interceptor-ref name="exception">
           <param name="logEnabled">true</param>
-          <param name="logCategory">org.plos.UnhandledException</param>
+          <param name="logCategory">org.topazproject.ambra.UnhandledException</param>
           <param name="logLevel">ERROR</param>
         </interceptor-ref>
         <interceptor-ref name="timer" />
@@ -138,11 +138,11 @@
       <exception-mapping exception="java.lang.Exception" result="error"/>
     </global-exception-mappings>
 
-    <action name="logout" class="org.plos.action.LogoutAction">
+    <action name="logout" class="org.topazproject.ambra.action.LogoutAction">
       <result type="redirect">/</result>
     </action>
 
-    <action name="trackback" class="org.plos.action.TrackbackAction">
+    <action name="trackback" class="org.topazproject.ambra.action.TrackbackAction">
       <result name="success">
         <param name="location">/trackback/success.ftl</param>
         <param name="contentType">application/xml</param>
@@ -153,7 +153,7 @@
       </result>
     </action>
 
-    <action name="getTrackbacks" class="org.plos.action.TrackbackAction" method="getTrackbacks">
+    <action name="getTrackbacks" class="org.topazproject.ambra.action.TrackbackAction" method="getTrackbacks">
       <result name="success">
         <param name="location">/trackback/listTrackbacks.ftl</param>
       </result>
@@ -163,28 +163,28 @@
       </result>
     </action>
 
-    <action name="pageNotFound" class="org.plos.action.PageNotFoundAction">
+    <action name="pageNotFound" class="org.topazproject.ambra.action.PageNotFoundAction">
       <interceptor-ref name="strutsBaseStack"/>
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/pageNotFound.ftl</param>
       </result>
     </action>
     
-    <action name="home" class="org.plos.action.HomePageAction">
+    <action name="home" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/index.ftl</param>
       </result>
     </action>
 
-    <action name="recentArticles" class="org.plos.action.HomePageAction">
+    <action name="recentArticles" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success">/article/recentArticles.ftl</result>
     </action>
 
-    <action name="mostCommented" class="org.plos.action.HomePageAction">
+    <action name="mostCommented" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success">/article/mostCommented.ftl</result>
     </action>
 
-    <action name="mostViewed" class="org.plos.action.HomePageAction">
+    <action name="mostViewed" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success">/article/mostViewed.ftl</result>
     </action>
 
@@ -194,13 +194,13 @@
       </result>
     </action>
 
-    <action name="feedbackCreate" class="org.plos.action.FeedbackAction" method="executeRender">
+    <action name="feedbackCreate" class="org.topazproject.ambra.action.FeedbackAction" method="executeRender">
       <result type="ambraFreemarker">
         <param name="templateFile">/feedback/feedbackEntry.ftl</param>
       </result>
     </action>
 
-    <action name="feedback" class="org.plos.action.FeedbackAction" method="executeSend">
+    <action name="feedback" class="org.topazproject.ambra.action.FeedbackAction" method="executeSend">
       <result name="error" type="ambraFreemarker">
         <param name="templateFile">/feedback/feedbackEntry.ftl</param>
       </result>
@@ -212,18 +212,18 @@
       </result>
     </action>
 
-    <action name="selectList" class="org.plos.action.ListingAction"/>
+    <action name="selectList" class="org.topazproject.ambra.action.ListingAction"/>
 
   </package>
 
   <package name="search" extends="default" namespace="/search">
-    <action name="searchStart" class="org.plos.action.NoOpAction">
+    <action name="searchStart" class="org.topazproject.ambra.action.NoOpAction">
       <result name="input" type="ambraFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
       </result>
     </action>
 
-    <action name="simpleSearch" class="org.plos.search.action.SearchAction" method="executeSimpleSearch">
+    <action name="simpleSearch" class="org.topazproject.ambra.search.action.SearchAction" method="executeSimpleSearch">
       <result name="input" type="ambraFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
       </result>
@@ -232,7 +232,7 @@
       </result>
     </action>
 
-    <action name="advancedSearch" class="org.plos.search.action.SearchAction" method="executeAdvancedSearch">
+    <action name="advancedSearch" class="org.topazproject.ambra.search.action.SearchAction" method="executeAdvancedSearch">
       <result name="input" type="ambraFreemarker">
         <param name="templateFile">/search/searchStart.ftl</param>
       </result>
@@ -243,52 +243,52 @@
   </package>
 
   <package name="static" extends="default" namespace="/static">
-    <action name="browse" class="org.plos.action.NoOpAction">
+    <action name="browse" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/browse.ftl</param>
       </result>
     </action>
-    <action name="commentGuidelines" class="org.plos.action.NoOpAction">
+    <action name="commentGuidelines" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/commentGuidelines.ftl</param>
       </result>
     </action>
-    <action name="help" class="org.plos.action.NoOpAction">
+    <action name="help" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/help.ftl</param>
       </result>
     </action>
-    <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
+    <action name="ratingGuidelines" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/ratingGuidelines.ftl</param>
       </result>
     </action>
-    <action name="releaseNotes" class="org.plos.action.NoOpAction">
+    <action name="releaseNotes" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/releaseNotes.ftl</param>
       </result>
     </action>
-    <action name="rssFeeds" class="org.plos.action.NoOpAction">
+    <action name="rssFeeds" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/rssFeeds.ftl</param>
       </result>
     </action>
-    <action name="rssInfo" class="org.plos.action.NoOpAction">
+    <action name="rssInfo" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/rssInfo.ftl</param>
       </result>
     </action>
-    <action name="error" class="org.plos.action.NoOpAction">
+    <action name="error" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/serverError.ftl</param>
       </result>
     </action>
-    <action name="sitemap" class="org.plos.action.NoOpAction">
+    <action name="sitemap" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/sitemap.ftl</param>
       </result>
     </action>
-    <action name="users" class="org.plos.action.NoOpAction">
+    <action name="users" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/static/users.ftl</param>
       </result>
@@ -296,7 +296,7 @@
   </package>
 
   <package name="rate" extends="default" namespace="/rate">
-    <action name="getAverageRatingsForArticle" class="org.plos.rating.action.GetAverageRatingsAction">
+    <action name="getAverageRatingsForArticle" class="org.topazproject.ambra.rating.action.GetAverageRatingsAction">
       <interceptor-ref name="chain">
         <param name="excludes">targetSource, callbacks, exposeProxy</param>
       </interceptor-ref>
@@ -306,17 +306,17 @@
         <param name="noCache">true</param>
       </result>
     </action>
-    <action name="getAverageRatings" class="org.plos.rating.action.GetAverageRatingsAction">
+    <action name="getAverageRatings" class="org.topazproject.ambra.rating.action.GetAverageRatingsAction">
       <result name="success">/WEB-INF/pages/article/articleRatings.ftl</result>
       <result name="error">/WEB-INF/pages/article/articleRatings.ftl</result>
     </action>
-    <action name="getUpdatedRatings" class="org.plos.rating.action.GetAverageRatingsAction">
+    <action name="getUpdatedRatings" class="org.topazproject.ambra.rating.action.GetAverageRatingsAction">
      <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_rhc_rating.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
-    <action name="getArticleRatings" class="org.plos.rating.action.GetArticleRatingsAction">
+    <action name="getArticleRatings" class="org.topazproject.ambra.rating.action.GetArticleRatingsAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/rating/index.ftl</param>
       </result>
@@ -324,19 +324,19 @@
   </package>
 
   <package name="rate-secure" extends="default" namespace="/rate/secure">
-    <action name="rateArticle" class="org.plos.rating.action.RateAction" method="rateArticle">
+    <action name="rateArticle" class="org.topazproject.ambra.rating.action.RateAction" method="rateArticle">
       <result name="input" type="json"/>
       <result name="success" type="json"/>
       <result name="error" type="json"/>
     </action>
 
-    <action name="createRatingFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createRatingFlag">
+    <action name="createRatingFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction" method="createRatingFlag">
       <result name="input"   type="json"/>
       <result name="error"   type="json"/>
       <result name="success" type="json"/>
     </action>
 
-    <action name="getRatingsForUser" class="org.plos.rating.action.RateAction" method="retrieveRatingsForUser">
+    <action name="getRatingsForUser" class="org.topazproject.ambra.rating.action.RateAction" method="retrieveRatingsForUser">
       <result name="input" type="json"/>
       <result name="success" type="json"/>
       <result name="error" type="json"/>
@@ -344,33 +344,33 @@
   </package>
 
   <package name="article" extends="default" namespace="/article">
-    <action name="listTrackbacks" class="org.plos.action.TrackbackAction" method="getTrackbacksForArticle">
+    <action name="listTrackbacks" class="org.topazproject.ambra.action.TrackbackAction" method="getTrackbacksForArticle">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/trackbackList.ftl</param>
       </result>
     </action>
 
-    <action name="articleList" class="org.plos.article.action.ArticleListAction">
+    <action name="articleList" class="org.topazproject.ambra.article.action.ArticleListAction">
       <result name="success">/WEB-INF/pages/article/articleList.ftl</result>
     </action>
 
-    <action name="emailArticle" class="org.plos.article.action.EmailArticleAction" method="executeRender">
+    <action name="emailArticle" class="org.topazproject.ambra.article.action.EmailArticleAction" method="executeRender">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/emailArticle.ftl</param>
       </result>
     </action>
 
-    <action name="findArticle" class="org.plos.action.NoOpAction">
+    <action name="findArticle" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/findArticle.ftl</param>
       </result>
     </action>
 
-    <action name="emailThisArticleCreate" class="org.plos.article.action.EmailArticleAction" method="executeRender">
+    <action name="emailThisArticleCreate" class="org.topazproject.ambra.article.action.EmailArticleAction" method="executeRender">
       <result name="success">/WEB-INF/pages/emailArticle/emailArticle.ftl</result>
     </action>
 
-    <action name="emailThisArticleSubmit" class="org.plos.article.action.EmailArticleAction" method="executeSend">
+    <action name="emailThisArticleSubmit" class="org.topazproject.ambra.article.action.EmailArticleAction" method="executeSend">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/emailSuccess.ftl</param>
       </result>
@@ -379,7 +379,7 @@
       </result>
     </action>
 
-    <action name="getNumTrackbacksForArticle" class="org.plos.action.TrackbackAction" method="getTrackbackCount">
+    <action name="getNumTrackbacksForArticle" class="org.topazproject.ambra.action.TrackbackAction" method="getTrackbackCount">
       <interceptor-ref name="chain">
         <param name="excludes">targetSource, callbacks, exposeProxy</param>
       </interceptor-ref>
@@ -390,96 +390,96 @@
       </result>
     </action>
 
-    <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
+    <action name="fetchArticle" class="org.topazproject.ambra.article.action.FetchArticleAction">
       <result type="chain">
         <param name="actionName">getNumTrackbacksForArticle</param>
         <param name="namespace">/article</param>
       </result>
     </action>
 
-    <action name="fetchSecondaryObjects" class="org.plos.article.action.SecondaryObjectAction">
+    <action name="fetchSecondaryObjects" class="org.topazproject.ambra.article.action.SecondaryObjectAction">
       <result name="success">/WEB-INF/pages/article/displayImages.ftl</result>
     </action>
 
-    <action name="slideshow" class="org.plos.article.action.SecondaryObjectAction" method="listFiguresAndTables">
+    <action name="slideshow" class="org.topazproject.ambra.article.action.SecondaryObjectAction" method="listFiguresAndTables">
       <result name="success" type="headless">
         <param name="templateFile">/article/imageWindow.ftl</param>
       </result>
     </action>
 
-    <action name="showImageLarge" class="org.plos.action.NoOpAction">
+    <action name="showImageLarge" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="headless">
         <param name="templateFile">/article/imageWindowLarge.ftl</param>
       </result>
     </action>
 
-    <action name="fetchObjectAttachment" class="org.plos.article.action.FetchObjectAction">
+    <action name="fetchObjectAttachment" class="org.topazproject.ambra.article.action.FetchObjectAction">
       <result name="success" type="plosStream">
         <param name="isAttachment">true</param>
       </result>
     </action>
 
-    <action name="fetchObject" class="org.plos.article.action.FetchObjectAction">
+    <action name="fetchObject" class="org.topazproject.ambra.article.action.FetchObjectAction">
       <result name="success" type="plosStream">
         <param name="isAttachment">false</param>
       </result>
     </action>
 
-    <action name="fetchFirstRepresentation" class="org.plos.article.action.FetchObjectAction" method="fetchFirstObject">
+    <action name="fetchFirstRepresentation" class="org.topazproject.ambra.article.action.FetchObjectAction" method="fetchFirstObject">
       <result name="success" type="plosStream">
         <param name="isAttachment">true</param>
       </result>
     </action>
 
-    <action name="fetchAnnotatedArticle" class="org.plos.article.action.FetchArticleAction" method="displayAnnotatedArticle">
+    <action name="fetchAnnotatedArticle" class="org.topazproject.ambra.article.action.FetchArticleAction" method="displayAnnotatedArticle">
        <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
 
-    <action name="fetchBody" class="org.plos.article.action.FetchArticleAction">
+    <action name="fetchBody" class="org.topazproject.ambra.article.action.FetchArticleAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_content.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="fetchArticleRhc" class="org.plos.article.action.FetchArticleAction">
+    <action name="fetchArticleRhc" class="org.topazproject.ambra.article.action.FetchArticleAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/article/article_rhc_count.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="browse" class="org.plos.article.action.BrowseArticlesAction">
+    <action name="browse" class="org.topazproject.ambra.article.action.BrowseArticlesAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/browse.ftl</param>
       </result>
     </action>
 
-    <action name="browseIssue" class="org.plos.article.action.BrowseIssueAction">
+    <action name="browseIssue" class="org.topazproject.ambra.article.action.BrowseIssueAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/browseIssue.ftl</param>
       </result>
     </action>
 
-    <action name="browseVolume" class="org.plos.article.action.BrowseVolumeAction">
+    <action name="browseVolume" class="org.topazproject.ambra.article.action.BrowseVolumeAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/browseVolume.ftl</param>
       </result>
     </action>
 
-    <action name="citationList" class="org.plos.article.action.CreateCitation">
+    <action name="citationList" class="org.topazproject.ambra.article.action.CreateCitation">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/citationList.ftl</param>
       </result>
     </action>
-    <action name="getRisCitation" class="org.plos.article.action.CreateCitation">
+    <action name="getRisCitation" class="org.topazproject.ambra.article.action.CreateCitation">
       <result name="success" type="citation">
         <param name="location">/article/ris.ftl</param>
         <param name="contentType">text/plain</param>
         <param name="fileExtension">.ris</param>
       </result>
     </action>
-    <action name="getBibTexCitation" class="org.plos.article.action.CreateCitation">
+    <action name="getBibTexCitation" class="org.topazproject.ambra.article.action.CreateCitation">
       <result name="success" type="citation">
         <param name="location">/article/bibtex.ftl</param>
         <param name="contentType">text/plain</param>
@@ -489,7 +489,7 @@
   </package>
 
   <package name="article-feed" extends="default" namespace="/article/feed">
-    <action name="getFeed" class="org.plos.article.action.ArticleFeed" method="execute">
+    <action name="getFeed" class="org.topazproject.ambra.article.action.ArticleFeed" method="execute">
       <result name="success" type="feed">
         <param name="feedName">wireFeed</param>
       </result>
@@ -497,75 +497,75 @@
   </package>
 
   <package name="annotation" extends="default" namespace="/annotation">
-    <action name="fetchBody" class="org.plos.annotation.action.BodyFetchAction">
+    <action name="fetchBody" class="org.topazproject.ambra.annotation.action.BodyFetchAction">
       <result name="success">/WEB-INF/pages/annotation/showCommentBody.ftl</result>
     </action>
 
-    <action name="listAnnotation" class="org.plos.annotation.action.ListAnnotationAction">
+    <action name="listAnnotation" class="org.topazproject.ambra.annotation.action.ListAnnotationAction">
       <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
     </action>
 
-    <action name="getFormalCorrections" class="org.plos.annotation.action.ListAnnotationAction" method="fetchFormalCorrections">
+    <action name="getFormalCorrections" class="org.topazproject.ambra.annotation.action.ListAnnotationAction" method="fetchFormalCorrections">
       <result name="success" type="json">
       	<param name="excludeProperties">advisors, callbacks, annotations</param>
       </result>
     </action>
 
-    <action name="getAnnotation" class="org.plos.annotation.action.GetAnnotationAction">
+    <action name="getAnnotation" class="org.topazproject.ambra.annotation.action.GetAnnotationAction">
       <result name="success" type="json"/>
     </action>
 
-    <action name="listReply" class="org.plos.annotation.action.ListReplyAction">
+    <action name="listReply" class="org.topazproject.ambra.annotation.action.ListReplyAction">
       <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
     </action>
 
-    <action name="listAllReplies" class="org.plos.annotation.action.ListReplyAction"
+    <action name="listAllReplies" class="org.topazproject.ambra.annotation.action.ListReplyAction"
       method="listAllReplies">
       <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
     </action>
 
-    <action name="listThreadedReplies" class="org.plos.annotation.action.ListReplyAction"
+    <action name="listThreadedReplies" class="org.topazproject.ambra.annotation.action.ListReplyAction"
       method="listAllReplies">
       <result name="success">/WEB-INF/pages/annotation/listThreadedReply.ftl</result>
     </action>
 
-    <action name="listThread" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
+    <action name="listThread" class="org.topazproject.ambra.annotation.action.ListReplyAction" method="listAllReplies">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/discussion.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="getCommentary" class="org.plos.annotation.action.GetCommentaryAction" method="listComments">
+    <action name="getCommentary" class="org.topazproject.ambra.annotation.action.GetCommentaryAction" method="listComments">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/commentary.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="getCorrectionsCommentary" class="org.plos.annotation.action.GetCommentaryAction" method="listCorrections">
+    <action name="getCorrectionsCommentary" class="org.topazproject.ambra.annotation.action.GetCommentaryAction" method="listCorrections">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/corrections.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="listThreadRefresh" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
+    <action name="listThreadRefresh" class="org.topazproject.ambra.annotation.action.ListReplyAction" method="listAllReplies">
       <result name="success" type="ambraFreemarker">
         <param name="location">/discussion/threaded_replies.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
 
-    <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
+    <action name="getReply" class="org.topazproject.ambra.annotation.action.GetReplyAction">
       <result name="success" type="json"/>
     </action>
 
-    <action name="listFlags" class="org.plos.annotation.action.ListFlagAction">
+    <action name="listFlags" class="org.topazproject.ambra.annotation.action.ListFlagAction">
       <result name="success">/WEB-INF/pages/annotation/listFlag.ftl</result>
     </action>
 
-    <action name="getFlag" class="org.plos.annotation.action.GetFlagAction">
+    <action name="getFlag" class="org.topazproject.ambra.annotation.action.GetFlagAction">
       <result name="success" type="json"/>
     </action>
   </package>
@@ -575,45 +575,45 @@
       <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>
 
-    <action name="startDiscussion" class="org.plos.annotation.action.GetCommentaryAction" method="getArticleMetaInfo">
+    <action name="startDiscussion" class="org.topazproject.ambra.annotation.action.GetCommentaryAction" method="getArticleMetaInfo">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/discussion/startDiscussion.ftl</param>
       </result>
     </action>
 
-    <action name="createAnnotationSubmit" class="org.plos.annotation.action.CreateAnnotationAction">
+    <action name="createAnnotationSubmit" class="org.topazproject.ambra.annotation.action.CreateAnnotationAction">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>
     </action>
 
-    <action name="createDiscussionSubmit" class="org.plos.annotation.action.CreateAnnotationAction" method="executeSaveDiscussion">
+    <action name="createDiscussionSubmit" class="org.topazproject.ambra.annotation.action.CreateAnnotationAction" method="executeSaveDiscussion">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>
     </action>
 
-    <action name="setAnnotationPublic" class="org.plos.annotation.action.SetAnnotationPublicAction" method="executeSetAnnotationPublic">
+    <action name="setAnnotationPublic" class="org.topazproject.ambra.annotation.action.SetAnnotationPublicAction" method="executeSetAnnotationPublic">
       <result name="input">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
       <result name="error">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
       <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
     </action>
 
-    <action name="deletePrivateAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction" method="deletePrivateAnnotation">
+    <action name="deletePrivateAnnotation" class="org.topazproject.ambra.annotation.action.DeleteAnnotationAction" method="deletePrivateAnnotation">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="deletePublicAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction" method="deletePublicAnnotation">
+    <action name="deletePublicAnnotation" class="org.topazproject.ambra.annotation.action.DeleteAnnotationAction" method="deletePublicAnnotation">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="createReplySubmit" class="org.plos.annotation.action.CreateReplyAction">
+    <action name="createReplySubmit" class="org.topazproject.ambra.annotation.action.CreateReplyAction">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>
     </action>
 
-    <action name="deleteReply" class="org.plos.annotation.action.DeleteReplyAction" method="deleteReplyWithId">
+    <action name="deleteReply" class="org.topazproject.ambra.annotation.action.DeleteReplyAction" method="deleteReplyWithId">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
@@ -622,45 +622,45 @@
       <result>/WEB-INF/pages/annotation/createFlag.ftl</result>
     </action>
 
-    <action name="createAnnotationFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createAnnotationFlag">
+    <action name="createAnnotationFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction" method="createAnnotationFlag">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>
     </action>
 
-    <action name="createReplyFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createReplyFlag">
+    <action name="createReplyFlagSubmit" class="org.topazproject.ambra.annotation.action.CreateFlagAction" method="createReplyFlag">
       <result name="input" type="json"/>
       <result name="error" type="json"/>
       <result name="success" type="json"/>
     </action>
 
-    <action name="deleteFlag" class="org.plos.annotation.action.DeleteFlagAction">
+    <action name="deleteFlag" class="org.topazproject.ambra.annotation.action.DeleteFlagAction">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="unflagAnnotation" class="org.plos.annotation.action.UnflagAnnotationAction" method="unflagAnnotation">
+    <action name="unflagAnnotation" class="org.topazproject.ambra.annotation.action.UnflagAnnotationAction" method="unflagAnnotation">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="unflagReply" class="org.plos.annotation.action.UnflagAnnotationAction" method="unflagReply">
+    <action name="unflagReply" class="org.topazproject.ambra.annotation.action.UnflagAnnotationAction" method="unflagReply">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
   </package>
 
   <package name="user-secure" extends="default" namespace="/user/secure">
-    <action name="secureRedirect" class="org.plos.action.RedirectAction">
+    <action name="secureRedirect" class="org.topazproject.ambra.action.RedirectAction">
       <result type="redirect">
         <param name="location">${goTo}</param>
         <param name="prependServletContext">false</param>
       </result>
     </action>
 
-    <action name="getUserProfilePrivateFields" class="org.plos.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">
+    <action name="getUserProfilePrivateFields" class="org.topazproject.ambra.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">
       <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
     </action>
 
-    <action name="editAjaxAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
+    <action name="editAjaxAlerts" class="org.topazproject.ambra.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success"  type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
@@ -675,12 +675,12 @@
       </result>
     </action>
 
-    <action name="retrieveUserAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
+    <action name="retrieveUserAlerts" class="org.topazproject.ambra.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success">/user/alerts.ftl</result>
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
     </action>
 
-    <action name="saveAjaxAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="saveAlerts">
+    <action name="saveAjaxAlerts" class="org.topazproject.ambra.user.action.MemberUserAlertsAction" method="saveAlerts">
       <result name="success"  type="ambraFreemarker">
         <param name="location">/user/alerts.ftl</param>
         <param name="noCache">true</param>
@@ -695,7 +695,7 @@
       </result>
      </action>
 
-    <action name="editProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
+    <action name="editProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="user">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
@@ -704,7 +704,7 @@
       </result>
     </action>
 
-    <action name="editPrefsAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
+    <action name="editPrefsAlerts" class="org.topazproject.ambra.user.action.MemberUserAlertsAction" method="retrieveAlerts">
       <result name="success" type="user">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
@@ -713,7 +713,7 @@
       </result>
     </action>
 
-    <action name="editAjaxProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
+    <action name="editAjaxProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="ambraFreemarker">
         <param name="location">/user/user.ftl</param>
         <param name="noCache">true</param>
@@ -728,7 +728,7 @@
       </result>
     </action>
 
-    <action name="saveAjaxProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
+    <action name="saveAjaxProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect-action">editAjaxProfile.action</result>
       <result name="input" type="ambraFreemarker">
         <param name="location">/user/user.ftl</param>
@@ -740,14 +740,14 @@
       </result>
     </action>
 
-    <action name="saveProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
+    <action name="saveProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
       <result name="input" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
 
-    <action name="retrieveUserProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
+    <action name="retrieveUserProfile" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
@@ -757,7 +757,7 @@
       </result>
     </action>
 
-    <action name="profile" class="org.plos.action.NoOpAction">
+    <action name="profile" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/profile.ftl</param>
       </result>
@@ -767,7 +767,7 @@
   <package name="user" extends="default" namespace="/user">
     <default-interceptor-ref name="plosBaseStack" />
 
-    <action name="prePopulateNewUser" class="org.plos.user.action.MemberUserProfileAction" method="prePopulateUserDetails">
+    <action name="prePopulateNewUser" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="prePopulateUserDetails">
       <result name="new-profile" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
@@ -777,7 +777,7 @@
       <result name="success" type="redirect">/</result>
     </action>
 
-    <action name="createNewUser" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
+    <action name="createNewUser" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/editPrefsAlerts.action?tabId=alerts</result>
       <result name="input" type="user">
         <param name="templateFile">/user/createNewUser.ftl</param>
@@ -789,18 +789,18 @@
       <result>//user/newUser.ftl</result>
     </action>
 
-    <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
+    <action name="displayUser" class="org.topazproject.ambra.user.action.DisplayUserAction">
       <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
 
-    <action name="showUser" class="org.plos.user.action.DisplayUserAction">
+    <action name="showUser" class="org.topazproject.ambra.user.action.DisplayUserAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/displayUser.ftl</param>
       </result>
     </action>
 
 
-    <action name="displayUserAJAX" class="org.plos.user.action.DisplayUserAction">
+    <action name="displayUserAJAX" class="org.topazproject.ambra.user.action.DisplayUserAction">
       <result name="success">/widget/userProfileTooltip.ftl</result>
     </action>
 
@@ -809,11 +809,11 @@
   <package name="admin" extends="default" namespace="/admin">
     <default-interceptor-ref name="plosAdminStack" />
 
-    <action name="oldMenu" class="org.plos.action.NoOpAction">
+    <action name="oldMenu" class="org.topazproject.ambra.action.NoOpAction">
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
-    <action name="adminTop" class="org.plos.admin.action.AdminTopAction">
+    <action name="adminTop" class="org.topazproject.ambra.admin.action.AdminTopAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
@@ -825,7 +825,7 @@
       </result>
     </action>
 
-    <action name="deleteArticle" class="org.plos.admin.action.DeleteArticleAction">
+    <action name="deleteArticle" class="org.topazproject.ambra.admin.action.DeleteArticleAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
@@ -837,7 +837,7 @@
       </result>
     </action>
 
-    <action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
+    <action name="ingestArchives" class="org.topazproject.ambra.admin.action.IngestArchivesAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
@@ -849,7 +849,7 @@
       </result>
     </action>
 
-    <action name="publishArchives" class="org.plos.admin.action.PublishArchivesAction">
+    <action name="publishArchives" class="org.topazproject.ambra.admin.action.PublishArchivesAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
@@ -861,7 +861,7 @@
       </result>
     </action>
 
-    <action name="processFlags" class="org.plos.admin.action.ProcessFlagsAction">
+    <action name="processFlags" class="org.topazproject.ambra.admin.action.ProcessFlagsAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
         <param name="noCache">true</param>
@@ -873,38 +873,38 @@
       </result>
     </action>
 
-    <action name="viewAnnotation" class="org.plos.admin.action.ViewAnnotationAction">
+    <action name="viewAnnotation" class="org.topazproject.ambra.admin.action.ViewAnnotationAction">
         <result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
     </action>
 
-    <action name="viewRating" class="org.plos.admin.action.ViewRatingAction">
+    <action name="viewRating" class="org.topazproject.ambra.admin.action.ViewRatingAction">
         <result name="success">/WEB-INF/pages/admin/viewRating.ftl</result>
     </action>
 
-        <action name="viewReply" class="org.plos.annotation.action.GetReplyAction">
+        <action name="viewReply" class="org.topazproject.ambra.annotation.action.GetReplyAction">
         <result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
     </action>
 
-    <action name="findUser" class="org.plos.action.NoOpAction">
+    <action name="findUser" class="org.topazproject.ambra.action.NoOpAction">
         <result>/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
 
-    <action name="findUserByUserId" class="org.plos.user.action.SearchUserAction" method="executeFindUserByAuthId">
+    <action name="findUserByUserId" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByAuthId">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
 
-    <action name="findUserByEmailAddress" class="org.plos.user.action.SearchUserAction" method="executeFindUserByEmailAddress">
+    <action name="findUserByEmailAddress" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByEmailAddress">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
 
-    <action name="assignAdminRole" class="org.plos.user.action.AssignAdminRoleAction">
+    <action name="assignAdminRole" class="org.topazproject.ambra.user.action.AssignAdminRoleAction">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
 
-    <action name="editProfileByAdmin" class="org.plos.user.action.AdminUserProfileAction" method="executeRetrieveUserProfile">
+    <action name="editProfileByAdmin" class="org.topazproject.ambra.user.action.AdminUserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/user.ftl</param>
       </result>
@@ -913,7 +913,7 @@
       </result>
     </action>
 
-    <action name="saveProfileByAdmin" class="org.plos.user.action.AdminUserProfileAction" method="executeSaveUser">
+    <action name="saveProfileByAdmin" class="org.topazproject.ambra.user.action.AdminUserProfileAction" method="executeSaveUser">
       <result name="success" type="chain">
         <param name="actionName">editProfileByAdmin</param>
       </result>
@@ -922,7 +922,7 @@
       </result>
     </action>
 
-    <action name="retrieveUserAlertsByAdmin" class="org.plos.user.action.AdminUserAlertsAction" method="retrieveAlerts">
+    <action name="retrieveUserAlertsByAdmin" class="org.topazproject.ambra.user.action.AdminUserAlertsAction" method="retrieveAlerts">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/user/alerts.ftl</param>
       </result>
@@ -931,7 +931,7 @@
       </result>
     </action>
 
-    <action name="saveAlertsByAdmin" class="org.plos.user.action.AdminUserAlertsAction" method="saveAlerts">
+    <action name="saveAlertsByAdmin" class="org.topazproject.ambra.user.action.AdminUserAlertsAction" method="saveAlerts">
       <result name="success" type="chain">
         <param name="actionName">retrieveUserAlertsByAdmin</param>
       </result>
@@ -940,41 +940,41 @@
       </result>
     </action>
 
-    <action name="editAnnotation" class="org.plos.admin.action.EditAnnotationAction">
+    <action name="editAnnotation" class="org.topazproject.ambra.admin.action.EditAnnotationAction">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
-    <action name="editAnnotationLoad" class="org.plos.admin.action.EditAnnotationAction"
+    <action name="editAnnotationLoad" class="org.topazproject.ambra.admin.action.EditAnnotationAction"
       method="loadAnnotation">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
-    <action name="editAnnotationSave" class="org.plos.admin.action.EditAnnotationAction"
+    <action name="editAnnotationSave" class="org.topazproject.ambra.admin.action.EditAnnotationAction"
       method="saveAnnotation">
       <result name="success" type="ambraFreemarker">
         <param name="location">/WEB-INF/pages/admin/editAnnotation.ftl</param>
       </result>
     </action>
 
-    <action name="manageVirtualJournals" class="org.plos.admin.action.ManageVirtualJournalsAction">
+    <action name="manageVirtualJournals" class="org.topazproject.ambra.admin.action.ManageVirtualJournalsAction">
       <result name="success">/WEB-INF/pages/admin/manageVirtualJournals.ftl</result>
       <result name="input" type="ambraFreemarker">
         <param name="templateFile">/WEB-INF/pages/admin/manageVirtualJournals.ftl</param>
       </result>
     </action>
 
-    <action name="manageVolumesIssues" class="org.plos.admin.action.ManageVolumesIssuesAction">
+    <action name="manageVolumesIssues" class="org.topazproject.ambra.admin.action.ManageVolumesIssuesAction">
       <result name="success">/WEB-INF/pages/admin/manageVolumesIssues.ftl</result>
       <result name="input" type="ambraFreemarker">
         <param name="templateFile">/WEB-INF/pages/admin/manageVolumesIssues.ftl</param>
       </result>
     </action>
 
-    <action name="manageCaches" class="org.plos.admin.action.ManageCachesAction">
+    <action name="manageCaches" class="org.topazproject.ambra.admin.action.ManageCachesAction">
         <result name="success">/WEB-INF/pages/admin/manageCaches.ftl</result>
     </action>
   </package>

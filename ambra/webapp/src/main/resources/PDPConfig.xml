@@ -25,16 +25,16 @@
   <pdp name="standard-pdp">
     <attributeFinderModule class="com.sun.xacml.finder.impl.CurrentEnvModule"/>
     <attributeFinderModule
-      class="org.plos.xacml.finder.ConfigurationAttributeFinderModule"/>
+      class="org.topazproject.ambra.xacml.finder.ConfigurationAttributeFinderModule"/>
     <attributeFinderModule
-      class="org.plos.xacml.ServletActionContextAttributeFinderModule"/>
-    <policyFinderModule class="org.plos.xacml.finder.ResourcePolicyModule"
+      class="org.topazproject.ambra.xacml.ServletActionContextAttributeFinderModule"/>
+    <policyFinderModule class="org.topazproject.ambra.xacml.finder.ResourcePolicyModule"
       name="standard-policy-finder">
       <list>
         <string>policy/sets/standard-set.xml</string>
       </list>
     </policyFinderModule>
-    <policyFinderModule class="org.plos.xacml.finder.ResourceReferencePolicyModule">
+    <policyFinderModule class="org.topazproject.ambra.xacml.finder.ResourceReferencePolicyModule">
       <list>
         <string>policy/rules/deny-revokes.xml</string>
         <string>policy/rules/deny-anonymous.xml</string>
@@ -56,16 +56,16 @@
   <pdp name="test-pdp">
     <attributeFinderModule class="com.sun.xacml.finder.impl.CurrentEnvModule"/>
     <attributeFinderModule
-      class="org.plos.xacml.finder.ConfigurationAttributeFinderModule"/>
+      class="org.topazproject.ambra.xacml.finder.ConfigurationAttributeFinderModule"/>
     <attributeFinderModule
-      class="org.plos.xacml.ServletActionContextAttributeFinderModule"/>
-    <policyFinderModule class="org.plos.xacml.finder.ResourcePolicyModule"
+      class="org.topazproject.ambra.xacml.ServletActionContextAttributeFinderModule"/>
+    <policyFinderModule class="org.topazproject.ambra.xacml.finder.ResourcePolicyModule"
       name="test-policy-finder">
       <list>
         <string>policy/sets/test-set.xml</string>
       </list>
     </policyFinderModule>
-    <policyFinderModule class="org.plos.xacml.finder.ResourceReferencePolicyModule">
+    <policyFinderModule class="org.topazproject.ambra.xacml.finder.ResourceReferencePolicyModule">
       <list>
         <string>policy/rules/deny-revokes.xml</string>
         <string>policy/rules/deny-anonymous.xml</string>
@@ -88,12 +88,12 @@
   <combiningAlgFactory name="comb" useStandardAlgorithms="true"/>
   <functionFactory name="func" useStandardFunctions="true">
     <condition>
-      <function class="org.plos.xacml.cond.ItqlQueryFunction"/>
-      <function class="org.plos.xacml.cond.OqlQueryFunction"/>
-      <function class="org.plos.xacml.cond.PermissionFunction$IsGranted"/>
-      <function class="org.plos.xacml.cond.PermissionFunction$IsRevoked"/>
-      <function class="org.plos.xacml.cond.CachedBagFunction"/>
-      <function class="org.plos.xacml.cond.StringToIntegerFunction"/>
+      <function class="org.topazproject.ambra.xacml.cond.ItqlQueryFunction"/>
+      <function class="org.topazproject.ambra.xacml.cond.OqlQueryFunction"/>
+      <function class="org.topazproject.ambra.xacml.cond.PermissionFunction$IsGranted"/>
+      <function class="org.topazproject.ambra.xacml.cond.PermissionFunction$IsRevoked"/>
+      <function class="org.topazproject.ambra.xacml.cond.CachedBagFunction"/>
+      <function class="org.topazproject.ambra.xacml.cond.StringToIntegerFunction"/>
     </condition>
   </functionFactory>
 </config>

@@ -23,7 +23,7 @@
   <xsl:strip-space elements="abstract p sec title" />
 
   <xsl:template match="/">
-    <org.plos.article.service.CitationInfo>
+    <org.topazproject.ambra.article.service.CitationInfo>
       <DOI><xsl:value-of select="//article-id[@pub-id-type='doi'][1]"/></DOI>
       <publicationDate>
         <xsl:call-template name="makeDate">
@@ -40,7 +40,7 @@
       <xsl:apply-templates select="article/front/article-meta/abstract[not(@abstract-type)]" />
       <authors>
         <xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='author']">
-          <org.plos.article.service.Author>
+          <org.topazproject.ambra.article.service.Author>
             <xsl:choose>
               <xsl:when test="position() = 1 or @equal-contrib='yes'">
                 <isPrimary>true</isPrimary>
@@ -54,17 +54,17 @@
             <xsl:if test="name/suffix">
               <suffix><xsl:value-of select="name/suffix"/></suffix>
             </xsl:if>
-          </org.plos.article.service.Author>
+          </org.topazproject.ambra.article.service.Author>
         </xsl:for-each>
       </authors>
       <collaborativeAuthors>
         <xsl:for-each select="//article/front/article-meta/contrib-group/contrib[@contrib-type='author']/collab[@collab-type='authors']">
-          <org.plos.article.service.CollaborativeAuthor>
+          <org.topazproject.ambra.article.service.CollaborativeAuthor>
             <nameRef><xsl:value-of select="."/></nameRef>
-          </org.plos.article.service.CollaborativeAuthor>
+          </org.topazproject.ambra.article.service.CollaborativeAuthor>
         </xsl:for-each>
       </collaborativeAuthors>
-    </org.plos.article.service.CitationInfo>
+    </org.topazproject.ambra.article.service.CitationInfo>
   </xsl:template>
 
   <xsl:template match="abstract">
