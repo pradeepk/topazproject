@@ -29,14 +29,14 @@
   <import resource="nonWebApplicationContext.xml"/>
 
   <!-- creating all actions with the right injections -->
-  <bean class="org.plos.web.RegisterAction" scope="prototype"/>
+  <bean class="org.topazproject.ambra.web.RegisterAction" scope="prototype"/>
 
-  <bean class="org.plos.web.ConfirmationAction" scope="prototype"/>
+  <bean class="org.topazproject.ambra.web.ConfirmationAction" scope="prototype"/>
 
-  <bean class="org.plos.web.ForgotPasswordAction" scope="prototype"/>
+  <bean class="org.topazproject.ambra.web.ForgotPasswordAction" scope="prototype"/>
 
-  <bean class="org.plos.web.ForgotPasswordChangePasswordAction" scope="prototype"/>
+  <bean class="org.topazproject.ambra.web.ForgotPasswordChangePasswordAction" scope="prototype"/>
 
-  <bean class="org.plos.web.ChangePasswordAction" scope="prototype"/>
+  <bean class="org.topazproject.ambra.web.ChangePasswordAction" scope="prototype"/>
 
 </beans>

@@ -30,16 +30,16 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
   <!--Ambra developer beans here -->
-  <bean id="serviceFactory" class="org.plos.service.ServiceFactory">
+  <bean id="serviceFactory" class="org.topazproject.ambra.service.ServiceFactory">
     <property name="persistenceService" ref="persistenceService"/>
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
-  <bean id="persistenceService" class="org.plos.service.impl.PlosPersistenceService">
+  <bean id="persistenceService" class="org.topazproject.ambra.service.impl.PlosPersistenceService">
     <property name="userDAO" ref="userDAO"/>
   </bean>
 
-  <bean id="userDAO" class="org.plos.service.impl.HibernateUserDAO">
+  <bean id="userDAO" class="org.topazproject.ambra.service.impl.HibernateUserDAO">
     <property name="sessionFactory">
       <ref bean="registrationSessionFactory"/>
     </property>
@@ -49,7 +49,7 @@
     <constructor-arg value="UTF-8"/>
   </bean>
 
-  <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService">
+  <bean id="registrationService" class="org.topazproject.ambra.service.impl.PlosRegistrationService">
     <property name="userDAO" ref="userDAO"/>
     <property name="passwordDigestService" ref="plosPasswordDigestService"/>
     <property name="mailer" ref="registrationVerificationMailer"/>
@@ -80,7 +80,7 @@
     <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
-  <bean id="registrationVerificationMailer" class="org.plos.util.MockTemplateMailer">
+  <bean id="registrationVerificationMailer" class="org.topazproject.ambra.util.MockTemplateMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="registration@plosone.org"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
@@ -124,7 +124,7 @@
     <property name="dataSource" ref="registrationDataSource"/>
     <property name="annotatedClasses">
       <list>
-        <value>org.plos.registration.UserImpl</value>
+        <value>org.topazproject.ambra.registration.UserImpl</value>
       </list>
     </property>
     <property name="hibernateProperties">
@@ -157,7 +157,7 @@
 <!--  END - Transaction injection for annotated transaction classes-->
 
   <!-- Add all your constants to the map with a key and a value/ref -->
-  <bean id="otherConstants" class="org.plos.OtherConstants">
+  <bean id="otherConstants" class="org.topazproject.ambra.OtherConstants">
     <property name="allConstants">
       <map>
         <entry key="mainAppUrl" value="plosone-webapp"/>

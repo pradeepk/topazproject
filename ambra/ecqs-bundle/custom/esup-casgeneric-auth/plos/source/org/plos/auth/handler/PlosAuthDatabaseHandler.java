@@ -25,7 +25,7 @@ import org.esupportail.cas.server.util.BasicHandler;
 import org.topazproject.ambra.auth.db.DatabaseContext;
 import org.topazproject.ambra.auth.db.DatabaseException;
 
-import org.plos.service.password.PasswordDigestService;
+import org.topazproject.ambra.service.password.PasswordDigestService;
 
 /**
  * Plos user authentication handler that verifies that the user with a given userid/adminPassword exists

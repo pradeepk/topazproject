@@ -32,16 +32,16 @@
   <bean id="propertyConfigurer" class="org.topazproject.ambra.configuration.SpringPlaceholderConfigurer"/>
 
   <!--Ambra developer beans here -->
-  <bean id="serviceFactory" class="org.plos.service.ServiceFactory">
+  <bean id="serviceFactory" class="org.topazproject.ambra.service.ServiceFactory">
     <property name="persistenceService" ref="persistenceService"/>
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
-  <bean id="persistenceService" class="org.plos.service.impl.PlosPersistenceService">
+  <bean id="persistenceService" class="org.topazproject.ambra.service.impl.PlosPersistenceService">
     <property name="userDAO" ref="userDAO"/>
   </bean>
 
-  <bean id="userDAO" class="org.plos.service.impl.HibernateUserDAO">
+  <bean id="userDAO" class="org.topazproject.ambra.service.impl.HibernateUserDAO">
     <property name="sessionFactory">
       <ref bean="registrationSessionFactory"/>
     </property>
@@ -51,7 +51,7 @@
     <constructor-arg type="java.lang.String" value="UTF-8"/>
   </bean>
 
-  <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService" scope="session">
+  <bean id="registrationService" class="org.topazproject.ambra.service.impl.PlosRegistrationService" scope="session">
     <!-- proxy needed as this bean is a part of a singleton's reference  -->
     <aop:scoped-proxy/>
     <property name="userDAO" ref="userDAO"/>
@@ -84,7 +84,7 @@
     <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
-  <bean id="registrationVerificationMailer" class="org.plos.service.RegistrationMailer">
+  <bean id="registrationVerificationMailer" class="org.topazproject.ambra.service.RegistrationMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="${ambra.services.registration.from-email}"/>
     <property name="fromEmailName" value="${ambra.services.registration.from-name}"/>
@@ -137,7 +137,7 @@
     <property name="dataSource" ref="registrationDataSource"/>
     <property name="annotatedClasses">
       <list>
-        <value>org.plos.registration.UserImpl</value>
+        <value>org.topazproject.ambra.registration.UserImpl</value>
       </list>
     </property>
     <property name="hibernateProperties">
