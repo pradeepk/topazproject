@@ -20,59 +20,59 @@
 -->
 <struts>
   <package name="default-overlay" extends="default" namespace="/journals/overlayJournal">
-    <action name="home" class="org.plos.action.HomePageAction">
+    <action name="home" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/index.ftl</param>
       </result>
     </action>
-    <action name="recentArticles" class="org.plos.action.HomePageAction">
+    <action name="recentArticles" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success">/journals/overlayJournal/article/recentArticles.ftl</result>
     </action>
-    <action name="mostCommented" class="org.plos.action.HomePageAction">
+    <action name="mostCommented" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success">/journals/overlayJournal/article/mostCommented.ftl</result>
     </action>
-    <action name="mostViewed" class="org.plos.action.HomePageAction">
+    <action name="mostViewed" class="org.topazproject.ambra.action.HomePageAction">
       <result name="success">/journals/overlayJournal/article/mostViewed.ftl</result>
     </action>
   </package>
   
   <package name="static-overlay" extends="default-overlay" namespace="/journals/overlayJournal/static">
-    <action name="browse" class="org.plos.action.NoOpAction">
+    <action name="browse" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/browse.ftl</param>
       </result>
     </action>
-    <action name="users" class="org.plos.action.NoOpAction">
+    <action name="users" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/users.ftl</param>
       </result>
     </action>
-    <action name="commentGuidelines" class="org.plos.action.NoOpAction">
+    <action name="commentGuidelines" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/commentGuidelines.ftl</param>
       </result>
     </action>
-    <action name="ratingGuidelines" class="org.plos.action.NoOpAction">
+    <action name="ratingGuidelines" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/ratingGuidelines.ftl</param>
       </result>
     </action>
-    <action name="help" class="org.plos.action.NoOpAction">
+    <action name="help" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/help.ftl</param>
       </result>
     </action>
-    <action name="sitemap" class="org.plos.action.NoOpAction">
+    <action name="sitemap" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/sitemap.ftl</param>
       </result>
     </action>
-    <action name="rssInfo" class="org.plos.action.NoOpAction">
+    <action name="rssInfo" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/rssInfo.ftl</param>
       </result>
     </action>
-    <action name="releaseNotes" class="org.plos.action.NoOpAction">
+    <action name="releaseNotes" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/overlayJournal/static/releaseNotes.ftl</param>
       </result>
