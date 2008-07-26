@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.plos.auth.handler;
+package org.topazproject.ambra.auth.handler;
 
 import org.dom4j.Element;
 
@@ -33,13 +33,13 @@ import org.topazproject.ambra.service.password.PasswordDigestService;
  * 
  * 
  To use this authentication handler, edit the file "genericHandler.xml" located at:
-  re-package/ecqs/custom/esup-casgeneric-auth/plos/webpages/WEB-INF/genericHandler.xml
+  custom/esup-casgeneric-auth/ambra/webpages/WEB-INF/genericHandler.xml
 
 with 
 
 <authentication debug="on">
   <handler>
-    <classname>org.plos.auth.handler.PlosAuthDatabaseHandler</classname>
+    <classname>org.topazproject.ambra.auth.handler.PlosAuthDatabaseHandler</classname>
     <config>
       <table>${esup-casgeneric.auth.plos.table}</table>
       <login_column>${esup-casgeneric.auth.plos.login-column}</login_column>
