@@ -28,7 +28,7 @@ import org.topazproject.ambra.auth.db.DatabaseException;
 import org.topazproject.ambra.service.password.PasswordDigestService;
 
 /**
- * Plos user authentication handler that verifies that the user with a given userid/adminPassword exists
+ * Ambra user authentication handler that verifies that the user with a given userid/adminPassword exists
  * in the database
  * 
  * 
@@ -39,19 +39,19 @@ with
 
 <authentication debug="on">
   <handler>
-    <classname>org.topazproject.ambra.auth.handler.PlosAuthDatabaseHandler</classname>
+    <classname>org.topazproject.ambra.auth.handler.AuthDatabaseHandler</classname>
     <config>
-      <table>${esup-casgeneric.auth.plos.table}</table>
-      <login_column>${esup-casgeneric.auth.plos.login-column}</login_column>
-      <password_column>${esup-casgeneric.auth.plos.password-column}</password_column>
-      <encryption>${esup-casgeneric.auth.plos.encryption}</encryption>
-      <encoding_charset>${esup-casgeneric.auth.plos.encoding-charset}</encoding_charset>
+      <table>${esup-casgeneric.auth.ambra.table}</table>
+      <login_column>${esup-casgeneric.auth.ambra.login-column}</login_column>
+      <password_column>${esup-casgeneric.auth.ambra.password-column}</password_column>
+      <encryption>${esup-casgeneric.auth.ambra.encryption}</encryption>
+      <encoding_charset>${esup-casgeneric.auth.ambra.encoding-charset}</encoding_charset>
     </config>
   </handler>
 </authentication>
 
  */
-public class PlosAuthDatabaseHandler extends BasicHandler {
+public class AuthDatabaseHandler extends BasicHandler {
   private PasswordDigestService passwordService;
   private String passwordSqlQuery;
   private String verifiedUserSqlQuery;
@@ -64,10 +64,10 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
    *
    * @throws Exception when the handler not configured correctly
    */
-  public PlosAuthDatabaseHandler(final Element handlerElement, final Boolean configDebug) throws Exception  {
+  public AuthDatabaseHandler(final Element handlerElement, final Boolean configDebug) throws Exception  {
     super(handlerElement, configDebug);
     traceBegin();
-    trace("PlosAuthDatabaseHandler constructor called");
+    trace("AuthDatabaseHandler constructor called");
 
     // check that a config element is present
     checkConfigElement(true);

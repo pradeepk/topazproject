@@ -21,7 +21,7 @@
 
 <authentication debug="on">
   <handler>
-    <classname>org.topazproject.ambra.auth.handler.PlosAuthDatabaseHandler</classname>
+    <classname>org.topazproject.ambra.auth.handler.AuthDatabaseHandler</classname>
     <config>
       <table>${esup-casgeneric.auth.ambra.table}</table>
       <login_column>${esup-casgeneric.auth.ambra.login-column}</login_column>
