@@ -29,8 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.testng.annotations.DataProvider;
-import org.topazproject.ambra.it.jwebunit.PlosOneTestContext;
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraTestContext;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 import org.topazproject.ambra.it.pages.AbstractPage;
 import org.topazproject.ambra.it.pages.HomePage;
 
@@ -43,13 +43,13 @@ import net.sourceforge.jwebunit.util.TestingEngineRegistry;
  *
  * @author Pradeep Krishnan
  */
-public abstract class AbstractPlosOneTest {
-  private static final Log log = LogFactory.getLog(AbstractPlosOneTest.class);
+public abstract class AbstractAmbraTest {
+  private static final Log log = LogFactory.getLog(AbstractAmbraTest.class);
 
   /**
    * DOCUMENT ME!
    */
-  public static final String TEST_ENGINE = PlosOneHtmlUnitDialog.class.getName();
+  public static final String TEST_ENGINE = AmbraHtmlUnitDialog.class.getName();
 
   /**
    * DOCUMENT ME!
@@ -96,8 +96,8 @@ public abstract class AbstractPlosOneTest {
   /**
    * DOCUMENT ME!
    */
-  private final Map<TesterId, PlosOneWebTester> testers =
-    new HashMap<TesterId, PlosOneWebTester>();
+  private final Map<TesterId, AmbraWebTester> testers =
+    new HashMap<TesterId, AmbraWebTester>();
 
   /**
    * DOCUMENT ME!
@@ -111,11 +111,11 @@ public abstract class AbstractPlosOneTest {
    * DOCUMENT ME!
    */
   public void initTesters() {
-    PlosOneDAO dao = new PlosOneDAO();
+    AmbraDAO dao = new AmbraDAO();
     for (String journal : journals.keySet()) {
       for (String browser : browsers.keySet()) {
-        PlosOneWebTester tester  = new PlosOneWebTester();
-        tester.setTestContext(new PlosOneTestContext(browsers.get(browser), journals.get(journal)));
+        AmbraWebTester tester  = new AmbraWebTester();
+        tester.setTestContext(new AmbraTestContext(browsers.get(browser), journals.get(journal)));
         tester.setTestingEngineKey(TEST_ENGINE);
         tester.getTestContext().setBaseUrl("http://localhost:8080/plosone-webapp");
         tester.setDao(dao);
@@ -133,7 +133,7 @@ public abstract class AbstractPlosOneTest {
     return envs[1];
   }
 
-  public PlosOneWebTester getTester(String journal, String browser) {
+  public AmbraWebTester getTester(String journal, String browser) {
     return testers.get(new TesterId(journal, browser));
   }
 

@@ -23,11 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 import org.topazproject.ambra.it.pages.SiteMapPage;
 
 
-public class SiteMapTest extends AbstractPlosOneTest {
+public class SiteMapTest extends AbstractAmbraTest {
   private static final Log log = LogFactory.getLog(SiteMapTest.class);
   
   /**
@@ -46,7 +46,7 @@ public class SiteMapTest extends AbstractPlosOneTest {
   @Test(dataProvider="journals")
   public void testSiteMapHome(String journal, String browser) {
     log.info("Verifying SiteMap for browser=['" + browser + "'] and journal=['" + journal + "']");
-    PlosOneWebTester tester = getTester(journal, browser);
+    AmbraWebTester tester = getTester(journal, browser);
     SiteMapPage smp = new SiteMapPage(tester, journal);
     smp.gotoPage();
     smp.verifyPage();
@@ -57,7 +57,7 @@ public class SiteMapTest extends AbstractPlosOneTest {
   public void testLoginLink(String journal, String browser) {
     log.info("Verifying that the Login link is displayed on SiteMap when user not in session. "+
         "browser=['" + browser + "'] and journal=['" + journal + "']");
-    PlosOneWebTester tester = getTester(journal, browser);
+    AmbraWebTester tester = getTester(journal, browser);
     SiteMapPage smp = new SiteMapPage(tester, journal);
     smp.gotoPage();
     smp.verifyPage();
@@ -69,7 +69,7 @@ public class SiteMapTest extends AbstractPlosOneTest {
   public void testLogoutLink(String journal, String browser) {
     log.info("Verifying that the Logout link is displayed on SiteMap when user is in session. "+
         "browser=['" + browser + "'] and journal=['" + journal + "']");
-    PlosOneWebTester tester = getTester(journal, browser);
+    AmbraWebTester tester = getTester(journal, browser);
     SiteMapPage smp = new SiteMapPage(tester, journal);
     smp.gotoPage();
     smp.verifyPage();

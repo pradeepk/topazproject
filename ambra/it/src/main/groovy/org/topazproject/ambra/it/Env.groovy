@@ -20,7 +20,7 @@
 package org.topazproject.ambra.it;
 
 /**
- * An integration test environment for PlosOne. The environment runs
+ * An integration test environment for Ambra. The environment runs
  * its own copy of mulgara and fedora. The DummySSO Filter is enabled
  * instead of using CAS. The mulgara and fedora stores can be pre-populated
  * with canned data. Same with lucene and ingestion-queue etc. In addition
@@ -78,8 +78,8 @@ public class Env {
 
     fedora = new Fedora(install)
 
-    pubApp = new PubApp(Env.path(install, '/plosone-webapp'))
-    pubApp.sysProperties.'log4j.configuration'           = Env.pathUrl(install, '/plosoneLog4j.xml')
+    pubApp = new PubApp(Env.path(install, '/ambra-webapp'))
+    pubApp.sysProperties.'log4j.configuration'           = Env.pathUrl(install, '/ambraLog4j.xml')
     pubApp.sysProperties.'ambra.configuration.overrides' = 'defaults-dev.xml'
     pubApp.sysProperties.'ambra.services.documentManagement.ingestSourceDir'      = Env.path(install, '/data/ingestion-queue')
     pubApp.sysProperties.'ambra.services.documentManagement.ingestDestinationDir' = Env.path(install, '/data/ingested')
@@ -139,7 +139,7 @@ public class Env {
     load()  // load data
 
     // install the log4j files
-    resource('/plosoneLog4j.xml')
+    resource('/ambraLog4j.xml')
     resource('/mulgaraLog4j.xml')
 
     // finally create the marker file
@@ -187,7 +187,7 @@ public class Env {
    * pom is not found there, then the install directory and its parents are looked up.
    *
    * Note that the expectation here is to find a pom that is the head/pom.xml or
-   * a child of the head/pom.xml where head represents the head of the plosone 
+   * a child of the head/pom.xml where head represents the head of the ambra
    * project source tree.
    */
   private String pom () {

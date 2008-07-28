@@ -20,19 +20,19 @@ package org.topazproject.ambra.it.jwebunit;
 
 import net.sourceforge.jwebunit.junit.WebTester;
 
-import org.topazproject.ambra.it.PlosOneDAO;
+import org.topazproject.ambra.it.AmbraDAO;
 
 /**
  * An extension for WebTester for keeping some plosone specific states.
  *
  * @author Pradeep Krishnan
  */
-public class PlosOneWebTester extends WebTester {
+public class AmbraWebTester extends WebTester {
   private boolean loggedIn = false;
   private boolean admin    = false;
   private boolean initialized = false;
 
-  private PlosOneDAO dao;
+  private AmbraDAO dao;
 
   /**
    * Gets the login state.
@@ -85,11 +85,11 @@ public class PlosOneWebTester extends WebTester {
       super.gotoPage(aRelativeURL);
   }
 
-  public PlosOneDAO getDao() {
+  public AmbraDAO getDao() {
     return dao;
   }
 
-  public void setDao(PlosOneDAO dao) {
+  public void setDao(AmbraDAO dao) {
     this.dao = dao;
   }
 }

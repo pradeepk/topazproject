@@ -21,23 +21,23 @@ package org.topazproject.ambra.it.pages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 
 /**
- * An abstract base class for PlosOne pages.
+ * An abstract base class for Ambra pages.
  *
  * @author Pradeep Krishnan
  */
 public abstract class AbstractPage {
   private static final Log    log         = LogFactory.getLog(AbstractPage.class);
 
-  protected final PlosOneWebTester tester;
+  protected final AmbraWebTester tester;
   protected final String url;
   protected final String journal;
   public static final String J_PONE = "pone";
   public static final String J_CT = "ct";
 
-  public AbstractPage(PlosOneWebTester tester, String journal, String url) {
+  public AbstractPage(AmbraWebTester tester, String journal, String url) {
     this.tester = tester;
     this.journal = journal;
     this.url = url;
@@ -51,7 +51,7 @@ public abstract class AbstractPage {
     return url;
   }
 
-  public PlosOneWebTester getTester() {
+  public AmbraWebTester getTester() {
     return tester;
   }
 

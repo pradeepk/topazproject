@@ -61,8 +61,8 @@ public class PubApp extends Tomcat5x {
     super(tomcatUrl, installDir, port, shutdownPort, 
           '-server -Xmx200m -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8085')
     String version = Env.pomVersion()
-    wars['/plosone-webapp'] = Env.dependencyPath('org.topazproject.ambra', 'plosone-webapp', version, 'war')
-    wars['/plos-registration'] = Env.dependencyPath('org.plos', 'plos-registration-webapp', 
+    wars['/ambra-webapp'] = Env.dependencyPath('org.topazproject.ambra', 'ambra-webapp', version, 'war')
+    wars['/ambra-registration'] = Env.dependencyPath('org.topazproject.ambra', 'ambra-registration-webapp', 
                                                      version, 'war')
     wars['/ws-search-webapp'] = Env.dependencyPath('org.topazproject.ws', 'ws-search-webapp',
                                                    version, 'war')
@@ -80,7 +80,7 @@ public class PubApp extends Tomcat5x {
    * inherited javadoc
    */
   public void waitFor() {
-    waitFor('http://localhost:8080/plosone-webapp/')
+    waitFor('http://localhost:8080/ambra-webapp/')
   }
 
   /*

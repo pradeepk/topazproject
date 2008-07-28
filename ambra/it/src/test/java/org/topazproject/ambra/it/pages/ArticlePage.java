@@ -20,12 +20,11 @@ package org.topazproject.ambra.it.pages;
 
 import java.net.URLEncoder;
 
-
-import org.plos.models.Article;
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 
 /**
- * PlosOne Article Display Page
+ * Ambra Article Display Page
  *
  * @author Pradeep Krishnan
  */
@@ -50,7 +49,7 @@ public class ArticlePage extends CommonBasePage {
 
   private final String doi;
 
-  public ArticlePage(PlosOneWebTester tester, String journal, String doi) {
+  public ArticlePage(AmbraWebTester tester, String journal, String doi) {
     super(tester,journal, PAGE_URL + URLEncoder.encode(doi));
     this.doi = doi;
   }

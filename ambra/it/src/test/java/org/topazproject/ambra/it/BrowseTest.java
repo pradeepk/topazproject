@@ -23,11 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 import org.topazproject.ambra.it.pages.AbstractPage;
 import org.topazproject.ambra.it.pages.HomePage;
 
-public class BrowseTest extends AbstractPlosOneTest {
+public class BrowseTest extends AbstractAmbraTest {
   public static final Log log = LogFactory.getLog(BrowseTest.class);
 
   @BeforeClass
@@ -50,7 +50,7 @@ public class BrowseTest extends AbstractPlosOneTest {
     try {
       log.info("Testing Browse PLOS Atricle by Subject using browser='"
           + browser + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       hp.getTester().clickLinkWithExactText("By Subject");
@@ -79,7 +79,7 @@ public class BrowseTest extends AbstractPlosOneTest {
     try {
       log.info("Testing Browse Atricles by Date using browser='" + browser
           + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       hp.getTester().clickLinkWithExactText("By Publication Date");
@@ -105,7 +105,7 @@ public class BrowseTest extends AbstractPlosOneTest {
     try {
       log.info("Testing Browse Atricles by Subject using browser='" + browser
           + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       hp.getTester().clickLinkWithExactText("By Subject");
@@ -127,10 +127,10 @@ public class BrowseTest extends AbstractPlosOneTest {
   public void testBrowseByDateJournalFilterPLoS() {
     try {
       // just grab the first browser
-      String browser = AbstractPlosOneTest.IE7;
+      String browser = AbstractAmbraTest.IE7;
       log.info("Testing that CT-only articles are not presented when using "
           + "browse by date in PLoS Journal using browser='" + browser + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       hp.getTester().clickLinkWithExactText("By Publication Date");
@@ -150,10 +150,10 @@ public class BrowseTest extends AbstractPlosOneTest {
   public void testBrowseByDateJournalFilterCT() {
     try {
       // just grab the first browser
-      String browser = AbstractPlosOneTest.IE7;
+      String browser = AbstractAmbraTest.IE7;
       log.info("Testing that PLoS-only articles are not presented when using "
           + "browse by date in CT Journal using browser='" + browser + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_CT, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_CT);
       hp.gotoPage();
       hp.getTester().clickLinkWithExactText("By Publication Date");
@@ -173,12 +173,12 @@ public class BrowseTest extends AbstractPlosOneTest {
   public void testBrowseBySubjectJournalFilterPLoS() {
     try {
       // just grab the first browser
-      String browser = AbstractPlosOneTest.IE7;
+      String browser = AbstractAmbraTest.IE7;
       log
           .info("Testing that CT-only articles are not presented when "
               + "browse by subject in PLoS Journal using browser='" + browser
               + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       hp.getTester().clickLinkWithExactText("By Subject");
@@ -197,10 +197,10 @@ public class BrowseTest extends AbstractPlosOneTest {
   public void testBrowseBySubjectJournalFilterCT() {
     try {
       // just grab the first browser
-      String browser = AbstractPlosOneTest.IE7;
+      String browser = AbstractAmbraTest.IE7;
       log.info("Testing that PLoS-only articles are not presented when "
           + "browse by subject in CT Journal using browser='" + browser + "'");
-      PlosOneWebTester testerCt = getTester(AbstractPage.J_CT, browser);
+      AmbraWebTester testerCt = getTester(AbstractPage.J_CT, browser);
       HomePage hpCt = new HomePage(testerCt, AbstractPage.J_CT);
       hpCt.gotoPage();
       hpCt.getTester().clickLinkWithExactText("By Subject");
@@ -222,7 +222,7 @@ public class BrowseTest extends AbstractPlosOneTest {
       log
           .info("Testing view annotation using left panel (non-ajax) using browser='"
               + browser + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       tester.clickLinkWithExactText("By Publication Date");
@@ -252,10 +252,10 @@ public class BrowseTest extends AbstractPlosOneTest {
   // @Test
   public void testNavigateAnnotationNonAjaxFromCT() {
     try {
-      String browser = AbstractPlosOneTest.IE7;
+      String browser = AbstractAmbraTest.IE7;
       log.info("Testing view annotation using left panel (non-ajax) from CT "
           + "using browser='" + browser + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_CT, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_CT);
       hp.gotoPage();
       tester.clickLinkWithExactText("By Publication Date");
@@ -287,7 +287,7 @@ public class BrowseTest extends AbstractPlosOneTest {
     try {
       log.info("Testing navigate annotaion reply using browser='" + browser
           + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       tester.clickLinkWithExactText("By Publication Date");
@@ -317,7 +317,7 @@ public class BrowseTest extends AbstractPlosOneTest {
   public void testNavigateDiscussion(String browser) {
     try {
       log.info("Testing navigate discussion using browser='" + browser + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       tester.clickLinkWithExactText("By Publication Date");
@@ -350,7 +350,7 @@ public class BrowseTest extends AbstractPlosOneTest {
     try {
       log.info("Testing navigate discussion from CT using browser='" + browser
           + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_CT, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_CT);
       hp.gotoPage();
       tester.clickLinkWithExactText("By Publication Date");
@@ -380,7 +380,7 @@ public class BrowseTest extends AbstractPlosOneTest {
   public void testNavigateRating(String browser) {
     try {
       log.info("Testing Navigate to Rating using browser='" + browser + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_PONE, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_PONE, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_PONE);
       hp.gotoPage();
       tester.clickLinkWithExactText("By Publication Date");
@@ -414,7 +414,7 @@ public class BrowseTest extends AbstractPlosOneTest {
     try {
       log.info("Testing navigate to rating from CT using browser='" + browser
           + "'");
-      PlosOneWebTester tester = getTester(AbstractPage.J_CT, browser);
+      AmbraWebTester tester = getTester(AbstractPage.J_CT, browser);
       HomePage hp = new HomePage(tester, AbstractPage.J_CT);
       hp.gotoPage();
       tester.clickLinkWithExactText("By Publication Date");

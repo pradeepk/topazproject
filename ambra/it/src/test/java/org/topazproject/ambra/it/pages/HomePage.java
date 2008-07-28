@@ -18,17 +18,12 @@
  */
 package org.topazproject.ambra.it.pages;
 
-
-
 import static org.testng.AssertJUnit.*;
 
-
-
-
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 
 /**
- * PlosOne Home page
+ * Ambra Home page
  *
  * @author Pradeep Krishnan
  */
@@ -36,7 +31,7 @@ public class HomePage extends CommonBasePage {
 
   public static final String PAGE_URL = "/home.action";
 
-  public HomePage(PlosOneWebTester tester, String journal) {
+  public HomePage(AmbraWebTester tester, String journal) {
     super(tester,journal, PAGE_URL);
   }
 

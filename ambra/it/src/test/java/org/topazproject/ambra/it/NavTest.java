@@ -22,17 +22,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 import org.topazproject.ambra.it.pages.ArticlePage;
 import org.topazproject.ambra.it.pages.HomePage;
 import org.topazproject.ambra.it.pages.SearchResultsPage;
 
 /**
- * PlosOne Tests
+ * Ambra Tests
  * 
  * @author Pradeep Krishnan
  */
-public class NavTest extends AbstractPlosOneTest {
+public class NavTest extends AbstractAmbraTest {
   public static final Log log = LogFactory.getLog(NavTest.class);
 
 
@@ -107,7 +107,7 @@ public class NavTest extends AbstractPlosOneTest {
   @Test(dataProvider = "articles")
   public void testArticle(String article, String journal, String browser) {
     log.info("Testing article-view [article='" + article + "', journal='" + journal + "', browser='" + browser + "'] ... ");
-    PlosOneWebTester tester = getTester(journal, browser);
+    AmbraWebTester tester = getTester(journal, browser);
     ArticlePage ap = new ArticlePage(tester, journal, article);
     ap.gotoPage();
     ap.verifyPage();
@@ -118,7 +118,7 @@ public class NavTest extends AbstractPlosOneTest {
     log.info("Testing annotation-login-redirect [article='" + article + "', journal='" + journal + "', browser='" + browser
         + "'] ... ");
     try {
-      PlosOneWebTester tester = getTester(journal, browser);
+      AmbraWebTester tester = getTester(journal, browser);
       ArticlePage ap = new ArticlePage(tester, journal, article);
       ap.gotoPage();
       ap.logOut();
@@ -137,7 +137,7 @@ public class NavTest extends AbstractPlosOneTest {
   public void testDiscussionLoginRedirect(String article, String journal, String browser) {
     log.info("Testing discussion-login-redirect [article='" + article + "', journal='" + journal + "', browser='" + browser
         + "'] ... ");
-    PlosOneWebTester tester = getTester(journal, browser);
+    AmbraWebTester tester = getTester(journal, browser);
     ArticlePage ap = new ArticlePage(tester, journal, article);
     ap.gotoPage();
     ap.logOut();

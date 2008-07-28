@@ -94,7 +94,7 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.jaxen.JaxenException;
 
-import org.topazproject.ambra.it.jwebunit.PlosOneTestContext;
+import org.topazproject.ambra.it.jwebunit.AmbraTestContext;
 
 /**
  * Acts as the wrapper for HtmlUnit access. A dialog is initialized with a given URL, and maintains conversational state
@@ -103,11 +103,11 @@ import org.topazproject.ambra.it.jwebunit.PlosOneTestContext;
  * @author Julien Henry
  * 
  */
-public class PlosOneHtmlUnitDialog implements IJWebUnitDialog {
+public class AmbraHtmlUnitDialog implements IJWebUnitDialog {
     /**
      * Logger for this class.
      */
-    private static final Log LOGGER = LogFactory.getLog(PlosOneHtmlUnitDialog.class);
+    private static final Log LOGGER = LogFactory.getLog(AmbraHtmlUnitDialog.class);
 
     /**
      * Encapsulate browser abilities.
@@ -634,8 +634,8 @@ public class PlosOneHtmlUnitDialog implements IJWebUnitDialog {
         BrowserVersion bv = new BrowserVersion(BrowserVersion.INTERNET_EXPLORER,
                 "4.0", testContext.getUserAgent(), "1.2", 6);
         */
-        BrowserVersion bv = (getTestContext() instanceof PlosOneTestContext) ?
-          ((PlosOneTestContext)getTestContext()).getBrowser() :
+        BrowserVersion bv = (getTestContext() instanceof AmbraTestContext) ?
+          ((AmbraTestContext)getTestContext()).getBrowser() :
           BrowserVersion.getDefault();
         if (getTestContext().getProxyHost()!=null && getTestContext().getProxyPort()>0) {
             //Proxy

@@ -19,13 +19,13 @@
 
 package org.topazproject.ambra.it.pages;
 
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 
 public class SiteMapPage extends CommonBasePage {
 
   public static final String PAGE_URL = "/static/sitemap.action";
 
-  public SiteMapPage(PlosOneWebTester tester, String journal) {
+  public SiteMapPage(AmbraWebTester tester, String journal) {
     super(tester,journal, PAGE_URL);
   }
 

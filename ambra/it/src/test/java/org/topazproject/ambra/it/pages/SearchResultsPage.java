@@ -20,10 +20,10 @@ package org.topazproject.ambra.it.pages;
 
 import java.net.URLEncoder;
 
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 
 /**
- * PlosOne Search Results
+ * Ambra Search Results
  *
  * @author Pradeep Krishnan
  */
@@ -35,7 +35,7 @@ public class SearchResultsPage extends CommonBasePage {
   private final String query;
 
 
-  public SearchResultsPage(PlosOneWebTester tester, String journal, String query, 
+  public SearchResultsPage(AmbraWebTester tester, String journal, String query, 
       String[] expected) {
     super(tester,journal, PAGE_URL + URLEncoder.encode(query));
     this.query = query;

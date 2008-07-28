@@ -31,17 +31,17 @@ import net.sourceforge.jwebunit.util.TestContext;
  *
  * @author Pradeep Krishnan
   */
-public class PlosOneTestContext extends TestContext {
+public class AmbraTestContext extends TestContext {
   private final BrowserVersion bv;
   private final Map<String, String> httpHeaders = new HashMap();
 
   /**
-   * Creates a new PlosOneTestContext object.
+   * Creates a new AmbraTestContext object.
    *
    * @param bv the browser to emulate
    * @param httpHeaders additional http headers to set
    */
-  public PlosOneTestContext(BrowserVersion bv, Map<String, String> httpHeaders) {
+  public AmbraTestContext(BrowserVersion bv, Map<String, String> httpHeaders) {
     this.bv = bv;
     if (httpHeaders != null)
       this.httpHeaders.putAll(httpHeaders);

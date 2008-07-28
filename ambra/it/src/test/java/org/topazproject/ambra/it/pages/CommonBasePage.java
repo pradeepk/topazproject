@@ -21,7 +21,7 @@ package org.topazproject.ambra.it.pages;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 
 /**
  * A base class for pages that contain the most common page elements.
@@ -50,7 +50,7 @@ public abstract class CommonBasePage extends AbstractPage {
     "For Authors"   // XXX: Is this a bug? Should this be same as plosOne?
   };
 
-  public CommonBasePage(PlosOneWebTester tester, String journal, String url) {
+  public CommonBasePage(AmbraWebTester tester, String journal, String url) {
     super(tester, journal, url);
   }
 

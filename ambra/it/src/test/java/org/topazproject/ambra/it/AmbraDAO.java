@@ -1,4 +1,4 @@
-/* $HeadURL::                                                                                      $
+/* $HeadURL::                                                                                    $
  * $Id$
  *
  * Copyright (c) 2007-2008 by Topaz, Inc.
@@ -25,35 +25,35 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 
-import org.plos.models.Aggregation;
-import org.plos.models.Annotation;
-import org.plos.models.Annotea;
-import org.plos.models.Article;
-import org.plos.models.AuthenticationId;
-import org.plos.models.Category;
-import org.plos.models.Citation;
-import org.plos.models.Comment;
-import org.plos.models.DublinCore;
-import org.plos.models.EditorialBoard;
-import org.plos.models.FoafPerson;
-import org.plos.models.Issue;
-import org.plos.models.Journal;
-import org.plos.models.License;
-import org.plos.models.ObjectInfo;
-import org.plos.models.PLoS;
-import org.plos.models.Rating;
-import org.plos.models.RatingContent;
-import org.plos.models.RatingSummary;
-import org.plos.models.RatingSummaryContent;
-import org.plos.models.Reply;
-import org.plos.models.ReplyThread;
-import org.plos.models.Trackback;
-import org.plos.models.TrackbackContent;
-import org.plos.models.UserAccount;
-import org.plos.models.UserPreference;
-import org.plos.models.UserPreferences;
-import org.plos.models.UserProfile;
-import org.plos.models.UserRole;
+import org.topazproject.ambra.models.Aggregation;
+import org.topazproject.ambra.models.Annotation;
+import org.topazproject.ambra.models.Annotea;
+import org.topazproject.ambra.models.Article;
+import org.topazproject.ambra.models.AuthenticationId;
+import org.topazproject.ambra.models.Category;
+import org.topazproject.ambra.models.Citation;
+import org.topazproject.ambra.models.Comment;
+import org.topazproject.ambra.models.DublinCore;
+import org.topazproject.ambra.models.EditorialBoard;
+import org.topazproject.ambra.models.FoafPerson;
+import org.topazproject.ambra.models.Issue;
+import org.topazproject.ambra.models.Journal;
+import org.topazproject.ambra.models.License;
+import org.topazproject.ambra.models.ObjectInfo;
+import org.topazproject.ambra.models.PLoS;
+import org.topazproject.ambra.models.Rating;
+import org.topazproject.ambra.models.RatingContent;
+import org.topazproject.ambra.models.RatingSummary;
+import org.topazproject.ambra.models.RatingSummaryContent;
+import org.topazproject.ambra.models.Reply;
+import org.topazproject.ambra.models.ReplyThread;
+import org.topazproject.ambra.models.Trackback;
+import org.topazproject.ambra.models.TrackbackContent;
+import org.topazproject.ambra.models.UserAccount;
+import org.topazproject.ambra.models.UserPreference;
+import org.topazproject.ambra.models.UserPreferences;
+import org.topazproject.ambra.models.UserProfile;
+import org.topazproject.ambra.models.UserRole;
 
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
@@ -90,8 +90,8 @@ import org.topazproject.otm.stores.ItqlStore;
  *
  * @author Pradeep Krishnan
  */
-public class PlosOneDAO {
-  private static final Log log     = LogFactory.getLog(PlosOneDAO.class);
+public class AmbraDAO {
+  private static final Log log     = LogFactory.getLog(AmbraDAO.class);
   private SessionFactory   factory = new SessionFactoryImpl();
 
   /**
@@ -99,7 +99,7 @@ public class PlosOneDAO {
    *
    * @throws OtmException DOCUMENT ME!
    */
-  public PlosOneDAO() throws OtmException {
+  public AmbraDAO() throws OtmException {
     initFactory();
   }
 

@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.topazproject.ambra.it.jwebunit.PlosOneWebTester;
+import org.topazproject.ambra.it.jwebunit.AmbraWebTester;
 import org.topazproject.ambra.it.pages.HomePage;
 
 /**
@@ -32,7 +32,7 @@ import org.topazproject.ambra.it.pages.HomePage;
  * 
  * @author Pradeep Krishnan
  */
-public class BootStrapTest extends AbstractPlosOneTest {
+public class BootStrapTest extends AbstractAmbraTest {
   private static final Log log = LogFactory.getLog(BootStrapTest.class);
 
   /**
@@ -80,9 +80,9 @@ public class BootStrapTest extends AbstractPlosOneTest {
   }
 
   @Test(dependsOnMethods = { "testJournalInstall" })
-  public void testPlosOneHomePage() {
+  public void testAmbraHomePage() {
     log.info("Testing home-page after journal install  ... ");
-    PlosOneWebTester tester = getTester(HomePage.J_PONE, IE7);
+    AmbraWebTester tester = getTester(HomePage.J_PONE, IE7);
     HomePage hp = new HomePage(tester, HomePage.J_PONE);
     hp.beginAt();
     hp.verifyPage();
