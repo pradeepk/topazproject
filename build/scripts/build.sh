@@ -56,7 +56,7 @@ svn log -rBASE:{`date "+%Y-%m-%d"`}
 # Remove all old rpm packages to not eat up disk space
 find $HOME/.m2/repository/org/topazproject/packages -name "*.rpm" -exec rm {} \; -print
 
-rm -f plos/it/install/*/installed
+rm -f ambra/it/install/*/installed
 set -e
 
 # compile under 1.5 and 1.6, and build packages under 1.5
