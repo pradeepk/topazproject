@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlosoneMailer extends FreemarkerTemplateMailer {
+public class AmbraMailer extends FreemarkerTemplateMailer {
   private Map<String, String> emailThisArticleMap;
   private Map<String, String> feedbackEmailMap;
 

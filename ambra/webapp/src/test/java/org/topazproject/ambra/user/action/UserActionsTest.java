@@ -22,7 +22,7 @@ import static com.opensymphony.xwork2.Action.SUCCESS;
 
 import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
 
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.PlosOneUser;
 import org.topazproject.ambra.user.UserProfileGrant;
@@ -36,7 +36,7 @@ import org.topazproject.ambra.user.action.UserProfileAction;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserActionsTest extends BasePlosoneTestCase {
+public class UserActionsTest extends BaseAmbraTestCase {
   private static final String TEST_EMAIL = "testcase@topazproject.org";
   private static final String REAL_NAME = "Test User";
   private static final String AUTH_ID = "92L6RFPMZZ0NKDSJH8T9S1E2589EWQRK";

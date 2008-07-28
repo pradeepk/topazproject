@@ -23,7 +23,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.user.PlosOneUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.action.DisplayUserAction;
@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class UserServiceTest extends BasePlosoneTestCase {
+public class UserServiceTest extends BaseAmbraTestCase {
   private static final String TEST_EMAIL = "testcase@topazproject.org";
   private static final String REAL_NAME = "Test User";
   private static final String AUTH_ID = "Test AuthID";

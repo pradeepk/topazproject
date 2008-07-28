@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.article.action.FetchObjectAction;
 import org.topazproject.ambra.article.action.SecondaryObjectAction;
 import org.topazproject.ambra.article.service.ArticleOtmService;
@@ -36,7 +36,7 @@ import java.util.Set;
 
 import javax.activation.URLDataSource;
 
-public class FetchObjectTest extends BasePlosoneTestCase {
+public class FetchObjectTest extends BaseAmbraTestCase {
   private static final Log log = LogFactory.getLog(FetchObjectTest.class);
   private String BASE_TEST_PATH = "src/test/resources/";
 

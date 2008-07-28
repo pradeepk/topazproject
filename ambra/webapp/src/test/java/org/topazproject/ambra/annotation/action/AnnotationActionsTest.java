@@ -32,7 +32,7 @@ import javax.activation.URLDataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
@@ -60,7 +60,7 @@ import org.topazproject.ambra.permission.service.PermissionsService;
 
 import com.opensymphony.xwork2.Action;
 
-public class AnnotationActionsTest extends BasePlosoneTestCase {
+public class AnnotationActionsTest extends BaseAmbraTestCase {
   private static final String target = "http://here.is/viru";
   private final String body = "spmething that I always wanted to say about everything and more about nothing\n";
   final String ANON_PRINCIPAL = "anonymous:user/";
@@ -580,7 +580,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 //      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
 
 //    String target = "http://localhost:9080/existingArticle/test.xml";
-//    String target = "http://localhost:8080/plosone-webapp/article/fetchArticle.action?articleURI=info:doi/10.1371%2Fjournal.pone.0000008";
+//    String target = "http://localhost:8080/ambra-webapp/article/fetchArticle.action?articleURI=info:doi/10.1371%2Fjournal.pone.0000008";
 //    final String target = getArticleOtmService().getObjectURL("info:doi/10.1371/journal.pone.0000008", "XML");
     final String target = "info:doi/10.1371/journal.pone.0000008";
     log.debug("target =" + target);

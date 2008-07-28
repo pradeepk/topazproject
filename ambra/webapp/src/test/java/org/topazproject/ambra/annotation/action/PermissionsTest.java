@@ -18,7 +18,7 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.permission.service.PermissionsService;
 
 import javax.xml.rpc.ServiceException;
@@ -27,7 +27,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class PermissionsTest extends BasePlosoneTestCase {
+public class PermissionsTest extends BaseAmbraTestCase {
   private String      resource = "foo:bar";
   private String[]    grants   = new String[] { "annotation:visibility-private", "foo:create", "foo:get", "foo:set", "foo:delete"  };
   private String[]    revokes    = new String[] { "foo:list-all", "foo:purge" };

@@ -24,7 +24,7 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import java.util.Map;
 
 /**
- * Some of the constants for the Plosone application.
+ * Some of the constants for the Ambra application.
  */
 public interface Constants {
   String PLOS_ONE_USER_KEY = "PLOS_ONE_USER";

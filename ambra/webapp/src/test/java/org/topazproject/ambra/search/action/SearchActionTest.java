@@ -20,7 +20,7 @@ package org.topazproject.ambra.search.action;
 
 import static com.opensymphony.xwork2.Action.SUCCESS;
 
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.search.SearchResultPage;
 import org.topazproject.ambra.search.SearchUtil;
 import org.topazproject.ambra.search.action.SearchAction;
@@ -28,7 +28,7 @@ import org.topazproject.ambra.util.FileUtils;
 
 import java.io.File;
 
-public class SearchActionTest extends BasePlosoneTestCase {
+public class SearchActionTest extends BaseAmbraTestCase {
   public void testSimpleSearchShouldReturnSomething(){
     final SearchAction searchAction = getSearchAction();
     searchAction.setQuery("system");

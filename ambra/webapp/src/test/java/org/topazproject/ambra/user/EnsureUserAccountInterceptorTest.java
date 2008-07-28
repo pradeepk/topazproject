@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.mock.MockActionInvocation;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.EnsureUserAccountInterceptor;
 import org.topazproject.ambra.user.PlosOneUser;
@@ -31,7 +31,7 @@ import org.topazproject.ambra.user.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EnsureUserAccountInterceptorTest extends BasePlosoneTestCase {
+public class EnsureUserAccountInterceptorTest extends BaseAmbraTestCase {
 
   public void testShouldForwardToCreateNewAccount() throws Exception {
     final EnsureUserAccountInterceptor interceptor = new EnsureUserAccountInterceptor();

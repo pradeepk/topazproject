@@ -23,7 +23,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
 
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.PlosOneUser;
 import org.topazproject.ambra.user.action.MemberUserAlertsAction;
@@ -34,7 +34,7 @@ import org.topazproject.ambra.user.action.UserProfileAction;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserAlertsTest extends BasePlosoneTestCase {
+public class UserAlertsTest extends BaseAmbraTestCase {
   final String AUTH_ID = UserAlertsTest.class.getName();
 
   public void testCreateAlerts() throws Exception {

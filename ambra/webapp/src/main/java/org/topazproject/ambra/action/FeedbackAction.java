@@ -22,7 +22,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
-import org.topazproject.ambra.service.PlosoneMailer;
+import org.topazproject.ambra.service.AmbraMailer;
 import org.topazproject.ambra.user.PlosOneUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
 
@@ -44,7 +44,7 @@ public class FeedbackAction extends UserActionSupport {
   private String note;
   private String subject;
   private String name;
-  private PlosoneMailer plosoneMailer;
+  private AmbraMailer ambraMailer;
   private String topazId;
   public final String FROM_EMAIL_ADDRESS_KEY = "fromEmailAddress";
 
@@ -91,7 +91,7 @@ public class FeedbackAction extends UserActionSupport {
     }
 
     mapFields.put("userInfo", StringUtils.join(values.iterator(), "<br/>\n"));
-    plosoneMailer.sendFeedback(fromEmailAddress, mapFields);
+    ambraMailer.sendFeedback(fromEmailAddress, mapFields);
     return SUCCESS;
   }
 
@@ -153,11 +153,11 @@ public class FeedbackAction extends UserActionSupport {
   }
 
   /**
-   * Setter for plosoneMailer.
-   * @param plosoneMailer Value to set for plosoneMailer.
+   * Setter for ambraMailer.
+   * @param ambraMailer Value to set for ambraMailer.
    */
-  public void setPlosoneMailer(final PlosoneMailer plosoneMailer) {
-    this.plosoneMailer = plosoneMailer;
+  public void setAmbraMailer(final AmbraMailer ambraMailer) {
+    this.ambraMailer = ambraMailer;
   }
 
   /**

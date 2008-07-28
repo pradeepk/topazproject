@@ -591,7 +591,7 @@
     <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
-  <bean id="plosoneMailer" class="org.topazproject.ambra.service.PlosoneMailer">
+  <bean id="ambraMailer" class="org.topazproject.ambra.service.AmbraMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="application@plosone.org"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>

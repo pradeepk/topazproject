@@ -23,7 +23,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.mock.MockActionInvocation;
 
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.EnsureRoleInterceptor;
 import org.topazproject.ambra.user.PlosOneUser;
@@ -32,7 +32,7 @@ import org.topazproject.ambra.user.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EnsureRoleInterceptorTest extends BasePlosoneTestCase {
+public class EnsureRoleInterceptorTest extends BaseAmbraTestCase {
 
   public void testShouldReturnErrorAsUserNotLoggedIn() throws Exception {
     final EnsureRoleInterceptor interceptor = new EnsureRoleInterceptor();

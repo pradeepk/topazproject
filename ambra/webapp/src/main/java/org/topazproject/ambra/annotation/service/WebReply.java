@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * Plosone wrapper around the Reply from topaz service. It provides
+ * Ambra wrapper around the Reply from topaz service. It provides
  * - A way to escape title/body text when returning the result to the web layer
  * - a separation from any topaz changes
  */

@@ -21,7 +21,7 @@ package org.topazproject.ambra.article;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -35,7 +35,7 @@ import java.io.FileOutputStream;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
-public class XSLTransformationTest extends BasePlosoneTestCase {
+public class XSLTransformationTest extends BaseAmbraTestCase {
   public static final Log log = LogFactory.getLog(XSLTransformationTest.class);
 
   private String BASE_TEST_PATH = "webapp/src/test/resources/";

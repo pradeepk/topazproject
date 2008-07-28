@@ -27,7 +27,7 @@ import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.email.impl.FreemarkerTemplateMailer;
 import org.topazproject.ambra.models.ObjectInfo;
-import org.topazproject.ambra.service.PlosoneMailer;
+import org.topazproject.ambra.service.AmbraMailer;
 import org.topazproject.ambra.user.PlosOneUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
 
@@ -50,7 +50,7 @@ public class EmailArticleAction extends UserActionSupport {
   private String title;
   private String description;
   private String journalName;
-  private PlosoneMailer plosoneMailer;
+  private AmbraMailer ambraMailer;
   private FetchArticleService fetchArticleService;
   private static final Log log = LogFactory.getLog(EmailArticleAction.class);
   private static final int MAX_TO_EMAIL = 5;
@@ -89,7 +89,7 @@ public class EmailArticleAction extends UserActionSupport {
     mapFields.put("description", description);
     mapFields.put("journalName", journalName);
     mapFields.put("subject", "An Article from " + journalName);
-    plosoneMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
+    ambraMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
   }
@@ -243,11 +243,11 @@ public class EmailArticleAction extends UserActionSupport {
   }
 
   /**
-   * Setter for plosoneMailer.
-   * @param plosoneMailer Value to set for plosoneMailer.
+   * Setter for ambraMailer.
+   * @param ambraMailer Value to set for ambraMailer.
    */
-  public void setPlosoneMailer(final PlosoneMailer plosoneMailer) {
-    this.plosoneMailer = plosoneMailer;
+  public void setAmbraMailer(final AmbraMailer ambraMailer) {
+    this.ambraMailer = ambraMailer;
   }
 
   /**

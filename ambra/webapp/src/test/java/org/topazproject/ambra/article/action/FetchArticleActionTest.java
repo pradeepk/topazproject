@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.BasePlosoneTestCase;
+import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.annotation.action.BodyFetchAction;
 import org.topazproject.ambra.article.action.FetchArticleAction;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
@@ -35,7 +35,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 
-public class FetchArticleActionTest extends BasePlosoneTestCase {
+public class FetchArticleActionTest extends BaseAmbraTestCase {
   public static final Log log = LogFactory.getLog(FetchArticleActionTest.class);
   private String BASE_TEST_PATH = "src/test/resources/";
   private String testXmlTarget = "file:src/test/resources/test.xml";

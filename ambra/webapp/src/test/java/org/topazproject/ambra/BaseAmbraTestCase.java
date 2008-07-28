@@ -57,7 +57,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
+public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSpringContextTests {
   private FetchArticleAction fetchArticleAction;
   private CreateAnnotationAction createAnnotationAction;
   private DeleteAnnotationAction deleteAnnotationAction;
