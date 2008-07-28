@@ -251,10 +251,10 @@ public class BasicOtmTest extends AbstractOtmTest {
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = new PublicAnnotation(URI.create("http://localhost/annotation/1"));
-          a.setAnnotates(URI.create("http://www.plosone.org"));
+          a.setAnnotates(URI.create("http://www.topazproject.org"));
 
           Annotation sa = new PublicAnnotation(URI.create("http://localhost/annotation/1/1"));
-          sa.setAnnotates(URI.create("http://www.plosone.org"));
+          sa.setAnnotates(URI.create("http://www.topazproject.org"));
 
           a.setSupersededBy(sa);
           sa.setSupersedes(a);
@@ -273,8 +273,8 @@ public class BasicOtmTest extends AbstractOtmTest {
 
           assertTrue(old.getSupersededBy() == a);
           assertEquals(URI.create("http://localhost/annotation/1"), old.getId());
-          assertEquals(URI.create("http://www.plosone.org"), old.getAnnotates());
-          assertEquals(URI.create("http://www.plosone.org"), a.getAnnotates());
+          assertEquals(URI.create("http://www.topazproject.org"), old.getAnnotates());
+          assertEquals(URI.create("http://www.topazproject.org"), a.getAnnotates());
         }
       });
   }
