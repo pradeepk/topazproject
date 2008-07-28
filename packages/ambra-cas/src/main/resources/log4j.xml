@@ -49,11 +49,6 @@
     <level value="warn" />
   </logger>
 
-  <!-- set to debug for troubleshooting -->
-  <logger name="org.plos">
-    <level value="info"/> 
-  </logger>
-
   <logger name="org.topazproject">
     <level value="info"/> 
   </logger>
