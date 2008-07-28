@@ -66,7 +66,7 @@ DATETIME='<http://www.w3.org/2001/XMLSchema#dateTime>'
 sf = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
 sf.addAlias('a', 'http://www.w3.org/2000/10/annotation-ns#')
 sess = sf.openSession()
-sess.beginTransaction()
+sess.beginTransaction(true, 6000)
 
 restrict = ""
 if (opt.s) {

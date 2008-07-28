@@ -59,7 +59,7 @@ if (verbose) {
 sf = new SessionFactoryImpl(tripleStore:new ItqlStore(mulgaraUri.toURI()))
 sf.addAlias('foaf', 'http://xmlns.com/foaf/0.1/')
 sess = sf.openSession()
-sess.beginTransaction()
+sess.beginTransaction(true, 6000)
 
 query = """
   select \$user \$email
