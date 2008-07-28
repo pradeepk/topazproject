@@ -40,7 +40,7 @@
     <level value="debug" />
   </logger>
 
-  <logger name="org.plos">
+  <logger name="org.topazproject.ambra">
     <level value="debug" />
   </logger>
 

@@ -39,7 +39,7 @@ import org.topazproject.xml.transform.CustomEntityResolver;
 
 /**
  * Creates a {@link Source} that can be used in a {@link javax.xml.transform.Transformer#transform}
- * call with most topaz/plosone entities cached.
+ * call with most topaz/ambra entities cached.
  *
  * For example:
  * <pre>

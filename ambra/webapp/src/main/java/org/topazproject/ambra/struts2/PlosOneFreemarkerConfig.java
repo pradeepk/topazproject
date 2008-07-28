@@ -619,7 +619,7 @@ public class PlosOneFreemarkerConfig {
   }
 
   /**
-   * @param host The plosOneHostname to set.
+   * @param host The ambra hostname to set.
    */
   public void setHost( String host) {
     this.host = host;

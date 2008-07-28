@@ -20,7 +20,7 @@
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 

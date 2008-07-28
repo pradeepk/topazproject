@@ -32,7 +32,7 @@ import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.user.service.UserService;
 
 /**
- * A kind of utility class to convert types between topaz and plosone types fro Annotations and Replies
+ * A kind of utility class to convert types between topaz and ambra types for Annotations and Replies
  */
 public class AnnotationConverter {
   private UserService userService;
@@ -94,7 +94,7 @@ public class AnnotationConverter {
    */
   @Transactional(readOnly = true)
   public WebReply[] convert(final Reply[] replies, Commentary com) throws ApplicationException {
-    final List<WebReply> plosoneReplies = new ArrayList<WebReply>();
+    final List<WebReply> webReplies = new ArrayList<WebReply>();
     final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
     int numReplies = replies.length;
     String latestReplyTime = null;
@@ -112,7 +112,7 @@ public class AnnotationConverter {
       final String replyTo = reply.getInReplyTo();
       //Setup the top level replies
       if (replyTo.equals(annotationId)) {
-        plosoneReplies.add(convertedObj);
+        webReplies.add(convertedObj);
       }
     }
 
@@ -126,14 +126,14 @@ public class AnnotationConverter {
         // If the replies are in reply to another reply and that reply isn't present
         // then just add them to the top. This only happens when the array passed in is a subtree
         if (null == inReplyTo) {
-          plosoneReplies.add(savedReply);
+          webReplies.add(savedReply);
         } else {
           inReplyTo.addReply(savedReply);
          }
       }
     }
 
-    WebReply[] returnArray = plosoneReplies.toArray(new WebReply[plosoneReplies.size()]);
+    WebReply[] returnArray = webReplies.toArray(new WebReply[webReplies.size()]);
     if (com != null) {
       com.setReplies(returnArray);
       com.setLastModified(latestReplyTime);

@@ -40,11 +40,11 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 
 /**
- * A webwork interceptor that maps the authenticated user id to an internal plos-user-id. The plos
+ * A webwork interceptor that maps the authenticated user id to an internal ambra-user-id. The ambra
  * user-id is setup in the HttpSession using the key {@link #USER_KEY}. The original user id is
  * available using the session key {@link #AUTH_KEY}. In addition a wrapper for
  * <code>HttpServletRequest</code> is setup so that the <code>getRemoteUser</code> and
- * <code>getUserPrincipal</code> returns the plos-user.
+ * <code>getUserPrincipal</code> returns the ambra-user.
  *
  * @author Pradeep Krishnan
  */
@@ -53,7 +53,7 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
   private static Log log = LogFactory.getLog(UserAccountsInterceptor.class);
 
   /**
-   * The session attribute key used to store the plos-user-id in HttpSession.
+   * The session attribute key used to store the ambra-user-id in HttpSession.
    */
   public static String USER_KEY = "org.topazproject.user-id";
 
@@ -131,7 +131,7 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
   }
 
   /**
-   * Looks up the plos-user for the currently authenticated user and saves it in
+   * Looks up the ambra-user for the currently authenticated user and saves it in
    * <code>HttpSession</code>.
    *
    * @throws Exception when an error occurs while obtaining the mapping

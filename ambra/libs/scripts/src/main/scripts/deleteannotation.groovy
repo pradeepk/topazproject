@@ -16,14 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.util.ToolHelper
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
-import org.plos.models.Comment
-import org.plos.models.Rating
-import org.plos.models.RatingSummary
-import org.plos.models.Reply
-import org.plos.models.ReplyThread
+import org.topazproject.ambra.models.Comment
+import org.topazproject.ambra.models.Rating
+import org.topazproject.ambra.models.RatingSummary
+import org.topazproject.ambra.models.Reply
+import org.topazproject.ambra.models.ReplyThread
 import org.topazproject.otm.SessionFactory
 import org.topazproject.otm.impl.SessionFactoryImpl
 import org.topazproject.otm.ModelConfig

@@ -37,10 +37,10 @@ import net.sf.saxon.TransformerFactoryImpl;
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
-import org.plos.article.util.Ingester
-import org.plos.article.util.Zip
-import org.plos.article.util.Zip2Xml
-import org.plos.util.ToolHelper
+import org.topazproject.ambra.article.util.Ingester
+import org.topazproject.ambra.article.util.Zip
+import org.topazproject.ambra.article.util.Zip2Xml
+import org.topazproject.ambra.util.ToolHelper
 
 import org.w3c.dom.Document
 

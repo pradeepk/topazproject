@@ -168,7 +168,7 @@ public class BrowseIssueAction extends BaseActionSupport{
         }
         buf.append(" |");
         log.error("Failed to add article '"+ ai.getId()
-                + "' to an article group. Check configured articles types (plosone.xml) "
+                + "' to an article group. Check configured articles types "
                 + "against the article types found for this Article: " + buf);
       }
     }

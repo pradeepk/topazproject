@@ -72,7 +72,7 @@ public class DummySSOFilter implements Filter {
     ssoUrl = filterConfig.getInitParameter("ssoUrl");
     wrap   = "true".equalsIgnoreCase(filterConfig.getInitParameter("wrapRequest"));
 
-    // look up any overrides in the plos configuration
+    // look up any overrides in the ambra configuration
     Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
     String casBaseUrl = configuration.getString("ambra.services.cas.url.base");
     if (casBaseUrl != null)

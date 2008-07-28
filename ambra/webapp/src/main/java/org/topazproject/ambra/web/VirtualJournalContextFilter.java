@@ -47,7 +47,7 @@ import org.topazproject.ambra.configuration.ConfigurationStore;
  * String requestJournal = requestContext.getJournal();
  * </pre>
  *
- * See WEB-INF/classes/org/plos/configuration/defaults.xml for configuration examples.
+ * See WEB-INF/classes/ambra/configuration/defaults.xml for configuration examples.
  */
 public class VirtualJournalContextFilter implements Filter {
 
