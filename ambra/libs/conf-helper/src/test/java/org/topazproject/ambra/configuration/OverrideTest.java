@@ -31,7 +31,7 @@ public class OverrideTest extends TestCase {
 
   protected void setUp() throws ConfigurationException {
     System.setProperty(ConfigurationStore.OVERRIDES_URL, "ambra/configuration/defaults-dev.xml");
-    System.setProperty("plosconf.test", "goodbye world");
+    System.setProperty("conf.test", "goodbye world");
     ConfigurationStore store = ConfigurationStore.getInstance();
     store.loadConfiguration(null);
     conf = store.getConfiguration();
@@ -41,15 +41,15 @@ public class OverrideTest extends TestCase {
     // Make an attempt to remove the system property for other test classes
     Properties p = System.getProperties();
     p.remove(ConfigurationStore.OVERRIDES_URL);
-    p.remove("plosconf.test");
+    p.remove("conf.test");
     System.setProperties(p);
   }
 
   public void testDefaultsOverrideGlobal() {
-    assertEquals("defaults override", "override-dev", conf.getString("plosconf.def"));
+    assertEquals("defaults override", "override-dev", conf.getString("conf.def"));
   }
 
   public void testSystemPropertyOverride() {
-    assertEquals("system property override", "goodbye world", conf.getString("plosconf.test"));
+    assertEquals("system property override", "goodbye world", conf.getString("conf.test"));
   }
 }

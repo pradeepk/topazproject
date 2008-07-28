@@ -18,7 +18,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   
-  This is the defaults used by any plos associated webapp and/or command line utility.
+  This is the defaults used by any ambra associated webapp and/or command line utility.
   The ConfigurationStore singleton loads this first. Settings in the defaults.xml
   resource in libs and webapps that use ConfigurationStore take precedence and
   override all the settings here. Although normally stuff in defaults.xml simply

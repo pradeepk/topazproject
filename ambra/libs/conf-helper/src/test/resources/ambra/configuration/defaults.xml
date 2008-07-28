@@ -19,9 +19,9 @@
   limitations under the License.
 -->
 <config>
-  <plosconf>
+  <conf>
     <def>override</def>
-  </plosconf>
+  </conf>
   <defaults>value</defaults>
   <ambra>
     <network>

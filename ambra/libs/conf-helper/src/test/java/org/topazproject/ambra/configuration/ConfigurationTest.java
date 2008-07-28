@@ -46,7 +46,7 @@ public class ConfigurationTest extends TestCase {
   }
 
   public void testGlobalDefaults() {
-    assertEquals("global-defaults plosconf.test", "hello world", conf.getString("plosconf.test"));
+    assertEquals("global-defaults conf.test", "hello world", conf.getString("conf.test"));
   }
 
   public void testDefaults() {
@@ -54,7 +54,7 @@ public class ConfigurationTest extends TestCase {
   }
 
   public void testDefaultsOverrideGlobal() {
-    assertEquals("defaults override", "override", conf.getString("plosconf.def"));
+    assertEquals("defaults override", "override", conf.getString("conf.def"));
   }
 
   private void checkExpTest(List l) {
