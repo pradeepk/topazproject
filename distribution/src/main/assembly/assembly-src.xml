@@ -41,7 +41,7 @@
       </includes>
       <excludes>
         <exclude>**/fedora/**</exclude>
-        <exclude>**/plos/**</exclude>
+        <exclude>**/ambra/**</exclude>
         <exclude>**/build/**</exclude>
         <exclude>**/conf-helper/**</exclude>
         <exclude>**/filter-resolver/**</exclude>
