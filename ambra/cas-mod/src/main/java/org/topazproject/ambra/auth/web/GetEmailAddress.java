@@ -33,17 +33,20 @@ import java.io.PrintWriter;
 /**
  * Returns the email address given a user's GUID
  * File to change when hosting
- * D:\java\topaz-install\esup-cas-quick-start-2.0.6-1\jakarta-tomcat-5.0.28\webapps\cas\WEB-INF\web.xml
-
- <servlet>
-   <servlet-name>Email</servlet-name>
-   <servlet-class>org.plos.auth.web.GetEmailAddress</servlet-class>
- </servlet>
-
- <servlet-mapping>
-   <servlet-name>Email</servlet-name>
-   <url-pattern>/email</url-pattern>
- </servlet-mapping>
+ * esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/webapps/cas/WEB-INF/web.xml
+ *  <pre>
+ *
+ *  &lt;servlet&gt;
+ *    &lt;servlet-name&gt;Email&lt;/servlet-name&gt;
+ *    &lt;servlet-class&gt;org.topazproject.ambra.auth.web.GetEmailAddress&lt;/servlet-class&gt;
+ *  &lt;/servlet&gt;
+ *
+ *  &lt;servlet-mapping&gt;
+ *    &lt;servlet-name&gt;Email&lt;/servlet-name&gt;
+ *    &lt;url-pattern&gt;/email&lt;/url-pattern&gt;
+ *  &lt;/servlet-mapping&gt;
+ *
+ *  </pre>
  */
 public class GetEmailAddress extends HttpServlet {
   private UserService userService;

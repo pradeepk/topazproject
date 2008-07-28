@@ -43,19 +43,22 @@ import java.util.Enumeration;
 /**
  * Replaces the Username with the user's GUID so that the username is the GUID for any responses to clients.
  * File to change when hosting
- * D:\java\topaz-install\esup-cas-quick-start-2.0.6-1\jakarta-tomcat-5.0.28\webapps\cas\WEB-INF\web.xml
-
-  <filter>
-    <filter-name>UsernameReplacementWithGuidFilter</filter-name>
-    <filter-class>org.plos.auth.web.UsernameReplacementWithGuidFilter</filter-class>
-  </filter>
-
-  <filter-mapping >
-    <filter-name>UsernameReplacementWithGuidFilter</filter-name>
-    <url-pattern>/login</url-pattern>
-  </filter-mapping>
-
-*/
+ * esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/webapps/cas/WEB-INF/web.xml
+ *
+ *  <pre>
+ *
+ *  &lt;filter&gt;
+ *    &lt;filter-name&gt;UsernameReplacementWithGuidFilter&lt;/filter-name&gt;
+ *    &lt;filter-class&gt;org.topazproject.ambra.auth.web.UsernameReplacementWithGuidFilter&lt;/filter-class&gt;
+ *  &lt;/filter&gt;
+ *
+ *  &lt;filter-mapping&gt;
+ *    &lt;filter-name&gt;UsernameReplacementWithGuidFilter&lt;/filter-name&gt;
+ *    &lt;url-pattern&gt;/login&lt;/url-pattern&gt;
+ *  &lt;/filter-mapping&gt;
+ *
+ *  </pre>
+ */
 public class UsernameReplacementWithGuidFilter implements Filter {
   private static final Log log = LogFactory.getLog(UsernameReplacementWithGuidFilter.class);
   private UserService userService;
