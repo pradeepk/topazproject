@@ -272,7 +272,7 @@
     </articleTypeList>
   </ambra>
 
-  <!-- See the PlosStruts2Filter dispatcher on how struts constants are configured -->
+  <!-- See the AmbraStruts2Filter dispatcher on how struts constants are configured -->
   <struts>
     <devMode>true</devMode>
   </struts>

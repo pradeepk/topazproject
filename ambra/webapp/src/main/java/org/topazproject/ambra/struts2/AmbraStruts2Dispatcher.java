@@ -54,8 +54,8 @@ import org.topazproject.ambra.web.HttpResourceServer;
  *
  * @author Pradeep Krishnan
  */
-public class PlosStruts2Dispatcher extends FilterDispatcher {
-  private static final Log      log          = LogFactory.getLog(PlosStruts2Dispatcher.class);
+public class AmbraStruts2Dispatcher extends FilterDispatcher {
+  private static final Log      log          = LogFactory.getLog(AmbraStruts2Dispatcher.class);
   private static final String[] keys         =
     {
       StrutsConstants.STRUTS_DEVMODE, StrutsConstants.STRUTS_I18N_RELOAD,

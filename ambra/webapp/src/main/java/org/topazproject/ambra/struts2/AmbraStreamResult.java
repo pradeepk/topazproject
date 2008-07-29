@@ -1,6 +1,6 @@
 /*
  * $HeadURL::                                                                            $ $Id:
- * PlosStreamResult.java 946 2006-11-03 22:23:42Z viru $
+ * AmbraStreamResult.java 946 2006-11-03 22:23:42Z viru $
  *
  * Copyright (c) 2006-2007 by Topaz, Inc. http://topazproject.org
  *
@@ -44,9 +44,9 @@ import com.opensymphony.xwork2.ActionInvocation;
  * headers and sets them the response stream as well as taking in an optional parameter indicating
  * whether to set the content-diposition to an attachment.
  */
-public class PlosStreamResult extends StreamResult {
+public class AmbraStreamResult extends StreamResult {
   private boolean            isAttachment = false;
-  private static final Log   log          = LogFactory.getLog(PlosStreamResult.class);
+  private static final Log   log          = LogFactory.getLog(AmbraStreamResult.class);
   private HttpResourceServer server       = new HttpResourceServer();
 
   /*

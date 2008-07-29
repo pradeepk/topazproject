@@ -114,7 +114,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
     <!--
     <filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
     -->
-    <filter-class>org.topazproject.ambra.struts2.PlosStruts2Dispatcher</filter-class>
+    <filter-class>org.topazproject.ambra.struts2.AmbraStruts2Dispatcher</filter-class>
     <init-param>
       <param-name>packages</param-name>
       <param-value>struts</param-value>

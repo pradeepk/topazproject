@@ -51,7 +51,7 @@
       <result-type name="user" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/journals/plosJournals/templates/user_shared_template.ftl</param>
       </result-type>
-      <result-type name="plosStream" class="org.topazproject.ambra.struts2.PlosStreamResult" />
+      <result-type name="ambraStream" class="org.topazproject.ambra.struts2.AmbraStreamResult" />
       <result-type name="json" class="org.topazproject.ambra.struts2.JsonResult">
         <param name="excludeProperties">advisors, callbacks</param>
         <param name="ignoreHierarchy">false</param>
@@ -414,19 +414,19 @@
     </action>
 
     <action name="fetchObjectAttachment" class="org.topazproject.ambra.article.action.FetchObjectAction">
-      <result name="success" type="plosStream">
+      <result name="success" type="ambraStream">
         <param name="isAttachment">true</param>
       </result>
     </action>
 
     <action name="fetchObject" class="org.topazproject.ambra.article.action.FetchObjectAction">
-      <result name="success" type="plosStream">
+      <result name="success" type="ambraStream">
         <param name="isAttachment">false</param>
       </result>
     </action>
 
     <action name="fetchFirstRepresentation" class="org.topazproject.ambra.article.action.FetchObjectAction" method="fetchFirstObject">
-      <result name="success" type="plosStream">
+      <result name="success" type="ambraStream">
         <param name="isAttachment">true</param>
       </result>
     </action>
