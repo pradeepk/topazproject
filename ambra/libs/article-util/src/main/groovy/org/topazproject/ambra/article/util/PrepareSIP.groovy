@@ -20,6 +20,7 @@
 package org.topazproject.ambra.article.util
 
 import org.topazproject.ambra.util.ToolHelper
+import java.util.zip.ZipFile
 
 /*
  * Prepare a SIP from an AP zip. This goes through the following steps:
@@ -34,13 +35,14 @@ import org.topazproject.ambra.util.ToolHelper
 
 args = ToolHelper.fixArgs(args)
 
-String usage = 'PrepareSIP [-v] [-c <config-overrides.xml>] [-o <output.zip>] <article.zip>'
+String usage = 'PrepareSIP [-vf] [-c <config-overrides.xml>] [-o <output.zip>] <article.zip>'
 def cli = new CliBuilder(usage: usage, writer : new PrintWriter(System.out))
 cli.h(longOpt:'help', "help (this message)")
 cli.o(args:1, 'output.zip - new zip file containing prepared sip; if not specified\n' +
               '             then input file is overwritten')
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz/ambra.xml')
 cli.v(args:0, 'verbose')
+cli.f(args:0, 'force - force a new manifest to be created even if one already exists')
 
 def opt = cli.parse(args);
 
@@ -52,19 +54,27 @@ if (opt.h || otherArgs.size() != 1) {
 
 def config = ToolHelper.loadConfiguration(opt.c)
 
-println("SIP for " + otherArgs[0])
+def inp = otherArgs[0]
+def out = opt.o ?: inp
+println("SIP for " + inp)
 
 try {
-  new AddManifest().addManifest(otherArgs[0], opt.o ?: null)
-  println "  manifest added"
-  
-  new FixArticle().fixLinks(opt.o ?: otherArgs[0], null)
+  boolean hasManif = new ZipFile(inp).entries().iterator()*.name.contains(SipUtil.MANIFEST)
+  if (opt.f || !hasManif) {
+    new AddManifest().addManifest(inp, out)
+    println "  manifest ${hasManif ? 'replaced' : 'added'}"
+    inp = out
+  } else {
+    println "  manifest already present"
+  }
+
+  new FixArticle().fixLinks(inp, out)
   println "  article links fixed"
-  
-  new ProcessImages(config, opt.v).processImages(opt.o ?: otherArgs[0], null)
+
+  new ProcessImages(config, opt.v).processImages(out, null)
   println "  images processed"
-  
-  new ValidateSIP().validate(opt.o ?: otherArgs[0])
+
+  new ValidateSIP().validate(out)
   println "  validation: No problems found"
   println "done"
 
