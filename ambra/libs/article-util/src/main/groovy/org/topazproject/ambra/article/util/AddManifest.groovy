@@ -57,7 +57,8 @@ public class AddManifest {
    */
   public void addManifest(String fname, String newName) throws IOException {
     SipUtil.updateZip(fname, newName) { zf, zout ->
-      def entries = zf.entries().iterator()*.name.minus(SipUtil.MANIFEST)
+      def entries =
+              zf.entries().iterator()*.name.minus(SipUtil.MANIFEST).minus(SipUtil.MANIFEST_DTD)
 
       // find article entry and representations
       String ae = entries.findAll{ it.endsWith('.xml') }.
@@ -105,7 +106,7 @@ public class AddManifest {
       zout.closeEntry()
 
       // copy everything else
-      zout.copyFrom(zf, zf.entries())
+      zout.copyFrom(zf, entries)
     }
   }
 
