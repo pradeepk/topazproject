@@ -20,7 +20,7 @@ package org.topazproject.ambra.user.action;
 
 import static com.opensymphony.xwork2.Action.SUCCESS;
 
-import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
+import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
@@ -259,7 +259,7 @@ public class UserActionsTest extends BaseAmbraTestCase {
     }
 
     final Map<String, Object> sessionMap = new HashMap<String, Object>();
-    sessionMap.put(PLOS_ONE_USER_KEY, ambraUser);
+    sessionMap.put(AMBRA_USER_KEY, ambraUser);
     sessionMap.put(Constants.SINGLE_SIGNON_USER_KEY, authId);
 
     return sessionMap;

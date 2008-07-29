@@ -694,7 +694,7 @@ public class AmbraFreemarkerConfig {
    * @return Returns the user attribute key
    */
   public String getUserAttributeKey() {
-    return org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
+    return org.topazproject.ambra.Constants.AMBRA_USER_KEY;
   }
 
 

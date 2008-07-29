@@ -27,7 +27,7 @@ import java.util.Map;
  * Some of the constants for the Ambra application.
  */
 public interface Constants {
-  String PLOS_ONE_USER_KEY = "PLOS_ONE_USER";
+  String AMBRA_USER_KEY = "AMBRA_USER";
   String SINGLE_SIGNON_USER_KEY = CASFilter.CAS_FILTER_USER;
   String SINGLE_SIGNON_RECEIPT = CASFilter.CAS_FILTER_RECEIPT;
   String SINGLE_SIGNON_EMAIL_KEY = "org.topazproject.ambra.sso.email";

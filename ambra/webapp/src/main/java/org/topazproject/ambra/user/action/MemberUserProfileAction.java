@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.AmbraUser;
 
-import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
+import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 
 import java.util.Map;
 
@@ -43,7 +43,7 @@ public class MemberUserProfileAction extends UserProfileAction {
 
     if (SUCCESS.equals(statusCode)) {
       final Map<String, Object> sessionMap = getSessionMap();
-      sessionMap.put(PLOS_ONE_USER_KEY, super.getSavedAmbraUser());
+      sessionMap.put(AMBRA_USER_KEY, super.getSavedAmbraUser());
     }
 
     return statusCode;
@@ -52,7 +52,7 @@ public class MemberUserProfileAction extends UserProfileAction {
   @Override
   protected AmbraUser getAmbraUserToUse() {
     final Map<String, Object> sessionMap = getSessionMap();
-    return (AmbraUser) sessionMap.get(PLOS_ONE_USER_KEY);
+    return (AmbraUser) sessionMap.get(AMBRA_USER_KEY);
   }
 
   @Override

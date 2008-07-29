@@ -61,7 +61,7 @@ public class EnsureRoleInterceptorTest extends BaseAmbraTestCase {
       protected Map<String, Object> getUserSessionMap() {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put(Constants.SINGLE_SIGNON_USER_KEY, "A_SINGLE_SIGNON_KEY");
-        map.put(Constants.PLOS_ONE_USER_KEY, ambraUser);
+        map.put(Constants.AMBRA_USER_KEY, ambraUser);
         return map;
       }
     };
@@ -91,7 +91,7 @@ public class EnsureRoleInterceptorTest extends BaseAmbraTestCase {
       protected Map<String, Object> getUserSessionMap() {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put(Constants.SINGLE_SIGNON_USER_KEY, "SINGLE_SIGNON_KEY_ASDASDASD12312313EDB");
-        map.put(Constants.PLOS_ONE_USER_KEY, ambraUser);
+        map.put(Constants.AMBRA_USER_KEY, ambraUser);
         return map;
       }
     };

@@ -24,7 +24,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
+import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 import static org.topazproject.ambra.Constants.ReturnCode;
 import static org.topazproject.ambra.Constants.SINGLE_SIGNON_EMAIL_KEY;
 import static org.topazproject.ambra.Constants.SINGLE_SIGNON_RECEIPT;
@@ -62,7 +62,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
       return actionInvocation.invoke();
     }
 
-    AmbraUser plosUser = (AmbraUser) sessionMap.get(PLOS_ONE_USER_KEY);
+    AmbraUser plosUser = (AmbraUser) sessionMap.get(AMBRA_USER_KEY);
     if (null != plosUser) {
       if (log.isDebugEnabled()) {
         log.debug("Retrieved user from session with userId: " + plosUser.getUserId());
@@ -82,7 +82,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
         return ReturnCode.NEW_PROFILE;
       } else {
         updateUserEmailAddress(plosUser, userId);
-        sessionMap.put(PLOS_ONE_USER_KEY, plosUser);
+        sessionMap.put(AMBRA_USER_KEY, plosUser);
         if (log.isDebugEnabled())
           log.debug("Existing user detected: " + userId);
         return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);

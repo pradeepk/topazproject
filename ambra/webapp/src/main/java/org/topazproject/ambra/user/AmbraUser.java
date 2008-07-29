@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.struts2.ServletActionContext;
 
-import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
+import static org.topazproject.ambra.Constants.AMBRA_USER_KEY;
 
 import org.topazproject.ambra.models.UserAccount;
 import org.topazproject.ambra.models.UserPreferences;
@@ -67,7 +67,7 @@ public class AmbraUser {
     if (ServletActionContext.getRequest().getSession() == null)
       return null;
     return (AmbraUser) ServletActionContext.getRequest().getSession()
-                                                              .getAttribute(PLOS_ONE_USER_KEY);
+                                                              .getAttribute(AMBRA_USER_KEY);
   }
 
   /**
