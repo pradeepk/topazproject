@@ -71,5 +71,7 @@ try {
   System.exit(0)
 } catch (Exception e) {
   println("  error: " + e)
+  if (opt.v)
+    e.printStackTrace()
   System.exit(1)
 }
