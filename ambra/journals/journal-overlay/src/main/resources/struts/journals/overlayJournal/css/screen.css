@@ -328,7 +328,7 @@ div.powered a:hover { color: #ccc; font-weight: bold;}
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
-div#rhc			{ float: right; width: 240px; position: relative; padding-top: 20px;}
+div#rhc			{ float: right; width: 240px; position: relative; }
 div.content 	{ margin-right: 255px; }
 
 div.static h1,
@@ -476,7 +476,7 @@ div.tools li			{ list-style-type: none; margin: 0; padding: 0; }
 /* rhc square box */
 div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; margin:0; padding:0; }
 
-div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/toolbar_bg.gif) repeat-x top;}
+div.commentview			{ padding: 5px; border: 3px solid #999; margin: 8px 0; background: url(../images/toolbar_bg.gif) repeat-x top;}
 div.commentview	div#ratingAverages { border: 1px solid #ccc; border-width: 1px 0; margin: 5px -5px; padding: 10px; background-color: #eee; position: relative; width:214px; }
 div.commentview	 li 	{ font-size: .9em; }
 div.commentview h6,

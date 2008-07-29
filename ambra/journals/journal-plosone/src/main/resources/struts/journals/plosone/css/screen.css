@@ -82,7 +82,7 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 /* Global : Styles
 ----------------------------------------------------------
 */
-.noshow { line-height:0; } /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
+.noshow { display:block; height:0px; line-height:0em; } /* can be applied to elements that need to be present in the flow but not impact vertical spacing, e.g. in-page anchors */
 .clearer  { clear:both; line-height:0; }
 
 /* Global : Icons and Links
@@ -293,7 +293,7 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 #user p 	{ margin: 0; padding: 0; display: inline;}
 #user ul li { list-style-type: none;display: inline; }
 #user li a:link,
-#user li a:visited 	{ padding: 0; margin-left:0 2px; text-decoration: none;}
+#user li a:visited 	{ padding: 0; margin:0 2px; text-decoration: none;}
 #user a:link,
 #user a:visited {  color: #fff!important; }
 #hdr #user a:hover { text-decoration: underline; }
@@ -329,7 +329,8 @@ div.powered a:hover { color: #ccc; font-weight: bold;}
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
-div#rhc			{ float: right; width: 240px; position: relative; padding-top: 20px;}
+div#rhc			{ float: right; width: 240px; position: relative; }
+div.browse div#rhc { padding:0; }
 div.content 	{ margin-right: 255px; }
 
 div.static h1,
@@ -415,12 +416,13 @@ div#articleMenu ul li a:visited { background-color:transparent; background-posit
 div#articleMenu ul li a:hover { text-decoration:underline; color:#008ED5; }
 
 /* Related articles at top of right column on article pages */
-dl#relatedArticles { margin:0 0 20px 0; padding:9px 0 .5em 0; border-bottom:1px solid #666; background-color:#fff; }
-dl#relatedArticles dt { font-size:1em; color:#303030; margin-bottom:.5em; }
-dl#relatedArticles dd { line-height:1.2em; margin-bottom:.5em; }
-dl#relatedArticles dd a:link,
-dl#relatedArticles dd a:visited { font-size:.95em; text-decoration:none; }
-dl#relatedArticles dd a:hover { text-decoration:underline; }
+div#sideNav dl.related { margin:0 0 20px 0; padding:9px 0 .5em 0; border-bottom:1px solid #999; background-color:#fff; }
+div#sideNav dl.related dt { font-size:1em; text-transform:uppercase; color:#303030; margin-bottom:.5em; }
+div#sideNav dl.related dt em { text-transform:none; font-style:normal }
+div#sideNav dl.related dd { line-height:1.2em; margin-bottom:.5em; }
+div#sideNav dl.related dd a:link,
+div#sideNav dl.related dd a:visited { font-size:.95em; text-decoration:none; }
+div#sideNav dl.related dd a:hover { text-decoration:underline; }
 
 #rhc ul li a,
 #rhc ul li a:visited	{ display: block; font-size: .85em; padding: 0 5px; text-decoration: none; color: #333; }
@@ -433,6 +435,11 @@ dl#relatedArticles dd a:hover { text-decoration:underline; }
 /* Valid use of child selector to hide these from IE6 which doubles bottom margin. Results in no bottom margin display for IE6 */ 
 div#rhc > div#sideNav > div#postcomment > div.commentview > ol > li > a.corrections,
 div#rhc > div#sideNav > div#postcommentfloat > div.commentview > ol > li > a.corrections/*for Safari*/ { display:block; margin-bottom:5px; background-position:left 0.2em; }
+/* temp styles for TOC floating nav - these should be removed when this menu is generated in the same way as the menu in articles */
+div.toc div#rhc div#sectionNavTop { position:static; width:240px; margin-top:8px; }
+div.toc div#rhc div#sectionNavTop ul li a,
+div.toc div#rhc div#sectionNavTop ul li a:visited { border-bottom:0; border-top:1px solid #ccc; }
+div.toc div#rhc div#sectionNavTop ul li a.first { border-top:0!important; }
 
 ul#dcCount1 { margin-bottom:5px; } /* increases spacing below note and comment counts to help block view/join discussion section */
 
@@ -477,7 +484,7 @@ div.tools li			{ list-style-type: none; margin: 0; padding: 0; }
 /* rhc square box */
 div.rhcBox { position:relative; top:0pt; width:240px; border:3px solid #999999; margin:0; padding:0; }
 
-div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/toolbar_bg.gif) repeat-x top;}
+div.commentview			{ padding: 5px; border: 3px solid #999; margin: 8px 0; background: url(../images/toolbar_bg.gif) repeat-x top;}
 div.commentview	div#ratingAverages { border: 1px solid #ccc; border-width: 1px 0; margin: 5px -5px; padding: 10px; background-color: #eee; position: relative; width:214px; }
 div.commentview	 li 	{ font-size: .9em; }
 div.commentview h6,
@@ -688,8 +695,11 @@ named-content[content-type="genus-species"] { font-style:italic; } /* italicizes
 #browseNav ol a:visited 	{ display: block; border-right: 1px solid #999; width: 32px; margin: 4px 0; text-align: center;}
 
 /*--- Browse by TOC and Journal Archive ---*/
-p#issueNav { margin:0; padding:0; position:relative; top:-12px }
-div.toc div#rhc { padding-top:0; }
+p#issueNav { margin:0; padding:0; position:relative; font-size:0.9em; }
+p#issueNav a:link,
+p#issueNav a:visited { text-decoration:none; }
+p#issueNav a:hover { text-decoration:underline; }
+div.toc div#rhc { margin-top:-9px; padding-top:0; }
 div.toc div#rhc div#floatMarker { line-height:0; margin:0; padding:0; display:hidden; } /* see floatingMenu.js */
 div.toc h1,
 div.archive h1  { width:99%; margin-bottom: 20px; padding-top: 10px; border-top: 6px solid #67a96d; }
