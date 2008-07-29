@@ -40,8 +40,8 @@ import java.util.Set;
  * @author Stephen Cheng
  */
 
-public class PlosOneUser {
-  private static final Log log = LogFactory.getLog(PlosOneUser.class);
+public class AmbraUser {
+  private static final Log log = LogFactory.getLog(AmbraUser.class);
   // Constants for application specific User Preferences
   private static final String ALERTS_CATEGORIES = "alertsJournals";
 
@@ -61,12 +61,12 @@ public class PlosOneUser {
   /**
    * Returns the current user. Valid only in a request context.
    */
-  public static PlosOneUser getCurrentUser() {
+  public static AmbraUser getCurrentUser() {
     if (ServletActionContext.getRequest() == null)
       return null;
     if (ServletActionContext.getRequest().getSession() == null)
       return null;
-    return (PlosOneUser) ServletActionContext.getRequest().getSession()
+    return (AmbraUser) ServletActionContext.getRequest().getSession()
                                                               .getAttribute(PLOS_ONE_USER_KEY);
   }
 
@@ -75,7 +75,7 @@ public class PlosOneUser {
    *
    * @param ua the user-account
    */
-  public PlosOneUser(UserAccount ua, String appId, UsersPEP pep) {
+  public AmbraUser(UserAccount ua, String appId, UsersPEP pep) {
     this.userId   = ua.getId().toString();
     this.authId   = ua.getAuthIds().iterator().next().getValue();
 
@@ -104,7 +104,7 @@ public class PlosOneUser {
    *
    * @param authId authentication ID of new user
    */
-  public PlosOneUser(String authId) {
+  public AmbraUser(String authId) {
     this.userId = null;
     this.authId = authId;
 
@@ -117,7 +117,7 @@ public class PlosOneUser {
    *
    * @param pou the other user-object
    */
-  protected PlosOneUser(PlosOneUser pou) {
+  protected AmbraUser(AmbraUser pou) {
     userId      = pou.userId;
     authId      = pou.authId;
     userProfile = pou.userProfile;
@@ -434,7 +434,7 @@ public class PlosOneUser {
    * @return array of categories user is subscribed to
    */
   public String[] getAlerts() {
-    return userPrefs.get(PlosOneUser.ALERTS_CATEGORIES);
+    return userPrefs.get(AmbraUser.ALERTS_CATEGORIES);
   }
 
   /**
@@ -443,7 +443,7 @@ public class PlosOneUser {
    *          the array of alert categories to set
    */
   public void setAlerts(String[] inAlerts) {
-    userPrefs.put(PlosOneUser.ALERTS_CATEGORIES, inAlerts);
+    userPrefs.put(AmbraUser.ALERTS_CATEGORIES, inAlerts);
   }
 
   /**

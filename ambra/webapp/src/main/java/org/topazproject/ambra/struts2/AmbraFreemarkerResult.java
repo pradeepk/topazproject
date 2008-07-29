@@ -35,7 +35,7 @@ import freemarker.template.SimpleHash;
  * @author Stephen Cheng
  *
  */
-public class PlosOneFreemarkerResult extends FreemarkerResult {
+public class AmbraFreemarkerResult extends FreemarkerResult {
   private String templateFile;
   private boolean noCache = false;
   /**

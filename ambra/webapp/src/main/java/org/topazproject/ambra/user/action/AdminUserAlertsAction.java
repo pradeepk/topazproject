@@ -19,7 +19,7 @@
 package org.topazproject.ambra.user.action;
 
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 
 /**
  * User Alerts Action that is called by the admin to update a user's alerts preferences
@@ -29,7 +29,7 @@ public class AdminUserAlertsAction extends UserAlertsAction {
   private String topazId;
 
   @Override
-  protected PlosOneUser getPlosOneUserToUse() throws ApplicationException {
+  protected AmbraUser getAmbraUserToUse() throws ApplicationException {
     return getUserService().getUserByTopazId(topazId);
   }
 

@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.BaseAmbraTestCase;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.action.DisplayUserAction;
 import org.topazproject.ambra.user.service.DisplayNameAlreadyExistsException;
@@ -55,7 +55,7 @@ public class UserServiceTest extends BaseAmbraTestCase {
     final DisplayUserAction displayUserAction = getDisplayUserAction();
     displayUserAction.setUserId(topazId);
     assertEquals(Action.SUCCESS, displayUserAction.execute());
-    final PlosOneUser pou = displayUserAction.getPou();
+    final AmbraUser pou = displayUserAction.getPou();
     assertEquals(USER_EMAIL, pou.getEmail());
     assertEquals(REAL_NAME, pou.getRealName());
     assertEquals(USERNAME, pou.getDisplayName());
@@ -169,7 +169,7 @@ public class UserServiceTest extends BaseAmbraTestCase {
     String topazId = getUserService().createUser(AUTH_ID);
     log.debug("topazId = " + topazId);
 
-    final PlosOneUser newUser = new PlosOneUser(AUTH_ID);
+    final AmbraUser newUser = new AmbraUser(AUTH_ID);
     newUser.setUserId(topazId);
     newUser.setEmail(USER_EMAIL);
     newUser.setDisplayName(USERNAME);

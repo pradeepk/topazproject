@@ -28,7 +28,7 @@ import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.email.impl.FreemarkerTemplateMailer;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.service.AmbraMailer;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
 
 
@@ -62,10 +62,10 @@ public class EmailArticleAction extends UserActionSupport {
    */
   @Transactional(readOnly = true)
   public String executeRender() throws Exception {
-    final PlosOneUser plosOneUser = PlosOneUser.getCurrentUser();
-    if (null != plosOneUser) {
-      senderName = plosOneUser.getDisplayName();
-      emailFrom = plosOneUser.getEmail();
+    final AmbraUser ambraUser = AmbraUser.getCurrentUser();
+    if (null != ambraUser) {
+      senderName = ambraUser.getDisplayName();
+      emailFrom = ambraUser.getEmail();
     }
     setArticleTitleAndDesc(articleURI);
     return SUCCESS;

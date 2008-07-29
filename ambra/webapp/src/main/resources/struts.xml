@@ -33,7 +33,7 @@
   allow the mapping of friendly URIs, 
   e.g. "/article/feed" v. requiring "/article/articleFeed.action?parms"
   -->
-  <constant name="struts.mapper.class" value="org.topazproject.ambra.struts2.PlosOneActionMapper"/>
+  <constant name="struts.mapper.class" value="org.topazproject.ambra.struts2.AmbraActionMapper"/>
 
   <include file="struts-default.xml" />
 
@@ -42,13 +42,13 @@
       <result-type name="freemarker"
         class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true">
       </result-type>
-      <result-type name="ambraFreemarker" class="org.topazproject.ambra.struts2.PlosOneFreemarkerResult">
+      <result-type name="ambraFreemarker" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/journals/plosJournals/templates/main_template.ftl</param>
       </result-type>
-      <result-type name="headless" class="org.topazproject.ambra.struts2.PlosOneFreemarkerResult">
+      <result-type name="headless" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/journals/plosJournals/templates/headless_template.ftl</param>
       </result-type>
-      <result-type name="user" class="org.topazproject.ambra.struts2.PlosOneFreemarkerResult">
+      <result-type name="user" class="org.topazproject.ambra.struts2.AmbraFreemarkerResult">
         <param name="location">/journals/plosJournals/templates/user_shared_template.ftl</param>
       </result-type>
       <result-type name="plosStream" class="org.topazproject.ambra.struts2.PlosStreamResult" />
@@ -57,7 +57,7 @@
         <param name="ignoreHierarchy">false</param>
         <param name="noCache">true</param>
       </result-type>
-      <result-type name="feed" class="org.topazproject.ambra.struts2.PlosOneFeedResult"/>
+      <result-type name="feed" class="org.topazproject.ambra.struts2.AmbraFeedResult"/>
       <result-type name="citation" class="org.topazproject.ambra.struts2.CitationResult"/>
     </result-types>
 

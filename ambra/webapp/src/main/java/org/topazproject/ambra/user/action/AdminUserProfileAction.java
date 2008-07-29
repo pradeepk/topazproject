@@ -20,7 +20,7 @@ package org.topazproject.ambra.user.action;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 
 
 /**
@@ -31,19 +31,19 @@ public class AdminUserProfileAction extends UserProfileAction {
   private boolean userIsHalfCreated = false;
 
   @Override
-  protected PlosOneUser getPlosOneUserToUse() throws ApplicationException {
-    final PlosOneUser plosOneUser = getUserService().getUserByTopazId(getTopazId());
+  protected AmbraUser getAmbraUserToUse() throws ApplicationException {
+    final AmbraUser ambraUser = getUserService().getUserByTopazId(getTopazId());
 
     //To be used to fix the partial created user profile for a user
-    if ("".equals(plosOneUser.getEmail())) {
+    if ("".equals(ambraUser.getEmail())) {
       setDisplayNameRequired(false);
       userIsHalfCreated = true;
-    } else if ("".equals(plosOneUser.getDisplayName())) {
+    } else if ("".equals(ambraUser.getDisplayName())) {
       setDisplayNameRequired(false);
       setIsDisplayNameSet(false);
     }
 
-    return plosOneUser;
+    return ambraUser;
   }
 
   @Override

@@ -40,15 +40,15 @@ import freemarker.cache.StatefulTemplateLoader;
  *
  * @author Stephen Cheng
  */
-public class PlosOneFreemarkerManager extends FreemarkerManager {
-  private PlosOneFreemarkerConfig fmConfig;
+public class AmbraFreemarkerManager extends FreemarkerManager {
+  private AmbraFreemarkerConfig fmConfig;
 
   /**
    * Sets the custom configuration object via Spring injection
    *
    * @param fmConfig
    */
-  public PlosOneFreemarkerManager(PlosOneFreemarkerConfig fmConfig) {
+  public AmbraFreemarkerManager(AmbraFreemarkerConfig fmConfig) {
     this.fmConfig = fmConfig;
   }
 

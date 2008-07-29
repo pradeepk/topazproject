@@ -45,14 +45,14 @@ import org.topazproject.ambra.web.VirtualJournalMappingFilter;
  * @author Jeff Suttor
  *
  */
-public class PlosOneActionMapper extends DefaultActionMapper {
+public class AmbraActionMapper extends DefaultActionMapper {
 
   /** Pub Configuration */
   private static final org.apache.commons.configuration.Configuration PUB_CONFIG =
     ConfigurationStore.getInstance().getConfiguration();
   private final String PUB_APP_CONTEXT = PUB_CONFIG.getString("ambra.platform.appContext", "");
 
-  private static final Log log = LogFactory.getLog(PlosOneActionMapper.class);
+  private static final Log log = LogFactory.getLog(AmbraActionMapper.class);
 
   /**
    * @see DefaultActionMapper#getMapping(HttpServletRequest, ConfigurationManager).

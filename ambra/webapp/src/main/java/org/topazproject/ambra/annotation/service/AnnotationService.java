@@ -48,7 +48,7 @@ import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.rating.service.RatingsService;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.util.FileUtils;
 
 /**
@@ -111,7 +111,7 @@ public class AnnotationService {
                                                                   olderAnnotation, title, body);
 
       if (log.isDebugEnabled()) {
-        final PlosOneUser user = PlosOneUser.getCurrentUser();
+        final AmbraUser user = AmbraUser.getCurrentUser();
         log.debug("Annotation created with ID: " + annotationId + " for user: " + user +
                   " for IP: " + ServletActionContext.getRequest().getRemoteAddr());
       }

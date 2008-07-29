@@ -18,98 +18,98 @@
  */
 package org.topazproject.ambra.user.action;
 
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.util.TextUtils;
 
 /**
- * A wrapper around PlosOneUser to be used to render PlosOneUser attributes as non-malicious chars
+ * A wrapper around AmbraUser to be used to render AmbraUser attributes as non-malicious chars
  */
-public class PlosOneUserDecorator extends PlosOneUser {
-  private final PlosOneUser plosOneUser;
+public class AmbraUserDecorator extends AmbraUser {
+  private final AmbraUser ambraUser;
 
-  public PlosOneUserDecorator(final PlosOneUser plosOneUser) {
-    super(plosOneUser);
-    this.plosOneUser = plosOneUser;
+  public AmbraUserDecorator(final AmbraUser ambraUser) {
+    super(ambraUser);
+    this.ambraUser = ambraUser;
   }
 
   public String getBiography() {
-    return getSafe(plosOneUser.getBiography());
+    return getSafe(ambraUser.getBiography());
   }
 
   public String getBiographyText() {
-    return getSafe(plosOneUser.getBiographyText());
+    return getSafe(ambraUser.getBiographyText());
   }
 
   public String getCity() {
-    return getSafe(plosOneUser.getCity());
+    return getSafe(ambraUser.getCity());
   }
 
   public String getCountry() {
-    return getSafe(plosOneUser.getCountry());
+    return getSafe(ambraUser.getCountry());
   }
 
   public String getDisplayName() {
-    return getSafe(plosOneUser.getDisplayName());
+    return getSafe(ambraUser.getDisplayName());
   }
 
   public String getEmail() {
-    return getSafe(plosOneUser.getEmail());
+    return getSafe(ambraUser.getEmail());
   }
 
   public String getGender() {
-    return getSafe(plosOneUser.getGender());
+    return getSafe(ambraUser.getGender());
   }
 
   public String getGivenNames() {
-    return getSafe(plosOneUser.getGivenNames());
+    return getSafe(ambraUser.getGivenNames());
   }
 
   public String getHomePage() {
-    return getSafe(plosOneUser.getHomePage());
+    return getSafe(ambraUser.getHomePage());
   }
 
   public String getInterestsText() {
-    return getSafe(plosOneUser.getInterestsText());
+    return getSafe(ambraUser.getInterestsText());
   }
 
   public String getOrganizationName() {
-    return getSafe(plosOneUser.getOrganizationName());
+    return getSafe(ambraUser.getOrganizationName());
   }
 
   public String getOrganizationType() {
-    return getSafe(plosOneUser.getOrganizationType());
+    return getSafe(ambraUser.getOrganizationType());
   }
 
   public String getPositionType() {
-    return getSafe(plosOneUser.getPositionType());
+    return getSafe(ambraUser.getPositionType());
   }
 
   public String getPostalAddress() {
-    return getSafe(plosOneUser.getPostalAddress());
+    return getSafe(ambraUser.getPostalAddress());
   }
 
   public String getPublications() {
-    return getSafe(plosOneUser.getPublications());
+    return getSafe(ambraUser.getPublications());
   }
 
   public String getRealName() {
-    return getSafe(plosOneUser.getRealName());
+    return getSafe(ambraUser.getRealName());
   }
 
   public String getResearchAreasText() {
-    return getSafe(plosOneUser.getResearchAreasText());
+    return getSafe(ambraUser.getResearchAreasText());
   }
 
   public String getSurnames() {
-    return getSafe(plosOneUser.getSurnames());
+    return getSafe(ambraUser.getSurnames());
   }
 
   public String getTitle() {
-    return getSafe(plosOneUser.getTitle());
+    return getSafe(ambraUser.getTitle());
   }
 
   public String getWeblog() {
-    return getSafe(plosOneUser.getWeblog());
+    return getSafe(ambraUser.getWeblog());
   }
 
   private String getSafe(final String value) {

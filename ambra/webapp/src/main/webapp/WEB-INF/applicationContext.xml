@@ -494,13 +494,13 @@
   </bean>
   
   <!-- freemarker configs -->
-  <bean id="plosOneFreemarkerManager" class="org.topazproject.ambra.struts2.PlosOneFreemarkerManager">
+  <bean id="ambraFreemarkerManager" class="org.topazproject.ambra.struts2.AmbraFreemarkerManager">
     <constructor-arg index="0">
-      <ref bean="plosOneFreemarkerConfig" />
+      <ref bean="ambraFreemarkerConfig" />
     </constructor-arg>
   </bean>
 
-  <bean id="plosOneFreemarkerConfig" class="org.topazproject.ambra.struts2.PlosOneFreemarkerConfig" />
+  <bean id="ambraFreemarkerConfig" class="org.topazproject.ambra.struts2.AmbraFreemarkerConfig" />
 
   <!-- Caches -->
   <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">

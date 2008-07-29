@@ -42,7 +42,7 @@ import org.topazproject.ambra.models.UserPreferences;
 import org.topazproject.ambra.models.UserProfile;
 import org.topazproject.ambra.models.UserRole;
 import org.topazproject.ambra.permission.service.PermissionsService;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.UsersPEP;
 import org.topazproject.ambra.web.UserContext;
@@ -58,7 +58,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
- * use PlosOneUser to
+ * use AmbraUser to
  *
  * @author Stephen Cheng
  *
@@ -203,25 +203,25 @@ public class UserService {
    * @throws ApplicationException on access-check failure
    */
   @Transactional(readOnly = true)
-  public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
+  public AmbraUser getUserByTopazId(final String topazUserId) throws ApplicationException {
     return getUserWithProfileLoaded(topazUserId);
   }
 
   /**
-   * Get the PlosOneUser with only the profile loaded. For getting the preferences also use
+   * Get the AmbraUser with only the profile loaded. For getting the preferences also use
    * {@link UserService#getUserByTopazId UserService.getUserByTopazId}
    *
    * @param topazUserId topazUserId
-   * @return PlosOneUser
+   * @return AmbraUser
    * @throws ApplicationException on access-check failure
    */
   @Transactional(readOnly = true)
-  public PlosOneUser getUserWithProfileLoaded(final String topazUserId)
+  public AmbraUser getUserWithProfileLoaded(final String topazUserId)
       throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
 
     UserAccount ua = getUserAccount(topazUserId);
-    return new PlosOneUser(ua, applicationId, pep);
+    return new AmbraUser(ua, applicationId, pep);
   }
 
   /**
@@ -232,12 +232,12 @@ public class UserService {
    * @throws ApplicationException on access-check failure
    */
   @Transactional(readOnly = true)
-  public PlosOneUser getUserByAuthId(final String authId) throws ApplicationException {
+  public AmbraUser getUserByAuthId(final String authId) throws ApplicationException {
     UserAccount ua = getUserAccountByAuthId(authId);
     if (ua == null)
       return null;
 
-    return new PlosOneUser(ua, applicationId, pep);
+    return new AmbraUser(ua, applicationId, pep);
   }
 
   /**
@@ -365,7 +365,7 @@ public class UserService {
    * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void setProfile(final PlosOneUser inUser)
+  public void setProfile(final AmbraUser inUser)
       throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
       setProfile(inUser, false);
@@ -384,7 +384,7 @@ public class UserService {
    * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void setProfile(final PlosOneUser inUser, final String[] privateFields,
+  public void setProfile(final AmbraUser inUser, final String[] privateFields,
                          final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
@@ -407,7 +407,7 @@ public class UserService {
    * @throws ApplicationException ApplicationException
    * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
-  protected void setProfile(final PlosOneUser inUser, final boolean userNameIsRequired)
+  protected void setProfile(final AmbraUser inUser, final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
     pep.checkAccessAE(pep.SET_PROFILE, URI.create(inUser.getUserId()));
 
@@ -581,7 +581,7 @@ public class UserService {
    * @throws ApplicationException ApplicationException
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public void setPreferences(final PlosOneUser inUser) throws ApplicationException {
+  public void setPreferences(final AmbraUser inUser) throws ApplicationException {
     if (inUser == null)
       throw new ApplicationException("User is null");
 

@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserAccountsInterceptor;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.service.DisplayNameAlreadyExistsException;
@@ -129,7 +129,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   }
 
   private static final Map fieldToUINameMapping = new HashMap<String, String>();
-  private PlosOneUser newUser;
+  private AmbraUser newUser;
 
   static {
     fieldToUINameMapping.put(DISPLAY_NAME, "Username");
@@ -158,9 +158,9 @@ public abstract class UserProfileAction extends UserActionSupport {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String executeSaveUser() throws Exception {
-    final PlosOneUser plosOneUser = getPlosOneUserToUse();
+    final AmbraUser ambraUser = getAmbraUserToUse();
     //if new user then capture the displayname or if display name is blank (when user has been migrated)
-    if ((null == plosOneUser) || (displayNameRequired && StringUtils.isBlank(plosOneUser.getDisplayName()))) {
+    if ((null == ambraUser) || (displayNameRequired && StringUtils.isBlank(ambraUser.getDisplayName()))) {
         isDisplayNameSet = false;
     }
 
@@ -186,7 +186,7 @@ public abstract class UserProfileAction extends UserActionSupport {
         session.put(UserAccountsInterceptor.USER_KEY, topazId);
     }
 
-    newUser = createPlosOneUser();
+    newUser = createAmbraUser();
     //if new or migrated user then capture the displayname
     if (!isDisplayNameSet) {
       newUser.setDisplayName(this.displayName);
@@ -216,7 +216,7 @@ public abstract class UserProfileAction extends UserActionSupport {
    * Getter for newUser.
    * @return Value of newUser.
    */
-  protected PlosOneUser getSavedPlosOneUser() {
+  protected AmbraUser getSavedAmbraUser() {
     return newUser;
   }
 
@@ -230,8 +230,8 @@ public abstract class UserProfileAction extends UserActionSupport {
 
   @Transactional(readOnly = true)
   public String executeRetrieveUserProfile() throws Exception {
-    final PlosOneUser plosOneUser = getPlosOneUserToUse();
-    assignUserFields (plosOneUser);
+    final AmbraUser ambraUser = getAmbraUserToUse();
+    assignUserFields (ambraUser);
 
     final Collection<UserProfileGrant> grants = getUserService().getProfileFieldsThatArePrivate(topazId);
     setVisibility(grants);
@@ -239,26 +239,26 @@ public abstract class UserProfileAction extends UserActionSupport {
     return SUCCESS;
   }
 
-  private void assignUserFields (PlosOneUser plosOneUser){
-    authId = plosOneUser.getAuthId();
-    topazId = plosOneUser.getUserId();
-    email = plosOneUser.getEmail();
-    displayName = plosOneUser.getDisplayName();
-    realName = plosOneUser.getRealName();
-    givenNames = plosOneUser.getGivenNames();
-    surnames = plosOneUser.getSurnames();
-    title = plosOneUser.getTitle();
-    positionType = plosOneUser.getPositionType();
-    organizationType = plosOneUser.getOrganizationType();
-    organizationName = plosOneUser.getOrganizationName();
-    postalAddress = plosOneUser.getPostalAddress();
-    biographyText = plosOneUser.getBiographyText();
-    interestsText = plosOneUser.getInterestsText();
-    researchAreasText = plosOneUser.getResearchAreasText();
-    homePage = plosOneUser.getHomePage();
-    weblog = plosOneUser.getWeblog();
-    city = plosOneUser.getCity();
-    country = plosOneUser.getCountry();
+  private void assignUserFields (AmbraUser ambraUser){
+    authId = ambraUser.getAuthId();
+    topazId = ambraUser.getUserId();
+    email = ambraUser.getEmail();
+    displayName = ambraUser.getDisplayName();
+    realName = ambraUser.getRealName();
+    givenNames = ambraUser.getGivenNames();
+    surnames = ambraUser.getSurnames();
+    title = ambraUser.getTitle();
+    positionType = ambraUser.getPositionType();
+    organizationType = ambraUser.getOrganizationType();
+    organizationName = ambraUser.getOrganizationName();
+    postalAddress = ambraUser.getPostalAddress();
+    biographyText = ambraUser.getBiographyText();
+    interestsText = ambraUser.getInterestsText();
+    researchAreasText = ambraUser.getResearchAreasText();
+    homePage = ambraUser.getHomePage();
+    weblog = ambraUser.getWeblog();
+    city = ambraUser.getCity();
+    country = ambraUser.getCountry();
   }
 
 
@@ -269,20 +269,20 @@ public abstract class UserProfileAction extends UserActionSupport {
    */
   @Transactional(readOnly = true)
   public String prePopulateUserDetails() throws Exception {
-    final PlosOneUser plosOneUser = getPlosOneUserToUse();
+    final AmbraUser ambraUser = getAmbraUserToUse();
 
     isDisplayNameSet = false;
     //If the user has no topaz id
-    if (null == plosOneUser) {
+    if (null == ambraUser) {
       email = fetchUserEmailAddress();
       log.debug("new profile with email: " + email);
       return NEW_PROFILE;
-    } else if (StringUtils.isBlank(plosOneUser.getDisplayName())) {
+    } else if (StringUtils.isBlank(ambraUser.getDisplayName())) {
       // if the user has no display name, possibly getting migrated from an old system
       try {
-        log.debug("this is an existing user with email: " + plosOneUser.getEmail());
+        log.debug("this is an existing user with email: " + ambraUser.getEmail());
 
-        assignUserFields (plosOneUser);
+        assignUserFields (ambraUser);
       } catch(NullPointerException  ex) {
         //fetching email in the case where profile creation failed and so email did not get saved.
         //Will not be needed when all the user accounts with a profile have a email set up
@@ -299,43 +299,43 @@ public abstract class UserProfileAction extends UserActionSupport {
     return SUCCESS;
   }
 
-  private PlosOneUser createPlosOneUser() throws Exception {
-    PlosOneUser plosOneUser = getPlosOneUserToUse();
-    if (null == plosOneUser || StringUtils.isEmpty(plosOneUser.getEmail())) {
-      if (plosOneUser == null) {
-        plosOneUser = new PlosOneUser(this.authId);
+  private AmbraUser createAmbraUser() throws Exception {
+    AmbraUser ambraUser = getAmbraUserToUse();
+    if (null == ambraUser || StringUtils.isEmpty(ambraUser.getEmail())) {
+      if (ambraUser == null) {
+        ambraUser = new AmbraUser(this.authId);
       }
       //Set the email address if the email address did not get saved during profile creation
-      plosOneUser.setEmail(fetchUserEmailAddress());
+      ambraUser.setEmail(fetchUserEmailAddress());
     }
 
-    plosOneUser.setUserId(this.topazId);
-    plosOneUser.setRealName(this.realName);
-    plosOneUser.setTitle(this.title);
-    plosOneUser.setSurnames(this.surnames);
-    plosOneUser.setGivenNames(this.givenNames);
-    plosOneUser.setPositionType(this.positionType);
-    plosOneUser.setOrganizationType(this.organizationType);
-    plosOneUser.setOrganizationName(this.organizationName);
-    plosOneUser.setPostalAddress(this.postalAddress);
-    plosOneUser.setBiographyText(this.biographyText);
-    plosOneUser.setInterestsText(this.interestsText);
-    plosOneUser.setResearchAreasText(this.researchAreasText);
+    ambraUser.setUserId(this.topazId);
+    ambraUser.setRealName(this.realName);
+    ambraUser.setTitle(this.title);
+    ambraUser.setSurnames(this.surnames);
+    ambraUser.setGivenNames(this.givenNames);
+    ambraUser.setPositionType(this.positionType);
+    ambraUser.setOrganizationType(this.organizationType);
+    ambraUser.setOrganizationName(this.organizationName);
+    ambraUser.setPostalAddress(this.postalAddress);
+    ambraUser.setBiographyText(this.biographyText);
+    ambraUser.setInterestsText(this.interestsText);
+    ambraUser.setResearchAreasText(this.researchAreasText);
     final String homePageUrl = StringUtils.stripToNull(makeValidUrl(homePage));
-    plosOneUser.setHomePage(homePageUrl);
+    ambraUser.setHomePage(homePageUrl);
     final String weblogUrl = StringUtils.stripToNull(makeValidUrl(weblog));
-    plosOneUser.setWeblog(weblogUrl);
-    plosOneUser.setCity(this.city);
-    plosOneUser.setCountry(this.country);
-    return plosOneUser;
+    ambraUser.setWeblog(weblogUrl);
+    ambraUser.setCity(this.city);
+    ambraUser.setCountry(this.country);
+    return ambraUser;
   }
 
   /**
-   * Provides a way to get the PlosOneUser to edit
-   * @return the PlosOneUser to edit
+   * Provides a way to get the AmbraUser to edit
+   * @return the AmbraUser to edit
    * @throws org.topazproject.ambra.ApplicationException ApplicationException
    */
-  protected abstract PlosOneUser getPlosOneUserToUse() throws ApplicationException;
+  protected abstract AmbraUser getAmbraUserToUse() throws ApplicationException;
 
   public String getEmail() {
     return email;

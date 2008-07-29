@@ -24,7 +24,7 @@ import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
 
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.action.AdminUserProfileAction;
 import org.topazproject.ambra.user.action.AssignAdminRoleAction;
@@ -77,7 +77,7 @@ public class UserActionsTest extends BaseAmbraTestCase {
     displayUserAction.setUserId(topazId);
     assertEquals(SUCCESS, displayUserAction.execute());
 
-    final PlosOneUser pou = displayUserAction.getPou();
+    final AmbraUser pou = displayUserAction.getPou();
     assertEquals(REAL_NAME, pou.getRealName());
     assertEquals(USERNAME, pou.getDisplayName());
     assertEquals(TEST_EMAIL, pou.getEmail());
@@ -122,7 +122,7 @@ public class UserActionsTest extends BaseAmbraTestCase {
     displayUserAction.setUserId(topazId);
     assertEquals(SUCCESS, displayUserAction.execute());
 
-    final PlosOneUser pou = displayUserAction.getPou();
+    final AmbraUser pou = displayUserAction.getPou();
     assertEquals(TEST_EMAIL, pou.getEmail());
     assertEquals(USERNAME, pou.getDisplayName());
     assertEquals(GIVENNAMES, pou.getGivenNames());
@@ -180,7 +180,7 @@ public class UserActionsTest extends BaseAmbraTestCase {
     adminUserProfileAction.setTopazId(topazUserIdList[0]);
     assertEquals(SUCCESS, adminUserProfileAction.executeRetrieveUserProfile());
 
-    final PlosOneUser pou = adminUserProfileAction.getPlosOneUserToUse();
+    final AmbraUser pou = adminUserProfileAction.getAmbraUserToUse();
     assertEquals(USERNAME, pou.getDisplayName());
     assertEquals(TEST_EMAIL, pou.getEmail());
     assertEquals(GIVENNAMES, pou.getGivenNames());
@@ -215,7 +215,7 @@ public class UserActionsTest extends BaseAmbraTestCase {
     adminUserProfileAction.setTopazId(topazUserIdList[0]);
     assertEquals(SUCCESS, adminUserProfileAction.executeRetrieveUserProfile());
 
-    final PlosOneUser pou = adminUserProfileAction.getPlosOneUserToUse();
+    final AmbraUser pou = adminUserProfileAction.getAmbraUserToUse();
     assertEquals(USERNAME, pou.getDisplayName());
     assertEquals(TEST_EMAIL, pou.getEmail());
     assertEquals(GIVENNAMES, pou.getGivenNames());
@@ -253,13 +253,13 @@ public class UserActionsTest extends BaseAmbraTestCase {
   }
 
   private Map<String, Object> createMockSessionMap(final String authId, final String topazId) {
-    final PlosOneUser plosOneUser = new PlosOneUser(authId);
+    final AmbraUser ambraUser = new AmbraUser(authId);
     if (null != topazId) {
-      plosOneUser.setUserId(topazId);
+      ambraUser.setUserId(topazId);
     }
 
     final Map<String, Object> sessionMap = new HashMap<String, Object>();
-    sessionMap.put(PLOS_ONE_USER_KEY, plosOneUser);
+    sessionMap.put(PLOS_ONE_USER_KEY, ambraUser);
     sessionMap.put(Constants.SINGLE_SIGNON_USER_KEY, authId);
 
     return sessionMap;

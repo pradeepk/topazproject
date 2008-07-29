@@ -34,7 +34,7 @@ import org.topazproject.ambra.models.RatingContent;
 import org.topazproject.ambra.models.RatingSummary;
 import org.topazproject.ambra.models.RatingSummaryContent;
 import org.topazproject.ambra.rating.service.RatingsPEP;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Restrictions;
@@ -81,7 +81,7 @@ public class RateAction extends AbstractRatingAction {
   @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
   public String rateArticle() {
-    final PlosOneUser       user               = PlosOneUser.getCurrentUser();
+    final AmbraUser       user               = AmbraUser.getCurrentUser();
     final Date              now                = new Date(System.currentTimeMillis());
     final URI               annotatedArticle;
 
@@ -277,7 +277,7 @@ public class RateAction extends AbstractRatingAction {
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public String retrieveRatingsForUser() {
-    final PlosOneUser user = PlosOneUser.getCurrentUser();
+    final AmbraUser user = AmbraUser.getCurrentUser();
 
     if (user == null) {
       log.info("User is null for retrieving user ratings");

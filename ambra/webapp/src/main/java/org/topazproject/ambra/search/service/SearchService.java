@@ -32,7 +32,7 @@ import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.search.SearchResultPage;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 
 /**
  * Service to provide search capabilities for the application
@@ -61,7 +61,7 @@ public class SearchService {
   public SearchResultPage find(final String query, final int startPage, final int pageSize)
       throws ApplicationException {
     try {
-      PlosOneUser   user     = PlosOneUser.getCurrentUser();
+      AmbraUser   user     = AmbraUser.getCurrentUser();
       final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
 
       Results results = cache.get(cacheKey, -1,

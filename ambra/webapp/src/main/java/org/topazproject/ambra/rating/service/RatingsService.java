@@ -42,7 +42,7 @@ import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingContent;
 import org.topazproject.ambra.models.RatingSummary;
 import org.topazproject.ambra.models.RatingSummaryContent;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
@@ -177,7 +177,7 @@ public class RatingsService {
 
     // the PEP check is against what is rated,
     // e.g. can this user see the ratings for what is rated?
-    PlosOneUser user = PlosOneUser.getCurrentUser();
+    AmbraUser user = AmbraUser.getCurrentUser();
     pep.checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
                           rating.getAnnotates());
 
@@ -229,7 +229,7 @@ public class RatingsService {
 
   @Transactional(readOnly = true)
   public boolean hasRated(String articleURI) {
-    final PlosOneUser   user               = PlosOneUser.getCurrentUser();
+    final AmbraUser   user               = AmbraUser.getCurrentUser();
 
     if (user != null) {
       if (log.isDebugEnabled()) {

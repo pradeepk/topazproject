@@ -40,8 +40,8 @@ import java.util.Set;
  *
  * @author Stephen Cheng
  */
-public class PlosOneFreemarkerConfig {
-  private static final Log log = LogFactory.getLog(PlosOneFreemarkerConfig.class);
+public class AmbraFreemarkerConfig {
+  private static final Log log = LogFactory.getLog(AmbraFreemarkerConfig.class);
 
   private static final String[] DEFAULT_CSS_FILES = {"/css/iepc.css", "/css/screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
@@ -67,7 +67,7 @@ public class PlosOneFreemarkerConfig {
    * of the configs in the config to assemble a union of pages defined.
    *
    */
-  public PlosOneFreemarkerConfig() {
+  public AmbraFreemarkerConfig() {
     Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
     if (log.isDebugEnabled()) {
       log.debug("Reading FreeMarker configuration");

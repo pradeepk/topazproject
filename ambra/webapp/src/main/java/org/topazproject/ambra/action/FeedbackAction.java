@@ -23,7 +23,7 @@ import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
 import org.topazproject.ambra.service.AmbraMailer;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.action.UserActionSupport;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,11 +59,11 @@ public class FeedbackAction extends UserActionSupport {
   }
 
   private void setUserDetailsFromSession() {
-    final PlosOneUser plosOneUser = PlosOneUser.getCurrentUser();
-    if (null != plosOneUser) {
-      name = plosOneUser.getDisplayName();
-      fromEmailAddress = plosOneUser.getEmail();
-      topazId = plosOneUser.getUserId();
+    final AmbraUser ambraUser = AmbraUser.getCurrentUser();
+    if (null != ambraUser) {
+      name = ambraUser.getDisplayName();
+      fromEmailAddress = ambraUser.getEmail();
+      topazId = ambraUser.getUserId();
     }
   }
 

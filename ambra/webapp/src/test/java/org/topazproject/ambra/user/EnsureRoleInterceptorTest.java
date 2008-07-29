@@ -26,7 +26,7 @@ import com.opensymphony.xwork2.mock.MockActionInvocation;
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.EnsureRoleInterceptor;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.service.UserService;
 
 import java.util.HashMap;
@@ -51,17 +51,17 @@ public class EnsureRoleInterceptorTest extends BaseAmbraTestCase {
 
   public void testShouldReturnNotSufficientRole() throws Exception {
     final String GUID = "A_GUID";
-    final PlosOneUser plosOneUser = new PlosOneUser(GUID);
-    plosOneUser.setUserId("topazId");
-    plosOneUser.setEmail("viru@home.com");
-    plosOneUser.setDisplayName("Viru");  //Display name is already set
-    plosOneUser.setRealName("virender");
+    final AmbraUser ambraUser = new AmbraUser(GUID);
+    ambraUser.setUserId("topazId");
+    ambraUser.setEmail("viru@home.com");
+    ambraUser.setDisplayName("Viru");  //Display name is already set
+    ambraUser.setRealName("virender");
 
     final EnsureRoleInterceptor interceptor = new EnsureRoleInterceptor() {
       protected Map<String, Object> getUserSessionMap() {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put(Constants.SINGLE_SIGNON_USER_KEY, "A_SINGLE_SIGNON_KEY");
-        map.put(Constants.PLOS_ONE_USER_KEY, plosOneUser);
+        map.put(Constants.PLOS_ONE_USER_KEY, ambraUser);
         return map;
       }
     };
@@ -81,17 +81,17 @@ public class EnsureRoleInterceptorTest extends BaseAmbraTestCase {
 
   public void testShouldForwardToOriginalActionAsUserIsAdmin() throws Exception {
     final String GUID = "ASDASDASD12312313EDB";
-    final PlosOneUser plosOneUser = new PlosOneUser(GUID);
-    plosOneUser.setUserId("topazId");
-    plosOneUser.setEmail("viru@home.com");
-    plosOneUser.setDisplayName("Viru");  //Display name is already set
-    plosOneUser.setRealName("virender");
+    final AmbraUser ambraUser = new AmbraUser(GUID);
+    ambraUser.setUserId("topazId");
+    ambraUser.setEmail("viru@home.com");
+    ambraUser.setDisplayName("Viru");  //Display name is already set
+    ambraUser.setRealName("virender");
 
     final EnsureRoleInterceptor interceptor = new EnsureRoleInterceptor() {
       protected Map<String, Object> getUserSessionMap() {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put(Constants.SINGLE_SIGNON_USER_KEY, "SINGLE_SIGNON_KEY_ASDASDASD12312313EDB");
-        map.put(Constants.PLOS_ONE_USER_KEY, plosOneUser);
+        map.put(Constants.PLOS_ONE_USER_KEY, ambraUser);
         return map;
       }
     };

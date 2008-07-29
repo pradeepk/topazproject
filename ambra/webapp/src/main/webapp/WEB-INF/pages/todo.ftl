@@ -44,11 +44,11 @@
       </p>
 
 			<p>
-			  <@s.a href="/plos-registration/registerPart1.action">Register New User</@s.a>
+			  <@s.a href="/ambra-registration/registerPart1.action">Register New User</@s.a>
 			</p>
 		
 			<p>
-					<#assign returnURL="http://"+freemarker_config.getPlosOneHost()+"/"+freemarker_config.getContext()>
+					<#assign returnURL="http://"+freemarker_config.getAmbraHost()+"/"+freemarker_config.getContext()>
 					<a href="${freemarker_config.getCasLoginURL()}?service=${returnURL?url("UTF-8")}">Login</a>
 			</p>
 

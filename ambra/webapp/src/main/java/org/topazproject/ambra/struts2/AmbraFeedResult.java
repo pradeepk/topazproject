@@ -35,11 +35,11 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author jsuttor
  */
-public class PlosOneFeedResult implements Result {
+public class AmbraFeedResult implements Result {
 
   private String feedName;
 
-  private static final Log log = LogFactory.getLog(PlosOneFeedResult.class);
+  private static final Log log = LogFactory.getLog(AmbraFeedResult.class);
 
   /**
    * @see com.opensymphony.xwork2.Result#execute(com.opensymphony.xwork2.ActionInvocation)
@@ -52,7 +52,7 @@ public class PlosOneFeedResult implements Result {
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("Creating a PlosOneFeedResult with feedName=" + feedName);
+      log.debug("Creating a AmbraFeedResult with feedName=" + feedName);
     }
 
     // get the feed from the stack that can be found by the feedName

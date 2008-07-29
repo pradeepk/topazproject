@@ -33,9 +33,6 @@ import static org.topazproject.ambra.annotation.service.BaseAnnotation.DELETE_MA
 import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
 import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
-
-
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +40,7 @@ import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.ambra.models.ReplyThread;
 import org.topazproject.ambra.permission.service.PermissionsService;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -98,7 +95,7 @@ public class ReplyService extends BaseAnnotationService {
       pep.checkAccess(pep.CREATE_REPLY, URI.create(inReplyTo));
 
     final String contentType = getContentType(mimeType);
-    String       user        = PlosOneUser.getCurrentUser().getUserId();
+    String       user        = AmbraUser.getCurrentUser().getUserId();
     ReplyBlob    blob        = new ReplyBlob(contentType, body.getBytes(getEncodingCharset()));
 
     final Reply  r           = new ReplyThread();

@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.service.CategoryBean;
 
 
@@ -47,12 +47,12 @@ public abstract class UserAlertsAction extends UserActionSupport {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String saveAlerts() throws Exception {
-    final PlosOneUser plosOneUser = getPlosOneUserToUse();
+    final AmbraUser ambraUser = getAmbraUserToUse();
     if (log.isDebugEnabled()) {
-      if (plosOneUser != null) {
-        log.debug("plosuser authID = " + plosOneUser.getAuthId());
-        log.debug("plosuser email = " + plosOneUser.getEmail());
-        log.debug("plosuser userID = " + plosOneUser.getUserId());
+      if (ambraUser != null) {
+        log.debug("plosuser authID = " + ambraUser.getAuthId());
+        log.debug("plosuser email = " + ambraUser.getEmail());
+        log.debug("plosuser userID = " + ambraUser.getUserId());
       }
     }
 
@@ -71,9 +71,9 @@ public abstract class UserAlertsAction extends UserActionSupport {
     }
 
     final String[] alerts = alertsList.toArray(new String[alertsList.size()]);
-    plosOneUser.setAlerts(alerts);
+    ambraUser.setAlerts(alerts);
 
-    getUserService().setPreferences(plosOneUser);
+    getUserService().setPreferences(ambraUser);
 
     return SUCCESS;
   }
@@ -85,16 +85,16 @@ public abstract class UserAlertsAction extends UserActionSupport {
    */
   @Transactional(readOnly = true)
   public String retrieveAlerts() throws Exception {
-    final PlosOneUser plosOneUser = getPlosOneUserToUse();
+    final AmbraUser ambraUser = getAmbraUserToUse();
     final Collection<String> monthlyAlertsList = new ArrayList<String>();
     final Collection<String> weeklyAlertsList = new ArrayList<String>();
 
-    final String[] alerts = plosOneUser.getAlerts();
+    final String[] alerts = ambraUser.getAlerts();
 
     if (log.isDebugEnabled()) {
-      log.debug("plosuser authID = " + plosOneUser.getAuthId());
-      log.debug("plosuser email = " + plosOneUser.getEmail());
-      log.debug("plosuser userID = " + plosOneUser.getUserId());
+      log.debug("plosuser authID = " + ambraUser.getAuthId());
+      log.debug("plosuser email = " + ambraUser.getEmail());
+      log.debug("plosuser userID = " + ambraUser.getUserId());
     }
 
     if (null != alerts) {
@@ -113,16 +113,16 @@ public abstract class UserAlertsAction extends UserActionSupport {
     monthlyAlerts = monthlyAlertsList.toArray(new String[monthlyAlertsList.size()]);
     weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);
 
-    setDisplayName(plosOneUser.getDisplayName());
+    setDisplayName(ambraUser.getDisplayName());
     return SUCCESS;
   }
 
   /**
-   * Provides a way to get the PlosOneUser to edit
-   * @return the PlosOneUser to edit
+   * Provides a way to get the AmbraUser to edit
+   * @return the AmbraUser to edit
    * @throws org.topazproject.ambra.ApplicationException ApplicationException
    */
-  protected abstract PlosOneUser getPlosOneUserToUse() throws ApplicationException;
+  protected abstract AmbraUser getAmbraUserToUse() throws ApplicationException;
 
   /**
    * @return categories that have monthly alerts

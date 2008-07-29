@@ -86,7 +86,7 @@ public class ArticleFeed extends BaseActionSupport {
   private String title;
   private String selfLink;
 
-  // WebWorks PlosOneFeedResult parms
+  // WebWorks AmbraFeedResult parms
   private WireFeed wireFeed;
 
   /**
@@ -152,7 +152,7 @@ public class ArticleFeed extends BaseActionSupport {
           }
         });
 
-    // Action response type is PlosOneFeedResult, it will return wireFeed as a response.
+    // Action response type is AmbraFeedResult, it will return wireFeed as a response.
 
     // tell WebWorks success
     return SUCCESS;

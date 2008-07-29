@@ -24,7 +24,7 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 
 
@@ -41,7 +41,7 @@ public class DisplayUserAction extends UserActionSupport {
 
   private static final Log log = LogFactory.getLog(DisplayUserAction.class);
 
-  private PlosOneUser pou;
+  private AmbraUser pou;
   private String userId;
   private Collection<String> privateFields;
 
@@ -55,7 +55,7 @@ public class DisplayUserAction extends UserActionSupport {
     if (log.isDebugEnabled()) {
       log.debug("retrieving user profile for: " + userId);
     }
-    pou = new PlosOneUserDecorator(getUserService().getUserWithProfileLoaded(userId));
+    pou = new AmbraUserDecorator(getUserService().getUserWithProfileLoaded(userId));
     return SUCCESS;
   }
 
@@ -79,7 +79,7 @@ public class DisplayUserAction extends UserActionSupport {
   /**
    * @return Returns the pou.
    */
-  public PlosOneUser getPou() {
+  public AmbraUser getPou() {
     return pou;
   }
 
@@ -87,7 +87,7 @@ public class DisplayUserAction extends UserActionSupport {
    * @param pou
    *          The pou to set.
    */
-  public void setPou(PlosOneUser pou) {
+  public void setPou(AmbraUser pou) {
     this.pou = pou;
   }
 

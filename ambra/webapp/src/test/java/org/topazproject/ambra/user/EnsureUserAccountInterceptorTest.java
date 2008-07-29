@@ -25,7 +25,7 @@ import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.user.EnsureUserAccountInterceptor;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.service.UserService;
 
 import java.util.HashMap;
@@ -50,17 +50,17 @@ public class EnsureUserAccountInterceptorTest extends BaseAmbraTestCase {
 
   public void testShouldForwardToUpdateNewAccount() throws Exception {
     final String GUID = "ASDASDASD12312313EDB";
-    final PlosOneUser plosOneUser = new PlosOneUser(GUID);
-    plosOneUser.setUserId("topazId");
-    plosOneUser.setEmail("viru@home.com");
-    plosOneUser.setDisplayName(null); //Display name is not set
-    plosOneUser.setRealName("virender");
+    final AmbraUser ambraUser = new AmbraUser(GUID);
+    ambraUser.setUserId("topazId");
+    ambraUser.setEmail("viru@home.com");
+    ambraUser.setDisplayName(null); //Display name is not set
+    ambraUser.setRealName("virender");
 
     final EnsureUserAccountInterceptor interceptor = new EnsureUserAccountInterceptor() {
       protected Map<String, Object> getUserSessionMap() {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put(Constants.SINGLE_SIGNON_USER_KEY, "SINGLE_SIGNON_KEY_ASDASDASD12312313EDB");
-        map.put(Constants.PLOS_ONE_USER_KEY, plosOneUser);
+        map.put(Constants.PLOS_ONE_USER_KEY, ambraUser);
         return map;
       }
     };
@@ -68,8 +68,8 @@ public class EnsureUserAccountInterceptorTest extends BaseAmbraTestCase {
     final MockActionInvocation actionInvocation = new MockActionInvocation();
 
     final UserService mockUserService = new UserService() {
-      public PlosOneUser getUserByAuthId(final String guid) throws ApplicationException {
-        return plosOneUser;
+      public AmbraUser getUserByAuthId(final String guid) throws ApplicationException {
+        return ambraUser;
       }
     };
     interceptor.setUserService(mockUserService);
@@ -82,17 +82,17 @@ public class EnsureUserAccountInterceptorTest extends BaseAmbraTestCase {
 
   public void testShouldForwardToOriginalAction() throws Exception {
     final String GUID = "ASDASDASD12312313EDB";
-    final PlosOneUser plosOneUser = new PlosOneUser(GUID);
-    plosOneUser.setUserId("topazId");
-    plosOneUser.setEmail("viru@home.com");
-    plosOneUser.setDisplayName("Viru");  //Display name is already set
-    plosOneUser.setRealName("virender");
+    final AmbraUser ambraUser = new AmbraUser(GUID);
+    ambraUser.setUserId("topazId");
+    ambraUser.setEmail("viru@home.com");
+    ambraUser.setDisplayName("Viru");  //Display name is already set
+    ambraUser.setRealName("virender");
 
     final EnsureUserAccountInterceptor interceptor = new EnsureUserAccountInterceptor() {
       protected Map<String, Object> getUserSessionMap() {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put(Constants.SINGLE_SIGNON_USER_KEY, "SINGLE_SIGNON_KEY_ASDASDASD12312313EDB");
-        map.put(Constants.PLOS_ONE_USER_KEY, plosOneUser);
+        map.put(Constants.PLOS_ONE_USER_KEY, ambraUser);
         return map;
       }
     };
@@ -106,8 +106,8 @@ public class EnsureUserAccountInterceptorTest extends BaseAmbraTestCase {
     };
 
     final UserService mockUserService = new UserService() {
-      public PlosOneUser getUserByAuthId(final String guid) throws ApplicationException {
-        return plosOneUser;
+      public AmbraUser getUserByAuthId(final String guid) throws ApplicationException {
+        return ambraUser;
       }
     };
 

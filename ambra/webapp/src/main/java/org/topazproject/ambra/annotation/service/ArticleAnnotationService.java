@@ -36,11 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import static org.topazproject.ambra.annotation.service.WebAnnotation.FLAG_MASK;
 import static org.topazproject.ambra.annotation.service.WebAnnotation.PUBLIC_MASK;
 
-
-
-
-
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +47,7 @@ import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.permission.service.PermissionsService;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
@@ -144,7 +139,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String         user       = PlosOneUser.getCurrentUser().getUserId();
+    String         user       = AmbraUser.getCurrentUser().getUserId();
     AnnotationBlob blob       =
       new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
 
@@ -225,7 +220,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String                  user       = PlosOneUser.getCurrentUser().getUserId();
+    String                  user       = AmbraUser.getCurrentUser().getUserId();
     AnnotationBlob          blob       =
       new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
 

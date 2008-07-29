@@ -62,7 +62,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
       return actionInvocation.invoke();
     }
 
-    PlosOneUser plosUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
+    AmbraUser plosUser = (AmbraUser) sessionMap.get(PLOS_ONE_USER_KEY);
     if (null != plosUser) {
       if (log.isDebugEnabled()) {
         log.debug("Retrieved user from session with userId: " + plosUser.getUserId());
@@ -90,8 +90,8 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     }
   }
 
-  private String getReturnCodeDependingOnDisplayName(final PlosOneUser plosOneUser, final ActionInvocation actionInvocation) throws Exception {
-    if (StringUtils.hasText(plosOneUser.getDisplayName())) {
+  private String getReturnCodeDependingOnDisplayName(final AmbraUser ambraUser, final ActionInvocation actionInvocation) throws Exception {
+    if (StringUtils.hasText(ambraUser.getDisplayName())) {
       //forward the user to the page he was initially going to
       return actionInvocation.invoke();
     } else {
@@ -108,7 +108,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     this.userService = userService;
   }
 
-  private void updateUserEmailAddress(PlosOneUser user, String authId) throws ApplicationException {
+  private void updateUserEmailAddress(AmbraUser user, String authId) throws ApplicationException {
     String emailAddress = fetchUserEmailAddress(user, authId);
     if (emailAddress != null) {
       if (!emailAddress.equals(user.getEmail())) {
@@ -130,7 +130,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     }
   }
 
-  private String fetchUserEmailAddress(PlosOneUser user, String authId) throws ApplicationException {
+  private String fetchUserEmailAddress(AmbraUser user, String authId) throws ApplicationException {
     String presetEmail = (String) getUserSessionMap().get(SINGLE_SIGNON_EMAIL_KEY);
     if (presetEmail != null)
       return presetEmail;

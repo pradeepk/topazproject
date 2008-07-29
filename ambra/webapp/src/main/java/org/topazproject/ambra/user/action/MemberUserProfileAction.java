@@ -20,7 +20,7 @@ package org.topazproject.ambra.user.action;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.Constants;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 
 import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
 
@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class MemberUserProfileAction extends UserProfileAction {
   /**
-   * Save the user and save the PlosOneUser into Session
+   * Save the user and save the AmbraUser into Session
    * @return webwork status code
    * @throws Exception
    */
@@ -43,16 +43,16 @@ public class MemberUserProfileAction extends UserProfileAction {
 
     if (SUCCESS.equals(statusCode)) {
       final Map<String, Object> sessionMap = getSessionMap();
-      sessionMap.put(PLOS_ONE_USER_KEY, super.getSavedPlosOneUser());
+      sessionMap.put(PLOS_ONE_USER_KEY, super.getSavedAmbraUser());
     }
 
     return statusCode;
   }
 
   @Override
-  protected PlosOneUser getPlosOneUserToUse() {
+  protected AmbraUser getAmbraUserToUse() {
     final Map<String, Object> sessionMap = getSessionMap();
-    return (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
+    return (AmbraUser) sessionMap.get(PLOS_ONE_USER_KEY);
   }
 
   @Override

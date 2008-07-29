@@ -18,7 +18,7 @@
  */
 package org.topazproject.ambra.user.action;
 
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 
 /**
  * User Alerts Action that is called by the member user to update their alerts preferences
@@ -26,7 +26,7 @@ import org.topazproject.ambra.user.PlosOneUser;
  */
 public class MemberUserAlertsAction extends UserAlertsAction {
   @Override
-  protected PlosOneUser getPlosOneUserToUse() {
-    return PlosOneUser.getCurrentUser();
+  protected AmbraUser getAmbraUserToUse() {
+    return AmbraUser.getCurrentUser();
   }
 }

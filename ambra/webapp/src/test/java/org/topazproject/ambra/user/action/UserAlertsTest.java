@@ -25,7 +25,7 @@ import static org.topazproject.ambra.Constants.PLOS_ONE_USER_KEY;
 
 import org.topazproject.ambra.BaseAmbraTestCase;
 import org.topazproject.ambra.Constants;
-import org.topazproject.ambra.user.PlosOneUser;
+import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.action.MemberUserAlertsAction;
 import org.topazproject.ambra.user.action.MemberUserProfileAction;
 import org.topazproject.ambra.user.action.UserAlertsAction;
@@ -116,13 +116,13 @@ public class UserAlertsTest extends BaseAmbraTestCase {
   }
 
   private Map<String, Object> createMockSessionMap(final String authId, final String topazId) {
-    final PlosOneUser plosOneUser = new PlosOneUser(authId);
+    final AmbraUser ambraUser = new AmbraUser(authId);
     if (null != topazId) {
-      plosOneUser.setUserId(topazId);
+      ambraUser.setUserId(topazId);
     }
 
     final Map<String, Object> sessionMap = new HashMap<String, Object>();
-    sessionMap.put(PLOS_ONE_USER_KEY, plosOneUser);
+    sessionMap.put(PLOS_ONE_USER_KEY, ambraUser);
     sessionMap.put(Constants.SINGLE_SIGNON_USER_KEY, authId);
 
     return sessionMap;
