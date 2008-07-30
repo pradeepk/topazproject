@@ -1,6 +1,5 @@
-/*
- * $HeadURL::                                                                            $ $Id:
- * PlosStreamResult.java 946 2006-11-03 22:23:42Z viru $
+/* $HeadURL::                                                                            $ 
+ * $Id::                                                      $
  *
  * Copyright (c) 2006-2007 by Topaz, Inc. http://topazproject.org
  *
