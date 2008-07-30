@@ -68,7 +68,7 @@ public abstract class CitationUtils {
           String[] givenNames = gns.split(" ");
           int gnc = 0;
           for(String gn :givenNames) {
-            if((correction && gnc++ == givenNames.length - 1) || !correction) {
+            if (gn.length() > 0 && ((correction && gnc++ == givenNames.length - 1) || !correction)) {
               if(gn.matches(".*\\p{Pd}\\p{Lu}.*")) {
                 String[] sarr = gn.split("\\p{Pd}");
                 sb.append(sarr[0].charAt(0));
@@ -143,20 +143,20 @@ public abstract class CitationUtils {
   }
 
   /**
-   * Assembles a String representing an annotation citatation based on a
-   * prescribed format.
+   * Assembles a String representing an annotation citatation based on a prescribed format.
    * <p>
    * FORMAT:
    * <p>
-   * {first five authors of the article}, et al. (<Year the annotation was
-   * created>) Correction: {article title}. {journal abbreviated name}
-   * {annotation URL}
+   * {first five authors of the article}, et al. (<Year the annotation was created>) Correction:
+   * {article title}. {journal abbreviated name} {annotation URL}
    *
-   * @param ci The {@link CitationInfo} pertaining to the article.
-   * @param wa The {@link WebAnnotation}.
-   * @return A newly created article annotation citation String.
-   * @see http://wiki.plos.org/pmwiki.php/Topaz/Corrections for the format
-   *      specification
+   * @param ci
+   *          The {@link CitationInfo} pertaining to the article.
+   * @param wa
+   *          The {@link WebAnnotation}.
+   * @return A newly created article annotation citation String. <br>
+   *         Refer to: <a href="http://wiki.plos.org/pmwiki.php/Topaz/Corrections"
+   *         >http://wiki.plos.org/pmwiki.php/Topaz/Corrections</a> for the format specification.
    */
   public static String generateArticleCorrectionCitationString(CitationInfo ci, WebAnnotation wa) {
     assert ci != null;
