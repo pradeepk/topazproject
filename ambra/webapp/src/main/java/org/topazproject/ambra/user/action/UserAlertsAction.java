@@ -50,9 +50,9 @@ public abstract class UserAlertsAction extends UserActionSupport {
     final AmbraUser ambraUser = getAmbraUserToUse();
     if (log.isDebugEnabled()) {
       if (ambraUser != null) {
-        log.debug("plosuser authID = " + ambraUser.getAuthId());
-        log.debug("plosuser email = " + ambraUser.getEmail());
-        log.debug("plosuser userID = " + ambraUser.getUserId());
+        log.debug("ambrauser authID = " + ambraUser.getAuthId());
+        log.debug("ambrauser email = " + ambraUser.getEmail());
+        log.debug("ambrauser userID = " + ambraUser.getUserId());
       }
     }
 
@@ -92,9 +92,9 @@ public abstract class UserAlertsAction extends UserActionSupport {
     final String[] alerts = ambraUser.getAlerts();
 
     if (log.isDebugEnabled()) {
-      log.debug("plosuser authID = " + ambraUser.getAuthId());
-      log.debug("plosuser email = " + ambraUser.getEmail());
-      log.debug("plosuser userID = " + ambraUser.getUserId());
+      log.debug("ambrauser authID = " + ambraUser.getAuthId());
+      log.debug("ambrauser email = " + ambraUser.getEmail());
+      log.debug("ambrauser userID = " + ambraUser.getUserId());
     }
 
     if (null != alerts) {

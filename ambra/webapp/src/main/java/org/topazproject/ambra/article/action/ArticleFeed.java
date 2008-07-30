@@ -90,7 +90,7 @@ public class ArticleFeed extends BaseActionSupport {
   private WireFeed wireFeed;
 
   /**
-   * PLoS ONE Configuration
+   * Ambra Configuration
    */
   private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 

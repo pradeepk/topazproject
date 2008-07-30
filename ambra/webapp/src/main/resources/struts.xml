@@ -65,7 +65,7 @@
       <interceptor name="journalSessionSetup" class="org.topazproject.ambra.journal.SessionFiltersInterceptor"/>
       <interceptor name="ensureUserAccount" class="org.topazproject.ambra.user.EnsureUserAccountInterceptor"/>
       <interceptor name="ensureAdmin" class="org.topazproject.ambra.user.EnsureRoleInterceptor"/>
-      <interceptor name="plosUserLookup" class="org.topazproject.ambra.user.UserAccountsInterceptor"/>
+      <interceptor name="ambraUserLookup" class="org.topazproject.ambra.user.UserAccountsInterceptor"/>
       <interceptor name="json" class="com.googlecode.jsonplugin.JSONInterceptor"/>
       
       <interceptor-stack name="strutsBaseStack">
@@ -96,24 +96,24 @@
         </interceptor-ref>
       </interceptor-stack>
 
-      <interceptor-stack name="plosBaseStack">
+      <interceptor-stack name="ambraBaseStack">
         <interceptor-ref name="strutsBaseStack"/>
         <interceptor-ref name="journalSessionSetup"/>
-        <interceptor-ref name="plosUserLookup"/>
+        <interceptor-ref name="ambraUserLookup"/>
       </interceptor-stack>
 
-      <interceptor-stack name="plosUserStack">
-        <interceptor-ref name="plosBaseStack" />
+      <interceptor-stack name="ambraUserStack">
+        <interceptor-ref name="ambraBaseStack" />
         <interceptor-ref name="ensureUserAccount" />
       </interceptor-stack>
 
-      <interceptor-stack name="plosAdminStack">
-        <interceptor-ref name="plosUserStack" />
+      <interceptor-stack name="ambraAdminStack">
+        <interceptor-ref name="ambraUserStack" />
         <interceptor-ref name="ensureAdmin" />
       </interceptor-stack>
     </interceptors>
 
-    <default-interceptor-ref name="plosUserStack" />
+    <default-interceptor-ref name="ambraUserStack" />
 
     <default-action-ref name="pageNotFound" />
 
@@ -300,7 +300,7 @@
       <interceptor-ref name="chain">
         <param name="excludes">targetSource, callbacks, exposeProxy</param>
       </interceptor-ref>
-      <interceptor-ref name="plosUserStack"/>
+      <interceptor-ref name="ambraUserStack"/>
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/article_body.ftl</param>
         <param name="noCache">true</param>
@@ -383,7 +383,7 @@
       <interceptor-ref name="chain">
         <param name="excludes">targetSource, callbacks, exposeProxy</param>
       </interceptor-ref>
-      <interceptor-ref name="plosUserStack"/>
+      <interceptor-ref name="ambraUserStack"/>
       <result type="chain">
         <param name="actionName">getAverageRatingsForArticle</param>
         <param name="namespace">/rate</param>
@@ -765,7 +765,7 @@
   </package>
 
   <package name="user" extends="default" namespace="/user">
-    <default-interceptor-ref name="plosBaseStack" />
+    <default-interceptor-ref name="ambraBaseStack" />
 
     <action name="prePopulateNewUser" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="prePopulateUserDetails">
       <result name="new-profile" type="user">
@@ -807,7 +807,7 @@
   </package>
 
   <package name="admin" extends="default" namespace="/admin">
-    <default-interceptor-ref name="plosAdminStack" />
+    <default-interceptor-ref name="ambraAdminStack" />
 
     <action name="oldMenu" class="org.topazproject.ambra.action.NoOpAction">
       <result>/WEB-INF/pages/todo.ftl</result>

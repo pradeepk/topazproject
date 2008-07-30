@@ -309,7 +309,7 @@ public class ArticleXMLUtils {
       throw new ApplicationException(e);
     }
 
-    // PLoS stylesheet leaves "END_TITLE" as a marker for other processes
+    // Ambra stylesheet leaves "END_TITLE" as a marker for other processes
     transformedString = transformedString.replace("END_TITLE", "");
     return transformedString;
   }

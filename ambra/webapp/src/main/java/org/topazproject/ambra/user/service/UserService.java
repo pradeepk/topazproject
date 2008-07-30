@@ -57,7 +57,7 @@ import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
- * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
+ * Class to roll up web services that a user needs in Ambra. Rest of application should generally
  * use AmbraUser to
  *
  * @author Stephen Cheng
@@ -358,7 +358,7 @@ public class UserService {
   }
 
   /**
-   * Takes in a PLoS ONE user and write the profile to the store
+   * Takes in an Ambra user and write the profile to the store
    *
    * @param inUser write profile of this user to the store
    * @throws ApplicationException ApplicationException
@@ -375,7 +375,7 @@ public class UserService {
   }
 
   /**
-   * Takes in a PLoS ONE user and write the profile to the store
+   * Takes in an Ambra user and write the profile to the store
    *
    * @param inUser write profile of this user to the store
    * @param privateFields fields marked private by the user

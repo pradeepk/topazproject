@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Send a feedback fromEmail to PLoS ONE
+ * Send a feedback fromEmail.
  */
 public class FeedbackAction extends UserActionSupport {
   private String page;

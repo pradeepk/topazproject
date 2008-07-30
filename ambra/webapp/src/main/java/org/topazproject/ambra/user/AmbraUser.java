@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class to roll up access for a user into a PLoS ONE appplication specific object.
+ * Class to roll up access for a user into an Ambra appplication specific object.
  * @author Stephen Cheng
  */
 
@@ -71,7 +71,7 @@ public class AmbraUser {
   }
 
   /**
-   * Initializes a new PLoS ONE user
+   * Initializes a new Ambra user
    *
    * @param ua the user-account
    */
@@ -100,7 +100,7 @@ public class AmbraUser {
   }
 
   /**
-   * Initializes a new PLoS ONE user and sets the authentication ID
+   * Initializes a new Ambra user and sets the authentication ID
    *
    * @param authId authentication ID of new user
    */
@@ -113,7 +113,7 @@ public class AmbraUser {
   }
 
   /**
-   * Initializes a new PLoS ONE user from another one.
+   * Initializes a new Ambra user from another one.
    *
    * @param pou the other user-object
    */
@@ -181,7 +181,7 @@ public class AmbraUser {
   }
 
   /**
-   * Method to check to see if this was a migrated PLoS user or not.
+   * Method to check to see if this was a migrated Ambra user or not.
    *
    * @return Returns true if the user is initialized (i.e. has chosen a username)
    */

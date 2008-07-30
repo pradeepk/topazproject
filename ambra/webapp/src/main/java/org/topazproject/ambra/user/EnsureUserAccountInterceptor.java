@@ -62,30 +62,30 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
       return actionInvocation.invoke();
     }
 
-    AmbraUser plosUser = (AmbraUser) sessionMap.get(AMBRA_USER_KEY);
-    if (null != plosUser) {
+    AmbraUser ambraUser = (AmbraUser) sessionMap.get(AMBRA_USER_KEY);
+    if (null != ambraUser) {
       if (log.isDebugEnabled()) {
-        log.debug("Retrieved user from session with userId: " + plosUser.getUserId());
+        log.debug("Retrieved user from session with userId: " + ambraUser.getUserId());
       }
-      return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
+      return getReturnCodeDependingOnDisplayName(ambraUser, actionInvocation);
     } else {
-      plosUser = userService.getUserByAuthId(userId);
+      ambraUser = userService.getUserByAuthId(userId);
       if (log.isDebugEnabled()) {
         log.debug("UserService : " + userService + " hashcode = "  + userService.hashCode());
         log.debug("Session: " + ServletActionContext.getRequest().getSession().getId());
       }
 
-      if (null == plosUser) {
+      if (null == ambraUser) {
         //forward to new profile creation page
         if (log.isDebugEnabled())
           log.debug("This is a new user with id: " + userId);
         return ReturnCode.NEW_PROFILE;
       } else {
-        updateUserEmailAddress(plosUser, userId);
-        sessionMap.put(AMBRA_USER_KEY, plosUser);
+        updateUserEmailAddress(ambraUser, userId);
+        sessionMap.put(AMBRA_USER_KEY, ambraUser);
         if (log.isDebugEnabled())
           log.debug("Existing user detected: " + userId);
-        return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
+        return getReturnCodeDependingOnDisplayName(ambraUser, actionInvocation);
       }
     }
   }
