@@ -24,7 +24,7 @@
       value="org.apache.struts2.spring.StrutsSpringObjectFactory"/>
   <constant name="struts.objectFactory.spring.autoWire" value="name"/>
   <constant name="struts.devMode" value="false"/>
-  <constant name="struts.freemarker.manager.classname" value="plosOneFreemarkerManager"/>
+  <constant name="struts.freemarker.manager.classname" value="ambraFreemarkerManager"/>
   <constant name="struts.i18n.encoding" value="UTF-8"/>
   <constant name="struts.ui.theme" value="ambra-theme"/>
   <constant name="struts.ui.templateDir" value="template"/>
