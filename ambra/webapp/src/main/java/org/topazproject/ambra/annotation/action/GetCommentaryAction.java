@@ -1,5 +1,5 @@
-/* $$HeadURL:: http://gandalf.topazproject.org/svn/branches/0.8.2.1/plos/webapp/src/main/#$$
- * $$Id: GetCommentaryAction.java 4629 2008-02-04 06:07:05Z alex $$
+/* $HeadURL::                                                                             $
+ * $Id::                                                         $
  *
  * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
