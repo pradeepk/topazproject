@@ -165,7 +165,6 @@
         <value>medicine</value>
         <value>pathogens</value>
         <value>plosntds</value>
-        <!-- <value>plosone</value> NOTE: no monthly alerts for PLoS ONE -->
       </list>
     </property>
     <property name="categoryNames">
