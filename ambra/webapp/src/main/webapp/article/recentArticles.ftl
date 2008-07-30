@@ -17,24 +17,21 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!-- Recent Research -->
-<ul class="articles">
-  <@s.url id="art1URL" namespace="/article" action="fetchArticle" includeParams="none" articleURI="#"/>
-	<li><a href="${art1URL}" title="Read Open Access Article">
-	Tego Regula Refero Vindico, Foras, Minim Proprius Melior Blandit Occuro eros Dignissim Causa Exputo
-	</a></li>
-	
-  <@s.url id="art2URL" namespace="/article" action="fetchArticle" includeParams="none" articleURI="#"/>
-	<li><a href="${art2URL}" title="Read Open Access Article">
-	Et Abluo Patria, Metuo Iusto Sagaciter Exerci
-	</a></li>
-	
-  <@s.url id="art3URL" namespace="/article" action="fetchArticle" includeParams="none" articleURI="#"/>
-	<li><a href="${art3URL}" title="Read Open Access Article">
-	Huic Brevitas Iustum Multo Distineo vel Vicis
-	</a></li>
-		
-	<!-- Do not edit below this comment -->
-	<@s.url action="browse" namespace="/article" field="date" includeParams="none" id="browseDateURL"/>
-	<li class="more"><a href="${browseDateURL}">Browse all recently published articles</a></li>
-</ul>
+<#assign numArticles = recentArticles?size>
+<#if (numArticles > 0)>
+  <#assign randomIndices = action.randomNumbers(numArticlesToShow, numArticles)>
+  <ul class="articles">
+  <#list randomIndices as random>
+    <#assign article = recentArticles[random]>
+    <#if random_index % 2 == 0>
+      <li class="even">
+    <#else>
+      <li>
+    </#if>
+    <@s.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${article.id}"/>
+    <a href="${articleURL}" title="Read Open Access Article">${article.title}</a>
+    </li>
+    </#list>
+  <li><a href="/article/browse.action?field=date" title="Browse Articles">Browse all recently published articles</a></li>
+  </ul>
+</#if>

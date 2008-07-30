@@ -96,6 +96,11 @@
             <id>${ambra.aliases.id}feed.ambj</id>
           </feed>
         </platform>
+        <!-- Configuration keys for displaying recent articles tab widget on home page -->
+        <recentArticles>
+          <numDaysInPast>7</numDaysInPast>
+          <numArticlesToShow>5</numArticlesToShow>
+        </recentArticles>
       </AmbraJournal>
     </virtualJournals>
 

@@ -19,8 +19,10 @@
 
 package org.topazproject.ambra.action;
 
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
@@ -28,14 +30,45 @@ import java.util.SortedMap;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.article.service.BrowseService;
+import org.topazproject.ambra.configuration.ConfigurationStore;
+import org.topazproject.ambra.journal.JournalService;
+import org.topazproject.ambra.model.article.ArticleInfo;
 
 /**
  * @author stevec
  */
 @SuppressWarnings("serial")
 public class HomePageAction extends BaseActionSupport {
+
+  private JournalService journalService;
   private BrowseService                   browseService;
   private SortedMap<String, Integer>      categoryInfos;
+
+  private List<ArticleInfo> recentArticles;
+  private int numDaysInPast;
+  private int numArticlesToShow;
+
+  private void initRecentArticles() {
+    ConfigurationStore config = ConfigurationStore.getInstance();
+    String journalKey = journalService.getCurrentJournalKey();
+    String rootKey = "ambra.virtualJournals." + journalKey + ".recentArticles";
+
+    numDaysInPast = config.getConfiguration().getInteger(rootKey + ".numDaysInPast", 7).intValue();
+    numArticlesToShow = config.getConfiguration().getInteger(rootKey + ".numArticlesToShow", 5)
+        .intValue();
+
+    Calendar startDate = Calendar.getInstance();
+    startDate.set(Calendar.HOUR, 0);
+    startDate.set(Calendar.MINUTE, 0);
+    startDate.set(Calendar.SECOND, 0);
+    startDate.set(Calendar.MILLISECOND, 0);
+
+    Calendar endDate = (Calendar) startDate.clone();
+    startDate.add(Calendar.DATE, -(numDaysInPast));
+    endDate.add(Calendar.DATE, 1);
+
+    recentArticles = browseService.getArticlesByDate(startDate, endDate, 0, -1, new int[1]);
+  }
 
   /**
    * This execute method always returns SUCCESS
@@ -44,6 +77,8 @@ public class HomePageAction extends BaseActionSupport {
   @Transactional(readOnly = true)
   public String execute() {
     categoryInfos = browseService.getCategoryInfos();
+
+    initRecentArticles();
 
     return SUCCESS;
   }
@@ -57,9 +92,18 @@ public class HomePageAction extends BaseActionSupport {
   }
 
   /**
-   * Returns an array of numValues ints which are randomly selected between 0 (inclusive)
-   * and maxValue(exclusive). If maxValue is less than numValues, will return maxValue items.
-   * Guarantees uniqueness of values.
+   * Retrieves the most recently published articles in the last 7 days
+   *
+   * @return array of ArticleInfo objects
+   */
+  public List<ArticleInfo> getRecentArticles() {
+    return recentArticles;
+  }
+
+  /**
+   * Returns an array of numValues ints which are randomly selected between 0 (inclusive) and
+   * maxValue(exclusive). If maxValue is less than numValues, will return maxValue items. Guarantees
+   * uniqueness of values.
    *
    * @param numValues
    * @param maxValue
@@ -88,11 +132,24 @@ public class HomePageAction extends BaseActionSupport {
     return returnArray;
   }
 
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
+  }
+
   /**
    * @param browseService The browseService to set.
    */
   @Required
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
+  }
+
+  public int getNumDaysInPast() {
+    return numDaysInPast;
+  }
+
+  public int getNumArticlesToShow() {
+    return numArticlesToShow;
   }
 }
