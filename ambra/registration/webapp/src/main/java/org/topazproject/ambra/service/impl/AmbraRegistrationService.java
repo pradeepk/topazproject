@@ -39,11 +39,11 @@ import org.topazproject.ambra.util.TokenGenerator;
 /**
  * Ambra registration service implementation.
  */
-public class PlosRegistrationService implements RegistrationService {
+public class AmbraRegistrationService implements RegistrationService {
   private UserDAO userDAO;
   private PasswordDigestService passwordDigestService;
   private RegistrationMailer mailer;
-  private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
+  private static final Log log = LogFactory.getLog(AmbraRegistrationService.class);
 
   public User createUser(final String loginName, final String password)
     throws UserAlreadyExistsException, PasswordServiceException {
@@ -197,7 +197,7 @@ public class PlosRegistrationService implements RegistrationService {
   }
 
   /**
-   * @see PlosRegistrationService#changePassword(String, String, String)
+   * @see AmbraRegistrationService#changePassword(String, String, String)
    */
   public void changePassword(final String loginName, final String oldPassword, final String newPassword)
     throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException,

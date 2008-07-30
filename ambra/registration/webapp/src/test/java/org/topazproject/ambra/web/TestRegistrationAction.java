@@ -20,12 +20,12 @@ package org.topazproject.ambra.web;
 
 import com.opensymphony.xwork2.Action;
 
-import org.topazproject.ambra.BasePlosoneRegistrationTestCase;
+import org.topazproject.ambra.BaseAmbraRegistrationTestCase;
 
 /**
  *
  */
-public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
+public class TestRegistrationAction extends BaseAmbraRegistrationTestCase {
   public void testShouldCreateAUserAccount() throws Exception {
     final String email = "viru-creating-a-user-account@home.com";
     final String password = "virupasswd";

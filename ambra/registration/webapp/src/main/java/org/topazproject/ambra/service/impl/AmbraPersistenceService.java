@@ -22,9 +22,9 @@ import org.topazproject.ambra.service.PersistenceService;
 import org.topazproject.ambra.service.UserDAO;
 
 /**
- * Plos implementation of the Persistence Service.
+ * Ambra implementation of the Persistence Service.
  */
-public class PlosPersistenceService implements PersistenceService {
+public class AmbraPersistenceService implements PersistenceService {
   private UserDAO userDAO;
 
   /**

@@ -18,7 +18,7 @@
  */
 package org.topazproject.ambra.service;
 
-import org.topazproject.ambra.BasePlosoneRegistrationTestCase;
+import org.topazproject.ambra.BaseAmbraRegistrationTestCase;
 import org.topazproject.ambra.registration.User;
 import org.topazproject.ambra.registration.UserImpl;
 import org.topazproject.ambra.service.UserDAO;
@@ -26,7 +26,7 @@ import org.topazproject.ambra.service.UserDAO;
 /**
  *
  */
-public class TestHibernate extends BasePlosoneRegistrationTestCase {
+public class TestHibernate extends BaseAmbraRegistrationTestCase {
   private UserDAO userDao;
 
   public void testHibernate() {

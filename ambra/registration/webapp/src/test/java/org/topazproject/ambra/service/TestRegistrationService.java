@@ -18,12 +18,12 @@
  */
 package org.topazproject.ambra.service;
 
-import org.topazproject.ambra.BasePlosoneRegistrationTestCase;
+import org.topazproject.ambra.BaseAmbraRegistrationTestCase;
 import org.topazproject.ambra.registration.User;
 
 import java.sql.Timestamp;
 
-public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
+public class TestRegistrationService extends BaseAmbraRegistrationTestCase {
 
   public void testCreateNewUserWithExpectedValues() throws Exception {
     final String loginName = "fedoraAdmin";

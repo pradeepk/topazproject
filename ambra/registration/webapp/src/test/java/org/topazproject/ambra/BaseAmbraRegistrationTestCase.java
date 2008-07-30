@@ -31,7 +31,7 @@ import org.topazproject.ambra.web.RegisterAction;
  * superclasses.
  *
  */
-public abstract class BasePlosoneRegistrationTestCase
+public abstract class BaseAmbraRegistrationTestCase
   extends AbstractDependencyInjectionSpringContextTests {
 
   protected RegistrationService registrationService;

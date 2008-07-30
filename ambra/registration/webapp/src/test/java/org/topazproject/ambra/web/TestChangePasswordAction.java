@@ -18,13 +18,13 @@
  */
 package org.topazproject.ambra.web;
 
-import org.topazproject.ambra.BasePlosoneRegistrationTestCase;
+import org.topazproject.ambra.BaseAmbraRegistrationTestCase;
 import org.topazproject.ambra.registration.User;
 import org.topazproject.ambra.web.ChangePasswordAction;
 
 import com.opensymphony.xwork2.Action;
 
-public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
+public class TestChangePasswordAction extends BaseAmbraRegistrationTestCase {
 
   public void testShouldChangeUserPassword() throws Exception {
     final String email = "user-changing-their-oldPassword@home.com";

@@ -22,7 +22,7 @@ package org.topazproject.ambra.registration;
 import java.sql.Timestamp;
 
 /**
- * Interface for Plos Reistration User
+ * Interface for Ambra Reistration User
  */
 public interface User {
   /**

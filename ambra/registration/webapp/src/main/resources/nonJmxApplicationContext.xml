@@ -37,7 +37,7 @@
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
-  <bean id="persistenceService" class="org.topazproject.ambra.service.impl.PlosPersistenceService">
+  <bean id="persistenceService" class="org.topazproject.ambra.service.impl.AmbraPersistenceService">
     <property name="userDAO" ref="userDAO"/>
   </bean>
 
@@ -51,11 +51,11 @@
     <constructor-arg type="java.lang.String" value="UTF-8"/>
   </bean>
 
-  <bean id="registrationService" class="org.topazproject.ambra.service.impl.PlosRegistrationService" scope="session">
+  <bean id="registrationService" class="org.topazproject.ambra.service.impl.AmbraRegistrationService" scope="session">
     <!-- proxy needed as this bean is a part of a singleton's reference  -->
     <aop:scoped-proxy/>
     <property name="userDAO" ref="userDAO"/>
-    <property name="passwordDigestService" ref="plosPasswordDigestService"/>
+    <property name="passwordDigestService" ref="ambraPasswordDigestService"/>
     <property name="mailer" ref="registrationVerificationMailer"/>
   </bean>
 
@@ -115,7 +115,7 @@
     </property>
   </bean>
 
-  <bean id="plosPasswordDigestService" class="org.topazproject.ambra.service.password.PasswordDigestService">
+  <bean id="ambraPasswordDigestService" class="org.topazproject.ambra.service.password.PasswordDigestService">
     <property name="algorithm" value="SHA-256"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>

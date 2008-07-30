@@ -35,7 +35,7 @@
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
-  <bean id="persistenceService" class="org.topazproject.ambra.service.impl.PlosPersistenceService">
+  <bean id="persistenceService" class="org.topazproject.ambra.service.impl.AmbraPersistenceService">
     <property name="userDAO" ref="userDAO"/>
   </bean>
 
@@ -49,9 +49,9 @@
     <constructor-arg value="UTF-8"/>
   </bean>
 
-  <bean id="registrationService" class="org.topazproject.ambra.service.impl.PlosRegistrationService">
+  <bean id="registrationService" class="org.topazproject.ambra.service.impl.AmbraRegistrationService">
     <property name="userDAO" ref="userDAO"/>
-    <property name="passwordDigestService" ref="plosPasswordDigestService"/>
+    <property name="passwordDigestService" ref="ambraPasswordDigestService"/>
     <property name="mailer" ref="registrationVerificationMailer"/>
   </bean>
 
@@ -102,7 +102,7 @@
     </property>
   </bean>
 
-  <bean id="plosPasswordDigestService" class="org.topazproject.ambra.service.password.PasswordDigestService">
+  <bean id="ambraPasswordDigestService" class="org.topazproject.ambra.service.password.PasswordDigestService">
     <property name="algorithm" value="SHA-256"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>
@@ -160,7 +160,7 @@
   <bean id="otherConstants" class="org.topazproject.ambra.OtherConstants">
     <property name="allConstants">
       <map>
-        <entry key="mainAppUrl" value="plosone-webapp"/>
+        <entry key="mainAppUrl" value="ambra-webapp"/>
       </map>
     </property>
   </bean>

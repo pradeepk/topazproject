@@ -28,7 +28,7 @@
       </result-types>
 
       <interceptors>
-        <interceptor-stack name="defaultPlosStack">
+        <interceptor-stack name="defaultAmbraStack">
           <interceptor-ref name="exception">
             <param name="logEnabled">true</param>
             <param name="logCategory">org.topazproject.ambra.UnhandledException</param>
@@ -52,13 +52,13 @@
         </interceptor-stack>
       
       
-        <interceptor-stack name="plosRegistrationStack">
+        <interceptor-stack name="ambraRegistrationStack">
           <interceptor-ref name="timer" />
           <!--<interceptor-ref name="logger"/>-->
-          <interceptor-ref name="defaultPlosStack" />
+          <interceptor-ref name="defaultAmbraStack" />
         </interceptor-stack>
       </interceptors>
-      <default-interceptor-ref name="plosRegistrationStack" />
+      <default-interceptor-ref name="ambraRegistrationStack" />
 
       <default-action-ref name="register" />
 

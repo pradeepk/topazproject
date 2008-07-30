@@ -18,14 +18,14 @@
  */
 package org.topazproject.ambra.web;
 
-import org.topazproject.ambra.BasePlosoneRegistrationTestCase;
+import org.topazproject.ambra.BaseAmbraRegistrationTestCase;
 import org.topazproject.ambra.registration.User;
 import org.topazproject.ambra.web.ConfirmationAction;
 import org.topazproject.ambra.web.ForgotPasswordAction;
 
 import com.opensymphony.xwork2.Action;
 
-public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
+public class TestForgotPasswordAction extends BaseAmbraRegistrationTestCase {
   public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered()
     throws Exception {
     final String email = "viru-forgot-password-not-registered@home.com";
