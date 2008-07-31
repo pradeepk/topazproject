@@ -1332,17 +1332,18 @@
 
     <!-- New Table: titles and author group -->
     <!-- All data comes from front/article-meta -->
-
     <!-- abstract(s) -->
-
-    <xsl:for-each select="abstract | trans-abstract">
-      <div class="info abstract">
+    <xsl:for-each select="abstract[not(@abstract-type) 
+                          or (@abstract-type !='toc' 
+                          and @abstract-type != 'teaser' 
+                          and @abstract-type != 'editor' 
+                          and @abstract-type != 'patient')]">
+      <div class="abstract">      
         <xsl:call-template name="makeXpathLocation"/>
         <xsl:call-template name="words-for-abstract-title"/>
         <xsl:apply-templates select="*[not(self::title)]"/>
       </div>
     </xsl:for-each> 
-   
     <!-- end of abstract or trans-abstract -->
 
     <!-- end of the titles-and-authors context; return to previous context -->
@@ -1391,6 +1392,13 @@
     <xsl:call-template name="author-contrib"/>
     <xsl:apply-templates select="*[not(self::title) and not(self::fn-group) and not(self::ack)]"/>
     <xsl:call-template name="nl-1"/>
+    <xsl:for-each select="//abstract[@abstract-type='patient']">
+      <div class="patient">
+        <a id="patient" name="patient" toc="patient" title="Patient Summary"/>
+        <h3><xsl:value-of select="title"/></h3>
+        <xsl:apply-templates select="*[not(self::title)]"/>
+      </div>
+    </xsl:for-each>
   </xsl:for-each>
 </xsl:template>
 
