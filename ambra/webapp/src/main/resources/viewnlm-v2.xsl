@@ -1055,45 +1055,18 @@
       <xsl:value-of select="elocation-id"/>.
       doi:<xsl:value-of select="article-id[@pub-id-type='doi']"/>
     </p>
-    <xsl:for-each select="contrib-group/contrib[@contrib-type='editor']">
-      <p>
-        <xsl:choose>
-          <xsl:when test="role">
-            <strong><xsl:value-of select="role"/>:</strong><xsl:text> </xsl:text>
-          </xsl:when>
-          <xsl:otherwise>
-            <strong>Academic Editor:</strong><xsl:text> </xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-           <xsl:choose>
-            <xsl:when test="@xlink:href">
-              <xsl:element name="a">
-                <xsl:call-template name="make-href"/>
-                <xsl:call-template name="make-id"/>
-                 <xsl:apply-templates select="name | collab" mode="front"/>
-             </xsl:element>
-            </xsl:when>
-            <xsl:otherwise>
- 
-              <!-- removed comma -->
-              <xsl:apply-templates select="name | collab" mode="front"/> 
-            </xsl:otherwise>
-          </xsl:choose>
 
-          <!-- the name element handles any contrib/xref and contrib/degrees -->
-          <xsl:apply-templates select="*[not(self::name)
-                                      and not(self::collab)
-                                      and not(self::xref)
-                                      and not(self::degrees)
-                                      and not(self::role)]"
-                                      mode="front"/>
-          <xsl:variable name="matchto" select="xref/@rid"/>
-		  <xsl:if test="../following-sibling::aff">
-			<xsl:text>, </xsl:text>
-      <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
-		  </xsl:if>
-      </p>
-    </xsl:for-each>
+    <!-- Created a new way to format the editors list in the citation box -->
+    <xsl:for-each-group select="//contrib-group/contrib[@contrib-type='editor']" group-by="role">
+ 	    <xsl:call-template name="editors-list">
+ 	  	 <xsl:with-param name="r" select="//contrib-group/contrib[@contrib-type='editor' 
+                                        and role=current-grouping-key()]"/>
+ 	  	</xsl:call-template>
+ 	  </xsl:for-each-group>
+ 	  <xsl:call-template name="editors-list">
+ 	  	<xsl:with-param name="r" select="//contrib-group/contrib[@contrib-type='editor'
+                                       and not(role)]"/>
+ 	  </xsl:call-template>
 
     <!-- end of contrib -->
     <p>
@@ -1125,7 +1098,10 @@
 		<xsl:choose>
 			<xsl:when test="$dtd-version &lt; 2.3">
 				<xsl:choose>
-					<xsl:when test="copyright-statement[contains(., 'Attribution')]">
+          <!-- Modified to output the word "copyright" for the header if the expression
+               "Open-Access License" appears anywhere in the copyright-statement. -->
+          <xsl:when test="copyright-statement[contains(., 'Attribution') 
+                          or contains(.,'Open-Access License')]">
 						<strong>Copyright:</strong><xsl:text>  &#169; </xsl:text>
 						<xsl:apply-templates select="copyright-year" /><xsl:text> </xsl:text>
 						<xsl:apply-templates select="copyright-statement" />
@@ -1189,6 +1165,51 @@
        
   <!-- that's it for article-meta; return to previous context -->
   </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="editors-list">
+  <xsl:param name="r"/>
+  <p>
+  <xsl:for-each select="$r">
+  
+    <!-- for the first item, print out the role first, i.e. Editor -->
+    <xsl:if test="position()=1"> 
+      <strong>
+        <xsl:choose>
+ 	  	    <xsl:when test="role">
+ 	  	      <xsl:value-of select="role"/>
+ 	  	    </xsl:when>
+ 	  	    <xsl:otherwise>
+ 	  	      Academic Editor
+ 	  	    </xsl:otherwise>
+ 	  	  </xsl:choose>
+        
+        <!-- add an s at end of role to make it plural -->
+ 	  	  <xsl:if test="last() > 1">s</xsl:if>
+        <xsl:text>: </xsl:text> 
+      </strong>
+    </xsl:if>
+ 	  <xsl:apply-templates select="name | collab" mode="front"/>
+ 	  <xsl:apply-templates select="*[not(self::name)
+ 	  	         and not(self::collab)
+ 	  	         and not(self::xref)
+ 	  	         and not(self::degrees)
+ 	  	         and not(self::role)]"
+ 	  	         mode="front"/>
+ 	  <xsl:variable name="matchto" select="xref/@rid"/>
+ 	  <xsl:if test="../following-sibling::aff">
+      <xsl:text> (</xsl:text>
+      <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
+      <xsl:text>)</xsl:text>
+    </xsl:if>
+ 	  <xsl:if test="position() != last()">  <!-- appropriately place commas and "and" -->
+ 	    <xsl:text>, </xsl:text>
+ 	  </xsl:if>
+ 	  <xsl:if test="position() = last()-1">
+ 	    <xsl:text>and </xsl:text>
+ 	  </xsl:if>
+  </xsl:for-each>
+ 	</p>
 </xsl:template>
 
 <xsl:template name="make-editors-summary">
