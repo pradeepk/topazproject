@@ -1390,7 +1390,9 @@
     <xsl:apply-templates select="title"/>
     <xsl:apply-templates select="ack"/>
     <xsl:call-template name="author-contrib"/>
-    <xsl:apply-templates select="*[not(self::title) and not(self::fn-group) and not(self::ack)]"/>
+    <xsl:apply-templates select="notes"/>
+    <xsl:apply-templates select="*[not(self::title) and not(self::fn-group) and not(self::ack) 
+                                 and not(self::notes)]"/>
     <xsl:call-template name="nl-1"/>
     <xsl:for-each select="//abstract[@abstract-type='patient']">
       <div class="patient">
@@ -3294,13 +3296,13 @@
   <xsl:call-template name="nl-1"/>
   <div class="capture-id">
     <xsl:call-template name="make-id"/>
-    <xsl:if test="not(title)">
-      <span class="tl-main-part">Notes</span>
-      <xsl:call-template name="nl-1"/>
-    </xsl:if>
     <xsl:apply-templates/>
     <xsl:call-template name="nl-1"/>
   </div>
+</xsl:template>
+
+<xsl:template match="notes/sec/title">
+ <h3><xsl:value-of select="."/></h3>
 </xsl:template>
 
 <xsl:template match="note">
@@ -3579,8 +3581,7 @@
 <!-- ============================================================= -->
 
 <!-- first-level divisions and default -->
-<xsl:template match="ack/sec/title | app/sec/title
-                     | boxed-text/title | gloss-group/title | notes/sec/title">
+<xsl:template match="ack/sec/title | app/sec/title | boxed-text/title | gloss-group/title">
   <xsl:call-template name="nl-1"/>
   <span class="tl-lowest-section"><xsl:apply-templates/></span>
   <xsl:call-template name="nl-1"/>
