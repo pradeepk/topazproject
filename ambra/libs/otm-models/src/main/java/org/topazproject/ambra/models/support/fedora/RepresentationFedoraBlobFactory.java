@@ -74,7 +74,7 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
     Representation r      = (Representation) instance;
 
     String         cModel =
-      (r.getObject() instanceof Article) ? "PlosArticle" : "PlosArticleSecObj";
+      (r.getObject() instanceof Article) ? "AmbraArticle" : "AmbraArticleSecObj";
 
     String pid = toPid(r.getObject().getId());
 
