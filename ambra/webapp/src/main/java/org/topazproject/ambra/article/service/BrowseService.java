@@ -56,23 +56,23 @@ import org.topazproject.otm.query.Results;
  * @author Alex Worden, stevec
  */
 public class BrowseService {
-  static final Log log = LogFactory.getLog(BrowseService.class);
+  private static final Log log = LogFactory.getLog(BrowseService.class);
 
-  private static final String CAT_INFO_LOCK = "CatLock-";
-  private static final String CAT_INFO_KEY = "CatInfo-";
-  private static final String ARTBYCAT_LIST_KEY = "ArtByCat-";
+  private static final String CAT_INFO_LOCK       = "CatLock-";
+  private static final String CAT_INFO_KEY        = "CatInfo-";
+  private static final String ARTBYCAT_LIST_KEY   = "ArtByCat-";
 
-  private static final String DATE_LIST_LOCK = "DateLock-";
-  private static final String DATE_LIST_KEY = "DateList-";
+  private static final String DATE_LIST_LOCK      = "DateLock-";
+  private static final String DATE_LIST_KEY       = "DateList-";
 
   private static final String ARTBYDATE_LIST_LOCK = "ArtByDateLock-";
-  private static final String ARTBYDATE_LIST_KEY = "ArtByDate-";
+  private static final String ARTBYDATE_LIST_KEY  = "ArtByDate-";
 
-  private static final String ARTICLE_LOCK = "ArticleLock-";
-  private static final String ARTICLE_KEY = "Article-";
+  private static final String ARTICLE_LOCK        = "ArticleLock-";
+  private static final String ARTICLE_KEY         = "Article-";
 
-  private static final String ISSUE_LOCK = "IssueLock-";
-  private static final String ISSUE_KEY = "Issue-";
+  private static final String ISSUE_LOCK          = "IssueLock-";
+  private static final String ISSUE_KEY           = "Issue-";
 
   private static final int getSecsTillMidnight() {
     Calendar cal = Calendar.getInstance();
@@ -99,11 +99,11 @@ public class BrowseService {
     return Integer.valueOf(date.substring(8, 10));
   }
 
-  private final ArticlePEP pep;
-  private Session session;
-  Cache browseCache;
-  private JournalService journalService;
-  private Invalidator invalidator;
+  private final ArticlePEP     pep;
+  private       Session        session;
+  private       Cache          browseCache;
+  private       JournalService journalService;
+  private       Invalidator    invalidator;
 
   /**
    * Constructor
@@ -113,8 +113,8 @@ public class BrowseService {
   }
 
   /**
-   * Get the dates of all articles. The outer map is a map of years, the next inner map a map of
-   * months, and finally the innermost is a list of days.
+   * Get the dates of all articles. The outer map is a map of years, the next inner map a map
+   * of months, and finally the innermost is a list of days.
    *
    * @return the article dates.
    */
@@ -124,16 +124,17 @@ public class BrowseService {
   }
 
   private Years getArticleDates(boolean load, String jnlName) {
-    String key = DATE_LIST_KEY + jnlName;
+    String key  = DATE_LIST_KEY + jnlName;
     Object lock = (DATE_LIST_LOCK + jnlName).intern();
 
-    return browseCache.get(key, -1, !load ? null
-        : new Cache.SynchronizedLookup<Years, RuntimeException>(lock) {
-          @Override
-          public Years lookup() throws RuntimeException {
-            return loadArticleDates();
-          }
-        });
+    return browseCache.get(key, -1,
+                  !load ? null : new Cache.SynchronizedLookup<Years, RuntimeException> (lock) {
+        @SuppressWarnings("synthetic-access")
+        @Override
+        public Years lookup() throws RuntimeException {
+          return loadArticleDates();
+        }
+      });
   }
 
   /**
@@ -142,18 +143,18 @@ public class BrowseService {
    * may be returned, either because it's the end of the list or because some articles are not
    * accessible.
    *
-   * @param catName the category for which to return the articles
-   * @param pageNum the page-number for which to return articles; 0-based
+   * @param catName  the category for which to return the articles
+   * @param pageNum  the page-number for which to return articles; 0-based
    * @param pageSize the number of articles per page
-   * @param numArt (output) the total number of articles in the given category
+   * @param numArt   (output) the total number of articles in the given category
    * @return the articles.
    */
   @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByCategory(final String catName, int pageNum, int pageSize,
-      int[] numArt) {
-    List<URI> uris = ((SortedMap<String, List<URI>>) getCatInfo(ARTBYCAT_LIST_KEY,
-        "articles by category ", true)).get(catName);
+                                                 int[] numArt) {
+    List<URI> uris = ((SortedMap<String, List<URI>>)
+                        getCatInfo(ARTBYCAT_LIST_KEY, "articles by category ", true)).get(catName);
 
     if (uris == null) {
       numArt[0] = 0;
@@ -163,38 +164,39 @@ public class BrowseService {
     return loadArticles(uris, pageNum, pageSize);
   }
 
+
   /**
    * Get articles in the given date range, from newest to olders. One "page" of articles will be
    * returned, i.e. articles pageNum * pageSize .. (pageNum + 1) * pageSize - 1 . Note that less
    * than a pageSize articles may be returned, either because it's the end of the list or because
    * some articles are not accessible.
    *
-   * <p>
-   * Note: this method assumes the dates are truly just dates, i.e. no hours, minutes, etc.
+   * <p>Note: this method assumes the dates are truly just dates, i.e. no hours, minutes, etc.
    *
    * @param startDate the earliest date for which to return articles (inclusive)
-   * @param endDate the latest date for which to return articles (exclusive)
-   * @param pageNum the page-number for which to return articles; 0-based
-   * @param pageSize the number of articles per page, or -1 for all articles
-   * @param numArt (output) the total number of articles in the given category
+   * @param endDate   the latest date for which to return articles (exclusive)
+   * @param pageNum   the page-number for which to return articles; 0-based
+   * @param pageSize  the number of articles per page, or -1 for all articles
+   * @param numArt    (output) the total number of articles in the given category
    * @return the articles.
    */
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByDate(final Calendar startDate, final Calendar endDate,
-      int pageNum, int pageSize, int[] numArt) {
+                                             int pageNum, int pageSize, int[] numArt) {
     String jnlName = getCurrentJournal();
-    String mod = jnlName + "-" + startDate.getTimeInMillis() + "-" + endDate.getTimeInMillis();
-    String key = ARTBYDATE_LIST_KEY + mod;
-    Object lock = (ARTBYDATE_LIST_LOCK + mod).intern();
-    int ttl = getSecsTillMidnight();
+    String mod     = jnlName + "-" + startDate.getTimeInMillis() + "-" + endDate.getTimeInMillis();
+    String key     = ARTBYDATE_LIST_KEY + mod;
+    Object lock    = (ARTBYDATE_LIST_LOCK + mod).intern();
+    int    ttl     = getSecsTillMidnight();
 
     List<URI> uris = browseCache.get(key, ttl,
-        new Cache.SynchronizedLookup<List<URI>, RuntimeException>(lock) {
-          @Override
-          public List<URI> lookup() throws RuntimeException {
-            return loadArticlesByDate(startDate, endDate);
-          }
-        });
+                              new Cache.SynchronizedLookup<List<URI>, RuntimeException>(lock) {
+        @Override
+        @SuppressWarnings("synthetic-access")
+        public List<URI> lookup() throws RuntimeException {
+          return loadArticlesByDate(startDate, endDate);
+        }
+      });
 
     if (uris == null) {
       numArt[0] = 0;
@@ -225,9 +227,11 @@ public class BrowseService {
   public IssueInfo getIssueInfo(final URI doi) {
     // This flush is so that our own query cache reflects change.
     // TODO : implement query caching in OTM and let it manage this cached query
-    if (session.getFlushMode().implies(FlushMode.always)) session.flush();
+    if (session.getFlushMode().implies(FlushMode.always))
+      session.flush();
     return browseCache.get(ISSUE_KEY + doi, -1,
         new Cache.SynchronizedLookup<IssueInfo, RuntimeException>((ISSUE_LOCK + doi).intern()) {
+          @SuppressWarnings("synthetic-access")
           @Override
           public IssueInfo lookup() throws RuntimeException {
             return getIssueInfo2(doi);
@@ -241,19 +245,20 @@ public class BrowseService {
    * @param issue DOI of Issue.
    * @return the Issue information.
    */
-  IssueInfo getIssueInfo2(final URI issueDOI) {
+  private IssueInfo getIssueInfo2(final URI issueDOI) {
 
     // get the Issue
     final Issue issue = session.get(Issue.class, issueDOI.toString());
     if (issue == null) {
-      log.error("Faiiled to retrieve Issue for doi='" + issueDOI.toString() + "'");
+      log.error("Faiiled to retrieve Issue for doi='"+issueDOI.toString()+"'");
       return null;
     }
 
     // get the image Article
     URI imageArticle = null;
     String description = null;
-    if ((issue.getImage() != null) && (issue.getImage().toString().length() != 0)) {
+    if ((issue.getImage() != null)
+        && (issue.getImage().toString().length() != 0)) {
       final Article article = session.get(Article.class, issue.getImage().toString());
       if (article != null) {
         imageArticle = issue.getImage();
@@ -270,11 +275,11 @@ public class BrowseService {
     // Results results = session.createQuery(oqlQuery).execute();
 
     Results results = session.createQuery("select v from Volume v where v.issueList = :doi ;")
-        .setParameter("doi", issueDOI).execute();
+                             .setParameter("doi", issueDOI).execute();
 
     results.beforeFirst();
     if (results.next()) {
-      parentVolume = (Volume) results.get("v");
+      parentVolume = (Volume)results.get("v");
       results.close();
     }
     if (parentVolume != null) {
@@ -286,8 +291,8 @@ public class BrowseService {
       log.warn("Issue: " + issue.getId() + ", not contained in any Volumes");
     }
 
-    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI,
-        nextIssueURI, imageArticle, description, parentVolume == null ? null : parentVolume.getId());
+    IssueInfo issueInfo = new IssueInfo(issue.getId(), issue.getDisplayName(), prevIssueURI, nextIssueURI,
+                                        imageArticle, description, parentVolume == null ? null : parentVolume.getId());
     issueInfo.setArticleUriList(issue.getSimpleCollection());
     return issueInfo;
   }
@@ -297,6 +302,7 @@ public class BrowseService {
    * ArticleInfos for Articles that the current user has permission to view.
    *
    * @param issueDOI
+   * @return List of ArticleInfo objects.
    */
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticleInfosForIssue(final URI issueDOI) {
@@ -319,21 +325,25 @@ public class BrowseService {
    * Get a VolumeInfo for the given id. This only works if the volume is in the current journal.
    *
    * @param id
+   * @return VolumeInfo
    */
   @Transactional(readOnly = true)
   public VolumeInfo getVolumeInfo(URI id) {
     // Attempt to get the volume infos from the cached journal list...
     List<VolumeInfo> volumes = getVolumeInfosForJournal(journalService.getCurrentJournal(session));
     for (VolumeInfo vol : volumes) {
-      if (id.equals(vol.getId())) { return vol; }
+      if (id.equals(vol.getId())) {
+        return vol;
+      }
     }
 
-    // If we have no luck with the cached journal list, attempt to load the volume re-using
-    // loadVolumeInfos();
+    // If we have no luck with the cached journal list, attempt to load the volume re-using loadVolumeInfos();
     List<URI> l = new ArrayList<URI>();
     l.add(id);
     List<VolumeInfo> vols = loadVolumeInfos(l);
-    if ((vols != null) && (vols.size() > 0)) { return vols.get(0); }
+    if ((vols != null) && (vols.size() > 0)) {
+      return vols.get(0);
+    }
     return null;
   }
 
@@ -364,7 +374,7 @@ public class BrowseService {
     // get the Volumes
     for (int onVolumeDoi = 0; onVolumeDoi < volumeDois.size(); onVolumeDoi++) {
       final URI volumeDoi = volumeDois.get(onVolumeDoi);
-      final Volume volume = session.get(Volume.class, volumeDoi.toString());
+      final Volume volume  = session.get(Volume.class, volumeDoi.toString());
       if (volume == null) {
         log.error("unable to load Volume: " + volumeDoi);
         continue;
@@ -387,10 +397,10 @@ public class BrowseService {
 
       // calculate prev/next
       final URI prevVolumeDoi = (onVolumeDoi == 0) ? null : volumeDois.get(onVolumeDoi - 1);
-      final URI nextVolumeDoi = (onVolumeDoi == volumeDois.size() - 1) ? null : volumeDois
-          .get(onVolumeDoi + 1);
+      final URI nextVolumeDoi = (onVolumeDoi == volumeDois.size() - 1) ? null
+                                                      : volumeDois.get(onVolumeDoi + 1);
       final VolumeInfo volumeInfo = new VolumeInfo(volume.getId(), volume.getDisplayName(),
-          prevVolumeDoi, nextVolumeDoi, imageArticle, description, issueInfos);
+              prevVolumeDoi, nextVolumeDoi, imageArticle, description, issueInfos);
       volumeInfos.add(volumeInfo);
     }
 
@@ -403,16 +413,16 @@ public class BrowseService {
 
   private Object getCatInfo(String key, String desc, boolean load, final String jnlName) {
     final String jnlkey = key + jnlName;
-    return browseCache.get(jnlkey, -1,
-        !load ? null : new Cache.SynchronizedLookup<Object, RuntimeException>(
-            (CAT_INFO_LOCK + jnlName).intern()) {
+    return browseCache.get(jnlkey, -1, !load ? null :
+        new Cache.SynchronizedLookup<Object, RuntimeException>((CAT_INFO_LOCK + jnlName).intern()) {
+          @SuppressWarnings("synthetic-access")
           @Override
           public Object lookup() throws RuntimeException {
-            loadCategoryInfos(jnlName);
-            Cache.Item item = browseCache.get(jnlkey);
-            return (item == null) ? null : item.getValue();
+             loadCategoryInfos(jnlName);
+             Cache.Item item = browseCache.get(jnlkey);
+             return (item == null) ? null : item.getValue();
           }
-        });
+      });
   }
 
   private String getCurrentJournal() {
@@ -424,14 +434,15 @@ public class BrowseService {
    *
    * @param uris the list of id's of changed articles
    */
-  void notifyArticlesChanged(String[] uris) {
+  private void notifyArticlesChanged(String[] uris) {
 
     for (Object key : browseCache.getKeys()) {
-      if ((key instanceof String)
-          && (((String) key).startsWith(ARTBYDATE_LIST_KEY)
-              || ((String) key).startsWith(DATE_LIST_KEY)
-              || ((String) key).startsWith(ARTBYCAT_LIST_KEY) || ((String) key)
-              .startsWith(CAT_INFO_KEY))) browseCache.remove(key);
+      if ((key instanceof String) &&
+             (((String)key).startsWith(ARTBYDATE_LIST_KEY) ||
+              ((String)key).startsWith(DATE_LIST_KEY) ||
+              ((String)key).startsWith(ARTBYCAT_LIST_KEY) ||
+              ((String)key).startsWith(CAT_INFO_KEY)))
+         browseCache.remove(key);
     }
     // update article cache
     for (String uri : uris) {
@@ -445,7 +456,7 @@ public class BrowseService {
    *
    * @param jnlName the key of the journal that was modified
    */
-  void notifyJournalModified(final String jnlName) {
+  private void notifyJournalModified(final String jnlName) {
     browseCache.remove(CAT_INFO_KEY + jnlName);
     browseCache.remove(ARTBYCAT_LIST_KEY + jnlName);
 
@@ -464,11 +475,11 @@ public class BrowseService {
    * Loading (cat, art-id) from the db and doing the counting ourselves is faster than loading (cat,
    * count(art-id)) (at least 10 times as fast with 50'000 articles in 10'000 categories).
    */
-  void loadCategoryInfos(String jnlName) {
+  private void loadCategoryInfos(String jnlName) {
     // get all article-ids in all categories
     Results r = session.createQuery(
-        "select cat, a.id articleId, a.dublinCore.date date from Article a "
-            + "where cat := a.categories.mainCategory order by date desc, articleId;").execute();
+              "select cat, a.id articleId, a.dublinCore.date date from Article a " +
+              "where cat := a.categories.mainCategory order by date desc, articleId;").execute();
 
     SortedMap<String, List<URI>> artByCat = new TreeMap<String, List<URI>>();
     r.beforeFirst();
@@ -479,7 +490,8 @@ public class BrowseService {
         artByCat.put(cat, ids = new ArrayList<URI>());
       }
       URI id = r.getURI(1);
-      if (!ids.contains(id)) ids.add(id);
+      if (!ids.contains(id))
+       ids.add(id);
     }
 
     updateCategoryCaches(artByCat, jnlName);
@@ -497,49 +509,51 @@ public class BrowseService {
     browseCache.put(CAT_INFO_KEY + jnlName, catSizes);
   }
 
-  ArticleInfo loadArticleInfo(final URI id) {
-    ArticleInfo ai = session.get(ArticleInfo.class, id.toString());
-    if (ai == null) return null;
+  private ArticleInfo loadArticleInfo(final URI id) {
+    ArticleInfo ai =  session.get(ArticleInfo.class, id.toString());
+    if (ai == null)
+      return null;
 
     if (log.isDebugEnabled()) {
-      log.debug("loaded ArticleInfo: id='" + ai.getId() + "', articleTypes='"
-          + ai.getArticleTypes() + "', date='" + ai.getDate() + "', title='" + ai.getTitle()
-          + "', authors='" + ai.getAuthors() + "', related-articles='" + ai.getRelatedArticles()
-          + "'");
+      log.debug("loaded ArticleInfo: id='" + ai.getId() +
+                "', articleTypes='" + ai.getArticleTypes() +
+                "', date='" + ai.getDate() +
+                "', title='" + ai.getTitle() +
+                "', authors='" + ai.getAuthors() +
+                "', related-articles='" + ai.getRelatedArticles() + "'");
     }
 
     return ai;
   }
 
-  Years loadArticleDates() {
+  private Years loadArticleDates() {
     Results r = session.createQuery("select a.dublinCore.date from Article a;").execute();
 
     Years dates = new Years();
 
     r.beforeFirst();
     while (r.next()) {
-      String date = r.getString(0);
-      Integer y = getYear(date);
-      Integer m = getMonth(date);
-      Integer d = getDay(date);
+      String  date = r.getString(0);
+      Integer y    = getYear(date);
+      Integer m    = getMonth(date);
+      Integer d    = getDay(date);
       dates.getMonths(y).getDays(m).add(d);
     }
 
     return dates;
   }
 
-  List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate) {
+  private List<URI> loadArticlesByDate(final Calendar startDate, final Calendar endDate) {
     // XsdDateTimeSerializer formats dates in UTC, so make sure that doesn't change the date
     final Calendar sd = (Calendar) startDate.clone();
     sd.add(Calendar.MILLISECOND, sd.get(Calendar.ZONE_OFFSET) + sd.get(Calendar.DST_OFFSET));
     // ge(date, date) is currently broken, so tweak the start-date instead
     sd.add(Calendar.MILLISECOND, -1);
 
-    Results r = session
-        .createQuery(
-            "select a.id articleId, date from Article a where "
-                + "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc, articleId;")
-        .setParameter("sd", sd).setParameter("ed", endDate).execute();
+    Results r = session.createQuery(
+            "select a.id articleId, date from Article a where " +
+            "date := a.dublinCore.date and gt(date, :sd) and lt(date, :ed) order by date desc, articleId;").
+            setParameter("sd", sd).setParameter("ed", endDate).execute();
 
     List<URI> dates = new ArrayList<URI>();
 
@@ -580,13 +594,15 @@ public class BrowseService {
       return null;
     }
 
-    return browseCache.get(ARTICLE_KEY + id, -1,
-        new Cache.SynchronizedLookup<ArticleInfo, RuntimeException>((ARTICLE_LOCK + id).intern()) {
-          @Override
-          public ArticleInfo lookup() throws RuntimeException {
-            return loadArticleInfo(id);
-          }
-        });
+    return
+      browseCache.get(ARTICLE_KEY + id, -1,
+           new Cache.SynchronizedLookup<ArticleInfo, RuntimeException>((ARTICLE_LOCK + id).intern()) {
+        @SuppressWarnings("synthetic-access")
+        @Override
+        public ArticleInfo lookup() throws RuntimeException {
+          return loadArticleInfo(id);
+        }
+      });
   }
 
   /**
@@ -629,16 +645,18 @@ public class BrowseService {
   }
 
   private class Invalidator implements ObjectListener {
+    @SuppressWarnings("synthetic-access")
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
       if (o instanceof Article) {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was updated.");
-        notifyArticlesChanged(new String[] { id });
+        notifyArticlesChanged(new String[]{id});
       } else if (o instanceof Journal) {
-        String key = ((Journal) o).getKey();
-        if ((updates == null) || updates.isChanged("smartCollectionRules")
-            || updates.isChanged("simpleCollection")) {
+        String key = ((Journal)o).getKey();
+        if ((updates == null)
+                 || updates.isChanged("smartCollectionRules")
+                 || updates.isChanged("simpleCollection")) {
           if (log.isDebugEnabled())
             log.debug("Updating browsecache for the journal that was modified.");
           notifyJournalModified(key);
@@ -647,7 +665,7 @@ public class BrowseService {
         if ((updates != null) && updates.isChanged("issueList")) {
           if (log.isDebugEnabled())
             log.debug("Updating issue-infos for the Volume that was modified.");
-          for (URI issue : ((Volume) o).getIssueList())
+          for (URI issue : ((Volume)o).getIssueList())
             clearIssueInfoCache(issue);
           for (String v : updates.getOldValue("issueList"))
             clearIssueInfoCache(URI.create(v));
@@ -655,22 +673,24 @@ public class BrowseService {
       } else if (o instanceof Issue) {
         if (log.isDebugEnabled())
           log.debug("Updating issue-info for the Issue that was modified.");
-        clearIssueInfoCache(((Issue) o).getId());
+        clearIssueInfoCache(((Issue)o).getId());
       }
     }
 
+    @SuppressWarnings("synthetic-access")
     public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
       if (o instanceof Article) {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the article that was deleted.");
-        notifyArticlesChanged(new String[] { id });
+        notifyArticlesChanged(new String[]{id});
       } else if (o instanceof Journal) {
         if (log.isDebugEnabled())
           log.debug("Updating browsecache for the journal that was deleted.");
-        notifyJournalModified(((Journal) o).getKey());
+        notifyJournalModified(((Journal)o).getKey());
       } else if (o instanceof Issue) {
-        if (log.isDebugEnabled()) log.debug("Updating issue-info for the issue that was deleted.");
-        clearIssueInfoCache(((Issue) o).getId());
+          if (log.isDebugEnabled())
+            log.debug("Updating issue-info for the issue that was deleted.");
+          clearIssueInfoCache(((Issue)o).getId());
       }
     }
   }
