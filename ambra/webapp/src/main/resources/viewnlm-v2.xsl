@@ -365,11 +365,10 @@
                 xmlns:d="http://purl.org/dc/elements/1.1/"
                 exclude-result-prefixes="util xsl ">              
 
-<xsl:output
-      method="html"
-      indent="no"
-      encoding="UTF-8"
-      omit-xml-declaration="yes"/>
+<xsl:output method="html"
+            indent="no"
+            encoding="UTF-8"
+            omit-xml-declaration="yes"/>
 
 <xsl:strip-space elements="abstract ack address annotation app app-group
                            array article article-categories article-meta article-title
@@ -390,11 +389,10 @@
 
 <xsl:preserve-space elements="preformat"/>
 
-
 <!--  Run-time parameters -->
+<!--  This stylesheet accepts no run-time parameters. -->
 
-<!--  This stylesheet accepts no run-time parameters.              -->
-<!-- Pub Config -->
+<!-- Pub Config-->
 <xsl:param name="pubAppContext"></xsl:param>
 
 <!-- Keys -->
@@ -407,11 +405,10 @@
      from the node they reference. -->
 <xsl:key name="element-by-rid" match="*[@rid]" use="@rid"/>
 
-
 <!-- Lookup table for person-type strings
      used in nlm-citations -->
 <xsl:variable name="person-strings"
-  select="document('')/*/util:map[@id='person-strings']/item"/>
+              select="document('')/*/util:map[@id='person-strings']/item"/>
 
 <util:map id="person-strings">
   <item source="editor"       singular="editor"
@@ -431,10 +428,11 @@
   <!-- value 'allauthors' puts no string out -->
 </util:map>
 
-<!-- 2/15/08 Store the version of the XML file so that we can use to conditionally select different
-options and preserve backward compatibility. -JK -->
+<!-- Store the version of the XML file so that we can use to conditionally select different
+     options and preserve backward compatibility. -->
 
 <xsl:variable name="dtd-version" select="/article/@dtd-version"/>
+
 
 <!-- ============================================================= -->
 <!--  2. ROOT TEMPLATE - HANDLES HTML FRAMEWORK                    -->
@@ -495,12 +493,10 @@ options and preserve backward compatibility. -JK -->
   <!-- front matter, in table -->
   <xsl:call-template name="nl-2"/>
 
-<!--  <div id="{$which-piece}-front" class="fm">-->
     <!-- class is repeated on contained table elements -->
     <xsl:call-template name="nl-1"/>
     <xsl:call-template name="make-front"/>
     <xsl:call-template name="nl-1"/>
-<!--  </div>-->
 
   <xsl:text><!-- start : article information --></xsl:text>
     <div class="articleinfo" xpathLocation="noSelect">
@@ -510,17 +506,14 @@ options and preserve backward compatibility. -JK -->
 
   <!-- body -->
   <xsl:call-template name="nl-2"/>
-<!--  <div id="{$which-piece}-body" class="body">-->
   <xsl:call-template name="nl-1"/>
   <xsl:call-template name="make-body"/>
   <xsl:call-template name="nl-1"/>
-<!--  </div>-->
 
-      <!-- class is repeated on contained table elements -->
+  <!-- class is repeated on contained table elements -->
   <xsl:call-template name="nl-1"/>
   <xsl:call-template name="make-back"/>
   <xsl:call-template name="nl-1"/>
-
 </xsl:template>
 
 
@@ -538,6 +531,7 @@ options and preserve backward compatibility. -JK -->
   </xsl:choose>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  "capitalize" Capitalize a string                             -->
 <!-- ============================================================= -->
@@ -545,9 +539,10 @@ options and preserve backward compatibility. -JK -->
 <xsl:template name="capitalize">
   <xsl:param name="str"/>
   <xsl:value-of select="translate($str,
-                          'abcdefghjiklmnopqrstuvwxyz',
-                          'ABCDEFGHJIKLMNOPQRSTUVWXYZ')"/>
+                                  'abcdefghjiklmnopqrstuvwxyz',
+                                  'ABCDEFGHJIKLMNOPQRSTUVWXYZ')"/>
 </xsl:template>
+
 
 <!-- ============================================================= -->
 <!--  "language"                                                   -->
@@ -567,6 +562,7 @@ options and preserve backward compatibility. -JK -->
   </xsl:choose>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  "cleantitle"                                                 -->
 <!-- ============================================================= -->
@@ -576,12 +572,12 @@ options and preserve backward compatibility. -JK -->
   <xsl:value-of select="translate($str,'. ,-_','')"/>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  "newlines"                                                   -->
 <!-- ============================================================= -->
 
 <!-- produces newlines in output, to increase legibility of XML    -->
-
 <xsl:template name="nl-1">
   <xsl:text>&#xA;</xsl:text>
 </xsl:template>
@@ -591,11 +587,11 @@ options and preserve backward compatibility. -JK -->
   <xsl:text>&#xA;</xsl:text>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  make-id, make-src, make-href, make-email                     -->
 <!-- ============================================================= -->
 <xsl:template name="makeXpathLocation">
-<!--    <xsl:param name="node" select="."/>-->
   <xsl:variable name="xpathLocation">
     <xsl:call-template name="createXpath">
       <xsl:with-param name="theNode" select="."/>
@@ -605,6 +601,7 @@ options and preserve backward compatibility. -JK -->
     <xsl:value-of select="$xpathLocation"/>
   </xsl:attribute>
 </xsl:template>
+
 <!-- use when we want to constrain the user selection to be at the element level only -->
 <xsl:template name="makeElementXpathLocation">
   <xsl:call-template name="makeXpathLocation"/>
@@ -635,8 +632,11 @@ options and preserve backward compatibility. -JK -->
         </xsl:when>
         <xsl:otherwise>
           <xsl:for-each select="$theNode[1]/ancestor-or-self::*[not(self::aml:annotated)]">
-            <xsl:text/>/<xsl:value-of select="name()"/>
-            <xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
+            <xsl:text/>
+            /<xsl:value-of select="name()"/>
+            <xsl:text/>
+            [<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]
+            <xsl:text/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -649,7 +649,9 @@ options and preserve backward compatibility. -JK -->
         <xsl:otherwise>
           <xsl:for-each select="$theNode/ancestor-or-self::*[not(self::aml:annotated)]">
             <xsl:text/>/<xsl:value-of select="name()"/>
-            <xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
+            <xsl:text/>
+            [<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]
+            <xsl:text/>
           </xsl:for-each>
         </xsl:otherwise>
       </xsl:choose>
@@ -699,7 +701,9 @@ options and preserve backward compatibility. -JK -->
   <xsl:variable name="display-phrase">
     <xsl:choose>
       <xsl:when test="self::disp-formula"><xsl:text>Formula ID</xsl:text></xsl:when>
-      <xsl:when test="self::chem-struct-wrapper"><xsl:text>Chemical Structure Wrapper ID</xsl:text></xsl:when>
+      <xsl:when test="self::chem-struct-wrapper">
+        <xsl:text>Chemical Structure Wrapper ID</xsl:text>
+      </xsl:when>
       <xsl:when test="self::chem-struct"><xsl:text>Chemical Structure ID</xsl:text></xsl:when>
       <xsl:otherwise><xsl:text>ID</xsl:text></xsl:otherwise>
     </xsl:choose>
@@ -747,18 +751,20 @@ options and preserve backward compatibility. -JK -->
 <!-- ============================================================= -->
 
 <!-- initial context node is article -->
-
 <xsl:template match="fig | table-wrap">
   <xsl:variable name="figId"><xsl:value-of select="@id"/></xsl:variable>
   <xsl:variable name="apos">'</xsl:variable>
   <xsl:variable name="imageURI"><xsl:value-of select="graphic/@xlink:href"/></xsl:variable>
   <xsl:variable name="slideshowURL">
-    <xsl:value-of select="concat($pubAppContext,'/article/slideshow.action?uri=',substring($imageURI, 1, (string-length($imageURI)-5)),'&amp;imageURI=',$imageURI)"/>
+    <xsl:value-of select="concat($pubAppContext, '/article/slideshow.action?uri=',
+                                 substring($imageURI, 1, (string-length($imageURI)-5)),
+                                 '&amp;imageURI=', $imageURI)"/>
   </xsl:variable>
   <xsl:variable name="jsWindow">
     <xsl:value-of select="concat('window.open(this.href,',$apos,'plosSlideshow',$apos,',',$apos,
-                         'directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850',
-                        $apos,');return false;')"/>
+                                 'directories=no,location=no,menubar=no,resizable=yes,status=no,',
+                                 'scrollbars=yes,toolbar=no,height=600,width=850', $apos,
+                                 ');return false;')"/>
   </xsl:variable>
 <xsl:if test="graphic">
   <div class="figure">
@@ -772,13 +778,17 @@ options and preserve backward compatibility. -JK -->
       <xsl:element name="img">
         <xsl:attribute name="xpathLocation">noSelect</xsl:attribute>
         <xsl:attribute name="border">1</xsl:attribute>
-        <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$imageURI,'&amp;representation=PNG_S')"/></xsl:attribute>
+        <xsl:attribute name="src">
+          <xsl:value-of select="concat($pubAppContext,
+                                       '/article/fetchObject.action?uri=',
+                                       $imageURI,'&amp;representation=PNG_S')"/>
+        </xsl:attribute>
         <xsl:attribute name="align">left</xsl:attribute>
         <xsl:attribute name="alt">thumbnail</xsl:attribute>
         <xsl:attribute name="class">thumbnail</xsl:attribute>
       </xsl:element>
     </xsl:element>
-     <p><strong><!--replacing <h5> -->
+     <p><strong>
       <xsl:call-template name="makeXpathLocationParam" >
         <xsl:with-param name="node" select="label"/>
       </xsl:call-template>
@@ -800,7 +810,7 @@ options and preserve backward compatibility. -JK -->
         <xsl:apply-templates select="caption/title"/>
       </span>
       </xsl:if>
-    </strong></p> <!--replacing </h5> -->
+    </strong></p>
     <xsl:apply-templates select="caption/node()[not(self::title)]"/>
     <xsl:if test="object-id[@pub-id-type='doi']">
       <span><xsl:call-template name="makeXpathLocationParam" >
@@ -848,85 +858,69 @@ options and preserve backward compatibility. -JK -->
 </xsl:template>
 
 
-
 <!-- ============================================================= -->
 <!-- 6. SUPPRESSED ELEMENTS                                        -->
 <!-- ============================================================= -->
 
 <!-- suppressed in no-mode (processed in mode "front") -->
-
 <xsl:template match="journal-meta | article-meta"/>
 
-
 <!-- not handled by this transform -->
-
 <xsl:template match="sub-article | response"/>
-
 
 <!-- xlink attributes are generally suppressed; note however that
      @xlink:href is used in some element templates. -->
-
 <xsl:template match="@xlink:*"/>
-
 
 <!-- Tables and figures are displayed at the end of the document,
      using mode "put-at-end".
      So, in no-mode, we suppress them: -->
-
 <xsl:template match="fig-group | table-wrap-group"/>
-
 
 
 <!-- ============================================================= -->
 <!-- CALLED TEMPLATES FOR ARTICLE PARTS                            -->
 <!-- ============================================================= -->
 
+
 <!-- ============================================================= -->
 <!--  7. MAKE-HTML-HEADER                                          -->
 <!-- ============================================================= -->
 
 <xsl:template name="make-html-header">
-
   <head>
     <xsl:call-template name="nl-1"/>
     <title>
       <xsl:choose>
-
         <xsl:when test="/article/front/journal-meta/journal-id
                         [@journal-id-type='pubmed']">
           <xsl:value-of select="/article/front/journal-meta/journal-id
                                 [@journal-id-type='pubmed']"/>
           <xsl:text>: </xsl:text>
         </xsl:when>
-
         <xsl:when test="/article/front/journal-meta/journal-id
                        [@journal-id-type='publisher']">
           <xsl:value-of select="/article/front/journal-meta/journal-id
                                 [@journal-id-type='publisher']"/>
           <xsl:text>: </xsl:text>
         </xsl:when>
-
         <xsl:when test="/article/front/journal-meta/journal-id">
           <xsl:value-of select="/article/front/journal-meta/journal-id
                                 [1][@journal-id-type]"/>
           <xsl:text>: </xsl:text>
         </xsl:when>
-
         <xsl:otherwise/>
       </xsl:choose>
-
       <xsl:for-each select="/article/front/article-meta/volume">
         <xsl:text>Vol. </xsl:text>
         <xsl:apply-templates/>
         <xsl:text> </xsl:text>
       </xsl:for-each>
-
       <xsl:for-each select="/article/front/article-meta/issue">
         <xsl:text>Issue </xsl:text>
         <xsl:apply-templates/>
         <xsl:text>: </xsl:text>
       </xsl:for-each>
-
       <xsl:if test="/article/front/article-meta/fpage">
         <xsl:choose>
           <xsl:when test="../lpage">
@@ -942,23 +936,22 @@ options and preserve backward compatibility. -JK -->
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-
     </title>
     <xsl:call-template name="nl-1"/>
-
     <link rel="stylesheet" type="text/css" href="ViewNLM.css"/>
     <xsl:call-template name="nl-1"/>
   </head>
-
 </xsl:template>
 
 <xsl:template name="fund-compete">
   <xsl:for-each select="/article/back/fn-group">
   	<xsl:if test="fn[@fn-type='financial-disclosure']">
-    	<p><strong>Funding:</strong><xsl:text> </xsl:text><xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
+    	<p><strong>Funding:</strong><xsl:text> </xsl:text>
+      <xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
 	</xsl:if>
 	<xsl:if test="fn[@fn-type='conflict']">
-    	<p><strong>Competing interests:</strong><xsl:text> </xsl:text> <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
+    	<p><strong>Competing interests:</strong><xsl:text> </xsl:text> 
+      <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
 	</xsl:if>
   </xsl:for-each>
 </xsl:template>
@@ -968,8 +961,7 @@ options and preserve backward compatibility. -JK -->
   <xsl:param name="delimiter" select="' '" />
   <xsl:choose>
     <xsl:when test="$delimiter and contains($string, $delimiter)">
-    
-    <xsl:value-of select="substring(substring-before($string,$delimiter), 1,1)" />
+     <xsl:value-of select="substring(substring-before($string,$delimiter), 1,1)" />
       <xsl:call-template name="makeInitials">
         <xsl:with-param name="string" select="substring-after($string,$delimiter)" />
         <xsl:with-param name="delimiter" select="$delimiter" />
@@ -998,10 +990,7 @@ options and preserve backward compatibility. -JK -->
   </xsl:for-each>
 </xsl:template>
 
-<!--
-Make article meta data
-
--->
+<!-- Make article meta data -->
 <xsl:template name="make-article-meta">
   <xsl:for-each select="front/article-meta">
     <p>
@@ -1011,53 +1000,54 @@ Make article meta data
           <xsl:when test="position() = 6">
             <xsl:text>et al. </xsl:text>
           </xsl:when>
+        <xsl:otherwise>
+          <!-- added this in to handle group author in citation -->
+          <xsl:choose> 
+            <xsl:when test="collab">
+              <xsl:apply-templates select="collab"/>
+            </xsl:when>
           <xsl:otherwise>
-            <xsl:choose> <!-- added this in to handle group author in citation -->
-              <xsl:when test="collab"><!-- added this in to handle group author in citation -->
-                <xsl:apply-templates select="collab"/><!-- added this in to handle group author in citation -->
-                </xsl:when><!-- added this in to handle group author in citation -->
-              <xsl:otherwise><!-- added this in to handle group author in citation -->
-                  <xsl:apply-templates select="name/surname"/>
-                  <xsl:text> </xsl:text>
-                 <xsl:call-template name="makeInitials2">
-                    <xsl:with-param name="x"><xsl:value-of select="name/given-names"/></xsl:with-param>
-                  </xsl:call-template>
-                  
-                 <!-- 2/5/08 - Included missing suffix and made sure it doesn't have a trailing period - JK -->
-				 <xsl:if test="string-length(name/suffix) > 0">
-					 <xsl:text> </xsl:text>
-					 <xsl:choose>
-							<xsl:when test="substring(name/suffix,string-length(name/suffix))='.'">
-								<xsl:value-of select="substring(name/suffix,1,string-length(name/suffix)-1)"/>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="name/suffix"/>
-							</xsl:otherwise>
-					</xsl:choose>
-				 </xsl:if>
-				  
-			</xsl:otherwise><!-- added this in to handle group author in citation -->
-            </xsl:choose><!-- added this in to handle group author in citation -->
-            <xsl:if test="position() != last()">
-              <xsl:text>, </xsl:text>
+            <xsl:apply-templates select="name/surname"/>
+            <xsl:text> </xsl:text>
+            <xsl:call-template name="makeInitials2">
+              <xsl:with-param name="x"><xsl:value-of select="name/given-names"/></xsl:with-param>
+            </xsl:call-template>
+            <!-- Included missing suffix and made sure it doesn't have a trailing period -->
+            <xsl:if test="string-length(name/suffix) > 0">
+              <xsl:text> </xsl:text>
+              <xsl:choose>
+                <xsl:when test="substring(name/suffix,string-length(name/suffix))='.'">
+                  <xsl:value-of select="substring(name/suffix,1,string-length(name/suffix)-1)"/>
+                </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="name/suffix"/>
+              </xsl:otherwise>
+              </xsl:choose>
             </xsl:if>
           </xsl:otherwise>
+          </xsl:choose>
+          <xsl:if test="position() != last()">
+            <xsl:text>, </xsl:text>
+          </xsl:if>
+        </xsl:otherwise>
         </xsl:choose>
       </xsl:for-each>
       <xsl:text> (</xsl:text>
-      <xsl:value-of select="pub-date[@pub-type='collection']/year | pub-date[@pub-type='ppub']/year"/>
+      <xsl:value-of select="pub-date[@pub-type='collection']/year |
+                            pub-date[@pub-type='ppub']/year"/>
       <xsl:text>) </xsl:text>
       
-      <!-- 2/5/08 - Fixed bug where a title with a ? or ! at end was followed by a period in the citation. - JK -->
-      <!-- <xsl:variable name="at" select="title-group/article-title"/> -->
+      <!-- Fixed bug where a title with a ? or ! at end 
+           was followed by a period in the citation. -->
       <xsl:apply-templates select="title-group/article-title" mode="none"/>
       <xsl:variable name="at" select="normalize-space(title-group/article-title)"/>
-      <xsl:if test="substring($at,string-length($at))!='?' and substring($at,string-length($at))!='!'">
-		  <xsl:text>.</xsl:text>
+      <xsl:if test="substring($at,string-length($at))!='?' and  
+                    substring($at,string-length($at))!='!'">
+        <xsl:text>.</xsl:text>
       </xsl:if>
       <xsl:text> </xsl:text>
-      
-      <xsl:value-of select="../journal-meta/journal-id[@journal-id-type='nlm-ta']"/><xsl:text> </xsl:text>
+      <xsl:value-of select="../journal-meta/journal-id[@journal-id-type='nlm-ta']"/>
+      <xsl:text> </xsl:text>
       <xsl:value-of select="volume"/>(<xsl:value-of select="issue"/>):
       <xsl:value-of select="elocation-id"/>.
       doi:<xsl:value-of select="article-id[@pub-id-type='doi']"/>
@@ -1077,14 +1067,16 @@ Make article meta data
               <xsl:element name="a">
                 <xsl:call-template name="make-href"/>
                 <xsl:call-template name="make-id"/>
-                <!-- <xsl:apply-templates select="name | collab" mode="article-meta"/> -->
                  <xsl:apply-templates select="name | collab" mode="front"/>
              </xsl:element>
             </xsl:when>
             <xsl:otherwise>
-              <xsl:apply-templates select="name | collab" mode="front"/> <!-- removed comma -->
+ 
+              <!-- removed comma -->
+              <xsl:apply-templates select="name | collab" mode="front"/> 
             </xsl:otherwise>
           </xsl:choose>
+
           <!-- the name element handles any contrib/xref and contrib/degrees -->
           <xsl:apply-templates select="*[not(self::name)
                                       and not(self::collab)
@@ -1094,37 +1086,39 @@ Make article meta data
                                       mode="front"/>
           <xsl:variable name="matchto" select="xref/@rid"/>
 		  <xsl:if test="../following-sibling::aff">
-			<xsl:text>, </xsl:text><xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
+			<xsl:text>, </xsl:text>
+      <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
 		  </xsl:if>
-<!--
-          <xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
-          <xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>-->
       </p>
-    </xsl:for-each> <!-- end of contrib -->
+    </xsl:for-each>
 
+    <!-- end of contrib -->
     <p>
       <xsl:if test="history/date[@date-type='received']">
         <strong>Received:</strong> <xsl:text> </xsl:text>
-        <xsl:apply-templates select="history/date[@date-type='received']/month" mode="none"/><xsl:text> </xsl:text>
+        <xsl:apply-templates select="history/date[@date-type='received']/month" mode="none"/>
+        <xsl:text> </xsl:text>
         <xsl:value-of select="history/date[@date-type='received']/day"/><xsl:text>, </xsl:text>
         <xsl:value-of select="history/date[@date-type='received']/year"/><xsl:text>; </xsl:text>
       </xsl:if>
       <xsl:if test="history/date[@date-type='accepted']">
         <strong>Accepted:</strong> <xsl:text> </xsl:text>
-        <xsl:apply-templates select="history/date[@date-type='accepted']/month" mode="none"/><xsl:text> </xsl:text>
+        <xsl:apply-templates select="history/date[@date-type='accepted']/month" mode="none"/>
+        <xsl:text> </xsl:text>
         <xsl:value-of select="history/date[@date-type='accepted']/day"/><xsl:text>, </xsl:text>
         <xsl:value-of select="history/date[@date-type='accepted']/year"/><xsl:text>; </xsl:text>
       </xsl:if>
       <strong>Published:</strong> <xsl:text> </xsl:text>
-      <xsl:apply-templates select="pub-date[@pub-type='epub']/month" mode="none"/><xsl:text> </xsl:text>
+      <xsl:apply-templates select="pub-date[@pub-type='epub']/month" mode="none"/>
+      <xsl:text> </xsl:text>
       <xsl:if test="pub-date[@pub-type='epub']/day">
         <xsl:value-of select="pub-date[@pub-type='epub']/day"/><xsl:text>, </xsl:text>
       </xsl:if>
       <xsl:value-of select="pub-date[@pub-type='epub']/year"/>
     </p>
     
-    <!-- 2/15/08 - Output the copyright statement differently with v2.3 of the dtd - JK -->
-	<p>
+    <!-- Output the copyright statement differently with v2.3 of the dtd -->
+  	<p>
 		<xsl:choose>
 			<xsl:when test="$dtd-version &lt; 2.3">
 				<xsl:choose>
@@ -1149,35 +1143,32 @@ Make article meta data
 		</xsl:choose>
     </p>
     
-          <!-- copyright: show statement -or- year -->
-          <!-- Most recent version of DTD recommends using the <permissions> wrapper
-               for the copyright data. We handle both cases here. -->
+    <!-- copyright: show statement -or- year -->
+    <!-- Most recent version of DTD recommends using the <permissions> wrapper
+         for the copyright data. We handle both cases here. -->
     <xsl:call-template name="fund-compete"/>
      <xsl:if test="../../back/glossary">
       <p>
         <strong><xsl:value-of select="../..//back/glossary/title"/>: </strong>
         <xsl:for-each select="../../back/glossary/def-list/def-item">
-          <xsl:apply-templates select="term" mode="glossary"/>, <xsl:apply-templates select="def" mode="glossary"/><xsl:if test="position() != last()">; </xsl:if>
+          <xsl:apply-templates select="term" mode="glossary"/>, 
+          <xsl:apply-templates select="def" mode="glossary"/>
+          <xsl:if test="position() != last()">; </xsl:if>
         </xsl:for-each>
       </p>
     </xsl:if>
-<!--  <p>
-    <strong>DOI:</strong><xsl:text> </xsl:text>
-    <xsl:value-of select="article-id[@pub-id-type='doi']"/>
-    </p>-->
     <xsl:if test="author-notes/corresp">
       <p>
         <xsl:apply-templates select="author-notes/corresp" mode="front"/>
       </p>
     </xsl:if>
-    
      <xsl:if test="contrib-group/contrib[@contrib-type='author'][@equal-contrib='yes']">
       <p>
-        <a name="equal-contrib"></a><xsl:text>#</xsl:text> These authors contributed equally to this work.
+        <a name="equal-contrib"></a><xsl:text>#</xsl:text> 
+        These authors contributed equally to this work.
       </p>
     </xsl:if>
-    
-   <xsl:for-each select="author-notes/fn[@fn-type='current-aff']">
+    <xsl:for-each select="author-notes/fn[@fn-type='current-aff']">
       <p>
         <xsl:apply-templates select="." mode="front"/>
       </p>
@@ -1187,18 +1178,18 @@ Make article meta data
         <xsl:apply-templates select="." mode="front"/>
       </p>
     </xsl:for-each>
- 
     <xsl:for-each select="author-notes/fn[@fn-type='other']">
       <p>
         <xsl:apply-templates select="." mode="front"/>
       </p>
     </xsl:for-each>
        
-      <!-- that's it for article-meta; return to previous context -->
+  <!-- that's it for article-meta; return to previous context -->
   </xsl:for-each>
 </xsl:template>
 
-<!-- 2/12/08 Added the following template rules to correctly copy and map different markup within glossary definitions - JK -->
+<!-- Added the following template rules to correctly copy and map 
+     different markup within glossary definitions -->
 <xsl:template match="def-item//p" mode="glossary">
 	<xsl:apply-templates mode="glossary"/>
 </xsl:template>
@@ -1209,13 +1200,15 @@ Make article meta data
 	</span>
 </xsl:template>
 
-<xsl:template match="def-item//sup | def-item//sub | def-item//em | def-item//strong" mode="glossary">
+<xsl:template 
+  match="def-item//sup | def-item//sub | def-item//em | def-item//strong" mode="glossary">
 	<xsl:element name="{local-name()}">
 		<xsl:apply-templates mode="glossary"/>
 	</xsl:element>
 </xsl:template>
 
-<!-- 3/7/08 - Output def-lists in the body of the text (note: different than def-list in the glossary as above) - JK -->
+<!-- Output def-lists in the body of the text 
+     (note: different than def-list in the glossary as above) -->
 <xsl:template match="def-list">
 	<dl>
 		<xsl:for-each select="def-item">
@@ -1225,72 +1218,69 @@ Make article meta data
 	</dl>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  8. MAKE-FRONT                                                -->
 <!-- ============================================================= -->
 
 <!-- initial context node is /article -->
-
 <xsl:template name="make-front">
-
   <xsl:call-template name="nl-1"/>
-
-  <!-- 2/14/08 - The following should be uncommented to display the formal corrections box at the top of the page. - JK -->  
-  <!-- <xsl:call-template name="formal-corrections"/> -->
 
   <!-- change context to front/article-meta -->
   <xsl:for-each select="front/article-meta">
     <xsl:apply-templates select="title-group" mode="front"/>
-<!--    <xsl:variable name="matchto" select="author"/>-->
     <p class="authors" xpathLocation="noSelect">
       <xsl:for-each select="contrib-group/contrib[@contrib-type='author']">
         <xsl:choose>
         
-			<!-- 2/15/08 - the following test for @xlink probably is not used any more and can be removed - JK -->
-			<xsl:when test="@xlink:href">
-				<xsl:element name="a">
-					<xsl:call-template name="make-href"/>
-					<xsl:call-template name="make-id"/>
-					<xsl:apply-templates select="name" mode="front"/>
-				</xsl:element>
-				<xsl:apply-templates select="name" mode="front-refs"/>
-				<xsl:apply-templates select="collab" mode="front"/>
-			</xsl:when>
-         
-			<!-- 2/15/08 - email tag is new with version 2.3 of the dtd. Currently disabled - JK-->
-			<!--
-			<xsl:when test="email">
-				<xsl:element name="a">
-					<xsl:attribute name="class">author-link</xsl:attribute>
-					<xsl:attribute name="href"><xsl:value-of select="concat('mailto:',email)"/></xsl:attribute>
-					<xsl:apply-templates select="name" mode="front"/>
-				</xsl:element>
-				<xsl:apply-templates select="name" mode="front-refs"/>
-				<xsl:apply-templates select="collab" mode="front"/>
-			</xsl:when>
-			-->
-          
-			<xsl:otherwise>          
-				<xsl:apply-templates select="name" mode="front"/>
-				<xsl:apply-templates select="name" mode="front-refs"/>
-				<xsl:apply-templates select="collab" mode="front"/>
-			</xsl:otherwise>
-			
+        <!-- the following test for @xlink probably is not used any more and can be removed -->
+        <xsl:when test="@xlink:href">
+          <xsl:element name="a">
+            <xsl:call-template name="make-href"/>
+            <xsl:call-template name="make-id"/>
+            <xsl:apply-templates select="name" mode="front"/>
+          </xsl:element>
+          <xsl:apply-templates select="name" mode="front-refs"/>
+          <xsl:apply-templates select="collab" mode="front"/>
+        </xsl:when>
+           
+        <!-- email tag is new with version 2.3 of the dtd. Currently disabled -->
+        <!--
+        <xsl:when test="email">
+          <xsl:element name="a">
+            <xsl:attribute name="class">author-link</xsl:attribute>
+            <xsl:attribute name="href">
+              <xsl:value-of select="concat('mailto:',email)"/>\
+            </xsl:attribute>
+            <xsl:apply-templates select="name" mode="front"/>
+          </xsl:element>
+          <xsl:apply-templates select="name" mode="front-refs"/>
+          <xsl:apply-templates select="collab" mode="front"/>
+        </xsl:when>
+        -->
+            
+        <xsl:otherwise>          
+          <xsl:apply-templates select="name" mode="front"/>
+          <xsl:apply-templates select="name" mode="front-refs"/>
+          <xsl:apply-templates select="collab" mode="front"/>
+        </xsl:otherwise>
         </xsl:choose>
-         
         <xsl:if test="position() != last()">
-            <xsl:text>, </xsl:text>
+          <xsl:text>, </xsl:text>
         </xsl:if>
         
-            <!-- the name element handles any contrib/xref and contrib/degrees -->
+        <!-- the name element handles any contrib/xref and contrib/degrees -->
         <xsl:apply-templates select="*[not(self::name)
-                                       and not(self::collab)
-                                       and not(self::xref)
-                                       and not(self::email)
-                                       and not(self::degrees)
-                                       and not(self::aff)]"
+                                     and not(self::collab)
+                                     and not(self::xref)
+                                     and not(self::email)
+                                     and not(self::degrees)
+                                     and not(self::aff)]"
                              mode="front"/>
-      </xsl:for-each> <!-- end of contrib -->
+      </xsl:for-each> 
+
+    <!-- end of contrib -->
     </p>
     <p class="affiliations" xpathLocation="noSelect">
       <xsl:for-each select="contrib-group/aff | contrib-group/contrib[@contrib-type='author']/aff">
@@ -1312,7 +1302,8 @@ Make article meta data
            also makes a row: empty left, details at right -->
       <xsl:for-each select="aff">
         <xsl:variable name="rid"><xsl:value-of select="@id"/></xsl:variable>
-        <xsl:if test="../contrib-group/contrib[@contrib-type='author']/xref[@ref-type='aff' and @rid=$rid]">
+        <xsl:if test="../contrib-group/contrib[@contrib-type='author']/xref[@ref-type='aff' 
+                      and @rid=$rid]">
           <xsl:element name="a">
             <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
             <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
@@ -1327,8 +1318,11 @@ Make article meta data
           </xsl:if>
           <xsl:apply-templates select="addr-line" />
           <xsl:if test="following-sibling::aff">
-            <xsl:variable name="nextId"><xsl:value-of select="following-sibling::aff/@id"/></xsl:variable>
-            <xsl:if test="../contrib-group/contrib[@contrib-type='author']/xref[@ref-type='aff' and @rid=$nextId]">
+            <xsl:variable name="nextId">
+              <xsl:value-of select="following-sibling::aff/@id"/>
+            </xsl:variable>
+            <xsl:if test="../contrib-group/contrib[@contrib-type='author']/xref[@ref-type='aff' 
+                          and @rid=$nextId]">
               <xsl:text>, </xsl:text>
             </xsl:if>
           </xsl:if>
@@ -1336,57 +1330,47 @@ Make article meta data
       </xsl:for-each>
     </p>
 
-  <!-- New Table: titles and author group -->
-  <!-- All data comes from front/article-meta -->
+    <!-- New Table: titles and author group -->
+    <!-- All data comes from front/article-meta -->
 
-      <!-- abstract(s) -->
+    <!-- abstract(s) -->
 
-<!--      <xsl:if test="abstract | trans-abstract">-->
-        <xsl:for-each select="abstract | trans-abstract">
-<!--      <xsl:variable name="xpathLocation">
-            <xsl:call-template name="str:xpath">
-              <xsl:with-param name="node" select="."/>
-            </xsl:call-template>
-          </xsl:variable>-->
-          <div class="info abstract">
-            <xsl:call-template name="makeXpathLocation"/>
-<!--        <xsl:attribute name="xpathLocation">
-              <xsl:value-of select="$xpathLocation"/>
-            </xsl:attribute>-->
-            <xsl:call-template name="words-for-abstract-title"/>
-            <xsl:apply-templates select="*[not(self::title)]"/>
-          </div>
-        </xsl:for-each> <!-- end of abstract or trans-abstract -->
-
-<!--      </xsl:if>--> <!-- end of dealing with abstracts -->
+    <xsl:for-each select="abstract | trans-abstract">
+      <div class="info abstract">
+        <xsl:call-template name="makeXpathLocation"/>
+        <xsl:call-template name="words-for-abstract-title"/>
+        <xsl:apply-templates select="*[not(self::title)]"/>
+      </div>
+    </xsl:for-each> 
+   
+    <!-- end of abstract or trans-abstract -->
 
     <!-- end of the titles-and-authors context; return to previous context -->
     </xsl:for-each>
-
-  <xsl:call-template name="nl-2"/>
+    <xsl:call-template name="nl-2"/>
 
 <!-- end of big front-matter pull -->
 </xsl:template>
 
-<!-- 2/5/08 - Hack to remove leading and trailing space from addr-line elements that were incorrectly
-        written this way. Utlimately, XML files should be cleaned up rather than this hack. - JK-->
+<!-- Hack to remove leading and trailing space from addr-line elements 
+     that were incorrectly written this way. 
+     Utlimately, XML files should be cleaned up rather than this hack. -->
 <xsl:template match="addr-line">
 	<xsl:value-of select="normalize-space()"/>
 </xsl:template>
+
 
 <!-- ============================================================= -->
 <!--  9. MAKE-BODY                                                 -->
 <!-- ============================================================= -->
 
 <!-- initial context node is article -->
-
 <xsl:template name="make-body">
+
   <!-- change context node -->
   <xsl:for-each select="body">
     <xsl:call-template name="nl-1"/>
-<!--    <hr class="part-rule"/>-->
     <xsl:call-template name="nl-1"/>
-
     <xsl:apply-templates/>
     <xsl:call-template name="nl-1"/>
   </xsl:for-each>
@@ -1398,27 +1382,17 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- initial context node is article -->
-
 <xsl:template name="make-back">
 
   <!-- change context node to back -->
   <xsl:for-each select="back">
     <xsl:apply-templates select="title"/>
-<!--
-    <xsl:if test="preceding-sibling::body//fn-group | .//fn-group">
-      <span class="tl-main-part">Notes</span>
-      <xsl:apply-templates select="preceding-sibling::body//fn-group | .//fn-group"/>
-      <xsl:call-template name="nl-1"/>
-    </xsl:if>-->
-
     <xsl:apply-templates select="ack"/>
     <xsl:call-template name="author-contrib"/>
     <xsl:apply-templates select="*[not(self::title) and not(self::fn-group) and not(self::ack)]"/>
     <xsl:call-template name="nl-1"/>
   </xsl:for-each>
-
 </xsl:template>
-
 
 <xsl:template name="author-contrib">
   <xsl:if test="../front/article-meta/author-notes/fn[@fn-type='con']">
@@ -1436,7 +1410,6 @@ Make article meta data
 <!--  11. MAKE-POST-PUBLICATION                                    -->
 <!-- ============================================================= -->
 
-
 <!-- At present the transform does not support
      subarticles and responses. To include that
      support in the present structure, fill out
@@ -1444,7 +1417,6 @@ Make article meta data
      template to ensure the details are handled
      in the same way and by the same templates
      as for the main article body. -->
-
 
 
 <!-- ============================================================= -->
@@ -1464,21 +1436,15 @@ Make article meta data
 
   <!-- change context node -->
   <xsl:for-each select="front/article-meta">
-
     <xsl:if test="article-categories
                 | kwd-group
                 | related-article
                 | conference">
-
       <hr class="part-rule"/>
-
       <table width="100%" class="fm">
-
         <xsl:call-template name="table-setup-l-wide"/>
-
         <xsl:call-template name="nl-1"/>
         <tr>
-
           <xsl:call-template name="nl-1"/>
           <td colspan="2" valign="top">
 
@@ -1494,21 +1460,15 @@ Make article meta data
 
             <!-- conference information -->
             <xsl:apply-templates select="conference"/>
-
           </td>
           <xsl:call-template name="nl-1"/>
-
         </tr>
         <xsl:call-template name="nl-1"/>
-
       </table>
       <xsl:call-template name="nl-1"/>
-
     </xsl:if>
   </xsl:for-each>
-
 </xsl:template>
-
 
 
 <!-- ============================================================= -->
@@ -1617,6 +1577,7 @@ Make article meta data
   <br/>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  Conference                                                   -->
 <!-- ============================================================= -->
@@ -1629,12 +1590,10 @@ Make article meta data
 
 <!-- doesn't use conf-num, conf-sponsor, conf-theme -->
 <xsl:template name="make-conference">
-
   <xsl:apply-templates select="conf-acronym" mode="add-period"/>
   <xsl:apply-templates select="conf-name" mode="add-period"/>
   <xsl:apply-templates select="conf-loc" mode="add-period"/>
   <xsl:apply-templates select="conf-date" mode="add-period"/>
-
 </xsl:template>
 
 <xsl:template match="*" mode="add-period">
@@ -1647,6 +1606,7 @@ Make article meta data
 <!--  NARRATIVE CONTENT AND COMMON STRUCTURES                      -->
 <!-- ============================================================= -->
 
+
 <!-- ============================================================= -->
 <!--  13. PARAGRAPH WITH ITS SUBTLETIES                            -->
 <!-- ============================================================= -->
@@ -1654,9 +1614,7 @@ Make article meta data
 <xsl:template match="p">
 
   <p>
-<!--    <xsl:call-template name="make-id"/>-->
     <xsl:call-template name="makeXpathLocation" >
-      <!-- <xsl:with-param name="node" select="."/> -->
     </xsl:call-template>
     <xsl:apply-templates/>
   </p>
@@ -1711,6 +1669,7 @@ Make article meta data
 </xsl:template>
 -->
 
+
 <!-- ============================================================= -->
 <!--  14. SECTION                                                  -->
 <!-- ============================================================= -->
@@ -1720,23 +1679,18 @@ Make article meta data
      subsequent body/secs do put out a section-rule -->
 <xsl:template match="body/sec">
   <xsl:call-template name="nl-1"/>
-<!--
-  <xsl:if test="position()>'1'">
-    <hr class="section-rule"/>
-    <xsl:call-template name="nl-1"/>
-  </xsl:if>
--->
   <div>
     <xsl:call-template name="make-section-id"/>
     <xsl:call-template name="makeXpathLocation" >
-      <!-- <xsl:with-param name="node" select="."/> -->
     </xsl:call-template>
     <xsl:if test="descendant::title[1] != ''">
       <xsl:element name="a">
         <xsl:attribute name="id"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
         <xsl:attribute name="name"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
         <xsl:attribute name="toc"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
-        <xsl:attribute name="title"><xsl:value-of select="descendant::title[1]"></xsl:value-of></xsl:attribute>
+        <xsl:attribute name="title">
+          <xsl:value-of select="descendant::title[1]"></xsl:value-of>
+        </xsl:attribute>
       </xsl:element>
     </xsl:if>
     <xsl:apply-templates/>
@@ -1746,10 +1700,7 @@ Make article meta data
 
 <!-- no other level of sec puts out a rule -->
 <xsl:template match="sec">
-<!--  <div>-->
-<!--    <xsl:call-template name="make-id"/>-->
-    <xsl:apply-templates/>
-<!--</div>-->
+  <xsl:apply-templates/>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
@@ -1772,7 +1723,9 @@ Make article meta data
     <xsl:otherwise>
       <xsl:call-template name="nl-1"/>
       <ol>
-        <xsl:attribute name="class"><xsl:value-of select="@list-type"></xsl:value-of></xsl:attribute>
+        <xsl:attribute name="class">
+          <xsl:value-of select="@list-type"></xsl:value-of>
+        </xsl:attribute>
         <xsl:call-template name="nl-1"/>
         <xsl:apply-templates/>
         <xsl:call-template name="nl-1"/>
@@ -1885,7 +1838,6 @@ Make article meta data
 <!--  21. PREFORMAT                                                -->
 <!-- ============================================================= -->
 
-
 <xsl:template match="preformat" name="format-as-line-for-line">
   <pre><xsl:call-template name="make-id"/><xsl:apply-templates/></pre>
 </xsl:template>
@@ -1916,7 +1868,10 @@ Make article meta data
   <p><strong><!-- replacing  <h5 xpathLocation="noSelect"> -->
    <xsl:element name="a">
      <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-     <xsl:attribute name="href"><xsl:value-of select="concat($pubAppContext,'/article/fetchFirstRepresentation.action?uri=',$objURI)"/></xsl:attribute>
+     <xsl:attribute name="href">
+      <xsl:value-of select="concat($pubAppContext,'/article/fetchFirstRepresentation.action?uri=',
+                                   $objURI)"/>
+    </xsl:attribute>
     <xsl:apply-templates select="label"/>
   </xsl:element>
  <xsl:apply-templates select="caption/title"/>
@@ -1936,7 +1891,7 @@ Make article meta data
  	 <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
   	<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
   </xsl:element>
-  <!-- 2/22/08 - Added span class='equation' surrounding equations - JK -->
+  <!-- Added span class='equation' surrounding equations -->
   <span class="equation">
     <xsl:apply-templates select="*[not(self::label)]"/>
     <xsl:apply-templates select="label"/>
@@ -2013,7 +1968,10 @@ Make article meta data
   <xsl:element name="img">
     <xsl:if test="@xlink:href">
       <xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-      <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+      <xsl:attribute name="src">
+        <xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$graphicDOI,
+                                     '&amp;representation=PNG')"/>
+      </xsl:attribute>
       <xsl:attribute name="border">0</xsl:attribute>
     </xsl:if>
   </xsl:element>
@@ -2047,6 +2005,7 @@ Make article meta data
     <xsl:text>]</xsl:text>
   </span>
 </xsl:template>
+
 
 <!-- ============================================================= -->
 <!--  Named Content                                                -->
@@ -2096,7 +2055,6 @@ Make article meta data
 </xsl:template>
 
 
-
 <!-- ============================================================= -->
 <!--  27. CHEM-STRUCT                                              -->
 <!-- ============================================================= -->
@@ -2129,7 +2087,6 @@ Make article meta data
     <xsl:text>[tex-math code here]</xsl:text>
   </span>
 </xsl:template>
-
 
 <!-- can presume this is meant to be inline -->
 <xsl:template match="inline-formula//mml:math">
@@ -2168,7 +2125,6 @@ Make article meta data
        </tr>
      </table>
     </xsl:when>
-
     <xsl:otherwise>
       <table border="1">
         <tr>
@@ -2182,7 +2138,6 @@ Make article meta data
       </table>
     </xsl:otherwise>
   </xsl:choose>
-
 </xsl:template>
 
 
@@ -2194,11 +2149,13 @@ Make article meta data
   <xsl:element name="img">
     <xsl:if test="@xlink:href">
     <xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-    <xsl:attribute name="src"><xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+    <xsl:attribute name="src">
+      <xsl:value-of select="concat($pubAppContext,'/article/fetchObject.action?uri=',
+                                   $graphicDOI,'&amp;representation=PNG')"/>
+    </xsl:attribute>
     </xsl:if>
   </xsl:element>
 </xsl:template>
-
 
 <xsl:template match="media">
   <a>
@@ -2217,14 +2174,12 @@ Make article meta data
 <xsl:template match="array">
   <hr width="40%" align="left" noshade="1"/>
   <xsl:call-template name="nl-1"/>
-
   <table>
     <xsl:call-template name="make-id"/>
     <xsl:apply-templates/>
     <xsl:call-template name="nl-1"/>
   </table>
   <xsl:call-template name="nl-1"/>
-
   <hr width="40%" align="left" noshade="1"/>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
@@ -2236,21 +2191,22 @@ Make article meta data
 
 <!-- the chooses before and after the element content
      tweak the display as appropriate -->
-
 <xsl:template match="label | alt-text | attrib">
+
   <!-- element-specific handling before content: -->
   <xsl:choose>
     <xsl:when test="ancestor::disp-formula">
-	  <!-- 2/22/08 - Set class to 'note' for the labels on equations - JK -->
+
+  	  <!-- Set class to 'note' for the labels on equations -->
       <span class="note"><xsl:call-template name="makeXpathLocation" /><xsl:apply-templates/></span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:choose>
+
         <!-- alt-text gets a generated label-->
         <xsl:when test="self::alt-text">
           <xsl:if test="not(ancestor::fig)
                         and not(ancestor::table)"><br/></xsl:if>
-
           <span class="gen">
             <xsl:call-template name="make-id"/>
             <xsl:text>Alternate Text: </xsl:text>
@@ -2266,18 +2222,18 @@ Make article meta data
       <xsl:text>. </xsl:text>
     </xsl:otherwise>
   </xsl:choose>
-    <!-- element-specific handling after content: -->
+
+  <!-- element-specific handling after content: -->
   <xsl:choose>
+
     <!-- alt-text and long-desc get a break after -->
     <xsl:when test="self::alt-text | self::long-desc"><br/></xsl:when>
   </xsl:choose>
 </xsl:template>
 
-
 <xsl:template match="caption">
   <xsl:apply-templates/>
 </xsl:template>
-
 
 <!-- mixed-content; used in figures, tables, etc. -->
 <xsl:template match="long-desc">
@@ -2299,10 +2255,9 @@ Make article meta data
       </span>
     </xsl:otherwise>
   </xsl:choose>
-
   <xsl:text>:</xsl:text>
   <xsl:apply-templates/>
- </xsl:template>
+</xsl:template>
 
 
 <!-- ============================================================= -->
@@ -2314,14 +2269,11 @@ Make article meta data
 
     <!-- left column:  graphic
          right column: captioning elements - label, caption, etc. -->
-
     <tr>
     <xsl:call-template name="nl-1"/>
-
       <td valign="top">
         <xsl:apply-templates select="graphic"/>
         <br/>
-
         <span class="gen">
           <xsl:call-template name="make-id"/>
           <xsl:text>[Figure ID: </xsl:text>
@@ -2330,17 +2282,14 @@ Make article meta data
         <span class="gen">
           <xsl:text>] </xsl:text>
         </span>
-
       </td>
       <xsl:call-template name="nl-1"/>
-
       <td valign="top">
         <xsl:apply-templates select="child::*[not(self::graphic)]"/>
       </td>
       <xsl:call-template name="nl-1"/>
     </tr>
     <xsl:call-template name="nl-1"/>
-
 </xsl:template>
 
 
@@ -2371,7 +2320,6 @@ Make article meta data
 
 <xsl:template match="table">
   <table width="100%" class="bm">
-
     <xsl:if test="@frame">
       <xsl:attribute name="frame">
         <xsl:value-of select="@frame"/>
@@ -2383,7 +2331,6 @@ Make article meta data
       </xsl:attribute>
     </xsl:if>
     <xsl:call-template name="nl-1"/>
-
     <xsl:apply-templates/>
     <xsl:call-template name="nl-1"/>
   </table>
@@ -2446,7 +2393,6 @@ Make article meta data
 </xsl:template>
 
 
-
 <!-- ============================================================= -->
 <!-- MODE front                                                    -->
 <!-- ============================================================= -->
@@ -2458,12 +2404,12 @@ Make article meta data
                    | journal-meta/publisher"/>
 -->
 
+
 <!-- ============================================================= -->
 <!--  34) JOURNAL-META (in order of appearance in output)          -->
 <!-- ============================================================= -->
 
 <!-- journal-id -->
-
 <xsl:template match="journal-id[@journal-id-type]" mode="front">
   <span class="gen"><xsl:text>Journal ID (</xsl:text></span>
   <xsl:value-of select="@journal-id-type"/>
@@ -2474,7 +2420,6 @@ Make article meta data
 </xsl:template>
 
 <!-- abbrev-journal-title -->
-
 <xsl:template match="abbrev-journal-title" mode="front">
   <span class="gen"><xsl:text>Journal Abbreviation: </xsl:text></span>
   <xsl:apply-templates/>
@@ -2483,7 +2428,6 @@ Make article meta data
 </xsl:template>
 
 <!-- issn -->
-
 <xsl:template match="issn" mode="front">
   <span class="gen"><xsl:text>ISSN: </xsl:text></span>
   <xsl:apply-templates/>
@@ -2493,7 +2437,6 @@ Make article meta data
 
 <!-- publisher -->
 <!-- required name, optional location -->
-
 <xsl:template match="publisher" mode="front">
   <xsl:apply-templates mode="front"/>
   <br/>
@@ -2506,13 +2449,13 @@ Make article meta data
 </xsl:template>
 
 <xsl:template match="publisher-loc" mode="front">
+
   <!-- if present, follows a publisher-name, so produces a comma -->
   <xsl:text>, </xsl:text>
   <xsl:apply-templates/>
 </xsl:template>
 
 <!-- notes -->
-
 <xsl:template match="notes" mode="front">
   <span class="gen">Notes: </span>
   <xsl:apply-templates/>
@@ -2526,7 +2469,6 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- ext-link -->
-
 <xsl:template match="ext-link" mode="front">
   <span class="gen">
     <xsl:call-template name="make-id"/>
@@ -2538,7 +2480,6 @@ Make article meta data
 </xsl:template>
 
 <!-- supplementary-material -->
-
 <!-- Begins with:
     Object Identifier <object-id>, zero or more
     Label (Of a Figure, Reference, Etc.) <label>, zero or one
@@ -2568,7 +2509,6 @@ Make article meta data
 </xsl:template>
 
 <!-- self-uri -->
-
 <xsl:template match="self-uri" mode="front">
   <a href="@xlink:href"><span class="gen"><xsl:text>Self URI: </xsl:text></span></a>
   <xsl:apply-templates/>
@@ -2578,7 +2518,6 @@ Make article meta data
 
 <!-- product -->
 <!-- uses mode="product" within -->
-
 <xsl:template match="product" mode="front">
   <xsl:choose>
     <xsl:when test="@xlink:href">
@@ -2603,14 +2542,11 @@ Make article meta data
        - if the next sibling is another element,
          add a space to make the content somewhat legible. -->
 <xsl:template match="*" mode="product">
-
   <xsl:apply-templates/>
-
   <xsl:if test="generate-id(following-sibling::node()[1])
                  =generate-id(following-sibling::*[1])">
   <xsl:text> </xsl:text>
   </xsl:if>
-
 </xsl:template>
 
 <!-- copyright-statement, copyright-year, copyright-holder -->
@@ -2620,9 +2556,7 @@ Make article meta data
 </xsl:template>-->
 
 <!-- history -->
-
 <xsl:template match="history/date" mode="front">
-
   <xsl:variable name="the-type">
     <xsl:choose>
       <xsl:when test="@date-type='accepted'">Accepted</xsl:when>
@@ -2631,21 +2565,18 @@ Make article meta data
       <xsl:when test="@date-type='rev-recd'">Revision Received</xsl:when>
     </xsl:choose>
   </xsl:variable>
-
   <xsl:if test="@date-type">
     <span class="gen">
       <xsl:value-of select="$the-type"/>
       <xsl:text> </xsl:text>
     </span>
   </xsl:if>
-
   <xsl:apply-templates/>
   <br/>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
 <!-- pub-date -->
-
 <xsl:template match="pub-date" mode="front">
   <xsl:choose>
     <xsl:when test="@pub-type='ppub'">
@@ -2658,7 +2589,6 @@ Make article meta data
       <xsl:value-of select="@pub-type"/>
     </xsl:otherwise>
   </xsl:choose>
-
   <span class="gen"><xsl:text> publication date: </xsl:text></span>
   <xsl:apply-templates/>
   <br/>
@@ -2666,7 +2596,6 @@ Make article meta data
 </xsl:template>
 
 <!-- volume -->
-
 <xsl:template match="volume" mode="front">
   <span class="gen"><xsl:text>Volume: </xsl:text></span>
   <xsl:apply-templates/>
@@ -2676,7 +2605,6 @@ Make article meta data
 </xsl:template>
 
 <!-- issue -->
-
 <xsl:template match="issue" mode="front">
   <span class="gen"><xsl:text>Issue: </xsl:text></span>
   <xsl:apply-templates/>
@@ -2685,7 +2613,6 @@ Make article meta data
 </xsl:template>
 
 <!-- elocation-id -->
-
 <xsl:template match="elocation-id" mode="front">
   <span class="gen"><xsl:text>E-location ID: </xsl:text></span>
   <xsl:apply-templates/>
@@ -2694,7 +2621,6 @@ Make article meta data
 </xsl:template>
 
 <!-- fpage, lpage -->
-
 <xsl:template match="fpage" mode="front">
   <span class="gen"><xsl:text>First Page: </xsl:text></span>
   <xsl:apply-templates/>
@@ -2717,7 +2643,6 @@ Make article meta data
 </xsl:template>
 
 <!-- article-id -->
-
 <xsl:template match="article-id">
   <xsl:choose>
     <xsl:when test="@pub-id-type='coden'">
@@ -2751,15 +2676,12 @@ Make article meta data
       <span class="gen"><xsl:text>ID: </xsl:text></span>
     </xsl:otherwise>
   </xsl:choose>
-
   <xsl:apply-templates/>
   <br/>
   <xsl:call-template name="nl-1"/>
-
 </xsl:template>
 
 <!-- contract-num, contract-sponsor -->
-
 <xsl:template match="contract-num | contract-sponsor" mode="front">
   <xsl:choose>
     <xsl:when test="@xlink:href">
@@ -2781,20 +2703,18 @@ Make article meta data
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  36) TITLE-GROUP                                              -->
 <!-- ============================================================= -->
 
 <!-- title-group -->
-
 <!-- Appears only in article-meta -->
 <!-- The fn-group, if any, is output in the "back" of the
      HTML page, together with any other fn-group. -->
-
 <xsl:template match="title-group" mode="front">
   <xsl:apply-templates select="article-title" mode="front"/>
   <xsl:apply-templates select="subtitle" mode="front"/>
-  <!-- <xsl:apply-templates select="trans-title | alt-title" mode="front"/>-->
 </xsl:template>
 
 <xsl:template match="article-title" mode="front">
@@ -2829,11 +2749,11 @@ Make article meta data
         <span class="gen">Alternate Title: </span>
       </xsl:otherwise>
     </xsl:choose>
-
     <xsl:apply-templates/>
   </span>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
+
 
 <!-- ============================================================= -->
 <!--  37) PARTS OF CONTRIB                                         -->
@@ -2841,7 +2761,6 @@ Make article meta data
 
 <!-- collab -->
 <!-- A mixed-content model; process it as given -->
-
 <xsl:template match="collab" mode="front">
   <xsl:choose>
     <xsl:when test="@xlink:href">
@@ -2884,7 +2803,6 @@ Make article meta data
 
 <!-- name -->
 <!-- uses mode="contrib" within -->
-
 <xsl:template match="name" mode="front">
   <xsl:apply-templates select="prefix"      mode="contrib"/>
   <xsl:apply-templates select="given-names" mode="contrib-abbr"/>
@@ -2893,9 +2811,11 @@ Make article meta data
   <xsl:apply-templates select="../degrees"  mode="contrib"/>
 </xsl:template>
 
-   <!-- Ordering of author footnotes is as follows:
-1,2 - Indicates affiliation(s). Use numbers when there is more than one affiliation. Comma separate multiple affiliations.
-    <xref ref-type="aff"><sup>1</sup></xref>
+<!-- Ordering of author footnotes is as follows:
+
+1,2 - Indicates affiliation(s). 
+      Use numbers when there is more than one affiliation. Comma separate multiple affiliations.
+      <xref ref-type="aff"><sup>1</sup></xref>
  
 [ - Indicates equal authorship (in XML/HTML marked up as # instead of with yin-yang image).
     <contrib contrib-type="author" equal-contrib="yes">
@@ -2903,8 +2823,10 @@ Make article meta data
 ¶ - Indicates additional sets of equally contributing authors.
     <xref ref-type="fn"><sup>&#xb6;</sup></xref>
  
-¤ - Indicates current address. Append letters when there is more than one current address (¤a, ¤b, ¤c, etc.)
-    <xref ref-type="fn"><sup>&curren;</sup></xref> or <xref ref-type="fn" rid=""><sup>&curren;a</sup></xref>
+¤ - Indicates current address. 
+    Append letters when there is more than one current address (¤a, ¤b, ¤c, etc.)
+    <xref ref-type="fn"><sup>&curren;</sup></xref> or <xref ref-type="fn" rid="">
+    <sup>&curren;a</sup></xref>
  
 † - Indicates author is deceased
     <xref ref-type="fn"><sup>&dagger;</sup></xref>
@@ -2914,7 +2836,7 @@ Make article meta data
  
 * - Indicates corresponding author <corresp>
     <xref ref-type="corresp">
-  -->
+-->
   
 <xsl:template match="name" mode="front-refs">
   <xsl:apply-templates select="../xref[@ref-type='aff']" mode="contrib"/>
@@ -2940,8 +2862,7 @@ Make article meta data
   <xsl:text> </xsl:text>
 </xsl:template>
 
-
-<!-- 2/5/08 - added abbreviate-name template to correctly put a period after a single initial middle name - JK -->
+<!-- added abbreviate-name template to correctly put a period after a single initial middle name -->
 <xsl:template match="given-names" mode="contrib-abbr">
   <xsl:call-template name="abbreviate-name">
 	  <xsl:with-param name="n" select="."/>
@@ -2953,7 +2874,10 @@ Make article meta data
 	<xsl:param name="n"/>		
 	<xsl:variable name="x" select="normalize-space($n)"/>
 	<xsl:value-of select="$x"/>
-	<xsl:if test="substring($x,string-length($x),1) != '.' and (string-length($x) = 1 or (string-length($x) > 1 and substring($x,string-length($x)-1,1)=' '))">
+	<xsl:if test="substring($x,string-length($x),1) != '.' 
+                and (string-length($x) = 1 
+                or (string-length($x) > 1 
+                and substring($x,string-length($x)-1,1)=' '))">
 		<xsl:text>.</xsl:text>
 	</xsl:if>
 </xsl:template>	
@@ -2976,17 +2900,27 @@ Make article meta data
 <xsl:template match="xref[@ref-type='author-notes']" mode="contrib">
   <xsl:choose>
     <xsl:when test="not(.//italic) and not (.//sup)">
-      <sup><i><xsl:element name="a"><xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute><xsl:apply-templates/></xsl:element></i></sup>
+      <sup><i>
+      <xsl:element name="a">
+        <xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute>
+        <xsl:apply-templates/>
+      </xsl:element>
+      </i></sup>
     </xsl:when>
     <xsl:when test="not(.//italic)">
-      <i><xsl:element name="a"><xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute><xsl:attribute name="class">fnoteref</xsl:attribute> <xsl:value-of select="sup"/></xsl:element></i>
+      <i>
+      <xsl:element name="a">
+        <xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute>
+        <xsl:attribute name="class">fnoteref</xsl:attribute> 
+        <xsl:value-of select="sup"/>
+      </xsl:element>
+      </i>
     </xsl:when>
     <xsl:otherwise>
       <xsl:apply-templates/>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
 
 <xsl:template match="xref[@ref-type='corresp']" mode="contrib">
   <xsl:if test="./sup">
@@ -3026,12 +2960,9 @@ Make article meta data
   <xsl:if test="following-sibling::xref[@ref-type='fn']"><sup>,</sup></xsl:if>
 </xsl:template>
 
-
 <!-- author-comment -->
 <!-- optional title, one-or-more paras -->
-
 <xsl:template match="author-comment | bio" mode="front">
-
   <xsl:variable name="the-title">
     <xsl:choose>
       <xsl:when test="title">
@@ -3046,7 +2977,6 @@ Make article meta data
       <!-- no logical otherwise -->
     </xsl:choose>
   </xsl:variable>
-
   <xsl:choose>
     <xsl:when test="@xlink:href">
       <a>
@@ -3060,10 +2990,8 @@ Make article meta data
       <xsl:value-of select="$the-title"/>
     </xsl:otherwise>
   </xsl:choose>
-
   <xsl:apply-templates select="*[not(self::title)]" mode="front"/>
 </xsl:template>
-
 <xsl:template match="author-comment/title | bio/title" mode="front">
   <xsl:apply-templates/>
 </xsl:template>
@@ -3078,7 +3006,6 @@ Make article meta data
 </xsl:template>
 
 <!-- parts of contrib: address -->
-
 <xsl:template match="address" mode="front">
   <span class="gen">
     <xsl:call-template name="make-id"/>
@@ -3104,7 +3031,6 @@ Make article meta data
       </span>
     </xsl:otherwise>
   </xsl:choose>
-
   <xsl:if test="following-sibling::*">
     <xsl:text> </xsl:text>
   </xsl:if>
@@ -3132,10 +3058,7 @@ Make article meta data
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
-
-
 <!-- on-behalf-of -->
-
 <xsl:template match="on-behalf-of" mode="front">
   <span class="gen"><xsl:text>On behalf of: </xsl:text></span>
   <xsl:apply-templates/>
@@ -3144,7 +3067,6 @@ Make article meta data
 </xsl:template>
 
 <!-- role -->
-
 <xsl:template match="role" mode="front">
   <span class="gen"><xsl:text>Role: </xsl:text></span>
   <xsl:apply-templates/>
@@ -3153,7 +3075,6 @@ Make article meta data
 </xsl:template>
 
 <!-- email -->
-
 <xsl:template match="email" mode="front">
   <xsl:choose>
     <xsl:when test="@xlink:href">
@@ -3171,9 +3092,7 @@ Make article meta data
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
-
 <!-- author-notes -->
-
 <xsl:template match="author-notes" mode="front">
   <span class="capture-id">
     <xsl:call-template name="make-id"/>
@@ -3182,7 +3101,6 @@ Make article meta data
 </xsl:template>
 
 <!-- author-notes/title -->
-
 <xsl:template match="author-notes/title" mode="front">
   <b><xsl:apply-templates/></b>
   <br/>
@@ -3191,7 +3109,6 @@ Make article meta data
 
 <!-- author-notes/corresp -->
 <!-- mixed-content; process it as given -->
-
 <xsl:template match="author-notes/corresp" mode="front">
   <xsl:element name="a">
     <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
@@ -3199,18 +3116,15 @@ Make article meta data
   <xsl:apply-templates/>
 </xsl:template>
 
-
 <!-- author-notes/fn -->
 <!-- optional label, one or more paras -->
 <!-- unmoded (author-notes only appears in article-meta) -->
-
 <xsl:template match="author-notes/fn[@fn-type='current-aff']" mode="front">
   <xsl:element name="a">
     <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
   </xsl:element>
   <xsl:apply-templates/>
 </xsl:template>
-
 
 <xsl:template match="author-notes/fn[@fn-type='deceased']" mode="front">
   <xsl:element name="a">
@@ -3227,18 +3141,14 @@ Make article meta data
 </xsl:template>
 
 <!-- author-notes/fn/label -->
-
 <xsl:template match="author-notes/fn/label">
   <xsl:apply-templates/>
 </xsl:template>
 
 <!-- author-notes/fn/p[1] -->
-
 <xsl:template match="author-notes/fn/p[1]" priority="2">
-
   <span class="capture-id">
     <xsl:call-template name="make-id"/>
-
     <xsl:choose>
       <xsl:when test="parent::fn/@fn-type='com'">
         <span class="gen">
@@ -3246,9 +3156,6 @@ Make article meta data
         </span>
       </xsl:when>
       <xsl:when test="parent::fn/@fn-type='con'">
-<!--        <span class="gen">
-          <xsl:text>Contributed by footnote: </xsl:text>
-        </span>-->
       </xsl:when>
       <xsl:when test="parent::fn/@fn-type='cor'">
         <span class="gen">
@@ -3289,13 +3196,11 @@ Make article meta data
         <xsl:text> </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
-
     <xsl:apply-templates/>
   </span>
 </xsl:template>
 
 <!-- author-notes/fn/p processed as ordinary unmoded p-->
-
 <!-- abstract and trans-abstract are handled entirely
      within the make-front template -->
 
@@ -3304,19 +3209,17 @@ Make article meta data
 <!-- BACK (unmoded templates)                                      -->
 <!-- ============================================================= -->
 
+
 <!-- ============================================================= -->
 <!--  38. BACK MATTER: ACKNOWLEDGEMENTS                            -->
 <!-- ============================================================= -->
 
 <xsl:template match="ack">
-
   <xsl:call-template name="nl-1"/>
   <xsl:if test="position()>1">
     <hr class="section-rule"/>
   </xsl:if>
   <xsl:call-template name="nl-1"/>
-
-<!--  <div class="capture-id">-->
   <div xpathLocation="noSelect" >
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
@@ -3325,45 +3228,39 @@ Make article meta data
     </xsl:if>
     <xsl:apply-templates/>
   </div>
-  <!--</div>-->
-
 </xsl:template>
+
 
 <!-- ============================================================= -->
 <!--  39. BACK-MATTER: APPENDIX                                    -->
 <!-- ============================================================= -->
 
 <xsl:template match="app">
-
   <xsl:text>&#xA;</xsl:text>
   <xsl:if test="position()>1">
     <hr class="section-rule"/>
   </xsl:if>
   <xsl:call-template name="nl-1"/>
-
   <div class="capture-id">
     <xsl:call-template name="make-id"/>
     <xsl:apply-templates/>
     <xsl:call-template name="nl-1"/>
   </div>
-
 </xsl:template>
+
 
 <!-- ============================================================= -->
 <!--  40. BACK-MATTER: FOOTNOTE-GROUP and FN                       -->
 <!-- ============================================================= -->
 
 <xsl:template match="fn-group">
-
   <xsl:call-template name="nl-1"/>
   <xsl:if test="position()>1">
     <hr class="section-rule"/>
   </xsl:if>
   <xsl:call-template name="nl-1"/>
-
   <xsl:apply-templates/>
   <xsl:call-template name="nl-1"/>
-
 </xsl:template>
 
 
@@ -3372,11 +3269,8 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- symbol or id is displayed by the first para within the fn     -->
-
 <xsl:template match="fn">
-<!---  <div id="{@id}">-->
     <xsl:apply-templates/>
-<!--  </div>-->
 </xsl:template>
 
 
@@ -3385,24 +3279,20 @@ Make article meta data
 <!-- ============================================================= -->
 
 <xsl:template match="notes">
-
   <xsl:call-template name="nl-1"/>
   <xsl:if test="position()>1">
     <hr class="section-rule"/>
   </xsl:if>
   <xsl:call-template name="nl-1"/>
-
   <div class="capture-id">
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
       <span class="tl-main-part">Notes</span>
       <xsl:call-template name="nl-1"/>
     </xsl:if>
-
     <xsl:apply-templates/>
     <xsl:call-template name="nl-1"/>
   </div>
-
 </xsl:template>
 
 <xsl:template match="note">
@@ -3412,20 +3302,18 @@ Make article meta data
   </span>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  42. BACK MATTER: GLOSSARY                                    -->
 <!-- ============================================================= -->
 
 <xsl:template match="glossary">
-
-</xsl:template>
-<!--
+  <!--
   <xsl:call-template name="nl-1"/>
   <xsl:if test="position()>1">
     <hr class="section-rule"/>
   </xsl:if>
   <xsl:call-template name="nl-1"/>
-
   <div class="capture-id">
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
@@ -3435,35 +3323,29 @@ Make article meta data
       </span>
       <xsl:call-template name="nl-1"/>
     </xsl:if>
-
     <xsl:apply-templates/>
   </div>
   <xsl:call-template name="nl-1"/>
-
+  -->
 </xsl:template>
 
+<!--
 <xsl:template match="gloss-group">
-
   <xsl:call-template name="nl-1"/>
   <xsl:if test="not(title)">
     <span class="tl-main-part">Glossary</span>
     <xsl:call-template name="nl-1"/>
   </xsl:if>
-
   <xsl:apply-templates/>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
 <xsl:template match="def-list">
-
   <xsl:apply-templates select="title"/>
   <xsl:call-template name="nl-1"/>
-
   <table width="100%" cellpadding="2" class="bm">
     <xsl:call-template name="nl-1"/>
-
     <xsl:call-template name="table-setup-l-wide"/>
-
     <xsl:if test="term-head|def-head">
       <tr>
         <td valign="top" align="right"><i><xsl:apply-templates select="term-head"/></i></td>
@@ -3471,15 +3353,11 @@ Make article meta data
       </tr>
       <xsl:call-template name="nl-1"/>
     </xsl:if>
-
     <xsl:apply-templates select="def-item"/>
-
   <xsl:call-template name="nl-1"/>
   </table>
   <xsl:call-template name="nl-1"/>
-
 </xsl:template>
-
 
 <xsl:template match="def-item">
   <tr>
@@ -3507,6 +3385,7 @@ Make article meta data
 </xsl:template>
 -->
 
+
 <!-- ============================================================= -->
 <!--  43. TARGET OF A REFERENCE                                    -->
 <!-- ============================================================= -->
@@ -3524,17 +3403,19 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- xref for fn, table-fn, or bibr becomes a superior number -->
-
 <xsl:template match="xref[@ref-type='fn']">
   <span class="xref">
     <xsl:call-template name="make-id"/>
     <sup>
+
       <!-- if immediately-preceding sibling was an xref, punctuate
            (otherwise assume desired punctuation is in the source).-->
       <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
         <span class="gen"><xsl:text>, </xsl:text></span>
       </xsl:if>
-      <a href="#{@rid}"><xsl:apply-templates/></a><!-- Displays the element content (if any), not the @rid -->
+      
+      <!-- Displays the element content (if any), not the @rid -->
+      <a href="#{@rid}"><xsl:apply-templates/></a>
     </sup>
   </span>
 </xsl:template>
@@ -3548,47 +3429,33 @@ Make article meta data
       <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
         <span class="gen"><xsl:text>, </xsl:text></span>
       </xsl:if>
-     	<xsl:apply-templates/><!-- Displays the footnote symbols (if any). Removed the hyperlink because table footnotes are not displayed on the web page, therefore there is nothing to hyperlink to. -->
+      
+      <!-- Displays the footnote symbols (if any). 
+           Removed the hyperlink because table footnotes are not displayed on the web page,
+           therefore there is nothing to hyperlink to. -->
+     	<xsl:apply-templates/>
     </sup>
   </span>
 </xsl:template>
 
 <xsl:template match="xref[@ref-type='bibr']">
-<!--  <xsl:variable name="urlnumber" select="count(preceding::xref[@ref-type='bibr'])+1"/>-->
 
-
- <!-- <span class="xref">
-    <xsl:call-template name="make-id"/>-->
-<!--  <xsl:if test="preceding-sibling::node()[1]!=','">
-    <xsl:if test="local-name(preceding-sibling::node()[1])!='xref'">
-      <xsl:text>&#91;</xsl:text>
-    </xsl:if>
-  </xsl:if>-->
-<!--    <sup>-->
-      <!-- if immediately-preceding sibling was an xref, punctuate
-           (otherwise assume desired punctuation is in the source).-->
-      <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
-        <xsl:text>,</xsl:text>
-      </xsl:if>
-      <a href="#{@rid}"><xsl:apply-templates/></a>
-<!--    </sup>-->
-<!--  <xsl:if test="following-sibling::node()[1]!=','">
-    <xsl:if test="local-name(following-sibling::node()[1])!='xref'">
-      <xsl:text>&#93;</xsl:text>
-    </xsl:if>
-  </xsl:if>-->
-
-<!--  </span>-->
+  <!-- if immediately-preceding sibling was an xref, punctuate
+       (otherwise assume desired punctuation is in the source).-->
+  <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
+    <xsl:text>,</xsl:text>
+  </xsl:if>
+  <a href="#{@rid}"><xsl:apply-templates/></a>
 </xsl:template>
-
 
 <xsl:template match="text()[normalize-space(.)='-']">
   <xsl:choose>
+
     <!-- if a hyphen is the only thing in a text node
          and it's between two xrefs, we conclude that
          it's expressing a range, and we superscript it -->
     <xsl:when test="local-name(following-sibling::node()[1])='xref'
-                and local-name(preceding-sibling::node()[1])='xref'">
+                    and local-name(preceding-sibling::node()[1])='xref'">
       <sup>-</sup>
     </xsl:when>
     <xsl:otherwise>
@@ -3602,12 +3469,9 @@ Make article meta data
      and typically part of a sentence,
      so -not- a superior number. -->
 <xsl:template match="xref[@ref-type='fig'] | xref[@ref-type='table']">
-<!--  <span class="xref">
-    <xsl:call-template name="make-id"/>-->
     <a href="#{@rid}">
       <xsl:apply-templates/>
     </a>
-<!--  </span>-->
 </xsl:template>
 
 <!-- default: if none of the above ref-types -->
@@ -3615,11 +3479,13 @@ Make article meta data
   <xsl:call-template name="make-id"/>
   <a href="#{@rid}">
     <xsl:choose>
+
       <!-- if xref not empty -->
       <xsl:when test="child::node()">
         <xsl:apply-templates/>
       </xsl:when>
       <xsl:otherwise>
+
         <!-- if empty -->
         <xsl:value-of select="@rid"/>
       </xsl:otherwise>
@@ -3633,9 +3499,7 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- xlink:href attribute makes a link -->
-
 <xsl:template match="ext-link | uri">
-
   <xsl:choose>
     <xsl:when test="@xlink:href">
       <a>
@@ -3650,29 +3514,17 @@ Make article meta data
       </span>
     </xsl:otherwise>
   </xsl:choose>
-
 </xsl:template>
 
 <xsl:template match="email">
-<!--
-  <xsl:choose>
-    <xsl:when test="@xlink:href">-->
-      <a>
-      <xsl:attribute name="href">mailto:<xsl:apply-templates/></xsl:attribute>
-    <xsl:apply-templates/>
-      </a>
-<!--    </xsl:when>
-    <xsl:otherwise>
-      <xsl:apply-templates/>
-    </xsl:otherwise>
-  </xsl:choose>-->
-
+  <a>
+  <xsl:attribute name="href">mailto:<xsl:apply-templates/></xsl:attribute>
+  <xsl:apply-templates/>
+  </a>
 </xsl:template>
 
 <!-- xlink:href attribute makes a link -->
-
 <xsl:template match="mailto">
-
   <xsl:choose>
     <xsl:when test="@xlink:href">
       <a>
@@ -3684,7 +3536,6 @@ Make article meta data
       <xsl:apply-templates/>
     </xsl:otherwise>
   </xsl:choose>
-
 </xsl:template>
 
 
@@ -3693,11 +3544,10 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- main or top-level divisions -->
-
 <xsl:template match="abstract/title
-                   | back/title | app-group/title | app/title
-                   | glossary/title | def-list/title | ack/title
-                   | back/notes/title">
+                     | back/title | app-group/title | app/title
+                     | glossary/title | def-list/title | ack/title
+                     | back/notes/title">
   <xsl:call-template name="nl-1"/>
   <h2 xpathLocation="noSelect">
     <xsl:apply-templates/>
@@ -3705,17 +3555,15 @@ Make article meta data
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
-<xsl:template match="body/sec/title"><!-- article main main body heading -->
+<xsl:template match="body/sec/title">
+
+  <!-- article main main body heading -->
   <h3>
     <xsl:call-template name="makeXpathLocation" >
-      <!-- <xsl:with-param name="node" select="."/> -->
     </xsl:call-template>
     <xsl:apply-templates/>
   </h3>
 </xsl:template>
-
-
-
 
 
 <!-- ============================================================= -->
@@ -3723,31 +3571,30 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- first-level divisions and default -->
-
 <xsl:template match="ack/sec/title | app/sec/title
-                   | boxed-text/title | gloss-group/title | notes/sec/title">
+                     | boxed-text/title | gloss-group/title | notes/sec/title">
   <xsl:call-template name="nl-1"/>
   <span class="tl-lowest-section"><xsl:apply-templates/></span>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
+<xsl:template match="body/sec/sec/title">
 
-<xsl:template match="body/sec/sec/title"><!-- article second level heading -->
+  <!-- article second level heading -->
   <xsl:call-template name="nl-1"/>
   <h4>
-   <xsl:call-template name="makeXpathLocation" >
-    <!-- <xsl:with-param name="node" select="."/> -->
+  <xsl:call-template name="makeXpathLocation" >
   </xsl:call-template>
   <xsl:apply-templates/>
   </h4>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
+<xsl:template match="body/sec/sec/sec/title">
 
-<xsl:template match="body/sec/sec/sec/title"><!-- article third level heading -->
+  <!-- article third level heading -->
   <h5>
     <xsl:call-template name="makeXpathLocation" >
-      <!-- <xsl:with-param name="node" select="."/> -->
     </xsl:call-template>
     <xsl:apply-templates/><xsl:text>.</xsl:text>
   </h5>
@@ -3770,21 +3617,19 @@ Make article meta data
   </h3>
 </xsl:template>
 
-
 <xsl:template match="caption/title">
   <xsl:apply-templates/>
 </xsl:template>
 
 <!-- default: any other titles found -->
-
 <xsl:template match="title">
   <xsl:choose>
+
     <!-- if there's a title, use it -->
     <xsl:when test="count(ancestor::sec) > 1">
       <xsl:call-template name="nl-1"/>
       <h4>
         <xsl:call-template name="makeXpathLocation" >
-          <!-- <xsl:with-param name="node" select="."/> -->
         </xsl:call-template>
         <xsl:apply-templates/>
       </h4>
@@ -3794,7 +3639,6 @@ Make article meta data
       <xsl:call-template name="nl-1"/>
       <h3>
         <xsl:call-template name="makeXpathLocation" >
-          <!-- <xsl:with-param name="node" select="."/> -->
         </xsl:call-template>
         <xsl:apply-templates/>
       </h3>
@@ -3809,11 +3653,11 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- called by template for abstract and trans-abstract -->
-
 <xsl:template name="words-for-abstract-title">
   <xsl:variable name="idx" select="count(preceding-sibling::abstract)"/>
   <xsl:variable name="abs_id">abstract<xsl:value-of select="$idx"/></xsl:variable>
   <xsl:choose>
+
     <!-- if there's a title, use it -->
     <xsl:when test="title">
       <xsl:element name="a">
@@ -3846,9 +3690,9 @@ Make article meta data
       </xsl:element>
       <h2><xsl:text>Abstract, Translated</xsl:text></h2>
     </xsl:when>
-    <!-- there is no logical otherwise -->
-  </xsl:choose>
 
+  <!-- there is no logical otherwise -->
+  </xsl:choose>
 </xsl:template>
 
 
@@ -3857,7 +3701,6 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- epage -->
-
 <xsl:template match="epage">
   <span class="gen"><xsl:text>Electronic Page: </xsl:text></span>
   <xsl:apply-templates/>
@@ -3865,7 +3708,6 @@ Make article meta data
 </xsl:template>
 
 <!-- series -->
-
 <xsl:template match="series">
   <xsl:text> (</xsl:text>
   <xsl:apply-templates/>
@@ -3873,7 +3715,6 @@ Make article meta data
 </xsl:template>
 
 <!-- comment -->
-
 <xsl:template match="comment">
   <xsl:if test="not(self::node()='.')">
     <xsl:text> </xsl:text>
@@ -3885,7 +3726,6 @@ Make article meta data
 </xsl:template>
 
 <!-- annotation -->
-
 <xsl:template match="annotation">
   <br/>
   <xsl:text> [</xsl:text>
@@ -3893,7 +3733,6 @@ Make article meta data
   <xsl:text>]</xsl:text>
   <br/>
 </xsl:template>
-
 
 <!-- permissions -->
 <!--
@@ -3923,6 +3762,7 @@ Make article meta data
   <p><xsl:apply-templates/></p>
 </xsl:template>
 -->
+
 
 <!-- ============================================================= -->
 <!--  50. UNMODED DATA ELEMENTS: PARTS OF A DATE                   -->
@@ -3975,7 +3815,6 @@ Make article meta data
 <xsl:template match="name">
   <xsl:variable name="nodetotal" select="count(../*)"/>
   <xsl:variable name="position" select="position()"/>
-
   <xsl:choose>
     <xsl:when test="given-names">
       <xsl:apply-templates select="surname"/>
@@ -3986,12 +3825,10 @@ Make article meta data
         <xsl:apply-templates select="suffix"/>
       </xsl:if>
       </xsl:when>
-
       <xsl:otherwise>
          <xsl:apply-templates select="surname"/>
       </xsl:otherwise>
   </xsl:choose>
-
   <xsl:choose>
     <xsl:when test="following-sibling::aff"/>
     <xsl:otherwise>
@@ -4024,26 +3861,21 @@ Make article meta data
 <xsl:template match="aff">
   <xsl:variable name="nodetotal" select="count(../*)"/>
   <xsl:variable name="position" select="position()"/>
-
   <span class="capture-id">
     <xsl:call-template name="make-id"/>
     <xsl:text> (</xsl:text>
     <xsl:apply-templates/>
     <xsl:text>)</xsl:text>
   </span>
-
   <xsl:choose>
     <xsl:when test="$nodetotal=$position">. </xsl:when>
     <xsl:otherwise>, </xsl:otherwise>
   </xsl:choose>
-
 </xsl:template>
-
 
 <xsl:template match="etal">
   <xsl:text>et al.</xsl:text>
   <xsl:choose>
-
     <xsl:when test="parent::person-group/@person-group-type">
       <xsl:choose>
         <xsl:when test="parent::person-group/@person-group-type='author'">
@@ -4052,7 +3884,6 @@ Make article meta data
         <xsl:otherwise/>
       </xsl:choose>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:text> </xsl:text>
     </xsl:otherwise>
@@ -4063,7 +3894,6 @@ Make article meta data
 <!-- ============================================================= -->
 <!--  CITATION AND NLM-CITATION                                    -->
 <!-- ============================================================= -->
-
 
 <!-- NLM Archiving DTD:
        - citation uses mode nscitation.
@@ -4080,11 +3910,6 @@ Make article meta data
 
 <xsl:template match="ref-list">
 <div xpathLocation="noSelect">
-<!--
-  <xsl:if test="position()>1">
-    <hr class="section-rule"/>
-  </xsl:if>
--->
   <xsl:choose>
     <xsl:when test="not(title)">
       <a id="refs" name="refs" toc="refs" title="References"></a>
@@ -4095,7 +3920,6 @@ Make article meta data
       <xsl:apply-templates select="title"/>
     </xsl:otherwise>
   </xsl:choose>
-
   <ol class="references" xpathLocation="noSelect">
     <xsl:for-each select="ref">
     <xsl:sort data-type="number" select="label"/>
@@ -4105,37 +3929,25 @@ Make article meta data
           <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
         </a>
         <xsl:apply-templates select="citation"/>
-<!--
-          <span class="authors">
-            <xsl:for-each select="citation/person-group[@person-group-type='author']/name">
-              <xsl:apply-templates select="surname"/><xsl:text> </xsl:text><xsl:apply-templates select="given-names"/>
-              <xsl:if test="following-sibling::name"><xsl:text>, </xsl:text></xsl:if>
-            </xsl:for-each>
-          </span>
-            (<xsl:value-of select="citation/year"/>)
-          <xsl:apply-templates select="citation/article-title"/><xsl:text> </xsl:text>
-          <xsl:apply-templates select="citation/source"/><xsl:text> </xsl:text>
-          <xsl:apply-templates select="citation/volume"/><xsl:text>: </xsl:text>
-          <xsl:apply-templates select="citation/fpage"/>
-          <xsl:if test="citation/lpage">
-            <xsl:text>&#8211;</xsl:text>
-            <xsl:apply-templates select="citation/lpage"/><xsl:text>.</xsl:text>
-          </xsl:if>-->
-<!--    <xsl:choose>
-      <xsl:when test="ref/label">
-        <xsl:call-template name="table-setup-l-wide"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="table-setup-l-narrow"/>
-      </xsl:otherwise>
-    </xsl:choose>-->
         <xsl:text> </xsl:text>
         <xsl:if test="citation[@citation-type='journal']">
           <xsl:variable name="apos">'</xsl:variable>
-          <xsl:variable name="artTitle"><xsl:value-of select="citation/article-title"/></xsl:variable>
-          <xsl:variable name="author"><xsl:value-of select="citation/person-group[@person-group-type='author'][1]/name[1]/surname"/></xsl:variable>
-          <xsl:variable name="findURL"><xsl:value-of select="concat($pubAppContext,'/article/findArticle.action?author=', $author, '&amp;title=', $artTitle)"/></xsl:variable>
-          <xsl:element name="a"><xsl:attribute name="class">find</xsl:attribute><xsl:attribute name="href"><xsl:value-of select="$findURL"/></xsl:attribute>Find this article online</xsl:element>
+          <xsl:variable name="artTitle">
+            <xsl:value-of select="citation/article-title"/>
+          </xsl:variable>
+          <xsl:variable name="author">
+            <xsl:value-of 
+              select="citation/person-group[@person-group-type='author'][1]/name[1]/surname"/>
+          </xsl:variable>
+          <xsl:variable name="findURL">
+            <xsl:value-of select="concat($pubAppContext,'/article/findArticle.action?author=',
+                                         $author, '&amp;title=', $artTitle)"/>
+          </xsl:variable>
+          <xsl:element name="a">
+            <xsl:attribute name="class">find</xsl:attribute>
+            <xsl:attribute name="href"><xsl:value-of select="$findURL"/></xsl:attribute>
+            Find this article online
+          </xsl:element>
         </xsl:if>
       </li>
     </xsl:for-each>
@@ -4143,10 +3955,8 @@ Make article meta data
   </div>
 </xsl:template>
 
-
 <!-- suppress the ref-list title so it doesn't reappear -->
 <xsl:template match="ref-list/title" mode="nscitation"/>
-
 
 
 <!-- ============================================================= -->
@@ -4157,7 +3967,6 @@ Make article meta data
 <xsl:template match="ref">
   <tr>
     <xsl:call-template name="nl-1"/>
-
     <td id="{@id}" valign="top" align="right">
       <xsl:if test="not(label)">
         <xsl:value-of select="@id"/>
@@ -4165,7 +3974,6 @@ Make article meta data
       <xsl:apply-templates select="label"/>
     </td>
     <xsl:call-template name="nl-1"/>
-
     <td valign="top">
       <xsl:apply-templates select="citation|nlm-citation"/>
     </td>
@@ -4229,9 +4037,7 @@ Make article meta data
                    | ref/citation[@citation-type='other']">
    
   <xsl:variable name="augroupcount" select="count(person-group) + count(collab)"/>
-
   <xsl:choose>
-
     <xsl:when test="$augroupcount>1 and
                     person-group[@person-group-type!='author'] and
                     article-title ">
@@ -4262,13 +4068,12 @@ Make article meta data
       <xsl:apply-templates select="fpage | lpage"
                            mode="book"/>
     </xsl:when>
-
     <xsl:when test="person-group[@person-group-type='author'] or
                     person-group[@person-group-type='compiler']">
       <span class="authors">
         <xsl:apply-templates select="person-group[@person-group-type='author']
                                  | person-group[@person-group-type='compiler']"
-                           mode="book"/>
+                            mode="book"/>
         <xsl:apply-templates select="collab"
                            mode="book"/>
       </span>
@@ -4293,9 +4098,7 @@ Make article meta data
       <xsl:apply-templates select="fpage | lpage"
                            mode="book"/>
       <xsl:apply-templates select="page-count" mode="book"/>
-
     </xsl:when>
-
     <xsl:otherwise>
       <span class="authors">
         <xsl:apply-templates select="person-group[@person-group-type='editor']
@@ -4323,19 +4126,14 @@ Make article meta data
       <xsl:apply-templates select="fpage | lpage"
                            mode="book"/>
       <xsl:apply-templates select="page-count" mode="book"/>
-
     </xsl:otherwise>
   </xsl:choose>
-
  <xsl:call-template name="citation-tag-ends"/>
 </xsl:template>
 
-
 <!-- Conference proceedings -->
 <xsl:template match="ref/citation[@citation-type='confproc']">
-
   <xsl:variable name="augroupcount" select="count(person-group) + count(collab)"/>
-
   <xsl:choose>
     <xsl:when test="$augroupcount>1 and person-group[@person-group-type!='author']">
       <xsl:apply-templates select="person-group[@person-group-type='author']"
@@ -4362,7 +4160,6 @@ Make article meta data
       <xsl:apply-templates select="fpage | lpage"
                            mode="book"/>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:apply-templates select="person-group"
                            mode="book"/>
@@ -4382,23 +4179,17 @@ Make article meta data
       <xsl:apply-templates select="fpage | lpage"
                            mode="book"/>
       <xsl:apply-templates select="page-count" mode="book"/>
-
     </xsl:otherwise>
   </xsl:choose>
-
   <xsl:call-template name="citation-tag-ends"/>
 </xsl:template>
-
 
 <!-- Government and other reports, other, web, and commun -->
 <xsl:template match="ref/citation[@citation-type='gov']
                    | ref/citation[@citation-type='web']
                    | ref/citation[@citation-type='commun']">
-
   <xsl:apply-templates select="person-group" mode="book"/>
-
   <xsl:apply-templates select="collab"/>
-
   <xsl:choose>
     <xsl:when test="publisher-loc | publisher-name">
       <xsl:apply-templates select="source"
@@ -4412,7 +4203,6 @@ Make article meta data
           <xsl:apply-templates select="edition"/>
         </xsl:otherwise>
       </xsl:choose>
-
       <xsl:apply-templates select="publisher-loc"
                            mode="none"/>
       <xsl:apply-templates select="publisher-name"
@@ -4422,7 +4212,6 @@ Make article meta data
       <xsl:apply-templates select="article-title|gov"
                            mode="none"/>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:apply-templates select="article-title|gov"
                            mode="book"/>
@@ -4437,18 +4226,13 @@ Make article meta data
                            mode="book"/>
     </xsl:otherwise>
   </xsl:choose>
-
   <xsl:apply-templates select="fpage | lpage"
                        mode="book"/>
-
   <xsl:call-template name="citation-tag-ends"/>
-
 </xsl:template>
-
 
 <!-- Patents  -->
 <xsl:template match="ref/citation[@citation-type='patent']">
-
   <xsl:apply-templates select="person-group"
                        mode="book"/>
   <xsl:apply-templates select="collab"
@@ -4463,15 +4247,11 @@ Make article meta data
                        mode="book"/>
   <xsl:apply-templates select="fpage | lpage"
                        mode="book"/>
-
   <xsl:call-template name="citation-tag-ends"/>
-
 </xsl:template>
-
 
 <!-- Discussion  -->
 <xsl:template match="ref/citation[@citation-type='discussion']">
-
   <xsl:apply-templates select="person-group"
                        mode="book"/>
   <xsl:apply-templates select="collab"/>
@@ -4480,7 +4260,6 @@ Make article meta data
   <xsl:text>In: </xsl:text>
   <xsl:apply-templates select="source"
                        mode="none"/>
-
   <xsl:if test="publisher-name | publisher-loc">
     <xsl:text> [</xsl:text>
     <xsl:apply-templates select="publisher-loc"
@@ -4488,23 +4267,17 @@ Make article meta data
     <xsl:value-of select="publisher-name"/>
     <xsl:text>]; </xsl:text>
   </xsl:if>
-
   <xsl:apply-templates select="year | month | time-stamp | season | access-date"
                        mode="book"/>
   <xsl:apply-templates select="fpage | lpage"
                        mode="book"/>
-
   <xsl:call-template name="citation-tag-ends"/>
 </xsl:template>
 
-
 <!--
 <xsl:template match="ref/citation[@citation-type='journal']">
-
   <xsl:variable name="augroupcount" select="count(person-group) + count(collab)"/>
-
   <xsl:choose>
-
     <xsl:when test="$augroupcount>1 and
                     person-group[@person-group-type!='author'] and
                     article-title ">
@@ -4535,7 +4308,6 @@ Make article meta data
       <xsl:apply-templates select="fpage | lpage"
                            mode="book"/>
     </xsl:when>
-
     <xsl:when test="person-group[@person-group-type='author'] or
                     person-group[@person-group-type='compiler']">
       <span class="authors">
@@ -4565,7 +4337,6 @@ Make article meta data
       <xsl:apply-templates select="article-title | fpage | lpage"
                            mode="book"/>
     </xsl:when>
-
     <xsl:otherwise>
       <span class="authors">
         <xsl:apply-templates select="person-group[@person-group-type='editor']
@@ -4593,11 +4364,9 @@ Make article meta data
                            mode="book"/>
     </xsl:otherwise>
   </xsl:choose>
-
   <xsl:call-template name="citation-tag-ends"/>
 </xsl:template>
 -->
-
 
 <!-- If none of the above citation-types applies,
      use mode="none". This generates punctuation. -->
@@ -4607,13 +4376,11 @@ Make article meta data
     <xsl:apply-templates select="person-group"/>
     <xsl:apply-templates select="collab"/>
   </span>
-  <xsl:apply-templates select="*[not(self::annotation) and
-                                 not(self::edition) and not(self::person-group) and not(self::collab) and
-                                 not(self::comment)]|text()"
+  <xsl:apply-templates select="*[not(self::annotation) 
+                               and not(self::edition) and not(self::person-group) 
+                               and not(self::collab) and not(self::comment)]|text()"
                        mode="none"/>
-
   <xsl:call-template name="citation-tag-ends"/>
-
 </xsl:template>
 
 
@@ -4623,10 +4390,9 @@ Make article meta data
 
 <xsl:template match="person-group" mode="book">
 
-<!-- XX needs fix, value is not a nodeset on the when -->
-<!--
+  <!-- XX needs fix, value is not a nodeset on the when -->
+  <!--
   <xsl:choose>
-
     <xsl:when test="@person-group-type='editor'
                   | @person-group-type='assignee'
                   | @person-group-type='translator'
@@ -4635,24 +4401,17 @@ Make article meta data
                   | @person-group-type='compiler'
                   | @person-group-type='inventor'
                   | @person-group-type='allauthors'">
-
       <xsl:call-template name="make-persons-in-mode"/>
       <xsl:call-template name="choose-person-type-string"/>
       <xsl:call-template name="choose-person-group-end-punct"/>
-
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:apply-templates mode="book"/>
     </xsl:otherwise>
-
   </xsl:choose>
 -->
 
   <xsl:call-template name="make-persons-in-mode"/>
-<!--      <xsl:call-template name="choose-person-type-string"/>
-      <xsl:call-template name="choose-person-group-end-punct"/>-->
-
 </xsl:template>
 
 <xsl:template match="person-group[@person-group-type='editor']" mode="book">
@@ -4673,54 +4432,27 @@ Make article meta data
   <xsl:text>, translator; </xsl:text>
 </xsl:template>
 
-
-
 <!-- if given names aren't all-caps, use book mode -->
-
 <xsl:template name="make-persons-in-mode">
-<!--
-  <xsl:variable name="gnms"
-    select="string(descendant::given-names)"/>
-
-  <xsl:variable name="GNMS"
-    select="translate($gnms,
-      'abcdefghjiklmnopqrstuvwxyz',
-      'ABCDEFGHJIKLMNOPQRSTUVWXYZ')"/>
-
-  <xsl:choose>
-    <xsl:when test="$gnms=$GNMS">
-      <xsl:apply-templates/>
-    </xsl:when>
-    <xsl:otherwise>-->
     <xsl:apply-templates mode="book"/>
-<!--        </xsl:otherwise>
-  </xsl:choose>
--->
 </xsl:template>
 
 
 <xsl:template name="choose-person-type-string">
-
   <xsl:variable name="person-group-type">
     <xsl:value-of select="@person-group-type"/>
   </xsl:variable>
-
   <xsl:choose>
-        <!-- allauthors is an exception to the usual choice pattern -->
+
+    <!-- allauthors is an exception to the usual choice pattern -->
     <xsl:when test="$person-group-type='allauthors'"/>
 
-        <!-- the usual choice pattern: singular or plural? -->
+    <!-- the usual choice pattern: singular or plural? -->
     <xsl:when test="count(name) > 1 or etal ">
       <xsl:text>, </xsl:text>
       <xsl:value-of select="($person-strings[@source=$person-group-type]/@plural)"/>
     </xsl:when>
-
-<!--        <xsl:otherwise>
-          <xsl:text>, </xsl:text>
-          <xsl:value-of select="($person-strings[@source=$person-group-type]/@singular)"/>
-        </xsl:otherwise>-->
     </xsl:choose>
-
 </xsl:template>
 
 
@@ -4740,7 +4472,6 @@ Make article meta data
       <xsl:text>. </xsl:text>
     </xsl:otherwise>
   </xsl:choose>
-
 </xsl:template>
 
 
@@ -4749,7 +4480,6 @@ Make article meta data
 <!-- ============================================================= -->
 
 <!-- names -->
-
 <xsl:template match="name" mode="nscitation">
   <xsl:value-of select="surname"/>
   <xsl:text> </xsl:text>
@@ -4762,7 +4492,6 @@ Make article meta data
   <xsl:variable name="nodetotal" select="count(../*)"/>
   <xsl:variable name="penult" select="count(../*)-1"/>
   <xsl:variable name="position" select="position()"/>
-
     <xsl:choose>
 
       <!-- if given-names -->
@@ -4796,8 +4525,8 @@ Make article meta data
         <xsl:apply-templates select="surname"/>
       </xsl:otherwise>
     </xsl:choose>
-
     <xsl:choose>
+
       <!-- if have aff -->
       <xsl:when test="following-sibling::aff"/>
 
@@ -4854,10 +4583,8 @@ Make article meta data
              </xsl:otherwise>
          </xsl:choose>
       </xsl:otherwise>
-
    </xsl:choose>
 </xsl:template>
-
 
 <xsl:template match="collab" mode="book">
   <xsl:apply-templates/>
@@ -4869,7 +4596,6 @@ Make article meta data
       <xsl:text>, </xsl:text>
       <xsl:value-of select="@collab-type"/>
     </xsl:if>
-<!--  <xsl:text>. </xsl:text>-->
 </xsl:template>
 
 <xsl:template match="etal" mode="book">
@@ -4883,7 +4609,6 @@ Make article meta data
         <xsl:otherwise/>
       </xsl:choose>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:text> </xsl:text>
     </xsl:otherwise>
@@ -4891,25 +4616,19 @@ Make article meta data
 </xsl:template>
 
 <!-- affiliations -->
-
 <xsl:template match="aff" mode="book">
   <xsl:variable name="nodetotal" select="count(../*)"/>
   <xsl:variable name="position" select="position()"/>
-
   <xsl:text> (</xsl:text>
   <xsl:apply-templates/>
   <xsl:text>)</xsl:text>
-
   <xsl:choose>
     <xsl:when test="$nodetotal=$position">. </xsl:when>
     <xsl:otherwise>, </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
-
-
 <!-- publication info -->
-
 <xsl:template match="article-title" mode="nscitation">
   <xsl:apply-templates/>
   <xsl:text> </xsl:text>
@@ -4917,7 +4636,6 @@ Make article meta data
 
 <xsl:template match="article-title" mode="book">
   <xsl:apply-templates/>
-
   <xsl:choose>
     <xsl:when test="../fpage or ../lpage">
       <xsl:text>; </xsl:text>
@@ -4928,7 +4646,8 @@ Make article meta data
           <xsl:with-param name="value" select="."/>
         </xsl:call-template>
       </xsl:variable>
-      <!-- 2/6/08 - Fixed bug where the word false wasn't quoted - JK -->
+
+      <!-- Fixed bug where the word false wasn't quoted -->
       <xsl:if test="$punc = 'false'">
         <xsl:text>.</xsl:text>
       </xsl:if>
@@ -4961,7 +4680,8 @@ Make article meta data
       <xsl:with-param name="value" select="."/>
     </xsl:call-template>
   </xsl:variable>
-  <!-- 2/6/08 - Fixed bug where the word false wasn't quoted - JK -->
+
+  <!-- Fixed bug where the word false wasn't quoted -->
   <xsl:if test="$punc = 'false'">
     <xsl:text>.</xsl:text>
   </xsl:if>
@@ -4985,7 +4705,8 @@ Make article meta data
       <xsl:with-param name="value" select="."/>
     </xsl:call-template>
   </xsl:variable>
-  <!-- 2/6/08 - Fixed bug where the word false wasn't quoted - JK -->
+
+  <!-- Fixed bug where the word false wasn't quoted -->
   <xsl:if test="$punc = 'false'">
     <xsl:text>.</xsl:text>
   </xsl:if>
@@ -4994,7 +4715,6 @@ Make article meta data
 
 <xsl:template match="source" mode="book">
   <xsl:choose>
-
     <xsl:when test="../trans-source">
       <xsl:apply-templates/>
       <xsl:choose>
@@ -5013,7 +4733,8 @@ Make article meta data
           <xsl:with-param name="value" select="."/>
         </xsl:call-template>
       </xsl:variable>
-	  <!-- 2/6/08 - Fixed bug where the word false wasn't quoted - JK -->
+
+      <!-- Fixed bug where the word false wasn't quoted -->
       <xsl:if test="$punc='false'">
         <xsl:text>.</xsl:text>
       </xsl:if>
@@ -5047,11 +4768,9 @@ Make article meta data
     <xsl:text>, </xsl:text>
     <xsl:value-of select="@collab-type"/>
   </xsl:if>
-<!--  <xsl:text>. </xsl:text>-->
 </xsl:template>
 
 <!-- dates -->
-
 <xsl:template match="month" mode="nscitation">
   <xsl:apply-templates/><xsl:text>.</xsl:text>
 </xsl:template>
@@ -5094,11 +4813,9 @@ Make article meta data
   </xsl:choose>
 </xsl:template>
 
-
 <xsl:template match="day" mode="nscitation">
   <xsl:apply-templates/><xsl:text>. </xsl:text>
 </xsl:template>
-
 
 <xsl:template match="year" mode="nscitation">
   <xsl:text> (</xsl:text>
@@ -5127,7 +4844,6 @@ Make article meta data
 
 <xsl:template match="time-stamp" mode="book"/>
 
-
 <xsl:template match="access-date" mode="nscitation">
   <xsl:apply-templates/>
   <xsl:text>. </xsl:text>
@@ -5153,7 +4869,6 @@ Make article meta data
 </xsl:template>
 
 <!-- pages -->
-
 <xsl:template match="fpage" mode="nscitation">
   <xsl:apply-templates/>
   <xsl:if test="../lpage">
@@ -5166,8 +4881,7 @@ Make article meta data
   <xsl:text>. </xsl:text>
 </xsl:template>
 
-<!-- 2/11/08 - The following fpage and lpage mode=book templates have been replaced with simpler versions. - JK -->
-
+<!-- The following fpage and lpage mode=book templates have been replaced with simpler versions. -->
 <xsl:template match="lpage" mode="book">
 	<xsl:value-of select="lpage"/><xsl:text>.</xsl:text>
 </xsl:template>
@@ -5176,7 +4890,6 @@ Make article meta data
 	<xsl:value-of select="@count"/><xsl:text> p.</xsl:text>
 </xsl:template>
 
-
 <xsl:template match="fpage" mode="book">
   <xsl:if test="../lpage">
     <xsl:text>pp. </xsl:text>
@@ -5184,7 +4897,6 @@ Make article meta data
     <xsl:text>&#8211;</xsl:text>
   </xsl:if>
 </xsl:template>
-
 
 <xsl:template match="lpage" mode="book">
     <xsl:if test="../fpage">
@@ -5196,10 +4908,10 @@ Make article meta data
 <xsl:template match="lpage" mode="nscitation"/>
 
 <!-- misc stuff -->
-
 <xsl:template match="pub-id[@pub-id-type='pmid']" mode="nscitation">
   <xsl:variable name="pmid" select="."/>
-  <xsl:variable name="href" select="'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&amp;db=PubMed&amp;dopt=abstract&amp;list_uids='"/>
+  <xsl:variable name="href" 
+                select="'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&amp;db=PubMed&amp;dopt=abstract&amp;list_uids='"/>
   <xsl:text> [</xsl:text>
   <a>
     <xsl:attribute name="href">
@@ -5241,50 +4953,14 @@ Make article meta data
 <!-- called by match="name" in book mode,
      as part of citation handling
      when given-names is not all-caps -->
-
 <xsl:template name="firstnames" >
   <xsl:param name="nodetotal"/>
   <xsl:param name="position"/>
   <xsl:param name="names"/>
   <xsl:param name="pgtype"/>
-
-  <!--<xsl:variable name="length" select="string-length($names)-1"/>
-  <xsl:variable name="gnm" select="substring($names,$length,2)"/>
-  <xsl:variable name="GNM">
-    <xsl:call-template name="capitalize">
-      <xsl:with-param name="str" select="substring($names,$length,2)"/>
-    </xsl:call-template>
-  </xsl:variable>
--->
-<!--
-<xsl:text>Value of $names = [</xsl:text><xsl:value-of select="$names"/><xsl:text>]</xsl:text>
-<xsl:text>Value of $length = [</xsl:text><xsl:value-of select="$length"/><xsl:text>]</xsl:text>
-<xsl:text>Value of $gnm = [</xsl:text><xsl:value-of select="$gnm"/><xsl:text>]</xsl:text>
-<xsl:text>Value of $GNM = [</xsl:text><xsl:value-of select="$GNM"/><xsl:text>]</xsl:text>
--->
-
   <xsl:if test="$names">
-<!--    <xsl:choose>
-
-      <xsl:when test="$gnm=$GNM">
-        <xsl:apply-templates select="$names"/>
-        <xsl:choose>
-          <xsl:when test="$nodetotal!=$position">
-            <xsl:text>.</xsl:text>
-          </xsl:when>
-          <xsl:when test="$pgtype!='author'">
-            <xsl:text>.</xsl:text>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:when>
-
-      <xsl:otherwise>-->
-        <xsl:apply-templates select="$names"/>
-<!--      </xsl:otherwise>
-
-    </xsl:choose-->
+    <xsl:apply-templates select="$names"/>
   </xsl:if>
-
 </xsl:template>
 
 
@@ -5341,23 +5017,7 @@ Make article meta data
 </xsl:template>
 
 <xsl:template match="person-group" mode="none">
-<!--  <xsl:variable name="gnms" select="string(descendant::given-names)"/>
-  <xsl:variable name="GNMS">
-    <xsl:call-template name="capitalize">
-      <xsl:with-param name="str" select="$gnms"/>
-    </xsl:call-template>
-  </xsl:variable>
-
-  <xsl:choose>
-    <xsl:when test="$gnms=$GNMS">
-      <xsl:apply-templates/>
-    </xsl:when>
-
-    <xsl:otherwise>-->
-      <xsl:apply-templates select="node()" mode="book"/>
-
-<!--    </xsl:otherwise>
-  </xsl:choose>-->
+  <xsl:apply-templates select="node()" mode="book"/>
 </xsl:template>
 
 <xsl:template match="collab" mode="none">
@@ -5366,12 +5026,10 @@ Make article meta data
     <xsl:text>, </xsl:text>
     <xsl:value-of select="@collab-type"/>
   </xsl:if>
-
   <xsl:choose>
     <xsl:when test="following-sibling::collab">
       <xsl:text>; </xsl:text>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:text>. </xsl:text>
     </xsl:otherwise>
@@ -5381,7 +5039,6 @@ Make article meta data
 <xsl:template match="source" mode="none">
   <xsl:text> </xsl:text>
   <xsl:apply-templates/>
-
   <xsl:choose>
     <xsl:when test="../access-date">
       <xsl:if test="../edition">
@@ -5391,14 +5048,12 @@ Make article meta data
       </xsl:if>
       <xsl:text>. </xsl:text>
     </xsl:when>
-
     <xsl:when test="../volume | ../fpage">
       <xsl:if test="../edition">
         <xsl:text> (</xsl:text><xsl:apply-templates select="../edition" mode="plain"/><xsl:text>)</xsl:text>
       </xsl:if>
       <xsl:text> </xsl:text>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:if test="../edition">
         <xsl:text> (</xsl:text>
@@ -5431,19 +5086,10 @@ Make article meta data
     <xsl:when test="$month='10' ">October</xsl:when>
     <xsl:when test="$month='11' ">November</xsl:when>
     <xsl:when test="$month='12' ">December</xsl:when>
-
     <xsl:otherwise>
       <xsl:value-of select="$month"/>
     </xsl:otherwise>
   </xsl:choose>
-<!--
-  <xsl:if test="../day">
-    <xsl:text> </xsl:text>
-    <xsl:value-of select="../day"/>
-  </xsl:if>
-
-  <xsl:text>;</xsl:text>
--->
 </xsl:template>
 
 <xsl:template match="day" mode="none"/>
@@ -5454,14 +5100,10 @@ Make article meta data
       <xsl:apply-templates mode="none"/>
       <xsl:text> </xsl:text>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:text> (</xsl:text>
       <xsl:apply-templates mode="none"/>
       <xsl:text>) </xsl:text>
-<!--      <xsl:if test="../volume or ../issue">
-        <xsl:text>;</xsl:text>
-      </xsl:if>-->
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -5482,32 +5124,26 @@ Make article meta data
   <xsl:apply-templates/>
 </xsl:template>
 
-<!-- BUG in the following fpage template for the def of hermano - JK -->
-
+<!-- BUG in the following fpage template for the def of hermano -->
 <xsl:template match="fpage" mode="none">
   <xsl:variable name="fpgct" select="count(../fpage)"/>
   <xsl:variable name="lpgct" select="count(../lpage)"/>
   <xsl:variable name="hermano" select="name(following-sibling::node()[1])"/>
-
   <xsl:choose>
-
     <xsl:when test="preceding-sibling::fpage">
       <xsl:choose>
         <xsl:when test="following-sibling::fpage">
           <xsl:text> </xsl:text>
           <xsl:apply-templates/>
-
           <xsl:if test="$hermano='lpage'">
             <xsl:text>&#8211;</xsl:text>
             <xsl:apply-templates select="following-sibling::lpage[1]" mode="none"/>
           </xsl:if>
           <xsl:text>,</xsl:text>
         </xsl:when>
-
         <xsl:otherwise>
           <xsl:text> </xsl:text>
           <xsl:apply-templates/>
-
           <xsl:if test="$hermano='lpage'">
             <xsl:text>&#8211;</xsl:text>
             <xsl:apply-templates select="following-sibling::lpage[1]" mode="none"/>
@@ -5516,29 +5152,21 @@ Make article meta data
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:apply-templates/>
-
       <xsl:choose>
         <xsl:when test="$hermano='lpage'">
           <xsl:text>&#8211;</xsl:text>
-          <!--<xsl:apply-templates select="following-sibling::lpage[1]" mode="none"/>
-          <xsl:text>.</xsl:text>-->
         </xsl:when>
-
-        <xsl:when test="$hermano='fpage'">
+       <xsl:when test="$hermano='fpage'">
           <xsl:text>,</xsl:text>
         </xsl:when>
-
         <xsl:otherwise>
           <xsl:text>.</xsl:text>
         </xsl:otherwise>
       </xsl:choose>
-
     </xsl:otherwise>
   </xsl:choose>
-
 </xsl:template>
 
 <xsl:template match="lpage" mode="none">
@@ -5550,7 +5178,6 @@ Make article meta data
     <xsl:when test="../trans-title">
       <xsl:apply-templates/>
     </xsl:when>
-
     <xsl:otherwise>
       <xsl:apply-templates/>
       <xsl:text>. </xsl:text>
@@ -5563,7 +5190,6 @@ Make article meta data
   <xsl:text>. </xsl:text>
 </xsl:template>
 
-
 <xsl:template match="aff/label">
   <strong><xsl:apply-templates/></strong>
 </xsl:template>
@@ -5572,47 +5198,38 @@ Make article meta data
   <xsl:value-of select="translate(., '&#8194;&#x200A;&#8764;&#x02236;&#x02208;', '  ~:&#x404;') "/>
 </xsl:template>
 
+
 <!-- ============================================================= -->
 <!--  57. "CITATION-TAG-ENDS"                                      -->
 <!-- ============================================================= -->
 
-
 <xsl:template name="citation-tag-ends">
-
   <xsl:apply-templates select="series" mode="citation"/>
 
   <!-- If language is not English -->
   <!-- XX review logic -->
   <xsl:if test="article-title[@xml:lang!='en']
                 or article-title[@xml:lang!='EN']">
-
     <xsl:call-template name="language">
       <xsl:with-param name="lang" select="article-title/@xml:lang"/>
     </xsl:call-template>
   </xsl:if>
-
   <xsl:if test="source[@xml:lang!='en']
               or source[@xml:lang!='EN']">
-
     <xsl:call-template name="language">
       <xsl:with-param name="lang" select="source/@xml:lang"/>
     </xsl:call-template>
   </xsl:if>
 
-   <!-- 2/8/08 - Hack to fix bad XML in which incorrect <comment> tags are placed within a citation.
-                          We should only output a single comment tag that appears as the very last child of the citation. - JK -->
-                          	
+  <!-- Hack to fix bad XML in which incorrect <comment> tags are placed within a citation.
+       We should only output a single comment tag that appears as the very last child of the 
+       citation. -->
 	<xsl:variable name="x" select="child::*[position()=last()]"/>
 	<xsl:if test="local-name($x)='comment' and not(starts-with($x,'p.')) and not(starts-with($x,'In:') and not(starts-with($x,'pp.')))">
 		<xsl:text> </xsl:text><xsl:apply-templates select="$x"/>
 	</xsl:if>	
-		
-   <!-- <xsl:apply-templates select="comment" mode="citation"/> -->
-
   <xsl:apply-templates select="annotation" mode="citation"/>
-
 </xsl:template>
-
 
 <xsl:template name="createAnnotationSpan">
   <xsl:variable name="regionId" select="@aml:id"/>
@@ -5628,11 +5245,12 @@ Make article meta data
 
     <!-- populate the span tag's class attribute based on the presence of comments vs. corrections --> 
     <xsl:attribute name="class">
-			<xsl:text>note public</xsl:text> <!-- we're always considered a note -->
+
+      <!-- we're always considered a note -->
+			<xsl:text>note public</xsl:text>
     	<xsl:if test="$regionNumMinorCorrections &gt; 0"><xsl:text> minrcrctn</xsl:text></xsl:if>
     	<xsl:if test="$regionNumFormalCorrections &gt; 0"><xsl:text> frmlcrctn</xsl:text></xsl:if>
     </xsl:attribute>
-
     <xsl:attribute name="title">User Annotation</xsl:attribute>
     <xsl:attribute name="annotationId">
       <xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
@@ -5642,7 +5260,9 @@ Make article meta data
         </xsl:if>
        </xsl:for-each>
     </xsl:attribute>
-    <xsl:variable name="displayAnn"> <!-- only add an annotation to the display list if this is the beginning of the annotation -->
+
+    <!-- only add an annotation to the display list if this is the beginning of the annotation -->
+    <xsl:variable name="displayAnn">
     	<xsl:variable name="annId" select="@aml:id"/>
     	<xsl:if test="@aml:first">
       	<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
@@ -5662,7 +5282,8 @@ Make article meta data
           <xsl:value-of select="concat('annAnchor',@aml:id)"/>
         </xsl:attribute>
         <xsl:attribute name="displayId">
-          <xsl:value-of select="substring($displayAnn,2)"/> <!-- get rid of first comma in list -->
+          <!-- get rid of first comma in list -->
+          <xsl:value-of select="substring($displayAnn,2)"/>
         </xsl:attribute>
         <xsl:attribute name="onclick">return(ambra.displayComment.show(this));</xsl:attribute>
         <xsl:attribute name="onmouseover">ambra.displayComment.mouseoverComment(this);</xsl:attribute>
