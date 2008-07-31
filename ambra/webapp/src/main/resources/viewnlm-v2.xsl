@@ -3664,7 +3664,13 @@
   <h5>
     <xsl:call-template name="makeXpathLocation" >
     </xsl:call-template>
-    <xsl:apply-templates/><xsl:text>.</xsl:text>
+    <xsl:apply-templates/>
+
+    <!-- This code should probably not output a period, but have kept it here just in case. 
+         This extra test was added to stop double periods from appearing. -->
+    <xsl:if test="not(ends-with(normalize-space(),'.'))">
+      <xsl:text>.</xsl:text>
+    </xsl:if>
   </h5>
 </xsl:template>
 
