@@ -4076,6 +4076,26 @@
       <xsl:apply-templates select="fpage | lpage"
                            mode="book"/>
     </xsl:when>
+    <xsl:when test="person-group[not(@person-group-type)]">
+      <span class="authors">
+        <xsl:apply-templates select="person-group"/>
+        <xsl:apply-templates select="collab"/>
+      </span>
+      <xsl:apply-templates select="year | month | time-stamp | season | access-date" mode="book"/>
+      <xsl:apply-templates select="article-title" mode="book"/>
+      <xsl:apply-templates select="source" mode="book"/>
+      <xsl:apply-templates select="edition" mode="book"/>
+      <xsl:apply-templates select="person-group[@person-group-type='editor']
+                                   | person-group[@person-group-type='translator']
+                                   | person-group[@person-group-type='transed'] "
+                           mode="book"/>
+      <xsl:apply-templates select="volume" mode="book"/>
+      <xsl:apply-templates select="issue" mode="none"/>
+      <xsl:apply-templates select="trans-source" mode="book"/>
+      <xsl:apply-templates select="publisher-name | publisher-loc" mode="none"/>
+      <xsl:apply-templates select="fpage | lpage" mode="book"/>
+      <xsl:apply-templates select="page-count" mode="book"/>
+    </xsl:when>
     <xsl:when test="person-group[@person-group-type='author'] or
                     person-group[@person-group-type='compiler']">
       <span class="authors">
