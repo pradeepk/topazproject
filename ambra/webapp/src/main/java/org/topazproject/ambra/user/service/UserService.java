@@ -21,18 +21,17 @@ package org.topazproject.ambra.user.service;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.cache.Cache;
@@ -46,15 +45,10 @@ import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.UsersPEP;
 import org.topazproject.ambra.web.UserContext;
+import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.spring.OtmTransactionManager;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.support.DefaultTransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
  * Class to roll up web services that a user needs in Ambra. Rest of application should generally
@@ -65,14 +59,17 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  */
 public class UserService {
   private static final Log      log = LogFactory.getLog(UserService.class);
+
   private static final String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
   private static final DefaultTransactionDefinition txnDef = new DefaultTransactionDefinition();
 
-  private Session               session;
-  private OtmTransactionManager txManager;
+  private static final String[] ALL_PRINCIPALS = new String[] { Constants.Permission.ALL_PRINCIPALS };
 
   private static final String USER_LOCK = "UserCache-Lock-";
-  private static final String USER_KEY  = "UserCache-User-";
+  private static final String USER_KEY = "UserCache-User-";
+
+  private Session               session;
+  private OtmTransactionManager txManager;
 
   private final UsersPEP pep;
 
@@ -82,12 +79,12 @@ public class UserService {
   private String applicationId;
   private String emailAddressUrl;
 
-  private final String[] ALL_PRINCIPALS = new String[] { Constants.Permission.ALL_PRINCIPALS };
-  private Collection<String> weeklyCategories;
-  private Collection<String> monthlyCategories;
-  private Map<String, String> categoryNames;
   private UserContext userContext;
 
+  /**
+   * Constructor
+   * @throws IOException
+   */
   public UserService() throws IOException {
     pep = new UsersPEP();
   }
@@ -101,7 +98,7 @@ public class UserService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String createUser(final String authId) throws ApplicationException {
-    pep.checkAccessAE(pep.CREATE_USER, pep.ANY_RESOURCE);
+    pep.checkAccessAE(UsersPEP.CREATE_USER, AbstractSimplePEP.ANY_RESOURCE);
 
     // create account
     UserAccount ua = new UserAccount();
@@ -140,7 +137,7 @@ public class UserService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void deleteUser(final String topazUserId) throws ApplicationException {
-    pep.checkAccessAE(pep.DELETE_USER, URI.create(topazUserId));
+    pep.checkAccessAE(UsersPEP.DELETE_USER, URI.create(topazUserId));
 
     UserAccount ua = session.get(UserAccount.class, topazUserId);
     if (ua != null)
@@ -174,6 +171,8 @@ public class UserService {
 
     return userCache.get(USER_KEY + topazUserId, -1,
                                new Cache.SynchronizedLookup<String, ApplicationException>(lock) {
+      @SuppressWarnings("synthetic-access")
+      @Override
       public String lookup() throws ApplicationException {
         return getDisplayName(topazUserId);
       }
@@ -181,7 +180,7 @@ public class UserService {
   }
 
   private String getDisplayName(final String topazUserId) throws ApplicationException {
-    pep.checkAccessAE(pep.GET_DISP_NAME, URI.create(topazUserId));
+    pep.checkAccessAE(UsersPEP.GET_DISP_NAME, URI.create(topazUserId));
 
     Results r = session.
         createQuery("select ua.profile.displayName from UserAccount ua where ua = :id;").
@@ -218,7 +217,7 @@ public class UserService {
   @Transactional(readOnly = true)
   public AmbraUser getUserWithProfileLoaded(final String topazUserId)
       throws ApplicationException {
-    pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
+    pep.checkAccessAE(UsersPEP.LOOKUP_USER, URI.create(topazUserId));
 
     UserAccount ua = getUserAccount(topazUserId);
     return new AmbraUser(ua, applicationId, pep);
@@ -249,7 +248,7 @@ public class UserService {
    */
   @Transactional(readOnly = true)
   public UserAccount getUserAccountByAuthId(String authId) throws ApplicationException {
-    pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
+    pep.checkAccessAE(UsersPEP.LOOKUP_USER, URI.create("account:" + authId));
 
     Results r = session.
         createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
@@ -271,7 +270,7 @@ public class UserService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setState(final String userId, int state) throws ApplicationException {
-    pep.checkAccessAE(pep.SET_STATE, URI.create(userId));
+    pep.checkAccessAE(UsersPEP.SET_STATE, URI.create(userId));
 
     UserAccount ua = getUserAccount(userId);
     ua.setState(state);
@@ -286,7 +285,7 @@ public class UserService {
    */
   @Transactional(readOnly = true)
   public int getState(final String userId) throws ApplicationException {
-    pep.checkAccessAE(pep.GET_STATE, URI.create(userId));
+    pep.checkAccessAE(UsersPEP.GET_STATE, URI.create(userId));
 
     UserAccount ua = getUserAccount(userId);
     return ua.getState();
@@ -301,7 +300,7 @@ public class UserService {
    */
   @Transactional(readOnly = true)
   public String getAuthenticationId(final String topazId) throws ApplicationException {
-    pep.checkAccessAE(pep.GET_AUTH_IDS, URI.create(topazId));
+    pep.checkAccessAE(UsersPEP.GET_AUTH_IDS, URI.create(topazId));
 
     UserAccount ua = getUserAccount(topazId);
     return ua.getAuthIds().iterator().next().getValue();
@@ -316,7 +315,7 @@ public class UserService {
    */
   @Transactional(readOnly = true)
   public String lookUpUserByAuthId(final String authId) throws ApplicationException {
-    pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
+    pep.checkAccessAE(UsersPEP.LOOKUP_USER, URI.create("account:" + authId));
 
     Results r = session.
         createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
@@ -343,7 +342,7 @@ public class UserService {
 
   private String lookUpUserByProfile(final String field, final Object value)
       throws ApplicationException {
-    pep.checkAccessAE(pep.FIND_USERS_BY_PROF, pep.ANY_RESOURCE);
+    pep.checkAccessAE(UsersPEP.FIND_USERS_BY_PROF, AbstractSimplePEP.ANY_RESOURCE);
 
     Results r = session.
         createQuery("select ua.id from UserAccount ua where ua.profile." + field + " = :v;").
@@ -409,7 +408,7 @@ public class UserService {
    */
   protected void setProfile(final AmbraUser inUser, final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
-    pep.checkAccessAE(pep.SET_PROFILE, URI.create(inUser.getUserId()));
+    pep.checkAccessAE(UsersPEP.SET_PROFILE, URI.create(inUser.getUserId()));
 
     if (userNameIsRequired) {
       final String userId = lookUpUserByProfile("displayName", inUser.getDisplayName());
@@ -549,10 +548,6 @@ public class UserService {
     }
   }
 
-  private ArrayList<String> getAllUserProfileGrants() {
-    return new ArrayList<String>(Arrays.asList(allUserProfileFieldGrants));
-  }
-
   private String[] getGrants(final UserProfileGrant[] grantEnums) {
     final List<String> grantsList = new ArrayList<String>(grantEnums.length);
     for (final UserProfileGrant grantEnum : grantEnums) {
@@ -585,7 +580,7 @@ public class UserService {
     if (inUser == null)
       throw new ApplicationException("User is null");
 
-    pep.checkAccessAE(pep.SET_PREFERENCES, URI.create(inUser.getUserId()));
+    pep.checkAccessAE(UsersPEP.SET_PREFERENCES, URI.create(inUser.getUserId()));
 
     UserAccount ua = getUserAccount(inUser.getUserId());
 
@@ -616,7 +611,7 @@ public class UserService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setRole(final String topazId, final String[] roleIds) throws ApplicationException {
-    pep.checkAccessAE(pep.SET_ROLES, URI.create(topazId));
+    pep.checkAccessAE(UsersPEP.SET_ROLES, URI.create(topazId));
 
     UserAccount ua = getUserAccount(topazId);
     ua.getRoles().clear();
@@ -630,7 +625,7 @@ public class UserService {
    */
   @Transactional(readOnly = true)
   public String[] getRole(final String topazId) throws ApplicationException {
-    pep.checkAccessAE(pep.GET_ROLES, URI.create(topazId));
+    pep.checkAccessAE(UsersPEP.GET_ROLES, URI.create(topazId));
 
     UserAccount ua = getUserAccount(topazId);
 
@@ -647,7 +642,7 @@ public class UserService {
   @Transactional(readOnly = true)
   public boolean allowAdminAction() {
     try {
-      pep.checkAccess(pep.ADMIN_GUARD, pep.ANY_RESOURCE);
+      pep.checkAccess(UsersPEP.ADMIN_GUARD, AbstractSimplePEP.ANY_RESOURCE);
       return true;
     } catch (SecurityException e) {
       return false;
@@ -703,82 +698,11 @@ public class UserService {
   }
 
   /**
-   * @return all the weekly categories
-   * TODO: should these not really be in a database
-   */
-  public Collection<String> getWeeklyCategories() {
-    return weeklyCategories;
-  }
-
-  /**
-   * Set the weekly categories.
-   * @param weeklyCategories weeklyCategories
-   */
-  public void setWeeklyCategories(final Collection<String> weeklyCategories) {
-    this.weeklyCategories = weeklyCategories;
-  }
-
-  /**
-   * @return all the monthly categories
-   * TODO: should these not really be in a database
-   */
-  public Collection<String> getMonthlyCategories() {
-    return monthlyCategories;
-  }
-
-  /**
-   * Set the monthly categories.
-   * @param monthlyCategories monthlyCategories
-   */
-  public void setMonthlyCategories(final Collection<String> monthlyCategories) {
-    this.monthlyCategories = monthlyCategories;
-  }
-
-  /**
    * @param userCache The User cache to use.
    */
   @Required
   public void setUserCache(Cache userCache) {
     this.userCache = userCache;
-  }
-
-  /**
-   * Set the categories and their presentation names.
-   * @param categoryNames categoryNames
-   */
-  public void setCategoryNames(final Map<String, String> categoryNames) {
-    this.categoryNames = categoryNames;
-  }
-
-  /**
-   * @return the map of category and their presentation names
-   */
-  public Map<String, String> getCategoryNames() {
-    return categoryNames;
-  }
-
-  /**
-   * @return the Category beans
-   */
-  public Collection<CategoryBean> getCategoryBeans() {
-    final Collection<CategoryBean> result = new ArrayList<CategoryBean>(categoryNames.size());
-    final Set<Map.Entry<String, String>> categoryNamesSet = categoryNames.entrySet();
-
-    for (final Map.Entry<String, String> category : categoryNamesSet) {
-      final String key = category.getKey();
-      boolean weeklyCategoryKey = false;
-      boolean monthlyCategoryKey = false;
-      if (weeklyCategories.contains(key)) {
-        weeklyCategoryKey = true;
-      }
-      if (monthlyCategories.contains(key)) {
-        monthlyCategoryKey = true;
-      }
-      result.add(
-              new CategoryBean(key, category.getValue(), weeklyCategoryKey, monthlyCategoryKey));
-    }
-
-    return result;
   }
 
   /**
@@ -791,9 +715,9 @@ public class UserService {
     this.session = session;
   }
 
-  /** 
-   * Set the OTM transaction manager. Called by spring's bean wiring. 
-   * 
+  /**
+   * Set the OTM transaction manager. Called by spring's bean wiring.
+   *
    * @param txManager the otm transaction manager
    */
   @Required

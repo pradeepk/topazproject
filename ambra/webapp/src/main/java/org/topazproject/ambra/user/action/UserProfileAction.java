@@ -31,6 +31,7 @@ import org.topazproject.ambra.user.AmbraUser;
 import org.topazproject.ambra.user.UserAccountsInterceptor;
 import org.topazproject.ambra.user.UserProfileGrant;
 import org.topazproject.ambra.user.service.DisplayNameAlreadyExistsException;
+import org.topazproject.ambra.user.service.UserAlert;
 import org.topazproject.ambra.util.FileUtils;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 import org.topazproject.ambra.util.TextUtils;
@@ -51,34 +52,12 @@ import java.util.regex.Pattern;
 
 /**
  * Creates a new user in Topaz and sets come Profile properties.  User must be logged in via CAS.
- * 
+ *
  * @author Stephen Cheng
- * 
+ *
  */
 public abstract class UserProfileAction extends UserActionSupport {
-
-  private String displayName, email, realName, topazId;
-  private String authId;
-
   private static final Log log = LogFactory.getLog(UserProfileAction.class);
-  private String givenNames;
-  private String surnames;
-  private String positionType;
-  private String organizationType;
-  private String organizationName;
-  private String postalAddress;
-  private String biographyText;
-  private String interestsText;
-  private String researchAreasText;
-  private String homePage;
-  private String weblog;
-  private String city;
-  private String country;
-  private String title;
-  private String nameVisibility = PUBLIC;
-  private String extendedVisibility;
-  private String orgVisibility;
-  private ProfanityCheckingService profanityCheckingService;
 
   public static final String PRIVATE = "private";
   public static final String PUBLIC = "public";
@@ -106,8 +85,8 @@ public abstract class UserProfileAction extends UserActionSupport {
   private static final String ORG_GROUP = "org";
   private static final String HTTP_PREFIX = "http://";
   private static final Pattern spacePattern = Pattern.compile("[\\p{L}\\p{N}\\p{Pc}\\p{Pd}]*");
-  private boolean isDisplayNameSet = true;
-  private boolean displayNameRequired = true;
+
+  private static final Map<String, String> fieldToUINameMapping = new HashMap<String, String>();
 
   static {
     visibilityMapping.put(NAME_GROUP,
@@ -126,12 +105,7 @@ public abstract class UserProfileAction extends UserActionSupport {
                                   ORGANIZATION_NAME,
                                   TITLE,
                                   POSITION_TYPE});
-  }
 
-  private static final Map fieldToUINameMapping = new HashMap<String, String>();
-  private AmbraUser newUser;
-
-  static {
     fieldToUINameMapping.put(DISPLAY_NAME, "Username");
     fieldToUINameMapping.put(GIVEN_NAMES, "First/Given Name");
     fieldToUINameMapping.put(SURNAMES, "Last/Family Name");
@@ -149,11 +123,38 @@ public abstract class UserProfileAction extends UserActionSupport {
     fieldToUINameMapping.put(WEBLOG, "Weblog");
   }
 
+  private String displayName, email, realName, topazId;
+  private String authId;
+
+  private String givenNames;
+  private String surnames;
+  private String positionType;
+  private String organizationType;
+  private String organizationName;
+  private String postalAddress;
+  private String biographyText;
+  private String interestsText;
+  private String researchAreasText;
+  private String homePage;
+  private String weblog;
+  private String city;
+  private String country;
+  private String title;
+  private String nameVisibility = PUBLIC;
+  private String extendedVisibility;
+  private String orgVisibility;
+  private ProfanityCheckingService profanityCheckingService;
+
+  private AmbraUser newUser;
+
+  private boolean isDisplayNameSet = true;
+  private boolean displayNameRequired = true;
+
   /**
    * Will take the CAS ID and create a user in Topaz associated with that auth ID. If auth ID
    * already exists, it will not create another user. Email and Username are required and the
    * profile will be updated.
-   * 
+   *
    * @return status code for webwork
    */
   @Transactional(rollbackFor = { Throwable.class })
@@ -463,7 +464,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   private boolean isProfane(final String fieldName, final String fieldValue) {
     final List<String> profaneWords = profanityCheckingService.validate(fieldValue);
     if (profaneWords.size() > 0 ) {
-      addProfaneMessages(profaneWords, fieldName, (String) fieldToUINameMapping.get(fieldName));
+      addProfaneMessages(profaneWords, fieldName, fieldToUINameMapping.get(fieldName));
       return true;
     }
     return false;
@@ -501,7 +502,7 @@ public abstract class UserProfileAction extends UserActionSupport {
 
   /**
    * Here mainly for unit tests. Should not need to be used otherwise
-   * 
+   *
    * @return Returns the authId.
    */
   protected String getAuthId() {
@@ -511,7 +512,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   /**
    * Here mainly for unit tests. Should not need to be used otherwise. Action picks it up from
    * session automatically.
-   * 
+   *
    * @param authId
    *          The authId to set.
    */
@@ -809,14 +810,6 @@ public abstract class UserProfileAction extends UserActionSupport {
    */
   public String getNameVisibility() {
     return getVisibility(nameVisibility);
-  }
-
-  /**
-   * Setter for nameVisibility.
-   * @param nameVisibility Value to set for nameVisibility.
-   */
-  private void setNameVisibility(final String nameVisibility) {
-    this.nameVisibility = nameVisibility;
   }
 
   /**

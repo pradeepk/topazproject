@@ -144,41 +144,6 @@
     <property name="userCache" ref="userCache"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="emailAddressUrl" value="${ambra.services.cas.url.base}/email?guid="/>
-    <property name="weeklyCategories">
-      <list>
-        <value>biology</value>
-        <value>clinical_trials</value>
-        <value>computational_biology</value>
-        <value>genetics</value>
-        <value>medicine</value>
-        <value>pathogens</value>
-        <value>plosntds</value>
-        <value>plosone</value>
-      </list>
-    </property>
-    <property name="monthlyCategories">
-      <list>
-        <value>biology</value>
-        <value>clinical_trials</value>
-        <value>computational_biology</value>
-        <value>genetics</value>
-        <value>medicine</value>
-        <value>pathogens</value>
-        <value>plosntds</value>
-      </list>
-    </property>
-    <property name="categoryNames">
-      <map>
-        <entry key="biology" value="PLoS Biology"/>
-        <entry key="computational_biology" value="PLoS Computational Biology"/>
-        <entry key="clinical_trials" value="PLoS Hub for Clinical Trials"/>
-        <entry key="genetics" value="PLoS Genetics"/>
-        <entry key="medicine" value="PLoS Medicine"/>
-        <entry key="pathogens" value="PLoS Pathogens"/>
-        <entry key="plosntds" value="PLoS Neglected Tropical Diseases"/>
-        <entry key="plosone" value="PLoS ONE"/>
-      </map>
-    </property>
   </bean>
 
   <bean id="profanityCheckingService" class="org.topazproject.ambra.util.ProfanityCheckingService">

@@ -67,29 +67,29 @@
         		</li>
         	</ol>
 			</li>
-      <#list categoryBeans as category>
+      <#list userAlerts as ua>
         <li>
           <ol>
-            <li class="alerts-title">${category.name}</li>
+            <li class="alerts-title">${ua.name}</li>
             <li>
-              <#if category.weeklyAvailable>
-                <label for="${category.key}">
+              <#if ua.weeklyAvailable>
+                <label for="${ua.key}">
 				<#if tabId?has_content>
-	              <@s.checkbox name="weeklyAlerts" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.horizontalTabs.checkValue(this); ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" onchange="ambra.horizontalTabs.checkValue(this);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
+	              <@s.checkbox name="weeklyAlerts" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.horizontalTabs.checkValue(this); ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" onchange="ambra.horizontalTabs.checkValue(this);" fieldValue="${ua.key}" value="${isFound(weeklyAlerts, ua.key)}"/>
 				<#else>
-	              <@s.checkbox name="weeklyAlerts" onclick="ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
+	              <@s.checkbox name="weeklyAlerts" onclick="ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" fieldValue="${ua.key}" value="${isFound(weeklyAlerts, ua.key)}"/>
 				</#if>
                 Weekly </label>
               </#if>
             </li>
 
             <li>
-              <#if category.monthlyAvailable>
-                <label for="${category.key}">
+              <#if ua.monthlyAvailable>
+                <label for="${ua.key}">
     			<#if tabId?has_content>
-	              <@s.checkbox name="monthlyAlerts" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.horizontalTabs.checkValue(this); ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);" onchange="ambra.horizontalTabs.checkValue(this);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
+	              <@s.checkbox name="monthlyAlerts" onfocus="ambra.horizontalTabs.setTempValue(this);" onclick="ambra.horizontalTabs.checkValue(this); ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);" onchange="ambra.horizontalTabs.checkValue(this);"  fieldValue="${ua.key}" value="${isFound(monthlyAlerts, ua.key)}"/>
     			<#else>
-                  <@s.checkbox name="monthlyAlerts" onclick="ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
+                  <@s.checkbox name="monthlyAlerts" onclick="ambra.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);"  fieldValue="${ua.key}" value="${isFound(monthlyAlerts, ua.key)}"/>
     			</#if>
                   Monthly </label>
               <#else>

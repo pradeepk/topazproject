@@ -19,16 +19,23 @@
 package org.topazproject.ambra.user.service;
 
 /**
- * A comfort class to help render the alerts page. It provide the presentable for a alert category,
- * whether it is available for a weekly/monthly alert
+ * UserAlert - Encapsulates a single user alert entry as defined in the configuration in the
+ * optional "ambra.userAlerts" section.
  */
-public class CategoryBean {
+public class UserAlert {
   private final String key;
   private final String name;
   private final boolean weeklyAvailable;
   private final boolean monthlyAvailable;
 
-  public CategoryBean(final String key, final String name, final boolean weeklyAvailable, final boolean monthlyAvailable) {
+  /**
+   * Constructor
+   * @param key
+   * @param name
+   * @param weeklyAvailable
+   * @param monthlyAvailable
+   */
+  public UserAlert(final String key, final String name, final boolean weeklyAvailable, final boolean monthlyAvailable) {
     this.key = key;
     this.name = name;
     this.weeklyAvailable = weeklyAvailable;
@@ -36,32 +43,30 @@ public class CategoryBean {
   }
 
   /**
-   * Getter for property 'name'.
-   * @return Value for property 'name'.
+   * @return The name.
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Getter for property 'key'.
-   * @return Value for property 'key'.
+   * @return The key.
    */
   public String getKey() {
     return key;
   }
 
   /**
-   * Getter for property 'monthlyAvailable'.
-   * @return Value for property 'monthlyAvailable'.
+   * Is available monthly?
+   * @return true/false
    */
   public boolean isMonthlyAvailable() {
     return monthlyAvailable;
   }
 
   /**
-   * Getter for property 'weeklyAvailable'.
-   * @return Value for property 'weeklyAvailable'.
+   * Is available weekly?
+   * @return true/false
    */
   public boolean isWeeklyAvailable() {
     return weeklyAvailable;

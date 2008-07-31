@@ -18,27 +18,111 @@
  */
 package org.topazproject.ambra.user.action;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+
+import org.apache.commons.configuration.HierarchicalConfiguration;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.user.AmbraUser;
-import org.topazproject.ambra.user.service.CategoryBean;
-
-
-import java.util.ArrayList;
-import java.util.Collection;
+import org.topazproject.ambra.user.service.UserAlert;
 
 /**
  * Update action for saving or getting alerts that the user subscribes to.
  */
+@SuppressWarnings("serial")
 public abstract class UserAlertsAction extends UserActionSupport {
+
+  private static final Log log = LogFactory.getLog(UserAlertsAction.class);
+
+  /**
+   * The list of available {@link UserAlert}s as prescribed in the configuration. May be empty.
+   */
+  private static final List<UserAlert> userAlerts = new ArrayList<UserAlert>();
+
+  /**
+   * @return All available user alerts
+   */
+  public static Collection<UserAlert> getUserAlerts() {
+    return userAlerts;
+  }
+
+  /**
+   * Stubs optional user alert data data which may be specified in the configuration. <br>
+   *
+   * Config FORMAT EXAMPLE:<br>
+   *
+   * <pre>
+   * &lt;userAlerts&gt;
+   *         &lt;categories&gt;
+   *           &lt;category key=&quot;biology&quot;&gt;PLoS Biology&lt;/category&gt;
+   *           &lt;category key=&quot;computational_biology&quot;&gt;PLoS Computational Biology&lt;/category&gt;
+   *           &lt;category key=&quot;clinical_trials&quot;&gt;PLoS Hub for Clinical Trials&lt;/category&gt;
+   *           &lt;category key=&quot;genetics&quot;&gt;PLoS Genetics&lt;/category&gt;
+   *           &lt;category key=&quot;medicine&quot;&gt;PLoS Medicine&lt;/category&gt;
+   *           &lt;category key=&quot;pathogens&quot;&gt;PLoS Pathogens&lt;/category&gt;
+   *           &lt;category key=&quot;plosntds&quot;&gt;PLoS Neglected Tropical Diseases&lt;/category&gt;
+   *           &lt;category key=&quot;plosone&quot;&gt;PLoS ONE&lt;/category&gt;
+   *         &lt;/categories&gt;
+   *         &lt;monthly&gt;biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds&lt;/monthly&gt;
+   *         &lt;weekly&gt;biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds, plosone&lt;/weekly&gt;
+   *       &lt;/userAlerts&gt;
+   * </pre>
+   */
+  @SuppressWarnings("unchecked")
+  private static void initUserAlertData() {
+
+    final Map<String, String> categoryNames = new HashMap<String, String>();
+
+    ConfigurationStore config = ConfigurationStore.getInstance();
+    HierarchicalConfiguration hc = (HierarchicalConfiguration) config.getConfiguration();
+    List<HierarchicalConfiguration> categories = hc
+        .configurationsAt("ambra.userAlerts.categories.category");
+    for (HierarchicalConfiguration c : categories) {
+      String key = c.getString("[@key]");
+      String value = c.getString("");
+      categoryNames.put(key, value);
+    }
+
+    final String[] weeklyCategories = hc.getStringArray("ambra.userAlerts.weekly");
+    final String[] monthlyCategories = hc.getStringArray("ambra.userAlerts.monthly");
+
+    final Set<Map.Entry<String, String>> categoryNamesSet = categoryNames.entrySet();
+
+    for (final Map.Entry<String, String> category : categoryNamesSet) {
+      final String key = category.getKey();
+      boolean weeklyCategoryKey = false;
+      boolean monthlyCategoryKey = false;
+      if (ArrayUtils.contains(weeklyCategories, key)) {
+        weeklyCategoryKey = true;
+      }
+      if (ArrayUtils.contains(monthlyCategories, key)) {
+        monthlyCategoryKey = true;
+      }
+      userAlerts
+          .add(new UserAlert(key, category.getValue(), weeklyCategoryKey, monthlyCategoryKey));
+    }
+  }
+
+  static {
+    initUserAlertData();
+  }
+
   private String displayName;
   private String[] monthlyAlerts = new String[]{};
   private String[] weeklyAlerts = new String[]{};
   private final String MONTHLY_ALERT_SUFFIX = "_monthly";
   private final String WEEKLY_ALERT_SUFFIX = "_weekly";
-  private static final Log log = LogFactory.getLog(UserAlertsAction.class);
 
   /**
    * Save the alerts.
@@ -48,12 +132,8 @@ public abstract class UserAlertsAction extends UserActionSupport {
   @Transactional(rollbackFor = { Throwable.class })
   public String saveAlerts() throws Exception {
     final AmbraUser ambraUser = getAmbraUserToUse();
-    if (log.isDebugEnabled()) {
-      if (ambraUser != null) {
-        log.debug("ambrauser authID = " + ambraUser.getAuthId());
-        log.debug("ambrauser email = " + ambraUser.getEmail());
-        log.debug("ambrauser userID = " + ambraUser.getUserId());
-      }
+    if (ambraUser == null) {
+      throw new ServletException("Unable to resolve ambra user");
     }
 
     final Collection<String> alertsList = new ArrayList<String>();
@@ -86,16 +166,14 @@ public abstract class UserAlertsAction extends UserActionSupport {
   @Transactional(readOnly = true)
   public String retrieveAlerts() throws Exception {
     final AmbraUser ambraUser = getAmbraUserToUse();
+    if (ambraUser == null) {
+      throw new ServletException("Unable to resolve ambra user");
+    }
+
     final Collection<String> monthlyAlertsList = new ArrayList<String>();
     final Collection<String> weeklyAlertsList = new ArrayList<String>();
 
     final String[] alerts = ambraUser.getAlerts();
-
-    if (log.isDebugEnabled()) {
-      log.debug("ambrauser authID = " + ambraUser.getAuthId());
-      log.debug("ambrauser email = " + ambraUser.getEmail());
-      log.debug("ambrauser userID = " + ambraUser.getUserId());
-    }
 
     if (null != alerts) {
       for (final String alert : alerts) {
@@ -155,13 +233,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
   }
 
   /**
-   * @return all the category beans
-   */
-  public Collection<CategoryBean> getCategoryBeans() {
-    return getUserService().getCategoryBeans();
-  }
-
-  /**
    * @return Returns the displayName.
    */
   public String getDisplayName() {
@@ -174,5 +245,4 @@ public abstract class UserAlertsAction extends UserActionSupport {
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
-
 }

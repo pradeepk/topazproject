@@ -387,5 +387,21 @@
         <imageSetConfigName>issueImage</imageSetConfigName>
       </articleType>
     </articleTypeList>
+
+    <userAlerts>
+      <categories>
+        <category key="biology">PLoS Biology</category>
+        <category key="computational_biology">PLoS Computational Biology</category>
+        <category key="clinical_trials">PLoS Hub for Clinical Trials</category>
+        <category key="genetics">PLoS Genetics</category>
+        <category key="medicine">PLoS Medicine</category>
+        <category key="pathogens">PLoS Pathogens</category>
+        <category key="plosntds">PLoS Neglected Tropical Diseases</category>
+        <category key="plosone">PLoS ONE</category>
+      </categories>
+      <monthly>biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds</monthly>
+      <weekly>biology, clinical_trials, computational_biology, genetics, medicine, pathogens, plosntds, plosone</weekly>
+    </userAlerts>
+    
   </ambra>
 </config>
