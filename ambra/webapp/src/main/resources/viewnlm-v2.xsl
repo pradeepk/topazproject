@@ -3852,9 +3852,6 @@
                 <xsl:otherwise/>
               </xsl:choose>
             </xsl:when>
-            <xsl:otherwise>
-              <xsl:text>. </xsl:text>
-            </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
         <xsl:otherwise>, </xsl:otherwise>
@@ -3937,16 +3934,15 @@
           <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
           <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
         </a>
-        <xsl:apply-templates select="citation"/>
+        <xsl:variable name="cit" select="citation | nlm-citation"/>
+        <xsl:apply-templates select="$cit"/>
         <xsl:text> </xsl:text>
-        <xsl:if test="citation[@citation-type='journal']">
+        <xsl:if test="$cit[@citation-type='journal']">
           <xsl:variable name="apos">'</xsl:variable>
-          <xsl:variable name="artTitle">
-            <xsl:value-of select="citation/article-title"/>
-          </xsl:variable>
+          <xsl:variable name="artTitle"><xsl:value-of select="$cit/article-title"/></xsl:variable>
           <xsl:variable name="author">
-            <xsl:value-of 
-              select="citation/person-group[@person-group-type='author'][1]/name[1]/surname"/>
+            <xsl:value-of
+              select="$cit/person-group[@person-group-type='author'][1]/name[1]/surname"/>
           </xsl:variable>
           <xsl:variable name="findURL">
             <xsl:value-of select="concat($pubAppContext,'/article/findArticle.action?author=',
@@ -4043,8 +4039,10 @@
 <!-- Book or thesis -->
 <xsl:template match="ref/citation[@citation-type='book']
                    | ref/citation[@citation-type='thesis']
-                   | ref/citation[@citation-type='other']">
-   
+                   | ref/citation[@citation-type='other']
+                   | ref/nlm-citation[@citation-type='book']
+                   | ref/nlm-citation[@citation-type='thesis']
+                   | ref/nlm-citation[@citation-type='other']">   
   <xsl:variable name="augroupcount" select="count(person-group) + count(collab)"/>
   <xsl:choose>
     <xsl:when test="$augroupcount>1 and
@@ -4161,7 +4159,8 @@
 </xsl:template>
 
 <!-- Conference proceedings -->
-<xsl:template match="ref/citation[@citation-type='confproc']">
+<xsl:template match="ref/citation[@citation-type='confproc']
+                   | ref/nlm-citation[@citation-type='confproc']">
   <xsl:variable name="augroupcount" select="count(person-group) + count(collab)"/>
   <xsl:choose>
     <xsl:when test="$augroupcount>1 and person-group[@person-group-type!='author']">
@@ -4216,7 +4215,10 @@
 <!-- Government and other reports, other, web, and commun -->
 <xsl:template match="ref/citation[@citation-type='gov']
                    | ref/citation[@citation-type='web']
-                   | ref/citation[@citation-type='commun']">
+                   | ref/citation[@citation-type='commun']
+                   | ref/nlm-citation[@citation-type='gov']
+                   | ref/nlm-citation[@citation-type='web']
+                   | ref/nlm-citation[@citation-type='commun']">
   <xsl:apply-templates select="person-group" mode="book"/>
   <xsl:apply-templates select="collab"/>
   <xsl:choose>
@@ -4261,7 +4263,8 @@
 </xsl:template>
 
 <!-- Patents  -->
-<xsl:template match="ref/citation[@citation-type='patent']">
+<xsl:template match="ref/citation[@citation-type='patent']
+                   | ref/nlm-citation[@citation-type='patent']">
   <xsl:apply-templates select="person-group"
                        mode="book"/>
   <xsl:apply-templates select="collab"
@@ -4280,7 +4283,8 @@
 </xsl:template>
 
 <!-- Discussion  -->
-<xsl:template match="ref/citation[@citation-type='discussion']">
+<xsl:template match="ref/citation[@citation-type='discussion']
+                   | ref/nlm-citation[@citation-type='discussion']">
   <xsl:apply-templates select="person-group"
                        mode="book"/>
   <xsl:apply-templates select="collab"/>
@@ -4409,6 +4413,24 @@
                                and not(self::edition) and not(self::person-group) 
                                and not(self::collab) and not(self::comment)]|text()"
                        mode="none"/>
+  <xsl:call-template name="citation-tag-ends"/>
+</xsl:template>
+
+<!-- Modified the above citation template to work with legacy nlm-citations for journal articles.
+     However, since the ordering of these nlm-citations child elements does not correspond to the
+     output ordering in the citation, I needed to explitly write out the ordering below. -->
+<xsl:template match="nlm-citation">
+  <span class="authors">
+    <xsl:apply-templates select="person-group"/>
+    <xsl:apply-templates select="collab"/>
+  </span>
+ <xsl:apply-templates select="year" mode="none"/>
+ <xsl:apply-templates select="article-title" mode="none"/>
+ <xsl:apply-templates select="*[not(self::annotation) 
+                              and not(self::edition) and not(self::person-group) 
+                              and not(self::collab) and not(self::comment) and not(self::year) 
+                              and not (self::article-title)]|text()"
+          	  	       mode="none"/>
   <xsl:call-template name="citation-tag-ends"/>
 </xsl:template>
 
