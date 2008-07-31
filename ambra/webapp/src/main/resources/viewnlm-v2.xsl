@@ -1319,7 +1319,7 @@
           <xsl:apply-templates select="addr-line" />
           <xsl:if test="following-sibling::aff">
             <xsl:variable name="nextId">
-              <xsl:value-of select="following-sibling::aff/@id"/>
+              <xsl:value-of select="following-sibling::aff[1]/@id"/>
             </xsl:variable>
             <xsl:if test="../contrib-group/contrib[@contrib-type='author']/xref[@ref-type='aff' 
                           and @rid=$nextId]">
