@@ -192,10 +192,10 @@ public class ProcessImages {
    */
   private Configuration getImageSet(def art) throws IOException {
     def artType = art.front.'article-meta'.'article-categories'.'subj-group'.
-                      find{ it.'@subj-group-type' = 'heading' }.subject
+                      find{ it.'@subj-group-type' = 'heading' }.subject.text()
 
     use (CommonsConfigCategory) {
-      def name = config.ambra.articleTypeList.articleType.grep{ it.typeHeader == artType }.
+      def name = config.ambra.articleTypeList.articleType.grep{ it.typeHeading == artType }.
                         imageSetConfigName
       name = name ?: '#default'
 
