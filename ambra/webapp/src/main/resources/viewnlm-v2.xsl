@@ -1157,6 +1157,12 @@
         <xsl:apply-templates select="." mode="front"/>
       </p>
     </xsl:for-each>
+
+    <!-- added additional test for automatic deceased footnote. -->
+    <xsl:if test="contrib-group/contrib/@deceased='yes' 
+                  and not(author-notes/fn[@fn-type='deceased'])">
+      <p><a name="deceased"></a><sup>&#x2021;</sup> Deceased.</p>
+    </xsl:if>
     <xsl:for-each select="author-notes/fn[@fn-type='other']">
       <p>
         <xsl:apply-templates select="." mode="front"/>
@@ -2898,7 +2904,15 @@
     <xsl:if test="../@equal-contrib='yes'">
         <sup><a href="#equal-contrib">#</a></sup>
   </xsl:if>
-  <xsl:apply-templates select="../xref[@ref-type='fn']" mode="contrib"/>  
+  <xsl:apply-templates select="../xref[@ref-type='fn']" mode="contrib"/>
+  
+  <!-- Checking if the deceased attribute is set and there isn't already a deceased footnote,
+       output a dagger. However, be careful in checking for the existence of an editor defined
+       deceased fn. -->
+  <xsl:if test="../@deceased='yes' and not(../xref/sup='‡') and not(../ref/sup='&amp;dagger;') 
+                and not(../ref/sup='&amp;Dagger;')">
+    <a href="#deceased"><sup>&#x2021;</sup></a>
+  </xsl:if>
   <xsl:apply-templates select="../xref[@ref-type='corresp']" mode="contrib"/>  
   <xsl:apply-templates select="../xref[@ref-type='author-notes']" mode="contrib"/>  
 </xsl:template>
