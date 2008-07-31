@@ -1,6 +1,6 @@
 /*
- * $HeadURL:: http://gandalf.topazproject.org/svn/head/plos/webapp/src/main/webapp/javas#$
- * $Id: responsePanel.js 5581 2008-05-02 23:01:11Z jkirton $
+ * $HeadURL::                                                                            $
+ * $Id$
  *
  * Copyright (c) 2006-2008 by Topaz, Inc.
  * http://topazproject.org

@@ -1,5 +1,5 @@
-/* $HeadURL:: http://gandalf/svn/head/topaz/core/src/main/java/org/topazproject/otm/Abst#$
- * $Id: AbstractConnection.java 4807 2008-02-27 11:06:12Z ronald $
+/* $HeadURL::                                                                            $
+ * $Id$
  *
  * Copyright (c) 2007-2008 by Topaz, Inc.
  * http://topazproject.org

@@ -1,5 +1,5 @@
-/* $HeadURL:: http://gandalf.topazproject.org/svn/head/plosone/libs/otm-models/src/main/java/org/#$
- * $Id: ObjectInfo.java 2758 2007-05-20 03:11:36Z ronald $
+/* $HeadURL::                                                                                     $
+ * $Id$
  *
  * Copyright (c) 2006-2008 by Topaz, Inc.
  * http://topazproject.org

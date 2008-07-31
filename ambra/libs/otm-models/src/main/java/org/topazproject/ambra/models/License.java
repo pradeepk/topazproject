@@ -1,5 +1,5 @@
-/* $HeadURL:: http://gandalf.topazproject.org/svn/head/plosone/libs/otm-models/src/main/#$
- * $Id: Ambra.java 3138 2007-07-10 19:10:40Z amit $
+/* $HeadURL::                                                                            $
+ * $Id$
  *
  * Copyright (c) 2007-2008 by Topaz, Inc.
  * http://topazproject.org
