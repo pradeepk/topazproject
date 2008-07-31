@@ -4889,11 +4889,6 @@
   <xsl:text>. </xsl:text>
 </xsl:template>
 
-<!-- The following fpage and lpage mode=book templates have been replaced with simpler versions. -->
-<xsl:template match="lpage" mode="book">
-	<xsl:value-of select="lpage"/><xsl:text>.</xsl:text>
-</xsl:template>
-
 <xsl:template match="page-count" mode="book">
 	<xsl:value-of select="@count"/><xsl:text> p.</xsl:text>
 </xsl:template>
