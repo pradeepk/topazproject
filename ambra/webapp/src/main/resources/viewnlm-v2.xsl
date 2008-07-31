@@ -504,6 +504,9 @@
   </div>
   <xsl:text><!-- end : article infomation --></xsl:text>
 
+  <!-- Add editors summary box after article meta info and before introduction -->
+  <xsl:call-template name="make-editors-summary"/>
+  
   <!-- body -->
   <xsl:call-template name="nl-2"/>
   <xsl:call-template name="nl-1"/>
@@ -1185,6 +1188,16 @@
     </xsl:for-each>
        
   <!-- that's it for article-meta; return to previous context -->
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="make-editors-summary">
+  <xsl:for-each select="front/article-meta/abstract[@abstract-type='editor']">
+    <div class="editorsAbstract">
+      <xsl:call-template name="makeXpathLocation"/>
+      <xsl:call-template name="words-for-abstract-title"/>
+      <xsl:apply-templates select="*[not(self::title)]"/>
+    </div>
   </xsl:for-each>
 </xsl:template>
 
@@ -1875,7 +1888,9 @@
   <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
   </xsl:element>
 
-  <p><strong><!-- replacing  <h5 xpathLocation="noSelect"> -->
+  <p>
+  <!-- replacing  <h5 xpathLocation="noSelect"> -->
+  <strong>
    <xsl:element name="a">
      <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
      <xsl:attribute name="href">
@@ -1884,8 +1899,10 @@
     </xsl:attribute>
     <xsl:apply-templates select="label"/>
   </xsl:element>
- <xsl:apply-templates select="caption/title"/>
- </strong></p><!-- replacing </h5> -->
+  <xsl:apply-templates select="caption/title"/>
+  <!-- replacing </h5> -->
+  </strong>
+  </p>
   <xsl:apply-templates select="caption/p"/>
 </xsl:template>
 
@@ -3611,10 +3628,13 @@
 
 <xsl:template match="abstract/sec/title">
   <xsl:call-template name="nl-1"/>
-  <h3>
-    <xsl:call-template name="makeXpathLocation"/>
-    <xsl:apply-templates/>
-  </h3>
+  <!-- Be careful not to output an abstract's title if it's blank -->
+  <xsl:if test="string-length() &gt; 0">
+    <h3>
+      <xsl:call-template name="makeXpathLocation"/>
+      <xsl:apply-templates/>
+    </h3>
+  </xsl:if>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
