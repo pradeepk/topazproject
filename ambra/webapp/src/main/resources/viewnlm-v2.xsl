@@ -4664,24 +4664,10 @@
 
 <xsl:template match="article-title" mode="book">
   <xsl:apply-templates/>
-  <xsl:choose>
-    <xsl:when test="../fpage or ../lpage">
-      <xsl:text>; </xsl:text>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:variable name="punc">
-        <xsl:call-template name="endsWithPunctuation">
-          <xsl:with-param name="value" select="."/>
-        </xsl:call-template>
-      </xsl:variable>
-
-      <!-- Fixed bug where the word false wasn't quoted -->
-      <xsl:if test="$punc = 'false'">
-        <xsl:text>.</xsl:text>
-      </xsl:if>
-      <xsl:text> </xsl:text>
-    </xsl:otherwise>
-  </xsl:choose>
+  <xsl:if test="not(ends-with(normalize-space(),'.'))">
+    <xsl:text>.</xsl:text>
+  </xsl:if>
+  <xsl:text> </xsl:text>
 </xsl:template>
 
 <xsl:template match="article-title" mode="editedbook">
