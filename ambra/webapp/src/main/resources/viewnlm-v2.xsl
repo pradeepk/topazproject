@@ -1165,6 +1165,13 @@
        
   <!-- that's it for article-meta; return to previous context -->
   </xsl:for-each>
+
+  <!-- The following hack for legacy articles allows these other footnotes to
+       be output at the bottom of the citation section. -->
+  <xsl:for-each select="//back/fn-group/fn[@fn-type='other']/node()">
+    <p><xsl:apply-templates/></p>
+  </xsl:for-each>  
+  
 </xsl:template>
 
 <xsl:template name="editors-list">
@@ -4965,7 +4972,20 @@
 
 <xsl:template match="fpage" mode="book">
   <xsl:if test="../lpage">
-    <xsl:text>pp. </xsl:text>
+
+    <!-- Fix old journal articles that were coded as type other, but actually
+         had a volume, source and page numbers. While in reality the XML should have been 
+         changed to make these citations type='journal', there are too many such instances 
+         and so we placed this hack in the xsl. 
+         Hopefully, it does not break any other cases. -->
+    <xsl:choose>
+      <xsl:when test="name(preceding-sibling::node()[1])='volume'">
+        <xsl:text>: </xsl:text>
+      </xsl:when>
+      <xsl:otherwise>  
+        <xsl:text>pp. </xsl:text>
+	    </xsl:otherwise>
+    </xsl:choose>
     <xsl:apply-templates/>
     <xsl:text>&#8211;</xsl:text>
   </xsl:if>
