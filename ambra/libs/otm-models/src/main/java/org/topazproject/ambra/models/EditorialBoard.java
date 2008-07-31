@@ -36,7 +36,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
   */
-@Entity(type = PLoS.plos + "EditorialBoard", model = "ri")
+@Entity(type = Ambra.plos + "EditorialBoard", model = "ri")
 public class EditorialBoard implements Serializable {
   @Id
   @GeneratedValue(uriPrefix = "id:editorialBoard/")
@@ -45,7 +45,7 @@ public class EditorialBoard implements Serializable {
   private EditorialBoard supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private EditorialBoard supersededBy;
-  @Predicate(uri = PLoS.plos + "editors", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = Ambra.plos + "editors", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile>      editors = new ArrayList();
 
   /**

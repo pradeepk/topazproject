@@ -1,5 +1,5 @@
 /* $HeadURL:: http://gandalf.topazproject.org/svn/head/plosone/libs/otm-models/src/main/#$
- * $Id: PLoS.java 3138 2007-07-10 19:10:40Z amit $
+ * $Id: Ambra.java 3138 2007-07-10 19:10:40Z amit $
  *
  * Copyright (c) 2007-2008 by Topaz, Inc.
  * http://topazproject.org
@@ -29,7 +29,7 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Amit Kapoor
  */
-@Entity(type = PLoS.creativeCommons + "License", model = "ri")
+@Entity(type = Ambra.creativeCommons + "License", model = "ri")
 public abstract class License implements Serializable {
   @Id
   private URI   id;

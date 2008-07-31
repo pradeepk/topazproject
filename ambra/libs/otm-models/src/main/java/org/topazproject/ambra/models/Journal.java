@@ -30,22 +30,22 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = PLoS.plos + "Journal", model = "ri")
+@Entity(type = Ambra.plos + "Journal", model = "ri")
 public class Journal extends Aggregation {
-  @Predicate(uri = PLoS.plos + "key")
+  @Predicate(uri = Ambra.plos + "key")
   private String  key;
 
   @Predicate(uri = "http://prismstandard.org/namespaces/1.2/basic/eIssn")
   private String  eIssn;
 
   /** DOI of "current issue" */
-  @Predicate(uri = PLoS.plos + "Journal/currentIssue")
+  @Predicate(uri = Ambra.plos + "Journal/currentIssue")
   private URI currentIssue;
 
-  @Predicate(uri = PLoS.plos + "Journal/volumes")
+  @Predicate(uri = Ambra.plos + "Journal/volumes")
   private List<URI> volumes = new ArrayList();
 
-  @Predicate(uri = PLoS.plos + "Journal/image")
+  @Predicate(uri = Ambra.plos + "Journal/image")
   private URI image;
 
   /**

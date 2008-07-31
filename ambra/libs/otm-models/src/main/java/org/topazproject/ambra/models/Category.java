@@ -28,7 +28,7 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
- * PLOSOne articles have a category and sub-category. Theoretically these are well defined
+ * Ambra articles have a category and sub-category. Theoretically these are well defined
  * but in practice they seem to be somewhat adhoc (at this time). The sub-category is
  * optional.<p>
  *

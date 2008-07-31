@@ -28,15 +28,15 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Jeff Suttor
  */
-@Entity(type = PLoS.plos + "Issue", model = "ri")
+@Entity(type = Ambra.plos + "Issue", model = "ri")
 public class Issue extends Aggregation {
 
   /** Display name.  Human friendly. */
-  @Predicate(uri = PLoS.plos + "displayName")
+  @Predicate(uri = Ambra.plos + "displayName")
   private String displayName;
 
   /** Arbitrary URI to an image */
-  @Predicate(uri = PLoS.plos + "image")
+  @Predicate(uri = Ambra.plos + "image")
   private URI image;
 
   /**

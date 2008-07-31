@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
- * Model for PLOS articles.
+ * Model for Ambra articles.
  *
  * @author Eric Brown
  * @author Amit Kapoor
@@ -54,7 +54,7 @@ public class Article extends ObjectInfo {
   @Predicate(uri = Rdf.rdf + "type")
   private Set<URI> articleType;
 
-  @Predicate(uri = PLoS.plos + "relatedArticle")
+  @Predicate(uri = Ambra.plos + "relatedArticle")
   private Set<RelatedArticle> relatedArticles;
 
   /**
@@ -93,8 +93,8 @@ public class Article extends ObjectInfo {
   }
 
   /**
-   * A single PLoS article can have multiple types associated with it. For
-   * example, it could have a PMC article type and also a PLoS specific article
+   * A single Ambra article can have multiple types associated with it. For
+   * example, it could have a PMC article type and also a Ambra specific article
    * type. This setter allows the application to set the different types this
    * article conforms to.
    *

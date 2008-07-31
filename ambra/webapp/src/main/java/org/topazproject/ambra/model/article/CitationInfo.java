@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.ambra.model.UserProfileInfo;
-import org.topazproject.ambra.models.PLoS;
+import org.topazproject.ambra.models.Ambra;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
@@ -34,11 +34,11 @@ import org.topazproject.otm.annotations.Predicate;
 /**
  * Just the list of authors.
  */
-@Entity(type = PLoS.bibtex + "Entry", model = "ri")
+@Entity(type = Ambra.bibtex + "Entry", model = "ri")
 public class CitationInfo implements Serializable {
   @Id
   public URI id;
 
-  @Predicate(uri = PLoS.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = Ambra.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
   public List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();
 }

@@ -39,7 +39,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
  *
  * @author Ronald Tschalär
  */
-@Entity(type = PLoS.plos + "RelatedArticle", model = "ri")
+@Entity(type = Ambra.plos + "RelatedArticle", model = "ri")
 public class RelatedArticle  implements Serializable {
   @Id @GeneratedValue(uriPrefix = "id:relatedArticle/")
   private URI id;
@@ -47,7 +47,7 @@ public class RelatedArticle  implements Serializable {
   @Predicate(uri = Rdf.dc_terms + "references")
   private URI article;
 
-  @Predicate(uri = PLoS.plos + "articleRelationType")
+  @Predicate(uri = Ambra.plos + "articleRelationType")
   private String relationType;
 
   private static final long serialVersionUID = -4229157024423830497L;

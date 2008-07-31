@@ -34,15 +34,15 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Jeff Suttor, Alex Worden
  */
-@Entity(type = PLoS.plos + "Volume", model = "ri")
+@Entity(type = Ambra.plos + "Volume", model = "ri")
 public class Volume extends Aggregation {
 
   /** Display name.  Human friendly. */
-  @Predicate(uri = PLoS.plos + "displayName")
+  @Predicate(uri = Ambra.plos + "displayName")
   private String displayName;
 
   /** Arbitrary URI to an image. */
-  @Predicate(uri = PLoS.plos + "image")
+  @Predicate(uri = Ambra.plos + "image")
   private URI image;
 
   // The ordered list of DOIs of issues contained in this volume. 

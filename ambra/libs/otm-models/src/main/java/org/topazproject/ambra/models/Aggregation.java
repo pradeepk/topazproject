@@ -47,13 +47,13 @@ public class Aggregation implements Serializable {
   @Id
   @GeneratedValue(uriPrefix = "id:aggregation/")
   private URI                            id;
-  @Predicate(uri = PLoS.plos + "editorialBoard")
+  @Predicate(uri = Ambra.plos + "editorialBoard")
   private EditorialBoard                 editorialBoard;
   @Embedded
   private DublinCore        dublinCore;
   @Predicate(uri = Rdf.dc_terms + "hasPart")
   private List<URI>                      simpleCollection = new ArrayList();
-  @Predicate(uri = PLoS.plos + "smartCollectionRules", cascade = {CascadeType.all, CascadeType.deleteOrphan})
+  @Predicate(uri = Ambra.plos + "smartCollectionRules", cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private List<DetachedCriteria>         smartCollectionRules = new ArrayList();
   @Predicate(uri = Rdf.dc_terms + "replaces")
   private Aggregation                    supersedes;

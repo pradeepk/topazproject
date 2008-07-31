@@ -25,7 +25,7 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
- * This defines a user's profile in PLoS-ONE. It is modeled on <a
+ * This defines a user's profile in Ambra. It is modeled on <a
  * href="http://xmlns.com/foaf/0.1/">foaf</a> and <a href="http://vocab.org/bio/0.1/">bio</a>,
  * consisting of a subset of the <var>foaf:Person</var> and <var>bio:*</var> plus a number topaz
  * specific additions.

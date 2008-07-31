@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
- * A person according to foaf. This is not complete, but just the subset used by PLoS-ONE.
+ * A person according to foaf. This is not complete, but just the subset used by Ambra.
  *
  * @author Ronald Tschalär
  */

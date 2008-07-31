@@ -39,63 +39,63 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(type = PLoS.bibtex + "Entry", model = "ri")
+@Entity(type = Ambra.bibtex + "Entry", model = "ri")
 @UriPrefix(Rdf.topaz)
 public class Citation implements Serializable {
   @Id @GeneratedValue(uriPrefix = "id:citation/")
   private URI   id;
 
-  @Predicate(uri = PLoS.bibtex + "hasKey", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasKey", dataType = Rdf.xsd + "string")
   private String key;
 
   /* TODO: Restore to correct datatype. Stored as double because of bug in Mulgara */
-  @Predicate(uri = PLoS.bibtex + "hasYear", dataType = Rdf.xsd + "double")
+  @Predicate(uri = Ambra.bibtex + "hasYear", dataType = Rdf.xsd + "double")
   private Integer year;
 
-  @Predicate(uri=PLoS.PLoS_Temporal + "displayYear", dataType = Rdf.xsd + "string")
+  @Predicate(uri=Ambra.plos + "temporal#displayYear", dataType = Rdf.xsd + "string")
   private String displayYear;
 
-  @Predicate(uri = PLoS.bibtex + "hasMonth", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasMonth", dataType = Rdf.xsd + "string")
   private String month;
 
   /* TODO: Restore to correct datatype .Stored as double because of bug in Mulgara */
-  @Predicate(uri = PLoS.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
+  @Predicate(uri = Ambra.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
   private Integer volumeNumber;
 
-  @Predicate(uri=PLoS.prism + "volume", dataType = Rdf.xsd + "string")
+  @Predicate(uri=Ambra.prism + "volume", dataType = Rdf.xsd + "string")
   private String volume;
 
-  @Predicate(uri = PLoS.bibtex + "hasNumber", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasNumber", dataType = Rdf.xsd + "string")
   private String issue;
 
   @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
   private String title;
 
-  @Predicate(uri = PLoS.bibtex + "hasAddress", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasAddress", dataType = Rdf.xsd + "string")
   private String publisherLocation;
 
-  @Predicate(uri = PLoS.bibtex + "hasPublisher", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasPublisher", dataType = Rdf.xsd + "string")
   private String publisherName;
 
-  @Predicate(uri = PLoS.bibtex + "hasPages", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasPages", dataType = Rdf.xsd + "string")
   private String pages;
 
-  @Predicate(uri = PLoS.bibtex + "hasJournal", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasJournal", dataType = Rdf.xsd + "string")
   private String journal;
 
-  @Predicate(uri = PLoS.bibtex + "hasNote", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasNote", dataType = Rdf.xsd + "string")
   private String note;
 
-  @Predicate(uri = PLoS.plos + "hasEditorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = Ambra.plos + "hasEditorList", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile> editors = new ArrayList<UserProfile>();
 
-  @Predicate(uri = PLoS.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = Ambra.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile> authors = new ArrayList<UserProfile>();
 
-  @Predicate(uri = PLoS.bibtex + "hasURL", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasURL", dataType = Rdf.xsd + "string")
   private String url;
 
-  @Predicate(uri = PLoS.bibtex + "hasAbstract", dataType = Rdf.xsd + "string")
+  @Predicate(uri = Ambra.bibtex + "hasAbstract", dataType = Rdf.xsd + "string")
   private String summary;
 
   @Predicate(uri = Rdf.rdf + "type", type = PropType.OBJECT)
@@ -413,7 +413,7 @@ public class Citation implements Serializable {
    * @throws IllegalArgumentException if the string is not a valid URI.
    */
   public void setCitationType(String citationType) {
-    assert URI.create(citationType) != null : "Invalid PLoS Citation Type" + citationType;
+    assert URI.create(citationType) != null : "Invalid Ambra Citation Type" + citationType;
     this.citationType = citationType;
   }
 

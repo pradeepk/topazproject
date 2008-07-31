@@ -21,7 +21,7 @@ package org.topazproject.ambra.models;
 import org.topazproject.otm.annotations.Entity;
 
 /**
- * Class that will represent comments by users persisted as comment annotations by PlosOne.
+ * Class that will represent comments by users persisted as comment annotations by Ambra.
  *
  * @author Pradeep Krishnan
  */

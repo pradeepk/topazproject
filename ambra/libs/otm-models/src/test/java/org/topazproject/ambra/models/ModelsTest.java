@@ -51,7 +51,7 @@ import org.topazproject.ambra.models.Issue;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.models.License;
 import org.topazproject.ambra.models.ObjectInfo;
-import org.topazproject.ambra.models.PLoS;
+import org.topazproject.ambra.models.Ambra;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingContent;
 import org.topazproject.ambra.models.RatingSummary;
@@ -81,7 +81,7 @@ public class ModelsTest {
     new Class[] {
                   Annotation.class, Annotea.class, Article.class, AuthenticationId.class,
                   Category.class, Citation.class, Comment.class, Correction.class, DublinCore.class,
-                  FoafPerson.class, ObjectInfo.class, PLoS.class, Rating.class, RatingContent.class,
+                  FoafPerson.class, ObjectInfo.class, Ambra.class, Rating.class, RatingContent.class,
                   RatingSummary.class, RatingSummaryContent.class, RelatedArticle.class,
                   License.class, Reply.class,
                   ReplyThread.class, UserAccount.class, UserPreference.class, UserPreferences.class,
@@ -105,21 +105,21 @@ public class ModelsTest {
     blobStore.addBlobFactory(new AnnotationFedoraBlobFactory());
 
     FedoraBlob rb = blobStore.toBlob(factory.getClassMetadata(AnnotationBlob.class), 
-                                       "info:fedora/PLoS:42", null, null);
+                                       "info:fedora/Ambra:42", null, null);
     assert rb instanceof AnnotationFedoraBlob;
     AnnotationFedoraBlob b = (AnnotationFedoraBlob) rb;
     assert "text/plain;UTF-8".equals(b.getContentType());
     assert "Annotation".equals(b.getContentModel());
     assert "Annotation Body".equals(b.getDatastreamLabel());
-    assert "PLoS:42".equals(b.getPid());
+    assert "Ambra:42".equals(b.getPid());
     assert "BODY".equals(b.getDsId());
-    rb = blobStore.toBlob(factory.getClassMetadata(ReplyBlob.class), "info:fedora/PLoS:42", null, null);
+    rb = blobStore.toBlob(factory.getClassMetadata(ReplyBlob.class), "info:fedora/Ambra:42", null, null);
     assert rb instanceof AnnotationFedoraBlob;
     b = (AnnotationFedoraBlob) rb;
     assert "text/plain;UTF-8".equals(b.getContentType());
     assert "Reply".equals(b.getContentModel());
     assert "Reply Body".equals(b.getDatastreamLabel());
-    assert "PLoS:42".equals(b.getPid());
+    assert "Ambra:42".equals(b.getPid());
     assert "BODY".equals(b.getDsId());
   }
 
@@ -131,7 +131,7 @@ public class ModelsTest {
    */
   @Test
   public void serializationTest() throws ClassNotFoundException, IOException {
-    
+
     // persist to file
     Article article = new Article();
     Correction correction = new Correction();
@@ -144,7 +144,7 @@ public class ModelsTest {
     out.writeObject(citation);
     out.writeObject(correction);
     out.close();
-    
+
     // restore from file
     FileInputStream fis = new FileInputStream(articleTmpFile);
     ObjectInputStream in = new ObjectInputStream(fis);
@@ -152,7 +152,7 @@ public class ModelsTest {
     Citation restoredCitation = (Citation) in.readObject();
     Correction restoredCorrection = (Correction) in.readObject();
     in.close();
-    
+
     assert restoredArticle != null;
     assert restoredCitation != null;
     assert restoredCorrection != null;
