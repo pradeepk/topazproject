@@ -5100,7 +5100,11 @@
 <xsl:template match="volume" mode="none">
   <xsl:text> </xsl:text>
   <xsl:apply-templates/>
-  <xsl:text>: </xsl:text>
+  <!-- Bug fix. If there is an issue number, then don't print the colon and
+       space following the volume # -->
+  <xsl:if test="not(../issue)">
+    <xsl:text>: </xsl:text>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="edition" mode="none">
@@ -5114,9 +5118,21 @@
 </xsl:template>
 
 <xsl:template match="issue" mode="none">
-  <xsl:text>(</xsl:text>
+  <xsl:if test="not(starts-with(normalize-space(),'('))">
+    <xsl:text>(</xsl:text>
+  </xsl:if>
   <xsl:apply-templates/>
-  <xsl:text>)</xsl:text>
+  <xsl:if test="not(ends-with(normalize-space(),')'))">
+    <xsl:text>)</xsl:text>
+  </xsl:if>
+  <xsl:choose>
+    <xsl:when test="../fpage or ../lpage">
+      <xsl:text>: </xsl:text>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:text>.</xsl:text>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="publisher-loc" mode="none">
