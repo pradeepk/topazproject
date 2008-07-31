@@ -71,7 +71,7 @@ ambra.corrections = {
       _ldc.show();
       dojo.xhrGet({
         url: _namespace + "/annotation/getFormalCorrections.action?target=" + targetUri,
-        handleAs:'json',
+        handleAs:'json-comment-filtered',
         error: function(response, ioArgs){
           handleXhrError(response, ioArgs);
         },

@@ -18,7 +18,7 @@
     <dependency>
       <groupId>com.googlecode.jsonplugin</groupId>
       <artifactId>jsonplugin</artifactId>
-      <version>0.14</version>
+      <version>0.30</version>
     </dependency>
 
     <dependency>

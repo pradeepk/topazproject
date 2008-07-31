@@ -128,7 +128,7 @@ function submitResponseInfo(targetObj) {
   dojo.xhrPost({
     url: (_namespace + urlParam),
     form: targetForm,
-    handleAs:'json',
+    handleAs:'json-comment-filtered',
     error: function(response, ioArgs){
       handleXhrError(response, ioArgs);
       ambra.formUtil.enableFormFields(targetForm);

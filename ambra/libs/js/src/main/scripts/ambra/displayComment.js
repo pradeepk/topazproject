@@ -541,7 +541,7 @@ function getComment(obj) {
       //alert("uriArray[" + i + "] = " + uriArray[i]);
       dojo.xhrGet({
         url: _namespace + "/annotation/getAnnotation.action?annotationId=" + uriArray[i],
-        handleAs:'json',
+        handleAs:'json-comment-filtered',
         error: function(response, ioArgs){
           handleXhrError(response, ioArgs);
         },

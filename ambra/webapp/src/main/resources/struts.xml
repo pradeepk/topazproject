@@ -56,6 +56,7 @@
         <param name="excludeProperties">advisors, callbacks</param>
         <param name="ignoreHierarchy">false</param>
         <param name="noCache">true</param>
+        <param name="wrapWithComments">true</param>
       </result-type>
       <result-type name="feed" class="org.topazproject.ambra.struts2.AmbraFeedResult"/>
       <result-type name="citation" class="org.topazproject.ambra.struts2.CitationResult"/>

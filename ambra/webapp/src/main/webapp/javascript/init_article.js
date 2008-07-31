@@ -195,7 +195,7 @@ function validateNewComment() {
   
   dojo.xhrPost({
      url: _namespace + "/annotation/secure/createAnnotationSubmit.action",
-     handleAs:'json',
+     handleAs:'json-comment-filtered',
      form: _annotationForm,
      error: function(response, ioArgs){
        handleXhrError(response, ioArgs);

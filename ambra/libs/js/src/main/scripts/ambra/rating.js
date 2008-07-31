@@ -155,7 +155,7 @@ function getRatingsForUser() {
 	var targetUri = _ratingsForm.articleURI.value;
 	dojo.xhrGet({
     url: _namespace + "/rate/secure/getRatingsForUser.action?articleURI=" + targetUri,
-    handleAs:'json',
+    handleAs:'json-comment-filtered',
     error: function(response, ioArgs){
       handleXhrError(response, ioArgs);
     },
@@ -185,7 +185,7 @@ function updateRating() {
   _ldc.show();
   dojo.xhrPost({
     url: _namespace + "/rate/secure/rateArticle.action",
-    handleAs:'json',
+    handleAs:'json-comment-filtered',
     form: _ratingsForm,
     sync: true,
     error: function(response, ioArgs){
