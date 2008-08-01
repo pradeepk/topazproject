@@ -710,7 +710,7 @@ div.toc p.authors { margin:0 0 5px 0; font-weight:normal; font-size:.9em; line-h
 div.toc dl.related { margin:0 0 10px 0; }
 div.toc dl.related dt,
 div.toc dl.related dd { margin-bottom:.2em; font-size:.9em; line-height:1.5em; }
-div.toc dl.related dt { color:#666 }
+div.toc dl.related dt { float:none; color:#666 }
 div.toc dl.related dt em { font-style:normal }
 
 /*--- Browse Form ---- */
