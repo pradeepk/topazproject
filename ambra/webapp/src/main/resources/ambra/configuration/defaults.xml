@@ -59,6 +59,7 @@
 
       <!-- common display constants -->
       <name>Ambra</name>
+      <shortName>${ambra.platform.name}</shortName>
       <email>
         <general>webmaster@example.org</general>
         <feedback>webmaster@example.org</feedback>

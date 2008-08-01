@@ -60,6 +60,7 @@ public class AmbraFreemarkerConfig {
   private String changeEmailURL;
   private String defaultJournalName;
   private String orgName;
+  private String orgShortName;
 
   /**
    * Constructor that loads the list of css and javascript files and page titles for pages which
@@ -84,6 +85,7 @@ public class AmbraFreemarkerConfig {
     defaultJournalName = myConfig.getString(DEFAULT_JOURNAL_NAME_CONFIG_KEY);
     journals = new HashMap<String, JournalConfig>();
     orgName = myConfig.getString("ambra.platform.name");
+    orgShortName = myConfig.getString("ambra.platform.shortName");
 
     loadConfig(myConfig);
 
@@ -151,6 +153,7 @@ public class AmbraFreemarkerConfig {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void loadConfig2(Configuration oneConfig) {
       int numJournals = oneConfig.getList("ambra.freemarker.journal.name").size();
       for (int k = 0; k < numJournals; k++) {
@@ -204,27 +207,27 @@ public class AmbraFreemarkerConfig {
         }
 
         if (jc.getDefaultCss() == null) {
-          final List fileList = oneConfig.getList(journal + ".default.css.file");
+          final List<String> fileList = oneConfig.getList(journal + ".default.css.file");
           String[] defaultCss;
           if (fileList.size() > 0) {
             defaultCss = new String[fileList.size()];
-            Iterator iter = fileList.iterator();
+            Iterator<String> iter = fileList.iterator();
             for (int i = 0; i < fileList.size(); i++) {
-              defaultCss[i] = dirPrefix + subdirPrefix + (String)iter.next();
+              defaultCss[i] = dirPrefix + subdirPrefix + iter.next();
             }
             jc.setDefaultCss(defaultCss);
           }
         }
 
         if (jc.getDefaultJavaScript() == null) {
-          final List fileList = oneConfig.getList(journal + ".default.javascript.file");
+          final List<String> fileList = oneConfig.getList(journal + ".default.javascript.file");
           String javascriptFile;
           String[] defaultJavaScript;
           if (fileList.size() > 0) {
             defaultJavaScript = new String[fileList.size()];
-            Iterator iter = fileList.iterator();
+            Iterator<String> iter = fileList.iterator();
             for (int i = 0; i < fileList.size(); i++) {
-              javascriptFile = (String)iter.next();
+              javascriptFile = iter.next();
               if (javascriptFile.endsWith(".ftl")) {
                 defaultJavaScript[i] = subdirPrefix + javascriptFile;
               } else {
@@ -320,6 +323,7 @@ public class AmbraFreemarkerConfig {
     return s.toString();
   }
 
+  @SuppressWarnings("unchecked")
   private void processVirtualJournalConfig (Configuration configuration) {
     final Collection<String> virtualJournals = configuration.getList(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_JOURNALS);
     String defaultVirtualJournal = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
@@ -879,6 +883,20 @@ public class AmbraFreemarkerConfig {
    */
   public void setOrgName(String orgName) {
     this.orgName = orgName;
+  }
+
+  /**
+   * @return the orgShortName
+   */
+  public String getOrgShortName() {
+    return orgShortName;
+  }
+
+  /**
+   * @param orgShortName the orgShortName to set
+   */
+  public void setOrgShortName(String orgShortName) {
+    this.orgShortName = orgShortName;
   }
 
 }
