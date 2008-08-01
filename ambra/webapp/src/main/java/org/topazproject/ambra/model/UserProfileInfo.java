@@ -29,11 +29,11 @@ import org.topazproject.otm.annotations.Predicate;
 /**
  * Just the full name.
  */
-@Entity(type = Rdf.foaf + "Person", model = "profiles")
+@Entity(type = "foaf:Person", model = "profiles")
 public class UserProfileInfo implements Serializable {
   @Id
   public URI id;
 
-  @Predicate(uri = Rdf.foaf + "name")
+  @Predicate(uri = "foaf:name")
   public String realName;
 }

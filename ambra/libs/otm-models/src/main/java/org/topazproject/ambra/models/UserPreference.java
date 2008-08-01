@@ -22,7 +22,6 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -38,10 +37,10 @@ public class UserPreference implements Serializable {
   @Id @GeneratedValue(uriPrefix = "id:preferences/")
   private URI    id;
   /** The name of the preference. */
-  @Predicate(uri = Rdf.topaz + "prefName")
+  @Predicate(uri = "topaz:prefName")
   private String name;
   /** The values of the preference. */
-  @Predicate(uri = Rdf.topaz + "prefValue")
+  @Predicate(uri = "topaz:prefValue")
   private String[] values;
 
   /** 

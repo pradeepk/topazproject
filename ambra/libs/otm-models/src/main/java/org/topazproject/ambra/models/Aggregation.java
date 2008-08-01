@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -47,17 +46,17 @@ public class Aggregation implements Serializable {
   @Id
   @GeneratedValue(uriPrefix = "id:aggregation/")
   private URI                            id;
-  @Predicate(uri = Ambra.plos + "editorialBoard")
+  @Predicate(uri = "plos:editorialBoard")
   private EditorialBoard                 editorialBoard;
   @Embedded
   private DublinCore        dublinCore;
-  @Predicate(uri = Rdf.dc_terms + "hasPart")
+  @Predicate(uri = "dcterms:hasPart")
   private List<URI>                      simpleCollection = new ArrayList();
-  @Predicate(uri = Ambra.plos + "smartCollectionRules", cascade = {CascadeType.all, CascadeType.deleteOrphan})
+  @Predicate(uri = "plos:smartCollectionRules", cascade = {CascadeType.all, CascadeType.deleteOrphan})
   private List<DetachedCriteria>         smartCollectionRules = new ArrayList();
-  @Predicate(uri = Rdf.dc_terms + "replaces")
+  @Predicate(uri = "dcterms:replaces")
   private Aggregation                    supersedes;
-  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
+  @Predicate(uri = "dcterms:isReplacedBy")
   private Aggregation                    supersededBy;
 
   /**

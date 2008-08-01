@@ -22,7 +22,6 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
@@ -39,15 +38,15 @@ import org.topazproject.otm.annotations.GeneratedValue;
  *
  * @author Ronald Tschalär
  */
-@Entity(type = Ambra.plos + "RelatedArticle", model = "ri")
+@Entity(type = "plos:RelatedArticle", model = "ri")
 public class RelatedArticle  implements Serializable {
   @Id @GeneratedValue(uriPrefix = "id:relatedArticle/")
   private URI id;
 
-  @Predicate(uri = Rdf.dc_terms + "references")
+  @Predicate(uri = "dcterms:references")
   private URI article;
 
-  @Predicate(uri = Ambra.plos + "articleRelationType")
+  @Predicate(uri = "plos:articleRelationType")
   private String relationType;
 
   private static final long serialVersionUID = -4229157024423830497L;

@@ -22,7 +22,6 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -35,8 +34,8 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author stevec
  * @author Jeff Suttor
  */
-@UriPrefix(Rdf.topaz + "TrackbackContent/")
-@Entity(model = "ri", type = Rdf.topaz + "TrackbackContent")
+@UriPrefix("topaz:TrackbackContent/")
+@Entity(model = "ri", type = "topaz:TrackbackContent")
 public class TrackbackContent implements Serializable {
 
   @Id

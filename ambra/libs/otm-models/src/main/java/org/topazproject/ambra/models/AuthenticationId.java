@@ -22,7 +22,6 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -40,9 +39,9 @@ public class AuthenticationId implements Serializable {
 
   @Id @GeneratedValue(uriPrefix = "id:authids/")
   private URI id;
-  @Predicate(uri = Rdf.topaz + "realm")
+  @Predicate(uri = "topaz:realm")
   private String realm = DEF_REALM;
-  @Predicate(uri = Rdf.rdf + "value")
+  @Predicate(uri = "rdf:value")
   private String value;
 
   /** 

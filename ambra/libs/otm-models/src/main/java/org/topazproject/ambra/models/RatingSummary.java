@@ -19,7 +19,6 @@
 package org.topazproject.ambra.models;
 
 import org.topazproject.otm.FetchType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -28,11 +27,11 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Stephen Cheng
  */
-@Entity(type = Rdf.topaz + "RatingSummaryAnnotation")
+@Entity(type = "topaz:RatingSummaryAnnotation")
 public class RatingSummary extends Annotation {
   private static final long serialVersionUID = -8110763767878695617L;
 
-  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager)
+  @Predicate(uri = "a:body", fetch = FetchType.eager)
   private RatingSummaryContent body;
 
   /**

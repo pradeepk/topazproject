@@ -20,7 +20,6 @@ package org.topazproject.ambra.models;
 
 import java.util.Date;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -34,19 +33,19 @@ import org.topazproject.otm.event.PreInsertEventListener;
  *
  * @author Pradeep Krishnan
  */
-@Entity(model = "ri", type = Rdf.topaz + "Representation")
+@Entity(model = "ri", type = "topaz:Representation")
 public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
   @Id @GeneratedValue(uriPrefix = "id:representation/")
   private String                                                           id;
-  @Predicate(uri = Rdf.dc_terms + "identifier")
+  @Predicate(uri = "dcterms:identifier")
   private String                                                           name;
-  @Predicate(uri = Rdf.topaz + "contentType")
+  @Predicate(uri = "topaz:contentType")
   private String                                                           contentType;
-  @Predicate(uri = Rdf.topaz + "objectSize")
+  @Predicate(uri = "topaz:objectSize")
   private long                                                             size;
-  @Predicate(uri = Rdf.dc_terms + "modified", dataType = Rdf.xsd + "dateTime")
+  @Predicate(uri = "dcterms:modified", dataType = "xsd:dateTime")
   private Date                                                             lastModified;
-  @Predicate(uri = Rdf.topaz + "hasRepresentation", inverse=true)
+  @Predicate(uri = "topaz:hasRepresentation", inverse=true)
   private ObjectInfo                                                       object;
 
   private transient boolean modified = true;

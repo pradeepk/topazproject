@@ -25,7 +25,6 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -37,22 +36,22 @@ import org.topazproject.otm.annotations.UriPrefix;
  *
  * @author Ronald Tschalär
  */
-@UriPrefix(Rdf.foaf)
-@Entity(type = Rdf.foaf + "Person")
+@UriPrefix("foaf:")
+@Entity(type = "foaf:Person")
 public class FoafPerson implements Serializable, Cloneable {
   @Id @GeneratedValue(uriPrefix = "id:profile/")
   private URI      id;
 
   /** Their real name, usually as &lt;first&gt; &lt;last&gt; */
-  @Predicate(uri = Rdf.foaf + "name")
+  @Predicate(uri = "foaf:name")
   private String   realName;
 
   /** Their given names */
-  @Predicate(uri = Rdf.foaf + "givenname")
+  @Predicate(uri = "foaf:givenname")
   private String   givenNames;
 
   /** Their surnames */
-  @Predicate(uri = Rdf.foaf + "surname")
+  @Predicate(uri = "foaf:surname")
   private String   surnames;
 
   /** The title by which they go */
@@ -62,11 +61,11 @@ public class FoafPerson implements Serializable, Cloneable {
   private String   gender;
 
   /** email address */
-  @Predicate(uri = Rdf.foaf + "mbox")
+  @Predicate(uri = "foaf:mbox")
   private URI      email;
 
   /** url of their homepage */
-  @Predicate(uri = Rdf.foaf + "homepage")
+  @Predicate(uri = "foaf:homepage")
   private URI      homePage;
 
   /** url of their blog */
@@ -76,7 +75,7 @@ public class FoafPerson implements Serializable, Cloneable {
   private URI      publications;
 
   /** a list of urls pointing to stuff representing their interests */
-  @Predicate(uri = Rdf.foaf + "interest")
+  @Predicate(uri = "foaf:interest")
   private Set<URI> interests = new HashSet<URI>();
 
   public FoafPerson clone() {

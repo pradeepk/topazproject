@@ -20,7 +20,6 @@ package org.topazproject.ambra.models;
 
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -38,9 +37,9 @@ public abstract class Annotation extends Annotea {
   private URI                                                               id;
   private URI                                                               annotates;
   private String                                                            context;
-  @Predicate(uri = Rdf.dc_terms + "replaces")
+  @Predicate(uri = "dcterms:replaces")
   private Annotation                                                        supersedes;
-  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
+  @Predicate(uri = "dcterms:isReplacedBy")
   private Annotation                                                        supersededBy;
   public static final String RDF_TYPE = Annotea.W3C_NS + "Annotation";
 

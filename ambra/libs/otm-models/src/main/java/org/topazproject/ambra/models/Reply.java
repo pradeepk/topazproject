@@ -21,6 +21,7 @@ package org.topazproject.ambra.models;
 import java.net.URI;
 
 import org.topazproject.otm.FetchType;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -48,7 +49,7 @@ public class Reply extends Annotea {
   private String                                                       root;
   @Predicate(type=PropType.OBJECT)
   private String                                                       inReplyTo;
-  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager) // XXX: lazy?
+  @Predicate(uri = "a:body", fetch = FetchType.eager) // XXX: lazy?
   private ReplyBlob                                                    body;
 
 /**

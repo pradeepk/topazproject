@@ -44,7 +44,7 @@ public class Rating extends Annotation {
   /** Single Rating */
   public static final String SINGLE_RATING_TYPE = Rdf.topaz + "SingleRating";
 
-  @Predicate(uri = Annotea.W3C_NS + "body", fetch = FetchType.eager)
+  @Predicate(uri = "a:body", fetch = FetchType.eager)
   private RatingContent body;
 
   /**

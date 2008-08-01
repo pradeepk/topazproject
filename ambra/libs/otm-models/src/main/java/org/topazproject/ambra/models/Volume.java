@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -34,20 +33,20 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Jeff Suttor, Alex Worden
  */
-@Entity(type = Ambra.plos + "Volume", model = "ri")
+@Entity(type = "plos:Volume", model = "ri")
 public class Volume extends Aggregation {
 
   /** Display name.  Human friendly. */
-  @Predicate(uri = Ambra.plos + "displayName")
+  @Predicate(uri = "plos:displayName")
   private String displayName;
 
   /** Arbitrary URI to an image. */
-  @Predicate(uri = Ambra.plos + "image")
+  @Predicate(uri = "plos:image")
   private URI image;
 
   // The ordered list of DOIs of issues contained in this volume. 
-  // TODO - "issueList" should probably not be prefixed with Rdf.dc_terms. We'll need a data migration to change this :(
-  @Predicate(uri = Rdf.dc_terms + "issueList", collectionType = CollectionType.RDFSEQ)
+  // TODO - "issueList" should probably not be prefixed with dcterms. We'll need a data migration to change this :(
+  @Predicate(uri = "dcterms:issueList", collectionType = CollectionType.RDFSEQ)
   private List<URI> issueList = new ArrayList<URI>();
 
   /**

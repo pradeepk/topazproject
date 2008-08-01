@@ -21,7 +21,6 @@ package org.topazproject.ambra.models;
 
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
@@ -31,6 +30,6 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Ronald Tschalär
  */
 public class PermissionsPropagator {
-  @Predicate(uri = Rdf.topaz + "propagate-permissions-to", model = "pp")
+  @Predicate(uri = "topaz:propagate-permissions-to", model = "pp")
   public URI propPermsTo;
 }

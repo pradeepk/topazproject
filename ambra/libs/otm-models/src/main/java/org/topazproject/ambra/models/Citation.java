@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -39,66 +38,66 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(type = Ambra.bibtex + "Entry", model = "ri")
-@UriPrefix(Rdf.topaz)
+@Entity(type = "bibtex:Entry", model = "ri")
+@UriPrefix("topaz:")
 public class Citation implements Serializable {
   @Id @GeneratedValue(uriPrefix = "id:citation/")
   private URI   id;
 
-  @Predicate(uri = Ambra.bibtex + "hasKey", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasKey", dataType = "xsd:string")
   private String key;
 
   /* TODO: Restore to correct datatype. Stored as double because of bug in Mulgara */
-  @Predicate(uri = Ambra.bibtex + "hasYear", dataType = Rdf.xsd + "double")
+  @Predicate(uri = "bibtex:hasYear", dataType = "xsd:double")
   private Integer year;
 
-  @Predicate(uri=Ambra.plos + "temporal#displayYear", dataType = Rdf.xsd + "string")
+  @Predicate(uri="plos:temporal#displayYear", dataType = "xsd:string")
   private String displayYear;
 
-  @Predicate(uri = Ambra.bibtex + "hasMonth", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasMonth", dataType = "xsd:string")
   private String month;
 
   /* TODO: Restore to correct datatype .Stored as double because of bug in Mulgara */
-  @Predicate(uri = Ambra.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
+  @Predicate(uri = "bibtex:hasVolume", dataType = "xsd:double")
   private Integer volumeNumber;
 
-  @Predicate(uri=Ambra.prism + "volume", dataType = Rdf.xsd + "string")
+  @Predicate(uri="prism:volume", dataType = "xsd:string")
   private String volume;
 
-  @Predicate(uri = Ambra.bibtex + "hasNumber", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasNumber", dataType = "xsd:string")
   private String issue;
 
-  @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
+  @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   private String title;
 
-  @Predicate(uri = Ambra.bibtex + "hasAddress", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasAddress", dataType = "xsd:string")
   private String publisherLocation;
 
-  @Predicate(uri = Ambra.bibtex + "hasPublisher", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasPublisher", dataType = "xsd:string")
   private String publisherName;
 
-  @Predicate(uri = Ambra.bibtex + "hasPages", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasPages", dataType = "xsd:string")
   private String pages;
 
-  @Predicate(uri = Ambra.bibtex + "hasJournal", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasJournal", dataType = "xsd:string")
   private String journal;
 
-  @Predicate(uri = Ambra.bibtex + "hasNote", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasNote", dataType = "xsd:string")
   private String note;
 
-  @Predicate(uri = Ambra.plos + "hasEditorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "plos:hasEditorList", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile> editors = new ArrayList<UserProfile>();
 
-  @Predicate(uri = Ambra.plos + "hasAuthorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "plos:hasAuthorList", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile> authors = new ArrayList<UserProfile>();
 
-  @Predicate(uri = Ambra.bibtex + "hasURL", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasURL", dataType = "xsd:string")
   private String url;
 
-  @Predicate(uri = Ambra.bibtex + "hasAbstract", dataType = Rdf.xsd + "string")
+  @Predicate(uri = "bibtex:hasAbstract", dataType = "xsd:string")
   private String summary;
 
-  @Predicate(uri = Rdf.rdf + "type", type = PropType.OBJECT)
+  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
   private String citationType;
 
   private static final long serialVersionUID = 6405781304940950306L;

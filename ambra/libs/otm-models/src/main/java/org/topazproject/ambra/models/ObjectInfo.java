@@ -23,7 +23,6 @@ import java.net.URI;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
@@ -36,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(type = Rdf.topaz + "ObjectInfo", model = "ri")
+@Entity(type = "topaz:ObjectInfo", model = "ri")
 public class ObjectInfo implements Serializable {
   @Id
   private URI id;
@@ -45,17 +44,17 @@ public class ObjectInfo implements Serializable {
   @Embedded
   private DublinCore dublinCore = new DublinCore();
 
-  @Predicate(uri = Rdf.dc_terms + "isPartOf")
+  @Predicate(uri = "dcterms:isPartOf")
   private Article isPartOf;
 
   // PDF, TIF, PNG_S, DOC, ....
-  @Predicate(uri = Rdf.topaz + "hasRepresentation")
+  @Predicate(uri = "topaz:hasRepresentation")
   private Set<Representation> representations = new HashSet<Representation>();
 
-  @Predicate(uri = Rdf.topaz + "contextElement")
+  @Predicate(uri = "topaz:contextElement")
   private String contextElement;
 
-  @Predicate(uri = "http://prismstandard.org/namespaces/1.2/basic/eIssn")
+  @Predicate(uri = "prism:eIssn")
   private String eIssn;
 
   private static final long serialVersionUID = 4074534426473235595L;

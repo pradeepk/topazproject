@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -36,16 +35,16 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
   */
-@Entity(type = Ambra.plos + "EditorialBoard", model = "ri")
+@Entity(type = "plos:EditorialBoard", model = "ri")
 public class EditorialBoard implements Serializable {
   @Id
   @GeneratedValue(uriPrefix = "id:editorialBoard/")
   private URI            id;
-  @Predicate(uri = Rdf.dc_terms + "replaces")
+  @Predicate(uri = "dcterms:replaces")
   private EditorialBoard supersedes;
-  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
+  @Predicate(uri = "dcterms:isReplacedBy")
   private EditorialBoard supersededBy;
-  @Predicate(uri = Ambra.plos + "editors", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "plos:editors", collectionType = CollectionType.RDFSEQ)
   private List<UserProfile>      editors = new ArrayList();
 
   /**

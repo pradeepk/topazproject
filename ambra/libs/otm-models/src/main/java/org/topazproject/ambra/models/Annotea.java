@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.Predicate.PropType;
  * @author Pradeep Krishnan
  */
 @Entity(model = "ri")
-@UriPrefix(Annotea.W3C_NS)
+@UriPrefix("a:")
 public abstract class Annotea implements Serializable {
   /**
    * Annotea Namespace URI
@@ -49,17 +49,17 @@ public abstract class Annotea implements Serializable {
   public static final String TOPAZ_TYPE_NS = Rdf.topaz + "2008/01/annotationType#";
 
   private Date                                              created;
-  @Predicate(uri = Rdf.rdf + "type", type = PropType.OBJECT)
+  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
   private String                                            type;
-  @Predicate(uri = Rdf.dc + "creator")
+  @Predicate(uri = "dc:creator")
   private String                                            creator;
-  @Predicate(uri = Rdf.topaz + "anonymousCreator")
+  @Predicate(uri = "topaz:anonymousCreator")
   private String                                            anonymousCreator;
-  @Predicate(uri = Rdf.dc + "title")
+  @Predicate(uri = "dc:title")
   private String                                            title;
-  @Predicate(uri = Rdf.dc_terms + "mediator")
+  @Predicate(uri = "dcterms:mediator")
   private String                                            mediator;
-  @Predicate(uri = Rdf.topaz + "state", dataType = Predicate.UNTYPED)
+  @Predicate(uri = "topaz:state", dataType = Predicate.UNTYPED)
   private int                                               state;
 
   static final long serialVersionUID = 7228784439724175998L;

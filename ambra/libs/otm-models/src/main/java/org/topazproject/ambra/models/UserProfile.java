@@ -19,7 +19,6 @@
 
 package org.topazproject.ambra.models;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
@@ -42,11 +41,11 @@ import org.topazproject.otm.annotations.UriPrefix;
  *
  * @author Ronald Tschalär
  */
-@UriPrefix(Rdf.topaz)
+@UriPrefix("topaz:")
 @Entity(model = "profiles")
 public class UserProfile extends FoafPerson {
-  private static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
-  private static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
+  public static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
+  public static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
 
   /** The name to use for display; stored in topaz:displayName; subPropertyOf foaf:nick */
   private String displayName;
@@ -64,27 +63,27 @@ public class UserProfile extends FoafPerson {
   private String postalAddress;
 
   /** city */
-  @Predicate(uri = ADDR_URI + "town")
+  @Predicate(uri = "address:town")
   private String city;
 
   /** country */
-  @Predicate(uri = ADDR_URI + "country")
+  @Predicate(uri = "address:country")
   private String country;
 
   /** url pointing to their biography */
-  @Predicate(uri = BIO_URI + "olb")
+  @Predicate(uri = "bio:olb")
   private String biography;
 
   /** text containing their biography */
-  @Predicate(uri = Rdf.topaz + "bio")
+  @Predicate(uri = "topaz:bio")
   private String biographyText;
 
   /** text containing their interests */
-  @Predicate(uri = Rdf.topaz + "interests")
+  @Predicate(uri = "topaz:interests")
   private String interestsText;
 
   /** text containing their research areas */
-  @Predicate(uri = Rdf.topaz + "researchAreas")
+  @Predicate(uri = "topaz:researchAreas")
   private String researchAreasText;
 
 static final long serialVersionUID = -1224761277569005857L;

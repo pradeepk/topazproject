@@ -21,7 +21,6 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -40,9 +39,9 @@ import org.topazproject.otm.annotations.Predicate;
 public class Category implements Serializable {
   @Id @GeneratedValue(uriPrefix = "id:category/")
   private URI id;
-  @Predicate(uri = Rdf.topaz + "mainCategory")
+  @Predicate(uri = "topaz:mainCategory")
   private String mainCategory;
-  @Predicate(uri = Rdf.topaz + "subCategory")
+  @Predicate(uri = "topaz:subCategory")
   private String subCategory;
 
   private static final long serialVersionUID = -1910044609722349497L;

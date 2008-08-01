@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
@@ -40,81 +39,81 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Amit Kapoor
  */
 public class DublinCore implements Serializable {
-  @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
+  @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   private String title;
 
-  @Predicate(uri = Rdf.dc + "description", dataType = Rdf.rdf + "XMLLiteral")
+  @Predicate(uri = "dc:description", dataType = "rdf:XMLLiteral")
   private String description;
 
-  @Predicate(uri = Rdf.dc + "creator")
+  @Predicate(uri = "dc:creator")
   private Set<String> creators = new HashSet<String>();
 
-  @Predicate(uri = Rdf.dc + "date", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dc:date", dataType = "xsd:date")
   private Date date;
 
-  @Predicate(uri = Rdf.dc + "identifier")
+  @Predicate(uri = "dc:identifier")
   private String identifier;
 
-  @Predicate(uri = Rdf.dc + "rights", dataType = Rdf.rdf + "XMLLiteral")
+  @Predicate(uri = "dc:rights", dataType = "rdf:XMLLiteral")
   private String rights;
 
-  @Predicate(uri = Rdf.dc + "type")
+  @Predicate(uri = "dc:type")
   private URI type;
 
-  @Predicate(uri = Rdf.dc + "contributor")
+  @Predicate(uri = "dc:contributor")
   private Set<String> contributors = new HashSet<String>();
 
-  @Predicate(uri = Rdf.dc + "subject", dataType = Rdf.rdf + "XMLLiteral")
+  @Predicate(uri = "dc:subject", dataType = "rdf:XMLLiteral")
   private Set<String> subjects = new HashSet<String>();
 
-  @Predicate(uri = Rdf.dc + "language")
+  @Predicate(uri = "dc:language")
   private String language;
 
-  @Predicate(uri = Rdf.dc + "publisher", dataType = Rdf.rdf + "XMLLiteral")
+  @Predicate(uri = "dc:publisher", dataType = "rdf:XMLLiteral")
   private String publisher;
 
-  @Predicate(uri = Rdf.dc + "format")
+  @Predicate(uri = "dc:format")
   private String format;
 
-  @Predicate(uri = Rdf.dc + "source")
+  @Predicate(uri = "dc:source")
   private Object source;
 
-  @Predicate(uri = Rdf.dc_terms + "available", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dcterms:available", dataType = "xsd:date")
   private Date available;
 
-  @Predicate(uri = Rdf.dc_terms + "issued", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dcterms:issued", dataType = "xsd:date")
   private Date issued;
 
-  @Predicate(uri = Rdf.dc_terms + "dateSubmitted", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dcterms:dateSubmitted", dataType = "xsd:date")
   private Date submitted;
 
-  @Predicate(uri = Rdf.dc_terms + "dateAccepted", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dcterms:dateAccepted", dataType = "xsd:date")
   private Date accepted;
 
-  @Predicate(uri = Rdf.dc_terms + "dateCopyrighted")
+  @Predicate(uri = "dcterms:dateCopyrighted")
   private Integer copyrightYear;
 
-  @Predicate(uri = Rdf.dc_terms + "abstract")
+  @Predicate(uri = "dcterms:abstract")
   private Set<String> summary;
 
-  @Predicate(uri = Rdf.dc_terms + "bibliographicCitation")
+  @Predicate(uri = "dcterms:bibliographicCitation")
   private Citation bibliographicCitation;
 
-  @Predicate(uri = Rdf.dc_terms + "created", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dcterms:created", dataType = "xsd:date")
   private Date created;
 
-  @Predicate(uri = Rdf.dc_terms + "license",
+  @Predicate(uri = "dcterms:license",
              cascade = { CascadeType.saveOrUpdate, CascadeType.merge, CascadeType.refresh,
                          CascadeType.evict })
   private Set<License> license;
 
-  @Predicate(uri = Rdf.dc_terms + "modified", dataType = Rdf.xsd + "date")
+  @Predicate(uri = "dcterms:modified", dataType = "xsd:date")
   private Date modified;
 
-  @Predicate(uri = Rdf.dc_terms + "references")
+  @Predicate(uri = "dcterms:references")
   private List<Citation> references;
 
-  @Predicate(uri = Rdf.dc_terms + "conformsTo")
+  @Predicate(uri = "dcterms:conformsTo")
   private URI conformsTo;
 
   private static final long serialVersionUID = -3010297971167417038L;

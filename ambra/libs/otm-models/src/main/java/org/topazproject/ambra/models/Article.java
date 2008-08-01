@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -35,7 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(type = Rdf.topaz + "Article", model = "ri")
+@Entity(type = "topaz:Article", model = "ri")
 public class Article extends ObjectInfo {
   private static final long serialVersionUID = 7195650215022649188L;
 
@@ -47,14 +46,14 @@ public class Article extends ObjectInfo {
   /** Active article states */
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
-  @Predicate(uri = Rdf.dc_terms + "hasPart", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "dcterms:hasPart", collectionType = CollectionType.RDFSEQ)
   private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
 
   // This will be used to indicate the different types the article conforms to
-  @Predicate(uri = Rdf.rdf + "type")
+  @Predicate(uri = "rdf:type")
   private Set<URI> articleType;
 
-  @Predicate(uri = Ambra.plos + "relatedArticle")
+  @Predicate(uri = "plos:relatedArticle")
   private Set<RelatedArticle> relatedArticles;
 
   /**
@@ -62,11 +61,11 @@ public class Article extends ObjectInfo {
    *
    * TODO: This needs to be changed.
    */
-  @Predicate(uri = Rdf.topaz + "hasCategory")
+  @Predicate(uri = "topaz:hasCategory")
   private Set<Category> categories = new HashSet<Category>();
 
   /** The state of this article. */
-  @Predicate(uri = Rdf.topaz + "articleState")
+  @Predicate(uri = "topaz:articleState")
   private int state;
 
   /** 

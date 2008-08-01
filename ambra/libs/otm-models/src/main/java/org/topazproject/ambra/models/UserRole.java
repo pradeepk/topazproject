@@ -22,7 +22,6 @@ package org.topazproject.ambra.models;
 import java.io.Serializable;
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -37,7 +36,7 @@ import org.topazproject.otm.annotations.Predicate;
 public class UserRole implements Serializable {
   @Id @GeneratedValue(uriPrefix = "id:roles/")
   private URI    id;
-  @Predicate(uri = Rdf.topaz + "role")
+  @Predicate(uri = "topaz:role")
   private String role;
 
   /**

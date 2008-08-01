@@ -23,7 +23,6 @@ import java.io.Serializable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -36,8 +35,8 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author stevec
  * @author Jeff Suttor
  */
-@UriPrefix(Rdf.topaz + "RatingContent/")
-@Entity(model = "ri", type = Rdf.topaz + "RatingContent")
+@UriPrefix("topaz:RatingContent/")
+@Entity(model = "ri", type = "topaz:RatingContent")
 public class RatingContent implements Serializable {
 
   public static final int INSIGHT_WEIGHT = 6;
