@@ -165,28 +165,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       log.debug("created annotaion " + newId + " for " + target + " with body in blob "
                 + blob.getId());
 
-    boolean propagated = false;
 
-    try {
-      permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
-      propagated = true;
-
-      if (log.isDebugEnabled())
-        log.debug("propagated permissions for annotaion " + newId + " to " + blob.getId());
-    } finally {
-      if (!propagated) {
-        if (log.isDebugEnabled())
-          log.debug("failed to propagate permissions for annotaion " + newId + " to "
-                    + blob.getId());
-
-        try {
-          deleteAnnotation(newId);
-        } catch (Throwable t) {
-          if (log.isDebugEnabled())
-            log.debug("failed to delete partially created annotation " + newId, t);
-        }
-      }
-    }
+    permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
     return newId;
   }
@@ -245,28 +225,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       log.debug("created annotaion " + newId + " for " + target + " with body in blob "
                 + blob.getId());
 
-    boolean propagated = false;
-
-    try {
-      permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
-      propagated = true;
-
-      if (log.isDebugEnabled())
-        log.debug("propagated permissions for annotaion " + newId + " to " + blob.getId());
-    } finally {
-      if (!propagated) {
-        if (log.isDebugEnabled())
-          log.debug("failed to propagate permissions for annotaion " + newId + " to "
-                    + blob.getId());
-
-        try {
-          deleteAnnotation(newId);
-        } catch (Throwable t) {
-          if (log.isDebugEnabled())
-            log.debug("failed to delete partially created annotation " + newId, t);
-        }
-      }
-    }
+    permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
     return newId;
   }

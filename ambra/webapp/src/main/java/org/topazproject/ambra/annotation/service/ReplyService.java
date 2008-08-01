@@ -13,7 +13,7 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissionsService and
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package org.topazproject.ambra.annotation.service;
@@ -115,27 +115,7 @@ public class ReplyService extends BaseAnnotationService {
 
     String  newId      = session.saveOrUpdate(r);
 
-    boolean propagated = false;
-
-    try {
-      permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
-      propagated = true;
-
-      if (log.isDebugEnabled())
-        log.debug("propagated permissionsService for reply " + newId + " to " + blob.getId());
-    } finally {
-      if (!propagated) {
-        if (log.isDebugEnabled())
-          log.debug("failed to propagate permissionsService for reply " + newId + " to " + blob.getId());
-
-        try {
-          session.delete(r);
-        } catch (Throwable t) {
-          if (log.isDebugEnabled())
-            log.debug("failed to delete partially created reply " + newId, t);
-        }
-      }
-    }
+    permissionsService.propagatePermissions(newId, new String[] { blob.getId() });
 
     return newId;
   }
@@ -172,22 +152,8 @@ public class ReplyService extends BaseAnnotationService {
       session.createCriteria(ReplyThread.class).add(Restrictions.eq("root", root))
               .add(Restrictions.walk("replies", inReplyTo)).list();
 
-    for (Reply r : all) {
-      pep.checkAccess(pep.DELETE_REPLY, r.getId());
-    }
-
     for (Reply r : all)
-      session.delete(r);
-
-    for (Reply r : all) {
-      try {
-        permissionsService.cancelPropagatePermissions(r.getId().toString(),
-                                               new String[] { r.getBody().getId() });
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to cancel the propagated permissionsService on " + r.getId(), t);
-      }
-    }
+      deleteReplies(r.getId().toString());
   }
 
   /**
@@ -200,9 +166,8 @@ public class ReplyService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void deleteReplies(final String target) throws OtmException, SecurityException {
-    if (log.isDebugEnabled()) {
+    if (log.isDebugEnabled())
       log.debug("deleting reply and descendants with id: " + target);
-    }
 
     final List<Reply> all  = new ArrayList();
     final ReplyThread root = session.get(ReplyThread.class, target);
@@ -210,20 +175,13 @@ public class ReplyService extends BaseAnnotationService {
     if (root != null)
       add(all, root);
 
-    for (Reply r : all)
+    for (Reply r : all) {
       pep.checkAccess(pep.DELETE_REPLY, r.getId());
+      permissionsService.cancelPropagatePermissions(r.getId().toString(),
+                                               new String[] { r.getBody().getId() });
+    }
 
     session.delete(root); // ... and cascade
-
-    for (Reply r : all) {
-      try {
-        permissionsService.cancelPropagatePermissions(r.getId().toString(),
-                                               new String[] { r.getBody().toString() });
-      } catch (Throwable t) {
-        if (log.isDebugEnabled())
-          log.debug("Failed to cancel the propagated permissionsService on " + r.getId(), t);
-      }
-    }
   }
 
   private void add(List<Reply> all, ReplyThread r) {
