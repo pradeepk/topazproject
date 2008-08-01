@@ -979,17 +979,17 @@
 <xsl:template name="makeInitials2">
   <xsl:param name="x" />
   <xsl:for-each select="tokenize($x,'\s+')">
-	  <xsl:choose>
-			<xsl:when test="contains(.,'-')">
-				<xsl:for-each select="tokenize(.,'-')">
-					<xsl:value-of select="substring(.,1,1)"/>
-					<xsl:if test="position()!=last()">-</xsl:if>
-				</xsl:for-each>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="substring(.,1,1)"/>
-			</xsl:otherwise>
-	  </xsl:choose>
+    <xsl:choose>
+      <xsl:when test="contains(.,'-')">
+        <xsl:for-each select="tokenize(.,'-')">
+          <xsl:value-of select="substring(.,1,1)"/>
+          <xsl:if test="position()!=last()">-</xsl:if>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="substring(.,1,1)"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:for-each>
 </xsl:template>
 
@@ -1058,15 +1058,16 @@
 
     <!-- Created a new way to format the editors list in the citation box -->
     <xsl:for-each-group select="//contrib-group/contrib[@contrib-type='editor']" group-by="role">
- 	    <xsl:call-template name="editors-list">
- 	  	 <xsl:with-param name="r" select="//contrib-group/contrib[@contrib-type='editor' 
-                                        and role=current-grouping-key()]"/>
- 	  	</xsl:call-template>
- 	  </xsl:for-each-group>
- 	  <xsl:call-template name="editors-list">
- 	  	<xsl:with-param name="r" select="//contrib-group/contrib[@contrib-type='editor'
-                                       and not(role)]"/>
- 	  </xsl:call-template>
+      <xsl:call-template name="editors-list">
+        <xsl:with-param name="r" select="//contrib-group/contrib[@contrib-type='editor' 
+          and role=current-grouping-key()]"/>
+      </xsl:call-template>
+    </xsl:for-each-group>
+
+    <xsl:call-template name="editors-list">
+      <xsl:with-param name="r" select="//contrib-group/contrib[@contrib-type='editor'
+        and not(role)]"/>
+    </xsl:call-template>
 
     <!-- end of contrib -->
     <p>
@@ -1094,39 +1095,39 @@
     </p>
     
     <!-- Output the copyright statement differently with v2.3 of the dtd -->
-  	<p>
-		<xsl:choose>
-			<xsl:when test="$dtd-version &lt; 2.3">
-				<xsl:choose>
-          <!-- Modified to output the word "copyright" for the header if the expression
-               "Open-Access License" appears anywhere in the copyright-statement. -->
-          <xsl:when test="copyright-statement[contains(., 'Attribution') 
-                          or contains(.,'Open-Access License')]">
-						<strong>Copyright:</strong><xsl:text>  &#169; </xsl:text>
-						<xsl:apply-templates select="copyright-year" /><xsl:text> </xsl:text>
-						<xsl:apply-templates select="copyright-statement" />
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:apply-templates select="copyright-statement" />
-					</xsl:otherwise>
-				</xsl:choose>			
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:choose>
-					<xsl:when test="permissions/license/@license-type='open-access'">
-						<xsl:apply-templates select="permissions/copyright-statement"/><xsl:text> </xsl:text>
-					</xsl:when>
-				</xsl:choose>
-				<xsl:apply-templates select="permissions/license/p/node()"/>
-			</xsl:otherwise>
-		</xsl:choose>
+    <p>
+      <xsl:choose>
+        <xsl:when test="$dtd-version &lt; 2.3">
+          <xsl:choose>
+            <!-- Modified to output the word "copyright" for the header if the expression
+            "Open-Access License" appears anywhere in the copyright-statement. -->
+            <xsl:when test="copyright-statement[contains(., 'Attribution') 
+              or contains(.,'Open-Access License')]">
+              <strong>Copyright:</strong><xsl:text>  &#169; </xsl:text>
+              <xsl:apply-templates select="copyright-year" /><xsl:text> </xsl:text>
+              <xsl:apply-templates select="copyright-statement" />
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:apply-templates select="copyright-statement" />
+            </xsl:otherwise>
+          </xsl:choose>			
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="permissions/license/@license-type='open-access'">
+              <xsl:apply-templates select="permissions/copyright-statement"/><xsl:text> </xsl:text>
+            </xsl:when>
+          </xsl:choose>
+          <xsl:apply-templates select="permissions/license/p/node()"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </p>
-    
+
     <!-- copyright: show statement -or- year -->
     <!-- Most recent version of DTD recommends using the <permissions> wrapper
          for the copyright data. We handle both cases here. -->
     <xsl:call-template name="fund-compete"/>
-     <xsl:if test="../../back/glossary">
+    <xsl:if test="../../back/glossary">
       <p>
         <strong><xsl:value-of select="../..//back/glossary/title"/>: </strong>
         <xsl:for-each select="../../back/glossary/def-list/def-item">
@@ -1183,46 +1184,47 @@
 <xsl:template name="editors-list">
   <xsl:param name="r"/>
   <p>
-  <xsl:for-each select="$r">
-  
-    <!-- for the first item, print out the role first, i.e. Editor -->
-    <xsl:if test="position()=1"> 
-      <strong>
-        <xsl:choose>
- 	  	    <xsl:when test="role">
- 	  	      <xsl:value-of select="role"/>
- 	  	    </xsl:when>
- 	  	    <xsl:otherwise>
- 	  	      Academic Editor
- 	  	    </xsl:otherwise>
- 	  	  </xsl:choose>
-        
-        <!-- add an s at end of role to make it plural -->
- 	  	  <xsl:if test="last() > 1">s</xsl:if>
-        <xsl:text>: </xsl:text> 
-      </strong>
-    </xsl:if>
- 	  <xsl:apply-templates select="name | collab" mode="front"/>
- 	  <xsl:apply-templates select="*[not(self::name)
- 	  	         and not(self::collab)
- 	  	         and not(self::xref)
- 	  	         and not(self::degrees)
- 	  	         and not(self::role)]"
- 	  	         mode="front"/>
- 	  <xsl:variable name="matchto" select="xref/@rid"/>
- 	  <xsl:if test="../following-sibling::aff">
-      <xsl:text> (</xsl:text>
-      <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
-      <xsl:text>)</xsl:text>
-    </xsl:if>
- 	  <xsl:if test="position() != last()">  <!-- appropriately place commas and "and" -->
- 	    <xsl:text>, </xsl:text>
- 	  </xsl:if>
- 	  <xsl:if test="position() = last()-1">
- 	    <xsl:text>and </xsl:text>
- 	  </xsl:if>
-  </xsl:for-each>
- 	</p>
+    <xsl:for-each select="$r">
+
+      <!-- for the first item, print out the role first, i.e. Editor -->
+      <xsl:if test="position()=1"> 
+        <strong>
+          <xsl:choose>
+            <xsl:when test="role">
+              <xsl:value-of select="role"/>
+            </xsl:when>
+            <xsl:otherwise>
+              Academic Editor
+            </xsl:otherwise>
+          </xsl:choose>
+
+          <!-- add an s at end of role to make it plural -->
+          <xsl:if test="last() > 1">s</xsl:if>
+          <xsl:text>: </xsl:text> 
+        </strong>
+      </xsl:if>
+      <xsl:apply-templates select="name | collab" mode="front"/>
+      <xsl:apply-templates select="*[not(self::name)
+                                   and not(self::collab)
+                                   and not(self::xref)
+                                   and not(self::degrees)
+                                   and not(self::role)]"
+                           mode="front"/>
+      <xsl:variable name="matchto" select="xref/@rid"/>
+      <xsl:if test="../following-sibling::aff">
+        <xsl:text> (</xsl:text>
+        <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
+        <xsl:text>)</xsl:text>
+      </xsl:if>
+      <!-- appropriately place commas and "and" -->
+      <xsl:if test="position() != last()">
+        <xsl:text>, </xsl:text>
+      </xsl:if>
+      <xsl:if test="position() = last()-1">
+        <xsl:text>and </xsl:text>
+      </xsl:if>
+    </xsl:for-each>
+  </p>
 </xsl:template>
 
 <xsl:template name="make-editors-summary">
@@ -1242,27 +1244,27 @@
 </xsl:template>
 
 <xsl:template match="def-item//named-content" mode="glossary">
-	<span class="{@content-type}">
-		<xsl:apply-templates mode="glossary"/>
-	</span>
+  <span class="{@content-type}">
+    <xsl:apply-templates mode="glossary"/>
+  </span>
 </xsl:template>
 
 <xsl:template 
   match="def-item//sup | def-item//sub | def-item//em | def-item//strong" mode="glossary">
-	<xsl:element name="{local-name()}">
-		<xsl:apply-templates mode="glossary"/>
-	</xsl:element>
+  <xsl:element name="{local-name()}">
+    <xsl:apply-templates mode="glossary"/>
+  </xsl:element>
 </xsl:template>
 
 <!-- Output def-lists in the body of the text 
      (note: different than def-list in the glossary as above) -->
 <xsl:template match="def-list">
-	<dl>
-		<xsl:for-each select="def-item">
-			<dt><xsl:apply-templates select="term"/></dt>
-			<dd><xsl:apply-templates select="def"/></dd>
-		</xsl:for-each>
-	</dl>
+  <dl>
+    <xsl:for-each select="def-item">
+      <dt><xsl:apply-templates select="term"/></dt>
+      <dd><xsl:apply-templates select="def"/></dd>
+    </xsl:for-each>
+  </dl>
 </xsl:template>
 
 
@@ -1404,7 +1406,7 @@
      that were incorrectly written this way. 
      Utlimately, XML files should be cleaned up rather than this hack. -->
 <xsl:template match="addr-line">
-	<xsl:value-of select="normalize-space()"/>
+  <xsl:value-of select="normalize-space()"/>
 </xsl:template>
 
 
@@ -1669,7 +1671,6 @@
 <!-- ============================================================= -->
 
 <xsl:template match="p">
-
   <p>
     <xsl:call-template name="makeXpathLocation" >
     </xsl:call-template>
@@ -1949,8 +1950,8 @@
 <xsl:template match="disp-formula | chem-struct-wrapper">
   <br/>
   <xsl:element name="a">
- 	 <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
-  	<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
+    <xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+    <xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
   </xsl:element>
   <!-- Added span class='equation' surrounding equations -->
   <span class="equation">
@@ -1980,9 +1981,7 @@
 </xsl:template>
 
 <xsl:template match="sc">
-
-  <!-- handle any tags as usual, until
-       we're down to the text strings -->
+  <!-- handle any tags as usual, until we're down to the text strings -->
   <small><xsl:apply-templates/></small>
 </xsl:template>
 
@@ -2181,10 +2180,10 @@
               <xsl:call-template name="make-href"/>
               <xsl:call-template name="make-id"/>
               <xsl:apply-templates/>
-           </a>
-         </td>
-       </tr>
-     </table>
+            </a>
+          </td>
+        </tr>
+      </table>
     </xsl:when>
     <xsl:otherwise>
       <table border="1">
@@ -2258,7 +2257,7 @@
   <xsl:choose>
     <xsl:when test="ancestor::disp-formula">
 
-  	  <!-- Set class to 'note' for the labels on equations -->
+      <!-- Set class to 'note' for the labels on equations -->
       <span class="note"><xsl:call-template name="makeXpathLocation" /><xsl:apply-templates/></span>
     </xsl:when>
     <xsl:otherwise>
@@ -2940,15 +2939,15 @@
 </xsl:template>
 
 <xsl:template name="abbreviate-name">
-	<xsl:param name="n"/>		
-	<xsl:variable name="x" select="normalize-space($n)"/>
-	<xsl:value-of select="$x"/>
-	<xsl:if test="substring($x,string-length($x),1) != '.' 
-                and (string-length($x) = 1 
-                or (string-length($x) > 1 
-                and substring($x,string-length($x)-1,1)=' '))">
-		<xsl:text>.</xsl:text>
-	</xsl:if>
+  <xsl:param name="n"/>		
+  <xsl:variable name="x" select="normalize-space($n)"/>
+  <xsl:value-of select="$x"/>
+  <xsl:if test="substring($x,string-length($x),1) != '.' 
+    and (string-length($x) = 1 
+    or (string-length($x) > 1 
+    and substring($x,string-length($x)-1,1)=' '))">
+    <xsl:text>.</xsl:text>
+  </xsl:if>
 </xsl:template>	
 
 <xsl:template match="surname" mode="contrib">
@@ -3768,7 +3767,7 @@
       <h2><xsl:text>Abstract, Translated</xsl:text></h2>
     </xsl:when>
 
-  <!-- there is no logical otherwise -->
+    <!-- there is no logical otherwise -->
   </xsl:choose>
 </xsl:template>
 
@@ -5376,9 +5375,9 @@
     <xsl:attribute name="class">
 
       <!-- we're always considered a note -->
-			<xsl:text>note public</xsl:text>
-    	<xsl:if test="$regionNumMinorCorrections &gt; 0"><xsl:text> minrcrctn</xsl:text></xsl:if>
-    	<xsl:if test="$regionNumFormalCorrections &gt; 0"><xsl:text> frmlcrctn</xsl:text></xsl:if>
+      <xsl:text>note public</xsl:text>
+      <xsl:if test="$regionNumMinorCorrections &gt; 0"><xsl:text> minrcrctn</xsl:text></xsl:if>
+      <xsl:if test="$regionNumFormalCorrections &gt; 0"><xsl:text> frmlcrctn</xsl:text></xsl:if>
     </xsl:attribute>
     <xsl:attribute name="title">User Annotation</xsl:attribute>
     <xsl:attribute name="annotationId">
@@ -5392,17 +5391,18 @@
 
     <!-- only add an annotation to the display list if this is the beginning of the annotation -->
     <xsl:variable name="displayAnn">
-    	<xsl:variable name="annId" select="@aml:id"/>
-    	<xsl:if test="@aml:first">
-      	<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-        	<xsl:variable name="localAnnId" select="@aml:id"/>
-        	<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$localAnnId]) = 0">
-          	<xsl:text>,</xsl:text>
-          	<xsl:value-of select="@aml:id"/>
-        	</xsl:if>
-      	</xsl:for-each>
-    	</xsl:if>
-  	</xsl:variable>
+      <xsl:variable name="annId" select="@aml:id"/>
+      <xsl:if test="@aml:first">
+        <xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+          <xsl:variable name="localAnnId" select="@aml:id"/>
+          <xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$localAnnId]) = 0">
+            <xsl:text>,</xsl:text>
+            <xsl:value-of select="@aml:id"/>
+          </xsl:if>
+        </xsl:for-each>
+      </xsl:if>
+    </xsl:variable>
+
     <xsl:if test="not($displayAnn='')">
       <xsl:element name="a">
         <xsl:attribute name="href">#</xsl:attribute>
