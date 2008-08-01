@@ -123,7 +123,7 @@ div.banner object 			{ float: none; margin:0 0 4px 2px!important; background: tr
 div.banner object			{ padding-top: 0; }
 
 /* partner icons */
-div.partner 				{ text-align: center; margin:0; padding:0; }
+div.partner 				{ position:relative; text-align: center; margin:0; padding:0; }
 div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
 div.partner img 			{ margin:0 20px; vertical-align:top;}
 
@@ -192,9 +192,9 @@ div.recent p		{ margin: 0 0 10px 0; }
 
 /* Explore by Subject block */
 div.explore p { margin:14px 14px 7px 14px }
-div.explore ul	{ width:244px; float:left; margin:5px 0 10px 0; padding: 0; text-indent: 0; }
+div.explore ul	{ position:static; width:244px; float:left; margin:5px 0 10px 0; padding: 0; text-indent: 0; } /* Note: explicit static positioning required for IE6 */
 div.explore li	{ margin:0; padding:0 14px 5px; text-indent:0; list-style-type: none; font-size:0.9em; }
-div.explore li img { vertical-align:-1px }
+div.explore li img { position:static!important; vertical-align:-1px } /* Note: explicit static positioning with '!important' construct required for IE6 */
 
 /* browse widget */
 #first .last div#browseWidget { background: url(../images/home_browse_bg.gif) no-repeat left center; height:30px; border:0; }

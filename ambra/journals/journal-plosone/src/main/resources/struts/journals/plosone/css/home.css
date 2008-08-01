@@ -78,7 +78,7 @@ All rights reserved.
 /* float left and kill margin on first for added flex */
 #first, .col .first 		{ float:left; }
 /* container column 1 */
-#first 						{ width:518px; padding-top:12px; }
+#first 						{ width:518px; padding-top:27px; }
 
 /* column 1 --This column is empty-- */
 
@@ -150,7 +150,7 @@ div.banner object 			{ float: none; margin:0 0 4px 2px!important; background: tr
 div.banner object			{ padding-top: 0; }
 
 /* partner icons */
-div.partner 				{ text-align: center; margin:0; padding:0; }
+div.partner 				{ position:relative; text-align: center; margin:0; padding:0; }
 div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
 div.partner img 			{ margin:0 20px; vertical-align:top;}
 
@@ -203,9 +203,9 @@ div.mainnav	{ margin: 30px 0 0 ; padding: 20px 0 10px 0;}
 
 /* Explore by Subject block */
 div.explore p { margin:14px 14px 7px 14px }
-div.explore ul	{ width:244px; float:left; margin:5px 0 10px 0; padding: 0; text-indent: 0; }
+div.explore ul	{ position:static; width:244px; float:left; margin:5px 0 10px 0; padding: 0; text-indent: 0; } /* Note: explicit static positioning required for IE6 */
 div.explore li	{ margin:0; padding:0 14px 5px; text-indent:0; list-style-type: none; font-size:0.9em; }
-div.explore li img { vertical-align:-1px }
+div.explore li img { position:static!important; vertical-align:-1px } /* Note: explicit static positioning with '!important' construct required for IE6 */
 
 /* calls to action blocks */
 div.ctaWrap { margin-bottom:20px; margin-left:5px; }
@@ -220,8 +220,6 @@ div#cta2 strong	{ display:block; margin: 0 0 5px 0; font-size:1.2em; color:#444;
 div#browseWidget { background: url(../images/home_browse_bg.gif) no-repeat left center; }
 div#browseWidget p { margin:0 0 0 30px; padding:0; font-weight:bold;}
 
-/* NOTE: horizontal tab styles moved to screen.css */
-
 /* apply to all article lists on homepage */
 ul.articles,
 ul.articles li		{ margin: 0; padding: 0; list-style-type: none; }
@@ -235,3 +233,20 @@ ul.refs li a,
 ul.refs a:link,
 ul.refs a:visited { text-decoration:underline!important; }
 
+/* NOTE: horizontal tab styles that I'd previously moved to screen.css are now below. These styles are for the Homepage ONLY. Alex's new tab CSS for the Journal Archive page is now on it's own stylesheet: plostabs.css */
+/* tabs and tabbed box */
+div.horizontalTabs	{ position:relative; border:0; margin:0 0 20px; padding:0; background:transparent; width:490px; }
+div.horizontalTabs:after  { content:"."; display: block; height:0; clear:both; visibility:hidden; }
+ul#tabsContainer  { float:left;  margin:0!important; padding:0 0 0 10px!important; /* "!important" required for IE7 */ line-height:normal; background:transparent url("../images/tab_bg.gif") repeat-x bottom; width:480px; }
+ul#tabsContainer ul { margin:0; padding:10px 10px 0; }
+ul#tabsContainer li		{ cursor:pointer; float:left; background:url("../images/tab_left.gif") no-repeat 0% 0%; margin:0 2px; padding:0 0 0 8px; list-style:none; font-size:.9em; font-weight:bold; color:#666; }
+ul#tabsContainer li span { display:block; float:left; background:url("../images/tab_right.gif") no-repeat 100% 0%;  padding:8px 16px 8px 8px!important; /* "!important" required for IE7 */ }
+ul#tabsContainer li.active { background-position:0% -40px; }
+ul#tabsContainer li.active span { background-position:100% -40px; padding-bottom: 9px!important; }
+.horizontalTabs .contentwrap { float:left; width:488px; margin:0!important; padding:0!important; background:#ffffff;  border:1px solid #bababa; border-top:0; }
+.horizontalTabs ul {  border:0; /* suppresses "border-bottom:2px solid #acf1ff" from screen.css, ln. #511 */ }
+.horizontalTabs .contentwrap ul { list-style:none; margin:10px 10px 0 10px!important; padding:0!important; }
+.horizontalTabs .contentwrap li	{ display:list-item; background-image:none!important; list-style:none; margin:0!important; padding:0!important; padding-bottom:1em!important; line-height:1.5em; }
+.horizontalTabs .contentwrap li	a { font-weight:bold; }
+.horizontalTabs .contentwrap li.more	{ border-top:1px solid #ccc!important; padding-top:.4em!important; }
+.horizontalTabs .contentwrap li.more a	{ font-weight:normal!important; text-decoration:underline!important; }

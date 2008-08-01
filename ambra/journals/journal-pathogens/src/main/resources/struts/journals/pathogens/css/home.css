@@ -130,7 +130,7 @@ div.banner object 			{ float: none; margin:0 0 4px 2px!important; background: tr
 div.banner object			{ padding-top: 0; }
 
 /* partner icons */
-div.partner 				{ text-align: center; margin:0; padding:0; }
+div.partner 				{ position:relative; text-align: center; margin:0; padding:0; }
 div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
 div.partner img 			{ margin:0 20px; vertical-align:top;}
 
