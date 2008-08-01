@@ -207,7 +207,7 @@ public class DummySSOFilter implements Filter {
        append("    <h2>Login</h2>\n").
        append("    <form method=\"POST\" action=\"").append(request.getContextPath()).append(ssoUrl).append(login).append("\">\n").
        append("      <table border=0>\n").
-       append("        <tr><td>Username:</td><td><input name=\"sso.auth.id\"/></td></tr>\n").
+       append("        <tr><td>AuthId:</td><td><input name=\"sso.auth.id\"/></td></tr>\n").
        append("        <tr><td>Email:   </td><td><input name=\"sso.email\"/></td></tr>\n").
        append("      </table>\n");
 
@@ -221,9 +221,9 @@ public class DummySSOFilter implements Filter {
        append("    </form>\n").
        append("    <p>Notes:</p>\n").
        append("    <ul>\n").
-       append("      <li>creates a new account if username doesn't exist</li>\n").
-       append("      <li>\"username\" is actually internal account-id (auth-id)</li>\n").
-       append("      <li>leave \"username\" empty to logout and become anonymous user</li>\n").
+       append("      <li>creates a new account if AuthId doesn't exist</li>\n").
+       append("      <li>\"AuthId\" is actually internal auth-id. The value here should be o of the s-p-o triple &lt;authId&gt; &lt;rdf:value&gt; \'.....\'. For details please read on use of rdf:value</li>\n").
+       append("      <li>leave \"AuthId\" empty to logout and become anonymous user</li>\n").
        append("      <li>if email is different than the currently stored one, the profile will be updated</li>\n").
        append("    </ul>\n").
        append("  </body>\n").
