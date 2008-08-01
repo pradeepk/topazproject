@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
 public class Trackback extends Annotation {
   private static final long serialVersionUID = -1224471659454172666L;
 
-  @Predicate(uri = "a:body")
+  @Predicate(uri = "annotea:body")
   private TrackbackContent body;
 
   /**

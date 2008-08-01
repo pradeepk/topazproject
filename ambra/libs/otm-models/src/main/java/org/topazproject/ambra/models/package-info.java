@@ -27,7 +27,7 @@
   , @Alias(alias = "bibtex",  value = Ambra.bibtex)
   , @Alias(alias = "prism",   value = Ambra.prism)
   , @Alias(alias = "r",       value = Reply.NS)
-  , @Alias(alias = "a",       value = Annotea.W3C_NS)
+  , @Alias(alias = "annotea", value = Annotea.W3C_NS)
   , @Alias(alias = "bio",     value = UserProfile.BIO_URI)
   , @Alias(alias = "address", value = UserProfile.ADDR_URI)
 })

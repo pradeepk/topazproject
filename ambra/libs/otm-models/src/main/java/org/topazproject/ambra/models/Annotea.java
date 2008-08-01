@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.Predicate.PropType;
  * @author Pradeep Krishnan
  */
 @Entity(model = "ri")
-@UriPrefix("a:")
+@UriPrefix("annotea:")
 public abstract class Annotea implements Serializable {
   /**
    * Annotea Namespace URI

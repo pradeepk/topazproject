@@ -31,7 +31,7 @@ import org.topazproject.otm.annotations.Predicate;
 public class RatingSummary extends Annotation {
   private static final long serialVersionUID = -8110763767878695617L;
 
-  @Predicate(uri = "a:body", fetch = FetchType.eager)
+  @Predicate(uri = "annotea:body", fetch = FetchType.eager)
   private RatingSummaryContent body;
 
   /**

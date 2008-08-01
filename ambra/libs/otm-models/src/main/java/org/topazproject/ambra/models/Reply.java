@@ -49,7 +49,7 @@ public class Reply extends Annotea {
   private String                                                       root;
   @Predicate(type=PropType.OBJECT)
   private String                                                       inReplyTo;
-  @Predicate(uri = "a:body", fetch = FetchType.eager) // XXX: lazy?
+  @Predicate(uri = "annotea:body", fetch = FetchType.eager) // XXX: lazy?
   private ReplyBlob                                                    body;
 
 /**

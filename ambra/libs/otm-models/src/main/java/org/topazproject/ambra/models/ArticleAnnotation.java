@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity()
 public abstract class ArticleAnnotation extends Annotation {
-  @Predicate(uri = "a:body", fetch = FetchType.eager) // XXX: lazy?
+  @Predicate(uri = "annotea:body", fetch = FetchType.eager) // XXX: lazy?
   private AnnotationBlob body;
 
   /**
