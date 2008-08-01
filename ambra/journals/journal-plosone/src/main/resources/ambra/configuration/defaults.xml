@@ -23,6 +23,11 @@
             </feed>
           </services>
         </ambra>
+        <!-- Configuration keys for displaying recent articles tab widget on home page -->
+        <recentArticles>
+          <numDaysInPast>7</numDaysInPast>
+          <numArticlesToShow>5</numArticlesToShow>
+        </recentArticles>
       </PLoSONE>
     </virtualJournals>
 
