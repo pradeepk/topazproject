@@ -22,30 +22,34 @@ package org.topazproject.ambra.article.util
 import org.apache.commons.configuration.Configuration
 
 /**
- * A category to allow easier traversal of commons-configuration objects. Specifically, it add
- * a support for the '.' operator. If multiple items exist for a given member, a list of
- * Configuration is returned; if only one exists a Configuration is returned. Also, use '@foo'
- * to access attribute 'foo'. Example:
+ * A category to allow easier traversal of commons-configuration objects. Specifically, it adds
+ * support for the '.' operator. If invoked on a Configuration this returns a String (if the
+ * name is an existing configuration key or an attribute), null (if it specifies a not-present
+ * attribute), or a List&lt;Configuration&gt; otherwise (which may be empty); if invoked on a
+ * List&lt;Configuration&gt; then the operator returns a List of Configuration or String.
+ * This also recognizes @foo to access attribute 'foo'. Example:
  * <pre>
- *   config.ambra.services.foo.'@bar'
+ *   config.ambra.services.foo.'@bar'[0]
  * </pre>
  *
  * @author Ronald Tschalär
  */
 class CommonsConfigCategory {
   static Object get(Configuration config, String key) {
-    if (key.startsWith('@') || config.containsKey(key))
-      return config.getString(key.startsWith('@') ? "[${key}]" : key)
+    if (key.startsWith('@'))
+      return config.getString("[${key}]", null)
+    if (config.containsKey(key))
+      return config.getString(key)
 
     List res = []
     for (int idx = 0; !config.subset("${key}(${idx})").isEmpty(); idx++)
       res.add(config.subset("${key}(${idx})"))
 
-    return res.size() == 1 ? res[0] : res
+    return res
   }
 
   static Object get(List<Configuration> configList, String key) {
-    List res = configList.collect{ get(it, key) }.flatten()
-    return res.size() == 1 ? res[0] : res
+    List res = configList.collect{ get(it, key) }.flatten().findAll{ it }
+    return res
   }
 }

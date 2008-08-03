@@ -37,7 +37,7 @@ public class ImageUtil {
 
   public ImageUtil(Configuration config, boolean verbose) {
     use (CommonsConfigCategory) {
-      def im = config.ambra.services.documentManagement.imageMagick
+      def im = config.ambra.services.documentManagement.imageMagick[0]
       imConvert  = im.executablePath ?: 'convert'
       imIdentify = im.identifyPath   ?: 'identify'
       tmpDir     = new File(im.tempDirectory ?: System.getProperty('java.io.tmpdir'))

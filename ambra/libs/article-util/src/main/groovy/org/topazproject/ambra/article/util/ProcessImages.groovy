@@ -171,19 +171,19 @@ public class ProcessImages {
     use (CommonsConfigCategory) {
       if (reps.any{ it == 'PNG_S' })
         imgNames.add(imgUtil.resizeImage(file, baseName + 'PNG_S', 'png',
-                                         imgSet?.small?.'@width'?.toInteger() ?: 70, 0,
-                                         imgSet?.small?.'@quality'?.toInteger() ?: 70))
+                                         imgSet.small.'@width'[0]?.toInteger() ?: 70, 0,
+                                         imgSet.small.'@quality'[0]?.toInteger() ?: 70))
 
       if (reps.any{ it == 'PNG_M' })
         imgNames.add(imgUtil.resizeImage(file, baseName + 'PNG_M', 'png',
-                                         imgSet?.medium?.'@maxDimension'?.toInteger() ?: 600,
-                                         imgSet?.medium?.'@maxDimension'?.toInteger() ?: 600,
-                                         imgSet?.medium?.'@quality'?.toInteger() ?: 80))
+                                         imgSet.medium.'@maxDimension'[0]?.toInteger() ?: 600,
+                                         imgSet.medium.'@maxDimension'[0]?.toInteger() ?: 600,
+                                         imgSet.medium.'@quality'[0]?.toInteger() ?: 80))
 
       String lrg = reps.find{ it == 'PNG_L' || it == 'PNG' }
       if (lrg)
         imgNames.add(imgUtil.resizeImage(file, baseName + lrg, 'png', 0, 0,
-                                         imgSet?.large?.'@quality'?.toInteger() ?: 90))
+                                         imgSet.large.'@quality'[0]?.toInteger() ?: 90))
     }
   }
 
@@ -195,7 +195,7 @@ public class ProcessImages {
                       find{ it.'@subj-group-type' = 'heading' }.subject.text()
 
     use (CommonsConfigCategory) {
-      def name = config.ambra.articleTypeList.articleType.grep{ it.typeHeading == artType }.
+      def name = config.ambra.articleTypeList.articleType.find{ it.typeHeading == artType }?.
                         imageSetConfigName
       name = name ?: '#default'
 
