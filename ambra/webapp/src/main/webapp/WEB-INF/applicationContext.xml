@@ -293,7 +293,6 @@
         <value>org.topazproject.ambra.models.License</value>
         <value>org.topazproject.ambra.models.ObjectInfo</value>
         <value>org.topazproject.ambra.models.PermissionsPropagator</value>
-        <value>org.topazproject.ambra.models.PLoS</value>
         <value>org.topazproject.ambra.models.Rating</value>
         <value>org.topazproject.ambra.models.RatingContent</value>
         <value>org.topazproject.ambra.models.RatingSummary</value>
