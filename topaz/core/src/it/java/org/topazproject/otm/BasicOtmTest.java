@@ -394,6 +394,53 @@ public class BasicOtmTest extends AbstractOtmTest {
           nr = replies.get(0);
           assertNotNull(nr);
           assertEquals(URI.create("http://localhost/reply/1/1"), nr.getId());
+
+          session.flush();
+        }
+      });
+
+    final URI aid  = URI.create("http://localhost/article/11");
+    final URI pid1 = URI.create("http://localhost/article/11/part/1");
+    final URI pid2 = URI.create("http://localhost/article/11/part/2");
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Article a = new Article();
+          a.setUri(aid);
+
+          ObjectInfo p1 = new ObjectInfo();
+          p1.setUri(pid1);
+          p1.setIsPartOf(a);
+          a.getParts().add(p1);
+
+          session.saveOrUpdate(a);
+        }
+      });
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Article a = session.get(Article.class, aid.toString());
+          assertNotNull(a);
+
+          Article a2 = new Article();
+          a2.setUri(aid);
+
+          ObjectInfo p1 = new ObjectInfo();
+          ObjectInfo p2 = new ObjectInfo();
+          p1.setUri(pid1);
+          p2.setUri(pid2);
+          p1.setIsPartOf(a2);
+          p2.setIsPartOf(a2);
+          a2.getParts().add(p1);
+          a2.getParts().add(p2);
+
+          Article n = session.merge(a2);
+          assertTrue(n == a);  // instance should match
+          assertEquals(2, n.getParts().size());
+          for (ObjectInfo p : n.getParts())
+            assertEquals(p.getIsPartOf(), n);
+
+          session.flush();
         }
       });
   }
@@ -444,6 +491,43 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertNull(r);
         }
       });
+
+    final URI aid  = URI.create("http://localhost/article/11");
+    final URI pid1 = URI.create("http://localhost/article/11/part/1");
+    final URI pid2 = URI.create("http://localhost/article/11/part/2");
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Article o = session.get(Article.class, aid.toString());
+          assertNotNull(o);
+
+          Article a = new Article();
+          a.setUri(aid);
+
+          ObjectInfo p1 = new ObjectInfo();
+          p1.setUri(pid1);
+          p1.setIsPartOf(a);
+          a.getParts().add(p1);
+
+          Article n = session.merge(a);
+          assertTrue(n == o);
+          assertEquals(1, n.getParts().size());
+          for (ObjectInfo p : n.getParts())
+            assertEquals(p.getIsPartOf(), n);
+
+          session.flush();
+        }
+      });
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Article a = session.get(Article.class, aid.toString());
+          assertNotNull(a);
+          assertEquals(1, a.getParts().size());
+          for (ObjectInfo p : a.getParts())
+            assertEquals(p.getIsPartOf(), a);
+        }
+      });
   }
 
   @Test(dependsOnMethods =  {
@@ -460,6 +544,8 @@ public class BasicOtmTest extends AbstractOtmTest {
           a.addReply(r);
           r.addReply(rr);
           session.merge(a);
+
+          session.flush();
         }
       });
     doInSession(new Action() {
@@ -483,6 +569,35 @@ public class BasicOtmTest extends AbstractOtmTest {
           r = replies.get(0);
           assertNotNull(r);
           assertEquals(URI.create("http://localhost/reply/2/1"), r.getId());
+        }
+      });
+
+    final URI aid  = URI.create("http://localhost/article/12");
+    final URI pid1 = URI.create("http://localhost/article/12/part/1");
+    final URI pid2 = URI.create("http://localhost/article/12/part/2");
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Article a = new Article();
+          a.setUri(aid);
+
+          ObjectInfo p1 = new ObjectInfo();
+          p1.setUri(pid1);
+          p1.setIsPartOf(a);
+          a.getParts().add(p1);
+
+          session.merge(a);
+        }
+      });
+
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Article a = session.get(Article.class, aid.toString());
+          assertNotNull(a);
+
+          assertEquals(1, a.getParts().size());
+          for (ObjectInfo p : a.getParts())
+            assertEquals(p.getIsPartOf(), a);
         }
       });
   }

@@ -434,19 +434,14 @@ public class SessionImpl extends AbstractSession {
 
     // make sure it is loaded
     ClassMetadata cm = id.getClassMetadata();
-    T ao = (T) get(cm, id.getId(), true);
+    T ao = (T) load(cm, id.getId());
 
-    if (ao == null) {
-      // does not exist; so make a copy first
-      ao = (T) cm.getEntityBinder(getEntityMode()).newInstance();
-
+    if (ao != null) {
       Map<Id, Object> loopDetect = new HashMap<Id, Object>();
       loopDetect.put(id, ao);
       copy(id, ao, o, loopDetect); // deep copy
-      o = ao;
+      ao = (T) sync(ao, id, true, true, CascadeType.merge, false);
     }
-
-    ao = (T) sync(o, id, true, true, CascadeType.merge, false);
 
     return ao;
   }
@@ -830,7 +825,7 @@ public class SessionImpl extends AbstractSession {
           Object aoc  = loopDetect.get(aid);
 
           if (aoc == null) {
-            aoc = aid.getClassMetadata().getEntityBinder(getEntityMode()).newInstance();
+            aoc = load(aid.getClassMetadata(), aid.getId());
 
             loopDetect.put(aid, aoc);
             copy(aid, aoc, ao, loopDetect);
