@@ -68,8 +68,12 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
     if (EntityMode.POJO != con.getSession().getEntityMode())
       throw new OtmException(con.getSession().getEntityMode() + " is not supported here. Fix me");
 
+    if (instance == null)
+      return null;
+
     if (!(instance instanceof Representation))
-      throw new OtmException("Expecting entity " + Representation.class + " instead found " + cm);
+      throw new OtmException("Expecting entity " + Representation.class + " instead found " +
+                             instance.getClass() + " (" + cm + ")");
 
     Representation r      = (Representation) instance;
 
