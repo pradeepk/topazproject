@@ -130,7 +130,9 @@ public class FedoraConnection extends AbstractConnection {
     byte[] b = contentMap.get(id);
 
     if (b == null) {
-      b = bs.toBlob(cm, id, blob, this).get(this);
+      FedoraBlob fb = bs.toBlob(cm, id, blob, this);
+      if (fb != null)
+        b = fb.get(this);
 
       if (b != null)
         contentMap.put(id, b);
