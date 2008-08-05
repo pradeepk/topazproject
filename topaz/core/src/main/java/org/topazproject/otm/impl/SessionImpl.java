@@ -804,7 +804,8 @@ public class SessionImpl extends AbstractSession {
     if (!cm.isAssignableFrom(ocm))
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
-    log.warn ("Copy(" + ((loopDetect==null) ? "shallow" : "deep") + ") merging " + id);
+    if (log.isDebugEnabled())
+      log.debug("Copy(" + ((loopDetect == null) ? "shallow" : "deep") + ") merging " + id);
 
     for (RdfMapper m : cm.getRdfMappers()) {
       Mapper p = ocm.getMapperByName(m.getName());
