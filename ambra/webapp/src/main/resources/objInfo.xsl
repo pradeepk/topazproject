@@ -2,11 +2,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions"  xmlns:xlink="http://www.w3.org/1999/xlink"
  xmlns:util="http://dtd.nlm.nih.gov/xsl/util"  xmlns:mml="http://www.w3.org/1998/Math/MathML">
 
-<xsl:output 
-			method="html"
-            indent="no"
-            encoding="UTF-8"
-            omit-xml-declaration="yes"/>
+<xsl:output method="html" indent="no" encoding="UTF-8" omit-xml-declaration="yes"/>
 
 <xsl:template name="make-id">
   <xsl:if test="@id">
@@ -56,10 +52,10 @@
 </xsl:template>
 
 <xsl:template match="email">
-    <a>
-		<xsl:attribute name="href">mailto:<xsl:apply-templates/></xsl:attribute>
-		<xsl:apply-templates/>
-    </a>
+  <a>
+    <xsl:attribute name="href">mailto:<xsl:apply-templates/></xsl:attribute>
+    <xsl:apply-templates/>
+  </a>
 </xsl:template>
 
 <xsl:template match="italic">
@@ -79,7 +75,7 @@
 </xsl:template>
 
 <xsl:template match="p">
-	<p><xsl:apply-templates/></p>
+  <p><xsl:apply-templates/></p>
 </xsl:template>
 
 <xsl:template match="sc">
@@ -91,9 +87,9 @@
 <xsl:template match="sc//text()">
   <xsl:param name="str" select="."/>
 
-    <xsl:call-template name="capitalize">
-      <xsl:with-param name="str" select="$str"/>
-    </xsl:call-template>
+  <xsl:call-template name="capitalize">
+    <xsl:with-param name="str" select="$str"/>
+  </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="strike">
@@ -132,12 +128,12 @@
 </xsl:template>
 
 <xsl:template match="inline-graphic">
-	<xsl:element name="img">
-	  <xsl:if test="@xlink:href">
-		<xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
-		<xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
-		<xsl:attribute name="border">0</xsl:attribute>
-	  </xsl:if>
+  <xsl:element name="img">
+    <xsl:if test="@xlink:href">
+    <xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
+    <xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+    <xsl:attribute name="border">0</xsl:attribute>
+    </xsl:if>
   </xsl:element>
 </xsl:template>
 
@@ -207,11 +203,11 @@
 </xsl:template>
 
 <xsl:template match="title">
-	<xsl:apply-templates/>END_TITLE
+  <xsl:apply-templates/>END_TITLE
 </xsl:template>
 
 <xsl:template match="text()">
-	<xsl:value-of select="translate(., '&#x200A;&#8764;', ' ~') "/>
+  <xsl:value-of select="translate(., '&#x200A;&#8764;', ' ~') "/>
 </xsl:template>
 
 </xsl:stylesheet>
