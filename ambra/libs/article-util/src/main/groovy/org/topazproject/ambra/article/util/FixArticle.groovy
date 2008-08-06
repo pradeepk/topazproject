@@ -33,6 +33,7 @@ import groovy.xml.FactorySupport
 
 import net.sf.saxon.TransformerFactoryImpl
 
+import org.topazproject.ambra.configuration.ConfigurationStore
 import org.topazproject.ambra.util.ToolHelper
 import org.topazproject.xml.transform.cache.CachedSource
 import org.xml.sax.InputSource
@@ -73,6 +74,9 @@ public class FixArticle {
       StreamSource xslt =
         new StreamSource(inputStream:getClass().getResourceAsStream(FIX_LINKS), systemId:FIX_LINKS)
       Transformer t = getTrnsfFact().newTransformer(xslt)
+      def conf = ConfigurationStore.getInstance().getConfiguration()
+      def doiPrefix = conf.getString("ambra.aliases.doiPrefix")
+      t.setParameter("doiPrefix", doiPrefix)
 
       XMLReader r = FactorySupport.createSaxParserFactory().newSAXParser().getXMLReader()
       r.setEntityResolver(new ManifestDTDResolver())

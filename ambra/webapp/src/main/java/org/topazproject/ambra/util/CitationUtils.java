@@ -136,7 +136,7 @@ public abstract class CitationUtils {
     sb.append(' ');
 
     // doi
-    sb.append("doi:");
+    sb.append("doi:");  // XXX: Fixing #921 should get rid of this.
     sb.append(ci.getDOI());
 
     return sb.toString();
@@ -187,7 +187,8 @@ public abstract class CitationUtils {
     // annotation URI
     sb.append(ConfigurationStore.getInstance().getConfiguration().getString(
         "ambra.platform.doiUrlPrefix"));
-    sb.append(StringUtils.replace(wa.getId(), "info:doi", ""));
+    sb.append(StringUtils.replace(wa.getId(), ConfigurationStore.getInstance().getConfiguration()
+                                                      .getString("ambra.aliases.doiPrefix"), ""));
 
     return sb.toString();
   }

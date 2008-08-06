@@ -48,8 +48,10 @@ class FedoraArticle {
     // Get configuration information we need
     def conf = ConfigurationStore.getInstance().configuration
     def fedoraUri = conf.getString("ambra.topaz.blobStore.fedora.base-url") + "get"
+    def pidNs = conf.getString("ambra.topaz.blobStore.fedora.blobTypes.representation.pidNs");
+    def uriPrefix = conf.getString("ambra.topaz.blobStore.fedora.blobTypes.representation.uriPrefix");
 
-    this.url = "$fedoraUri/doi:${URLEncoder.encode(doi.substring(9))}/XML"
+    this.url = "$fedoraUri/$pidNs:${URLEncoder.encode(doi.substring(uriPrefix.length()))}/XML"
     this.article = slurper.parse(new URL(this.url).getContent())
     article.front.'article-meta'.'contrib-group'.contrib.each() {
       def name = ((it.name.@'name-style' == "eastern") 

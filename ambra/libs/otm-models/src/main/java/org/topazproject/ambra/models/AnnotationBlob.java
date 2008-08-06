@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Id;
 @Entity()
 public class AnnotationBlob extends Blob {
   @Id
-  @GeneratedValue(uriPrefix = "info:fedora/", generatorClass = "org.topazproject.ambra.models.support.BlobIdGenerator")
+  @GeneratedValue(uriPrefix = "annoteaBodyId:", generatorClass = "org.topazproject.ambra.models.support.BlobIdGenerator")
   private String id;
 
   /**

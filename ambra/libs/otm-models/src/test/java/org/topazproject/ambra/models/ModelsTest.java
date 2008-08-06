@@ -97,12 +97,13 @@ public class ModelsTest {
    */
   @Test
   public void preloadTest() throws OtmException {
+    factory.addAlias("annoteaBodyId", "info:fedora/");
     for (Class c : classes)
       factory.preload(c);
 
     FedoraBlobStore  blobStore =
       new FedoraBlobStore("http://localhost:9090/fedora/services/management", "fedoraAdmin", "fedoraAdmin");
-    blobStore.addBlobFactory(new AnnotationFedoraBlobFactory());
+    blobStore.addBlobFactory(new AnnotationFedoraBlobFactory("Ambra", "info:fedora/"));
 
     FedoraBlob rb = blobStore.toBlob(factory.getClassMetadata(AnnotationBlob.class), 
                                        "info:fedora/Ambra:42", null, null);

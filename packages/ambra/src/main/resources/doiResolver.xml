@@ -37,6 +37,11 @@
       <webserverUrl>http://www.plosone.org/</webserverUrl>
       <errorPage>static/pageNotFound.action</errorPage> 
     </platform>
+
+    <aliases>
+      <doiPrefix>info:doi</doiPrefix>
+    </aliases>
+
     <services>
       <doiResolver>
         <!-- 

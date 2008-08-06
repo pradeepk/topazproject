@@ -82,7 +82,7 @@ public class ResolverServlet extends HttpServlet {
   private static final int             numJournals;
   private static final String          errorPage;
   private static final DOITypeResolver resolver;
-  private static final String          INFO_DOI_PREFIX = "info:doi";
+  private static final String          INFO_DOI_PREFIX = myConfig.getString("ambra.aliases.doiPrefix");
 
   static {
     numJournals     = myConfig.getList("ambra.services.doiResolver.mappings.journalMapping.url").size();

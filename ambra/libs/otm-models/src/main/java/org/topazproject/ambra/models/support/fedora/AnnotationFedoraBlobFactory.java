@@ -31,11 +31,27 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public class AnnotationFedoraBlobFactory extends DefaultFedoraBlobFactory {
+
+  private final String pidNs;
+  private final String uriPrefix;
+
+  /**
+   * Creates a new AnnotationFedoraBlobFactory object.
+   *
+   * @param pidNs the Fedora PID namespace for annotations. (See retainPIDs in fedora.fcfg)
+   * @param uriPrefix the uri prefix to strip to get to the Fedora PID (eg. 'info:fedora/')
+   */
+  public AnnotationFedoraBlobFactory(String pidNs, String uriPrefix) {
+    this.pidNs = pidNs;
+    this.uriPrefix = uriPrefix;
+  }
+
+
   /*
    * inherited javadoc
    */
   public String[] getSupportedUriPrefixes() {
-    return new String[] { "info:fedora/" };
+    return new String[] { uriPrefix };
   }
 
   /*
@@ -64,6 +80,6 @@ public class AnnotationFedoraBlobFactory extends DefaultFedoraBlobFactory {
    * inherited javadoc
    */
   protected String getPidNs(ClassMetadata cm, FedoraConnection con) {
-    return super.getPidNs(cm, con);
+    return pidNs;
   }
 }

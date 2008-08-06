@@ -53,11 +53,25 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
     DOI_PID_CHARS.set('~');
   }
 
+  private final String pidNs;
+  private final String uriPrefix;
+
+  /**
+   * Creates a new RepresentationFedoraBlobFactory object.
+   *
+   * @param pidNs the Fedora PID namespace for representations. (See retainPIDs in fedora.fcfg)
+   * @param uriPrefix the uri prefix to strip to get to the Fedora PID (eg. 'info:doi/')
+   */
+  public RepresentationFedoraBlobFactory(String pidNs, String uriPrefix) {
+    this.pidNs = pidNs;
+    this.uriPrefix = uriPrefix;
+  }
+
   /*
    * inherited javadoc
    */
   public String[] getSupportedUriPrefixes() {
-    return new String[] { "info:doi/" };
+    return new String[] { uriPrefix };
   }
 
   /*
@@ -85,14 +99,13 @@ public class RepresentationFedoraBlobFactory implements FedoraBlobFactory {
     return new RepresentationFedoraBlob(cm, id, pid, r.getName(), r.getContentType(), cModel);
   }
 
-  private static String toPid(URI uri) throws OtmException {
-    // info:doi/ -> doi:
-    if (!uri.toString().startsWith("info:doi/"))
-      throw new OtmException("Unknown uri type '" + uri + "' - can only map info:doi/... uri's");
+  private String toPid(URI uri) throws OtmException {
+    if (!uri.toString().startsWith(uriPrefix))
+      throw new OtmException("Unknown uri type '" + uri + "' - can only map " + uriPrefix + "... uri's");
 
     try {
-      byte[] dec = URLCodec.decodeUrl(uri.toString().substring(9).getBytes("UTF-8"));
-      return "doi:" + new String(URLCodec.encodeUrl(DOI_PID_CHARS, dec), "ISO-8859-1");
+      byte[] dec = URLCodec.decodeUrl(uri.toString().substring(uriPrefix.length()).getBytes("UTF-8"));
+      return pidNs + ":" + new String(URLCodec.encodeUrl(DOI_PID_CHARS, dec), "ISO-8859-1");
     } catch (Exception e) {
       throw new OtmException("Error converting '" + uri + "' to fedora pid", e);
     }

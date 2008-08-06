@@ -65,7 +65,9 @@
       file sections to consolidate identifier prefix usages.
     -->
     <aliases>
-      <id>info:doi/10.1371/</id>
+      <doiPrefix>info:doi</doiPrefix>
+      <id>${ambra.aliases.doiPrefix}/10.1371/</id>
+      <annoteaBodyId>info:fedora/</annoteaBodyId>
     </aliases>
 
     <!-- Overlay journal config -->
@@ -82,10 +84,20 @@
         <fedora>
           <userName>fedoraAdmin</userName>
           <password>fedoraAdmin</password>
+          <blobTypes>
+            <representation>
+              <pidNs>doi</pidNs> <!-- must be configured in "retainPIDs" of fedora.fcfg -->
+              <uriPrefix>${ambra.aliases.doiPrefix}/</uriPrefix>
+            </representation>
+            <annotation>
+              <pidNs>PLoS</pidNs> <!-- must be configured in "retainPIDs" of fedora.fcfg -->
+              <uriPrefix>${ambra.aliases.annoteaBodyId}</uriPrefix>
+            </annotation>
+          </blobTypes>
         </fedora>
       </blobStore>
     </topaz>
-      
+
     <services>
       <search>
         <!-- Path where lucene search index is stored -->

@@ -186,9 +186,15 @@
     <property name="fedoraBlobFactories">
       <list>
         <bean name="annotationFedoraBlobFactory" 
-            class="org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlobFactory"/>
+            class="org.topazproject.ambra.models.support.fedora.AnnotationFedoraBlobFactory">
+          <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.blobTypes.annotation.pidNs}"/>
+          <constructor-arg index="1" value="${ambra.topaz.blobStore.fedora.blobTypes.annotation.uriPrefix}"/>
+        </bean>
         <bean name="representationFedoraBlobFactory" 
-            class="org.topazproject.ambra.models.support.fedora.RepresentationFedoraBlobFactory"/>
+            class="org.topazproject.ambra.models.support.fedora.RepresentationFedoraBlobFactory">
+          <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.blobTypes.representation.pidNs}"/>
+          <constructor-arg index="1" value="${ambra.topaz.blobStore.fedora.blobTypes.representation.uriPrefix}"/>
+        </bean>
       </list>
     </property>
     <property name="models">
@@ -269,6 +275,7 @@
     <property name="aliases">
       <map>
         <entry key="id" value="${ambra.aliases.id}"/>
+        <entry key="annoteaBodyId" value="${ambra.aliases.annoteaBodyId}"/>
       </map>
     </property>
 

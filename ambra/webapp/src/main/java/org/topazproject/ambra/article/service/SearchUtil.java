@@ -64,8 +64,18 @@ public class SearchUtil {
    * hack will go away before we do.
    */
   private static String objIdToFedoraPid(String uri) {
+    String k1, k2;
+    String pidNs = CONF.getString(k1 = "ambra.topaz.blobStore.fedora.blobTypes.representation.pidNs");
+    String uriPrefix = CONF.getString(k2 = "ambra.topaz.blobStore.fedora.blobTypes.representation.uriPrefix");
+
+    if (pidNs == null)
+      throw new NullPointerException("Missing configuration: " + k1);
+
+    if (uriPrefix == null)
+      throw new NullPointerException("Missing configuration: " + k2);
+
     try {
-      return "doi:" + URLEncoder.encode(URLDecoder.decode(uri.substring(9), "UTF-8"), "UTF-8");
+      return pidNs + ":" + URLEncoder.encode(URLDecoder.decode(uri.substring(uriPrefix.length()), "UTF-8"), "UTF-8");
     } catch (UnsupportedEncodingException uee) {
       throw new RuntimeException("Unexpected exception", uee);
     }

@@ -36,6 +36,7 @@
     -->
 
   <xsl:param name="manifest" as="document-node(element(manifest))"/>
+  <xsl:param name="doiPrefix">info:doi</xsl:param>
 
   <xsl:preserve-space elements="*"/>
 
@@ -83,7 +84,7 @@
       if (my:uri-is-absolute($href)) then
         (: doi-uri normalization: 'doi:/DOI' -> 'info:doi/DOI' :)
         if (starts-with($href, 'doi:')) then
-          concat('info:doi/', substring($href, 5))
+          concat($doiPrefix, '/', substring($href, 5))
         else
           $href
       else if ($href = $manifest/manifest/articleBundle/*/representation/@entry) then
