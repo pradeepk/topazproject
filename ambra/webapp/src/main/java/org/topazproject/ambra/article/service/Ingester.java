@@ -256,9 +256,15 @@ public class Ingester {
 
       if (tag.equals("Article")) {
         art = (Article) unmarshaller.unmarshal(new DomReader(child));
-        if (!force && sess.get(Article.class, art.getId().toString()) != null)
+        Article existing = sess.get(Article.class, art.getId().toString());
+
+        if (!force && existing != null)
           throw new DuplicateArticleIdException(art.getId().toString());
-        sess.saveOrUpdate(art);
+
+        if (existing != null)
+          art = sess.merge(art);
+        else
+          sess.saveOrUpdate(art);
 
       } else if (tag.equals("propagatePermissions")) {
         String resource = child.getAttribute("resource");
