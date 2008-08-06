@@ -97,7 +97,9 @@ public class ResolverServlet extends HttpServlet {
         new StringBuilder("/").append(myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i
                                                          + ").regex"));
       journalRegExs[i]   = Pattern.compile(pat.toString());
-      figureRegExs[i]    = Pattern.compile(pat.append("\\.[gt]\\d{3}").toString());
+      pat = new StringBuilder("/").append(myConfig.getString("ambra.services.doiResolver.mappings.journalMapping(" + i
+                                                         + ").figureRegex"));
+      figureRegExs[i]    = Pattern.compile(pat.toString());
     }
 
     errorPage = myConfig.getString("ambra.platform.webserverUrl") + myConfig.getString("ambra.platform.errorPage");
