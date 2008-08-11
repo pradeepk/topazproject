@@ -18,7 +18,7 @@
   limitations under the License.
 -->
 	<ul>
-		<li><a href="http://journals.plos.org/help.php" title="Help Using this Site" tabindex="504">Help</a></li>
+		<li><a href="http://${freemarker_config.host}${freemarker_config.context}/static/help.action" title="Help Using this Site" tabindex="504">Help</a></li>
 		<li><a href="http://topazproject.org" title="topazproject.org" tabindex="504">Topaz</a></li>
 	</ul>
 	
