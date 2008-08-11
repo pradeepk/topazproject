@@ -58,28 +58,28 @@
           </journalMapping>
           <journalMapping>
             <url>http://clinicaltrials.ploshubs.org/</url>
-            <regex>10\.1371/journal\.pctr\.\d{7}</regex>
-            <figureRegex>10\.1371/journal\.pctr\.\d{7}\.[gt]\d{3}</figureRegex>
+            <regex>10\.1371/(journal|image)\.pctr\.(\d{7}|v\d\d\.i\d\d)</regex>
+            <figureRegex>10\.1371/(journal|image)\.pctr\.(\d{7}|v\d\d\.i\d\d)\.[gt]\d{3}</figureRegex>
           </journalMapping>
           <journalMapping>
             <url>http://www.ploscompbiol.org/</url>
-            <regex>10\.1371/journal\.pcbi\.\d{7}</regex>
-            <figureRegex>10\.1371/journal\.pcbi\.\d{7}\.[gt]\d{3}</figureRegex>
+            <regex>10\.1371/(journal|image)\.pcbi\.(\d{7}|v\d\d\.i\d\d)</regex>
+            <figureRegex>10\.1371/(journal|image)\.pcbi\.(\d{7}|v\d\d\.i\d\d)\.[gt]\d{3}</figureRegex>
           </journalMapping>
           <journalMapping>
             <url>http://www.plosgenetics.org/</url>
-            <regex>10\.1371/journal\.pgen\.\d{7}</regex>
-            <figureRegex>10\.1371/journal\.pgen\.\d{7}\.[gt]\d{3}</figureRegex>
+            <regex>10\.1371/(journal|image)\.pgen\.(\d{7}|v\d\d\.i\d\d)</regex>
+            <figureRegex>10\.1371/(journal|image)\.pgen\.(\d{7}|v\d\d\.i\d\d)\.[gt]\d{3}</figureRegex>
           </journalMapping>
           <journalMapping>
             <url>http://www.plosntds.org/</url>
-            <regex>10\.1371/journal\.pntd\.\d{7}</regex>
-            <figureRegex>10\.1371/journal\.pntd\.\d{7}\.[gt]\d{3}</figureRegex>
+            <regex>10\.1371/(journal|image)\.pntd\.(\d{7}|v\d\d\.i\d\d)</regex>
+            <figureRegex>10\.1371/(journal|image)\.pntd\.(\d{7}|v\d\d\.i\d\d)\.[gt]\d{3}</figureRegex>
           </journalMapping>
           <journalMapping>
             <url>http://www.plospathogens.org/</url>
-            <regex>10\.1371/journal\.ppat\.\d{7}</regex>
-            <figureRegex>10\.1371/journal\.ppat\.\d{7}\.[gt]\d{3}</figureRegex>
+            <regex>10\.1371/(journal|image)\.ppat\.(\d{7}|v\d\d\.i\d\d)</regex>
+            <figureRegex>10\.1371/(journal|image)\.ppat\.(\d{7}|v\d\d\.i\d\d)\.[gt]\d{3}</figureRegex>
           </journalMapping>
         </mappings>
       </doiResolver>
