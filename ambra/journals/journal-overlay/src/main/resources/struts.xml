@@ -72,10 +72,5 @@
         <param name="templateFile">/journals/overlayJournal/static/rssInfo.ftl</param>
       </result>
     </action>
-    <action name="releaseNotes" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/journals/overlayJournal/static/releaseNotes.ftl</param>
-      </result>
-    </action>
   </package>  
 </struts>

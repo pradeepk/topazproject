@@ -167,11 +167,6 @@
         <param name="templateFile">/journals/plosJournals/static/ratingGuidelines.ftl</param>
       </result>
     </action>
-        <action name="releaseNotes" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/journals/plosone/static/releaseNotes.ftl</param>
-      </result>
-    </action>
     <action name="rssInfo" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/journals/plosJournals/static/rssInfo.ftl</param>

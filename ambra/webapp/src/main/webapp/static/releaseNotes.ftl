@@ -34,6 +34,32 @@
     become available. This page summarizes features and known bugs in each updated version.
   </p>
   
+    <h2>RC 0.9 rc1 beta</h2>
+<p>Released July 16, 2008</p>
+<h3>Features implemented in RC 0.9 rc1</h3>
+<ul>
+<li>Pre-ingest script (process_sip) for images transforms.</li>
+<li>Re-architected the cache code.</li>
+<li>Moved transactions to read-only queries where possible.</li>
+<li>Optimized slideshow retrieval/display.</li>
+<li>Optimized many actions (e.g. FetchArticleAction, GetAverageRatingsAction, etc.).</li>
+<li>Lots of Ambra code improvements.</li>
+<li>Upgraded to Dojo 1.1.</li>
+<li>Upgraded to Mulgara 1.2 (multi-core!).</li>
+<li>Upgraded to Lucene 2.3.</li>
+<li>Upgraded to ehCache 1.4.1.</li>
+<li>Many Ambra configuration changes for ease of installation.</li>
+</ul>
+
+<h3>Features fixed in RC 0.9 rc1</h3>
+<ul>
+<li>Safari bugs fixed; ratings, drop-down menus.</li>
+<li>Ingest fixes; ingest doesn't change .mov to .qt; ingest handles .swf files.</li>
+<li>Advanced search by past month &amp; past three months working.</li>
+<li>Search results with correct journal context.</li>
+<li>XSL fixes.</li> 
+</ul>
+  
 	<h2>RC 0.8.2.1 beta</h2>
 	<p>Released February 26, 2008</p>
 	<h3>Features Implemented in RC 0.8.2.1</h3>
