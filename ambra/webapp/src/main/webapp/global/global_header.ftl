@@ -17,9 +17,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-
-  CRAPDIDDLY
-
   <!-- begin : logo -->
   <div id="logo" title="${freemarker_config.getDisplayName(journalContext)}"><a href="${homeURL}" title="${freemarker_config.getDisplayName(journalContext)}"><span>${freemarker_config.getDisplayName(journalContext)}</span></a></div>
   <!-- end : logo -->
