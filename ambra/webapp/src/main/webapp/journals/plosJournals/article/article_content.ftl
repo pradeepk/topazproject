@@ -17,6 +17,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+
+BLAMTASTIC
+
 <#assign publisher=""/>
 <#if Request[freemarker_config.journalContextAttributeKey]?exists>
   <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
@@ -24,17 +27,25 @@
   <#assign journalContext = "">
 </#if>
 <#list journalList as jour>
-  <#if (articleInfo.EIssn = jour.EIssn) && (jour.key != journalContext) >
-    <#assign publisher = "Published in <em><a href=\"" + freemarker_config.getJournalUrl(jour.key)
-                         + "\">"+ jour.dublinCore.title + "</a></em>" />
-    <#break/>
+  <#-- Special Case -->
+  <#if (journalList?size == 1) && (jour.key == journalContext)>
+    <#if jour.key == "PLoSClinicalTrials">
+      <#assign jourAnchor = "<a href=\"" + freemarker_config.getJournalUrl(jour.key) + "/static/faq.action\">"/>    
+      <#assign publisher="Published in <em>" + jourAnchor + "PLoS Clinical Trials</a></em>" />
+    </#if>
   <#else>
-    <#if jour.key != journalContext> 
-      <#assign jourAnchor = "<a href=\"" + freemarker_config.getJournalUrl(jour.key) + "\">"/>
-      <#if publisher?length gt 0>
-        <#assign publisher = publisher + ", " + jourAnchor + jour.dublinCore.title + "</a>" />
-      <#else>
-        <#assign publisher = publisher + "Featured in " + jourAnchor + jour.dublinCore.title + "</a>" />
+    <#if (articleInfo.EIssn = jour.EIssn) && (jour.key != journalContext) >
+      <#assign publisher = "Published in <em><a href=\"" + freemarker_config.getJournalUrl(jour.key)
+                           + "\">"+ jour.dublinCore.title + "</a></em>" />
+      <#break/>
+    <#else>
+      <#if jour.key != journalContext> 
+        <#assign jourAnchor = "<a href=\"" + freemarker_config.getJournalUrl(jour.key) + "\">"/>
+        <#if publisher?length gt 0>
+          <#assign publisher = publisher + ", " + jourAnchor + jour.dublinCore.title + "</a>" />
+        <#else>
+          <#assign publisher = publisher + "Featured in " + jourAnchor + jour.dublinCore.title + "</a>" />
+        </#if>
       </#if>
     </#if>
   </#if>
@@ -70,6 +81,9 @@
 			<li><@s.a href="%{articleCitationURL}"  cssClass="citation" title="Download Citation">Download Citation</@s.a></li> 
 			<@s.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/> 
 			<li><@s.a href="%{emailArticleURL}"  cssClass="email" title="E-mail This Article to a Friend or Colleague">E-mail this Article</@s.a></li>
+			<#if articleType.heading != 'Issue Image'>
+				<li><a href="http://www.plos.org/journals/print.html" title="Order reprinted versions of this article" class="reprints icon">Order Reprints</a></li> 
+			</#if>
 			<li><a href="#" onclick="window.print();return false;" class="print last" title="Print this article">Print this Article</a></li> 
 		</ul> 
 	</div> 

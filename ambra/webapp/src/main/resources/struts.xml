@@ -438,7 +438,7 @@
 
     <action name="fetchBody" class="org.topazproject.ambra.article.action.FetchArticleAction">
       <result name="success" type="ambraFreemarker">
-        <param name="location">/article/article_content.ftl</param>
+        <param name="location">/journals/plosJournals/article/article_content.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
