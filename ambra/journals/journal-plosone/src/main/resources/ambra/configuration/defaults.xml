@@ -89,7 +89,7 @@
           </javascript>
         </page>
         <page>
-          <name>/article/article_body.ftl</name>
+          <name>/journals/plosJournals/article/article_body.ftl</name>
           <title>CODE_ARTICLE_TITLE</title>
           <css>
             <file>dojo.css</file>

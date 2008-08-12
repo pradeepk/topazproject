@@ -303,7 +303,7 @@
       </interceptor-ref>
       <interceptor-ref name="ambraUserStack"/>
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/article/article_body.ftl</param>
+        <param name="templateFile">/journals/plosJournals/article/article_body.ftl</param>
         <param name="noCache">true</param>
       </result>
     </action>
