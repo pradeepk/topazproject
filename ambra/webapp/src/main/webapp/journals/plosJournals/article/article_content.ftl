@@ -18,8 +18,6 @@
   limitations under the License.
 -->
 
-BLAMTASTIC
-
 <#assign publisher=""/>
 <#if Request[freemarker_config.journalContextAttributeKey]?exists>
   <#assign journalContext = Request[freemarker_config.journalContextAttributeKey].journal>
