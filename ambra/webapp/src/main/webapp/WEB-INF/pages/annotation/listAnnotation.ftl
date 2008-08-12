@@ -49,7 +49,7 @@
 
         <li>
           <@s.url includeParams="none" id="listThreadURL" action="listThread" root="${annotation.id}" inReplyTo="${annotation.id}"/>
-          <@s.a href="%{listThreadURL}">list threaded replies (new - plosone)</@s.a> <br/>
+          <@s.a href="%{listThreadURL}">list threaded replies</@s.a> <br/>
         </li>
 
         <li>

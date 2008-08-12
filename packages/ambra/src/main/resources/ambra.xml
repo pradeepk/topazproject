@@ -47,7 +47,7 @@
       <appContext></appContext>
       <defaultJournalName>PLoSONE</defaultJournalName>
       <!-- common display constants -->
-      <name>Public Library of Science</name>
+      <name>PLoS</name>
       <email>
         <general>webmaster@plos.org</general>
         <feedback>webmaster@plos.org</feedback>

@@ -206,7 +206,8 @@ ul.articles li		{ margin: 0; padding: 0; list-style-type: none; }
 ul.articles			{ margin: 5px 4px 10px 0;  padding: 10px 10px 0 6px;}
 #home ul.articles li		{ font-size: .9em; margin-left:10px; padding: 3px 0 3px 10px; list-style:none; background: url(../images/home_articles_li_bg.gif) no-repeat 0 10px;}
 
-/* NOTE: horizontal tab styles that I'd previously moved to screen.css are now below. These styles are for the Homepage ONLY. Alex's new tab CSS for the Journal Archive page is now on it's own stylesheet: plostabs.css */
+/* NOTE: horizontal tab styles that I'd previously moved to screen.css are now below. */
+
 /* tabs and tabbed box */
 div.horizontalTabs	{ position:relative; border:0; margin:0 0 20px; padding:0; background:transparent; width:490px; }
 div.horizontalTabs:after  { content:"."; display: block; height:0; clear:both; visibility:hidden; }

@@ -72,10 +72,10 @@
       <@s.url id="imageLgURL" action="slideshow" namespace="/article" uri="${issueInfo.imageArticle}" imageURI="${issueInfo.imageArticle}.g001" includeParams="none"/>
       <div id="issueImage">
         <div id="thumbnail">
-	<a href="${imageLgURL}" onclick="window.open(this.href,'plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850');return false;">
+	<a href="${imageLgURL}" onclick="window.open(this.href,'ambraSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850');return false;">
 	  	<img alt="Issue Image" src="${imageSmURL}"/>
 	  </a>
-	  <a href="${imageLgURL}" onclick="window.open(this.href,'plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850');return false;">
+	  <a href="${imageLgURL}" onclick="window.open(this.href,'ambraSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850');return false;">
 	  	View large image
 	  </a>
         </div>

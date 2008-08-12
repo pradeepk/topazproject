@@ -24,7 +24,7 @@
 
 	<#if articleInfoX.relatedArticles?size gt 0>
 		<dl class="related">
-			<dt>Related <em>PLoS</em> Articles</dt>
+			<dt>Related <em>${freemarker_config.orgName}</em> Articles</dt>
 			<#list articleInfoX.relatedArticles as ra>
 			<@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${ra.uri}" includeParams="none"/>
 			<dd><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${ra.title}</@s.a></dd>
