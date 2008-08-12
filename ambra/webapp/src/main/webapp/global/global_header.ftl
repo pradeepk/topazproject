@@ -17,17 +17,25 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+
+  CRAPDIDDLY
+
   <!-- begin : logo -->
   <div id="logo" title="${freemarker_config.getDisplayName(journalContext)}"><a href="${homeURL}" title="${freemarker_config.getDisplayName(journalContext)}"><span>${freemarker_config.getDisplayName(journalContext)}</span></a></div>
   <!-- end : logo -->
   <!-- begin : user controls -->
+
   <@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
-  <!-- remove duplicate articleURI specification, e.g. /article/doi?articleURL=doi -->
+  <#-- remove duplicate articleURI specification, e.g. /article/doi?articleURL=doi -->
   <#if thisPageURL?matches(r"^(/.+)?/article/info(:|%3A)doi(/|%2F).+")>
     <#assign thisPage = thisPageURL?replace(r"\??articleURI=info%3Adoi%2F.{30}", "", "r")?replace("&amp;", "&")?url>
+  <#-- dont to anything if we're already on the feedbackCreate.action page -->
+  <#elseif thisPageURL?matches(r"^(/.+)?/feedbackCreate.action.*")>
+    <#assign thisPage = "${freemarker_config.context}/feedbackCreate.action">
   <#else>
     <#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
   </#if>
+
   <@s.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPage}" encode="false"/>
 
   <#if Session?exists && Session[freemarker_config.userAttributeKey]?exists>
