@@ -29,12 +29,68 @@
         <!-- SWT removed col 1 -->
         <!-- begin : col 2 -->
           <div class="col last">
-            <div class="horizontalTabs">
-              <ul id="tabsContainer"></ul>
-              <div id="tabPaneSet" class="contentwrap">
-                <#include "article/recentArticles.ftl">
+            <div id="importantStuff" class="block">
+             <@s.url id="newNoted01" namespace="/article" action="fetchArticle"
+                     articleURI="info:doi/10.1371/journal.pone.0001780"/>
+              <@s.url id="newNoted02" namespace="/article" action="fetchArticle"
+                      articleURI="info:doi/10.1371/journal.pone.0001743"/>
+              <@s.url id="newNoted03" namespace="/article" action="fetchArticle"
+                      articleURI="info:doi/10.1371/journal.pone.0001709"/>
+              <h2>New and Noted</h2>
+               <div class="article section">
+                <h3>Recently Published <a href="${freemarker_config.context}/article/feed">
+                  <img src="${freemarker_config.context}/images/feed-icon-inline.gif"/></a></h3>
+                <#include "/article/recentArticles.ftl">
+                <div class="clearer">&nbsp;</div>
               </div>
-            </div><!-- end : horizontalTabs -->
+              <div class="article section">
+              <@s.url id="newNoted04" namespace="/article" action="fetchArticle"
+                      articleURI="info:doi/10.1371/journal.pone.0001584"/>
+              <@s.url id="newNoted05" namespace="/article" action="fetchArticle"
+                      articleURI="info:doi/10.1371/journal.pone.0001506"/>
+               <@s.url id="newNoted06" namespace="/article" action="fetchArticle"
+                       articleURI="info:doi/10.1371/journal.pone.0001678"/>
+               <h3>Community Discussions</h3>
+                <ul class="articles">
+                  <li><@s.a href="${newNoted04}" title="Read Open-Access Article">Microbial Ecology
+                  of Four Coral Atolls in the Northern Line Islands</@s.a></li>
+                  <li><@s.a href="${newNoted05}" title="Read Open-Access Article">Prelude to
+                  Passion: Limbic Activation by "Unseen" Drug and Sexual Cues</@s.a></li>
+                  <li><@s.a href="${newNoted06}" title="Read Open-Access Article">One-Pot,
+                  Mix-and-Read Peptide-MHC Tetramers</@s.a></li>
+               </ul>
+                <div class="clearer">&nbsp;</div>
+              </div>
+              <div class="article section lastSection">
+              <@s.url id="newNoted07" namespace="/article" action="fetchArticle"
+                      articleURI="info:doi/10.1371/journal.pone.0001664"/>
+
+                <h3>In the News</h3>
+                <h4><@s.a href="${newNoted07}" title="Read Open-Access Article">A Specific and 
+                Rapid Neural Signature for Parental Instinct</@s.a></h4>
+                <p>One of a number of <em>PLoS ONE</em> papers published last week that were 
+                covered by the media was an article by Kringelbach and colleagues, in which the
+                authors found that a certain region of the brain was activated on the sight of
+                infants' faces, providing evidence for a neural basis of parental instinct. The
+                article was featured in some of the following stories:</p>
+                <ul class="articles">
+                  <li>Daily Telegraph - <@s.a
+                  href="http://www.telegraph.co.uk/earth/main.jhtml?view=DETAILS&grid=&xml=/earth/2008/02/27/scibaby127.xml">Babies
+                  Faces 'Make Us Want to Care for Them'</@s.a></li>
+                  <li>Discovery Channel - <@s.a
+                  href="http://dsc.discovery.com/news/2008/02/27/babies-human-brain.html">Adult
+                  Brains Wired to Go Ga-Ga Over Babies</@s.a></li>
+                  <li>Reuters - <@s.a
+                  href="http://www.reuters.com/article/scienceNews/idUSL2657590420080227">Study
+                  Sheds Light on Parental Instinct</@s.a></li>
+                  <li>Cognitive Daily - <@s.a
+                  href="http://scienceblogs.com/cognitivedaily/2008/02/we_respond_differently_to_babi.php">We
+                  Respond Differently to Babies' Faces within 150 Milliseconds</@s.a></li>
+                </ul>
+                <div class="clearer">&nbsp;</div>
+              </div>
+            </div>
+            <!-- end : block -->
             <!-- begin : calls to action blocks -->
             <div class="ctaWrap">
               <div id="cta1">
@@ -59,13 +115,18 @@
               <p>(#) indicates the number of articles published in each subject category.</p>
               <ul>
                 <#list categoryInfos?keys as category>
-		  <#if (category_index + 1) lte colSize>
-		  <#assign categoryId = category?replace("\\s|\'","","r")>
-                    <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}" includeParams="none"/>
-                    <li>
-                      <a id="widget${categoryId}" href="${browseURL}">${category} (${categoryInfos[category]})</a>&nbsp;
-                      <a href="${freemarker_config.context}/article/feed?category=${category?replace(' ','+')}"><img src="${freemarker_config.context}/images/feed-icon-inline.gif" /></a>
-                    </li>
+                <#if (category_index + 1) lte colSize>
+                  <#assign categoryId = category?replace("\\s|\'","","r")>
+                  <@s.url id="browseURL" action="browse" namespace="/article" catName="${category}"
+                          includeParams="none"/>
+                  <li>
+                    <a id="widget${categoryId}" href="${browseURL}">${category}
+                    (${categoryInfos[category]})</a>&nbsp;
+                    <a
+             href="${freemarker_config.context}/article/feed?category=${category?replace(' ','+')}">
+                     <img src="${freemarker_config.context}/images/feed-icon-inline.gif"
+                     /></a>
+                  </li>
 		  </#if>
                 </#list>
               </ul>
