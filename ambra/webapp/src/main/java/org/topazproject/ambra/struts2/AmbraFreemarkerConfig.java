@@ -60,6 +60,7 @@ public class AmbraFreemarkerConfig {
   private String changeEmailURL;
   private String defaultJournalName;
   private String orgName;
+  private String feedbackEmail;
 
   /**
    * Constructor that loads the list of css and javascript files and page titles for pages which
@@ -84,7 +85,8 @@ public class AmbraFreemarkerConfig {
     defaultJournalName = myConfig.getString(DEFAULT_JOURNAL_NAME_CONFIG_KEY);
     journals = new HashMap<String, JournalConfig>();
     orgName = myConfig.getString("ambra.platform.name");
-
+    feedbackEmail = myConfig.getString("ambra.platform.email.feedback");
+    
     loadConfig(myConfig);
 
     processVirtualJournalConfig(myConfig);
@@ -881,4 +883,17 @@ public class AmbraFreemarkerConfig {
     this.orgName = orgName;
   }
 
+  /**
+   * @return the feedbackEmail
+   */
+  public String getFeedbackEmail() {
+    return feedbackEmail;
+  }
+
+  /**
+   * @param feedbackEmail the feedbackEmail to set
+   */
+  public void setFeedbackEmail(String feedbackEmail) {
+    this.feedbackEmail = feedbackEmail;
+  }
 }
