@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<#include "initForEditedBy.ftl">
+<#include "/user/initForEditedBy.ftl">
 
 <#if Parameters.tabId?exists>
    <#assign tabId = Parameters.tabId>
@@ -37,10 +37,10 @@
   <fieldset>
   <legend>${addressingUser} Private Information</legend>
   <ol>
-    <li>
-      <strong>${email}</strong><br />
-      <a href="${freemarker_config.changeEmailURL}" title="Click here to change your e-mail address">Change your e-mail address</a><br/>
-      <a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your password</a>
+    <li><p><em>Your E-mail address will always be kept private. See the the <a href="${freemarker_config.context}/static/privacy.action" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
+    <strong>${email}</strong><br />
+    <a href="${freemarker_config.changeEmailURL}" title="Click here to change your e-mail address">Change your e-mail address</a><br/>
+    <a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your password</a>
     </li>
   </ol>
   </fieldset>
@@ -179,7 +179,7 @@
 			</li>
 		</ol>
 
-    <#include "submit.ftl">
+    <#include "/user/submit.ftl">
 
 	</fieldset>
 
