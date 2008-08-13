@@ -193,10 +193,10 @@
         <div id="lower">&nbsp;</div>
       </div><!-- end : col -->
       <div class="partner">
-        <a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="images/home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
+        <a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="journals/plosJournals/images/home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
         <a href="http://www.fedora-commons.org/" title="Fedora-Commons.org"><img src="images/home_fedoracommons.png" alt="Fedora-Commons.org"/></a>
         <a href="http://www.mulgara.org/" title="Mulgara.org"><img src="images/home_mulgara.gif" alt="Mulgara.org"/></a>
-        <a href="http://www.sciencecommons.org/" title="Science Commons"><img src="images/home_sciencecommons.gif"  alt="Science Commons"/></a>
+        <a href="http://www.sciencecommons.org/" title="Science Commons"><img src="journals/plosJournals/images/home_sciencecommons.gif"  alt="Science Commons"/></a>
         <a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="images/home_moore.gif" alt="Moore Foundation"/></a>
       </div><!-- end : block partners -->
     </div><!-- end : home -->
