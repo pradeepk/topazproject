@@ -1212,9 +1212,19 @@
                            mode="front"/>
       <xsl:variable name="matchto" select="xref/@rid"/>
       <xsl:if test="../following-sibling::aff">
-        <xsl:text> (</xsl:text>
-        <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
-        <xsl:text>)</xsl:text>
+
+        <!-- use commas between name & aff if single editor; else use parens -->
+        <xsl:choose>
+          <xsl:when test="position() = 1 and position() = last()">
+            <xsl:text>, </xsl:text>
+            <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text> (</xsl:text>
+            <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
+            <xsl:text>)</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:if>
       <!-- appropriately place commas and "and" -->
       <xsl:if test="position() != last()">
