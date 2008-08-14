@@ -22,6 +22,7 @@ import java.net.URI;
 
 import java.util.Date;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -38,7 +39,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity()
 public abstract class ArticleAnnotation extends Annotation {
-  @Predicate(uri = "annotea:body", fetch = FetchType.eager) // XXX: lazy?
+  @Predicate(uri = "annotea:body", cascade = { CascadeType.child },
+             fetch = FetchType.eager) // XXX: lazy?
   private AnnotationBlob body;
 
   /**

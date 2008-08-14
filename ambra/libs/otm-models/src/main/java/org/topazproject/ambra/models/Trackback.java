@@ -21,6 +21,7 @@ package org.topazproject.ambra.models;
 
 import java.net.URL;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -33,7 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
 public class Trackback extends Annotation {
   private static final long serialVersionUID = -1224471659454172666L;
 
-  @Predicate(uri = "annotea:body")
+  @Predicate(uri = "annotea:body", cascade = { CascadeType.child })
   private TrackbackContent body;
 
   /**

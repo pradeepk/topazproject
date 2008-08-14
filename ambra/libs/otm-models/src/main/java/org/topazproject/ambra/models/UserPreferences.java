@@ -45,7 +45,7 @@ public class UserPreferences implements Serializable {
   private URI    id;
   @Predicate(uri = "dcterms:mediator")
   private String appId;
-  @Predicate(uri = "topaz:preference", cascade = {CascadeType.all, CascadeType.deleteOrphan})
+  @Predicate(uri = "topaz:preference", cascade = {CascadeType.child})
   private Set<UserPreference> prefs = new HashSet<UserPreference>();
 
   /**

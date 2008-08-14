@@ -46,15 +46,15 @@ public class UserAccount implements Serializable {
   private URI id;
   @Predicate(uri = "topaz:accountState")
   private int state = ACNT_ACTIVE;
-  @Predicate(uri = "topaz:hasAuthId", cascade = {CascadeType.all, CascadeType.deleteOrphan})
+  @Predicate(uri = "topaz:hasAuthId", cascade = {CascadeType.child})
   private Set<AuthenticationId> authIds = new HashSet<AuthenticationId>();
-  @Predicate(uri = "topaz:hasRoles", cascade = {CascadeType.all, CascadeType.deleteOrphan})
+  @Predicate(uri = "topaz:hasRoles", cascade = {CascadeType.child})
   private Set<UserRole>         roles = new HashSet<UserRole>();
   @Predicate(uri = "topaz:hasPreferences", model="preferences", 
-             cascade = {CascadeType.all, CascadeType.deleteOrphan})
+             cascade = {CascadeType.child})
   private Set<UserPreferences>  preferences = new HashSet<UserPreferences>();
   @Predicate(uri = "foaf:holdsAccount", inverse = true, model="profiles",
-             cascade = {CascadeType.all, CascadeType.deleteOrphan})
+             cascade = {CascadeType.child})
   private UserProfile           profile;
 
   /**

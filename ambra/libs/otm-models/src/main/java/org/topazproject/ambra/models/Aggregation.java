@@ -52,7 +52,7 @@ public class Aggregation implements Serializable {
   private DublinCore        dublinCore;
   @Predicate(uri = "dcterms:hasPart")
   private List<URI>                      simpleCollection = new ArrayList();
-  @Predicate(uri = "plos:smartCollectionRules", cascade = {CascadeType.all, CascadeType.deleteOrphan})
+  @Predicate(uri = "plos:smartCollectionRules", cascade = {CascadeType.child})
   private List<DetachedCriteria>         smartCollectionRules = new ArrayList();
   @Predicate(uri = "dcterms:replaces")
   private Aggregation                    supersedes;

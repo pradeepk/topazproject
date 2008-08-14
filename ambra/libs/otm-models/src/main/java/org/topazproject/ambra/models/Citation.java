@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -85,10 +86,12 @@ public class Citation implements Serializable {
   @Predicate(uri = "bibtex:hasNote", dataType = "xsd:string")
   private String note;
 
-  @Predicate(uri = "plos:hasEditorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "plos:hasEditorList", collectionType = CollectionType.RDFSEQ,
+             cascade = { CascadeType.child })
   private List<UserProfile> editors = new ArrayList<UserProfile>();
 
-  @Predicate(uri = "plos:hasAuthorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "plos:hasAuthorList", collectionType = CollectionType.RDFSEQ,
+             cascade = { CascadeType.child })
   private List<UserProfile> authors = new ArrayList<UserProfile>();
 
   @Predicate(uri = "bibtex:hasURL", dataType = "xsd:string")

@@ -18,6 +18,7 @@
  */
 package org.topazproject.ambra.models;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
@@ -44,7 +45,7 @@ public class Rating extends Annotation {
   /** Single Rating */
   public static final String SINGLE_RATING_TYPE = Rdf.topaz + "SingleRating";
 
-  @Predicate(uri = "annotea:body", fetch = FetchType.eager)
+  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = {CascadeType.child})
   private RatingContent body;
 
   /**

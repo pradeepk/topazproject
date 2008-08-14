@@ -18,6 +18,7 @@
  */
 package org.topazproject.ambra.models;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -31,7 +32,7 @@ import org.topazproject.otm.annotations.Predicate;
 public class RatingSummary extends Annotation {
   private static final long serialVersionUID = -8110763767878695617L;
 
-  @Predicate(uri = "annotea:body", fetch = FetchType.eager)
+  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = { CascadeType.child })
   private RatingSummaryContent body;
 
   /**

@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -46,14 +47,15 @@ public class Article extends ObjectInfo {
   /** Active article states */
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
-  @Predicate(uri = "dcterms:hasPart", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "dcterms:hasPart", collectionType = CollectionType.RDFSEQ,
+             cascade = { CascadeType.child })
   private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
 
   // This will be used to indicate the different types the article conforms to
   @Predicate(uri = "rdf:type")
   private Set<URI> articleType;
 
-  @Predicate(uri = "plos:relatedArticle")
+  @Predicate(uri = "plos:relatedArticle", cascade = { CascadeType.child })
   private Set<RelatedArticle> relatedArticles;
 
   /**
@@ -61,7 +63,7 @@ public class Article extends ObjectInfo {
    *
    * TODO: This needs to be changed.
    */
-  @Predicate(uri = "topaz:hasCategory")
+  @Predicate(uri = "topaz:hasCategory", cascade = { CascadeType.child })
   private Set<Category> categories = new HashSet<Category>();
 
   /** The state of this article. */

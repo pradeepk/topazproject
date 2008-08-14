@@ -96,21 +96,19 @@ public class DublinCore implements Serializable {
   @Predicate(uri = "dcterms:abstract")
   private Set<String> summary;
 
-  @Predicate(uri = "dcterms:bibliographicCitation")
+  @Predicate(uri = "dcterms:bibliographicCitation", cascade = { CascadeType.child })
   private Citation bibliographicCitation;
 
   @Predicate(uri = "dcterms:created", dataType = "xsd:date")
   private Date created;
 
-  @Predicate(uri = "dcterms:license",
-             cascade = { CascadeType.saveOrUpdate, CascadeType.merge, CascadeType.refresh,
-                         CascadeType.evict })
+  @Predicate(uri = "dcterms:license", cascade = { CascadeType.child })
   private Set<License> license;
 
   @Predicate(uri = "dcterms:modified", dataType = "xsd:date")
   private Date modified;
 
-  @Predicate(uri = "dcterms:references")
+  @Predicate(uri = "dcterms:references", cascade = { CascadeType.child } )
   private List<Citation> references;
 
   @Predicate(uri = "dcterms:conformsTo")

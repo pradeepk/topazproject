@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -44,7 +45,8 @@ public class EditorialBoard implements Serializable {
   private EditorialBoard supersedes;
   @Predicate(uri = "dcterms:isReplacedBy")
   private EditorialBoard supersededBy;
-  @Predicate(uri = "plos:editors", collectionType = CollectionType.RDFSEQ)
+  @Predicate(uri = "plos:editors", collectionType = CollectionType.RDFSEQ,
+      cascade = { CascadeType.child })
   private List<UserProfile>      editors = new ArrayList();
 
   /**

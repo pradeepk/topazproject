@@ -23,6 +23,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
@@ -48,7 +49,7 @@ public class ObjectInfo implements Serializable {
   private Article isPartOf;
 
   // PDF, TIF, PNG_S, DOC, ....
-  @Predicate(uri = "topaz:hasRepresentation")
+  @Predicate(uri = "topaz:hasRepresentation", cascade = { CascadeType.child } )
   private Set<Representation> representations = new HashSet<Representation>();
 
   @Predicate(uri = "topaz:contextElement")

@@ -45,7 +45,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
   private long                                                             size;
   @Predicate(uri = "dcterms:modified", dataType = "xsd:dateTime")
   private Date                                                             lastModified;
-  @Predicate(uri = "topaz:hasRepresentation", inverse=true)
+  @Predicate(uri = "topaz:hasRepresentation", inverse=true, notOwned=true)
   private ObjectInfo                                                       object;
 
   private transient boolean modified = true;
