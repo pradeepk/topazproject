@@ -171,6 +171,13 @@ public class FilterResolverFactory implements ResolverFactory {
   }
 
   /**
+   * @return true
+   */
+  public boolean supportsExport() {
+    return true;
+  }
+
+  /**
    * Close the session factory.
    */
   public void close() throws ResolverFactoryException {

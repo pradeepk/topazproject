@@ -80,6 +80,13 @@ public class StringCompareResolverFactory implements ResolverFactory {
     return null;
   }
 
+  /**
+   * @return false
+   */
+  public boolean supportsExport() {
+    return false;
+  }
+
   public void close() {
   }
 

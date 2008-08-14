@@ -164,7 +164,7 @@ class TransactionLogger extends QueueingFilterHandler<String> {
       val = "'" + val + "'";
       if (l.getDatatypeURI() != null)
         val += "^^<" + l.getDatatypeURI() + ">";
-      else if (!l.getLanguage().equals(""))
+      else if (l.getLanguage() != null && l.getLanguage().length() > 0)
         val += "@" + l.getLanguage();
       return val;
     }
