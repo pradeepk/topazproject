@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
@@ -43,13 +44,15 @@ public class Article extends ObjectInfo {
   private String[] subjects;
   @Predicate(uri = Rdf.topaz + "hasCategory")
   private String[] categories;
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true, fetch=FetchType.eager)
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
+      fetch=FetchType.eager, cascade = {CascadeType.child})
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
+      cascade = {CascadeType.child})
   private List<PrivateAnnotation> privateAnnotations = new ArrayList<PrivateAnnotation>();
   @Predicate(uri = Reply.NS + "inReplyTo", inverse=true, notOwned=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
-  @Predicate(uri = Rdf.dc_terms + "hasPart")
+  @Predicate(uri = Rdf.dc_terms + "hasPart", cascade = {CascadeType.child})
   private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
 
   /**

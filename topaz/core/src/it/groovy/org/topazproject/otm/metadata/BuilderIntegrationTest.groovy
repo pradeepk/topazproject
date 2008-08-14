@@ -311,8 +311,10 @@ public class BuilderIntegrationTest extends GroovyTestCase {
      def cnt = mc * 10
      for (colType in ['Predicate', 'RdfList', 'RdfBag', 'RdfSeq', 'RdfAlt']) {
        Class cls = rdf.class('Test' + cnt, type:'foo:Test' + cnt) {
-         col (pred:'foo:p1', type:'foo:Test' + cnt, colMapping: colType, maxCard:-1)
-         lis (pred:'foo:p2', type:type, colMapping: colType, maxCard:-1)
+         col (pred:'foo:p1', type:'foo:Test' + cnt, colMapping: colType, maxCard:-1
+                               ,cascade:['child'])
+         lis (pred:'foo:p2', type:type, colMapping: colType, maxCard:-1
+                               ,cascade:['child'])
          label()
        }
        def obj = cls.newInstance(id:'foo:obj'.toURI(), label:'obj')
@@ -356,7 +358,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   void testCascade() {
     Class cls = rdf.class('Test1', type:'foo:Test1') {
       sel  (pred:'foo:p1', type:'foo:Test1', cascade:['saveOrUpdate'])
-      all  (pred:'foo:p2', type:'foo:Test1', cascade:['all', 'deleteOrphan'])
+      all  (pred:'foo:p2', type:'foo:Test1', cascade:['child'])
       none (pred:'foo:p3', type:'foo:Test1', cascade:[])
     }
 

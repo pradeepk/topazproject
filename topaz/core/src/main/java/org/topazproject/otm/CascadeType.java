@@ -27,19 +27,59 @@ import java.util.EnumSet;
  * @author Pradeep Krishnan
  */
 public enum CascadeType {
+  /**
+   * Cascades the {@link org.topazproject.otm.Session#saveOrUpdate} to this
+   * association. 
+   */
   saveOrUpdate,
-  delete,
+  /**
+   * Cascades the {@link org.topazproject.otm.Session#merge} to this
+   * association. 
+   */
   merge,
+  /**
+   * Cascades the {@link org.topazproject.otm.Session#refresh} to this
+   * association. 
+   */
   refresh,
+  /**
+   * Cascades the {@link org.topazproject.otm.Session#evict} to this
+   * association. 
+   */
   evict,
-  all {public boolean implies(CascadeType e){
+  /**
+   * Cascades the {@link org.topazproject.otm.Session#delete} to this
+   * association. 
+   */
+  delete,
+  /**
+   * This cascade option specifies that when an associated object becomes 
+   * dis-associated with this instance, it should be considered an orphan and must 
+   * be deleted. This can happen when an assignment or 
+   * {@link org.topazproject.otm.Session#merge} replaces the associated instance
+   * with another.
+   */
+  deleteOrphan,
+  /**
+   * A convenience grouping of cascade operations when the assocition represents a 
+   * 'peer'. This is the set of {@link #saveOrUpdate}, {@link #merge}, {@link #refresh},
+   * and {@link #evict}.
+   */
+  peer {public boolean implies(CascadeType e){
     for (CascadeType c: EnumSet.range(CascadeType.saveOrUpdate, CascadeType.evict))
       if (c.implies(e))
         return true;
     return e.equals(this);
   }},
-  deleteOrphan {public boolean implies(CascadeType e){
-    return e.equals(this) || CascadeType.delete.implies(e);
+  /**
+   * A convenience grouping of cascade operations when the assocition represents a 
+   * 'child'. This is the set of {@link #peer}, {@link #delete} and {@link #deleteOrphan}.
+   */
+  child {public boolean implies(CascadeType e){
+    for (CascadeType c: EnumSet.range(CascadeType.delete, CascadeType.peer))
+      if (c.implies(e))
+        return true;
+    return e.equals(this);
   }};
 
   /**

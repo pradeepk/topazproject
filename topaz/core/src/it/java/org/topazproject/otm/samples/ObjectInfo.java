@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Alias;
 import org.topazproject.otm.annotations.Aliases;
@@ -80,7 +81,7 @@ public class ObjectInfo {
   /** The state of this article (or its parts). */
   @Predicate(uri = Rdf.topaz + "articleState")
   private int state;
-  @Predicate(uri = Rdf.topaz + "hasRepresentation")
+  @Predicate(uri = Rdf.topaz + "hasRepresentation", cascade={CascadeType.child})
   private Set<String> representations = new HashSet<String>(); // PDF, TIF, PNG_S, DOC, ...
   @Predicate(uri = Rdf.topaz + "contextElement")
   private String contextElement;

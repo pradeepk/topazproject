@@ -477,7 +477,7 @@ public class AnnotationClassMetaFactory {
 
       CollectionType mt             = getColType(rdf);
       CascadeType[]  ct             =
-        (rdf != null) ? rdf.cascade() : new CascadeType[] { CascadeType.all };
+        (rdf != null) ? rdf.cascade() : new CascadeType[] { CascadeType.peer };
       FetchType      ft             = (rdf != null) ? rdf.fetch() : FetchType.lazy;
 
       boolean        objectProperty = false;

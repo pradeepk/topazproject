@@ -45,7 +45,7 @@ public abstract class Annotation extends Annotea {
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private Annotation                                                                supersededBy;
   @Predicate(uri = Reply.NS + "inReplyTo", inverse = true, notOwned = true, 
-             cascade={CascadeType.all, CascadeType.deleteOrphan})
+             cascade={CascadeType.child})
   private List<ReplyThread>                                                         replies =
     new ArrayList<ReplyThread>();
 

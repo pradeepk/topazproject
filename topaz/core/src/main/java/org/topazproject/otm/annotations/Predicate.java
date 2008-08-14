@@ -107,7 +107,7 @@ public @interface Predicate {
   /**
    * Cascading preferences for this field. 
    */
-  CascadeType[] cascade() default {CascadeType.all};
+  CascadeType[] cascade() default {CascadeType.peer};
 
   /**
    * Fetch preferences for this field. Valid only for association fields.

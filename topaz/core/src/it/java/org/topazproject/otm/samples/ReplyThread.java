@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
@@ -30,7 +31,8 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 public class ReplyThread extends Reply {
-  @Predicate(uri=Reply.NS + "inReplyTo", inverse=true, notOwned=true)
+  @Predicate(uri=Reply.NS + "inReplyTo", inverse=true, notOwned=true, 
+      cascade={CascadeType.child})
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**

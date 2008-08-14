@@ -92,7 +92,7 @@ public class FieldDef {
    */
   String   colMapping
   /** the cascading options; default is 'all' */
-  String[] cascade = ['all']
+  String[] cascade = ['peer']
   /** the fetch options; default is 'lazy' */
   String fetch = 'lazy'
   /** if false this field is never saved, only loaded; defaults to 'true' */
@@ -356,8 +356,11 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
     for (String c in cascade) {
       switch(c?.toLowerCase()) {
         case null:
-        case 'all':
-           ct.add(CascadeType.all)
+        case 'peer':
+           ct.add(CascadeType.peer)
+           break;
+        case 'child':
+           ct.add(CascadeType.child)
            break;
         case 'delete':
            ct.add(CascadeType.delete)
@@ -379,7 +382,8 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
            break;
         default:
           throw new OtmException("Unknown cascade type '${c}' - must be one of " +
-            "'all', 'delete', 'saveOrUpdate', 'refresh', 'merge' 'evict' or 'deleteOrphan'");
+            "'peer', 'child', 'delete', 'saveOrUpdate', 'refresh', 'merge' 'evict' or " +
+            "'deleteOrphan'");
       }
     }
     return ct.toArray(new CascadeType[0])

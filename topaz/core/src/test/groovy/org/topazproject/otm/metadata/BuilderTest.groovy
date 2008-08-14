@@ -934,10 +934,14 @@ public class BuilderTest extends GroovyTestCase {
     assertEquals('foo:p2', m.uri)
     assertFalse(m.hasInverseUri())
     assertNull(m.model)
-    assertTrue(m.isCascadable(CascadeType.delete))
+    assertTrue(m.isCascadable(CascadeType.evict))
     assertTrue(m.isCascadable(CascadeType.saveOrUpdate))
     assertTrue(m.isCascadable(CascadeType.merge))
     assertTrue(m.isCascadable(CascadeType.refresh))
+    assertTrue(m.isCascadable(CascadeType.peer))
+    assertFalse(m.isCascadable(CascadeType.delete))
+    assertFalse(m.isCascadable(CascadeType.deleteOrphan))
+    assertFalse(m.isCascadable(CascadeType.child))
 
     m = cm.rdfMappers.asList()[2]
     l = (FieldBinder)m.getBinder(EntityMode.POJO)
