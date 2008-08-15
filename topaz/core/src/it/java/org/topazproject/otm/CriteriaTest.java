@@ -442,7 +442,7 @@ public class CriteriaTest extends AbstractOtmTest {
         public void run(Session session) throws OtmException {
           List l =
                 session.createCriteria(Annotation.class).add(Restrictions.ne("annotates", "bar:1"))
-                        .setFirstResult(0).setMaxResults(1).list();
+                        .setMaxResults(1).list();
 
           assertEquals(1, l.size());
 
@@ -463,15 +463,16 @@ public class CriteriaTest extends AbstractOtmTest {
     log.info("Testing first-result ...");
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          List l =
+          for (int idx = 0; idx < 3; idx++) {
+            List l =
                 session.createCriteria(Annotation.class).add(Restrictions.ne("annotates", "bar:1"))
-                        .setFirstResult(1).setMaxResults(1).list();
+                       .setFirstResult(idx).list();
 
-          assertEquals(1, l.size());
+            assertEquals(3 - idx, l.size());
 
-          Annotation a1 = (Annotation) l.get(0);
-
-          assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()) || id4.equals(a1.getId()));
+            Annotation a1 = (Annotation) l.get(0);
+            assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()) || id4.equals(a1.getId()));
+          }
         }
       });
   }
