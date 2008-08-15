@@ -39,9 +39,8 @@
 <!-- begin : main content -->
 <div id="content">
 <h1>Change Your Password</h1>
-	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Fields marked with <span class="required">*</span> are required. </p>
-  <@s.form cssClass="pone-form" method="post" name="changePasswordForm" id="changePasswordForm" action="forgotPasswordChangeSubmit" title="Change Password Form">
+  <@s.form cssClass="ambra-form" method="post" name="changePasswordForm" id="changePasswordForm" action="forgotPasswordChangeSubmit" title="Change Password Form">
 	  <@s.hidden name="loginName" value="${thisLoginName}"/>
     <@s.hidden name="resetPasswordToken" value="${thisPasswordToken}" />
 	<fieldset>

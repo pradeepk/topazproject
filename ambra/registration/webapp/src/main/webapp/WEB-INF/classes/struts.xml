@@ -71,7 +71,7 @@
       </global-exception-mappings>
 
       <action name="home">
-        <result>/WEB-INF/pages/home.ftl</result>
+        <result>/pages/home.ftl</result>
       </action>
 
       <action name="register">

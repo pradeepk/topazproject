@@ -19,7 +19,7 @@
 -->
 <html>
 <body>
-You have requested to change your PLoS account from ${user.loginName} to ${user.newLoginName}.<br/>
+You have requested to change your account from ${user.loginName} to ${user.newLoginName}.<br/>
 <br/>
 Please click on this <a href="${url}?loginName=${user.loginName}&amp;emailVerificationToken=${user.emailVerificationToken}">link</a> to 
 verify your new e-mail address.

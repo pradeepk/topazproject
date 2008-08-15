@@ -25,7 +25,7 @@
 <h1>Resend Registration E-mail</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Fields marked with <span class="required">*</span> are required. </p>
-  <@s.form cssClass="pone-form" method="post" name="resendRegistrationForm" id="resendRegistrationForm" action="resendRegistrationSubmit" title="Resend Registration Form">
+  <@s.form cssClass="ambra-form" method="post" name="resendRegistrationForm" id="resendRegistrationForm" action="resendRegistrationSubmit" title="Resend Registration Form">
 		
 	<fieldset>
 		<legend>Resend Registration</legend>
@@ -40,10 +40,9 @@
   </@s.form>
   
   <ul>
-          <li><a href="http://journals.plos.org/help.php">Help</a></li>
-	  <li>Already registered? <a href="${plosOneUrl}${plosOneContext}/profile">Login</a>.</li>
-          <li><a href="/ambra-registration/register.action">Register for a New Account</a></li>
-          <li><a href="/ambra-registration/forgotPassword.action" title="Click here if you forgot your password">Forgotten Password?</a></li>
+	  <li>Already registered? <a href="${ambraUrl}${ambraContext}/profile">Login</a>.</li>
+    <li><a href="${context}/register.action">Register for a New Account</a></li>
+    <li><a href="${context}/forgotPassword.action" title="Click here if you forgot your password">Forgotten Password?</a></li>
   </ul>
   
 </div>

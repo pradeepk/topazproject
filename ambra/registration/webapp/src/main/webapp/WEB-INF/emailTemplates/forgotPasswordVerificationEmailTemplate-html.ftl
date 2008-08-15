@@ -19,7 +19,7 @@
 -->
 <html>
 <body>
-Thank you <b>${user.loginName}</b> for requesting to reset your PLoS password.<br/>
+Thank you <b>${user.loginName}</b> for requesting to reset your password.<br/>
 
 Please click on this link to reset your password:
 

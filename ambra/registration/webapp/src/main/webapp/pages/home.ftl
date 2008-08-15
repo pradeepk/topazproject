@@ -22,7 +22,7 @@
         <title>Welcome</title>
     </head>
     <body>
-        <h1>Welcome to the Plosone webapp</h1>
+        <h1>Welcome to the ambra-registration webapp</h1>
 
         <p>
             <fieldset>

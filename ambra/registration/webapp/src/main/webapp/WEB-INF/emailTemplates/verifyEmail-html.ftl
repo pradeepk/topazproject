@@ -19,7 +19,7 @@
 -->
 <html>
 <body>
-Thank you <b>${user.loginName}</b> for registering with PLoS.<br/>
+Thank you <b>${user.loginName}</b> for registering.<br/>
 
 Please click on this link to verify your e-mail address:
 

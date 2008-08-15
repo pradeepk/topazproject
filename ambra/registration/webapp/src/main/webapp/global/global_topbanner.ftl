@@ -23,6 +23,5 @@
 	<!-- end : left banner slot -->
 	<!-- begin : right banner slot -->
 	<div class="right">
-
 	</div>
 	<!-- end : right banner slot -->

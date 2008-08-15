@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-Thank you ${user.loginName} for requesting to reset your PLoS password.
+Thank you ${user.loginName} for requesting to reset your password.
 
 Please copy and paste the link below into a web browser to reset your password: 
 

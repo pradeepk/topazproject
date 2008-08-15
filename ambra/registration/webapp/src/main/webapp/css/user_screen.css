@@ -19,7 +19,7 @@
  */
 /*
 ----------------------------------------------------------
-Global Style Sheet for PLoS Journals
+Global Style Sheet for Ambra
 Created by: Margaret Shear May 20, 2006
 Modified by: Margaret Shear October 22, 2006
 Modified by: Susanne DeRisi April 23, 2007
@@ -200,13 +200,3 @@ div.horizontalTabs	{ position: relative; border-width: 0;}
 
 .horizontalTabs .contentwrap 	{margin: 30px 0 0 0; padding: 0; position: relative; }
 
-
-/* ORIGINAL TABS
-div.horizontalTabs	{ position: relative; border-width: 0;}
-.horizontalTabs ul,
-.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; color: #069;}
-.horizontalTabs ul	{ display: block; margin-bottom: 5px; z-index: 10; border-bottom: 2px solid #ACF1FF; }
-.horizontalTabs ul li	{ cursor: pointer; padding: 5px 10px 5px 10px; background-color: transparent; margin: 5px 2px 3px 2px; display: inline; }
-.horizontalTabs ul li.active	{ font-weight: bold;background: url(../images/pone_forms_bg.gif) repeat-x bottom; border-bottom-color: #fff; text-decoration: none; color: #000;}
-.horizontalTabs .contentwrap 	{margin: 0; border: 2px solid #fff; padding: 0;position: relative; }
-*/

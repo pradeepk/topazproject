@@ -23,7 +23,7 @@
   of these values may be overridden by settings in defaults-dev.xml. Finally, look for overrides
   in /etc/topaz/ambra.xml.
 
-  See also libs/conf-helper/src/main/resources/globa-defaults.xml
+  See also libs/conf-helper/src/main/resources/global-defaults.xml
 -->
 <config>
   <ambra>
@@ -32,7 +32,7 @@
       <registration>
         <from-email>registration@your-org</from-email> <!-- From address in registration emails -->
         <from-name>My Org Registration</from-name>     <!-- Name of from user in reg emails -->
-        <context>/plos-registration</context>          <!-- Directory of webapp -->
+        <context>/ambra-registration</context>          <!-- Directory of webapp -->
         <!-- Full URL of registration webapp - Shouldn't need to be exposed -->
         <url>https://${ambra.network.hosts.registration}:${ambra.network.ports.registration-ssl}${ambra.services.registration.context}</url>
         <ambra> <!-- Location of publishing app so links in registration work -->

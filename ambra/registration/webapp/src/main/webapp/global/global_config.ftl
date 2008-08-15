@@ -18,5 +18,5 @@
   limitations under the License.
 -->
 <#assign context="${config.getString('ambra.services.registration.context')}">
-<#assign plosOneUrl="${config.getString('ambra.services.registration.ambra.url')}">
-<#assign plosOneContext="${config.getString('ambra.services.registration.ambra.context')}">
+<#assign ambraUrl="${config.getString('ambra.services.registration.ambra.url')}">
+<#assign ambraContext="${config.getString('ambra.services.registration.ambra.context')}">

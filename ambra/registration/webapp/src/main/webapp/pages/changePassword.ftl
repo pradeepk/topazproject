@@ -23,9 +23,8 @@
 <!-- begin : main content -->
 <div id="content">
 <h1>Change Your Password</h1>
-	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Fields marked with <span class="required">*</span> are required. </p>
-  <@s.form cssClass="pone-form" method="post" name="changePasswordForm" id="changePasswordForm" action="changePasswordSubmit" title="Change Password Form">
+  <@s.form cssClass="ambra-form" method="post" name="changePasswordForm" id="changePasswordForm" action="changePasswordSubmit" title="Change Password Form">
 
 	<fieldset>
 		<legend>Change your password</legend>

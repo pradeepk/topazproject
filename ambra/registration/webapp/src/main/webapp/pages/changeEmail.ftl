@@ -24,7 +24,7 @@
 <div id="content">
 <h1>Change Your E-mail Address</h1>
 	<p>Fields marked with <span class="required">*</span> are required. </p>
-  <@s.form cssClass="pone-form" method="post" name="changeEmailForm" id="changeEmailForm" action="changeEmailSubmit" title="Change E-mail Address Form">
+  <@s.form cssClass="ambra-form" method="post" name="changeEmailForm" id="changeEmailForm" action="changeEmailSubmit" title="Change E-mail Address Form">
 
 	<fieldset>
 		<legend>Change your e-mail address</legend>

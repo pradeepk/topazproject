@@ -22,7 +22,7 @@
 <#else>
 	<#assign journalContext = "">
 </#if>
-<title>Ambra : It's refreshing.</title>
+<title>Ambra</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" href="${freemarker_config.context}/images/favicon.ico" type="image/x-icon" />
