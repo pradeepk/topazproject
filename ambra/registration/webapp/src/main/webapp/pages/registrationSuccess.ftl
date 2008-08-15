@@ -22,7 +22,7 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h1>Sign Up for a PLoS Journals Profile</h1>
+<h1>Sign Up for an Ambra Journals Profile</h1>
 	<p>
 		<strong>Thanks for registering!</strong>
 		Please check your e-mail inbox to confirm your registration.  

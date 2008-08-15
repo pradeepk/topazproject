@@ -19,5 +19,5 @@
 -->
 	<ul>
 		<li><a href="${ambraUrl}${ambraContext}/static/privacy.action" title="Privacy Statement" tabindex="501">Privacy Statement</a></li>
-		<li><a href="${ambraUrl}${ambraContext}/static/terms.action" title="PLoS Terms of Use" tabindex="502">Terms of Use</a></li>
+		<li><a href="${ambraUrl}${ambraContext}/static/terms.action" title="Terms of Use" tabindex="502">Terms of Use</a></li>
 	</ul>
