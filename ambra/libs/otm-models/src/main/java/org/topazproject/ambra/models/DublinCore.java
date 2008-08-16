@@ -104,7 +104,7 @@ public class DublinCore implements Serializable {
   @Predicate(uri = "dcterms:created", dataType = "xsd:date")
   private Date created;
 
-  @Predicate(uri = "dcterms:license", cascade = { CascadeType.child })
+  @Predicate(uri = "dcterms:license")
   private Set<License> license;
 
   @Predicate(uri = "dcterms:modified", dataType = "xsd:date")
