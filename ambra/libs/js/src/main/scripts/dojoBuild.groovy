@@ -49,6 +49,16 @@ def injectLocales = { String fpath ->
     f.write(fbuf.substring(0, index) + locales + fbuf.substring(index))
 }
 
+// check if we're already up-to-date
+def artifact = new File(project.build.directory, "${project.build.finalName}-js.zip")
+
+ant.uptodate(property: 'isUpToDate', targetfile: artifact) {
+  srcfiles(dir: new File(project.basedir, project.build.scriptSourceDirectory), includes: "*")
+}
+
+if (ant.project.properties.'isUpToDate')
+  System.exit(0)
+
 // dojo build settings 
 // IMPT: paths in the following setting vars are relative to the 'dojo-release-xxx-src/util/buildscripts' dir
 final String profileFile = '../../../ambra.profile.js';
