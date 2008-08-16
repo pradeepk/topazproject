@@ -44,6 +44,8 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix("topaz:")
 @Entity(model = "profiles")
 public class UserProfile extends FoafPerson {
+  static final long serialVersionUID = -1224761277569005857L;
+
   public static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
   public static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
 
@@ -85,8 +87,6 @@ public class UserProfile extends FoafPerson {
   /** text containing their research areas */
   @Predicate(uri = "topaz:researchAreas")
   private String researchAreasText;
-
-static final long serialVersionUID = -1224761277569005857L;
 
   public UserProfile clone() {
     return (UserProfile) super.clone();

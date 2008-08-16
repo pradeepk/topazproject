@@ -30,9 +30,6 @@ public class FormalCorrection extends Correction {
   private static final long   serialVersionUID = 4949878990530615857L;
   public  static final String RDF_TYPE         = Annotea.TOPAZ_TYPE_NS + "FormalCorrection";
 
-  /*
-   * inherited javadoc
-   */
   public String getType() {
     return RDF_TYPE;
   }

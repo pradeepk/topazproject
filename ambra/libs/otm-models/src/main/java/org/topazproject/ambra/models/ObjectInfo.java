@@ -38,6 +38,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = "topaz:ObjectInfo", model = "ri")
 public class ObjectInfo implements Serializable {
+  private static final long serialVersionUID = 4074534426473235595L;
+
   @Id
   private URI id;
 
@@ -57,8 +59,6 @@ public class ObjectInfo implements Serializable {
 
   @Predicate(uri = "prism:eIssn")
   private String eIssn;
-
-  private static final long serialVersionUID = 4074534426473235595L;
 
   /**
    * Return the context for the object

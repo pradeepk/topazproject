@@ -37,6 +37,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix("topaz:TrackbackContent/")
 @Entity(model = "ri", type = "topaz:TrackbackContent")
 public class TrackbackContent implements Serializable {
+  static final long serialVersionUID = -4310540950708482559L;
 
   @Id
   @GeneratedValue(uriPrefix = "id:trackbackContent/")
@@ -46,8 +47,6 @@ public class TrackbackContent implements Serializable {
   private URL url;
   private String blog_name;
   private String excerpt;
-
-  static final long serialVersionUID = -4310540950708482559L;
 
   /**
    * Creates a new TrackbackContent object with default values.

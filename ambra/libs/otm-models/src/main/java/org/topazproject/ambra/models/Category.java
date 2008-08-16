@@ -37,14 +37,14 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "ri")
 public class Category implements Serializable {
+  private static final long serialVersionUID = -1910044609722349497L;
+
   @Id @GeneratedValue(uriPrefix = "id:category/")
   private URI id;
   @Predicate(uri = "topaz:mainCategory")
   private String mainCategory;
   @Predicate(uri = "topaz:subCategory")
   private String subCategory;
-
-  private static final long serialVersionUID = -1910044609722349497L;
 
   /**
    * @return the id

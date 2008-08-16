@@ -40,6 +40,8 @@ import org.topazproject.otm.annotations.GeneratedValue;
  */
 @Entity(type = "plos:RelatedArticle", model = "ri")
 public class RelatedArticle  implements Serializable {
+  private static final long serialVersionUID = -4229157024423830497L;
+
   @Id @GeneratedValue(uriPrefix = "id:relatedArticle/")
   private URI id;
 
@@ -48,8 +50,6 @@ public class RelatedArticle  implements Serializable {
 
   @Predicate(uri = "plos:articleRelationType")
   private String relationType;
-
-  private static final long serialVersionUID = -4229157024423830497L;
 
   /**
    * Return the identifier of the object

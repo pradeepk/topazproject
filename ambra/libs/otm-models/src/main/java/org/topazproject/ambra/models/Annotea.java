@@ -40,6 +40,9 @@ import org.topazproject.otm.annotations.Predicate.PropType;
 @Entity(model = "ri")
 @UriPrefix("annotea:")
 public abstract class Annotea implements Serializable {
+  private static final long serialVersionUID = 7228784439724175998L;
+  private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
   /**
    * Annotea Namespace URI
    */
@@ -62,8 +65,6 @@ public abstract class Annotea implements Serializable {
   @Predicate(uri = "topaz:state", dataType = Predicate.UNTYPED)
   private int                                               state;
 
-  static final long serialVersionUID = 7228784439724175998L;
-  private static SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
   static {
     fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
   }

@@ -39,6 +39,8 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Amit Kapoor
  */
 public class DublinCore implements Serializable {
+  private static final long serialVersionUID = -3010297971167417038L;
+
   @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   private String title;
 
@@ -113,8 +115,6 @@ public class DublinCore implements Serializable {
 
   @Predicate(uri = "dcterms:conformsTo")
   private URI conformsTo;
-
-  private static final long serialVersionUID = -3010297971167417038L;
 
   /**
    * Empty contructor

@@ -42,6 +42,8 @@ import org.topazproject.otm.annotations.UriPrefix;
 @Entity(type = "bibtex:Entry", model = "ri")
 @UriPrefix("topaz:")
 public class Citation implements Serializable {
+  private static final long serialVersionUID = 6405781304940950306L;
+
   @Id @GeneratedValue(uriPrefix = "id:citation/")
   private URI   id;
 
@@ -102,8 +104,6 @@ public class Citation implements Serializable {
 
   @Predicate(uri = "rdf:type", type = PropType.OBJECT)
   private String citationType;
-
-  private static final long serialVersionUID = 6405781304940950306L;
 
   /**
    * Get id.
