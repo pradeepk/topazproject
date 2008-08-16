@@ -841,6 +841,7 @@ public class SessionImpl extends AbstractSession {
           cc.add(aoc);
         }
 
+        b.get(o);       // force load of lazy-loaded associations for orphanTrack
         b.set(o, cc);
       }
     }

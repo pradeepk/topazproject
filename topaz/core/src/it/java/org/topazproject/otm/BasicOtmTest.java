@@ -450,6 +450,7 @@ public class BasicOtmTest extends AbstractOtmTest {
   )
   public void testMergeDelAssoc() throws OtmException {
     log.info("Testing merge() - deletion of associations...");
+    // delete reply
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
@@ -484,6 +485,40 @@ public class BasicOtmTest extends AbstractOtmTest {
           List<ReplyThread> replies = a.getReplies();
           assertNotNull(replies);
           assertEquals(0, replies.size());
+
+          ReplyThread r = session.get(ReplyThread.class, "http://localhost/reply/1");
+          assertNull(r);
+          r = session.get(ReplyThread.class, "http://localhost/reply/1/1");
+          assertNull(r);
+        }
+      });
+
+    // same as above, but where reply hasn't been loaded yet
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+
+          ReplyThread r  = new ReplyThread(URI.create("http://localhost/reply/1"));
+          ReplyThread rr = new ReplyThread(URI.create("http://localhost/reply/1/1"));
+
+          a.addReply(r);
+          r.addReply(rr);
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+          assertNotNull(a);
+
+          Annotation n =
+              session.merge(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
+          assertTrue(n == a);
+        }
+      });
+    doInSession(new Action() {
+        public void run(Session session) throws OtmException {
+          Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+          assertNotNull(a);
 
           ReplyThread r = session.get(ReplyThread.class, "http://localhost/reply/1");
           assertNull(r);
