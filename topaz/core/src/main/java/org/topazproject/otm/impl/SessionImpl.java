@@ -77,6 +77,7 @@ public class SessionImpl extends AbstractSession {
   private final Map<Id, Set<Wrapper>>          orphanTrack    = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
   private boolean flushing                                    = false;
+  private int flushLoopLimit                                  = 100; // XXX: expose this to the app
 
   private static final StateCache              states         = new StateCache() {
     public void insert(Object o, ClassMetadata cm, Session session) throws OtmException {
@@ -155,7 +156,7 @@ public class SessionImpl extends AbstractSession {
       }
     }
 
-    do {
+    for (int iterations = 0; iterations < flushLoopLimit; iterations++) {
       Map<Id, Object> workDelete = new HashMap<Id, Object>(deleteMap);
       Map<Id, Object> workDirty = new HashMap<Id, Object>(dirtyMap);
 
@@ -172,7 +173,12 @@ public class SessionImpl extends AbstractSession {
       deleteMap.keySet().removeAll(workDelete.keySet());
       dirtyMap.keySet().removeAll(workDirty.keySet());
       cleanMap.putAll(workDirty);
-    } while ((deleteMap.size() > 0) || (dirtyMap.size() > 0));
+      if ((deleteMap.size() == 0) && (dirtyMap.size() == 0))
+        return;
+    }
+    throw new OtmException("Flush is unable to converge. An Interceptor or PreInsertListener " +
+        "is updating the Session. Looped " + flushLoopLimit + " times and still have " + 
+        "deleteMap=" + deleteMap.keySet() + " dirtyMap=" + dirtyMap.keySet());
   }
 
   /*
