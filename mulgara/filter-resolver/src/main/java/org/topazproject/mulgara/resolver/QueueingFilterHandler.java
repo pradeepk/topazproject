@@ -163,14 +163,23 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
    */
   protected class QueueingXAResource extends DummyXAResource {
     public void start(Xid xid, int flags) {
+      if (logger.isTraceEnabled())
+        logger.trace("setting xid '" + xid + "'");
+
       currentTxId.set(xid);
     }
 
     public void end(Xid xid, int flags) {
+      if (logger.isTraceEnabled())
+        logger.trace("clearing xid '" + xid + "'");
+
       currentTxId.set(null);
     }
 
     public void commit(Xid xid, boolean onePhase) {
+      if (logger.isTraceEnabled())
+        logger.trace("committing xid '" + xid + "'");
+
       List<T> queue;
       synchronized (txQueue) {
         queue = txQueue.remove(xid);
@@ -186,6 +195,9 @@ abstract class QueueingFilterHandler<T> extends AbstractFilterHandler {
     }
 
     public void rollback(Xid xid) {
+      if (logger.isTraceEnabled())
+        logger.trace("rolling back xid '" + xid + "'");
+
       synchronized (txQueue) {
         txQueue.remove(xid);
       }
