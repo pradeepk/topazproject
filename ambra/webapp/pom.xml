@@ -57,6 +57,10 @@
       <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
