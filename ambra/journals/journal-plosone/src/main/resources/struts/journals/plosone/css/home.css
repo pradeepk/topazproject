@@ -142,6 +142,7 @@ div.article img {
   border: 1px solid #ccc;
 	position:static!important; /* static position required to fix wierd image displacement bug in IE6 when tabs are written into page */
 }
+div.article h3 img { float:none; border:0; margin:0 0 0 0.25em; }
 
 /* wraps banner ads */
 div.banner				{ padding: 0; border: none; margin:0 0 4px 2px; }
