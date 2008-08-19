@@ -819,12 +819,26 @@
           <groupId>org.topazproject.patch.plugin</groupId>
           <artifactId>axistools-maven-plugin</artifactId>
           <version>1.1-t1</version>
+          <dependencies>
+            <dependency>
+              <groupId>javax.mail</groupId>
+              <artifactId>mail</artifactId>
+              <version>1.4</version>
+            </dependency>
+          </dependencies>
         </plugin>
 
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>axistools-maven-plugin</artifactId>
           <version>1.0</version>
+          <dependencies>
+            <dependency>
+              <groupId>javax.mail</groupId>
+              <artifactId>mail</artifactId>
+              <version>1.4</version>
+            </dependency>
+          </dependencies>
         </plugin>
 
         <plugin>
