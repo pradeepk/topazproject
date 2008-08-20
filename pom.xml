@@ -92,7 +92,7 @@
   <scm>
     <developerConnection>scm:svn:http://svn.topazproject.org/svn/head/</developerConnection>
     <connection>scm:svn:http://svn.topazproject.org/svn-pub/head/</connection>
-    <url>http://www.topazproject.org/trac/browser</url>
+    <url>http://www.topazproject.org/trac/browser/head</url>
   </scm>
 
   <modules>
