@@ -57,7 +57,7 @@ ant.uptodate(property: 'isUpToDate', targetfile: artifact) {
 }
 
 if (ant.project.properties.'isUpToDate')
-  System.exit(0)
+  return
 
 // dojo build settings 
 // IMPT: paths in the following setting vars are relative to the 'dojo-release-xxx-src/util/buildscripts' dir
