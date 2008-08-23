@@ -680,7 +680,7 @@ div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  p
 #browseNav li 		{ font-size: .9em; font-weight: bold; padding: 0;margin: 0; }
 #browseNav li input { position: relative; }
 #browseNav ul		{ padding: 0; }
-#browseNav ul li	{ background: url(../images/browsenav_li.gif) no-repeat 0 8px; list-style-type: none; padding-left: 10px; }
+#browseNav ul li	{ background: url(../images/browsenav_li.gif) no-repeat 0 8px; list-style-type: none; padding-left: 10px; float:none; }
 #browseNav ul.subjects li { float:none; } /* fix for wrapping problem in IE7 -SWT */
 named-content[content-type="genus-species"] { font-style:italic; } /* italicizes genus and species names in titles returned by browse pages */
 
@@ -693,6 +693,20 @@ named-content[content-type="genus-species"] { font-style:italic; } /* italicizes
 
 #browseNav ol a:link,
 #browseNav ol a:visited 	{ display: block; border-right: 1px solid #999; width: 32px; margin: 4px 0; text-align: center;}
+/* Temporarily commented out until new browseNavDate.ftl is in place. Remember to comment out override style below and add styles to other journals
+ * #browseNav ol li.current a { color:#fff; text-decoration: none; background:#000; border-color:#000; cursor: default;}*/
+#browseNav ol li.month a { background-color:#CECECE; text-transform:uppercase; }
+#browseNav form { position:relative; } 
+#browseNav fieldset { border:0; padding:0; }
+div#browseNav fieldset div { padding:0; background-color:transparent; } 
+/* For ONE pub date selector on Browse by Pub Date page */
+#browseNav form#selectPubDate { clear:both; border-top:1px solid #999; margin:0 16px; padding:5px 0; }
+#browseNav form#selectPubDate div { float:left; margin-right:5px; }
+#browseNav form#selectPubDate div label { display:block; font-size:0.9em } 
+#browseNav fieldset legend { font-weight:bold; color:#666; }
+/* IE hacks to force fieldset legend to align to left */
+*:first-child+html #browseNav fieldset legend  { margin: 0 -7px; } /* IE7 */
+* html #browseNav fieldset legend { margin: 0 -7px; } /* IE6 */
 
 /*--- Browse by TOC and Journal Archive ---*/
 p#issueNav { margin:0; padding:0; position:relative; font-size:0.9em; }
