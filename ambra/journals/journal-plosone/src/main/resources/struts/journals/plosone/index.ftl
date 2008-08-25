@@ -38,8 +38,8 @@
                       articleURI="info:doi/10.1371/journal.pone.0001709"/>
               <h2>New and Noted</h2>
                <div class="article section">
-                <h3>Recently Published <a href="${freemarker_config.context}/article/feed">
-                  <img src="${freemarker_config.context}/images/feed-icon-inline.gif"/></a></h3>
+                <h3>Most Recently Published <a href="${freemarker_config.context}/article/feed">
+                  <img src="${freemarker_config.context}/images/icon_rss_small.gif"/></a></h3>
                 <#include "/article/recentArticles.ftl">
                 <div class="clearer">&nbsp;</div>
               </div>
