@@ -78,7 +78,7 @@ All rights reserved.
 /* float left and kill margin on first for added flex */
 #first, .col .first 		{ float:left; }
 /* container column 1 */
-#first 						{ width:518px; padding-top:27px; }
+#first 						{ width:518px; padding-top:12px; }
 
 /* column 1 --This column is empty-- */
 
