@@ -248,9 +248,9 @@
         <page>
           <name>/user/alerts.ftl</name>
           <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/forms.css</file>
+            <file>/css/user_screen.css</file>
+            <file>/css/user_iepc.css</file>
+            <file>/css/user_forms.css</file>
             <file>/css/static.css</file>
           </css>
           <javascript>
@@ -260,7 +260,7 @@
           </javascript>
         </page>
         <page>
-          <name>/user/createNewUser.ftl</name>
+          <name>/journals/plosJournals/user/createNewUser.ftl</name>
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
             <file>/javascript/dojo/dojo/ambra.js</file>
@@ -269,11 +269,11 @@
           </javascript>
         </page>
         <page>
-          <name>/user/editUser.ftl</name>
+          <name>/journals/plosJournals/user/editUser.ftl</name>
           <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/forms.css</file>
+            <file>/css/user_screen.css</file>
+            <file>/css/user_iepc.css</file>
+            <file>/css/user_forms.css</file>
             <file>/css/static.css</file>
           </css>
           <javascript>

@@ -442,9 +442,9 @@
         <page>
           <name>/user/alerts.ftl</name>
           <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/forms.css</file>
+            <file>/css/user_screen.css</file>
+            <file>/css/user_iepc.css</file>
+            <file>/css/user_forms.css</file>
             <file>/css/static.css</file>
           </css>
           <javascript>
@@ -465,9 +465,9 @@
         <page>
           <name>/user/editUser.ftl</name>
           <css>
-            <file>/css/screen.css</file>
-            <file>/css/iepc.css</file>
-            <file>/css/forms.css</file>
+            <file>/css/user_screen.css</file>
+            <file>/css/user_iepc.css</file>
+            <file>/css/user_forms.css</file>
             <file>/css/static.css</file>
           </css>
           <javascript>
