@@ -31,9 +31,9 @@
 <title>Ambra</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+
 <!-- global_css.ftl -->
 <style type="text/css" media="all"> @import "css/user_screen.css";</style>
-<style type="text/css" media="all"> @import "css/user_iepc.css";</style>
 <style type="text/css" media="all"> @import "css/user_forms.css";</style>
 
 <!--
