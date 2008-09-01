@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>journal-genetics</artifactId>
-  <version>0.9-rc2-SNAPSHOT</version>
+  <version>0.9</version>
   <name>Genetics Journal Resources</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>journals</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.9-rc2-SNAPSHOT</version>
+    <version>0.9</version>
   </parent>
 
 </project>

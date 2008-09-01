@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>ambra-password-service</artifactId>
-  <version>0.9-rc2-SNAPSHOT</version>
+  <version>0.9</version>
   <packaging>jar</packaging>
   <name>Ambra Registration Password Service</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra-registration</artifactId>
-    <version>0.9-rc2-SNAPSHOT</version>
+    <version>0.9</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
