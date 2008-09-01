@@ -21,12 +21,10 @@ package org.topazproject.ambra.article.action;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -285,24 +283,15 @@ public class ArticleFeed extends BaseActionSupport {
       maxResults = 30;  // default
     }
 
-    // sort by date, descending
-    LinkedHashMap<String, Boolean> sort = new LinkedHashMap();
-    sort.put("dublinCore.date", false);
-    sort.put("id", Boolean.TRUE);
-
-    List<Article> articles = null;
-    try {
-      articles = articleOtmService.getArticles(
+    List<Article> articles = articleOtmService.getArticles(
         startDate,             // start date
         endDate,               // end date
         categoriesList.toArray(new String[categoriesList.size()]),  // categories
         authorsList.toArray(new String[authorsList.size()]),        // authors
         Article.ACTIVE_STATES, // states
-        sort,                  // sort by
+        false,                 // sort by descending date
         maxResults);           // max results
-    } catch (ParseException ex) {
-      throw new ApplicationException(ex);
-    }
+
     if (log.isDebugEnabled()) {
       log.debug("feed query returned " + articles.size() + " articles");
     }

@@ -201,7 +201,8 @@ public class FetchArticleService {
   public List<String> getArticleIds(String startDate, String endDate, int[] state)
       throws ApplicationException {
     try {
-      return articleXmlUtils.getArticleService().getArticleIds(startDate, endDate, state, true);
+      return articleXmlUtils.getArticleService().
+                             getArticleIds(startDate, endDate, null, null, state, true, 0);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }

@@ -175,36 +175,63 @@ public class ArticleOtmService {
    * @param startDate  is the date to start searching from. If null, start from begining of time.
    *                   Can be iso8601 formatted or string representation of Date object.
    * @param endDate    is the date to search until. If null, search until present date
+   * @param categories is list of categories to search for articles within (all categories if null
+   *                   or empty)
+   * @param authors    is list of authors to search for articles within (all authors if null or
+   *                   empty)
    * @param states     the list of article states to search for (all states if null or empty)
    * @param ascending  controls the sort order (by date).
+   * @param maxResults the maximum number of results to return, or 0 for no limit
    * @return the (possibly empty) list of article ids.
    */
   @Transactional(readOnly = true)
-  public List<String> getArticleIds(final String startDate, final String endDate,
-                                    final int[] states, boolean ascending) throws Exception {
-    final StringBuilder qry = new StringBuilder();
-    qry.append("select art.id, art.dublinCore.date d from Article art where ");
+  public List<String> getArticleIds(String startDate, String endDate, String[] categories,
+                                    String[] authors, int[] states, boolean ascending,
+                                    int maxResults) {
+    StringBuilder qry = new StringBuilder();
+    qry.append("select art.id id, d from Article art where ");
+    qry.append("d := art.dublinCore.date and ");
 
+    // apply date constraints
     if (startDate != null)
-      qry.append("ge(art.dublinCore.date, :sd) and ");
+      qry.append("(gt(d, :sd) or d = :sd) and ");
     if (endDate != null)
-      qry.append("le(art.dublinCore.date, :ed) and ");
+      qry.append("(lt(d, :ed) or d = :ed) and ");
 
+    // match categories
+    if (categories != null && categories.length > 0) {
+      for (String category : categories)
+        qry.append("art.categories.mainCategory = '" + category + "' and ");
+    }
+
+    // match all authors
+    if (authors != null && authors.length > 0) {
+      for (String author : authors)
+        qry.append("art.dublinCore.creators = '" + author + "' and ");
+    }
+
+    // match all states
     if (states != null && states.length > 0) {
       qry.append("(");
       for (int idx = 0; idx < states.length; idx++)
         qry.append("art.state = :st").append(idx).append(" or ");
       qry.setLength(qry.length() - 4);
-      qry.append(")");
+      qry.append(") ");
     }
 
+    // trim off trailing 'and'
     if (qry.indexOf(" and ", qry.length() - 5) > 0)
       qry.setLength(qry.length() - 4);
-    if (qry.indexOf(" where ", qry.length() - 7) > 0)
-      qry.setLength(qry.length() - 6);
 
-    qry.append("order by d ").append(ascending ? "asc" : "desc").append(";");
+    // add ordering and limit
+    qry.append("order by d ").append(ascending ? "asc" : "desc").append(", id asc");
 
+    if (maxResults > 0)
+      qry.append(" limit ").append(maxResults);
+
+    qry.append(";");
+
+    // create the query, applying parameters
     Query q = session.createQuery(qry.toString());
     if (startDate != null)
       q.setParameter("sd", startDate);
@@ -213,12 +240,14 @@ public class ArticleOtmService {
     for (int idx = 0; states != null && idx < states.length; idx++)
       q.setParameter("st" + idx, states[idx]);
 
+    // run the query
     List<URI> ids = new ArrayList<URI>();
 
     Results r = q.execute();
     while (r.next())
       ids.add(r.getURI(0));
 
+    // apply access-controls
     List<String> res = new ArrayList<String>();
     for (URI id : ids) {
       try {
@@ -244,81 +273,20 @@ public class ArticleOtmService {
    * @param authors    is list of authors to search for articles within (all authors if null or
    *                   empty)
    * @param states     the list of article states to search for (all states if null or empty)
-   * @param orderBy    controls the ordering. The keys specify the fields to be ordered, and the
-   *                   values whether order is ascending (true) or descending (false).
+   * @param ascending  controls the sort order (by date).
+   * @param maxResults the maximum number of results to return, or 0 for no limit
    * @return the (possibly empty) list of articles.
-   * @throws ParseException if any of the dates could not be parsed
    */
   @Transactional(readOnly = true)
-  public List<Article> getArticles(final String startDate, final String endDate,
-                                   final String[] categories, final String[] authors,
-                                   final int[] states, final Map<String, Boolean> orderBy,
-                                   final int maxResults)
-      throws ParseException {
-    // build up Criteria for the Articles
-    Criteria articleCriteria = session.createCriteria(Article.class);
+  public List<Article> getArticles(String startDate, String endDate, String[] categories,
+                                   String[] authors, int[] states, boolean ascending,
+                                   int maxResults) {
+    List<String> articleIds =
+        getArticleIds(startDate, endDate, categories, authors, states, ascending, maxResults);
 
-    // normalize dates for query
-    if (startDate != null) {
-      articleCriteria.add(Restrictions.ge("dublinCore.date", parseDateParam(startDate)));
-    }
-    if (endDate != null) {
-      articleCriteria.add(Restrictions.le("dublinCore.date", parseDateParam(endDate)));
-    }
-
-    // match all categories
-    if (categories != null) {
-      Criteria catCriteria = articleCriteria.createCriteria("categories");
-      for (String category : categories) {
-        catCriteria.add(Restrictions.eq("mainCategory", category));
-      }
-    }
-
-    // match all authors
-    if (authors != null) {
-      for (String author : authors) {
-        articleCriteria.add(Restrictions.eq("dublinCore.creators", author));
-      }
-    }
-
-    // match all states
-    if (states != null && states.length > 0) {
-      Disjunction or = Restrictions.disjunction();
-      for (int state : states) {
-        or.add(Restrictions.eq("state", state));
-      }
-      articleCriteria.add(or);
-    }
-
-    // order by
-    if (orderBy != null) {
-      for (String field : orderBy.keySet()) {
-        boolean ascending = (boolean) orderBy.get(field);
-        articleCriteria.addOrder(ascending ? Order.asc(field) : Order.desc(field));
-      }
-    }
-
-    // max results
-    if (maxResults > 0) {
-      articleCriteria.setMaxResults(maxResults);
-    }
-
-    // get a list of Articles that meet the specified Criteria and Restrictions
-    List<Article> articleList = articleCriteria.list();
-
-    // filter access by id with PEP
-    // logged in user is automatically resolved by the ServletActionContextAttribute
-    for (Iterator it = articleList.iterator(); it.hasNext(); ) {
-      Article article = (Article) it.next();
-      try {
-        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
-      } catch (SecurityException se) {
-        it.remove();
-        if (log.isDebugEnabled())
-          log.debug("Filtering URI " + article.getId()
-                    + " from Article list due to PEP SecurityException", se);
-      }
-    }
+    List<Article> articleList = new ArrayList<Article>();
+    for (String id : articleIds)
+      articleList.add(session.get(Article.class, id));
 
     return articleList;
   }
@@ -544,46 +512,6 @@ public class ArticleOtmService {
   @Required
   public void setPermissionsService(PermissionsService permissionsService) {
     this.permissionsService = permissionsService;
-  }
-
-  /**
-   * Parse a kowari date into a java Date object.
-   *
-   * @param iso8601date is the date string to parse.
-   * @return a java Date object.
-   * @throws ParseException if there is a problem parsing the string
-   */
-  private static Date parseDate(String iso8601date) throws ParseException {
-    // Obvious formats:
-    final String[] defaultFormats = new String [] {
-      "yyyy-MM-dd", "y-M-d", "y-M-d'T'H:m:s", "y-M-d'T'H:m:s.S",
-      "y-M-d'T'H:m:s.Sz", "y-M-d'T'H:m:sz" };
-
-    // TODO: Replace with fedora.server.utilities.DateUtility some how?
-    // XXX: Deal with ' ' instead of 'T'
-    // XXX: Deal with timezone in iso8601 format (not java's idea)
-
-    return DateUtils.parseDate(iso8601date, defaultFormats);
-  }
-
-  /**
-   * Convert a date passed in as a string to a Date object. Support both string representations
-   * of the Date object and iso8601 formatted dates.
-   *
-   * @param date the string to convert to a Date object
-   * @return a date object (or null if date is null)
-   * @throws ParseException if unable to parse date
-   */
-  private static Date parseDateParam(String date) throws ParseException {
-    if (date == null)
-      return null;
-    try {
-      return new Date(date);
-    } catch (IllegalArgumentException iae) {
-      if (log.isDebugEnabled())
-        log.debug("failed to parse date '" + date + "' use Date - trying iso8601 format", iae);
-      return parseDate(date);
-    }
   }
 
   private static class ByteArrayDataSource implements DataSource {
