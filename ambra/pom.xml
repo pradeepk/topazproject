@@ -4,14 +4,14 @@
   <groupId>org.topazproject</groupId>
   <artifactId>ambra</artifactId>
   <packaging>pom</packaging>
-  <version>0.9</version>
+  <version>0.9.1-SNAPSHOT</version>
   <name>Ambra application</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.9</version>
+    <version>0.9.1-SNAPSHOT</version>
   </parent>
 
   <modules>

@@ -4,13 +4,13 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-doi-resolver</artifactId>
   <packaging>war</packaging>
-  <version>0.9</version>
+  <version>0.9.1-SNAPSHOT</version>
   <name>AmbraDOI Resolver</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
-    <version>0.9</version>
+    <version>0.9.1-SNAPSHOT</version>
   </parent>
 
   <dependencies>

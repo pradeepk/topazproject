@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.9</version>
+  <version>0.9.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Topaz Project</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -90,9 +90,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://svn.topazproject.org/svn/tags/the-whole-shebang-0.9</developerConnection>
-    <connection>scm:svn:http://svn.topazproject.org/svn-pub/tags/the-whole-shebang-0.9</connection>
-    <url>http://www.topazproject.org/trac/browser/tags/the-whole-shebang-0.9</url>
+    <developerConnection>scm:svn:http://svn.topazproject.org/svn/head/</developerConnection>
+    <connection>scm:svn:http://svn.topazproject.org/svn-pub/head/</connection>
+    <url>http://www.topazproject.org/trac/browser/head</url>
   </scm>
 
   <modules>
@@ -904,7 +904,7 @@
         <plugin>
           <groupId>org.topazproject.plugins</groupId>
           <artifactId>integration-tests-plugin</artifactId>
-          <version>0.9</version>
+          <version>0.9.1-SNAPSHOT</version>
           <executions>
             <execution>
               <goals>

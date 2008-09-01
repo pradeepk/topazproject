@@ -5,12 +5,12 @@
   <artifactId>ws-search</artifactId>
   <packaging>pom</packaging>
   <name>Ambra Search Webservice</name>
-  <version>0.9</version>
+  <version>0.9.1-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>ambra</artifactId>
-    <version>0.9</version>
+    <version>0.9.1-SNAPSHOT</version>
   </parent>
 
   <reporting>
