@@ -47,7 +47,7 @@
 	      <xsl:value-of select="//journal-title[1]"/>
 	    </full_title>
 	    <abbrev_title>
-	      <xsl:value-of select="//journal-title[1]"/>
+	      <xsl:value-of select="//journal-id[@journal-id-type='nlm-ta'][1]"/>
 	    </abbrev_title>
 	    <issn media_type="electronic">
 	      <xsl:value-of select="//issn[@pub-type='epub'][1]"/>
@@ -99,33 +99,52 @@
 		    </xsl:when>
 		    <xsl:otherwise>
 		      <person_name contributor_role="author">
-			<xsl:choose>
-			  <xsl:when test="position() = 1 or @equal-contrib='yes'">
-			    <xsl:attribute name="sequence">first</xsl:attribute>
-			  </xsl:when>
-			  <xsl:otherwise>
-			    <xsl:attribute name="sequence">additional</xsl:attribute>
-			  </xsl:otherwise>
-			</xsl:choose>
-			<given_name><xsl:value-of select="name/given-names"/></given_name>
-			<surname><xsl:value-of select="name/surname"/></surname>
+          <xsl:choose>
+            <xsl:when test="position() = 1">
+              <xsl:attribute name="sequence">first</xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:attribute name="sequence">additional</xsl:attribute>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:if test="name/given-names">
+            <given_name><xsl:value-of select="name/given-names"/></given_name>
+          </xsl:if>
+          <surname><xsl:value-of select="name/surname"/></surname>
 		      </person_name>
 		    </xsl:otherwise>
 		  </xsl:choose>
 		</xsl:for-each>
 		<xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='editor']">
-		  <person_name contributor_role="editor">
-		    <xsl:choose>
-		      <xsl:when test="position() = 1">
-			<xsl:attribute name="sequence">first</xsl:attribute>
-		      </xsl:when>
-		      <xsl:otherwise>
-			<xsl:attribute name="sequence">additional</xsl:attribute>
-		      </xsl:otherwise>
-		    </xsl:choose>
-		    <given_name><xsl:value-of select="name/given-names"/></given_name>
-		    <surname><xsl:value-of select="name/surname"/></surname>
-		  </person_name>
+      <xsl:choose>
+        <xsl:when test="collab">
+          <organization contributor_role="editor">
+          <xsl:choose>
+            <xsl:when test="position() = 1">
+              <xsl:attribute name="sequence">first</xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:attribute name="sequence">additional</xsl:attribute>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:value-of select="collab"/>
+          </organization>
+        </xsl:when>
+        <xsl:otherwise>
+          <person_name contributor_role="editor">
+          <xsl:choose>
+            <xsl:when test="position() = 1">
+              <xsl:attribute name="sequence">first</xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:attribute name="sequence">additional</xsl:attribute>
+            </xsl:otherwise>
+          </xsl:choose>
+          <given_name><xsl:value-of select="name/given-names"/></given_name>
+          <surname><xsl:value-of select="name/surname"/></surname>
+          </person_name>
+        </xsl:otherwise>
+      </xsl:choose>
 		</xsl:for-each>
 		<xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='translator']">
 		  <person_name contributor_role="translator">
@@ -137,7 +156,9 @@
 			<xsl:attribute name="sequence">additional</xsl:attribute>
 		      </xsl:otherwise>
 		    </xsl:choose>
-		    <given_name><xsl:value-of select="name/given-names"/></given_name>
+        <xsl:if test="name/given-names">
+  		    <given_name><xsl:value-of select="name/given-names"/></given_name>
+        </xsl:if>
 		    <surname><xsl:value-of select="name/surname"/></surname>
 		  </person_name>
 		</xsl:for-each>
