@@ -17,10 +17,12 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">
-_uacct = "UA-338393-1";
-_udn = "www.plosgenetics.org";
-urchinTracker();
+var pageTracker = _gat._getTracker("UA-338393-1");
+pageTracker._trackPageview();
+pageTracker._setDomainName("www.plosgenetics.org");
 </script>
