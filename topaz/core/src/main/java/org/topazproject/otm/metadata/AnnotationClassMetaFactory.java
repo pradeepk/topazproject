@@ -1,5 +1,5 @@
-/* $HeadURL::                                                                            $
- * $Id$
+/* $HeadURL:: http://gandalf.topazproject.org/svn/head/topaz/core/src/main/java/org/topa#$
+ * $Id: AnnotationClassMetaFactory.java 6329 2008-08-14 17:46:24Z pradeep $
  *
  * Copyright (c) 2007-2008 by Topaz, Inc.
  * http://topazproject.org
@@ -68,8 +68,7 @@ import org.topazproject.otm.mapping.java.ScalarFieldBinder;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
- * A factory that processes annotations on a class and creates
- * ClassMetadata for it.
+ * A factory that processes annotations on a class and creates ClassMetadata for it.
  *
  * @author Pradeep Krishnan
  */
@@ -100,9 +99,8 @@ public class AnnotationClassMetaFactory {
 
     if ((clazz.getAnnotation(View.class) != null) || (clazz.getAnnotation(SubView.class) != null))
       return createView(clazz);
-    else
 
-      return createEntity(clazz);
+    return createEntity(clazz);
   }
 
   private void addAliases(Class<?> clazz) throws OtmException {
@@ -147,7 +145,6 @@ public class AnnotationClassMetaFactory {
       sup = getEntityName(s);
 
     EntityDefinition ed           = new EntityDefinition(name, type, model, sup);
-
     UriPrefix        uriPrefixAnn = clazz.getAnnotation(UriPrefix.class);
 
     if (uriPrefixAnn != null)
@@ -367,10 +364,10 @@ public class AnnotationClassMetaFactory {
       if (ann == null)
         ann = type.getAnnotation(Embeddable.class);
 
-      if (((ann != null) && !(ann instanceof Id)) && 
-          ((cd instanceof ViewDefinition) ^ (ann instanceof Projection)))
+      if (((ann != null) && !(ann instanceof Id))
+           && ((cd instanceof ViewDefinition) ^ (ann instanceof Projection)))
         throw new OtmException("@Projection can-only/must be applied to Views or Sub-Views : "
-            + this);
+                               + this);
 
       if ((ann == null) && (cd instanceof ViewDefinition))
         return null;
