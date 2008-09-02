@@ -209,7 +209,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
     journalInfo = new JournalInfo();
 
     journalInfo.setKey(journal.getKey());
-    journalInfo.setEissn(journal.getEIssn());
+    journalInfo.setEissn(journal.geteIssn());
     journalInfo.setCurrentIssue(journal.getCurrentIssue() == null ? null : journal.getCurrentIssue().toString());
     journalInfo.setImage(journal.getImage() == null ? null : journal.getImage().toString());
 

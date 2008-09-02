@@ -36,7 +36,7 @@ public class GECriterion extends AbstractComparisonCriterion {
   }
 
   /**
-   * Creates a new PredicateCriterion object.
+   * Creates a new GECriterion object.
    *
    * @param name field/predicate name
    * @param value field/predicate value

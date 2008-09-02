@@ -18,7 +18,8 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Field;
+import java.beans.Introspector;
+
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
@@ -40,31 +41,28 @@ import org.topazproject.otm.serializer.Serializer;
  * @author Pradeep krishnan
  */
 public abstract class AbstractFieldBinder implements FieldBinder {
-  private final Serializer          serializer;
-  private final Method              getter;
-  private final Method              setter;
-  private final Field               field;
-  private final String              name;
-  private final Class               type;
-  private final Class               componentType;
+  private final Serializer serializer;
+  private final Method     getter;
+  private final Method     setter;
+  private final String     name;
+  private final Class      type;
+  private final Class      componentType;
 
   /**
    * Creates a new AbstractFieldBinder object for a regular class.
    *
-   * @param field the java class field
-   * @param getter the field get method or null
-   * @param setter the field set method or null
+   * @param getter the field get method (cannot be null)
+   * @param setter the field set method (cannot be null)
    * @param serializer the serializer or null
    * @param componentType of arrays and collections or type of functional properties
    */
-  public AbstractFieldBinder(Field field, Method getter, Method setter,
-                        Serializer serializer, Class componentType) {
-    this.field           = field;
+  public AbstractFieldBinder(Method getter, Method setter, Serializer serializer,
+                             Class componentType) {
     this.getter          = getter;
     this.setter          = setter;
     this.serializer      = serializer;
-    this.name            = field.getName();
-    this.type            = field.getType();
+    this.name            = Introspector.decapitalize(setter.getName().substring(3));
+    this.type            = setter.getParameterTypes()[0];
     this.componentType   = componentType;
   }
 
@@ -75,17 +73,14 @@ public abstract class AbstractFieldBinder implements FieldBinder {
     Object value;
 
     try {
-      if (getter != null)
-        value = getter.invoke(o);
-      else
-        value = field.get(o);
+      value = getter.invoke(o);
 
       if ((value == null) && create) {
-        value = field.getType().newInstance();
+        value = type.newInstance();
         setRawValue(o, value);
       }
     } catch (Exception e) {
-      throw new OtmException("Failed to get a value from '" + field.toGenericString() + "'", e);
+      throw new OtmException("Failed to get a value from '" + getter.toGenericString() + "'", e);
     }
 
     return value;
@@ -96,18 +91,14 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    */
   public void setRawValue(Object o, Object value) throws OtmException {
     try {
-      if (setter != null)
-        setter.invoke(o, value);
-      else
-        field.set(o, value);
+      setter.invoke(o, value);
     } catch (Exception e) {
       if ((value == null) && type.isPrimitive())
         setRawValue(o, 0);
       else
-        throw new OtmException("Failed to set a value for '" + field.toGenericString() + "'", e);
+        throw new OtmException("Failed to set a value for '" + setter.toGenericString() + "'", e);
     }
   }
-
 
   /*
    * inherited javadoc
@@ -121,13 +112,6 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    */
   public Method getSetter() {
     return setter;
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public Field getField() {
-    return field;
   }
 
   /*
@@ -157,7 +141,6 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   public Serializer getSerializer() {
     return serializer;
   }
-
 
   /**
    * Run a value through the serializer. If no serializer is defined, the value is returned
@@ -198,25 +181,25 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public final void load(Object instance, List<String> values, 
-      Map<String, Set<String>> types, RdfMapper mapper, 
-      Session session) throws OtmException {
+  public final void load(Object instance, List<String> values, Map<String, Set<String>> types,
+                         RdfMapper mapper, Session session)
+                  throws OtmException {
     load(instance, instance, values, types, mapper, session);
   }
 
   /*
    * inherited javadoc
    */
-  public void load(Object root, Object instance, List<String> values, 
-      Map<String, Set<String>> types, RdfMapper mapper, 
-      Session session) throws OtmException {
-
+  public void load(Object root, Object instance, List<String> values,
+                   Map<String, Set<String>> types, RdfMapper mapper, Session session)
+            throws OtmException {
     if (!mapper.isAssociation()) {
       this.set(instance, values);
+
       return;
     }
 
-    List           assocs = new ArrayList();
+    List assocs = new ArrayList();
     loadAssocs(values, types, session, assocs, mapper);
     this.set(instance, assocs);
   }
@@ -224,22 +207,24 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   /**
    * Instantiate and load the associations into the given list.
    *
-   * @param ids      the association ids
-   * @param types    the type look ahead for associations
-   * @param session  the session under which the load is performed.
-   *                 Used for resolving associations etc.
-   * @param assocs   the collection to load association instances to
-   * @param mapper   the mapper associated with this binder
+   * @param ids the association ids
+   * @param types the type look ahead for associations
+   * @param session the session under which the load is performed. Used for resolving associations
+   *        etc.
+   * @param assocs the collection to load association instances to
+   * @param mapper the mapper associated with this binder
    *
    * @throws OtmException on a failure in instantiating associations
    */
-  protected void loadAssocs(List<String> ids, Map<String, Set<String>> types,
-      Session session, Collection assocs, RdfMapper mapper) throws OtmException {
-    SessionFactory sf     = session.getSessionFactory();
-    ClassMetadata cm      = sf.getClassMetadata(mapper.getAssociatedEntity());
+  protected void loadAssocs(List<String> ids, Map<String, Set<String>> types, Session session,
+                            Collection assocs, RdfMapper mapper)
+                     throws OtmException {
+    SessionFactory sf = session.getSessionFactory();
+    ClassMetadata  cm = sf.getClassMetadata(mapper.getAssociatedEntity());
 
     for (String id : ids) {
       ClassMetadata c = sf.getSubClassMetadata(cm, session.getEntityMode(), types.get(id));
+
       if (c != null) {
         Object a = session.load(c, id);
 
@@ -259,7 +244,8 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public RawFieldData getRawFieldData(Object instance) throws OtmException {
+  public RawFieldData getRawFieldData(Object instance)
+                               throws OtmException {
     return null;
   }
 
@@ -267,9 +253,9 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public String toString() {
-    return getClass().getName() + "[field=" + name + ", type="
+    return getClass().getName() + "[property=" + name + ", type="
            + ((type != null) ? type.getName() : "-null-") + ", componentType="
-           + ((componentType != null) ? componentType.getName() : "-null-")
-           + ", serializer=" + serializer + "]";
+           + ((componentType != null) ? componentType.getName() : "-null-") + ", serializer="
+           + serializer + "]";
   }
 }

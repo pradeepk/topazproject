@@ -42,13 +42,8 @@ import org.topazproject.otm.annotations.GeneratedValue;
 public class RelatedArticle  implements Serializable {
   private static final long serialVersionUID = -4229157024423830497L;
 
-  @Id @GeneratedValue(uriPrefix = "id:relatedArticle/")
   private URI id;
-
-  @Predicate(uri = "dcterms:references")
   private URI article;
-
-  @Predicate(uri = "plos:articleRelationType")
   private String relationType;
 
   /**
@@ -65,6 +60,7 @@ public class RelatedArticle  implements Serializable {
    *
    * @param id the id to set
    */
+  @Id @GeneratedValue(uriPrefix = "id:relatedArticle/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -83,6 +79,7 @@ public class RelatedArticle  implements Serializable {
    *
    * @param article the article uri.
    */
+  @Predicate(uri = "dcterms:references")
   public void setArticle(URI article) {
     this.article = article;
   }
@@ -101,6 +98,7 @@ public class RelatedArticle  implements Serializable {
    *
    * @param relationType the relation type.
    */
+  @Predicate(uri = "plos:articleRelationType")
   public void setRelationType(String relationType) {
     this.relationType = relationType;
   }

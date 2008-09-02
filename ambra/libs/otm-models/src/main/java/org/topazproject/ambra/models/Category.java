@@ -39,11 +39,8 @@ import org.topazproject.otm.annotations.Predicate;
 public class Category implements Serializable {
   private static final long serialVersionUID = -1910044609722349497L;
 
-  @Id @GeneratedValue(uriPrefix = "id:category/")
   private URI id;
-  @Predicate(uri = "topaz:mainCategory")
   private String mainCategory;
-  @Predicate(uri = "topaz:subCategory")
   private String subCategory;
 
   /**
@@ -56,6 +53,7 @@ public class Category implements Serializable {
   /**
    * @param id the id to set
    */
+  @Id @GeneratedValue(uriPrefix = "id:category/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -70,6 +68,7 @@ public class Category implements Serializable {
   /**
    * @param mainCategory the value of the main category
    */
+  @Predicate(uri = "topaz:mainCategory")
   public void setMainCategory(String mainCategory) {
     this.mainCategory = mainCategory;
   }
@@ -84,6 +83,7 @@ public class Category implements Serializable {
   /**
    * @param subCategory the value of the sub-category
    */
+  @Predicate(uri = "topaz:subCategory")
   public void setSubCategory(String subCategory) {
     this.subCategory = subCategory;
   }

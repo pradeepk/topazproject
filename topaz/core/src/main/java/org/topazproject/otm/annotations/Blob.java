@@ -44,6 +44,6 @@ import java.lang.annotation.Target;
  * @author Pradeep Krishnan
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target({ElementType.METHOD})
 public @interface Blob {
 }

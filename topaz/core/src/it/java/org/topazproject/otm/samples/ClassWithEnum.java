@@ -16,26 +16,65 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.otm.samples;
 
 import org.topazproject.otm.Rdf;
-import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 @UriPrefix(Rdf.topaz)
-@Entity(model="ri")
+@Entity(model = "ri")
 public class ClassWithEnum {
-  @Id
-  public String id;
-  public enum Foo {bar1, bar2}
-  public Foo foo;
+  private String id;
+  public enum Foo {bar1, bar2;
+  }
+
+  private Foo foo;
 
   public ClassWithEnum() {
   }
 
   public ClassWithEnum(String id) {
     this.id = id;
+  }
+
+  /**
+   * Get id.
+   *
+   * @return id as String.
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  @Id
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  /**
+   * Get foo.
+   *
+   * @return foo as Foo.
+   */
+  public Foo getFoo() {
+    return foo;
+  }
+
+  /**
+   * Set foo.
+   *
+   * @param foo the value to set.
+   */
+  @Predicate
+  public void setFoo(Foo foo) {
+    this.foo = foo;
   }
 }

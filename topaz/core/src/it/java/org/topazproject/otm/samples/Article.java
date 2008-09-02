@@ -38,21 +38,12 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = "topaz:Article", model = "ri")
 public class Article extends ObjectInfo {
-  @Predicate(uri = Rdf.dc_terms + "available")
   private Date     articleDate;
-  @Predicate(uri = Rdf.dc + "subject")
   private String[] subjects;
-  @Predicate(uri = Rdf.topaz + "hasCategory")
   private String[] categories;
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
-      fetch=FetchType.eager, cascade = {CascadeType.child})
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
-      cascade = {CascadeType.child})
   private List<PrivateAnnotation> privateAnnotations = new ArrayList<PrivateAnnotation>();
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse=true, notOwned=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
-  @Predicate(uri = Rdf.dc_terms + "hasPart", cascade = {CascadeType.child})
   private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
 
   /**
@@ -69,6 +60,7 @@ public class Article extends ObjectInfo {
    *
    * @param articleDate the article date.
    */
+  @Predicate(uri = Rdf.dc_terms + "available")
   public void setArticleDate(Date articleDate) {
     this.articleDate = articleDate;
   }
@@ -88,6 +80,7 @@ public class Article extends ObjectInfo {
    *
    * @param subjects the article's subjects.
    */
+  @Predicate(uri = Rdf.dc + "subject")
   public void setSubjects(String[] subjects) {
     this.subjects = subjects;
   }
@@ -107,6 +100,7 @@ public class Article extends ObjectInfo {
    *
    * @param categories the article's categories.
    */
+  @Predicate(uri = Rdf.topaz + "hasCategory")
   public void setCategories(String[] categories) {
     this.categories = categories;
   }
@@ -115,10 +109,13 @@ public class Article extends ObjectInfo {
     return parts;
   }
 
+  @Predicate(uri = Rdf.dc_terms + "hasPart", cascade = {CascadeType.child})
   public void setParts(Set<ObjectInfo> parts) {
     this.parts = parts;
   }
 
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
+      cascade = {CascadeType.child})
   public void setPrivateAnnotations(List<PrivateAnnotation> privateAnnotations) {
     this.privateAnnotations = privateAnnotations;
   }
@@ -127,6 +124,8 @@ public class Article extends ObjectInfo {
     return privateAnnotations;
   }
 
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
+      fetch=FetchType.eager, cascade = {CascadeType.child})
   public void setPublicAnnotations(List<PublicAnnotation> publicAnnotations) {
     this.publicAnnotations = publicAnnotations;
   }
@@ -139,6 +138,7 @@ public class Article extends ObjectInfo {
     return replies;
   }
 
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse=true, notOwned=true)
   public void setReplies(List<ReplyThread> replies) {
     this.replies = replies;
   }

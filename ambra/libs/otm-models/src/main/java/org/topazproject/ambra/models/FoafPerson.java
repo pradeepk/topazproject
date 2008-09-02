@@ -39,43 +39,16 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix("foaf:")
 @Entity(type = "foaf:Person")
 public class FoafPerson implements Serializable, Cloneable {
-  @Id @GeneratedValue(uriPrefix = "id:profile/")
   private URI      id;
-
-  /** Their real name, usually as &lt;first&gt; &lt;last&gt; */
-  @Predicate(uri = "foaf:name")
   private String   realName;
-
-  /** Their given names */
-  @Predicate(uri = "foaf:givenname")
   private String   givenNames;
-
-  /** Their surnames */
-  @Predicate(uri = "foaf:surname")
   private String   surnames;
-
-  /** The title by which they go */
   private String   title;
-
-  /** 'male' or 'female' */
   private String   gender;
-
-  /** email address */
-  @Predicate(uri = "foaf:mbox")
   private URI      email;
-
-  /** url of their homepage */
-  @Predicate(uri = "foaf:homepage")
   private URI      homePage;
-
-  /** url of their blog */
   private URI      weblog;
-
-  /** url pointing to a webpage listing their publications; foaf:publications */
   private URI      publications;
-
-  /** a list of urls pointing to stuff representing their interests */
-  @Predicate(uri = "foaf:interest")
   private Set<URI> interests = new HashSet<URI>();
 
   public FoafPerson clone() {
@@ -98,6 +71,7 @@ public class FoafPerson implements Serializable, Cloneable {
   /**
    * @param id the id to set
    */
+  @Id @GeneratedValue(uriPrefix = "id:profile/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -116,6 +90,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param realName the real name; may be null
    */
+  @Predicate(uri = "foaf:name")
   public void setRealName(String realName) {
     this.realName = realName;
   }
@@ -134,6 +109,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param givenNames the given names.
    */
+  @Predicate(uri = "foaf:givenname")
   public void setGivenNames(String givenNames) {
     this.givenNames = givenNames;
   }
@@ -152,6 +128,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param surnames the surnames.
    */
+  @Predicate(uri = "foaf:surname")
   public void setSurnames(String surnames) {
     this.surnames = surnames;
   }
@@ -170,6 +147,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param title the title; may be null
    */
+  @Predicate
   public void setTitle(String title) {
     this.title = title;
   }
@@ -188,6 +166,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param gender the gender; may be null
    */
+  @Predicate
   public void setGender(String gender) {
     this.gender = gender;
   }
@@ -206,6 +185,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param email the email address.
    */
+  @Predicate(uri = "foaf:mbox")
   public void setEmail(URI email) {
     this.email = email;
   }
@@ -247,6 +227,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param homePage the url of the homepage; may be null.
    */
+  @Predicate(uri = "foaf:homepage")
   public void setHomePage(URI homePage) {
     this.homePage = homePage;
   }
@@ -265,6 +246,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param weblog the url of the blog; may be null.
    */
+  @Predicate
   public void setWeblog(URI weblog) {
     this.weblog = weblog;
   }
@@ -283,6 +265,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param publications the url; may be null.
    */
+  @Predicate
   public void setPublications(URI publications) {
     this.publications = publications;
   }
@@ -301,6 +284,7 @@ public class FoafPerson implements Serializable, Cloneable {
    *
    * @param interests the list of url's; may be null.
    */
+  @Predicate(uri = "foaf:interest")
   public void setInterests(Set<URI> interests) {
     this.interests = interests;
   }

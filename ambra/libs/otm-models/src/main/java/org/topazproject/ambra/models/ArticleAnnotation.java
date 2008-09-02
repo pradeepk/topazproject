@@ -39,8 +39,6 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity()
 public abstract class ArticleAnnotation extends Annotation {
-  @Predicate(uri = "annotea:body", cascade = { CascadeType.peer, CascadeType.delete },
-             fetch = FetchType.eager) // XXX: lazy?
   private AnnotationBlob body;
 
   /**
@@ -57,6 +55,8 @@ public abstract class ArticleAnnotation extends Annotation {
    *
    * @param body The body of the article annotation
    */
+  @Predicate(uri = "annotea:body", cascade = { CascadeType.peer, CascadeType.delete },
+             fetch = FetchType.eager) // XXX: lazy?
   public void setBody(AnnotationBlob body) {
     this.body = body;
   }

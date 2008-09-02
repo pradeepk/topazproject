@@ -30,7 +30,6 @@ import org.topazproject.otm.annotations.Entity;
  */
 @Entity()
 public abstract class Blob implements Serializable {
-  @org.topazproject.otm.annotations.Blob
   private byte[] body;
 
   /**
@@ -63,6 +62,7 @@ public abstract class Blob implements Serializable {
    *
    * @param body the value to set.
    */
+  @org.topazproject.otm.annotations.Blob
   public void setBody(byte[] body) {
     this.body = body;
   }

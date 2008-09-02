@@ -41,79 +41,30 @@ import org.topazproject.otm.annotations.Predicate;
 public class DublinCore implements Serializable {
   private static final long serialVersionUID = -3010297971167417038L;
 
-  @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   private String title;
-
-  @Predicate(uri = "dc:description", dataType = "rdf:XMLLiteral")
   private String description;
-
-  @Predicate(uri = "dc:creator")
   private Set<String> creators = new HashSet<String>();
-
-  @Predicate(uri = "dc:date", dataType = "xsd:date")
   private Date date;
-
-  @Predicate(uri = "dc:identifier")
   private String identifier;
-
-  @Predicate(uri = "dc:rights", dataType = "rdf:XMLLiteral")
   private String rights;
-
-  @Predicate(uri = "dc:type")
   private URI type;
-
-  @Predicate(uri = "dc:contributor")
   private Set<String> contributors = new HashSet<String>();
-
-  @Predicate(uri = "dc:subject", dataType = "rdf:XMLLiteral")
   private Set<String> subjects = new HashSet<String>();
-
-  @Predicate(uri = "dc:language")
   private String language;
-
-  @Predicate(uri = "dc:publisher", dataType = "rdf:XMLLiteral")
   private String publisher;
-
-  @Predicate(uri = "dc:format")
   private String format;
-
-  @Predicate(uri = "dc:source")
   private Object source;
-
-  @Predicate(uri = "dcterms:available", dataType = "xsd:date")
   private Date available;
-
-  @Predicate(uri = "dcterms:issued", dataType = "xsd:date")
   private Date issued;
-
-  @Predicate(uri = "dcterms:dateSubmitted", dataType = "xsd:date")
   private Date submitted;
-
-  @Predicate(uri = "dcterms:dateAccepted", dataType = "xsd:date")
   private Date accepted;
-
-  @Predicate(uri = "dcterms:dateCopyrighted")
   private Integer copyrightYear;
-
-  @Predicate(uri = "dcterms:abstract")
   private Set<String> summary;
-
-  @Predicate(uri = "dcterms:bibliographicCitation", cascade = { CascadeType.child })
   private Citation bibliographicCitation;
-
-  @Predicate(uri = "dcterms:created", dataType = "xsd:date")
   private Date created;
-
-  @Predicate(uri = "dcterms:license")
   private Set<License> license;
-
-  @Predicate(uri = "dcterms:modified", dataType = "xsd:date")
   private Date modified;
-
-  @Predicate(uri = "dcterms:references", cascade = { CascadeType.child } )
   private List<Citation> references;
-
-  @Predicate(uri = "dcterms:conformsTo")
   private URI conformsTo;
 
   /**
@@ -138,6 +89,7 @@ public class DublinCore implements Serializable {
    *
    * @param creators the set of creators for this object
    */
+  @Predicate(uri = "dc:creator")
   public void setCreators(Set<String> creators) {
     this.creators = creators;
   }
@@ -158,6 +110,7 @@ public class DublinCore implements Serializable {
    * @param contributors the contributors to set
    * @see #getContributors
    */
+  @Predicate(uri = "dc:contributor")
   public void setContributors(Set<String> contributors) {
     this.contributors = contributors;
   }
@@ -179,6 +132,7 @@ public class DublinCore implements Serializable {
    * @param date the date to set
    * @see #getDate
    */
+  @Predicate(uri = "dc:date", dataType = "xsd:date")
   public void setDate(Date date) {
     this.date = date;
   }
@@ -200,6 +154,7 @@ public class DublinCore implements Serializable {
    * @param type the type to set
    * @see #getType
    */
+  @Predicate(uri = "dc:type")
   public void setType(URI type) {
     this.type = type;
   }
@@ -221,6 +176,7 @@ public class DublinCore implements Serializable {
    * @param description the description to set
    * @see #getDescription
    */
+  @Predicate(uri = "dc:description", dataType = "rdf:XMLLiteral")
   public void setDescription(String description) {
     this.description = description;
   }
@@ -241,6 +197,7 @@ public class DublinCore implements Serializable {
    * @param identifier the identifier to set
    * @see #getIdentifier
    */
+  @Predicate(uri = "dc:identifier")
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
   }
@@ -261,6 +218,7 @@ public class DublinCore implements Serializable {
    * @param rights the rights to set
    * @see #getRights
    */
+  @Predicate(uri = "dc:rights", dataType = "rdf:XMLLiteral")
   public void setRights(String rights) {
     this.rights = rights;
   }
@@ -281,6 +239,7 @@ public class DublinCore implements Serializable {
    * @param title the title to set
    * @see #getTitle
    */
+  @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   public void setTitle(String title) {
     this.title = title;
   }
@@ -303,6 +262,7 @@ public class DublinCore implements Serializable {
    * @param subjects the subjects the object is about
    * @see #getSubjects
    */
+  @Predicate(uri = "dc:subject", dataType = "rdf:XMLLiteral")
   public void setSubjects(Set<String> subjects) {
     this.subjects = subjects;
   }
@@ -323,6 +283,7 @@ public class DublinCore implements Serializable {
    * @param language the language to set
    * @see #getLanguage
    */
+  @Predicate(uri = "dc:language")
   public void setLanguage(String language) {
     this.language = language;
   }
@@ -344,6 +305,7 @@ public class DublinCore implements Serializable {
    * @param publisher the name of the publisher
    * @see #getPublisher
    */
+  @Predicate(uri = "dc:publisher", dataType = "rdf:XMLLiteral")
   public void setPublisher(String publisher) {
     this.publisher = publisher;
    }
@@ -364,6 +326,7 @@ public class DublinCore implements Serializable {
    * @param format the dc:format to set
    * @see #getFormat
    */
+  @Predicate(uri = "dc:format")
   public void setFormat(String format) {
     this.format = format;
   }
@@ -383,6 +346,7 @@ public class DublinCore implements Serializable {
    * @param available the date the object was made available
    * @see #getAvailable
    */
+  @Predicate(uri = "dcterms:available", dataType = "xsd:date")
   public void setAvailable(Date available) {
     this.available = available;
   }
@@ -402,6 +366,7 @@ public class DublinCore implements Serializable {
    * @param issued the date the object was issued
    * @see #getIssued
    */
+  @Predicate(uri = "dcterms:issued", dataType = "xsd:date")
   public void setIssued(Date issued) {
     this.issued = issued;
   }
@@ -421,6 +386,7 @@ public class DublinCore implements Serializable {
    * @param submitted the date the object was submitted
    * @see #getSubmitted
    */
+  @Predicate(uri = "dcterms:dateSubmitted", dataType = "xsd:date")
   public void setSubmitted(Date submitted) {
     this.submitted = submitted;
   }
@@ -441,6 +407,7 @@ public class DublinCore implements Serializable {
    * @param accepted the date the object was accepted
    * @see #getAccepted
    */
+  @Predicate(uri = "dcterms:dateAccepted", dataType = "xsd:date")
   public void setAccepted(Date accepted) {
     this.accepted = accepted;
   }
@@ -460,6 +427,7 @@ public class DublinCore implements Serializable {
    * @param copyrightYear the year of the copyright
    * @see #getCopyrightYear
    */
+  @Predicate(uri = "dcterms:dateCopyrighted")
   public void setCopyrightYear(Integer copyrightYear) {
     this.copyrightYear = copyrightYear;
   }
@@ -481,6 +449,7 @@ public class DublinCore implements Serializable {
    * @param source the source of the object
    * @see #getSource
    */
+  @Predicate(uri = "dc:source")
   public void setSource(Object source) {
     this.source = source;
   }
@@ -500,6 +469,7 @@ public class DublinCore implements Serializable {
    * @param summary the summary/abstract of the object
    * @see #getSummary
    */
+  @Predicate(uri = "dcterms:abstract")
   public void setSummary(Set<String> summary) {
     this.summary = summary;
   }
@@ -519,6 +489,7 @@ public class DublinCore implements Serializable {
    * @param bibliographicCitation bibliographic citation for the object
    * @see #getBibliographicCitation
    */
+  @Predicate(uri = "dcterms:bibliographicCitation", cascade = { CascadeType.child })
   public void setBibliographicCitation(Citation bibliographicCitation) {
     this.bibliographicCitation = bibliographicCitation;
   }
@@ -537,6 +508,7 @@ public class DublinCore implements Serializable {
    *
    * @param created the date the object was created
    */
+  @Predicate(uri = "dcterms:created", dataType = "xsd:date")
   public void setCreated(Date created) {
     this.created = created;
   }
@@ -557,6 +529,7 @@ public class DublinCore implements Serializable {
    * @param license the set of licenses governing this object
    * @see #getLicense
    */
+  @Predicate(uri = "dcterms:license")
   public void setLicense(Set<License> license) {
     this.license = license;
   }
@@ -576,6 +549,7 @@ public class DublinCore implements Serializable {
    * @param modified the date the object was modified
    * @see #getModified
    */
+  @Predicate(uri = "dcterms:modified", dataType = "xsd:date")
   public void setModified(Date modified) {
     this.modified = modified;
   }
@@ -595,6 +569,7 @@ public class DublinCore implements Serializable {
    * @param references the set of objects referred to by this object
    * @see #getReferences
    */
+  @Predicate(uri = "dcterms:references", cascade = { CascadeType.child } )
   public void setReferences(List<Citation> references) {
     this.references = references;
   }
@@ -615,6 +590,7 @@ public class DublinCore implements Serializable {
    * @param conformsTo the URI specifying the conformance standard
    * @see #getConformsTo
    */
+  @Predicate(uri = "dcterms:conformsTo")
   public void setConformsTo(URI conformsTo) {
     this.conformsTo = conformsTo;
   }

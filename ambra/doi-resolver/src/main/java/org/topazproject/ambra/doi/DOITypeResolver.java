@@ -118,7 +118,7 @@ public class DOITypeResolver {
           if (r == null)
             return Collections.emptySet();
 
-          return r.types;
+          return r.getTypes();
         }
       });
   }
@@ -141,13 +141,13 @@ public class DOITypeResolver {
           Set<String> loopDetect = new HashSet<String>();
 
           while (a != null) {
-            id = a.id;
+            id = a.getId();
 
             if (loopDetect.contains(id))
               throw new OtmException("Loop detected for " + doi);
 
             loopDetect.add(id);
-            a = a.ann;
+            a = a.getAnn();
           }
 
           return id;
@@ -212,17 +212,87 @@ public class DOITypeResolver {
 
   @Entity(model = "ri")
   public static class Resource {
+    private String                                        id;
+    private Set<String>                                   types;
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
     @Id
-    public String                                        id;
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get types.
+     *
+     * @return types as Set of String.
+     */
+    public Set<String> getTypes() {
+      return types;
+    }
+
+    /**
+     * Set types.
+     *
+     * @param types the value to set.
+     */
     @Predicate(uri = Rdf.rdf + "type", fetch = FetchType.eager)
-    public Set<String>                                   types;
+    public void setTypes(Set<String> types) {
+        this.types = types;
+    }
   }
 
   @Entity(model = "ri")
   public static class Annotation {
+    private String                                                         id;
+    private Annotation                                                     ann;
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
     @Id
-    public String                                                         id;
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get ann.
+     *
+     * @return ann as Annotation.
+     */
+    public Annotation getAnn() {
+      return ann;
+    }
+    /**
+     * Set ann.
+     *
+     * @param ann the value to set.
+     */
     @Predicate(uri = ANNOTATES, fetch = FetchType.eager)
-    public Annotation                                                     ann;
+    public void setAnn(Annotation ann) {
+      this.ann = ann;
+    }
   }
 }

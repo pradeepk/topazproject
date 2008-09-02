@@ -43,17 +43,11 @@ import org.topazproject.otm.annotations.View;
         "from Article a, CitationInfo ci " +
         "where a.id = :id and dc := a.dublinCore and ci.id = dc.bibliographicCitation.id;")
 public class ArticleInfo implements Serializable {
-  @Id
   public URI                     id;
-  @Projection("date")
   public Date                    date;
-  @Projection("title")
   private String                 title;
-  @Projection("ci")
   private CitationInfo           ci;
-  @Projection("at")
   private Set<URI>               at;
-  @Projection("relatedArticles")
   public Set<RelatedArticleInfo> relatedArticles = new HashSet<RelatedArticleInfo>();
   public List<String>            authors = new ArrayList<String>();
   public Set<ArticleType>        articleTypes = new HashSet<ArticleType>();
@@ -64,6 +58,7 @@ public class ArticleInfo implements Serializable {
    * 
    * @param id
    */
+  @Id
   public void setId(URI id) {
     this.id = id;
   }
@@ -99,6 +94,7 @@ public class ArticleInfo implements Serializable {
    * Set the Date that this article was published
    * @param date
    */
+  @Projection("date")
   public void setDate(Date date) {
     this.date = date;
   }
@@ -117,6 +113,7 @@ public class ArticleInfo implements Serializable {
    *  
    * @param articleTitle
    */
+  @Projection("title")
   public void setTitle(String articleTitle) {
     title = articleTitle;
     unformattedTitle = null;
@@ -151,19 +148,25 @@ public class ArticleInfo implements Serializable {
     return relatedArticles;
   }
 
+  @Projection("ci")
   public void setCi(CitationInfo ci) {
     this.ci = ci;
     authors.clear();
-    for (UserProfileInfo upi : ci.authors) {
-      upi.hashCode(); // force load
-      authors.add(upi.realName);
+    for (UserProfileInfo upi : ci.getAuthors()) {
+      authors.add(upi.getRealName());
     }
   }
 
+  @Projection("at")
   public void setAt(Set<URI> at) {
     this.at = at;
     articleTypes.clear();
     for (URI a : at)
       articleTypes.add(ArticleType.getArticleTypeForURI(a, true));
+  }
+
+  @Projection("relatedArticles")
+  public void setRelatedArticles(Set<RelatedArticleInfo> relatedArticles) {
+    this.relatedArticles = relatedArticles;
   }
 }

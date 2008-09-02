@@ -35,18 +35,11 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = "plos:Volume", model = "ri")
 public class Volume extends Aggregation {
-
-  /** Display name.  Human friendly. */
-  @Predicate(uri = "plos:displayName")
   private String displayName;
-
-  /** Arbitrary URI to an image. */
-  @Predicate(uri = "plos:image")
   private URI image;
 
   // The ordered list of DOIs of issues contained in this volume. 
   // TODO - "issueList" should probably not be prefixed with dcterms. We'll need a data migration to change this :(
-  @Predicate(uri = "dcterms:issueList", collectionType = CollectionType.RDFSEQ)
   private List<URI> issueList = new ArrayList<URI>();
 
   /**
@@ -63,6 +56,7 @@ public class Volume extends Aggregation {
    *
    * @param image arbitrary URI to the image, may be null.
    */
+  @Predicate(uri = "plos:image")
   public void setImage(URI image) {
     this.image = image;
   }
@@ -84,6 +78,7 @@ public class Volume extends Aggregation {
    *
    * @param displayName the display name, may not be null.
    */
+  @Predicate(uri = "plos:displayName")
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
@@ -125,6 +120,7 @@ public class Volume extends Aggregation {
    * Set the ordered list of issue DOIs contained in this volume
    * @param issueList
    */
+  @Predicate(uri = "dcterms:issueList", collectionType = CollectionType.RDFSEQ)
   public void setIssueList(List<URI> issueList) {
      this.issueList = issueList;
      super.setSimpleCollection(new ArrayList<URI>());

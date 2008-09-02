@@ -23,6 +23,7 @@ import java.net.URI;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -38,13 +39,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix(Criterion.NS)
 public class Parameter {
   private String parameterName;
-
-  /**
-   * The id field used for persistence. Ignored otherwise.
-   */
-  @Id
-  @GeneratedValue(uriPrefix = Criterion.RDF_TYPE + "/Parameter/Id/")
-  public URI parameterId;
+  private URI    parameterId;
 
   /**
    * Creates a new Parameter object.
@@ -75,11 +70,35 @@ public class Parameter {
    *
    * @param parameterName the value to set.
    */
+  @Predicate
   public void setParameterName(String parameterName) {
     this.parameterName = parameterName;
   }
 
+  /*
+   * inherited javadoc
+   */
   public String toString() {
     return "Parameter[" + parameterName + "]";
+  }
+
+  /**
+   * Get parameterId.
+   *
+   * @return parameterId as URI.
+   */
+  public URI getParameterId() {
+    return parameterId;
+  }
+
+  /**
+   * Set parameterId. Used for persistence. Ignored otherwise.
+   *
+   * @param parameterId the value to set.
+   */
+  @Id
+  @GeneratedValue(uriPrefix = Criterion.RDF_TYPE + "/Parameter/Id/")
+  public void setParameterId(URI parameterId) {
+    this.parameterId = parameterId;
   }
 }

@@ -45,7 +45,6 @@ public class Rating extends Annotation {
   /** Single Rating */
   public static final String SINGLE_RATING_TYPE = Rdf.topaz + "SingleRating";
 
-  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = {CascadeType.child})
   private RatingContent body;
 
   /**
@@ -64,6 +63,7 @@ public class Rating extends Annotation {
   /**
    * @param rating The rating to set.
    */
+  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = {CascadeType.child})
   public void setBody(RatingContent rating) {
     this.body = rating;
   }

@@ -26,11 +26,12 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
- * RatingContent is the body of a Rating.
- * It stores, insight, reliability, style and comment values.
+ * RatingContent is the body of a Rating. It stores, insight, reliability, style and comment
+ * values.
  *
  * @author stevec
  * @author Jeff Suttor
@@ -38,29 +39,33 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix("topaz:RatingContent/")
 @Entity(model = "ri", type = "topaz:RatingContent")
 public class RatingContent implements Serializable {
-
+  /**
+   * Weight to use for single-rating calculation.
+   */
   public static final int INSIGHT_WEIGHT = 6;
+
+  /**
+   * Weight to use for single-rating calculation.
+   */
   public static final int RELIABILITY_WEIGHT = 5;
+
+  /**
+   * Weight to use for single-rating calculation.
+   */
   public static final int STYLE_WEIGHT = 4;
-
-  @Id
-  @GeneratedValue(uriPrefix = "id:ratingContent/")
-  private String id;
-
-  private int insightValue;
-  private int reliabilityValue;
-  private int styleValue;
-  private int singleRatingValue;
-  private String commentTitle;
-  private String commentValue;
-
+  private String           id;
+  private int              insightValue;
+  private int              reliabilityValue;
+  private int              styleValue;
+  private int              singleRatingValue;
+  private String           commentTitle;
+  private String           commentValue;
   private static final Log log = LogFactory.getLog(RatingContent.class);
 
   /**
    * Creates a new RatingContent object with default values.
    */
   public RatingContent() {
-
     this(0, 0, 0, null, null);
   }
 
@@ -72,21 +77,21 @@ public class RatingContent implements Serializable {
    */
   public RatingContent(int singleRatingValue, String commentTitle, String commentValue) {
     super();
-    this.singleRatingValue = singleRatingValue;
-    this.commentTitle = commentTitle;
-    this.commentValue = commentValue;
+    this.singleRatingValue   = singleRatingValue;
+    this.commentTitle        = commentTitle;
+    this.commentValue        = commentValue;
   }
 
   /**
    * Creates a new RatingContent object with specified values.
    */
-  public RatingContent(int insight, int reliability, int style, String commentTitle, String commentValue) {
-
-    this.insightValue      = insight;
-    this.reliabilityValue  = reliability;
-    this.styleValue        = style;
-    this.commentTitle = commentTitle;
-    this.commentValue = commentValue;
+  public RatingContent(int insight, int reliability, int style, String commentTitle,
+                       String commentValue) {
+    this.insightValue       = insight;
+    this.reliabilityValue   = reliability;
+    this.styleValue         = style;
+    this.commentTitle       = commentTitle;
+    this.commentValue       = commentValue;
   }
 
   /**
@@ -97,11 +102,13 @@ public class RatingContent implements Serializable {
   public int getInsightValue() {
     return insightValue;
   }
+
   /**
    * Set insightValue value.
    *
    * @param insight value.
    */
+  @Predicate
   public void setInsightValue(int insight) {
     this.insightValue = insight;
   }
@@ -114,11 +121,13 @@ public class RatingContent implements Serializable {
   public int getReliabilityValue() {
     return reliabilityValue;
   }
+
   /**
    * Set reliabilityValue value.
    *
    * @param reliability value.
    */
+  @Predicate
   public void setReliabilityValue(int reliability) {
     this.reliabilityValue = reliability;
   }
@@ -131,19 +140,32 @@ public class RatingContent implements Serializable {
   public int getStyleValue() {
     return styleValue;
   }
+
   /**
    * Set styleValue value.
    *
    * @param style value.
    */
+  @Predicate
   public void setStyleValue(int style) {
     this.styleValue = style;
   }
 
+  /**
+   * Get single rating value value.
+   *
+   * @return single rating value
+   */
   public int getSingleRatingValue() {
     return singleRatingValue;
   }
 
+  /**
+   * Set single rating value.
+   *
+   * @param singleRatingValue single rating value
+   */
+  @Predicate
   public void setSingleRatingValue(int singleRatingValue) {
     this.singleRatingValue = singleRatingValue;
   }
@@ -154,7 +176,6 @@ public class RatingContent implements Serializable {
    * @return Overall value.
    */
   public double getOverallValue() {
-
     return calculateOverall(getInsightValue(), getReliabilityValue(), getStyleValue());
   }
 
@@ -166,11 +187,13 @@ public class RatingContent implements Serializable {
   public String getCommentTitle() {
     return commentTitle;
   }
+
   /**
    * Set comment title.
    *
    * @param commentTitle title.
    */
+  @Predicate
   public void setCommentTitle(String commentTitle) {
     this.commentTitle = commentTitle;
   }
@@ -183,32 +206,43 @@ public class RatingContent implements Serializable {
   public String getCommentValue() {
     return commentValue;
   }
+
   /**
    * Set comment value.
    *
    * @param commentValue value.
    */
+  @Predicate
   public void setCommentValue(String commentValue) {
     this.commentValue = commentValue;
   }
 
   /**
+   * Gets the id. 
+   *
    * @return Returns the id.
    */
   public String getId() {
     return id;
   }
+
   /**
+   * Sets the id.
+   *
    * @param id The id to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "id:ratingContent/")
   public void setId(String id) {
     this.id = id;
   }
 
   /**
    * Round a rating.
+   *
    * @param x Rating value to round.
    * @param r Typically 0.5, to round to half stars
+   *
    * @return Rounded rating value
    */
   public static double roundTo(double x, double r) {
@@ -225,10 +259,10 @@ public class RatingContent implements Serializable {
    * @param insightValue Insight value.
    * @param reliabilityValue Reliability value.
    * @param styleValue Style value.
+   *
    * @return Weighted overall.
    */
   public static double calculateOverall(int insightValue, int reliabilityValue, int styleValue) {
-
     return calculateOverall((double) insightValue, (double) reliabilityValue, (double) styleValue);
   }
 
@@ -238,30 +272,35 @@ public class RatingContent implements Serializable {
    * @param insightValue Insight value.
    * @param reliabilityValue Reliability value.
    * @param styleValue Style value.
+   *
    * @return Weighted overall.
    */
-  public static double calculateOverall(double insightValue, double reliabilityValue, double styleValue) {
-
+  public static double calculateOverall(double insightValue, double reliabilityValue,
+                                        double styleValue) {
     int    runningWeight = 0;
     double runningTotal  = 0;
 
     if (insightValue > 0) {
       runningWeight += RatingContent.INSIGHT_WEIGHT;
-      runningTotal += insightValue * RatingContent.INSIGHT_WEIGHT;
+      runningTotal += (insightValue * RatingContent.INSIGHT_WEIGHT);
+
       if (log.isDebugEnabled())
         log.debug("INSIGHT: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
     }
 
     if (reliabilityValue > 0) {
       runningWeight += RatingContent.RELIABILITY_WEIGHT;
-      runningTotal += reliabilityValue * RatingContent.RELIABILITY_WEIGHT;
+      runningTotal += (reliabilityValue * RatingContent.RELIABILITY_WEIGHT);
+
       if (log.isDebugEnabled())
-        log.debug("RELIABILITY: runningWeight = " + runningWeight+ " runningTotal: " + runningTotal);
+        log.debug("RELIABILITY: runningWeight = " + runningWeight + " runningTotal: "
+                  + runningTotal);
     }
 
     if (styleValue > 0) {
       runningWeight += RatingContent.STYLE_WEIGHT;
-      runningTotal += styleValue * RatingContent.STYLE_WEIGHT;
+      runningTotal += (styleValue * RatingContent.STYLE_WEIGHT);
+
       if (log.isDebugEnabled())
         log.debug("STYLE: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
     }

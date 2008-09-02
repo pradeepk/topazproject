@@ -32,14 +32,10 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = Annotation.RDF_TYPE)
 public abstract class Annotation extends Annotea {
-  @Id
-  @GeneratedValue(uriPrefix = "id:annotation/")
   private URI                                                               id;
   private URI                                                               annotates;
   private String                                                            context;
-  @Predicate(uri = "dcterms:replaces")
   private Annotation                                                        supersedes;
-  @Predicate(uri = "dcterms:isReplacedBy")
   private Annotation                                                        supersededBy;
   public static final String RDF_TYPE = Annotea.W3C_NS + "Annotation";
 
@@ -63,6 +59,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param annotates the value to set.
    */
+  @Predicate
   public void setAnnotates(URI annotates) {
     this.annotates = annotates;
   }
@@ -81,6 +78,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param context the value to set.
    */
+  @Predicate
   public void setContext(String context) {
     this.context = context;
   }
@@ -99,6 +97,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param supersedes the value to set.
    */
+  @Predicate(uri = "dcterms:replaces")
   public void setSupersedes(Annotation supersedes) {
     this.supersedes = supersedes;
   }
@@ -117,6 +116,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param supersededBy the value to set.
    */
+  @Predicate(uri = "dcterms:isReplacedBy")
   public void setSupersededBy(Annotation supersededBy) {
     this.supersededBy = supersededBy;
   }
@@ -135,6 +135,8 @@ public abstract class Annotation extends Annotea {
    *
    * @param id the value to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "id:annotation/")
   public void setId(URI id) {
     this.id = id;
   }

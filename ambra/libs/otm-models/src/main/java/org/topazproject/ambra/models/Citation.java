@@ -44,65 +44,24 @@ import org.topazproject.otm.annotations.UriPrefix;
 public class Citation implements Serializable {
   private static final long serialVersionUID = 6405781304940950306L;
 
-  @Id @GeneratedValue(uriPrefix = "id:citation/")
   private URI   id;
-
-  @Predicate(uri = "bibtex:hasKey", dataType = "xsd:string")
   private String key;
-
-  /* TODO: Restore to correct datatype. Stored as double because of bug in Mulgara */
-  @Predicate(uri = "bibtex:hasYear", dataType = "xsd:double")
   private Integer year;
-
-  @Predicate(uri="plos:temporal#displayYear", dataType = "xsd:string")
   private String displayYear;
-
-  @Predicate(uri = "bibtex:hasMonth", dataType = "xsd:string")
   private String month;
-
-  /* TODO: Restore to correct datatype .Stored as double because of bug in Mulgara */
-  @Predicate(uri = "bibtex:hasVolume", dataType = "xsd:double")
   private Integer volumeNumber;
-
-  @Predicate(uri="prism:volume", dataType = "xsd:string")
   private String volume;
-
-  @Predicate(uri = "bibtex:hasNumber", dataType = "xsd:string")
   private String issue;
-
-  @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   private String title;
-
-  @Predicate(uri = "bibtex:hasAddress", dataType = "xsd:string")
   private String publisherLocation;
-
-  @Predicate(uri = "bibtex:hasPublisher", dataType = "xsd:string")
   private String publisherName;
-
-  @Predicate(uri = "bibtex:hasPages", dataType = "xsd:string")
   private String pages;
-
-  @Predicate(uri = "bibtex:hasJournal", dataType = "xsd:string")
   private String journal;
-
-  @Predicate(uri = "bibtex:hasNote", dataType = "xsd:string")
   private String note;
-
-  @Predicate(uri = "plos:hasEditorList", collectionType = CollectionType.RDFSEQ,
-             cascade = { CascadeType.child })
   private List<UserProfile> editors = new ArrayList<UserProfile>();
-
-  @Predicate(uri = "plos:hasAuthorList", collectionType = CollectionType.RDFSEQ,
-             cascade = { CascadeType.child })
   private List<UserProfile> authors = new ArrayList<UserProfile>();
-
-  @Predicate(uri = "bibtex:hasURL", dataType = "xsd:string")
   private String url;
-
-  @Predicate(uri = "bibtex:hasAbstract", dataType = "xsd:string")
   private String summary;
-
-  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
   private String citationType;
 
   /**
@@ -119,6 +78,7 @@ public class Citation implements Serializable {
    *
    * @param id the value to set.
    */
+  @Id @GeneratedValue(uriPrefix = "id:citation/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -135,6 +95,7 @@ public class Citation implements Serializable {
   /**
    * @param key the key or label for this citation
    */
+  @Predicate(uri = "bibtex:hasKey", dataType = "xsd:string")
   public void setKey(String key) {
     this.key = key;
   }
@@ -151,8 +112,11 @@ public class Citation implements Serializable {
   }
 
   /**
+   * TODO: Restore to correct datatype. Stored as double because of bug in Mulgara 
+   *
    * @param year the year of the citation
    */
+  @Predicate(uri = "bibtex:hasYear", dataType = "xsd:double")
   public void setYear(Integer year) {
     this.year = year;
   }
@@ -172,6 +136,7 @@ public class Citation implements Serializable {
   /**
    * @param displayYear the year of the citation
    */
+  @Predicate(uri="plos:temporal#displayYear", dataType = "xsd:string")
   public void setDisplayYear(String displayYear) {
     this.displayYear = displayYear;
   }
@@ -186,6 +151,7 @@ public class Citation implements Serializable {
   /**
    * @param month the month of the citation
    */
+  @Predicate(uri = "bibtex:hasMonth", dataType = "xsd:string")
   public void setMonth(String month) {
     this.month = month;
   }
@@ -198,8 +164,10 @@ public class Citation implements Serializable {
   }
 
   /**
+   * TODO: Restore to correct datatype. Stored as double because of bug in Mulgara 
    * @param volumeNumber the volume of this citation
    */
+  @Predicate(uri = "bibtex:hasVolume", dataType = "xsd:double")
   public void setVolumeNumber(Integer volumeNumber) {
     this.volumeNumber = volumeNumber;
   }
@@ -216,6 +184,7 @@ public class Citation implements Serializable {
   /**
    * @param volume the volume of the journal
    */
+  @Predicate(uri="prism:volume", dataType = "xsd:string")
   public void setVolume(String volume) {
     this.volume = volume;
   }
@@ -236,6 +205,7 @@ public class Citation implements Serializable {
   /**
    * @param issue the issue of the citation's article
    */
+  @Predicate(uri = "bibtex:hasNumber", dataType = "xsd:string")
   public void setIssue(String issue) {
     this.issue = issue;
   }
@@ -252,6 +222,7 @@ public class Citation implements Serializable {
   /**
    * @param title the title of the citation's article
    */
+  @Predicate(uri = "dc:title", dataType = "rdf:XMLLiteral")
   public void setTitle(String title) {
     this.title = title;
   }
@@ -271,6 +242,7 @@ public class Citation implements Serializable {
   /**
    * @param publisherLocation the location of the publisher
    */
+  @Predicate(uri = "bibtex:hasAddress", dataType = "xsd:string")
   public void setPublisherLocation(String publisherLocation) {
     this.publisherLocation = publisherLocation;
   }
@@ -285,6 +257,7 @@ public class Citation implements Serializable {
   /**
    * @param publisherName the name of the publisher
    */
+  @Predicate(uri = "bibtex:hasPublisher", dataType = "xsd:string")
   public void setPublisherName(String publisherName) {
     this.publisherName = publisherName;
   }
@@ -305,6 +278,7 @@ public class Citation implements Serializable {
   /**
    * @param pages the pages the citation is from
    */
+  @Predicate(uri = "bibtex:hasPages", dataType = "xsd:string")
   public void setPages(String pages) {
     this.pages = pages;
   }
@@ -321,6 +295,7 @@ public class Citation implements Serializable {
   /**
    * @param journal the journal of the citation
    */
+  @Predicate(uri = "bibtex:hasJournal", dataType = "xsd:string")
   public void setJournal(String journal) {
     this.journal = journal;
   }
@@ -338,6 +313,7 @@ public class Citation implements Serializable {
   /**
    * @param note the note for this citation
    */
+  @Predicate(uri = "bibtex:hasNote", dataType = "xsd:string")
   public void setNote(String note) {
     this.note = note;
   }
@@ -352,6 +328,8 @@ public class Citation implements Serializable {
   /**
    * @param editors the editors of this citation
    */
+  @Predicate(uri = "plos:hasEditorList", collectionType = CollectionType.RDFSEQ,
+             cascade = { CascadeType.child })
   public void setEditors(List<UserProfile> editors) {
     this.editors = editors;
   }
@@ -366,6 +344,8 @@ public class Citation implements Serializable {
   /**
    * @param authors the authors for this citation
    */
+  @Predicate(uri = "plos:hasAuthorList", collectionType = CollectionType.RDFSEQ,
+             cascade = { CascadeType.child })
   public void setAuthors(List<UserProfile> authors) {
     this.authors = authors;
   }
@@ -384,6 +364,7 @@ public class Citation implements Serializable {
   /**
    * @param url the URL for the object
    */
+  @Predicate(uri = "bibtex:hasURL", dataType = "xsd:string")
   public void setUrl(String url) {
     this.url = url;
   }
@@ -402,6 +383,7 @@ public class Citation implements Serializable {
    *
    * @param summary the summary/abstract of the object
    */
+  @Predicate(uri = "bibtex:hasAbstract", dataType = "xsd:string")
   public void setSummary(String summary) {
     this.summary = summary;
   }
@@ -414,6 +396,7 @@ public class Citation implements Serializable {
    * @param citationType the string representation of the URI for the type
    * @throws IllegalArgumentException if the string is not a valid URI.
    */
+  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
   public void setCitationType(String citationType) {
     assert URI.create(citationType) != null : "Invalid Ambra Citation Type" + citationType;
     this.citationType = citationType;
@@ -439,11 +422,11 @@ public class Citation implements Serializable {
    * @return the ordered list of author names
    */
   public List<String> getAuthorsRealNames() {
-    if (authors == null)
+    if (getAuthors() == null)
       return null;
 
     List<String> realNames = new ArrayList<String>();
-    for (UserProfile profile: authors)
+    for (UserProfile profile: getAuthors())
       realNames.add(profile.getRealName());
 
     return realNames;

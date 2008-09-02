@@ -18,8 +18,13 @@
  */
 package org.topazproject.otm.metadata;
 
+import java.beans.BeanInfo;
+import java.beans.IndexedPropertyDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -29,8 +34,10 @@ import java.net.URI;
 import java.net.URL;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +53,6 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.annotations.Alias;
 import org.topazproject.otm.annotations.Aliases;
 import org.topazproject.otm.annotations.Blob;
-import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -179,19 +185,71 @@ public class AnnotationClassMetaFactory {
     ClassBindings bin = sf.getClassBindings(def.getName());
     bin.bind(EntityMode.POJO, new ClassBinder(clazz));
 
-    for (Field f : clazz.getDeclaredFields()) {
-      FieldInfo fi = FieldInfo.create(def, f);
+    Set<Method> annotated = new HashSet<Method>();
+    String      ours      = Id.class.getPackage().getName();
 
-      if (fi == null) {
-        log.info("Skipped " + f.getName() + " in " + clazz.getName());
+    for (Method method : clazz.getDeclaredMethods()) {
+      // We only care about annotated methods. Ignore everything else.
+      for (Annotation a : method.getAnnotations()) {
+        if (a.annotationType().getPackage().getName().equals(ours)) {
+          annotated.add(method);
 
-        continue;
+          break;
+        }
       }
+    }
 
-      PropertyDefinition d = fi.getDefinition(sf, uriPrefix);
+    BeanInfo                beanInfo;
+    Set<PropertyDescriptor> properties = new HashSet<PropertyDescriptor>();
+
+    try {
+      beanInfo = Introspector.getBeanInfo(clazz);
+    } catch (IntrospectionException e) {
+      throw new OtmException("Failed to introspect " + clazz, e);
+    }
+
+    for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+      if (property instanceof IndexedPropertyDescriptor)
+        continue;
+
+      Method setter = property.getWriteMethod();
+      Method getter = property.getReadMethod();
+
+      if (!annotated.contains(setter) && !annotated.contains(getter))
+        continue;
+
+      if (setter == null)
+        throw new OtmException("Missing setter for property '" + property.getName() + "' in "
+                               + clazz);
+
+      if ((getter == null) && !(def instanceof ViewDefinition))
+        throw new OtmException("Missing getter for property '" + property.getName() + "' in "
+                               + clazz);
+
+      if (Modifier.isFinal(setter.getModifiers()))
+        throw new OtmException("Setter can't be 'final' for  '" + property.getName() + "' in "
+                               + clazz);
+
+      if ((getter != null) && Modifier.isFinal(setter.getModifiers()))
+        throw new OtmException("Getter can't be 'final' for  '" + property.getName() + "' in "
+                               + clazz);
+
+      annotated.remove(getter);
+      annotated.remove(setter);
+      properties.add(property);
+    }
+
+    if (annotated.size() > 0)
+      throw new OtmException("Following annotated methods are not valid getters or setters: "
+                             + annotated);
+
+    for (PropertyDescriptor property : properties) {
+      PropertyInfo       fi = new PropertyInfo(def, property);
+
+      PropertyDefinition d  = fi.getDefinition(sf, uriPrefix);
 
       if (d == null) {
-        log.info("Skipped " + fi);
+        log.info("Skipped (WTF) " + fi);
 
         continue;
       }
@@ -239,89 +297,39 @@ public class AnnotationClassMetaFactory {
     return getName(clazz);
   }
 
-  private static class FieldInfo {
-    final ClassDefinition cd;
-    final Field           field;
-    final String          name;
-    final Class<?>        type;
-    final Method          getter;
-    final Method          setter;
-    final boolean         isArray;
-    final boolean         isCollection;
+  private static class PropertyInfo {
+    final ClassDefinition    cd;
+    final String             name;
+    final PropertyDescriptor property;
+    final Class<?>           type;
+    final boolean            isArray;
+    final boolean            isCollection;
 
-    private FieldInfo(ClassDefinition cd, Field field)
-               throws OtmException {
-      this.cd        = cd;
-      this.field     = field;
-      name           = cd.getName() + ":" + field.getName();
+    public PropertyInfo(ClassDefinition cd, PropertyDescriptor property)
+                 throws OtmException {
+      this.cd         = cd;
+      this.property   = property;
+      this.name       = cd.getName() + ":" + property.getName();
 
-      int     mod    = field.getModifiers();
-      boolean readOnly = cd instanceof ViewDefinition;
+      Class<?> ptype  = property.getPropertyType();
 
-      if (Modifier.isFinal(mod))
-        throw new OtmException("'final' field " + this + " can't be persisted.");
-
-      String mn = capitalize(field.getName());
-      getter         = getGetter(field.getDeclaringClass(), "get" + mn);
-      setter         = getSetter(field.getDeclaringClass(), "set" + mn, field.getType());
-
-      if ((((getter == null) && !readOnly) || (setter == null)) && !Modifier.isPublic(mod))
-        throw new OtmException("The field " + this + " is inaccessible and can't be persisted.");
-
-      isArray        = field.getType().isArray();
-      isCollection   = Collection.class.isAssignableFrom(field.getType());
+      isArray         = ptype.isArray();
+      isCollection    = Collection.class.isAssignableFrom(ptype);
 
       if (isArray)
-        type = field.getType().getComponentType();
+        type = ptype.getComponentType();
       else if (isCollection)
-        type = collectionType(field);
+        type = collectionType(property.getWriteMethod());
       else
-        type = field.getType();
+        type = ptype;
     }
 
-    static FieldInfo create(ClassDefinition cd, Field field)
-                     throws OtmException {
-      int     mod      = field.getModifiers();
-      boolean readOnly = cd instanceof ViewDefinition;
-
-      if (Modifier.isStatic(mod) || Modifier.isTransient(mod))
-        return null;
-
-      return new FieldInfo(cd, field);
+    private Class<?> getDeclaringClass() {
+      return property.getWriteMethod().getDeclaringClass();
     }
 
-    private static String capitalize(String name) {
-      return name.substring(0, 1).toUpperCase() + name.substring(1);
-    }
-
-    private static Method getGetter(Class<?> invokedOn, String name) {
-      try {
-        return invokedOn.getMethod(name);
-      } catch (NoSuchMethodException e) {
-        return null;
-      }
-    }
-
-    private static Method getSetter(Class<?> invokedOn, String name, Class<?> type) {
-      for (Class<?> t = type; t != null; t = t.getSuperclass()) {
-        try {
-          return invokedOn.getMethod(name, t);
-        } catch (NoSuchMethodException e) {
-        }
-      }
-
-      for (Class<?> t : type.getInterfaces()) {
-        try {
-          return invokedOn.getMethod(name, t);
-        } catch (NoSuchMethodException e) {
-        }
-      }
-
-      return null;
-    }
-
-    private static Class collectionType(Field field) {
-      Type  type   = field.getGenericType();
+    private static Class collectionType(Method setter) {
+      Type  type   = setter.getGenericParameterTypes()[0];
       Class result = Object.class;
 
       if (type instanceof ParameterizedType) {
@@ -340,7 +348,7 @@ public class AnnotationClassMetaFactory {
     }
 
     public String toString() {
-      return "'" + field.getName() + "' in " + field.getDeclaringClass();
+      return "'" + property.getName() + "' in " + getDeclaringClass();
     }
 
     public PropertyDefinition getDefinition(SessionFactory sf, String uriPrefix)
@@ -349,20 +357,22 @@ public class AnnotationClassMetaFactory {
       Annotation     ann  = null;
       String         ours = Id.class.getPackage().getName();
 
-      for (Annotation a : field.getAnnotations()) {
-        if (a instanceof GeneratedValue)
-          gv = (GeneratedValue) a;
-        else if (a.annotationType().getPackage().getName().equals(ours)) {
-          if (ann != null)
-            throw new OtmException("Only one of @Id, @Predicate, @Blob, @Projection, @PredicateMap"
-                                   + " or @Embedded can be applied to " + this);
+      for (Method m : new Method[] { property.getWriteMethod(), property.getReadMethod() }) {
+        if (m == null)
+          continue;
 
-          ann = a;
+        for (Annotation a : m.getAnnotations()) {
+          if (a instanceof GeneratedValue)
+            gv = (GeneratedValue) a;
+          else if (a.annotationType().getPackage().getName().equals(ours)) {
+            if (ann != null)
+              throw new OtmException("Only one of @Id, @Predicate, @Blob, @Projection, @PredicateMap"
+                                     + " or @Embedded can be applied to " + this);
+
+            ann = a;
+          }
         }
       }
-
-      if (ann == null)
-        ann = type.getAnnotation(Embeddable.class);
 
       if (((ann != null) && !(ann instanceof Id))
            && ((cd instanceof ViewDefinition) ^ (ann instanceof Projection)))
@@ -394,7 +404,7 @@ public class AnnotationClassMetaFactory {
       if (ann instanceof Blob)
         return getBlobDefinition(sf, (Blob) ann);
 
-      if ((ann instanceof Embedded) || (ann instanceof Embeddable))
+      if (ann instanceof Embedded)
         return getEmbeddedDefinition(sf);
 
       if (ann instanceof PredicateMap)
@@ -421,9 +431,9 @@ public class AnnotationClassMetaFactory {
       if (pre.equals("")) {
         pre   = ((uriPrefix == null) || uriPrefix.equals("")) ? Rdf.topaz : uriPrefix;
         // Compute default uriPrefix: Rdf.topaz/clazz/generatorClass#
-        pre   = Rdf.topaz + field.getDeclaringClass().getName() + '/' + field.getName() + '#';
+        pre   = Rdf.topaz + getDeclaringClass().getName() + '/' + property.getName() + '#';
 
-        //pre = pre + cd.getName() + '/' + field.getName() + '/';
+        //pre = pre + cd.getName() + '/' + property.getName() + '/';
       } else {
         try {
           // Validate that we have a valid uri
@@ -444,7 +454,7 @@ public class AnnotationClassMetaFactory {
                                    throws OtmException {
       String uri =
         ((rdf != null) && !"".equals(rdf.uri())) ? sf.expandAlias(rdf.uri())
-        : ((ns != null) ? (ns + field.getName()) : null);
+        : ((ns != null) ? (ns + property.getName()) : null);
 
       if (uri == null)
         throw new OtmException("Missing attribute 'uri' in @Predicate for " + this);
@@ -460,7 +470,7 @@ public class AnnotationClassMetaFactory {
 
       if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
         throw new OtmException("No serializer found for '" + type + "' with dataType '" + dt
-                               + "' for field " + this);
+                               + "' for " + this);
 
       boolean inverse = (rdf != null) && rdf.inverse();
       String  model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
@@ -485,18 +495,16 @@ public class AnnotationClassMetaFactory {
         objectProperty = (serializer == null) || inverse || declaredAsUri;
       } else if (PropType.OBJECT.equals(rdf.type())) {
         if (!"".equals(rdf.dataType()))
-          throw new OtmException("Datatype cannot be specified for an object-Property field "
-                                 + this);
+          throw new OtmException("Datatype cannot be specified for an object-Property " + this);
 
         objectProperty = true;
       } else if (PropType.DATA.equals(rdf.type())) {
         if (serializer == null)
           throw new OtmException("No serializer found for '" + type + "' with dataType '" + dt
-                                 + "' for a data-property field " + this);
+                                 + "' for a data-property " + this);
 
         if (inverse)
-          throw new OtmException("Inverse mapping cannot be specified for a data-property field "
-                                 + this);
+          throw new OtmException("Inverse mapping cannot be specified for a data-property " + this);
       }
 
       if (serializer != null)
@@ -512,11 +520,11 @@ public class AnnotationClassMetaFactory {
 
     public VarDefinition getVarDefinition(SessionFactory sf, Projection proj)
                                    throws OtmException {
-      String     var        = "".equals(proj.value()) ? field.getName() : proj.value();
+      String     var        = "".equals(proj.value()) ? property.getName() : proj.value();
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
-        throw new OtmException("No serializer found for '" + type + "' for field " + this);
+        throw new OtmException("No serializer found for '" + type + "' for " + this);
 
       // XXX: shouldn't we parse the query to figure this out?
       String assoc = (serializer == null) ? getEntityName(type) : null;
@@ -527,7 +535,7 @@ public class AnnotationClassMetaFactory {
     public IdDefinition getIdDefinition(SessionFactory sf, Id id, IdentifierGenerator generator)
                                  throws OtmException {
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
-        throw new OtmException("@Id field '" + this + "' must be a String, URI or URL.");
+        throw new OtmException("@Id property '" + this + "' must be a String, URI or URL.");
 
       return new IdDefinition(getName(), generator);
     }
@@ -535,7 +543,7 @@ public class AnnotationClassMetaFactory {
     public BlobDefinition getBlobDefinition(SessionFactory sf, Blob blob)
                                      throws OtmException {
       if (!isArray || !type.equals(Byte.TYPE))
-        throw new OtmException("@Blob may only be applied to a 'byte[]' field: " + this);
+        throw new OtmException("@Blob may only be applied to a 'byte[]' property : " + this);
 
       return new BlobDefinition(getName());
     }
@@ -543,9 +551,10 @@ public class AnnotationClassMetaFactory {
     public RdfDefinition getPredicateMapDefinition(SessionFactory sf, PredicateMap pmap)
                                             throws OtmException {
       String model = null; // TODO: allow predicate maps from other models
-      Type   type  = field.getGenericType();
+      Type   type  = property.getWriteMethod().getGenericParameterTypes()[0];
 
-      if (Map.class.isAssignableFrom(field.getType()) && (type instanceof ParameterizedType)) {
+      if (Map.class.isAssignableFrom(property.getPropertyType())
+           && (type instanceof ParameterizedType)) {
         ParameterizedType ptype = (ParameterizedType) type;
         Type[]            targs = ptype.getActualTypeArguments();
 
@@ -565,8 +574,8 @@ public class AnnotationClassMetaFactory {
         }
       }
 
-      throw new OtmException("@PredicateMap can be applied to a Map<String, List<String>> field only."
-                             + "It cannot be applied to " + this);
+      throw new OtmException("@PredicateMap can be applied to a Map<String, List<String>> "
+                             + " property only. It cannot be applied to " + this);
     }
 
     public EmbeddedDefinition getEmbeddedDefinition(SessionFactory sf)
@@ -574,8 +583,8 @@ public class AnnotationClassMetaFactory {
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       if (isArray || isCollection || (serializer != null))
-        throw new OtmException("@Embedded class field " + this
-                               + " can't be an array, collection or a simple field");
+        throw new OtmException("@Embedded class property " + this
+                               + " can't be an array, collection or a simple data type");
 
       sf.preload(type);
 
@@ -597,7 +606,7 @@ public class AnnotationClassMetaFactory {
       }
 
       if (pd instanceof EmbeddedDefinition)
-        return new EmbeddedClassFieldBinder(field, getter, setter);
+        return new EmbeddedClassFieldBinder(property.getReadMethod(), property.getWriteMethod());
 
       Serializer serializer;
 
@@ -615,12 +624,14 @@ public class AnnotationClassMetaFactory {
         serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       if (isArray)
-        return new ArrayFieldBinder(field, getter, setter, serializer, type);
+        return new ArrayFieldBinder(property.getReadMethod(), property.getWriteMethod(),
+                                    serializer, type);
 
       if (isCollection)
-        return new CollectionFieldBinder(field, getter, setter, serializer, type);
+        return new CollectionFieldBinder(property.getReadMethod(), property.getWriteMethod(),
+                                         serializer, type);
 
-      return new ScalarFieldBinder(field, getter, setter, serializer);
+      return new ScalarFieldBinder(property.getReadMethod(), property.getWriteMethod(), serializer);
     }
   }
 }

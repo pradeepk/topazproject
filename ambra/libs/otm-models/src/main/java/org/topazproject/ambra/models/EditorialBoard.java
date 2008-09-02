@@ -38,15 +38,9 @@ import org.topazproject.otm.annotations.Predicate;
   */
 @Entity(type = "plos:EditorialBoard", model = "ri")
 public class EditorialBoard implements Serializable {
-  @Id
-  @GeneratedValue(uriPrefix = "id:editorialBoard/")
   private URI            id;
-  @Predicate(uri = "dcterms:replaces")
   private EditorialBoard supersedes;
-  @Predicate(uri = "dcterms:isReplacedBy")
   private EditorialBoard supersededBy;
-  @Predicate(uri = "plos:editors", collectionType = CollectionType.RDFSEQ,
-      cascade = { CascadeType.child })
   private List<UserProfile>      editors = new ArrayList();
 
   /**
@@ -63,6 +57,8 @@ public class EditorialBoard implements Serializable {
    *
    * @param id the value to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "id:editorialBoard/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -81,6 +77,7 @@ public class EditorialBoard implements Serializable {
    *
    * @param supersedes the value to set.
    */
+  @Predicate(uri = "dcterms:replaces")
   public void setSupersedes(EditorialBoard supersedes) {
     this.supersedes = supersedes;
   }
@@ -99,6 +96,7 @@ public class EditorialBoard implements Serializable {
    *
    * @param supersededBy the value to set.
    */
+  @Predicate(uri = "dcterms:isReplacedBy")
   public void setSupersededBy(EditorialBoard supersededBy) {
     this.supersededBy = supersededBy;
   }
@@ -117,6 +115,8 @@ public class EditorialBoard implements Serializable {
    *
    * @param editors the value to set.
    */
+  @Predicate(uri = "plos:editors", collectionType = CollectionType.RDFSEQ,
+      cascade = { CascadeType.child })
   public void setEditors(List<UserProfile> editors) {
     this.editors = editors;
   }

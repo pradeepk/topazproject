@@ -47,17 +47,71 @@ public class IdGenTest {
 
   @Entity(type = Rdf.topaz + "A", model = "idtest")
   public static class A {
+    private String id;
+    private String name;
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
     @Id @GeneratedValue(generatorClass = "org.topazproject.otm.id.GUIDGenerator",
                         uriPrefix = Rdf.topaz + "A#")
-    public String id;
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get name.
+     *
+     * @return name as String.
+     */
+    public String getName() {
+      return name;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param name the value to set.
+     */
     @Predicate(uri = Rdf.topaz + "name")
-    public String name;
+    public void setName(String name) {
+      this.name = name;
+    }
   }
 
   @Entity(type = Rdf.topaz + "B")
   public static class B extends A {
+    private String extra;
+
+    /**
+     * Get extra.
+     *
+     * @return extra as String.
+     */
+    public String getExtra() {
+      return extra;
+    }
+
+    /**
+     * Set extra.
+     *
+     * @param extra the value to set.
+     */
     @Predicate(uri = Rdf.topaz + "justInCase")
-    public String extra;
+    public void setExtra(String extra) {
+      this.extra = extra;
+    }
   }
 
   @Entity(type = Rdf.topaz + "C")
@@ -66,24 +120,114 @@ public class IdGenTest {
 
   @Entity(type = Rdf.topaz + "D", model = "idtest")
   public static class D {
+    private URI uri;
+    private String data;
+
+    /**
+     * Get uri.
+     *
+     * @return uri as URI.
+     */
+    public URI getUri() {
+      return uri;
+    }
+
+    /**
+     * Set uri.
+     *
+     * @param uri the value to set.
+     */
     @Id @GeneratedValue(generatorClass = "org.topazproject.otm.id.GUIDGenerator")
-    public URI uri;
+    public void setUri(URI uri) {
+      this.uri = uri;
+    }
+
+    /**
+     * Get data.
+     *
+     * @return data as String.
+     */
+    public String getData() {
+      return data;
+    }
+
+    /**
+     * Set data.
+     *
+     * @param data the value to set.
+     */
     @Predicate(uri = Rdf.topaz + "data")
-    public String data;
+    public void setData(String data) {
+      this.data = data;
+    }
   }
 
   @Entity(type = Rdf.topaz + "E", model = "idtest")
   public static class E {
+    private String id;
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
     @Id @GeneratedValue
-    public String id;
+    public void setId(String id) {
+      this.id = id;
+    }
   }
 
   @Entity(type = Rdf.topaz + "Kontrol", model = "idtest")
   public static class Kontrol {
+    private String id;
+    private String data;
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
     @Id
-    public String id;
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get data.
+     *
+     * @return data as String.
+     */
+    public String getData() {
+      return data;
+    }
+
+    /**
+     * Set data.
+     *
+     * @param data the value to set.
+     */
     @Predicate(uri = Rdf.topaz + "data")
-    public String data;
+    public void setData(String data) {
+      this.data = data;
+    }
   }
 
   @BeforeClass
@@ -151,9 +295,9 @@ public class IdGenTest {
     factory.preload(Kontrol.class);
     Kontrol k = new Kontrol();
     String id = "http://www.topazproject.org/Kontrol";
-    k.id = id;
+    k.setId(id);
     session.saveOrUpdate(k);
-    assertEquals(id, k.id);
+    assertEquals(id, k.getId());
   }
 
   @Test
@@ -166,12 +310,12 @@ public class IdGenTest {
     factory.preload(A.class);
     A a = new A();
     session.saveOrUpdate(a);
-    assert a.id != null;
+    assert a.getId() != null;
 
     // Ensure it is a uri
     URI uri = URI.create(a.id);
 
-    assert a.id.startsWith(Rdf.topaz + "A#") : a.id;
+    assert a.getId().startsWith(Rdf.topaz + "A#") : a.getId();
   }
 
   @Test
@@ -184,7 +328,7 @@ public class IdGenTest {
     factory.preload(C.class);
     C c = new C();
     session.saveOrUpdate(c);
-    assert c.id != null;
+    assert c.getId() != null;
   }
 
   @Test(groups = { "tx" })
@@ -192,8 +336,8 @@ public class IdGenTest {
     factory.preload(D.class);
     D d = new D();
     session.saveOrUpdate(d);
-    assert d.uri != null;
-    assert d.uri.toString().startsWith(Rdf.topaz + D.class.getName() + "/uri#") : d.uri;
+    assert d.getUri() != null;
+    assert d.getUri().toString().startsWith(Rdf.topaz + D.class.getName() + "/uri#") : d.getUri();
   }
 
   @Test(groups = { "tx" })
@@ -201,6 +345,6 @@ public class IdGenTest {
     factory.preload(E.class);
     E e = new E();
     session.saveOrUpdate(e);
-    assert e.id.startsWith(Rdf.topaz + E.class.getName() + "/id#") : e.id;
+    assert e.getId().startsWith(Rdf.topaz + E.class.getName() + "/id#") : e.getId();
   }
 }

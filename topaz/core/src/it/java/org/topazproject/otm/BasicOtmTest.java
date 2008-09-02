@@ -109,12 +109,12 @@ public class BasicOtmTest extends AbstractOtmTest {
           a.setCreator("Pradeep");
           a.setState(42);
 
-          if (a.foobar == null)
-            a.foobar = new SampleEmbeddable();
+          if (a.getFoobar() == null)
+            a.setFoobar(new SampleEmbeddable());
 
-          a.foobar.foo   = "FOO";
-          a.foobar.bar = "BAR";
-          a.foobar.set.add(a);
+          a.getFoobar().setFoo("FOO");
+          a.getFoobar().setBar("BAR");
+          a.getFoobar().getSet().add(a);
         }
       });
     doInSession(new Action() {
@@ -122,7 +122,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           Annotation a = (Annotation) session.get(Annotea.class, "http://localhost/annotation/1");
 
           assertNotNull(a);
-          assertNotNull(a.foobar);
+          assertNotNull(a.getFoobar());
 
           assertTrue(a instanceof PublicAnnotation);
 
@@ -131,16 +131,16 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertEquals(Annotation.NS + "Comment", a.getType());
           assertNotNull(a.getBody());
           assertEquals(blob, a.getBody().getBlob());
-          assertEquals("FOO", a.foobar.foo);
-          assertEquals("BAR", a.foobar.bar);
+          assertEquals("FOO", a.getFoobar().getFoo());
+          assertEquals("BAR", a.getFoobar().getBar());
 
 
           Binder b = session.getSessionFactory().getClassMetadata(Annotation.class)
                                      .getMapperByName("foobar.set").getBinder(session);
           assertFalse(b.isLoaded(a));
           assertNotNull(b.getRawFieldData(a));
-          assertEquals(1, a.foobar.set.size());
-          assertEquals(a, a.foobar.set.iterator().next());
+          assertEquals(1, a.getFoobar().getSet().size());
+          assertEquals(a, a.getFoobar().getSet().iterator().next());
           assertTrue(b.isLoaded(a));
           assertNull(b.getRawFieldData(a));
 
@@ -224,7 +224,7 @@ public class BasicOtmTest extends AbstractOtmTest {
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           ClassWithEnum c = new ClassWithEnum("http://localhost/ClassWithEnum/1");
-          c.foo = ClassWithEnum.Foo.bar1;
+          c.setFoo(ClassWithEnum.Foo.bar1);
           session.saveOrUpdate(c);
         }
       });
@@ -233,7 +233,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           ClassWithEnum c = session.get(ClassWithEnum.class, "http://localhost/ClassWithEnum/1");
           assertNotNull(c);
 
-          assertEquals(ClassWithEnum.Foo.bar1, c.foo);
+          assertEquals(ClassWithEnum.Foo.bar1, c.getFoo());
         }
       });
   }
@@ -647,10 +647,10 @@ public class BasicOtmTest extends AbstractOtmTest {
           SpecialMappers m = new SpecialMappers("http://localhost/sm/1");
 
           for (int i = 1; i < 11; i++) {
-            m.list.add("l" + i);
-            m.bag.add("b" + i);
-            m.seq.add("s" + i);
-            m.alt.add("a" + i);
+            m.getList().add("l" + i);
+            m.getBag().add("b" + i);
+            m.getSeq().add("s" + i);
+            m.getAlt().add("a" + i);
           }
 
           session.saveOrUpdate(m);
@@ -660,28 +660,28 @@ public class BasicOtmTest extends AbstractOtmTest {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.list.add("l11");
+          m.getList().add("l11");
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.bag.add("b11");
+          m.getBag().add("b11");
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.seq.add("s11");
+          m.getSeq().add("s11");
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.alt.add("a11");
+          m.getAlt().add("a11");
         }
       });
     doInSession(new Action() {
@@ -689,16 +689,16 @@ public class BasicOtmTest extends AbstractOtmTest {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
 
-          assertEquals(11, m.list.size());
-          assertEquals(11, m.bag.size());
-          assertEquals(11, m.seq.size());
-          assertEquals(11, m.alt.size());
+          assertEquals(11, m.getList().size());
+          assertEquals(11, m.getBag().size());
+          assertEquals(11, m.getSeq().size());
+          assertEquals(11, m.getAlt().size());
 
           for (int i = 1; i < 12; i++) {
-            assertEquals("l" + i, m.list.get(i - 1));
-            assertTrue(m.bag.contains("b" + i));
-            assertEquals("s" + i, m.seq.get(i - 1));
-            assertTrue(m.alt.contains("a" + i));
+            assertEquals("l" + i, m.getList().get(i - 1));
+            assertTrue(m.getBag().contains("b" + i));
+            assertEquals("s" + i, m.getSeq().get(i - 1));
+            assertTrue(m.getAlt().contains("a" + i));
           }
         }
       });
@@ -706,28 +706,28 @@ public class BasicOtmTest extends AbstractOtmTest {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.list.remove("l11");
+          m.getList().remove("l11");
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.bag.remove("b11");
+          m.getBag().remove("b11");
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.seq.remove("s11");
+          m.getSeq().remove("s11");
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
-          m.alt.remove("a11");
+          m.getAlt().remove("a11");
         }
       });
     doInSession(new Action() {
@@ -735,16 +735,16 @@ public class BasicOtmTest extends AbstractOtmTest {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
 
-          assertEquals(10, m.list.size());
-          assertEquals(10, m.bag.size());
-          assertEquals(10, m.seq.size());
-          assertEquals(10, m.alt.size());
+          assertEquals(10, m.getList().size());
+          assertEquals(10, m.getBag().size());
+          assertEquals(10, m.getSeq().size());
+          assertEquals(10, m.getAlt().size());
 
           for (int i = 1; i < 11; i++) {
-            assertEquals("l" + i, m.list.get(i - 1));
-            assertTrue(m.bag.contains("b" + i));
-            assertEquals("s" + i, m.seq.get(i - 1));
-            assertTrue(m.alt.contains("a" + i));
+            assertEquals("l" + i, m.getList().get(i - 1));
+            assertTrue(m.getBag().contains("b" + i));
+            assertEquals("s" + i, m.getSeq().get(i - 1));
+            assertTrue(m.getAlt().contains("a" + i));
           }
         }
       });
@@ -763,9 +763,9 @@ public class BasicOtmTest extends AbstractOtmTest {
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           Grants g = new Grants();
-          g.resource = "http://localhost/articles/1";
-          g.permissions.put("perm:1", Collections.singletonList("user:1"));
-          g.permissions.put("perm:2", Collections.singletonList("user:1"));
+          g.setResource("http://localhost/articles/1");
+          g.getPermissions().put("perm:1", Collections.singletonList("user:1"));
+          g.getPermissions().put("perm:2", Collections.singletonList("user:1"));
 
           session.saveOrUpdate(g);
         }
@@ -775,9 +775,9 @@ public class BasicOtmTest extends AbstractOtmTest {
           Grants g = session.get(Grants.class, "http://localhost/articles/1");
           assertNotNull(g);
 
-          assertEquals(2, g.permissions.size());
+          assertEquals(2, g.getPermissions().size());
 
-          List<String> u = g.permissions.get("perm:1");
+          List<String> u = g.getPermissions().get("perm:1");
           assertNotNull(u);
           assertEquals(1, u.size());
           assertEquals("user:1", u.get(0));
@@ -790,14 +790,14 @@ public class BasicOtmTest extends AbstractOtmTest {
           Grants g1 = l.get(0);
           assertTrue(g == g1);
 
-          assertEquals(2, g.permissions.size());
+          assertEquals(2, g.getPermissions().size());
 
-          u = g.permissions.get("perm:1");
+          u = g.getPermissions().get("perm:1");
           assertNotNull(u);
           assertEquals(1, u.size());
           assertEquals("user:1", u.get(0));
 
-          u = g.permissions.get("perm:2");
+          u = g.getPermissions().get("perm:2");
           assertNotNull(u);
           assertEquals(1, u.size());
         }

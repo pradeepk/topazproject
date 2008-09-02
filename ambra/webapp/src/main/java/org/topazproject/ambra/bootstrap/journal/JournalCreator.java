@@ -202,7 +202,7 @@ public class JournalCreator implements ServletContextListener {
       journal.setKey(key);
     }
 
-    journal.setEIssn(eIssn);
+    journal.seteIssn(eIssn);
 
     DublinCore dc = journal.getDublinCore();
 

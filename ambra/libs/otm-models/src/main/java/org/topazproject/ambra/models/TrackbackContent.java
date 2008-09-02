@@ -25,6 +25,7 @@ import java.net.URL;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -39,10 +40,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 public class TrackbackContent implements Serializable {
   static final long serialVersionUID = -4310540950708482559L;
 
-  @Id
-  @GeneratedValue(uriPrefix = "id:trackbackContent/")
   private String id;
-
   private String title;
   private URL url;
   private String blog_name;
@@ -81,6 +79,7 @@ public class TrackbackContent implements Serializable {
   /**
    * @param blog_name The blog_name to set.
    */
+  @Predicate
   public void setBlog_name(String blog_name) {
     this.blog_name = blog_name;
   }
@@ -95,6 +94,7 @@ public class TrackbackContent implements Serializable {
   /**
    * @param excerpt The excerpt to set.
    */
+  @Predicate
   public void setExcerpt(String excerpt) {
     this.excerpt = excerpt;
   }
@@ -109,6 +109,8 @@ public class TrackbackContent implements Serializable {
   /**
    * @param id The id to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "id:trackbackContent/")
   public void setId(String id) {
     this.id = id;
   }
@@ -123,6 +125,7 @@ public class TrackbackContent implements Serializable {
   /**
    * @param title The title to set.
    */
+  @Predicate
   public void setTitle(String title) {
     this.title = title;
   }
@@ -137,6 +140,7 @@ public class TrackbackContent implements Serializable {
   /**
    * @param url The url to set.
    */
+  @Predicate
   public void setUrl(URL url) {
     this.url = url;
   }

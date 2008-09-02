@@ -2082,6 +2082,15 @@ class ResultChecker extends BuilderSupport {
 }
 
 private class NonEntity {
+  URI bar1;
+
   @Predicate(uri = "topaz:bar1", model = "m1")
-  URI bar1
+  void setBar1(URI bar1) {
+    this.bar1 = bar1;
+  }
+
+  URI getBar1() {
+    return bar1;
+  }
+
 }

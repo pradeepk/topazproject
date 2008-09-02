@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.ambra.models;
 
 import java.net.URI;
@@ -30,6 +29,24 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Ronald Tschalär
  */
 public class PermissionsPropagator {
+  private URI propPermsTo;
+
+  /**
+   * Get propPermsTo.
+   *
+   * @return propPermsTo as URI.
+   */
+  public URI getPropPermsTo() {
+    return propPermsTo;
+  }
+
+  /**
+   * Set propPermsTo.
+   *
+   * @param propPermsTo the value to set.
+   */
   @Predicate(uri = "topaz:propagate-permissions-to", model = "pp")
-  public URI propPermsTo;
+  public void setPropPermsTo(URI propPermsTo) {
+    this.propPermsTo = propPermsTo;
+  }
 }

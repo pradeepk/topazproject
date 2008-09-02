@@ -107,7 +107,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
       }
     }
     if (log.isDebugEnabled()) {
-      log.debug(volumes.size() + " Volume(s) for Journal " + journal.getEIssn());
+      log.debug(volumes.size() + " Volume(s) for Journal " + journal.geteIssn());
     }
 
     // get Issues for this Journal
@@ -128,7 +128,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     }
     if (log.isDebugEnabled()) {
       log.debug(volumes.size() + " Volume(s), " + issues.size() + " Issue(s) for Journal "
-              + journal.getEIssn());
+              + journal.geteIssn());
     }
 
     // default action is just to display the template

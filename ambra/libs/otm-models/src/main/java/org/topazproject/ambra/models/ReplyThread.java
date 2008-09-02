@@ -31,7 +31,6 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 public class ReplyThread extends Reply {
-  @Predicate(uri="r:inReplyTo", inverse=true, notOwned=true, cascade = { CascadeType.child })
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**
@@ -61,6 +60,7 @@ public class ReplyThread extends Reply {
    *
    * @param replies the thread of replies
    */
+  @Predicate(uri="r:inReplyTo", inverse=true, notOwned=true, cascade = { CascadeType.child })
   public void setReplies(List<ReplyThread> replies) {
     this.replies = replies;
   }
@@ -73,6 +73,6 @@ public class ReplyThread extends Reply {
   public void addReply(ReplyThread r) {
     r.setRoot(getRoot());
     r.setInReplyTo(getId().toString());
-    replies.add(r);
+    getReplies().add(r);
   }
 }

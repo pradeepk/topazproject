@@ -19,14 +19,15 @@
 package org.topazproject.otm.criterion;
 
 import java.util.Collections;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 
 /**
  * A criterion that performs a set minus.
@@ -60,14 +61,15 @@ public class MinusCriterion extends Criterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
-    return "( (" + minuend.toItql(criteria, subjectVar, varPrefix + "m1") + ") minus ("
-           + subtrahend.toItql(criteria, subjectVar, varPrefix + "m2") + ") )";
+    return "( (" + getMinuend().toItql(criteria, subjectVar, varPrefix + "m1") + ") minus ("
+           + getSubtrahend().toItql(criteria, subjectVar, varPrefix + "m2") + ") )";
   }
 
   /*
    * inherited javadoc
    */
-  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix)
+               throws OtmException {
     throw new OtmException("'minus' is not supported by OQL");
   }
 
@@ -85,6 +87,7 @@ public class MinusCriterion extends Criterion {
    *
    * @param minuend the value to set.
    */
+  @Predicate
   public void setMinuend(Criterion minuend) {
     this.minuend = minuend;
   }
@@ -103,6 +106,7 @@ public class MinusCriterion extends Criterion {
    *
    * @param subtrahend the value to set.
    */
+  @Predicate
   public void setSubtrahend(Criterion subtrahend) {
     this.subtrahend = subtrahend;
   }
@@ -111,35 +115,39 @@ public class MinusCriterion extends Criterion {
    * inherited javadoc
    */
   public Set<String> getParamNames() {
-    Set<String> s1 = minuend.getParamNames();
-    Set<String> s2 = subtrahend.getParamNames();
+    Set<String> s1 = getMinuend().getParamNames();
+    Set<String> s2 = getSubtrahend().getParamNames();
 
-    if (s1.size() + s2.size() == 0)
+    if ((s1.size() + s2.size()) == 0)
       return Collections.emptySet();
 
     Set<String> s = new HashSet<String>();
     s.addAll(s1);
     s.addAll(s2);
+
     return s;
   }
 
+  /*
+   * inherited javadoc
+   */
   public String toString() {
-    return "Minus[" + minuend + ", " + subtrahend + "]";
+    return "Minus[" + getMinuend() + ", " + getSubtrahend() + "]";
   }
 
   /*
    * inherited javadoc
    */
   public void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm) {
-    minuend.onPreInsert(ses, dc, cm);
-    subtrahend.onPreInsert(ses, dc, cm);
+    getMinuend().onPreInsert(ses, dc, cm);
+    getSubtrahend().onPreInsert(ses, dc, cm);
   }
 
   /*
    * inherited javadoc
    */
   public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
-    minuend.onPostLoad(ses, dc, cm);
-    subtrahend.onPostLoad(ses, dc, cm);
+    getMinuend().onPostLoad(ses, dc, cm);
+    getSubtrahend().onPostLoad(ses, dc, cm);
   }
 }

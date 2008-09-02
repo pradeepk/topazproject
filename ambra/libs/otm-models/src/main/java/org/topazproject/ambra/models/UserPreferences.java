@@ -41,11 +41,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "preferences")
 public class UserPreferences implements Serializable {
-  @Id @GeneratedValue(uriPrefix = "id:preferences/")
   private URI    id;
-  @Predicate(uri = "dcterms:mediator")
   private String appId;
-  @Predicate(uri = "topaz:preference", cascade = {CascadeType.child})
   private Set<UserPreference> prefs = new HashSet<UserPreference>();
 
   /**
@@ -58,6 +55,7 @@ public class UserPreferences implements Serializable {
   /**
    * @param id the id to set
    */
+  @Id @GeneratedValue(uriPrefix = "id:preferences/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -77,6 +75,7 @@ public class UserPreferences implements Serializable {
    *
    * @param appId the application id to set.
    */
+  @Predicate(uri = "dcterms:mediator")
   public void setAppId(String appId)
   {
       this.appId = appId;
@@ -96,6 +95,7 @@ public class UserPreferences implements Serializable {
    *
    * @param prefs the preferences.
    */
+  @Predicate(uri = "topaz:preference", cascade = {CascadeType.child})
   public void setPrefs(Set<UserPreference> prefs) {
     this.prefs = prefs;
   }
@@ -108,7 +108,7 @@ public class UserPreferences implements Serializable {
   public Map<String, String[]> getPrefsAsMap() {
     Map<String, String[]> res = new HashMap<String, String[]>();
 
-    for (UserPreference p : prefs)
+    for (UserPreference p : getPrefs())
       res.put(p.getName(), p.getValues());
 
     return res;
@@ -120,7 +120,7 @@ public class UserPreferences implements Serializable {
    * @param prefs the preferences
    */
   public void setPrefsFromMap(Map<String, String[]> prefs) {
-    this.prefs.clear();
+    getPrefs().clear();
 
     for (Map.Entry<String, String[]> e : prefs.entrySet())
       this.prefs.add(new UserPreference(e.getKey(), e.getValue()));

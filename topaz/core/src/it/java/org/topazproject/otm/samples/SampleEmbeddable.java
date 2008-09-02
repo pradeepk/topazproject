@@ -16,22 +16,80 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.topazproject.otm.samples;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.topazproject.otm.Rdf;
-import org.topazproject.otm.annotations.Embeddable;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
-@Embeddable
+/**
+ * An embedding sample.
+ *
+ * @author Pradeep Krishnan
+  */
 @UriPrefix(Rdf.topaz)
 public class SampleEmbeddable {
+  private String foo;
+  private String bar;
+  private Set<Annotation> set = new HashSet<Annotation>();
 
-  public String foo;
-  public String bar;
-  public Set<Annotation> set = new HashSet<Annotation>();
+  /**
+   * Get foo.
+   *
+   * @return foo as String.
+   */
+  public String getFoo() {
+    return foo;
+  }
 
+  /**
+   * Set foo.
+   *
+   * @param foo the value to set.
+   */
+  @Predicate
+  public void setFoo(String foo) {
+    this.foo = foo;
+  }
+
+  /**
+   * Get bar.
+   *
+   * @return bar as String.
+   */
+  public String getBar() {
+    return bar;
+  }
+
+  /**
+   * Set bar.
+   *
+   * @param bar the value to set.
+   */
+  @Predicate
+  public void setBar(String bar) {
+    this.bar = bar;
+  }
+
+  /**
+   * Get set.
+   *
+   * @return annotation set.
+   */
+  public Set<Annotation> getSet() {
+    return set;
+  }
+
+  /**
+   * Set set.
+   *
+   * @param set the value to set.
+   */
+  @Predicate
+  public void setSet(Set<Annotation> set) {
+    this.set = set;
+  }
 }

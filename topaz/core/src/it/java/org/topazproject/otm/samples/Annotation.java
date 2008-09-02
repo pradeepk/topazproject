@@ -36,16 +36,11 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = Annotea.NS + "Annotation")
 public abstract class Annotation extends Annotea {
-  @Id
   private URI                                                                       id;
   private URI                                                                       annotates;
   private String                                                                    context;
-  @Predicate(uri = Rdf.dc_terms + "replaces")
   private Annotation                                                                supersedes;
-  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private Annotation                                                                supersededBy;
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true, notOwned = true, 
-             cascade={CascadeType.child})
   private List<ReplyThread>                                                         replies =
     new ArrayList<ReplyThread>();
 
@@ -76,6 +71,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param id the value to set.
    */
+  @Id
   public void setId(URI id) {
     this.id = id;
   }
@@ -94,6 +90,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param annotates the value to set.
    */
+  @Predicate
   public void setAnnotates(URI annotates) {
     this.annotates = annotates;
   }
@@ -112,6 +109,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param context the value to set.
    */
+  @Predicate
   public void setContext(String context) {
     this.context = context;
   }
@@ -130,6 +128,8 @@ public abstract class Annotation extends Annotea {
    *
    * @param replies DOCUMENT ME!
    */
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true, notOwned = true, 
+             cascade={CascadeType.child})
   public void setReplies(List<ReplyThread> replies) {
     this.replies = replies;
   }
@@ -159,6 +159,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param supersedes the value to set.
    */
+  @Predicate(uri = Rdf.dc_terms + "replaces")
   public void setSupersedes(Annotation supersedes) {
     this.supersedes = supersedes;
   }
@@ -177,6 +178,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param supersededBy the value to set.
    */
+  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   public void setSupersededBy(Annotation supersededBy) {
     this.supersededBy = supersededBy;
   }

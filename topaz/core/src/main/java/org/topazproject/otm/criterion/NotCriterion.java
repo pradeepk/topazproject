@@ -25,6 +25,7 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 
 /**
  * A criterion for doing a 'not' operation.
@@ -58,7 +59,7 @@ public class NotCriterion extends Criterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
-    Criterion impl = new MinusCriterion(new PredicateCriterion(), criterion);
+    Criterion impl = new MinusCriterion(new PredicateCriterion(), getCriterion());
 
     return impl.toItql(criteria, subjectVar, varPrefix);
   }
@@ -66,7 +67,8 @@ public class NotCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix)
+               throws OtmException {
     throw new OtmException("'not' is not supported by OQL");
   }
 
@@ -84,6 +86,7 @@ public class NotCriterion extends Criterion {
    *
    * @param criterion the value to set.
    */
+  @Predicate
   public void setCriterion(Criterion criterion) {
     this.criterion = criterion;
   }
@@ -92,24 +95,27 @@ public class NotCriterion extends Criterion {
    * inherited javadoc
    */
   public Set<String> getParamNames() {
-    return criterion.getParamNames();
+    return getCriterion().getParamNames();
   }
 
+  /*
+   * inherited javadoc
+   */
   public String toString() {
-    return "Not[" + criterion + "]";
+    return "Not[" + getCriterion() + "]";
   }
 
   /*
    * inherited javadoc
    */
   public void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm) {
-    criterion.onPreInsert(ses, dc, cm);
+    getCriterion().onPreInsert(ses, dc, cm);
   }
 
   /*
    * inherited javadoc
    */
   public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
-    criterion.onPostLoad(ses, dc, cm);
+    getCriterion().onPostLoad(ses, dc, cm);
   }
 }

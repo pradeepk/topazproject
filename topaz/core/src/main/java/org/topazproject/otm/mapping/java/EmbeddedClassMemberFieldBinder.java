@@ -18,7 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.util.Collections;
@@ -52,18 +51,18 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
     this.field       = field;
   }
 
-  /** 
+  /**
    * Get the mapper for the embedded class field in the embedding class
-   * 
+   *
    * @return the mapper
    */
   public EmbeddedClassFieldBinder getContainer() {
     return container;
   }
 
-  /** 
+  /**
    * Get the mapper for the field in the embedded class
-   * 
+   *
    * @return the mapper
    */
   public FieldBinder getFieldBinder() {
@@ -105,18 +104,17 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public void load(Object instance, List<String> values, 
-      Map<String, Set<String>> types, RdfMapper mapper, 
-      Session session) throws OtmException {
+  public void load(Object instance, List<String> values, Map<String, Set<String>> types,
+                   RdfMapper mapper, Session session) throws OtmException {
     load(instance, instance, values, types, mapper, session);
   }
 
   /*
    * inherited javadoc
    */
-  public void load(Object root, Object instance, List<String> values, 
-      Map<String, Set<String>> types, RdfMapper mapper, 
-      Session session) throws OtmException {
+  public void load(Object root, Object instance, List<String> values,
+                   Map<String, Set<String>> types, RdfMapper mapper, Session session)
+            throws OtmException {
     field.load(root, container.getRawValue(instance, true), values, types, mapper, session);
   }
 
@@ -132,13 +130,6 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
    */
   public Method getSetter() {
     return field.getSetter();
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public Field getField() {
-    return field.getField();
   }
 
   /*
@@ -174,6 +165,7 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
    */
   public boolean isLoaded(Object o) throws OtmException {
     Object co = container.getRawValue(o, false);
+
     return (co == null) ? false : field.isLoaded(co);
   }
 
@@ -182,6 +174,7 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
    */
   public RawFieldData getRawFieldData(Object o) throws OtmException {
     Object co = container.getRawValue(o, false);
+
     return (co == null) ? null : field.getRawFieldData(co);
   }
 

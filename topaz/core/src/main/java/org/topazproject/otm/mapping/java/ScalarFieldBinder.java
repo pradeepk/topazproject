@@ -18,7 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.util.Collections;
@@ -36,14 +35,13 @@ public class ScalarFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new FunctionalMapper object.
    *
-   * @param field the java class field
-   * @param getter the field get method or null
-   * @param setter the field set method or null
+   * @param getter the field get method (cannot be null)
+   * @param setter the field set method (cannot be null)
    * @param serializer the serializer or null
    */
-  public ScalarFieldBinder(Field field, Method getter, Method setter,
+  public ScalarFieldBinder(Method getter, Method setter,
                           Serializer serializer) {
-    super(field, getter, setter, serializer, field.getType());
+    super(getter, setter, serializer, setter.getParameterTypes()[0]);
   }
 
   /**
@@ -72,8 +70,8 @@ public class ScalarFieldBinder extends AbstractFieldBinder {
   public void set(Object o, List vals) throws OtmException {
     int size = vals.size();
 
-    if (size > 1) // xxx: should be optional
-      throw new OtmException("Too many values for '" + getField().toGenericString() 
+    if (size > 1) // XXX: should be optional
+      throw new OtmException("Too many values for '" + getSetter().toGenericString() 
           + "' : " + vals);
 
     Object value = (size == 0) ? null : deserialize(vals.get(0));

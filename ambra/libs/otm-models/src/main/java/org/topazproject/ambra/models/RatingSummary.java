@@ -32,7 +32,6 @@ import org.topazproject.otm.annotations.Predicate;
 public class RatingSummary extends Annotation {
   private static final long serialVersionUID = -8110763767878695617L;
 
-  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = { CascadeType.child })
   private RatingSummaryContent body;
 
   /**
@@ -51,6 +50,7 @@ public class RatingSummary extends Annotation {
   /**
    * @param ratingSummaryContent The rating to set.
    */
+  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = { CascadeType.child })
   public void setBody(RatingSummaryContent ratingSummaryContent) {
     this.body = ratingSummaryContent;
   }

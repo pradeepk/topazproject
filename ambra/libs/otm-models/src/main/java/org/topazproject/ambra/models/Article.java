@@ -47,27 +47,10 @@ public class Article extends ObjectInfo {
   /** Active article states */
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
-  @Predicate(uri = "dcterms:hasPart", collectionType = CollectionType.RDFSEQ,
-             cascade = { CascadeType.child })
   private List<ObjectInfo> parts = new ArrayList<ObjectInfo>();
-
-  // This will be used to indicate the different types the article conforms to
-  @Predicate(uri = "rdf:type")
   private Set<URI> articleType;
-
-  @Predicate(uri = "plos:relatedArticle", cascade = { CascadeType.child })
   private Set<RelatedArticle> relatedArticles;
-
-  /**
-   * The categories the article belongs to
-   *
-   * TODO: This needs to be changed.
-   */
-  @Predicate(uri = "topaz:hasCategory", cascade = { CascadeType.child })
   private Set<Category> categories = new HashSet<Category>();
-
-  /** The state of this article. */
-  @Predicate(uri = "topaz:articleState")
   private int state;
 
   /** 
@@ -80,6 +63,8 @@ public class Article extends ObjectInfo {
   /** 
    * @param parts the different parts of the article 
    */
+  @Predicate(uri = "dcterms:hasPart", collectionType = CollectionType.RDFSEQ,
+             cascade = { CascadeType.child })
   public void setParts(List<ObjectInfo> parts) {
     this.parts = parts;
   }
@@ -101,6 +86,7 @@ public class Article extends ObjectInfo {
    *
    * @param articleType the different types this article conforms to.
    */
+  @Predicate(uri = "rdf:type")
   public void setArticleType(Set<URI> articleType) {
     this.articleType = articleType;
   }
@@ -115,10 +101,13 @@ public class Article extends ObjectInfo {
   }
 
   /**
-   * Set the list of categories for the article
+   * Set the list of categories for the article.
+   *
+   * TODO: This needs to be changed.
    *
    * @param categories the categories to article belongs to
    */
+  @Predicate(uri = "topaz:hasCategory", cascade = { CascadeType.child })
   public void setCategories(Set<Category> categories) {
     this.categories = categories;
   }
@@ -137,6 +126,7 @@ public class Article extends ObjectInfo {
    *
    * @param relatedArticles the set of related articles.
    */
+  @Predicate(uri = "plos:relatedArticle", cascade = { CascadeType.child })
   public void setRelatedArticles(Set<RelatedArticle> relatedArticles) {
     this.relatedArticles = relatedArticles;
   }
@@ -155,6 +145,7 @@ public class Article extends ObjectInfo {
    *
    * @param state the article state to set
    */
+  @Predicate(uri = "topaz:articleState")
   public void setState(int state) {
     this.state = state;
   }

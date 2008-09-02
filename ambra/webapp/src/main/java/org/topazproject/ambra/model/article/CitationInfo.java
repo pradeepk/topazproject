@@ -35,9 +35,34 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = "bibtex:Entry", model = "ri")
 public class CitationInfo implements Serializable {
+  private URI id;
+  private List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();
+
+  /**
+   * Get id.
+   *
+   * @return id as URI.
+   */
+  public URI getId() {
+      return id;
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
   @Id
-  public URI id;
+  public void setId(URI id) {
+    this.id = id;
+  }
+
+  public List<UserProfileInfo> getAuthors() {
+    return authors;
+  }
 
   @Predicate(uri = "plos:hasAuthorList", collectionType = CollectionType.RDFSEQ)
-  public List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();
+  public void setAuthors(List<UserProfileInfo> authors) {
+    this.authors = authors;
+  }
 }

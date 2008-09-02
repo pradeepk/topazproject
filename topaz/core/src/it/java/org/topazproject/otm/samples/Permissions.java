@@ -32,15 +32,44 @@ import org.topazproject.otm.annotations.PredicateMap;
  * @version $Revision$
  */
 public class Permissions {
-  /**
-   * DOCUMENT ME!
-   */
-  @Id
-  public String resource;
+  private String                    resource;
+  private Map<String, List<String>> permissions = new HashMap<String, List<String>>();
 
   /**
-   * DOCUMENT ME!
+   * Get resource.
+   *
+   * @return resource as String.
+   */
+  public String getResource() {
+    return resource;
+  }
+
+  /**
+   * Set resource.
+   *
+   * @param resource the value to set.
+   */
+  @Id
+  public void setResource(String resource) {
+    this.resource = resource;
+  }
+
+  /**
+   * Get permissions.
+   *
+   * @return permissions on this resource.
+   */
+  public Map<String, List<String>> getPermissions() {
+    return permissions;
+  }
+
+  /**
+   * Set permissions.
+   *
+   * @param permissions the permissions
    */
   @PredicateMap
-  public Map<String, List<String>> permissions = new HashMap<String, List<String>>();
+  public void setPermissions(Map<String, List<String>> permissions) {
+    this.permissions = permissions;
+  }
 }

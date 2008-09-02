@@ -31,7 +31,7 @@ import org.topazproject.otm.FetchType;
  * @author Ronald Tschalär
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target({ElementType.METHOD})
 public @interface Projection {
   /**
    * The projection this field is to be filled with. This must be the name of the (explicit or

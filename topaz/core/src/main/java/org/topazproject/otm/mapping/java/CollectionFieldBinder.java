@@ -18,7 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -53,25 +52,24 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new CollectionFieldBinder object.
    *
-   * @param field the java class field
-   * @param getter the field get method or null
-   * @param setter the field set method or null
+   * @param getter the field get method (cannot be null)
+   * @param setter the field set method (cannot be null)
    * @param serializer the serializer or null
    * @param componentType the collection component type
    */
-  public CollectionFieldBinder(Field field, Method getter, Method setter,
-                          Serializer serializer, Class componentType) {
-    super(field, getter, setter, serializer, componentType);
+  public CollectionFieldBinder(Method getter, Method setter, Serializer serializer,
+                               Class componentType) {
+    super(getter, setter, serializer, componentType);
   }
 
   /**
-   * Retrieve elements from a collection field of an object.
+   * Retrieve elements from a collection property of an object.
    *
    * @param o the object
    *
    * @return the list of array elements (may be serialized)
    *
-   * @throws OtmException if a field's value cannot be retrieved and serialized
+   * @throws OtmException if a property's value cannot be retrieved and serialized
    */
   public List get(Object o) throws OtmException {
     Collection value = (Collection) getRawValue(o, false);
@@ -89,19 +87,15 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
   }
 
   /**
-   * Populate a collection field of an object.
+   * Populate a collection property of an object.
    *
    * @param o the object
    * @param vals the values to be set (may be deserialized)
    *
-   * @throws OtmException if a field's value cannot be de-serialized and set
+   * @throws OtmException if a property's value cannot be de-serialized and set
    */
   public void set(Object o, List vals) throws OtmException {
-    Collection value = null;
-    if (getGetter() != null || getField().isAccessible() ||
-        Modifier.isPublic(getField().getModifiers()))
-      value = (Collection) getRawValue(o, false);
-
+    Collection value  = (getGetter() == null) ? null : (Collection) getRawValue(o, false);
     boolean    create = (value == null) || isOurProxy(value);
 
     if (create)
@@ -119,12 +113,11 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
   /*
    * inherited javadoc
    */
-  public void load(Object root, Object instance, List<String> values, 
-      Map<String, Set<String>> types, RdfMapper mapper, 
-      Session session) throws OtmException {
-
-    if (mapper.isAssociation() && (mapper.getFetchType() == FetchType.lazy) 
-        && getType().isInterface())
+  public void load(Object root, Object instance, List<String> values,
+                   Map<String, Set<String>> types, RdfMapper mapper, Session session)
+            throws OtmException {
+    if (mapper.isAssociation() && (mapper.getFetchType() == FetchType.lazy)
+         && getType().isInterface())
       setRawValue(instance, newProxy(values, types, session, root, mapper));
     else
       super.load(root, instance, values, types, mapper, session);
@@ -132,14 +125,20 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
 
   /**
    * Create a new collection instance. The current implementation will instantiate classes
-   * for various field types as follows:<dl><dt>Collection, List, AbstractList<dd>ArrayList<dt>Set,
-   * AbstractSet<dd>HashSet<dt>SortedSet<dd>TreeSet<dt>AbstractSequentialList<dd>LinkedList<dt>anything
-   * else<dd>assumed to be a concrete implementation and instantiated directly</dl><p>Override
-   * this method in order to fine tune the instance creation.</p>
+   * for various field types as follows:
+   * <dl>
+   *   <dt>Collection, List, AbstractList<dd>ArrayList
+   *   <dt>Set,AbstractSet<dd>HashSet
+   *   <dt>SortedSet<dd>TreeSet
+   *   <dt>AbstractSequentialList<dd>LinkedList
+   *   <dt>anything else<dd>assumed to be a concrete implementation and instantiated directly
+   * </dl>
+   * 
+   * <p>Override this method in order to fine tune the instance creation.</p>
    *
    * @return an empty collection instance
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   protected Collection newInstance() throws OtmException {
     try {
@@ -173,60 +172,75 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
   }
 
   /**
-   * Creates a new proxy instance of the collection to support lazy loading.
+   * Creates a new proxy instance of the collection to support lazy loading. Note: There is a
+   * corner case where the type look ahead cache we are using becoming stale.  This would happen
+   * if the app did a type conversion on some objects (ie. changing the rdf:type used in sub-class
+   * determination) by the time we look at it to do the loads. So in those cases it is likely that
+   * we may end up loading the wrong sub-class. The solution really is to manage the type look
+   * ahead cache in a shared manner (perhaps in Session).
    *
-   * Note: There is a corner case where the type look ahead cache we are using becoming stale. 
-   * This would happen if the app did a type conversion on some objects (ie. changing the rdf:type
-   * used in sub-class determination) by the time we look at it to do the loads. So in those
-   * cases it is likely that we may end up loading the wrong sub-class. The solution really
-   * is to manage the type look ahead cache in a shared manner (perhaps in Session).
-   *
-   * @param values   the values to set
-   * @param types    the type look ahead for associations
-   * @param session  the session under which the load is performed.
-   *                 Used for resolving associations etc.
+   * @param values the values to set
+   * @param types the type look ahead for associations
+   * @param session the session under which the load is performed. Used for resolving associations
+   *        etc.
    * @param instance the object
-   * @param mapper   the mapper that this loader is associated to
+   * @param mapper the mapper that this loader is associated to
    *
    * @return the dynamic proxy instance of
+   *
+   * @throws OtmException on an error
    */
-  protected Collection newProxy(final List<String> values, 
-      final Map<String, Set<String>> types, final Session session, 
-      final Object instance, final RdfMapper mapper) throws OtmException {
-    final Class t = getType();
-    final Collection real = newInstance();
+  protected Collection newProxy(final List<String> values, final Map<String, Set<String>> types,
+                                final Session session, final Object instance, final RdfMapper mapper)
+                         throws OtmException {
+    final Class       t       = getType();
+    final Collection  real    = newInstance();
 
-    InvocationHandler handler = new OtmInvocationHandler() {
-      private boolean loaded = false;
-      public Object invoke(Object proxy, Method method, Object[] args)
-          throws Throwable {
-        if (!loaded) {
-          // Note: no short-cuts here. See orphan-delete tracking in session.
-          // Also session.load() may return null because of deletes etc. Hence
-          // no assumption can be made regarding values.size() the same as
-          // the collection size.
-          loadAssocs(values, types, session, real, mapper);
-          loaded = true;
-          session.delayedLoadComplete(instance, mapper);
+    InvocationHandler handler =
+      new OtmInvocationHandler() {
+        private boolean loaded = false;
+
+        public Object invoke(Object proxy, Method method, Object[] args)
+                      throws Throwable {
+          if (!loaded) {
+            // Note: no short-cuts here. See orphan-delete tracking in session.
+            // Also session.load() may return null because of deletes etc. Hence
+            // no assumption can be made regarding values.size() the same as
+            // the collection size.
+            loadAssocs(values, types, session, real, mapper);
+            loaded = true;
+            session.delayedLoadComplete(instance, mapper);
+          }
+
+          if (method.getName().equals("writeReplace") && ((args == null) || (args.length == 0)))
+            return real;
+
+          return method.invoke(real, args);
         }
-        if (method.getName().equals("writeReplace") && ((args == null) || (args.length == 0)))
-          return real;
-        return method.invoke(real, args);
-      }
-      public boolean isLoaded() {
-        return loaded;
-      }
-      public RawFieldData getRawFieldData() {
-        return loaded ? null : new RawFieldData() {
-          public List<String> getValues() { return values; }
-          public Map<String, Set<String>> getTypeLookAhead() { return types; }
-        };
-      }
-    };
 
-    Collection value = (Collection) Proxy.newProxyInstance(getClass().getClassLoader(), 
-          new Class[] {t, ClassBinder.WriteReplace.class}, handler);
+        public boolean isLoaded() {
+          return loaded;
+        }
+
+        public RawFieldData getRawFieldData() {
+          return loaded ? null
+                 : new RawFieldData() {
+              public List<String> getValues() {
+                return values;
+              }
+
+              public Map<String, Set<String>> getTypeLookAhead() {
+                return types;
+              }
+            };
+        }
+      };
+
+    Collection value =
+      (Collection) Proxy.newProxyInstance(getClass().getClassLoader(),
+                                          new Class[] { t, ClassBinder.WriteReplace.class }, handler);
     assert t.isInstance(value) : "expecting " + t + ", got " + value.getClass();
+
     return value;
   }
 
@@ -234,39 +248,41 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
    * Tests to see if the collection is a proxy that we created.
    *
    * @param col the collection to test
+   *
+   * @return true if the collection is a proxy created by us
    */
   protected boolean isOurProxy(Collection col) {
     return Proxy.isProxyClass(col.getClass())
-      && Proxy.getInvocationHandler(col) instanceof OtmInvocationHandler;
+            && Proxy.getInvocationHandler(col) instanceof OtmInvocationHandler;
   }
 
   /*
    * inherited javadoc
    */
   public boolean isLoaded(Object instance) throws OtmException {
-    Collection val = (Collection)getRawValue(instance, false);
-    return (val == null) || !isOurProxy(val) ||
-      ((OtmInvocationHandler)Proxy.getInvocationHandler(val)).isLoaded();
+    Collection val = (Collection) getRawValue(instance, false);
+
+    return (val == null) || !isOurProxy(val)
+            || ((OtmInvocationHandler) Proxy.getInvocationHandler(val)).isLoaded();
   }
 
   /*
    * inherited javadoc
    */
-  public RawFieldData getRawFieldData(Object instance) throws OtmException {
-    Collection val = (Collection)getRawValue(instance, false);
-    return (val != null) && isOurProxy(val) ?
-      ((OtmInvocationHandler)Proxy.getInvocationHandler(val)).getRawFieldData() : null;
+  public RawFieldData getRawFieldData(Object instance)
+                               throws OtmException {
+    Collection val = (Collection) getRawValue(instance, false);
+
+    return ((val != null) && isOurProxy(val))
+           ? ((OtmInvocationHandler) Proxy.getInvocationHandler(val)).getRawFieldData() : null;
   }
 
-  /**
+/**
    * A marker interface to detect when it is ours
    */
   private static interface OtmInvocationHandler extends InvocationHandler {
-
     public boolean isLoaded();
 
     public RawFieldData getRawFieldData();
-
   }
-
 }

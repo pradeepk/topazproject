@@ -29,8 +29,6 @@ import org.topazproject.otm.annotations.Id;
  */
 @Entity()
 public class ReplyBlob extends Blob {
-  @Id
-  @GeneratedValue(uriPrefix = "info:fedora/", generatorClass = "org.topazproject.ambra.models.support.BlobIdGenerator")
   private String id;
 
   /**
@@ -63,6 +61,9 @@ public class ReplyBlob extends Blob {
    *
    * @param id the value to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "info:fedora/",
+      generatorClass = "org.topazproject.ambra.models.support.BlobIdGenerator")
   public void setId(String id) {
     this.id = id;
   }

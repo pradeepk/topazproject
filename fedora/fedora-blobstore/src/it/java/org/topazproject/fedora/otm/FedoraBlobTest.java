@@ -36,6 +36,7 @@ import org.topazproject.otm.annotations.Blob;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.stores.MemStore;
@@ -86,39 +87,39 @@ public class FedoraBlobTest {
     final byte[] blob1 = "Hello world".getBytes("UTF-8");
     final byte[] blob2 = "Good bye world".getBytes("UTF-8");
     final Test1  t     = new Test1();
-    t.blob             = blob1;
+    t.setBlob(blob1);
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
           session.saveOrUpdate(t);
-          assertNotNull(t.id);
+          assertNotNull(t.getId());
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          Test1 t2 = session.get(Test1.class, t.id);
+          Test1 t2 = session.get(Test1.class, t.getId());
           assertNotNull(t2);
-          assertEquals(t.id, t2.id);
-          assertEquals(blob1, t2.blob);
-          t2.blob = blob2;
+          assertEquals(t.getId(), t2.getId());
+          assertEquals(blob1, t2.getBlob());
+          t2.setBlob(blob2);
           session.saveOrUpdate(t2);
         }
       });
 
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          Test1 t2 = session.get(Test1.class, t.id);
+          Test1 t2 = session.get(Test1.class, t.getId());
           assertNotNull(t2);
-          assertEquals(t.id, t2.id);
-          assertEquals(blob2, t2.blob);
+          assertEquals(t.getId(), t2.getId());
+          assertEquals(blob2, t2.getBlob());
           session.delete(t2);
         }
       });
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
-          Test1 t2 = session.get(Test1.class, t.id);
+          Test1 t2 = session.get(Test1.class, t.getId());
 
           if (t2 != null)
-            assertNull(t2.blob);
+            assertNull(t2.getBlob());
         }
       });
   }
@@ -209,19 +210,112 @@ public class FedoraBlobTest {
   }
 
   public static class Test1 {
+    private String id;
+    private byte[] blob;
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
     @Id
-    @GeneratedValue(generatorClass = "org.topazproject.fedora.otm.FedoraIdGenerator", uriPrefix = "info:fedora/test1/")
-    public String                                                                                                                       id;
+    @GeneratedValue(generatorClass = "org.topazproject.fedora.otm.FedoraIdGenerator",
+        uriPrefix = "info:fedora/test1/")
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get blob.
+     *
+     * @return blob as byte[].
+     */
+    public byte[] getBlob() {
+      return blob;
+    }
+
+    /**
+     * Set blob.
+     *
+     * @param blob the value to set.
+     */
     @Blob
-    public byte[]                                                                                                                       blob;
+    public void setBlob(byte[] blob) {
+      this.blob = blob;
+    }
   }
 
   @Entity(model = "ri")
   @UriPrefix("test2:test2/")
   public static class Test2 {
+    private String    id;
+    private String    name;
+    private Test1     test1;
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
     @Id
-    public String    id;
-    public String    name;
-    public Test1     test1;
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get name.
+     *
+     * @return name as String.
+     */
+    public String getName() {
+      return name;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param name the value to set.
+     */
+    @Predicate
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    /**
+     * Get test1.
+     *
+     * @return test1 as String.
+     */
+    public Test1 getTest1() {
+      return test1;
+    }
+
+    /**
+     * Set test1.
+     *
+     * @param test1 the value to set.
+     */
+    @Predicate
+    public void setTest1(Test1 test1) {
+      this.test1 = test1;
+    }
   }
 }

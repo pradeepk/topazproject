@@ -37,11 +37,8 @@ import org.topazproject.otm.annotations.Predicate;
 public class AuthenticationId implements Serializable {
   private static final String DEF_REALM = "local";
 
-  @Id @GeneratedValue(uriPrefix = "id:authids/")
   private URI id;
-  @Predicate(uri = "topaz:realm")
   private String realm = DEF_REALM;
-  @Predicate(uri = "rdf:value")
   private String value;
 
   /** 
@@ -69,6 +66,7 @@ public class AuthenticationId implements Serializable {
   /**
    * @param id the id to set
    */
+  @Id @GeneratedValue(uriPrefix = "id:authids/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -87,6 +85,7 @@ public class AuthenticationId implements Serializable {
    *
    * @param realm the realm.
    */
+  @Predicate(uri = "topaz:realm")
   public void setRealm(String realm) {
     this.realm = realm;
   }
@@ -105,6 +104,7 @@ public class AuthenticationId implements Serializable {
    *
    * @param value the value.
    */
+  @Predicate(uri = "rdf:value")
   public void setValue(String value) {
     this.value = value;
   }

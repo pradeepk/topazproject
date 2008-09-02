@@ -374,27 +374,169 @@ public class QueryTest extends TestCase {
 
   @Entity(type = Rdf.topaz + "Article", name = "Article", model = "ri")
   private static class Article {
-    @Id
-    public URI uri;
+    private URI uri;
+    private String      title;
+    private String[]    categories;
+    private List<Reply> replies = new ArrayList<Reply>();
 
+    /**
+     * Get uri.
+     *
+     * @return uri as URI.
+     */
+    public URI getUri() {
+      return uri;
+    }
+
+    /**
+     * Set uri.
+     *
+     * @param uri the value to set.
+     */
+    @Id
+    public void setUri(URI uri) {
+      this.uri = uri;
+    }
+
+    /**
+     * Get title.
+     *
+     * @return title as String.
+     */
+    public String getTitle() {
+      return title;
+    }
+
+    /**
+     * Set title.
+     *
+     * @param title the value to set.
+     */
     @Predicate(uri = Rdf.dc + "title")
-    public String      title;
+    public void setTitle(String title) {
+      this.title = title;
+    }
+
+    /**
+     * Get categories.
+     *
+     * @return categories as String array.
+     */
+    public String[] getCategories() {
+      return categories;
+    }
+
+    /**
+     * Set categories.
+     *
+     * @param categories the value to set.
+     */
     @Predicate(uri = Rdf.topaz + "hasCategory")
-    public String[]    categories;
+    public void setCategories(String[] categories) {
+      this.categories = categories;
+    }
+
+    /**
+     * Get replies.
+     *
+     * @return replies as String array.
+     */
+    public List<Reply> getReplies() {
+      return replies;
+    }
+
+    /**
+     * Set replies.
+     *
+     * @param replies the value to set.
+     */
     @Predicate(uri = Rdf.topaz + "inReplyTo", inverse=true, notOwned=true)
-    public List<Reply> replies = new ArrayList<Reply>();
+    public void setReplies(List<Reply> replies) {
+      this.replies = replies;
+    }
   }
 
   @Entity(type = Rdf.topaz + "Reply", name = "Reply", model = "ri")
   private static class Reply {
-    @Id
-    public URI id;
+    private URI id;
+    private String type;
+    private String title;
+    private String creator;
 
-    @Predicate(uri = Rdf.rdf + "type", dataType=Rdf.xsd + "anyURI")
-    public String type;
+    /**
+     * Get id.
+     *
+     * @return id as URI.
+     */
+    public URI getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param uri the value to set.
+     */
+    @Id
+    public void setId(URI id) {
+      this.id = id;
+    }
+
+    /**
+     * Get title.
+     *
+     * @return title as String.
+     */
+    public String getTitle() {
+      return title;
+    }
+
+    /**
+     * Set title.
+     *
+     * @param title the value to set.
+     */
     @Predicate(uri = Rdf.dc + "title")
-    public String title;
+    public void setTitle(String title) {
+      this.title = title;
+    }
+
+    /**
+     * Get type.
+     *
+     * @return type as String.
+     */
+    public String getType() {
+      return type;
+    }
+
+    /**
+     * Set type.
+     *
+     * @param type the value to set.
+     */
+    @Predicate(uri = Rdf.rdf + "type", dataType=Rdf.xsd + "anyURI")
+    public void setType(String type) {
+      this.type = type;
+    }
+
+    /**
+     * Get creator.
+     *
+     * @return creator as String.
+     */
+    public String getCreator() {
+      return creator;
+    }
+
+    /**
+     * Set creator.
+     *
+     * @param creator the value to set.
+     */
     @Predicate(uri = Rdf.dc + "creator")
-    public String creator;
+    public void setCreator(String creator) {
+      this.creator = creator;
+    }
   }
 }

@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * @author Eric Brown
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target({ElementType.METHOD})
 public @interface GeneratedValue {
   /**
    * The name of the generator class to use.

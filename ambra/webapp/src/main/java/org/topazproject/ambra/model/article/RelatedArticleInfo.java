@@ -26,9 +26,7 @@ import org.topazproject.otm.annotations.SubView;
 
 @SubView()
 public class RelatedArticleInfo implements Serializable {
-  @Projection("rid")
   public URI    uri;
-  @Projection("rtitle")
   public String title;
 
   /**
@@ -40,6 +38,11 @@ public class RelatedArticleInfo implements Serializable {
     return uri;
   }
 
+  @Projection("rid")
+  public void setUri(URI uri) {
+    this.uri = uri;
+  }
+
   /**
    * Get the title.
    *
@@ -47,6 +50,11 @@ public class RelatedArticleInfo implements Serializable {
    */
   public String getTitle() {
     return title;
+  }
+
+  @Projection("rtitle")
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String toString() {

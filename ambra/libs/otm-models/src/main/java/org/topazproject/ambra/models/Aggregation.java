@@ -43,20 +43,12 @@ import org.topazproject.otm.criterion.DetachedCriteria;
  */
 @Entity(type = "http://purl.org/dc/dcmitype/Collection", model = "ri")
 public class Aggregation implements Serializable {
-  @Id
-  @GeneratedValue(uriPrefix = "id:aggregation/")
   private URI                            id;
-  @Predicate(uri = "plos:editorialBoard")
   private EditorialBoard                 editorialBoard;
-  @Embedded
-  private DublinCore        dublinCore;
-  @Predicate(uri = "dcterms:hasPart")
+  private DublinCore                     dublinCore;
   private List<URI>                      simpleCollection = new ArrayList();
-  @Predicate(uri = "plos:smartCollectionRules", cascade = {CascadeType.child})
   private List<DetachedCriteria>         smartCollectionRules = new ArrayList();
-  @Predicate(uri = "dcterms:replaces")
   private Aggregation                    supersedes;
-  @Predicate(uri = "dcterms:isReplacedBy")
   private Aggregation                    supersededBy;
 
   /**
@@ -73,6 +65,8 @@ public class Aggregation implements Serializable {
    *
    * @param id the value to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "id:aggregation/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -91,6 +85,7 @@ public class Aggregation implements Serializable {
    *
    * @param editorialBoard the value to set.
    */
+  @Predicate(uri = "plos:editorialBoard")
   public void setEditorialBoard(EditorialBoard editorialBoard) {
     this.editorialBoard = editorialBoard;
   }
@@ -109,6 +104,7 @@ public class Aggregation implements Serializable {
    *
    * @param simpleCollection collection of article URI
    */
+  @Predicate(uri = "dcterms:hasPart")
   public void setSimpleCollection(List<URI> simpleCollection) {
     this.simpleCollection = simpleCollection;
   }
@@ -127,6 +123,7 @@ public class Aggregation implements Serializable {
    *
    * @param smartCollectionRules as a list of detached criteria
    */
+  @Predicate(uri = "plos:smartCollectionRules", cascade = {CascadeType.child})
   public void setSmartCollectionRules(List<DetachedCriteria> smartCollectionRules) {
     this.smartCollectionRules = smartCollectionRules;
   }
@@ -145,6 +142,7 @@ public class Aggregation implements Serializable {
    *
    * @param dublinCore the value to set.
    */
+  @Embedded
   public void setDublinCore(DublinCore dublinCore) {
       this.dublinCore = dublinCore;
   }
@@ -163,6 +161,7 @@ public class Aggregation implements Serializable {
    *
    * @param supersedes the value to set.
    */
+  @Predicate(uri = "dcterms:replaces")
   public void setSupersedes(Aggregation supersedes) {
     this.supersedes = supersedes;
   }
@@ -181,6 +180,7 @@ public class Aggregation implements Serializable {
    *
    * @param supersededBy the value to set.
    */
+  @Predicate(uri = "dcterms:isReplacedBy")
   public void setSupersededBy(Aggregation supersededBy) {
     this.supersededBy = supersededBy;
   }

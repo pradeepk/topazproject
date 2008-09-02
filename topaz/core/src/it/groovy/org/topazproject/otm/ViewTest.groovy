@@ -155,31 +155,54 @@ public class ViewTest extends AbstractTest {
 /* basic view test */
 @View(query = "select a.date date from Article a where a.uri = :id ;")
 class ViewOne {
-  @Id
   URI uri;
+  Date date;
+
+  @Id
+  void setUri(URI uri) {
+    this.uri = uri;
+  }
 
   @Projection("date")
-  Date date;
+  void setDate(Date date) {
+    this.date = date;
+  }
 }
 
 /* testing projection not used (date), projection used multiple times (authors), and subqueries */
 @View(query = """select a.uri, a.date, a.title title, (select a.authors from Article aa) authors
                  from Article a where a.uri = :id;""")
 class ViewTwo {
-  @Id
   URI uri;
+  String title;
+  String[] authors;
+  List<String> authorsList;
+  Set<String> authorsSet;
+
+  @Id
+  void setUri(URI uri) {
+    this.uri = uri;
+  }
 
   @Projection("title")
-  String title;
+  void setTitle(String title) {
+    this.title = title;
+  }
 
   @Projection("authors")
-  String[] authors;
+  void setAuthors(String[] authors) {
+    this.authors = authors;
+  }
 
   @Projection("authors")
-  List<String> authorsList;
+  void setAuthorsList(List<String> authorsList) {
+    this.authorsList = authorsList;
+  }
 
   @Projection("authors")
-  Set<String> authorsSet;
+  void setAuthorsSet(Set<String> authorsSet) {
+    this.authorsSet = authorsSet;
+  }
 }
 
 /* testing sub-views */
@@ -189,23 +212,40 @@ class ViewTwo {
                    from ObjectInfo oi where oi = a.parts order by ident) parts
                  from Article a where a.uri = :id;""")
 class ViewThree {
-  @Id
   String id;
+  int authors;
+  List<ViewThreePart> parts;
+
+  @Id
+  void setId(String id) {
+    this.id = id;
+  }
 
   @Projection("numAuth")
-  int authors;
+  void setAuthors(int authors) {
+    this.authors = authors;
+  }
 
   @Projection("parts")
-  List<ViewThreePart> parts;
+  void setParts(List<ViewThreePart> parts) {
+    this.parts = parts;
+  }
 }
 
 @SubView
 class ViewThreePart {
-  @Projection("ident")
   String identifier;
+  Set<String> representations;
+
+  @Projection("ident")
+  void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
 
   @Projection("reps")
-  Set<String> representations;
+  void setRepresentations(Set<String> representations) {
+    this.representations = representations;
+  }
 }
 
 /* testing views-in-views */
@@ -213,34 +253,58 @@ class ViewThreePart {
                    (select p from Article aa where p := cast(a.parts, ViewFourPart)) parts
                  from Article a where a.uri = :id;""")
 class ViewFour {
-  @Id
   String id;
+  List<ViewFourPart> parts;
+
+  @Id
+  void setId(String id) {
+    this.id = id;
+  }
 
   @Projection(value="parts", fetch=FetchType.lazy)
-  List<ViewFourPart> parts;
+  void setParts(List<ViewFourPart> parts) {
+    this.parts = parts;
+  }
 }
 
 @View(query = """select oi.uri, oi.identifier ident,
                    (select oi.representations from ObjectInfo oi2) reps
                  from ObjectInfo oi where oi.uri = :id;""")
 class ViewFourPart {
-  @Id
   String id;
+  String identifier;
+  Set<String> representations;
+
+  @Id
+  void setId(String id) {
+    this.id = id;
+  }
 
   @Projection("ident")
-  String identifier;
+  void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
 
   @Projection("reps")
-  Set<String> representations;
+  void setRepresentations(Set<String> representations) {
+    this.representations = representations;
+  }
 }
 
 /* testing view-in-views (non-collection) */
 @View(query = """select a.uri, p from Article a
                  where a.uri = :id and p := cast(a.parts, ViewFourPart);""")
 class ViewFive {
-  @Id
   String id;
+  ViewFourPart part;
+
+  @Id
+  void setId(String id) {
+    this.id = id;
+  }
 
   @Projection("p")
-  ViewFourPart part;
+  void setPart(ViewFourPart part) {
+    this.part = part;
+  }
 }

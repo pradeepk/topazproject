@@ -42,19 +42,11 @@ public class UserAccount implements Serializable {
   /** the state indicating the user account is suspended: {@value} */
   public static final int ACNT_SUSPENDED = 1;
 
-  @Id @GeneratedValue(uriPrefix = "id:account/")
   private URI id;
-  @Predicate(uri = "topaz:accountState")
   private int state = ACNT_ACTIVE;
-  @Predicate(uri = "topaz:hasAuthId", cascade = {CascadeType.child})
   private Set<AuthenticationId> authIds = new HashSet<AuthenticationId>();
-  @Predicate(uri = "topaz:hasRoles", cascade = {CascadeType.child})
   private Set<UserRole>         roles = new HashSet<UserRole>();
-  @Predicate(uri = "topaz:hasPreferences", model="preferences", 
-             cascade = {CascadeType.child})
   private Set<UserPreferences>  preferences = new HashSet<UserPreferences>();
-  @Predicate(uri = "foaf:holdsAccount", inverse = true, model="profiles",
-             cascade = {CascadeType.child})
   private UserProfile           profile;
 
   /**
@@ -67,6 +59,7 @@ public class UserAccount implements Serializable {
   /**
    * @param id the id to set
    */
+  @Id @GeneratedValue(uriPrefix = "id:account/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -85,6 +78,7 @@ public class UserAccount implements Serializable {
    *
    * @param state the state.
    */
+  @Predicate(uri = "topaz:accountState")
   public void setState(int state) {
     this.state = state;
   }
@@ -103,6 +97,7 @@ public class UserAccount implements Serializable {
    *
    * @param authIds the authentication ids.
    */
+  @Predicate(uri = "topaz:hasAuthId", cascade = {CascadeType.child})
   public void setAuthIds(Set<AuthenticationId> authIds) {
     this.authIds = authIds;
   }
@@ -121,6 +116,7 @@ public class UserAccount implements Serializable {
    *
    * @param roles the roles.
    */
+  @Predicate(uri = "topaz:hasRoles", cascade = {CascadeType.child})
   public void setRoles(Set<UserRole> roles) {
     this.roles = roles;
   }
@@ -139,6 +135,8 @@ public class UserAccount implements Serializable {
    *
    * @param preferences the preferences.
    */
+  @Predicate(uri = "topaz:hasPreferences", model="preferences", 
+             cascade = {CascadeType.child})
   public void setPreferences(Set<UserPreferences> preferences) {
     this.preferences = preferences;
   }
@@ -150,7 +148,7 @@ public class UserAccount implements Serializable {
    * @return the preferences, or null if none found.
    */
   public UserPreferences getPreferences(String appId) {
-    for (UserPreferences p : preferences) {
+    for (UserPreferences p : getPreferences()) {
       if (p.getAppId().equals(appId))
         return p;
     }
@@ -171,6 +169,8 @@ public class UserAccount implements Serializable {
    *
    * @param profile the profile.
    */
+  @Predicate(uri = "foaf:holdsAccount", inverse = true, model="profiles",
+             cascade = {CascadeType.child})
   public void setProfile(UserProfile profile) {
     this.profile = profile;
   }

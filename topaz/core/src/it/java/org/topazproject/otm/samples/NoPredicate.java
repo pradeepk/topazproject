@@ -24,13 +24,39 @@ import org.topazproject.otm.annotations.Id;
 
 @Entity(type = Rdf.topaz + "NoPredicate", model = "ri")
 public class NoPredicate {
-  @Id
-  public String id;
+  private String id;
 
+  /**
+   * Creates a new NoPredicate object.
+   *
+   * @param id the id
+   */
   public NoPredicate(String id) {
     this.id = id;
   }
 
+  /**
+   * Creates a new NoPredicate object.
+   */
   public NoPredicate() {
+  }
+
+  /**
+   * Get id.
+   *
+   * @return id as String.
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  @Id
+  public void setId(String id) {
+    this.id = id;
   }
 }

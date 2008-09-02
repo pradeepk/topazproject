@@ -34,13 +34,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "preferences")
 public class UserPreference implements Serializable {
-  @Id @GeneratedValue(uriPrefix = "id:preferences/")
   private URI    id;
-  /** The name of the preference. */
-  @Predicate(uri = "topaz:prefName")
   private String name;
-  /** The values of the preference. */
-  @Predicate(uri = "topaz:prefValue")
   private String[] values;
 
   /** 
@@ -74,6 +69,7 @@ public class UserPreference implements Serializable {
    *
    * @param id the id.
    */
+  @Id @GeneratedValue(uriPrefix = "id:preferences/")
   public void setId(URI id) {
     this.id = id;
   }
@@ -92,6 +88,7 @@ public class UserPreference implements Serializable {
    *
    * @param name the preference name
    */
+  @Predicate(uri = "topaz:prefName")
   public void setName(String name) {
     this.name = name;
   }
@@ -111,6 +108,7 @@ public class UserPreference implements Serializable {
    *
    * @param values the preference values; may be null. Note that the order will not be preserved.
    */
+  @Predicate(uri = "topaz:prefValue")
   public void setValues(String[] values) {
     this.values = values;
   }

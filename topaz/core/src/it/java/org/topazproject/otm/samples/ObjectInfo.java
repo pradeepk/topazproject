@@ -47,43 +47,26 @@ import org.topazproject.otm.annotations.PredicateMap;
 @Aliases({@Alias(alias = "bazAlias", value = "http://www.baz.com"),
           @Alias(alias = "barAlias", value = "http://www.bar.org/")})
 public class ObjectInfo {
-  @Id
   private URI uri;
 
   // dublin-core predicates:
-  @Predicate(uri = Rdf.dc + "title")
   private String title;
-  @Predicate(uri = Rdf.dc + "description", dataType = Rdf.rdf + "XMLLiteral")
   private String description;
-  @Predicate(uri = Rdf.dc + "creator")
   private Set<String> authors = new HashSet<String>();
-  @Predicate(uri = "dc:date", dataType = "xsd:date")
   private Date date;
-  @Predicate(uri = Rdf.dc + "identifier")
   private String identifier; // looks like a uri -- doi as a uri (for doi to uri conversion?)
-  @Predicate(uri = Rdf.dc + "rights", dataType = Rdf.rdf + "XMLLiteral")
   private String rights;
-  /** Will be: http://purl.org/dc/dcmitype/{Text|StillImage|Dataset|MovingImage|Sound} */
-  @Predicate(uri = Rdf.dc + "type")
   private URI dc_type;
-  @Predicate(uri = Rdf.dc + "contributor")
   private Set<String> contributors = new HashSet<String>();
 
-  @Predicate(uri = Rdf.dc_terms + "isPartOf")
   private Article isPartOf;
 
   // Topaz predicates:
 
-  @Predicate(uri = Rdf.topaz + "nextObject")
   private ObjectInfo nextObject;
-  @Predicate(uri = Rdf.topaz + "isPID")
   private String pid;
-  /** The state of this article (or its parts). */
-  @Predicate(uri = Rdf.topaz + "articleState")
   private int state;
-  @Predicate(uri = Rdf.topaz + "hasRepresentation", cascade={CascadeType.child})
   private Set<String> representations = new HashSet<String>(); // PDF, TIF, PNG_S, DOC, ...
-  @Predicate(uri = Rdf.topaz + "contextElement")
   private String contextElement;
 
   /**
@@ -96,7 +79,6 @@ public class ObjectInfo {
    * So the data map should have two entries. One for the contentType and one
    * for the objectSize.
    */
-  @PredicateMap
   private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
   /**
@@ -109,6 +91,7 @@ public class ObjectInfo {
   /**
    * @param authors the set of authors for this object
    */
+  @Predicate(uri = Rdf.dc + "creator")
   public void setAuthors(Set<String> authors) {
     this.authors = authors;
   }
@@ -123,6 +106,7 @@ public class ObjectInfo {
   /**
    * @param contextElement the contextElement to set
    */
+  @Predicate(uri = Rdf.topaz + "contextElement")
   public void setContextElement(String contextElement) {
     this.contextElement = contextElement;
   }
@@ -137,6 +121,7 @@ public class ObjectInfo {
   /**
    * @param contributors the contributors to set
    */
+  @Predicate(uri = Rdf.dc + "contributor")
   public void setContributors(Set<String> contributors) {
     this.contributors = contributors;
   }
@@ -151,6 +136,7 @@ public class ObjectInfo {
   /**
    * @param data the data to set
    */
+  @PredicateMap
   public void setData(Map<String, List<String>> data) {
     this.data = data;
   }
@@ -165,6 +151,7 @@ public class ObjectInfo {
   /**
    * @param date the date to set
    */
+  @Predicate(uri = "dc:date", dataType = "xsd:date")
   public void setDate(Date date) {
     this.date = date;
   }
@@ -177,8 +164,11 @@ public class ObjectInfo {
   }
 
   /**
+   * Will be: http://purl.org/dc/dcmitype/{Text|StillImage|Dataset|MovingImage|Sound}
+   *
    * @param dc_type the dc_type to set
    */
+  @Predicate(uri = Rdf.dc + "type")
   public void setDc_type(URI dc_type) {
     this.dc_type = dc_type;
   }
@@ -193,6 +183,7 @@ public class ObjectInfo {
   /**
    * @param description the description to set
    */
+  @Predicate(uri = Rdf.dc + "description", dataType = Rdf.rdf + "XMLLiteral")
   public void setDescription(String description) {
     this.description = description;
   }
@@ -207,6 +198,7 @@ public class ObjectInfo {
   /**
    * @param id the id to set
    */
+  @Id
   public void setUri(URI uri) {
     this.uri = uri;
   }
@@ -221,6 +213,7 @@ public class ObjectInfo {
   /**
    * @param identifier the identifier to set
    */
+  @Predicate(uri = Rdf.dc + "identifier")
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
   }
@@ -235,6 +228,7 @@ public class ObjectInfo {
   /**
    * @param isPartOf the isPartOf to set
    */
+  @Predicate(uri = Rdf.dc_terms + "isPartOf")
   public void setIsPartOf(Article isPartOf) {
     this.isPartOf = isPartOf;
   }
@@ -249,6 +243,7 @@ public class ObjectInfo {
   /**
    * @param nextObject the nextObject to set
    */
+  @Predicate(uri = Rdf.topaz + "nextObject")
   public void setNextObject(ObjectInfo nextObject) {
     this.nextObject = nextObject;
   }
@@ -263,6 +258,7 @@ public class ObjectInfo {
   /**
    * @param pid the pid to set
    */
+  @Predicate(uri = Rdf.topaz + "isPID")
   public void setPid(String pid) {
     this.pid = pid;
   }
@@ -277,6 +273,7 @@ public class ObjectInfo {
   /**
    * @param representations the representations to set
    */
+  @Predicate(uri = Rdf.topaz + "hasRepresentation", cascade={CascadeType.child})
   public void setRepresentations(Set<String> representations) {
     this.representations = representations;
   }
@@ -291,6 +288,7 @@ public class ObjectInfo {
   /**
    * @param rights the rights to set
    */
+  @Predicate(uri = Rdf.dc + "rights", dataType = Rdf.rdf + "XMLLiteral")
   public void setRights(String rights) {
     this.rights = rights;
   }
@@ -303,8 +301,10 @@ public class ObjectInfo {
   }
 
   /**
+   * The state of this article (or its parts). 
    * @param state the state to set
    */
+  @Predicate(uri = Rdf.topaz + "articleState")
   public void setState(int state) {
     this.state = state;
   }
@@ -319,6 +319,7 @@ public class ObjectInfo {
   /**
    * @param title the title to set
    */
+  @Predicate(uri = Rdf.dc + "title")
   public void setTitle(String title) {
     this.title = title;
   }

@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -37,8 +38,6 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix("topaz:RatingSummaryContent/")
 @Entity(model = "ri", type = "topaz:RatingSummaryContent")
 public class RatingSummaryContent implements Serializable {
-  @Id
-  @GeneratedValue(uriPrefix = "id:ratingSummaryContent/")
   private String id;
 
   private int    insightNumRatings;
@@ -108,6 +107,8 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param id The id to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "id:ratingSummaryContent/")
   public void setId(String id) {
     this.id = id;
   }
@@ -118,9 +119,11 @@ public class RatingSummaryContent implements Serializable {
   public int getInsightNumRatings() {
     return insightNumRatings;
   }
+
   /**
    * @param insightNumRatings The number of insight ratings.
    */
+  @Predicate
   public void setInsightNumRatings(int insightNumRatings) {
     this.insightNumRatings = insightNumRatings;
   }
@@ -131,9 +134,11 @@ public class RatingSummaryContent implements Serializable {
   public double getInsightTotal() {
     return insightTotal;
   }
+
   /**
    * @param insightTotal The total of insight ratings.
    */
+  @Predicate
   public void setInsightTotal(double insightTotal) {
     this.insightTotal = insightTotal;
   }
@@ -147,6 +152,7 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param reliabilityNumRatings The number of reliability ratings.
    */
+  @Predicate
   public void setReliabilityNumRatings(int reliabilityNumRatings) {
     this.reliabilityNumRatings = reliabilityNumRatings;
   }
@@ -160,6 +166,7 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param reliabilityTotal The total of reliability ratings.
    */
+  @Predicate
   public void setReliabilityTotal(double reliabilityTotal) {
     this.reliabilityTotal = reliabilityTotal;
   }
@@ -173,6 +180,7 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param styleNumRatings The number of style ratings.
    */
+  @Predicate
   public void setStyleNumRatings(int styleNumRatings) {
     this.styleNumRatings = styleNumRatings;
   }
@@ -186,6 +194,7 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param styleTotal The total of style ratings.
    */
+  @Predicate
   public void setStyleTotal(double styleTotal) {
     this.styleTotal = styleTotal;
   }
@@ -200,6 +209,7 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param singleRatingNumRatings the singleRatingNumRatings to set
    */
+  @Predicate
   public void setSingleRatingNumRatings(int singleRatingNumRatings) {
     this.singleRatingNumRatings = singleRatingNumRatings;
   }
@@ -214,6 +224,7 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param singleRatingTotal the singleRatingTotal to set
    */
+  @Predicate
   public void setSingleRatingTotal(double singleRatingTotal) {
     this.singleRatingTotal = singleRatingTotal;
   }
@@ -246,6 +257,7 @@ public class RatingSummaryContent implements Serializable {
   /**
    * @param numUsersThatRated Number of users that rated.
    */
+  @Predicate
   public void setNumUsersThatRated(int numUsersThatRated) {
     this.numUsersThatRated = numUsersThatRated;
   }

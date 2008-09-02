@@ -27,13 +27,31 @@ import org.topazproject.otm.annotations.Predicate;
 
 @Entity(type=Annotea.NS + "Public")
 public class PublicAnnotation extends Annotation {
-  @Predicate(uri = Rdf.topaz + "hasNote")
-  public String note;
+  private String note;
 
   public PublicAnnotation() {
   }
 
   public PublicAnnotation(URI id) {
     super(id);
+  }
+
+  /**
+   * Get note.
+   *
+   * @return note as String.
+   */
+  public String getNote() {
+    return note;
+  }
+
+  /**
+   * Set note.
+   *
+   * @param note the value to set.
+   */
+  @Predicate(uri = Rdf.topaz + "hasNote")
+  public void setNote(String note) {
+    this.note = note;
   }
 }

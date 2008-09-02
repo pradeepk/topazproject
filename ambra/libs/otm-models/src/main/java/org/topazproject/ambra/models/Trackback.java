@@ -34,7 +34,6 @@ import org.topazproject.otm.annotations.Predicate;
 public class Trackback extends Annotation {
   private static final long serialVersionUID = -1224471659454172666L;
 
-  @Predicate(uri = "annotea:body", cascade = { CascadeType.child })
   private TrackbackContent body;
 
   /**
@@ -47,6 +46,7 @@ public class Trackback extends Annotation {
   /**
    * @param body The body to set.
    */
+  @Predicate(uri = "annotea:body", cascade = { CascadeType.child })
   public void setBody(TrackbackContent body) {
     this.body = body;
   }
@@ -55,7 +55,7 @@ public class Trackback extends Annotation {
    * @return Returns the url.
    */
   public URL getUrl() {
-    if (body != null)
+    if (getBody() != null)
       return body.getUrl();
     return null;
   }
@@ -64,7 +64,7 @@ public class Trackback extends Annotation {
    * @return Returns the title.
    */
   public String getTitle() {
-    if (body != null)
+    if (getBody() != null)
       return body.getTitle();
     return "";
   }
@@ -73,7 +73,7 @@ public class Trackback extends Annotation {
    * @return Returns the excerpt.
    */
   public String getExcerpt() {
-    if (body != null)
+    if (getBody() != null)
       return body.getExcerpt();
     return "";
   }
@@ -82,7 +82,7 @@ public class Trackback extends Annotation {
    * @return Returns the blog_name.
    */
   public String getBlog_name() {
-    if (body != null)
+    if (getBody() != null)
       return body.getBlog_name();
     return "";
   }

@@ -19,7 +19,6 @@
 package org.topazproject.otm.mapping.java;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
@@ -38,25 +37,23 @@ public class ArrayFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new ArrayFieldBinder object.
    *
-   * @param field the java class field
-   * @param getter the field get method or null
-   * @param setter the field set method or null
+   * @param getter the field get method (cannot be null)
+   * @param setter the field set method (cannot be null)
    * @param serializer the serializer or null
    * @param componentType the array component type
    */
-  public ArrayFieldBinder(Field field, Method getter, Method setter, Serializer serializer,
-                     Class componentType) {
-    super(field, getter, setter, serializer, componentType);
+  public ArrayFieldBinder(Method getter, Method setter, Serializer serializer, Class componentType) {
+    super(getter, setter, serializer, componentType);
   }
 
   /**
-   * Retrieve elements from an array field of an object.
+   * Retrieve elements from an array property of an object.
    *
    * @param o the object
    *
    * @return the list of array elements (may be serialized)
    *
-   * @throws OtmException if the field's value cannot be retrieved and serialized
+   * @throws OtmException if the property's value cannot be retrieved and serialized
    */
   public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
@@ -78,18 +75,18 @@ public class ArrayFieldBinder extends AbstractFieldBinder {
   }
 
   /**
-   * Populate an array field of an object.
+   * Populate an array property of an object.
    *
    * @param o the object
    * @param vals the values to be set (may be deserialized)
    *
-   * @throws OtmException if a field's value cannot be deserilized and set
+   * @throws OtmException if a properties's value cannot be deserilized and set
    */
   public void set(Object o, List vals) throws OtmException {
     Object value;
 
     if (vals.size() == 0)
-      value = null; // xxx: this should be an option
+      value = null; // XXX: this should be an option
     else {
       value = Array.newInstance(getComponentType(), vals.size());
 

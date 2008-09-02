@@ -22,6 +22,7 @@ import java.util.Date;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Blob;
+import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -42,22 +43,12 @@ public class Annotea {
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
   private Date                                              created;
   private Body                                              body;
-  @Predicate(uri = Rdf.rdf + "type")
   private String                                            type;
-  @Predicate(uri = Rdf.dc + "creator")
   private String                                            creator;
-  @Predicate(uri = Rdf.dc + "title")
   private String                                            title;
-  @Predicate(uri = Rdf.dc_terms + "mediator")
   private String                                            mediator;
-  @Predicate(uri = Rdf.topaz + "state")
   private int                                               state;
-
-  // Embedding example
-  /**
-   * DOCUMENT ME!
-   */
-  public SampleEmbeddable foobar;
+  private SampleEmbeddable foobar;
 
   /**
    * Creates a new Annotea object.
@@ -79,6 +70,7 @@ public class Annotea {
    *
    * @param type the value to set.
    */
+  @Predicate(uri = Rdf.rdf + "type")
   public void setType(String type) {
     this.type = type;
   }
@@ -97,6 +89,7 @@ public class Annotea {
    *
    * @param creator the value to set.
    */
+  @Predicate(uri = Rdf.dc + "creator")
   public void setCreator(String creator) {
     this.creator = creator;
   }
@@ -115,6 +108,7 @@ public class Annotea {
    *
    * @param created the value to set.
    */
+  @Predicate
   public void setCreated(Date created) {
     this.created = created;
   }
@@ -133,6 +127,7 @@ public class Annotea {
    *
    * @param body the value to set.
    */
+  @Predicate
   public void setBody(Body body) {
     this.body = body;
   }
@@ -151,6 +146,7 @@ public class Annotea {
    *
    * @param title the value to set.
    */
+  @Predicate(uri = Rdf.dc + "title")
   public void setTitle(String title) {
     this.title = title;
   }
@@ -169,6 +165,7 @@ public class Annotea {
    *
    * @param mediator the value to set.
    */
+  @Predicate(uri = Rdf.dc_terms + "mediator")
   public void setMediator(String mediator) {
     this.mediator = mediator;
   }
@@ -187,15 +184,32 @@ public class Annotea {
    *
    * @param state the value to set.
    */
+  @Predicate(uri = Rdf.topaz + "state")
   public void setState(int state) {
     this.state = state;
   }
 
+  /**
+   * Get foobar.
+   *
+   * @return foobar as SampleEmbeddable.
+   */
+  public SampleEmbeddable getFoobar() {
+    return foobar;
+  }
+
+  /**
+   * Set foobar.
+   *
+   * @param foobar the value to set.
+   */
+  @Embedded
+  public void setFoobar(SampleEmbeddable foobar) {
+    this.foobar = foobar;
+  }
+
   public static class Body {
-    @Id
-    @GeneratedValue
     private String                   id;
-    @Blob
     private byte[]                   blob;
 
     public Body() {
@@ -219,6 +233,8 @@ public class Annotea {
      *
      * @param id the value to set.
      */
+    @Id
+    @GeneratedValue
     public void setId(String id) {
       this.id = id;
     }
@@ -237,6 +253,7 @@ public class Annotea {
      *
      * @param blob the value to set.
      */
+    @Blob
     public void setBlob(byte[] blob) {
       this.blob = blob;
     }

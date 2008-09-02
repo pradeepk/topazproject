@@ -35,17 +35,11 @@ import org.topazproject.otm.event.PreInsertEventListener;
  */
 @Entity(model = "ri", type = "topaz:Representation")
 public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
-  @Id @GeneratedValue(uriPrefix = "id:representation/")
   private String                                                           id;
-  @Predicate(uri = "dcterms:identifier")
   private String                                                           name;
-  @Predicate(uri = "topaz:contentType")
   private String                                                           contentType;
-  @Predicate(uri = "topaz:objectSize")
   private long                                                             size;
-  @Predicate(uri = "dcterms:modified", dataType = "xsd:dateTime")
   private Date                                                             lastModified;
-  @Predicate(uri = "topaz:hasRepresentation", inverse=true, notOwned=true)
   private ObjectInfo                                                       object;
 
   private transient boolean modified = true;
@@ -83,6 +77,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    *
    * @param name the name.
    */
+  @Predicate(uri = "dcterms:identifier")
   public void setName(String name) {
     this.name = name;
     modified = true;
@@ -102,6 +97,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    *
    * @param object the object
    */
+  @Predicate(uri = "topaz:hasRepresentation", inverse=true, notOwned=true)
   public void setObject(ObjectInfo object) {
     this.object = object;
     modified = true;
@@ -121,6 +117,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    *
    * @param contentType the content type.
    */
+  @Predicate(uri = "topaz:contentType")
   public void setContentType(String contentType) {
     this.contentType = contentType;
     modified = true;
@@ -140,6 +137,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    *
    * @param size the object size
    */
+  @Predicate(uri = "topaz:objectSize")
   public void setSize(long size) {
     this.size = size;
     modified = true;
@@ -160,6 +158,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    * @param lastModified the date the object was last modified
    * @see #getModified
    */
+  @Predicate(uri = "dcterms:modified", dataType = "xsd:dateTime")
   public void setLastModified(Date lastModified) {
     this.lastModified = lastModified;
   }
@@ -178,6 +177,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    *
    * @param id the value to set.
    */
+  @Id @GeneratedValue(uriPrefix = "id:representation/")
   public void setId(String id) {
     this.id = id;
     modified = true;

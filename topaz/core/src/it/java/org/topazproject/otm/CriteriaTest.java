@@ -107,7 +107,7 @@ public class CriteriaTest extends AbstractOtmTest {
           a3.setCreator("cc");
           a4.setCreator("dd");
 
-          ((PublicAnnotation) a2).note = "jade";
+          ((PublicAnnotation) a2).setNote("jade");
           a3.setCreated(new Date());
 
           a1.setSupersededBy(a2);
@@ -125,12 +125,12 @@ public class CriteriaTest extends AbstractOtmTest {
           SpecialMappers sm1 = new SpecialMappers(sm1Id);
           SpecialMappers sm2 = new SpecialMappers(sm2Id);
 
-          sm1.list.add("a1");
-          sm1.seq.add("a1");
-          sm2.list.add("b1");
-          sm2.list.add("b2");
-          sm2.seq.add("b1");
-          sm2.seq.add("b2");
+          sm1.getList().add("a1");
+          sm2.getList().add("b1");
+          sm2.getList().add("b2");
+          sm1.getSeq().add("a1");
+          sm2.getSeq().add("b1");
+          sm2.getSeq().add("b2");
 
           session.saveOrUpdate(sm1);
           session.saveOrUpdate(sm2);
@@ -849,13 +849,105 @@ public class CriteriaTest extends AbstractOtmTest {
   @Entity(name = "AnnotationLink", model = "ri")
   @UriPrefix(Rdf.topaz)
   public static class AnnotationLink {
-    @Id
     public URI        id;
     public Annotation ann1;
     public Annotation ann2;
     public URI        annU;
-    @Predicate(inverse = true)
     public Annotation annR;
+
+    /**
+     * Get id.
+     *
+     * @return id as URI.
+     */
+    public URI getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
+    @Id
+    public void setId(URI id) {
+      this.id = id;
+    }
+
+    /**
+     * Get ann1.
+     *
+     * @return ann1 as Annotation.
+     */
+    public Annotation getAnn1() {
+      return ann1;
+    }
+
+    /**
+     * Set ann1.
+     *
+     * @param ann1 the value to set.
+     */
+    @Predicate
+    public void setAnn1(Annotation ann1) {
+      this.ann1 = ann1;
+    }
+
+    /**
+     * Get ann2.
+     *
+     * @return ann2 as Annotation.
+     */
+    public Annotation getAnn2() {
+      return ann2;
+    }
+
+    /**
+     * Set ann2.
+     *
+     * @param ann2 the value to set.
+     */
+    @Predicate
+    public void setAnn2(Annotation ann2) {
+      this.ann2 = ann2;
+    }
+
+    /**
+     * Get annU.
+     *
+     * @return annU as URI.
+     */
+    public URI getAnnU() {
+      return annU;
+    }
+
+    /**
+     * Set annU.
+     *
+     * @param annU the value to set.
+     */
+    @Predicate
+    public void setAnnU(URI annU) {
+      this.annU = annU;
+    }
+
+    /**
+     * Get annR.
+     *
+     * @return annR as Annotation.
+     */
+    public Annotation getAnnR() {
+      return annR;
+    }
+    /**
+     * Set annR.
+     *
+     * @param ann1 the value to set.
+     */
+    @Predicate(inverse = true)
+    public void setAnnR(Annotation ann1) {
+      this.annR = annR;
+    }
   }
 
   /**
@@ -1083,22 +1175,22 @@ public class CriteriaTest extends AbstractOtmTest {
   }
 
   private void verifyDC(DetachedCriteria dc) {
-    assertEquals(dc.da.rdfType, factory.getClassMetadata(Annotation.class).getTypes());
-    assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
+    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(Annotation.class).getTypes());
+    assertEquals("" + dc.getOrderList().iterator().next().getDa().getPredicateUri(),
                  getMapper(Annotation.class, "annotates").getUri());
 
     assertEquals(1, dc.getChildCriteriaList().size());
     dc = dc.getChildCriteriaList().iterator().next();
-    assertEquals(dc.da.rdfType, factory.getClassMetadata(Annotation.class).getTypes());
-    assertEquals("" + dc.da.predicateUri,
+    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(Annotation.class).getTypes());
+    assertEquals("" + dc.getDa().getPredicateUri(),
                  getMapper(Annotation.class, "supersedes").getUri());
-    assertEquals("" + dc.getOrderList().iterator().next().da.predicateUri,
+    assertEquals("" + dc.getOrderList().iterator().next().getDa().getPredicateUri(),
                  getMapper(Annotation.class, "creator").getUri());
 
     assertEquals(1, dc.getChildCriteriaList().size());
     dc = dc.getChildCriteriaList().iterator().next();
-    assertEquals(dc.da.rdfType, factory.getClassMetadata(AnnotationLink.class).getTypes());
-    assertEquals("" + dc.da.predicateUri,
+    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(AnnotationLink.class).getTypes());
+    assertEquals("" + dc.getDa().getPredicateUri(),
                  getMapper(AnnotationLink.class, "ann1").getUri());
   }
 
@@ -1187,9 +1279,9 @@ public class CriteriaTest extends AbstractOtmTest {
           for (SpecialMappers sm : l) {
             boolean found = false;
             for (String id : results)
-               if (id.equals(sm.id))
+               if (id.equals(sm.getId()))
                   found = true;
-            assertTrue(sm.id + " not found in " + results, found);
+            assertTrue(sm.getId() + " not found in " + results, found);
           }
         }
       });

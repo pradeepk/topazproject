@@ -40,24 +40,11 @@ import org.topazproject.otm.annotations.Predicate;
 public class ObjectInfo implements Serializable {
   private static final long serialVersionUID = 4074534426473235595L;
 
-  @Id
   private URI id;
-
-  // Dublin Core predicates
-  @Embedded
   private DublinCore dublinCore = new DublinCore();
-
-  @Predicate(uri = "dcterms:isPartOf")
   private Article isPartOf;
-
-  // PDF, TIF, PNG_S, DOC, ....
-  @Predicate(uri = "topaz:hasRepresentation", cascade = { CascadeType.child } )
   private Set<Representation> representations = new HashSet<Representation>();
-
-  @Predicate(uri = "topaz:contextElement")
   private String contextElement;
-
-  @Predicate(uri = "prism:eIssn")
   private String eIssn;
 
   /**
@@ -74,6 +61,7 @@ public class ObjectInfo implements Serializable {
    *
    * @param contextElement the contextElement to set
    */
+  @Predicate(uri = "topaz:contextElement")
   public void setContextElement(String contextElement) {
     this.contextElement = contextElement;
   }
@@ -92,6 +80,7 @@ public class ObjectInfo implements Serializable {
    *
    * @param id the id to set
    */
+  @Id
   public void setId(URI id) {
     this.id = id;
   }
@@ -106,6 +95,7 @@ public class ObjectInfo implements Serializable {
   /** 
    * @param isPartOf the isPartOf to set 
    */
+  @Predicate(uri = "dcterms:isPartOf")
   public void setIsPartOf(Article isPartOf) {
     this.isPartOf = isPartOf;
   }
@@ -124,6 +114,7 @@ public class ObjectInfo implements Serializable {
    *
    * @param representations the representations to set
    */
+  @Predicate(uri = "topaz:hasRepresentation", cascade = { CascadeType.child } )
   public void setRepresentations(Set<Representation> representations) {
     this.representations = representations;
   }
@@ -136,10 +127,10 @@ public class ObjectInfo implements Serializable {
    * @return matching representation or null
    */
   public Representation getRepresentation(String name) {
-    if (representations == null)
+    if (getRepresentations() == null)
       return null;
 
-    for (Representation rep : representations)
+    for (Representation rep : getRepresentations())
       if (name.equals(rep.getName()))
         return rep;
 
@@ -160,6 +151,7 @@ public class ObjectInfo implements Serializable {
    *
    * @param dublinCore the dublin core object
    */
+  @Embedded
   public void setDublinCore(DublinCore dublinCore) {
     this.dublinCore = dublinCore;
   }
@@ -169,7 +161,7 @@ public class ObjectInfo implements Serializable {
    *
    * @return the e-issn.
    */
-  public String getEIssn() {
+  public String geteIssn() {
     return eIssn;
   }
 
@@ -178,7 +170,8 @@ public class ObjectInfo implements Serializable {
    *
    * @param eIssn the e-issn.
    */
-  public void setEIssn(String eIssn) {
+  @Predicate(uri = "prism:eIssn")
+  public void seteIssn(String eIssn) {
     this.eIssn = eIssn;
   }
 

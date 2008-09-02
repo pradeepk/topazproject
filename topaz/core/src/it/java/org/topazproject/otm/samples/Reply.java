@@ -22,6 +22,7 @@ import java.net.URI;
 
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -33,7 +34,6 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix(Reply.NS)
 public class Reply extends Annotea {
   public static final String NS = "http://www.w3.org/2001/03/thread#";
-  @Id
   private URI  id;
   private URI  root;
   private URI  inReplyTo;
@@ -62,6 +62,7 @@ public class Reply extends Annotea {
    *
    * @param id the value to set.
    */
+  @Id
   public void setId(URI id) {
     this.id = id;
   }
@@ -80,6 +81,7 @@ public class Reply extends Annotea {
    *
    * @param root the value to set.
    */
+  @Predicate
   public void setRoot(URI root) {
     this.root = root;
   }
@@ -98,6 +100,7 @@ public class Reply extends Annotea {
    *
    * @param inReplyTo the value to set.
    */
+  @Predicate
   public void setInReplyTo(URI inReplyTo) {
     this.inReplyTo = inReplyTo;
   }

@@ -52,17 +52,11 @@ public abstract class Annotea implements Serializable {
   public static final String TOPAZ_TYPE_NS = Rdf.topaz + "2008/01/annotationType#";
 
   private Date                                              created;
-  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
   private String                                            type;
-  @Predicate(uri = "dc:creator")
   private String                                            creator;
-  @Predicate(uri = "topaz:anonymousCreator")
   private String                                            anonymousCreator;
-  @Predicate(uri = "dc:title")
   private String                                            title;
-  @Predicate(uri = "dcterms:mediator")
   private String                                            mediator;
-  @Predicate(uri = "topaz:state", dataType = Predicate.UNTYPED)
   private int                                               state;
 
   static {
@@ -85,6 +79,7 @@ public abstract class Annotea implements Serializable {
    *
    * @param creator the value to set.
    */
+  @Predicate(uri = "dc:creator")
   public void setCreator(String creator) {
     this.creator = creator;
   }
@@ -103,6 +98,7 @@ public abstract class Annotea implements Serializable {
    *
    * @param creator the value to set.
    */
+  @Predicate(uri = "topaz:anonymousCreator")
   public void setAnonymousCreator(String creator) {
     this.anonymousCreator = creator;
   }
@@ -121,6 +117,7 @@ public abstract class Annotea implements Serializable {
    *
    * @param created the value to set.
    */
+  @Predicate
   public void setCreated(Date created) {
     this.created = created;
   }
@@ -140,6 +137,7 @@ public abstract class Annotea implements Serializable {
    *
    * @param title the value to set.
    */
+  @Predicate(uri = "dc:title")
   public void setTitle(String title) {
     this.title = title;
   }
@@ -158,6 +156,7 @@ public abstract class Annotea implements Serializable {
    *
    * @param mediator the value to set.
    */
+  @Predicate(uri = "dcterms:mediator")
   public void setMediator(String mediator) {
     this.mediator = mediator;
   }
@@ -176,6 +175,7 @@ public abstract class Annotea implements Serializable {
    *
    * @param state the value to set.
    */
+  @Predicate(uri = "topaz:state", dataType = Predicate.UNTYPED)
   public void setState(int state) {
     this.state = state;
   }
@@ -193,6 +193,7 @@ public abstract class Annotea implements Serializable {
    *
    * @param type the value to set.
    */
+  @Predicate(uri = "rdf:type", type = PropType.OBJECT)
   public void setType(String type) {
     this.type = type;
   }

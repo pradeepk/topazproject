@@ -40,60 +40,48 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
-import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
+import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * DetachedCriteria is similar to Criteria except that it can exist without a Session. This
  * makes it ideal for persistance. DetachedCriteria can be converted to an executable Criteria by
- * calling the {@link #getExecutableCriteria} method. DetachedCriteria is built the same
- * way as Criteria, ie. by {@link #add}ing {@link org.topazproject.otm.criterion.Criterion}
- * objects.
- *
- * <p> For persistence, make sure that {@link org.topazproject.otm.criterion.Criterion#MODEL} is 
- * configured in the SessionFactory. Also note that not all of the setter methods are for use
- * by application code. They are there to support a load from a triple-store.</p>
+ * calling the {@link #getExecutableCriteria} method. DetachedCriteria is built the same way as
+ * Criteria, ie. by {@link #add}ing {@link org.topazproject.otm.criterion.Criterion} objects.<p>For
+ * persistence, make sure that {@link org.topazproject.otm.criterion.Criterion#MODEL} is
+ * configured in the SessionFactory. Also note that not all of the setter methods are for use by
+ * application code. They are there to support a load from a triple-store.</p>
  *
  * @author Pradeep Krishnan
  */
 @Entity(type = Criterion.NS + "Criteria", model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
 public class DetachedCriteria implements PreInsertEventListener, PostLoadEventListener {
-  private static final Log        log               = LogFactory.getLog(DetachedCriteria.class);
-  private static final String     NL                = System.getProperty("line.separator");
-
-  private String                  alias;
-  private String                  type;
-  private String                  referrer;
-  private boolean                 forceType;
-  private DetachedCriteria        parent;
-  private Integer                 maxResults;
-  private Integer                 firstResult;
-  @Predicate(collectionType = CollectionType.RDFSEQ)
-  private List<Criterion>         criterionList     = new ArrayList<Criterion>();
-  @Predicate(collectionType = CollectionType.RDFSEQ)
-  private List<Order>             orderList         = new ArrayList<Order>();
-  @Predicate(collectionType = CollectionType.RDFSEQ)
-  private List<DetachedCriteria>  childCriteriaList = new ArrayList<DetachedCriteria>();
+  private static final Log       log               = LogFactory.getLog(DetachedCriteria.class);
+  private static final String    NL                = System.getProperty("line.separator");
+  private String                 alias;
+  private String                 type;
+  private String                 referrer;
+  private boolean                forceType;
+  private DetachedCriteria       parent;
+  private Integer                maxResults;
+  private Integer                firstResult;
+  private List<Criterion>        criterionList     = new ArrayList<Criterion>();
+  private List<Order>            orderList         = new ArrayList<Order>();
+  private List<DetachedCriteria> childCriteriaList = new ArrayList<DetachedCriteria>();
 
   // Only valid in the root criteria
-  @Predicate(collectionType = CollectionType.RDFSEQ)
-  private List<Order>             rootOrderList     = new ArrayList<Order>();
+  private List<Order> rootOrderList = new ArrayList<Order>();
 
-  /** 
-   * Used in persistence; ignored otherwise.
-   */
-  @Embedded
-  public DeAliased da = new DeAliased();
+  // Used in persistence; ignored otherwise.
+  private DeAliased da = new DeAliased();
 
   /**
    * The id field used for persistence. Ignored otherwise.
    */
-  @Id
-  @GeneratedValue(uriPrefix = Criterion.NS + "Criteria/Id/")
-  public URI criteriaId;
+  private URI criteriaId;
 
   /**
    * Creates a new DetachedCriteria object. 
@@ -109,34 +97,33 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * class name. 
    */
   public DetachedCriteria(String entity) {
-    this.alias     = entity;
-    this.parent    = null;
-    this.type      = null;
-    this.referrer  = null;
-    this.forceType = false;
+    this.alias         = entity;
+    this.parent        = null;
+    this.type          = null;
+    this.referrer      = null;
+    this.forceType     = false;
   }
 
   /**
    * Create a child DetachedCriteria.
    */
   private DetachedCriteria(DetachedCriteria parent, String path, String entity) {
-    this.alias     = path;
-    this.parent    = parent;
-    this.type      = entity;
-    this.referrer  = null;
-    this.forceType = false;
+    this.alias       = path;
+    this.parent      = parent;
+    this.type        = entity;
+    this.referrer    = null;
+    this.forceType   = false;
   }
 
   /**
    * Create a referrer DetachedCriteria.
    */
-  private DetachedCriteria(DetachedCriteria parent, String referrer, String path,
-                           boolean forceType) {
-    this.alias     = path;
-    this.parent    = parent;
-    this.type      = null;
-    this.referrer  = referrer;
-    this.forceType = forceType;
+  private DetachedCriteria(DetachedCriteria parent, String referrer, String path, boolean forceType) {
+    this.alias       = path;
+    this.parent      = parent;
+    this.type        = null;
+    this.referrer    = referrer;
+    this.forceType   = forceType;
   }
 
   /**
@@ -152,8 +139,9 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    */
   public Criteria getExecutableCriteria(Session session)
                                  throws OtmException, UnsupportedOperationException {
-    if (parent != null)
-      throw new UnsupportedOperationException("Can't create executable Criteria from a detached child criteria");
+    if (getParent() != null)
+      throw new UnsupportedOperationException("Can't create executable Criteria from a"
+                                              + " detached child criteria");
 
     ClassMetadata cm = session.getSessionFactory().getClassMetadata(alias);
 
@@ -163,7 +151,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     Criteria c = session.createCriteria(cm.getName());
     copyTo(c);
     c.getOrderPositions().clear();
-    c.getOrderPositions().addAll(rootOrderList);
+    c.getOrderPositions().addAll(getRootOrderList());
 
     return c;
   }
@@ -175,16 +163,16 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     if (firstResult != null)
       c.setFirstResult(firstResult);
 
-    for (Criterion cr : criterionList)
+    for (Criterion cr : getCriterionList())
       c.add(cr);
 
-    for (Order or : orderList)
+    for (Order or : getOrderList())
       c.addOrder(or);
 
-    for (DetachedCriteria dc : childCriteriaList)
-      dc.copyTo(dc.getReferrer() != null ?
-                      c.createReferrerCriteria(dc.getReferrer(), dc.getAlias(), dc.getForceType()) :
-                      c.createCriteria(dc.getAlias(), dc.getType()));
+    for (DetachedCriteria dc : getChildCriteriaList())
+      dc.copyTo((dc.getReferrer() != null)
+                ? c.createReferrerCriteria(dc.getReferrer(), dc.getAlias(), dc.isForceType())
+                : c.createCriteria(dc.getAlias(), dc.getType()));
   }
 
   /**
@@ -201,37 +189,40 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Creates a new sub-criteria with an explicit given type for an association. This is the same
-   * as {@link #createCriteria(java.lang.String)} except that the type of the child is explicitly
-   * forced instead of determined from the association metadata.
+   * Creates a new sub-criteria with an explicit given type for an association. This is the
+   * same as {@link #createCriteria(java.lang.String)} except that the type of the child is
+   * explicitly forced instead of determined from the association metadata.
    *
-   * @param path      to the association
+   * @param path to the association
    * @param childType the entity type of the child criteria
    *
    * @return the newly created sub-criteria
    *
    * @throws OtmException on an error
    */
-  public DetachedCriteria createCriteria(String path, String childType) throws OtmException {
+  public DetachedCriteria createCriteria(String path, String childType)
+                                  throws OtmException {
     DetachedCriteria c = new DetachedCriteria(this, path, childType);
-    childCriteriaList.add(c);
+    getChildCriteriaList().add(c);
 
     return c;
   }
 
   /**
    * Creates a new sub-criteria for an association from another object to the current object.
-   * This is the same as invoking {@link
-   * #createReferrerCriteria(java.lang.String, java.lang.String, boolean)
-   * createReferrerCriteria(referrer, path, false)}.
+   * This is the same as invoking {@link #createReferrerCriteria(java.lang.String,
+   * java.lang.String, boolean) createReferrerCriteria(referrer, path, false)}.
    *
    * @param referrer the entity whose association points to us
-   * @param path     to the association (in <var>entity</var>); this must point to this criteria's
-   *                 entity
+   * @param path to the association (in <var>entity</var>); this must point to this criteria's
+   *        entity
+   *
    * @return the newly created sub-criteria
+   *
    * @throws OtmException on an error
    */
-  public DetachedCriteria createReferrerCriteria(String referrer, String path) throws OtmException {
+  public DetachedCriteria createReferrerCriteria(String referrer, String path)
+                                          throws OtmException {
     return createReferrerCriteria(referrer, path, false);
   }
 
@@ -240,25 +231,27 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * Whereas {@link #createCriteria} allows one to walk down associations to other objects, this
    * allows one to walk up an assocation from another object.
    *
-   * @param referrer  the entity whose association points to us
-   * @param path      to the association (in <var>entity</var>); this must point to this criteria's
-   *                  entity
+   * @param referrer the entity whose association points to us
+   * @param path to the association (in <var>entity</var>); this must point to this criteria's
+   *        entity
    * @param forceType if true, force the type of our association end to be the same as this
-   *                  criteria's type; if false, this criteria's type must be a subtype of the
-   *                  assocation end's type.
+   *        criteria's type; if false, this criteria's type must be a subtype of the assocation
+   *        end's type.
+   *
    * @return the newly created sub-criteria
+   *
    * @throws OtmException on an error
    */
   public DetachedCriteria createReferrerCriteria(String referrer, String path, boolean forceType)
-      throws OtmException {
+                                          throws OtmException {
     DetachedCriteria c = new DetachedCriteria(this, referrer, path, forceType);
-    childCriteriaList.add(c);
+    getChildCriteriaList().add(c);
 
     return c;
   }
 
   /**
-   * Get parent. 
+   * Get parent.
    *
    * @return parent as Criteria.
    */
@@ -267,12 +260,12 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Set parent. For use by persistence.
-   *
-   * DO NOT USE DIRECTLY. Use {@link #createCriteria} instead on the parent.
+   * Set parent. For use by persistence. DO NOT USE DIRECTLY. Use {@link #createCriteria}
+   * instead on the parent.
    *
    * @param parent the value to set.
    */
+  @Predicate
   public void setParent(DetachedCriteria parent) {
     this.parent = parent;
   }
@@ -285,7 +278,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * @return this for method call chaining
    */
   public DetachedCriteria add(Criterion criterion) {
-    criterionList.add(criterion);
+    getCriterionList().add(criterion);
 
     return this;
   }
@@ -298,24 +291,28 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * @return this for method call chaining
    */
   public DetachedCriteria addOrder(Order order) {
-    orderList.add(order);
+    getOrderList().add(order);
     getRoot().getRootOrderList().add(order);
 
     return this;
   }
 
   private ClassMetadata getClassMetadata(SessionFactory sf) {
-    if (parent == null)
+    if (getParent() == null)
       return sf.getClassMetadata(alias);
+
     if (referrer != null)
       return sf.getClassMetadata(referrer);
 
-    ClassMetadata cm = parent.getClassMetadata(sf);
+    ClassMetadata cm = getParent().getClassMetadata(sf);
+
     if (cm == null)
       return null;
+
     Mapper m = cm.getMapperByName(alias);
+
     return (!(m instanceof RdfMapper)) ? null
-      : sf.getClassMetadata(((RdfMapper)m).getAssociatedEntity());
+           : sf.getClassMetadata(((RdfMapper) m).getAssociatedEntity());
   }
 
   /*
@@ -323,54 +320,58 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    */
   public void onPreInsert(Session session, Object object) {
     assert this == object;
+
     SessionFactory sf = session.getSessionFactory();
 
-    if (parent == null) {
+    if (getParent() == null) {
       ClassMetadata cm = sf.getClassMetadata(alias);
 
       if (cm == null)
-        log.warn("onPreInsert: Entity name '" + alias 
-            + "' is not found in session factory.");
+        log.warn("onPreInsert: Entity name '" + alias + "' is not found in session factory.");
       else {
-        da.rdfType = cm.getTypes();
-        da.predicateUri = null;
-        da.inverse = false;
+        da.setRdfType(cm.getTypes());
+        da.setPredicateUri(null);
+        da.setInverse(false);
 
         if (log.isDebugEnabled())
-          log.debug("onPreInsert: converted entity '" + alias + "' to " + da.rdfType);
+          log.debug("onPreInsert: converted entity '" + alias + "' to " + da.getRdfType());
 
-        for (Criterion cr : criterionList)
+        for (Criterion cr : getCriterionList())
           cr.onPreInsert(session, this, cm);
 
-        for (Order or : orderList)
+        for (Order or : getOrderList())
           or.onPreInsert(session, this, cm);
       }
     } else {
       ClassMetadata cm =
-              (referrer != null) ? sf.getClassMetadata(referrer) : parent.getClassMetadata(sf);
+        (referrer != null) ? sf.getClassMetadata(referrer) : getParent().getClassMetadata(sf);
+
       if (cm == null)
         log.warn("onPreInsert: Parent of '" + alias + "' not found in session factory");
       else {
         Mapper r = cm.getMapperByName(alias);
+
         if (!(r instanceof RdfMapper))
           log.warn("onPreInsert: Field '" + alias + "' not found in " + cm);
         else {
-          RdfMapper m = (RdfMapper)r;
+          RdfMapper m = (RdfMapper) r;
+
           if (referrer == null)
             cm = sf.getClassMetadata(m.getAssociatedEntity());
 
           if (cm != null)
-            da.rdfType = cm.getTypes();
-          da.predicateUri = URI.create(m.getUri());
-          da.inverse = m.hasInverseUri();
+            da.setRdfType(cm.getTypes());
+
+          da.setPredicateUri(URI.create(m.getUri()));
+          da.setInverse(m.hasInverseUri());
 
           if (log.isDebugEnabled())
-            log.debug("onPreInsert: converted field '" + alias + "' to "  + da);
+            log.debug("onPreInsert: converted field '" + alias + "' to " + da);
 
-          for (Criterion cr : criterionList)
+          for (Criterion cr : getCriterionList())
             cr.onPreInsert(session, this, cm);
 
-          for (Order or : orderList)
+          for (Order or : getOrderList())
             or.onPreInsert(session, this, cm);
         }
       }
@@ -382,40 +383,47 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    */
   public void onPostLoad(Session session, Object object) {
     assert this == object;
+
     SessionFactory sf = session.getSessionFactory();
 
-    if (parent == null) {
-      ClassMetadata cm = sf.getAnySubClassMetadata(null, da.rdfType);
+    if (getParent() == null) {
+      ClassMetadata cm = sf.getAnySubClassMetadata(null, da.getRdfType());
+
       if (cm == null) {
         cm = sf.getClassMetadata(alias);
-        if ((cm != null) && !cm.getTypes().containsAll(da.rdfType))
+
+        if ((cm != null) && !cm.getTypes().containsAll(da.getRdfType()))
           cm = null;
       }
 
       if (cm == null) {
-        log.warn("onPostLoad: A class metadata matching the rdf:type <" + da.rdfType 
-          + "> is not found in session factory. Entity name will remain as '" + alias + "'");
+        log.warn("onPostLoad: A class metadata matching the rdf:type <" + da.getRdfType()
+                 + "> is not found in session factory. Entity name will remain as '" + alias + "'");
       } else {
         alias = cm.getName();
 
         if (log.isDebugEnabled())
-          log.debug("onPostLoad: converted rdfType " + da.rdfType + " to entity '" + alias + "'");
+          log.debug("onPostLoad: converted rdfType " + da.getRdfType() + " to entity '" + alias
+                    + "'");
 
-        for (Criterion cr : criterionList)
+        for (Criterion cr : getCriterionList())
           cr.onPostLoad(session, this, cm);
 
-        for (Order or : orderList)
+        for (Order or : getOrderList())
           or.onPostLoad(session, this, cm);
       }
     } else {
       ClassMetadata cm =
-              (referrer != null) ? sf.getClassMetadata(referrer) : parent.getClassMetadata(sf);
+        (referrer != null) ? sf.getClassMetadata(referrer) : getParent().getClassMetadata(sf);
+
       if (cm == null)
         log.warn("onPostLoad: Parent of '" + alias + "' not found in session factory");
       else {
-        RdfMapper m = cm.getMapperByUri(sf, ser(da.predicateUri), da.inverse, da.rdfType);
+        RdfMapper m =
+          cm.getMapperByUri(sf, ser(da.getPredicateUri()), da.isInverse(), da.getRdfType());
+
         if (m == null)
-          log.warn("onPostLoad: A field matching " + da +  " not found in " + cm);
+          log.warn("onPostLoad: A field matching " + da + " not found in " + cm);
         else {
           alias = m.getName();
 
@@ -425,10 +433,10 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
           if (referrer == null)
             cm = sf.getClassMetadata(m.getAssociatedEntity());
 
-          for (Criterion cr : criterionList)
+          for (Criterion cr : getCriterionList())
             cr.onPostLoad(session, this, cm);
 
-          for (Order or : orderList)
+          for (Order or : getOrderList())
             or.onPostLoad(session, this, cm);
         }
       }
@@ -449,11 +457,11 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Sets the list of child Criteria. For use by persistence.
-   *
+   * Sets the list of child Criteria. For use by persistence. DO NOT USE DIRECTLY.
    *
    * @param list of child Criteria
    */
+  @Predicate(collectionType = CollectionType.RDFSEQ)
   public void setChildCriteriaList(List<DetachedCriteria> list) {
     childCriteriaList = list;
   }
@@ -468,12 +476,12 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Sets the list of Criterions. For use by persitence.
-   *
-   * DO NOT USE DIRECTLY. Use {@link #add} instead.
+   * Sets the list of Criterions. For use by persitence. DO NOT USE DIRECTLY. Use {@link
+   * #add} instead.
    *
    * @param list of Criterions
    */
+  @Predicate(collectionType = CollectionType.RDFSEQ)
   public void setCriterionList(List<Criterion> list) {
     criterionList = list;
   }
@@ -488,12 +496,12 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Sets the list of Order definitions. For use by persistence.
-   *
-   * DO NOT USE DIRECTLY. Use {@link #addOrder} instead.
+   * Sets the list of Order definitions. For use by persistence. DO NOT USE DIRECTLY. Use
+   * {@link #addOrder} instead.
    *
    * @param list of Order dedinitions
    */
+  @Predicate(collectionType = CollectionType.RDFSEQ)
   public void setOrderList(List<Order> list) {
     orderList = list;
   }
@@ -508,12 +516,12 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Gets the root order list. For use by persistence.
-   *
-   * DO NOT USE DIRECTLY. Use {@link #addOrder} instead.
+   * Gets the root order list. For use by persistence. DO NOT USE DIRECTLY. Use {@link
+   * #addOrder} instead.
    *
    * @param list the root order list
    */
+  @Predicate(collectionType = CollectionType.RDFSEQ)
   public void setRootOrderList(List<Order> list) {
     rootOrderList = list;
   }
@@ -522,26 +530,20 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * Set a limit upon the number of objects to be retrieved.
    *
    * @param maxResults the maximum number of results
-   *
-   * @return this (for method chaining)
    */
-  public DetachedCriteria setMaxResults(Integer maxResults) {
+  @Predicate
+  public void setMaxResults(Integer maxResults) {
     this.maxResults = maxResults;
-
-    return this;
   }
 
   /**
    * Set the first result to be retrieved.
    *
    * @param firstResult the first result to retrieve, numbered from <tt>0</tt>
-   *
-   * @return this (for method chaining)
    */
-  public DetachedCriteria setFirstResult(Integer firstResult) {
+  @Predicate
+  public void setFirstResult(Integer firstResult) {
     this.firstResult = firstResult;
-
-    return this;
   }
 
   /**
@@ -563,7 +565,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   private DetachedCriteria getRoot() {
-    return (parent == null) ? this : parent.getRoot();
+    return (getParent() == null) ? this : getParent().getRoot();
   }
 
   /**
@@ -576,12 +578,11 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Set alias. For use by persistence
-   *
-   * DO NOT USE DIRECTLY. Use the constructor instead.
+   * Set alias. For use by persistence DO NOT USE DIRECTLY. Use the constructor instead.
    *
    * @param alias the value to set.
    */
+  @Predicate
   public void setAlias(String alias) {
     this.alias = alias;
   }
@@ -596,12 +597,12 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Set referrer. For use by persistence.
-   *
-   * DO NOT USE DIRECTLY. Use {@link #createReferrerCriteria} instead on the parent.
+   * Set referrer. For use by persistence. DO NOT USE DIRECTLY. Use {@link
+   * #createReferrerCriteria} instead on the parent.
    *
    * @param referrer the value to set.
    */
+  @Predicate
   public void setReferrer(String referrer) {
     this.referrer = referrer;
   }
@@ -616,35 +617,74 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * Set the type. For use by persistence. Only valid for non-referrer criteria.
-   *
-   * DO NOT USE DIRECTLY. Use {@link #createCriteria} instead on the parent.
+   * Set the type. For use by persistence. Only valid for non-referrer criteria. DO NOT USE
+   * DIRECTLY. Use {@link #createCriteria} instead on the parent.
    *
    * @param type the value to set.
    */
+  @Predicate
   public void setType(String type) {
     this.type = type;
   }
 
   /**
-   * Whether to check the association end's type against the parents type. Only valid for referrer
-   * criteria.
+   * Whether to check the association end's type against the parents type. Only valid for
+   * referrer criteria.
    *
    * @return false if the types should be checked, true if not
    */
-  public boolean getForceType() {
+  public boolean isForceType() {
     return forceType;
   }
 
   /**
-   * Set the force-type flag. For use by persistence. Only valid for referrer criteria.
-   *
-   * DO NOT USE DIRECTLY. Use {@link #createCriteria} instead on the parent.
+   * Set the force-type flag. For use by persistence. Only valid for referrer criteria. DO
+   * NOT USE DIRECTLY. Use {@link #createCriteria} instead on the parent.
    *
    * @param force false if the types should be checked, true if not
    */
+  @Predicate
   public void setForceType(boolean force) {
     this.forceType = force;
+  }
+
+  /**
+   * Get de-aliased. Used in persistence. Ignored otherwise.
+   *
+   * @return da as DeAliased.
+   */
+  public DeAliased getDa() {
+    return da;
+  }
+
+  /**
+   * Set de-aliased. Used in persistence. Ignored otherwise
+   *
+   * @param da the value to set.
+   */
+  @Embedded
+  public void setDa(DeAliased da) {
+    this.da = da;
+  }
+
+  /**
+   * Get criteriaId.
+   *
+   * @return criteriaId as URI.
+   */
+  public URI getCriteriaId() {
+    return criteriaId;
+  }
+
+  /**
+   * Set criteriaId.
+   *
+   * @param criteriaId the value to set.
+   */
+  @Id
+  @GeneratedValue(uriPrefix = Criterion.NS + "Criteria/Id/")
+  public void setCriteriaId(URI criteriaId) {
+    this.criteriaId = criteriaId;
   }
 
   /**
@@ -653,28 +693,34 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
    * @return the set of names; will be empty if there are no parameters
    */
   public Set<String> getParameterNames() {
-    if (parent != null)
-      return parent.getParameterNames();
+    if (getParent() != null)
+      return getParent().getParameterNames();
 
     return getParameterNames(new HashSet<String>());
   }
 
   private Set<String> getParameterNames(Set<String> paramNames) {
-    for (DetachedCriteria dc : childCriteriaList)
+    for (DetachedCriteria dc : getChildCriteriaList())
       dc.getParameterNames(paramNames);
 
-    for (Criterion c : criterionList)
+    for (Criterion c : getCriterionList())
       paramNames.addAll(c.getParamNames());
 
     return paramNames;
   }
 
+  /*
+   * inherited javadoc
+   */
   public String toString() {
     return toString("");
   }
 
   /**
+   * Creates a String representation with a prefix for every line.
+   *
    * @param indent the string to prefix every line with
+   *
    * @return a string representation of this detached-criteria
    */
   public String toString(String indent) {
@@ -683,8 +729,10 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
 
     for (Criterion c : getCriterionList())
       sb.append(NL).append(indent).append(c);
+
     for (DetachedCriteria c : getChildCriteriaList())
       sb.append(NL).append(indent).append(c.toString(indent + "  "));
+
     for (Order o : getOrderList())
       sb.append(NL).append(indent).append(o);
 
@@ -692,26 +740,49 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
   }
 
   /**
-   * A class to hold the rdf:type URI, the predicate URI and the mapping direction 
-   * (inverse or not) for an entity supplied in creating this Criteria. This information is
-   * persisted when the Criteria is persisted allowing the re-construction of an association
-   * field name on retrieval even when the field name or the association class name has changed.
-   * <p/>
-   * This also has the additional advantage that what is stored in the persistence
-   * store has some meaning outside of the java class that this Criteria is tied to.
+   * A class to hold the rdf:type URI, the predicate URI and the mapping direction  (inverse
+   * or not) for an entity supplied in creating this Criteria. This information is persisted when
+   * the Criteria is persisted allowing the re-construction of an association field name on
+   * retrieval even when the field name or the association class name has changed. <p> This also
+   * has the additional advantage that what is stored in the persistence store has some meaning
+   * outside of the java class that this Criteria is tied to.</p>
    */
   @UriPrefix(Criterion.NS)
   public static class DeAliased {
-    @Predicate(type=Predicate.PropType.OBJECT)
-    public Set<String> rdfType = new HashSet<String>();
-    public URI predicateUri;
-    public boolean inverse;
+    private Set<String> rdfType      = new HashSet<String>();
+    private URI         predicateUri;
+    private boolean     inverse;
+
+    @Predicate(type = Predicate.PropType.OBJECT)
+    public void setRdfType(Set<String> rdfType) {
+      this.rdfType                   = rdfType;
+    }
+
+    public Set<String> getRdfType() {
+      return rdfType;
+    }
+
+    @Predicate
+    public void setPredicateUri(URI predicateUri) {
+      this.predicateUri = predicateUri;
+    }
+
+    public URI getPredicateUri() {
+      return predicateUri;
+    }
+
+    @Predicate
+    public void setInverse(boolean inverse) {
+      this.inverse = inverse;
+    }
+
+    public boolean isInverse() {
+      return inverse;
+    }
 
     public String toString() {
-      return "[predicate: <" + predicateUri
-            + ">, rdf:type: " + rdfType
-            + ", inverse: " + inverse
-            + "]";
+      return "[predicate: <" + predicateUri + ">, rdf:type: " + getRdfType() + ", inverse: "
+             + inverse + "]";
     }
   }
 }

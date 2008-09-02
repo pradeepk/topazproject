@@ -18,7 +18,7 @@
  */
 package org.topazproject.otm.owl;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -227,8 +227,8 @@ public class OwlGenerator {
           continue;
 
         // See if this field really belongs to our class/type
-        Field f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getField();
-        log.debug("Field Class extracted: " + f);
+        Method f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getSetter();
+        log.debug("Setter extracted: " + f);
 
         AddAxiom domainAxiom = null;
         AddAxiom rangeAxiom = null;
@@ -338,8 +338,8 @@ public class OwlGenerator {
           continue;
 
         // See if this field really belongs to our class/type
-        Field f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getField();
-        log.debug("Field Class extracted: " + f);
+        Method f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getSetter();
+        log.debug("Setter extracted: " + f);
         Class clazz = f.getDeclaringClass();
         if (clazz != getSourceClass(cm)) {
           // See if it exists in super classes
@@ -400,8 +400,8 @@ public class OwlGenerator {
           continue;
 
         // See if this field really belongs to our class/type
-        Field f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getField();
-        log.debug("Field Class extracted: " + f);
+        Method f = ((FieldBinder)m.getBinder(EntityMode.POJO)).getSetter();
+        log.debug("Setter extracted: " + f);
         Class clazz = f.getDeclaringClass();
         if (clazz != getSourceClass(cm)) {
           // See if it exists in super classes

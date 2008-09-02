@@ -49,43 +49,16 @@ public class UserProfile extends FoafPerson {
   public static final String BIO_URI  = "http://purl.org/vocab/bio/0.1/";
   public static final String ADDR_URI = "http://wymiwyg.org/ontologies/foaf/postaddress#";
 
-  /** The name to use for display; stored in topaz:displayName; subPropertyOf foaf:nick */
   private String displayName;
-
-  /** Their organizational position type */
   private String positionType;
-
-  /** Their organization name */
   private String organizationName;
-
-  /** Their organization type */
   private String organizationType;
-
-  /** postal address */
   private String postalAddress;
-
-  /** city */
-  @Predicate(uri = "address:town")
   private String city;
-
-  /** country */
-  @Predicate(uri = "address:country")
   private String country;
-
-  /** url pointing to their biography */
-  @Predicate(uri = "bio:olb")
   private String biography;
-
-  /** text containing their biography */
-  @Predicate(uri = "topaz:bio")
   private String biographyText;
-
-  /** text containing their interests */
-  @Predicate(uri = "topaz:interests")
   private String interestsText;
-
-  /** text containing their research areas */
-  @Predicate(uri = "topaz:researchAreas")
   private String researchAreasText;
 
   public UserProfile clone() {
@@ -106,6 +79,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param displayName the display name; may be null
    */
+  @Predicate
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
@@ -124,6 +98,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param positionType the position type.
    */
+  @Predicate
   public void setPositionType(String positionType) {
     this.positionType = positionType;
   }
@@ -142,6 +117,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param organizationName the organization name.
    */
+  @Predicate
   public void setOrganizationName(String organizationName) {
     this.organizationName = organizationName;
   }
@@ -160,6 +136,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param organizationType the organization type.
    */
+  @Predicate
   public void setOrganizationType(String organizationType) {
     this.organizationType = organizationType;
   }
@@ -178,6 +155,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param postalAddress the postal address.
    */
+  @Predicate
   public void setPostalAddress(String postalAddress) {
     this.postalAddress = postalAddress;
   }
@@ -196,6 +174,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param city the city.
    */
+  @Predicate(uri = "address:town")
   public void setCity(String city) {
     this.city = city;
   }
@@ -214,6 +193,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param country the country.
    */
+  @Predicate(uri = "address:country")
   public void setCountry(String country) {
     this.country = country;
   }
@@ -232,6 +212,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param biography the biography url; may be null
    */
+  @Predicate(uri = "bio:olb")
   public void setBiography(String biography) {
     this.biography = biography;
   }
@@ -250,6 +231,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param biographyText the text description of the biography.
    */
+  @Predicate(uri = "topaz:bio")
   public void setBiographyText(String biographyText) {
     this.biographyText = biographyText;
   }
@@ -268,6 +250,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param interestsText the text description of the interests.
    */
+  @Predicate(uri = "topaz:interests")
   public void setInterestsText(String interestsText) {
     this.interestsText = interestsText;
   }
@@ -286,6 +269,7 @@ public class UserProfile extends FoafPerson {
    *
    * @param researchAreasText the text description of the research areas.
    */
+  @Predicate(uri = "topaz:researchAreas")
   public void setResearchAreasText(String researchAreasText) {
     this.researchAreasText = researchAreasText;
   }

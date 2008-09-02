@@ -18,8 +18,9 @@
  */
 package org.topazproject.ambra.model;
 
-import java.net.URI;
 import java.io.Serializable;
+
+import java.net.URI;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
@@ -31,9 +32,44 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = "foaf:Person", model = "profiles")
 public class UserProfileInfo implements Serializable {
-  @Id
-  public URI id;
+  private URI id;
+  private String realName;
 
+  /**
+   * Get id.
+   *
+   * @return id as URI.
+   */
+  public URI getId() {
+    return id;
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  @Id
+  public void setId(URI id) {
+    this.id = id;
+  }
+
+  /**
+   * Get realName.
+   *
+   * @return realName as String.
+   */
+  public String getRealName() {
+    return realName;
+  }
+
+  /**
+   * Set realName.
+   *
+   * @param realName the value to set.
+   */
   @Predicate(uri = "foaf:name")
-  public String realName;
+  public void setRealName(String realName) {
+    this.realName = realName;
+  }
 }

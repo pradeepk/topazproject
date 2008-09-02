@@ -196,14 +196,14 @@ public class FieldDef {
     if (maxCard == 1 && embedded) {
       def cm = classType.toClass()
       def metaDef = new EmbeddedDefinition(dn, cm.getName())
-      def binders = [(EntityMode.POJO) : new EmbeddedClassFieldBinder(f, get, set)]
+      def binders = [(EntityMode.POJO) : new EmbeddedClassFieldBinder(get, set)]
       def container = new EmbeddedMapperImpl(metaDef, binders, cm)
       m = cm.rdfMappers.collect{ container.promote(it) }
       m.add(container)
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
-      FieldBinder l = new ScalarFieldBinder(f, get, set, ser);
+      FieldBinder l = new ScalarFieldBinder(get, set, ser);
       if (ser != null)
         ft = null;
       if (isId)
@@ -220,9 +220,9 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
         ft = null;
       FieldBinder l;
       if (collType.toLowerCase() == 'array')
-        l = new ArrayFieldBinder(f, get, set, ser, compType);
+        l = new ArrayFieldBinder(get, set, ser, compType);
       else
-        l = new CollectionFieldBinder(f, get, set, ser, compType);
+        l = new CollectionFieldBinder(get, set, ser, compType);
 
       m = [new RdfMapperImpl(new RdfDefinition(dn, pred, dtype, inverse, model, mt, owned,
                              idGen, ct, ft, cm?.getName(),

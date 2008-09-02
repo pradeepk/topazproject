@@ -35,18 +35,16 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.UriPrefix;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
  * An abstract base for all query criterion used as restrictions in a  {@link
- * org.topazproject.otm.Criteria}.
- *
- * <p>Subclasses must either override both {@link #toItql toItql()} and {@link #toOql toOql()},
- * or they must override {@link #toQuery toQuery()}; the default implementation for these is to
- * invoke each other.
+ * org.topazproject.otm.Criteria}.<p>Subclasses must either override both {@link #toItql
+ * toItql()} and {@link #toOql toOql()}, or they must override {@link #toQuery toQuery()}; the
+ * default implementation for these is to invoke each other.</p>
  *
  * @author Pradeep Krishnan
  *
@@ -68,26 +66,24 @@ public abstract class Criterion {
   public static final String NS = Rdf.topaz + "otm/";
 
   /**
-   * The base rdf:type and also the namespace for sub-class types for persistence. Unused otherwise/
+   * The base rdf:type and also the namespace for sub-class types for persistence. Unused
+   * otherwise/
    */
   public static final String RDF_TYPE = NS + "Criterion";
 
   /**
    * The constants indicating the query language.
    */
-  public static enum QL { ITQL, OQL };
+  public static enum QL {ITQL, OQL;};
 
   /**
    * The id field used for persistence. Ignored otherwise.
    */
-  @Id
-  @GeneratedValue(uriPrefix = NS + "Criterion/Id/")
-  public URI criterionId;
-
+  private URI criterionId;
 
   /**
-   * Creates an ITQL query 'where clause' fragment. The default implementation calls {@link #toQuery
-   * toQuery()}.
+   * Creates an ITQL query 'where clause' fragment. The default implementation calls {@link
+   * #toQuery toQuery()}.
    *
    * @param criteria the Criteria
    * @param subjectVar the subject designator variable (eg. $s etc.)
@@ -97,22 +93,25 @@ public abstract class Criterion {
    *
    * @throws OtmException if an error occurred
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+                throws OtmException {
     return toQuery(criteria, subjectVar, varPrefix, QL.ITQL);
   }
 
   /**
-   * Creates an OQL query 'where clause' fragment. The default implementation calls {@link #toQuery
-   * toQuery()}.
+   * Creates an OQL query 'where clause' fragment. The default implementation calls {@link
+   * #toQuery toQuery()}.
    *
    * @param criteria the Criteria
    * @param subjectVar the subject designator variable (eg. $s etc.)
    * @param varPrefix namespace for internal variables (ie. not visible on select list)
    *
    * @return the oql query fragment
+   *
    * @throws OtmException if an error occurred
    */
-  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix)
+               throws OtmException {
     return toQuery(criteria, subjectVar, varPrefix, QL.OQL);
   }
 
@@ -120,50 +119,57 @@ public abstract class Criterion {
    * Creates a query 'where clause' fragment. The default implementation calls {@link #toItql
    * toItql} or {@link #toOql toOql} depending on the specified query-language.
    *
-   * @param criteria   the Criteria
+   * @param criteria the Criteria
    * @param subjectVar the subject designator variable (eg. $s etc.)
-   * @param varPrefix  namespace for internal variables (ie. not visible on select list)
-   * @param ql         the query language to generate the fragment for
+   * @param varPrefix namespace for internal variables (ie. not visible on select list)
+   * @param ql the query language to generate the fragment for
+   *
    * @return the query fragment
+   *
    * @throws OtmException if an error occurred
    */
   public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
-      throws OtmException {
+                 throws OtmException {
     switch (ql) {
-      case ITQL:
-        return toItql(criteria, subjectVar, varPrefix);
-      case OQL:
-        return toOql(criteria, subjectVar, varPrefix);
-      default:
-        throw new OtmException("unknown query language '" + ql + "'");
+    case ITQL:
+      return toItql(criteria, subjectVar, varPrefix);
+
+    case OQL:
+      return toOql(criteria, subjectVar, varPrefix);
+
+    default:
+      throw new OtmException("unknown query language '" + ql + "'");
     }
   }
 
-  /** 
+  /**
    * Serialize the given value into standard rdf form, i.e "&lt;...&gt;" for URI's and
    * single-quoted strings with optional datatype uri for literals.
-   * 
-   * @param value    the value to serialize
+   *
+   * @param value the value to serialize
    * @param criteria the criteria object this criterion belongs to
-   * @param field    the name of the field whose value is being serialized
+   * @param field the name of the field whose value is being serialized
+   *
    * @return the serialized value
+   *
    * @throws OtmException if the field is not valid or an error occurred getting the string
-   *                      representation of the value
+   *         representation of the value
    */
   protected static String serializeValue(Object value, Criteria criteria, String field)
-      throws OtmException {
-    ClassMetadata cm = criteria.getClassMetadata();
-    RdfMapper     m  = getMapper(cm, field);
+                                  throws OtmException {
+    ClassMetadata cm                 = criteria.getClassMetadata();
+    RdfMapper     m                  = getMapper(cm, field);
 
-    String val;
+    String        val;
+
     if (value instanceof Parameter)
-      val = criteria.resolveParameter(((Parameter)value).getParameterName(), field);
+      val = criteria.resolveParameter(((Parameter) value).getParameterName(), field);
     else {
       try {
-        Binder l = m.getBinder(criteria.getSession());
-        Serializer ser = l.getSerializer();
+        Binder     l                 = m.getBinder(criteria.getSession());
+        Serializer ser               = l.getSerializer();
 
-        val = (ser != null) ? ser.serialize(value) : value.toString();
+        val                          = (ser != null) ? ser.serialize(value) : value.toString();
       } catch (Exception e) {
         throw new OtmException("Serializer exception", e);
       }
@@ -182,10 +188,9 @@ public abstract class Criterion {
   }
 
   /**
-   * Gets the parameter names that is set on this Criterion.
-   * The default implementation always returns an emptySet.
-   * Sub-classes must override this and return a set if they
-   * are parameterizable.
+   * Gets the parameter names that is set on this Criterion. The default implementation
+   * always returns an emptySet. Sub-classes must override this and return a set if they are
+   * parameterizable.
    *
    * @return the parameter names as a set; never null
    */
@@ -222,9 +227,12 @@ public abstract class Criterion {
    */
   protected URI getPrefixModel(Criteria criteria) throws OtmException {
     List<ModelConfig> l = criteria.getSession().getSessionFactory().getModels(PFX_MODEL);
+
     if ((l == null) || (l.size() == 0))
-      throw new OtmException("A model of type " + PFX_MODEL 
-          + " must be configured in SessionFactory to execute queries on rdf collections");
+      throw new OtmException("A model of type " + PFX_MODEL
+                             + " must be configured in SessionFactory to execute queries on"
+                             + " rdf collections");
+
     return l.get(0).getUri();
   }
 
@@ -238,7 +246,8 @@ public abstract class Criterion {
    *
    * @throws OtmException when the model is not configured in the SessionFactory
    */
-  protected URI getModelUri(Criteria criteria, String model) throws OtmException {
+  protected URI getModelUri(Criteria criteria, String model)
+                     throws OtmException {
     ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
 
     if (conf == null)
@@ -257,13 +266,33 @@ public abstract class Criterion {
    *
    * @throws OtmException when a mapper is not found
    */
-  protected static RdfMapper getMapper(ClassMetadata cm, String name) throws OtmException {
-    Mapper      r    = cm.getMapperByName(name);
+  protected static RdfMapper getMapper(ClassMetadata cm, String name)
+                                throws OtmException {
+    Mapper r = cm.getMapperByName(name);
 
     if (!(r instanceof RdfMapper))
       throw new OtmException("'" + name + "' does not exist in " + cm);
 
-   return (RdfMapper)r;
+    return (RdfMapper) r;
   }
 
+  /**
+   * Get criterionId. Id field used for persistence. Ignored otherwise.
+   *
+   * @return criterionId as URI.
+   */
+  public URI getCriterionId() {
+    return criterionId;
+  }
+
+  /**
+   * Set criterionId. Id field used for persistence. Ignored otherwise.
+   *
+   * @param criterionId the value to set.
+   */
+  @Id
+  @GeneratedValue(uriPrefix = NS + "Criterion/Id/")
+  public void setCriterionId(URI criterionId) {
+    this.criterionId = criterionId;
+  }
 }

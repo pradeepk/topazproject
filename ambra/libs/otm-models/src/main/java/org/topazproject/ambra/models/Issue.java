@@ -30,13 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = "plos:Issue", model = "ri")
 public class Issue extends Aggregation {
-
-  /** Display name.  Human friendly. */
-  @Predicate(uri = "plos:displayName")
   private String displayName;
-
-  /** Arbitrary URI to an image */
-  @Predicate(uri = "plos:image")
   private URI image;
 
   /**
@@ -53,6 +47,7 @@ public class Issue extends Aggregation {
    *
    * @param image arbitrary URI to the image, may be null.
    */
+  @Predicate(uri = "plos:image")
   public void setImage(URI image) {
     this.image = image;
   }
@@ -74,6 +69,7 @@ public class Issue extends Aggregation {
    *
    * @param displayName the display name, may not be null.
    */
+  @Predicate(uri = "plos:displayName")
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }

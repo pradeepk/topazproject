@@ -43,15 +43,9 @@ public class Reply extends Annotea {
    * Thread Namespace
    */
   public static final String NS = "http://www.w3.org/2001/03/thread#";
-  @Id
-  @GeneratedValue(uriPrefix = "id:reply/")
   private URI                                                           id;
-  @Predicate(type=PropType.OBJECT)
   private String                                                       root;
-  @Predicate(type=PropType.OBJECT)
   private String                                                       inReplyTo;
-  @Predicate(uri = "annotea:body", cascade = { CascadeType.child }, 
-             fetch = FetchType.eager) // XXX: lazy?
   private ReplyBlob                                                    body;
 
 /**
@@ -83,6 +77,7 @@ public class Reply extends Annotea {
    *
    * @param root the value to set.
    */
+  @Predicate(type=PropType.OBJECT)
   public void setRoot(String root) {
     this.root = root;
   }
@@ -101,13 +96,12 @@ public class Reply extends Annotea {
    *
    * @param inReplyTo the value to set.
    */
+  @Predicate(type=PropType.OBJECT)
   public void setInReplyTo(String inReplyTo) {
     this.inReplyTo = inReplyTo;
   }
 
   /**
-   * 
-  DOCUMENT ME!
    *
    * @return Returns the body.
    */
@@ -116,11 +110,11 @@ public class Reply extends Annotea {
   }
 
   /**
-   * 
-  DOCUMENT ME!
    *
    * @param body The body to set.
    */
+  @Predicate(uri = "annotea:body", cascade = { CascadeType.child }, 
+             fetch = FetchType.eager) // XXX: lazy?
   public void setBody(ReplyBlob body) {
     this.body = body;
   }
@@ -139,6 +133,8 @@ public class Reply extends Annotea {
    *
    * @param id the value to set.
    */
+  @Id
+  @GeneratedValue(uriPrefix = "id:reply/")
   public void setId(URI id) {
     this.id = id;
   }

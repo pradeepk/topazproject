@@ -44,24 +44,11 @@ import org.topazproject.otm.mapping.RdfMapper;
  */
 @Entity(type = Criterion.RDF_TYPE + "/Order", model = Criterion.MODEL)
 public class Order {
-  private static final Log   log    = LogFactory.getLog(Order.class);
-  @Predicate(uri = Criterion.NS + "fieldName")
-  private String             name;
-  @Predicate(uri = Criterion.NS + "order/ascending")
-  private boolean            ascending;
-
-  /**
-   * The id field used for persistence. Ignored otherwise.
-   */
-  @Id
-  @GeneratedValue(uriPrefix = Criterion.RDF_TYPE + "/Order/Id/")
-  public URI orderId;
-
-  /**
-   * De aliased field names for persistence. Ignored otherwise.
-   */
-  @Embedded
-  public DeAliased da = new DeAliased();
+  private static final Log log       = LogFactory.getLog(Order.class);
+  private String           name;
+  private boolean          ascending;
+  private URI              orderId;
+  private DeAliased        da        = new DeAliased();
 
   /**
    * Creates a new Order object.
@@ -94,6 +81,7 @@ public class Order {
    *
    * @param name the field name to set
    */
+  @Predicate(uri = Criterion.NS + "fieldName")
   public void setName(String name) {
     this.name = name;
   }
@@ -130,21 +118,52 @@ public class Order {
   }
 
   /**
-   * Get ascending.
-   *
-   * @return ascending as boolean.
-   */
-  public boolean getAscending() {
-    return ascending;
-  }
-
-  /**
    * Set ascending.
    *
    * @param ascending the value to set.
    */
+  @Predicate(uri = Criterion.NS + "order/ascending")
   public void setAscending(boolean ascending) {
     this.ascending = ascending;
+  }
+
+  /**
+   * Get orderId. Used for persistence. Ignored otherwise.
+   *
+   * @return orderId as URI.
+   */
+  public URI getOrderId() {
+    return orderId;
+  }
+
+  /**
+   * Set orderId. Used for persistence. Ignored otherwise.
+   *
+   * @param orderId the value to set.
+   */
+  @Id
+  @GeneratedValue(uriPrefix = Criterion.RDF_TYPE + "/Order/Id/")
+  public void setOrderId(URI orderId) {
+    this.orderId = orderId;
+  }
+
+  /**
+   * Get de-aliased. Used for persistence. Ignored otherwise.
+   *
+   * @return da as DeAliased.
+   */
+  public DeAliased getDa() {
+    return da;
+  }
+
+  /**
+   * Set de-aliased. Used for persistence. Ignored otherwise.
+   *
+   * @param da the value to set.
+   */
+  @Embedded
+  public void setDa(DeAliased da) {
+    this.da = da;
   }
 
   /*
@@ -167,14 +186,15 @@ public class Order {
     if (!(r instanceof RdfMapper))
       log.warn("onPreInsert: The field '" + name + "' does not exist in " + cm);
     else {
-      RdfMapper      m  = (RdfMapper)r;
-      da.predicateUri   = URI.create(m.getUri());
-      da.inverse        = m.hasInverseUri();
+      RdfMapper m = (RdfMapper) r;
+      da.setPredicateUri(URI.create(m.getUri()));
+      da.setInverse(m.hasInverseUri());
 
       if (m.isAssociation()) {
         ClassMetadata assoc = ses.getSessionFactory().getClassMetadata(m.getAssociatedEntity());
+
         if (assoc != null)
-          da.rdfType        = assoc.getTypes();
+          da.setRdfType(assoc.getTypes());
       }
 
       if (log.isDebugEnabled())
@@ -191,34 +211,60 @@ public class Order {
    */
   public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
     RdfMapper m =
-      (da.predicateUri == null) ? null
-      : cm.getMapperByUri(ses.getSessionFactory(), da.predicateUri.toString(), da.inverse, da.rdfType);
+      (da.getPredicateUri() == null) ? null
+      : cm.getMapperByUri(ses.getSessionFactory(), da.getPredicateUri().toString(), da.isInverse(),
+                          da.getRdfType());
 
     if (m == null)
       log.warn("onPostLoad: " + da + " not found in " + cm);
     else {
       name = m.getName();
 
-     if (log.isDebugEnabled())
+      if (log.isDebugEnabled())
         log.debug("onPostLoad: Converted " + da + " to '" + name + "' in " + cm);
     }
   }
 
   /**
-   * A class to hold the predicate-uri and the mapping direction (inverse or not)
-   * for a field name supplied in creating this Order by clause. This information is
-   * persisted when the Criterion is persisted allowing the re-construction of a
-   * field name on retrieval even when the field name has changed in the java class.
-   * <p/>
-   * This also has the additional advantage that what is stored in the persistence
-   * store has some meaning outside of the java class that this Criteria is tied to.
+   * A class to hold the predicate-uri and the mapping direction (inverse or not) for a field
+   * name supplied in creating this Order by clause. This information is persisted when the
+   * Criterion is persisted allowing the re-construction of a field name on retrieval even when
+   * the field name has changed in the java class.<p>This also has the additional advantage
+   * that what is stored in the persistence store has some meaning outside of the java class that
+   * this Criteria is tied to.</p>
    */
   @UriPrefix(Criterion.NS)
   public static class DeAliased {
-    public URI         predicateUri;
-    public boolean     inverse;
-    @Predicate(type=Predicate.PropType.OBJECT)
-    public Set<String> rdfType = new HashSet<String>();
+    private URI         predicateUri;
+    private boolean     inverse;
+    private Set<String> rdfType = new HashSet<String>();
+
+    @Predicate(type = Predicate.PropType.OBJECT)
+    public void setRdfType(Set<String> rdfType) {
+      this.rdfType = rdfType;
+    }
+
+    public Set<String> getRdfType() {
+      return rdfType;
+    }
+
+    @Predicate
+    public void setPredicateUri(URI predicateUri) {
+      this.predicateUri = predicateUri;
+    }
+
+    public URI getPredicateUri() {
+      return predicateUri;
+    }
+
+    @Predicate
+    public void setInverse(boolean inverse) {
+      this.inverse = inverse;
+    }
+
+    public boolean isInverse() {
+      return inverse;
+    }
 
     public String toString() {
       return "[predicateUri: <" + predicateUri + ">, inverse: " + inverse + "]";

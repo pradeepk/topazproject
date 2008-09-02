@@ -31,7 +31,6 @@ import org.topazproject.otm.annotations.Id;
  */
 @Entity(type = "cc:License", model = "ri")
 public abstract class License implements Serializable {
-  @Id
   private URI   id;
 
   /**
@@ -54,6 +53,7 @@ public abstract class License implements Serializable {
    *
    * @param id the value to set.
    */
+  @Id
   public void setId(URI id) {
     this.id = id;
   }

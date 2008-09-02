@@ -18,7 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.util.List;
@@ -49,13 +48,6 @@ public interface FieldBinder extends Binder {
    * @return the set method or null
    */
   public Method getSetter();
-
-  /**
-   * Gets the underlying field.
-   *
-   * @return the filed
-   */
-  public Field getField();
 
   /**
    * Gets the type of the field.

@@ -18,7 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.util.Collections;
@@ -35,12 +34,11 @@ public class PredicateMapFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new PredicateMapFieldBinder object.
    *
-   * @param field the java class field
-   * @param getter the field get method or null
-   * @param setter the field set method or null
+   * @param getter the field get method
+   * @param setter the field set method
    */
-  public PredicateMapFieldBinder(Field field, Method getter, Method setter) {
-    super(field, getter, setter, null, null);
+  public PredicateMapFieldBinder(Method getter, Method setter) {
+    super(getter, setter, null, null);
   }
 
   /**
@@ -50,7 +48,7 @@ public class PredicateMapFieldBinder extends AbstractFieldBinder {
    *
    * @return the 'raw' value in a list
    *
-   * @throws OtmException if a field's value cannot be retrieved
+   * @throws OtmException if a property's value cannot be retrieved
    */
   public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
@@ -64,16 +62,15 @@ public class PredicateMapFieldBinder extends AbstractFieldBinder {
    * @param o the object
    * @param vals the values to be set 
    *
-   * @throws OtmException if a field's value cannot be set
+   * @throws OtmException if a property's value cannot be set
    */
   public void set(Object o, List vals) throws OtmException {
     int size = vals.size();
 
     if (size > 1)
-      throw new OtmException("Too many values for '" + getField().toGenericString() + "'");
+      throw new OtmException("Too many values for '" + getSetter().toGenericString() + "'");
 
     Object value = (size == 0) ? null : vals.get(0);
     setRawValue(o, value);
   }
-
 }

@@ -34,7 +34,7 @@ import org.topazproject.otm.FetchType;
  * @author Pradeep Krishnan
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
+@Target({ElementType.METHOD})
 public @interface Predicate {
   /**
    * Predicate uri. Defaults to @UriPrefix + field name.

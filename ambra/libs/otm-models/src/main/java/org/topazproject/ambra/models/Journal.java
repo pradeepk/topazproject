@@ -32,20 +32,10 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(type = "plos:Journal", model = "ri")
 public class Journal extends Aggregation {
-  @Predicate(uri = "plos:key")
   private String  key;
-
-  @Predicate(uri = "prism:eIssn")
   private String  eIssn;
-
-  /** DOI of "current issue" */
-  @Predicate(uri = "plos:Journal/currentIssue")
   private URI currentIssue;
-
-  @Predicate(uri = "plos:Journal/volumes")
   private List<URI> volumes = new ArrayList();
-
-  @Predicate(uri = "plos:Journal/image")
   private URI image;
 
   /**
@@ -62,6 +52,7 @@ public class Journal extends Aggregation {
    *
    * @param key the key.
    */
+  @Predicate(uri = "plos:key")
   public void setKey(String key) {
     this.key = key;
   }
@@ -71,7 +62,7 @@ public class Journal extends Aggregation {
    *
    * @return the e-issn.
    */
-  public String getEIssn() {
+  public String geteIssn() {
     return eIssn;
   }
 
@@ -80,7 +71,8 @@ public class Journal extends Aggregation {
    *
    * @param eIssn the e-issn.
    */
-  public void setEIssn(String eIssn) {
+  @Predicate(uri = "prism:eIssn")
+  public void seteIssn(String eIssn) {
     this.eIssn = eIssn;
   }
 
@@ -98,6 +90,7 @@ public class Journal extends Aggregation {
    *
    * @param image the image, may be null.
    */
+  @Predicate(uri = "plos:Journal/image")
   public void setImage(URI image) {
     this.image = image;
   }
@@ -118,6 +111,7 @@ public class Journal extends Aggregation {
    *
    * @param currentIssue the current Issue, may be null.
    */
+  @Predicate(uri = "plos:Journal/currentIssue")
   public void setCurrentIssue(URI currentIssue) {
     this.currentIssue = currentIssue;
   }
@@ -136,6 +130,7 @@ public class Journal extends Aggregation {
    *
    * @param volumes the Volumes for this journal.
    */
+  @Predicate(uri = "plos:Journal/volumes")
   public void setVolumes(List<URI> volumes) {
     this.volumes= volumes;
   }
@@ -148,7 +143,7 @@ public class Journal extends Aggregation {
   @Override
   public String toString() {
     return "Journal: ["
-            + "eIssn: " + getEIssn()
+            + "eIssn: " + geteIssn()
             + ", key: " + getKey()
             + ", image: " + getImage()
             + ", currentIssue: " + getCurrentIssue()

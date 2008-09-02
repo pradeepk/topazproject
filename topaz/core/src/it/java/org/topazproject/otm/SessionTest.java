@@ -334,11 +334,84 @@ public class SessionTest extends AbstractOtmTest {
   @UriPrefix("foo:")
   @Entity(model="ri")
   public static class Serial implements Serializable {
-    @Id
     public String id;
     public String s1;
     public Serial ch;
-    @Predicate(fetch=FetchType.lazy)
     public List<Serial> foo = new ArrayList<Serial>();
+
+    /**
+     * Get id.
+     *
+     * @return id as String.
+     */
+    public String getId() {
+      return id;
+    }
+
+    /**
+     * Set id.
+     *
+     * @param id the value to set.
+     */
+    @Id
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    /**
+     * Get s1.
+     *
+     * @return s1 as String.
+     */
+    public String getS1() {
+      return s1;
+    }
+    /**
+     * Set s1.
+     *
+     * @param s1 the value to set.
+     */
+    @Predicate
+    public void setS1(String s1) {
+      this.s1 = s1;
+    }
+
+    /**
+     * Get ch.
+     *
+     * @return ch as Serial.
+     */
+    public Serial getCh() {
+        return ch;
+    }
+
+    /**
+     * Set ch.
+     *
+     * @param ch the value to set.
+     */
+    @Predicate
+    public void setCh(Serial ch) {
+      this.ch = ch;
+    }
+
+    /**
+     * Get foo.
+     *
+     * @return foo as List.
+     */
+    public List<Serial> getFoo() {
+      return foo;
+    }
+
+    /**
+     * Set foo.
+     *
+     * @param foo the value to set.
+     */
+    @Predicate(fetch=FetchType.lazy)
+    public void setFoo(List<Serial> foo) {
+      this.foo = foo;
+    }
   }
 }

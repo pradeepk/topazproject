@@ -36,9 +36,8 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 public abstract class Junction extends Criterion {
-  @Predicate(collectionType = CollectionType.RDFSEQ)
-  private List<Criterion>  criterions = new ArrayList<Criterion>();
-  private transient String op;
+  private List<Criterion>       criterions = new ArrayList<Criterion>();
+  private transient String      op;
   private transient Set<String> paramNames = new HashSet<String>();
 
   /**
@@ -58,7 +57,7 @@ public abstract class Junction extends Criterion {
    * @return this for expression chaining
    */
   public Junction add(Criterion c) {
-    criterions.add(c);
+    getCriterions().add(c);
     paramNames.addAll(c.getParamNames());
 
     return this;
@@ -78,10 +77,12 @@ public abstract class Junction extends Criterion {
    *
    * @param criterions the criterions to set
    */
+  @Predicate(collectionType = CollectionType.RDFSEQ)
   public void setCriterions(List<Criterion> criterions) {
     this.criterions = criterions;
 
     paramNames.clear();
+
     for (Criterion c : criterions)
       paramNames.addAll(c.getParamNames());
   }
@@ -106,7 +107,7 @@ public abstract class Junction extends Criterion {
    * inherited javadoc
    */
   public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
-                throws OtmException {
+                 throws OtmException {
     String sep   = "(";
     String query = "";
     int    i     = 0;
@@ -122,16 +123,21 @@ public abstract class Junction extends Criterion {
     return query;
   }
 
+  /*
+   * inherited javadoc
+   */
   public String toString() {
-    StringBuilder sb = new StringBuilder(criterions.size() * 20);
+    StringBuilder sb = new StringBuilder(getCriterions().size() * 20);
     sb.append(getClass().getName().replace("org.topazproject.otm.criterion.", "")).append("[");
 
-    for (Criterion c : criterions)
+    for (Criterion c : getCriterions())
       sb.append(c).append(", ");
-    if (criterions.size() > 0)
+
+    if (getCriterions().size() > 0)
       sb.setLength(sb.length() - 2);
 
     sb.append("]");
+
     return sb.toString();
   }
 
@@ -139,7 +145,7 @@ public abstract class Junction extends Criterion {
    * inherited javadoc
    */
   public void onPreInsert(Session ses, DetachedCriteria dc, ClassMetadata cm) {
-    for (Criterion c : criterions)
+    for (Criterion c : getCriterions())
       c.onPreInsert(ses, dc, cm);
   }
 
@@ -147,7 +153,7 @@ public abstract class Junction extends Criterion {
    * inherited javadoc
    */
   public void onPostLoad(Session ses, DetachedCriteria dc, ClassMetadata cm) {
-    for (Criterion c : criterions)
+    for (Criterion c : getCriterions())
       c.onPostLoad(ses, dc, cm);
   }
 }

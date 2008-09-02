@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.annotations.Predicate;
 
 /**
  * A base class for all binary operations involving a field and its value. The value could be a
@@ -75,6 +76,7 @@ public abstract class AbstractBinaryCriterion extends AbstractUnaryCriterion {
    *
    * @param serializedValue the value to set.
    */
+  @Predicate
   public void setSerializedValue(String serializedValue) {
     this.serializedValue = serializedValue;
   }
@@ -129,6 +131,7 @@ public abstract class AbstractBinaryCriterion extends AbstractUnaryCriterion {
    *
    * @param parameter the value to set.
    */
+  @Predicate
   public void setParameter(Parameter parameter) {
     this.parameter   = parameter;
     this.value       = parameter;

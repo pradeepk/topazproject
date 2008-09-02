@@ -18,7 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import java.util.List;
@@ -27,14 +26,14 @@ import java.util.Set;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.EmbeddedBinder;
+import org.topazproject.otm.mapping.Mapper;
 
 /**
- * FieldBinder for an embedded class field. The {@link #get} and {@link #set} methods are 
- * meaningless and hence this loader is used only by its field loaders to get/set the 
- * parent object's field.
+ * FieldBinder for an embedded class field. The {@link #get} and {@link #set} methods are
+ * meaningless and hence this loader is used only by its field loaders to get/set the  parent
+ * object's field.
  *
  * @author Pradeep Krishnan
  */
@@ -42,12 +41,11 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements Emb
   /**
    * Creates a new EmbeddedClassFieldBinder object.
    *
-   * @param field the field that is embedding this class
-   * @param getter the get method or null for this embedded class field
-   * @param setter the set method or null for this embedded classs field
+   * @param getter the get method for this embedded class field
+   * @param setter the set method for this embedded classs field
    */
-  public EmbeddedClassFieldBinder(Field field, Method getter, Method setter) {
-    super(field, getter, setter, null, null);
+  public EmbeddedClassFieldBinder(Method getter, Method setter) {
+    super(getter, setter, null, null);
   }
 
   /**
@@ -78,9 +76,9 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements Emb
   /*
    * inherited javadoc
    */
-  public void load(Object root, Object instance, List<String> values, 
-      Map<String, Set<String>> types, Mapper mapper, 
-      Session session) throws OtmException {
+  public void load(Object root, Object instance, List<String> values,
+                   Map<String, Set<String>> types, Mapper mapper, Session session)
+            throws OtmException {
     throw new UnsupportedOperationException("Only raw get/set allowed");
   }
 
@@ -88,7 +86,6 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements Emb
    * inherited javadoc
    */
   public Binder promote(Binder binder) {
-    return new EmbeddedClassMemberFieldBinder(this, (FieldBinder)binder);
+    return new EmbeddedClassMemberFieldBinder(this, (FieldBinder) binder);
   }
-
 }
