@@ -1009,25 +1009,27 @@
             <xsl:when test="collab">
               <xsl:apply-templates select="collab"/>
             </xsl:when>
-          <xsl:otherwise>
-            <xsl:apply-templates select="name/surname"/>
-            <xsl:text> </xsl:text>
-            <xsl:call-template name="makeInitials2">
-              <xsl:with-param name="x"><xsl:value-of select="name/given-names"/></xsl:with-param>
-            </xsl:call-template>
-            <!-- Included missing suffix and made sure it doesn't have a trailing period -->
-            <xsl:if test="string-length(name/suffix) > 0">
+            <xsl:otherwise>
+              <xsl:apply-templates select="name/surname"/>
+              <xsl:if test="name/given-names">
               <xsl:text> </xsl:text>
-              <xsl:choose>
-                <xsl:when test="substring(name/suffix,string-length(name/suffix))='.'">
-                  <xsl:value-of select="substring(name/suffix,1,string-length(name/suffix)-1)"/>
-                </xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="name/suffix"/>
-              </xsl:otherwise>
-              </xsl:choose>
-            </xsl:if>
-          </xsl:otherwise>
+              </xsl:if>
+              <xsl:call-template name="makeInitials2">
+                <xsl:with-param name="x"><xsl:value-of select="name/given-names"/></xsl:with-param>
+              </xsl:call-template>
+              <!-- Included missing suffix and made sure it doesn't have a trailing period -->
+              <xsl:if test="string-length(name/suffix) > 0">
+                <xsl:text> </xsl:text>
+                <xsl:choose>
+                  <xsl:when test="substring(name/suffix,string-length(name/suffix))='.'">
+                    <xsl:value-of select="substring(name/suffix,1,string-length(name/suffix)-1)"/>
+                  </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="name/suffix"/>
+                </xsl:otherwise>
+                </xsl:choose>
+              </xsl:if>
+            </xsl:otherwise>
           </xsl:choose>
           <xsl:if test="position() != last()">
             <xsl:text>, </xsl:text>
