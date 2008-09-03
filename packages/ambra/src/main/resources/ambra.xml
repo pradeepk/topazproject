@@ -168,7 +168,7 @@
       <crossref>
         <plos>
           <doiurl>
-            http://${ambra.network.hosts.default}:${ambra.network.ports.default}/doi-resolver/
+            http://${ambra.network.hosts.default}:${ambra.network.ports.default}/ambra-doi-resolver/
           </doiurl>
           <!-- email address to send info to -->
           <email>webmaster@example.org</email>
