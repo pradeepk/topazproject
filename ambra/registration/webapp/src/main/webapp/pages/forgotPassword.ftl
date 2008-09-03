@@ -39,7 +39,7 @@
 	</@s.form>
 
 	<ul>
-	  <li>Already registered? <a href="${ambraUrl}${ambraContext}/profile">Login</a>.</li>
+	  <li>Already registered? <a href="${ambraUrl}/cas/login">Login</a>.</li>
     <li><a href="${context}/register.action">Register for a New Account</a></li>
 	  <li><a href="${context}/resendRegistration.action" title="Click here if you need to confirm your e-mail address">Resend e-mail address confirmation</a></li>
 	</ul>
