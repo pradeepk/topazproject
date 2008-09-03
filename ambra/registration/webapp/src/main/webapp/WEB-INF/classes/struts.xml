@@ -74,6 +74,10 @@
         <result>/pages/home.ftl</result>
       </action>
 
+      <action name="help">
+        <result>/pages/help.ftl</result>
+      </action>
+
       <action name="register">
         <result>/pages/registration.ftl</result>
       </action>
