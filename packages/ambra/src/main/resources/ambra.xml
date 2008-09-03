@@ -135,9 +135,9 @@
           <!-- custom element namespace -->
           <namespace>http://www.plos.org/atom/ns#plos</namespace>
         </extended>
-        <!-- Path to rss feeds after journal context -->
+        <!-- Path to feeds after journal context -->
         <basePath>/article/</basePath>
-        <!-- Default rss feed if none other specified -->
+        <!-- Default feed if none other specified -->
         <defaultFile>feed</defaultFile>
         <!-- File prefix for a specific category -->
         <categoryPrefix>feed?category=</categoryPrefix>
