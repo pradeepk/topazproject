@@ -442,10 +442,22 @@
         <page>
           <name>/user/alerts.ftl</name>
           <css>
-            <file>/css/user_screen.css</file>
-            <file>/css/user_iepc.css</file>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
+            <file>/css/forms.css</file>
+          </css>
+          <javascript>
+            <file>/javascript/dojo/dojo/dojo.js</file>
+            <file>/javascript/dojo/dojo/ambra.js</file>
+            <file>/javascript/init_global.js</file>
+          </javascript>
+        </page>
+        <page>
+          <name>/user/user.ftl</name>
+          <css>
+            <file>/css/screen.css</file>
+            <file>/css/iepc.css</file>
             <file>/css/user_forms.css</file>
-            <file>/css/static.css</file>
           </css>
           <javascript>
             <file>/javascript/dojo/dojo/dojo.js</file>
