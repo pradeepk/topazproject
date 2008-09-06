@@ -183,11 +183,12 @@ public class ArticleOtmService {
    * @param ascending  controls the sort order (by date).
    * @param maxResults the maximum number of results to return, or 0 for no limit
    * @return the (possibly empty) list of article ids.
+   * @throws ParseException if any of the dates could not be parsed
    */
   @Transactional(readOnly = true)
   public List<String> getArticleIds(String startDate, String endDate, String[] categories,
                                     String[] authors, int[] states, boolean ascending,
-                                    int maxResults) {
+                                    int maxResults) throws ParseException {
     StringBuilder qry = new StringBuilder();
     qry.append("select art.id id, d from Article art where ");
     qry.append("d := art.dublinCore.date and ");
@@ -234,9 +235,9 @@ public class ArticleOtmService {
     // create the query, applying parameters
     Query q = session.createQuery(qry.toString());
     if (startDate != null)
-      q.setParameter("sd", startDate);
+      q.setParameter("sd", parseDateParam(startDate));
     if (endDate != null)
-      q.setParameter("ed", endDate);
+      q.setParameter("ed", parseDateParam(endDate));
     for (int idx = 0; states != null && idx < states.length; idx++)
       q.setParameter("st" + idx, states[idx]);
 
@@ -276,11 +277,12 @@ public class ArticleOtmService {
    * @param ascending  controls the sort order (by date).
    * @param maxResults the maximum number of results to return, or 0 for no limit
    * @return the (possibly empty) list of articles.
+   * @throws ParseException if any of the dates could not be parsed
    */
   @Transactional(readOnly = true)
   public List<Article> getArticles(String startDate, String endDate, String[] categories,
                                    String[] authors, int[] states, boolean ascending,
-                                   int maxResults) {
+                                   int maxResults) throws ParseException {
     List<String> articleIds =
         getArticleIds(startDate, endDate, categories, authors, states, ascending, maxResults);
 
@@ -289,6 +291,45 @@ public class ArticleOtmService {
       articleList.add(session.get(Article.class, id));
 
     return articleList;
+  }
+
+  /**
+   * Convert a date passed in as a string to a Date object. Support both string representations
+   * of the Date object and iso8601 formatted dates.
+   *
+   * @param date the string to convert to a Date object
+   * @return a date object (or null if date is null)
+   * @throws ParseException if unable to parse date
+   */
+  private static Date parseDateParam(String date) throws ParseException {
+    if (date == null)
+      return null;
+    try {
+      return new Date(date);
+    } catch (IllegalArgumentException iae) {
+      if (log.isDebugEnabled())
+        log.debug("failed to parse date '" + date + "' use Date - trying iso8601 format", iae);
+      return parseDate(date);
+    }
+  }
+
+  /**
+   * Parse an xsd date into a java Date object.
+   *
+   * @param iso8601date is the date string to parse.
+   * @return a java Date object.
+   * @throws ParseException if there is a problem parsing the string
+   */
+  private static Date parseDate(String iso8601date) throws ParseException {
+    // Obvious formats:
+    final String[] defaultFormats = new String [] {
+      "yyyy-MM-dd", "y-M-d", "y-M-d'T'H:m:s", "y-M-d'T'H:m:s.S",
+      "y-M-d'T'H:m:s.Sz", "y-M-d'T'H:m:sz" };
+
+    // XXX: Deal with ' ' instead of 'T'
+    // XXX: Deal with timezone in iso8601 format (not java's idea)
+
+    return DateUtils.parseDate(iso8601date, defaultFormats);
   }
 
   /**

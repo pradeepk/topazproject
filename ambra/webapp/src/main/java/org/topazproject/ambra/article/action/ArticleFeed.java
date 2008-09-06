@@ -21,6 +21,7 @@ package org.topazproject.ambra.article.action;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -283,7 +284,9 @@ public class ArticleFeed extends BaseActionSupport {
       maxResults = 30;  // default
     }
 
-    List<Article> articles = articleOtmService.getArticles(
+    List<Article> articles = null;
+    try {
+      articles = articleOtmService.getArticles(
         startDate,             // start date
         endDate,               // end date
         categoriesList.toArray(new String[categoriesList.size()]),  // categories
@@ -291,6 +294,9 @@ public class ArticleFeed extends BaseActionSupport {
         Article.ACTIVE_STATES, // states
         false,                 // sort by descending date
         maxResults);           // max results
+    } catch (ParseException ex) {
+      throw new ApplicationException(ex);
+    }
 
     if (log.isDebugEnabled()) {
       log.debug("feed query returned " + articles.size() + " articles");
