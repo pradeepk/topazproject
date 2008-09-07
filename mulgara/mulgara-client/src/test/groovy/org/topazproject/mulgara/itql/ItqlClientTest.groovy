@@ -110,16 +110,14 @@ public class ItqlClientTest extends GroovyTestCase {
     }
 
     // test literal language-tags
-    /* not supported by mulgara (yet)
     model = "<local:///test1#m1>";
     doCommands(itql, model) { checker ->
       itql.doUpdate("insert <foo:one> <bar:one> '45'@fr into ${model};");
       List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
-        row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45', lang:'en') }
+        row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45', lang:'fr') }
       }
     }
-    */
     itql.close();
 
     // test transactions
