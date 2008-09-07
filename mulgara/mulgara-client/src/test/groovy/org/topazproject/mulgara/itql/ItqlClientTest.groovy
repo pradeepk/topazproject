@@ -100,10 +100,12 @@ public class ItqlClientTest extends GroovyTestCase {
     // test literal datatypes
     model = "<local:///test1#m1>";
     doCommands(itql, model) { checker ->
-      itql.doUpdate("insert <foo:one> <bar:one> '45'^^<xsd:int> into ${model};");
+      itql.doUpdate(
+          "insert <foo:one> <bar:one> '45'^^<http://www.w3.org/2001/XMLSchema#int> into ${model};");
       List ans = itql.doQuery("select \$s \$p \$o from ${model} where \$s \$p \$o;")
       checker.verify(ans, variables:['s', 'p', 'o']) {
-        row { uri ('well:/blow/me/down#one'); uri('bar:one'); literal ('45', dt:'xsd:int') }
+        row { uri ('well:/blow/me/down#one'); uri('bar:one');
+              literal ('45', dt:'http://www.w3.org/2001/XMLSchema#int') }
       }
     }
 
