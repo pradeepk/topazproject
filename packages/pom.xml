@@ -110,13 +110,19 @@
           </plugin>
 
           <plugin>
-            <groupId>org.topazproject.plugins</groupId>
-            <artifactId>properties-plugin</artifactId>
+            <groupId>org.codehaus.groovy.maven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
             <executions>
               <execution>
+                <phase>validate</phase>
                 <goals>
-                  <goal>set-properties</goal>   <!-- set base-version property -->
+                  <goal>execute</goal>
                 </goals>
+                <configuration>
+                  <source>
+                    project.properties['base-version'] = project.version.replaceAll(/-.*/, '')
+                  </source>
+                </configuration>
               </execution>
             </executions>
           </plugin>
