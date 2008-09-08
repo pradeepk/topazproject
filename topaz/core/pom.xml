@@ -122,6 +122,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>antlr-maven-plugin</artifactId>
+        <version>2.1</version>
         <configuration>
           <grammars>query.g, predicates.g, param_resolver.g, itql_constr.g, itql_redux.g, itql_filter.g, itql_writer.g, to_criteria.g</grammars>
         </configuration>
