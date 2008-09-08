@@ -20,7 +20,7 @@
 package org.topazproject.plugins.dependencies;
 
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.groovy.GroovyMojo;
+import org.codehaus.groovy.maven.mojo.GroovyMojo;
 
 /**
  * Build our mulgara jar. This first adds any build classes (including resources), then adds

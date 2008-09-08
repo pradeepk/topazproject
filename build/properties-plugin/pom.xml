@@ -16,16 +16,16 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.mojo.groovy</groupId>
-      <artifactId>groovy-mojo-support</artifactId>
+      <groupId>org.codehaus.groovy.maven</groupId>
+      <artifactId>gmaven-mojo</artifactId>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo.groovy</groupId>
-        <artifactId>groovy-maven-plugin</artifactId>
+        <groupId>org.codehaus.groovy.maven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

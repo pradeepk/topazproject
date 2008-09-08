@@ -19,7 +19,7 @@
 
 package org.topazproject.plugins.it;
 
-import org.codehaus.mojo.groovy.GroovyMojo;
+import org.codehaus.groovy.maven.mojo.GroovyMojo;
 
 /**
  * Dummy to trigger running of the integration tests via a forked lifecycle.

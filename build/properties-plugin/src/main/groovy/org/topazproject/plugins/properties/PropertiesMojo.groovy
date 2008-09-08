@@ -20,7 +20,7 @@
 package org.topazproject.plugins.properties;
 
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.groovy.GroovyMojo;
+import org.codehaus.groovy.maven.mojo.GroovyMojo;
 
 /**
  * Compute and set some properties.

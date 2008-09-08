@@ -20,7 +20,7 @@
 package org.topazproject.plugins.it;
 
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.groovy.GroovyMojo;
+import org.codehaus.groovy.maven.mojo.GroovyMojo;
 
 /**
  * Set a property at the beginning of a integration-test run to indicate this is an

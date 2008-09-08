@@ -21,7 +21,7 @@ package org.topazproject.plugins.it;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.groovy.GroovyMojo;
+import org.codehaus.groovy.maven.mojo.GroovyMojo;
 
 /**
  * Set up the integration test sources.
