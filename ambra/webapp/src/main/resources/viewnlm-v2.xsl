@@ -1962,7 +1962,6 @@
     </xsl:choose>
   </xsl:for-each>
   </p>
-  <xsl:apply-templates select="caption/p"/>
 </xsl:template>
 
 
