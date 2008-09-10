@@ -47,7 +47,7 @@
 
     <#include "templates/messages.ftl">
 
-    <h2>${journal.key} (${journal.getEIssn()!""})</h2>
+    <h2>${journal.key} (${journal.geteIssn()!""})</h2>
 
     <!-- create a Volume -->
     <fieldset>

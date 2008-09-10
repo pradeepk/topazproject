@@ -32,7 +32,7 @@
       <#assign publisher="Published in <em>" + jourAnchor + "PLoS Clinical Trials</a></em>" />
     </#if>
   <#else>
-    <#if (articleInfo.EIssn = jour.EIssn) && (jour.key != journalContext) >
+    <#if (articleInfo.eIssn = jour.eIssn) && (jour.key != journalContext) >
       <#assign publisher = "Published in <em><a href=\"" + freemarker_config.getJournalUrl(jour.key)
                            + "\">"+ jour.dublinCore.title + "</a></em>" />
       <#break/>

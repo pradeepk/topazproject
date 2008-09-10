@@ -31,10 +31,10 @@
 
     <#include "templates/messages.ftl">
 
-    <h2>${journal.key} (${journal.eissn!""})</h2>
+    <h2>${journal.key} (${journal.eIssn!""})</h2>
 
     <@s.url id="manageVolumesIssues" namespace="/admin" action="manageVolumesIssues"
-      journalKey="${journal.key}" journalEIssn="${journal.eissn}"/>
+      journalKey="${journal.key}" journalEIssn="${journal.eIssn}"/>
     <@s.a href="${manageVolumesIssues}">Manage Volumes and Issues</@s.a><br />
     <br />
     <!-- TODO: display rules in a meaningful way  -->

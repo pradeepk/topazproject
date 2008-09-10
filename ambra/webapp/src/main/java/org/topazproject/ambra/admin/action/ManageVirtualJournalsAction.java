@@ -56,10 +56,10 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
     public void setKey(String key) {
       this.key = key;
     }
-    public String getEissn() {
+    public String geteIssn() {
       return eissn;
     }
-    public void setEissn(String eissn) {
+    public void seteIssn(String eissn) {
       this.eissn = eissn;
     }
     public String getSmartCollectionRulesDescriptor() {
@@ -209,7 +209,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
     journalInfo = new JournalInfo();
 
     journalInfo.setKey(journal.getKey());
-    journalInfo.setEissn(journal.geteIssn());
+    journalInfo.seteIssn(journal.geteIssn());
     journalInfo.setCurrentIssue(journal.getCurrentIssue() == null ? null : journal.getCurrentIssue().toString());
     journalInfo.setImage(journal.getImage() == null ? null : journal.getImage().toString());
 

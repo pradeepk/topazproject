@@ -120,7 +120,7 @@ public class JournalKeyService {
   }
 
   /**
-   * Get the current JournalInfo object. 
+   * Get the current Journal object. 
    *
    * @param session the otm session to use
    * @return the journal, or null if none found.
