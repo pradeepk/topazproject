@@ -171,7 +171,7 @@
             http://${ambra.network.hosts.default}:${ambra.network.ports.default}/ambra-doi-resolver/
           </doiurl>
           <!-- email address to send info to -->
-          <email>webmaster@example.org</email>
+          <email>plosdoi@plos.org</email>
         </plos>
         <!-- crossref login -->
         <login>crossref-username</login>
@@ -272,6 +272,10 @@
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Perspective</typeUri>
         <typeHeading>Perspective</typeHeading>
+      </articleType>
+      <articleType>
+        <typeUri>http://rdf.plos.org/RDF/articleType/Historical%20and%20Philosophical%20Perspectives</typeUri>
+        <typeHeading>Historical and Philosophical Perspectives</typeHeading>
       </articleType>
       <articleType>
         <typeUri>http://rdf.plos.org/RDF/articleType/Book%20Review</typeUri>
