@@ -36,21 +36,21 @@ dojo.addOnLoad( function() {
       tabKey :"recentContent",
       title :"Recently Published",
       className :"published",
-      urlLoad :"/article/recentArticles.action",
+      urlLoad :"/recentArticles.action",
       urlSave :""
     };
     tabsListMap[tabsListMap.length] = {
       tabKey :"featuredDiscussions",
       title :"Featured Discussions",
       className :"annotated",
-      urlLoad :"/article/mostCommented.action",
+      urlLoad :"/mostCommented.action",
       urlSave :""
     };
     tabsListMap[tabsListMap.length] = {
       tabKey :"mostViewed",
       title :"Most Viewed",
       className :"viewed",
-      urlLoad :"/article/mostViewed.action",
+      urlLoad :"/mostViewed.action",
       urlSave :""
     };
 
