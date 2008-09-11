@@ -34,7 +34,7 @@ dojo.addOnLoad( function() {
     tabsListMap = [];
     tabsListMap[tabsListMap.length] = {
       tabKey :"recentContent",
-      title :"Recentl Research",
+      title :"Recent Research",
       className :"published",
       urlLoad :"/recentArticles.action",
       urlSave :""
