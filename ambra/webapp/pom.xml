@@ -392,26 +392,6 @@
               <includes>dojo/dojo/**</includes>
             </configuration>
           </execution>
-            <execution>
-              <id>unpack dojo js to webapps source</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>unpack</goal>
-              </goals>
-              <configuration>
-                <artifactItems>
-                  <artifactItem>
-                    <groupId>org.topazproject</groupId>
-                    <artifactId>ambra-js</artifactId>
-                    <version>${pom.parent.version}</version>
-                    <type>zip</type>
-                    <classifier>js</classifier>
-                    <outputDirectory>${basedir}/src/main/webapp/javascript</outputDirectory>
-                  </artifactItem>
-                </artifactItems>
-                <includes>dojo/dojo/**</includes>
-              </configuration>
-            </execution>
           <execution>
             <id>unpack dojo css</id>
             <phase>generate-sources</phase>
@@ -433,27 +413,6 @@
               <excludes>**/dijit.css</excludes>
             </configuration>
           </execution>
-            <execution>
-              <id>unpack dojo css to webapps source</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>unpack</goal>
-              </goals>
-              <configuration>
-                <artifactItems>
-                  <artifactItem>
-                    <groupId>org.topazproject</groupId>
-                    <artifactId>ambra-js</artifactId>
-                    <version>${pom.parent.version}</version>
-                    <type>zip</type>
-                    <classifier>js</classifier>
-                    <outputDirectory>${basedir}/src/main/webapp/css</outputDirectory>
-                  </artifactItem>
-                </artifactItems>
-                <includes>**/themes/**</includes>
-                <excludes>**/dijit.css</excludes>
-              </configuration>
-            </execution>
         </executions>
       </plugin>
     </plugins>
