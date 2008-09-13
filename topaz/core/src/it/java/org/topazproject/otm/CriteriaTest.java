@@ -944,7 +944,7 @@ public class CriteriaTest extends AbstractOtmTest {
      *
      * @param ann1 the value to set.
      */
-    @Predicate(inverse = true)
+    @Predicate(inverse = Predicate.BT.TRUE)
     public void setAnnR(Annotation ann1) {
       this.annR = annR;
     }

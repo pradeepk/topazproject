@@ -169,7 +169,7 @@ public class UserAccount implements Serializable {
    *
    * @param profile the profile.
    */
-  @Predicate(uri = "foaf:holdsAccount", inverse = true, model="profiles",
+  @Predicate(uri = "foaf:holdsAccount", inverse = Predicate.BT.TRUE, model="profiles",
              cascade = {CascadeType.child})
   public void setProfile(UserProfile profile) {
     this.profile = profile;

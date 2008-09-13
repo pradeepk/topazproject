@@ -68,7 +68,7 @@ public class UserProfileInfo implements Serializable {
    *
    * @param realName the value to set.
    */
-  @Predicate(uri = "foaf:name")
+  @Predicate(ref="FoafPerson:realName")
   public void setRealName(String realName) {
     this.realName = realName;
   }

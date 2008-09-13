@@ -128,7 +128,7 @@ public abstract class Annotation extends Annotea {
    *
    * @param replies DOCUMENT ME!
    */
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true, notOwned = true, 
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse = Predicate.BT.TRUE, notOwned = Predicate.BT.TRUE, 
              cascade={CascadeType.child})
   public void setReplies(List<ReplyThread> replies) {
     this.replies = replies;

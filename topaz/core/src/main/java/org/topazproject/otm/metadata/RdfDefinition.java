@@ -36,6 +36,10 @@ import org.topazproject.otm.id.IdentifierGenerator;
  * @author Pradeep Krishnan
  */
 public class RdfDefinition extends PropertyDefinition {
+  /**
+   * To specify un-typed literal fields in configuration only.
+   */
+  public static final String UNTYPED = "__untyped__";
   private String              uri;
   private Boolean             inverse;
   private Boolean             objectProperty;
@@ -72,6 +76,17 @@ public class RdfDefinition extends PropertyDefinition {
                        IdentifierGenerator generator, CascadeType[] cascade, FetchType fetchType,
                        String associatedEntity, Boolean objectProperty) {
     super(name, reference);
+
+    // Normalize undefines
+    if (colType == CollectionType.UNDEFINED)
+      colType = (reference == null) ? CollectionType.PREDICATE : null;
+
+    if ((cascade != null) && (cascade.length == 1) && (cascade[0] == CascadeType.undefined))
+      cascade = (reference == null) ? new CascadeType[] { CascadeType.peer } : null;
+
+    if (fetchType == FetchType.undefined)
+      fetchType = (reference == null) ? FetchType.lazy : null;
+
     this.uri                = uri;
     this.dataType           = dataType;
     this.inverse            = inverse;
@@ -140,6 +155,12 @@ public class RdfDefinition extends PropertyDefinition {
       fetchType          = (fetchType == null) ? ref.fetchType : fetchType;
     }
 
+    if (objectProperty == null)
+      objectProperty = (associatedEntity != null) || inverse;
+
+    if (objectProperty)
+      dataType = null;
+
     // validate stuff
 
     /* Disabled till we split the resolve() as a second pass
@@ -170,8 +191,9 @@ public class RdfDefinition extends PropertyDefinition {
    */
   public boolean refersSameRange(RdfDefinition o) {
     return same(dataType, o.dataType) && same(colType, o.colType)
-            && same(objectProperty, o.objectProperty)
-            && same(associatedEntity, o.associatedEntity);
+            && same(objectProperty, o.objectProperty);
+     // TODO: Add equivalence comparison on associated entities rather than name compare
+     //       && same(associatedEntity, o.associatedEntity);
   }
 
   private boolean same(Object o1, Object o2) {

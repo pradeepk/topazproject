@@ -30,7 +30,7 @@ import java.util.Set;
 
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.metadata.RdfDefinition;
 
 /**
  * A factory for creating serializers for basic java types.
@@ -38,6 +38,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 public class SerializerFactory {
+  private static final String UNTYPED = RdfDefinition.UNTYPED;
   private Map<Class, Map<String, Serializer>> serializers;
   private SessionFactory                      sf;
   private static Map<Class, String>           typeMap = new HashMap<Class, String>();
@@ -192,7 +193,7 @@ public class SerializerFactory {
   public boolean mustSerialize(Class clazz) {
     // XXX: may be the apps would like to control this. 
     // XXX: for now piggy-back on the typeMap
-    return typeMap.containsKey(clazz);
+    return typeMap.containsKey(clazz) || Enum.class.isAssignableFrom(clazz);
   }
 
   /**
@@ -211,13 +212,13 @@ public class SerializerFactory {
    *
    * @param <T> the java type of the class
    * @param clazz the class
-   * @param dataType the data type
+   * @param dataType the data type or null for untyped
    *
    * @return a serializer or null
    */
   public <T> Serializer<T> getSerializer(Class<T> clazz, String dataType) {
     if (dataType == null)
-      dataType = Predicate.UNTYPED;
+      dataType = UNTYPED;
 
     Map<String, Serializer> m = serializers.get(clazz);
 
@@ -250,7 +251,7 @@ public class SerializerFactory {
       supers.add(clazz);
 
     if (dataType == null)
-      dataType = Predicate.UNTYPED;
+      dataType = UNTYPED;
 
     Map<String, Serializer> m = serializers.get(clazz);
 

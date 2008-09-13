@@ -259,8 +259,8 @@ public class AnnotationClassMetaFactory {
       // XXX: This API hasn't changed. We should be doing two passes.
       //      One for definition and one for Binder. Till then
       //      references are resolved right here.
-
       d.resolveReference(sf);
+
       FieldBinder b = fi.getBinder(sf, d);
       bin.addAndBindProperty(d.getName(), EntityMode.POJO, b);
     }
@@ -457,70 +457,82 @@ public class AnnotationClassMetaFactory {
     public RdfDefinition getRdfDefinition(SessionFactory sf, String ns, Predicate rdf,
                                           IdentifierGenerator generator)
                                    throws OtmException {
+      String ref = ((rdf != null) && !"".equals(rdf.ref())) ? rdf.ref() : null;
       String uri =
         ((rdf != null) && !"".equals(rdf.uri())) ? sf.expandAlias(rdf.uri())
-        : ((ns != null) ? (ns + property.getName()) : null);
+        : (((ref == null) && (ns != null)) ? (ns + property.getName()) : null);
 
-      if (uri == null)
+      if ((uri == null) && (ref == null))
         throw new OtmException("Missing attribute 'uri' in @Predicate for " + this);
 
-      String dt =
-        ((rdf == null) || "".equals(rdf.dataType()))
-        ? sf.getSerializerFactory().getDefaultDataType(type) : sf.expandAlias(rdf.dataType());
+      Boolean inverse        =
+        getBooleanProperty(((rdf != null) ? rdf.inverse() : null), ref, Boolean.FALSE);
+      Boolean notOwned       =
+        getBooleanProperty(((rdf != null) ? rdf.notOwned() : null), ref, Boolean.FALSE);
+      Boolean owned          = (notOwned == null) ? null : (!notOwned);
 
-      if (Predicate.UNTYPED.equals(dt))
-        dt = null;
+      String  dt             =
+        ((rdf != null) && !"".equals(rdf.dataType())) ? sf.expandAlias(rdf.dataType())
+        : ((ref != null) ? null : sf.getSerializerFactory().getDefaultDataType(type));
 
-      Serializer serializer = sf.getSerializerFactory().getSerializer(type, dt);
-
-      if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
-        throw new OtmException("No serializer found for '" + type + "' with dataType '" + dt
-                               + "' for " + this);
-
-      boolean inverse = (rdf != null) && rdf.inverse();
-      String  model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
-
-      String  assoc   = (serializer == null) ? getEntityName(type) : null;
-
-      if (inverse && (model == null) && (serializer == null))
-        model = getModel(type);
-
-      boolean        notOwned       = (rdf != null) && rdf.notOwned();
-
-      CollectionType mt             = getColType(rdf);
-      CascadeType[]  ct             =
-        (rdf != null) ? rdf.cascade() : new CascadeType[] { CascadeType.peer };
-      FetchType      ft             = (rdf != null) ? rdf.fetch() : FetchType.lazy;
-
-      boolean        objectProperty = false;
+      String  assoc          =
+        sf.getSerializerFactory().mustSerialize(type) ? null : getEntityName(type);
+      Boolean objectProperty = null;
 
       if ((rdf == null) || PropType.UNDEFINED.equals(rdf.type())) {
-        boolean declaredAsUri =
-          URI.class.isAssignableFrom(type) || URL.class.isAssignableFrom(type);
-        objectProperty = (serializer == null) || inverse || declaredAsUri;
+        if ((ref == null) && (URI.class.isAssignableFrom(type) || URL.class.isAssignableFrom(type)))
+          objectProperty = Boolean.TRUE;
       } else if (PropType.OBJECT.equals(rdf.type())) {
         if (!"".equals(rdf.dataType()))
           throw new OtmException("Datatype cannot be specified for an object-Property " + this);
 
-        objectProperty = true;
+        objectProperty = Boolean.TRUE;
       } else if (PropType.DATA.equals(rdf.type())) {
-        if (serializer == null)
-          throw new OtmException("No serializer found for '" + type + "' with dataType '" + dt
-                                 + "' for a data-property " + this);
+        assoc = null;
 
-        if (inverse)
+        if ((inverse != null) && (inverse == Boolean.TRUE))
           throw new OtmException("Inverse mapping cannot be specified for a data-property " + this);
+
+        objectProperty   = Boolean.FALSE;
+        inverse          = Boolean.FALSE;
       }
 
-      if (serializer != null)
-        ft = null;
+      String model = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
 
-      return new RdfDefinition(getName(), null, uri, dt, inverse, model, mt, !notOwned, generator, ct,
+      if ((inverse != null) && inverse && (model == null) && (assoc != null))
+        model = getModel(type);
+
+      CollectionType mt = (rdf == null) ? CollectionType.UNDEFINED : rdf.collectionType();
+
+      if (mt == CollectionType.UNDEFINED)
+        mt = (ref == null) ? CollectionType.PREDICATE : null;
+
+      CascadeType[] ct =
+        (rdf != null) ? rdf.cascade() : new CascadeType[] { CascadeType.undefined };
+
+      if ((ct.length == 1) && (ct[0] == CascadeType.undefined))
+        ct = (ref == null) ? new CascadeType[] { CascadeType.peer } : null;
+
+      FetchType ft = (rdf != null) ? rdf.fetch() : FetchType.undefined;
+
+      if (ft == FetchType.undefined)
+        ft = (ref == null) ? FetchType.lazy : null;
+
+      return new RdfDefinition(getName(), ref, uri, dt, inverse, model, mt, owned, generator, ct,
                                ft, assoc, objectProperty);
     }
 
-    private CollectionType getColType(Predicate rdf) throws OtmException {
-      return (rdf == null) ? CollectionType.PREDICATE : rdf.collectionType();
+    private Boolean getBooleanProperty(Predicate.BT raw, String ref, Boolean dflt) {
+      if (raw == Predicate.BT.TRUE)
+        return Boolean.TRUE;
+
+      if (raw == Predicate.BT.FALSE)
+        return Boolean.FALSE;
+
+      if (ref == null)
+        return dflt;
+
+      return null;
     }
 
     public VarDefinition getVarDefinition(SessionFactory sf, Projection proj)
@@ -611,6 +623,10 @@ public class AnnotationClassMetaFactory {
         RdfDefinition rd = (RdfDefinition) pd;
         serializer = (rd.isAssociation()) ? null
                      : sf.getSerializerFactory().getSerializer(type, rd.getDataType());
+
+        if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
+          throw new OtmException("No serializer found for '" + type + "' with dataType '"
+                                 + rd.getDataType() + "' for " + this);
       } else if (pd instanceof VarDefinition) {
         VarDefinition vd = (VarDefinition) pd;
         serializer = (vd.getAssociatedEntity() == null) ? null

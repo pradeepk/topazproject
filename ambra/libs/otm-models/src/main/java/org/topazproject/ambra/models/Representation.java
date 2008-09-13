@@ -97,7 +97,8 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    *
    * @param object the object
    */
-  @Predicate(uri = "topaz:hasRepresentation", inverse=true, notOwned=true)
+  @Predicate(uri = "topaz:hasRepresentation", inverse=Predicate.BT.TRUE, 
+             notOwned=Predicate.BT.TRUE)
   public void setObject(ObjectInfo object) {
     this.object = object;
     modified = true;

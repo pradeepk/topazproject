@@ -24,4 +24,4 @@ package org.topazproject.otm;
  *
  * @author Pradeep Krishnan
  */
-public enum CollectionType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT}
+public enum CollectionType {UNDEFINED, PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT}

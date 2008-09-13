@@ -24,4 +24,4 @@ package org.topazproject.otm;
  *
  * @author Pradeep Krishnan
  */
-public enum FetchType {lazy, eager}
+public enum FetchType {undefined, lazy, eager}

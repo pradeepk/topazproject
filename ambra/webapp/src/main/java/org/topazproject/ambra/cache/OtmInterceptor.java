@@ -32,8 +32,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
-
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
@@ -45,6 +43,7 @@ import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.metadata.Definition;
+import org.topazproject.otm.metadata.RdfDefinition;
 
 /**
  * An interceptor that listens to changes from OTM and maintains an object cache  that acts as
@@ -59,13 +58,6 @@ public class OtmInterceptor implements Interceptor {
   private final Cache          objCache;
   private final Cache          repCache;
   private final JournalService journalService;
-
-  // FIXME: remove once reference annotations are added in OTM
-  private static final Map<String, String> aliases = new HashMap<String, String>();
-  static {
-    aliases.put("CitationInfo:authors", "Citation:authors");
-    aliases.put("UserProfileInfo:realName", "FoafPerson:realName");
-  }
 
   /**
    * Creates a new OtmInterceptor object.
@@ -421,10 +413,16 @@ public class OtmInterceptor implements Interceptor {
     }
 
     private String getName(Definition def, Session sess) {
-      // FIXME: remove once reference annotations are added in OTM
-      String name = def.getName();
-      String alias = aliases.get(name);
-      return (alias != null) ? alias : name;
+      if ((def.getReference() == null) || !(def instanceof RdfDefinition))
+        return def.getName();
+
+      RdfDefinition ref = (RdfDefinition)sess.getSessionFactory().getDefinition(def.getReference());
+
+      if (((RdfDefinition)def).refersSameGraphNodes(ref) 
+          && ((RdfDefinition)def).refersSameRange(ref))
+        return getName(ref, sess);
+
+      return def.getName();
     }
 
     public String toString() {

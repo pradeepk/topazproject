@@ -450,7 +450,7 @@ public class QueryTest extends TestCase {
      *
      * @param replies the value to set.
      */
-    @Predicate(uri = Rdf.topaz + "inReplyTo", inverse=true, notOwned=true)
+    @Predicate(uri = Rdf.topaz + "inReplyTo", inverse=Predicate.BT.TRUE, notOwned=Predicate.BT.TRUE)
     public void setReplies(List<Reply> replies) {
       this.replies = replies;
     }

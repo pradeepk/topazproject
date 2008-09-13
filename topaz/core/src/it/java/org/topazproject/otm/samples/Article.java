@@ -114,7 +114,7 @@ public class Article extends ObjectInfo {
     this.parts = parts;
   }
 
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
+  @Predicate(uri = Annotation.NS + "annotates", inverse=Predicate.BT.TRUE, notOwned=Predicate.BT.TRUE,
       cascade = {CascadeType.child})
   public void setPrivateAnnotations(List<PrivateAnnotation> privateAnnotations) {
     this.privateAnnotations = privateAnnotations;
@@ -124,7 +124,7 @@ public class Article extends ObjectInfo {
     return privateAnnotations;
   }
 
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true,
+  @Predicate(uri = Annotation.NS + "annotates", inverse=Predicate.BT.TRUE, notOwned=Predicate.BT.TRUE,
       fetch=FetchType.eager, cascade = {CascadeType.child})
   public void setPublicAnnotations(List<PublicAnnotation> publicAnnotations) {
     this.publicAnnotations = publicAnnotations;
@@ -138,7 +138,7 @@ public class Article extends ObjectInfo {
     return replies;
   }
 
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse=true, notOwned=true)
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse=Predicate.BT.TRUE, notOwned=Predicate.BT.TRUE)
   public void setReplies(List<ReplyThread> replies) {
     this.replies = replies;
   }

@@ -61,7 +61,7 @@ public class CitationInfo implements Serializable {
     return authors;
   }
 
-  @Predicate(uri = "plos:hasAuthorList", collectionType = CollectionType.RDFSEQ)
+  @Predicate(ref = "Citation:authors")
   public void setAuthors(List<UserProfileInfo> authors) {
     this.authors = authors;
   }

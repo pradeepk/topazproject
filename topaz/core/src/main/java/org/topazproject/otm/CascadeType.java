@@ -28,6 +28,10 @@ import java.util.EnumSet;
  */
 public enum CascadeType {
   /**
+   * CascadeType value is undefined.
+   */
+  undefined,
+  /**
    * Cascades the {@link org.topazproject.otm.Session#saveOrUpdate} to this
    * association. 
    */
