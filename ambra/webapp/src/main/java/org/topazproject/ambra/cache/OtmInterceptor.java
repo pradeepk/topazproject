@@ -45,7 +45,6 @@ import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.metadata.Definition;
-import org.topazproject.otm.metadata.Reference;
 
 /**
  * An interceptor that listens to changes from OTM and maintains an object cache  that acts as
@@ -422,9 +421,6 @@ public class OtmInterceptor implements Interceptor {
     }
 
     private String getName(Definition def, Session sess) {
-      if (def instanceof Reference)
-        return getName(sess.getSessionFactory().getDefinition(((Reference) def).getReferred()), sess);
-
       // FIXME: remove once reference annotations are added in OTM
       String name = def.getName();
       String alias = aliases.get(name);

@@ -77,13 +77,7 @@ public class ViewDefinition extends ClassDefinition {
       if (def == null)
         throw new OtmException("No such property :" + prop);
 
-      while (def instanceof PropertyReferenceDefinition) {
-        String d = ((PropertyReferenceDefinition) def).getReferred();
-        def = sf.getDefinition(d);
-
-        if (def == null)
-          throw new OtmException("No such property :" + d + " referred from " + prop);
-      }
+      def.resolveReference(sf);
 
       if (def instanceof VarDefinition)
         fields.add(new VarMapperImpl((VarDefinition) def, binders));

@@ -30,6 +30,16 @@ public class PropertyDefinition extends Definition {
    * @param name   The name of this definition.
    */
   public PropertyDefinition(String name) {
-    super(name);
+    this(name, null);
+  }
+
+  /**
+   * Creates a new PropertyDefinition object.
+   *
+   * @param name   The name of this definition.
+   * @param reference The definition to refer to resolve undefined attribiutes or null.
+   */
+  public PropertyDefinition(String name, String reference) {
+    super(name, reference);
   }
 }

@@ -18,6 +18,8 @@
  */
 package org.topazproject.otm.mapping;
 
+import java.util.Set;
+
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
@@ -105,7 +107,7 @@ public interface RdfMapper extends Mapper {
    *
    * @return the cascading options.
    */
-  public CascadeType[] getCascade();
+  public Set<CascadeType> getCascade();
 
   /**
    * Tests if an operation is cascaded for this field

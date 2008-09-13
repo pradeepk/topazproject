@@ -18,9 +18,16 @@
  */
 package org.topazproject.otm.metadata;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
@@ -29,40 +36,42 @@ import org.topazproject.otm.id.IdentifierGenerator;
  * @author Pradeep Krishnan
  */
 public class RdfDefinition extends PropertyDefinition {
-  private final String              uri;
-  private final boolean             inverse;
-  private final boolean             objectProperty;
-  private final String              model;
-  private final String              dataType;
-  private final CollectionType      colType;
-  private final boolean             entityOwned;
-  private final boolean             predicateMap;
-  private final CascadeType[]       cascade;
-  private final FetchType           fetchType;
-  private final String              associatedEntity;
-  private final IdentifierGenerator generator;
+  private String              uri;
+  private Boolean             inverse;
+  private Boolean             objectProperty;
+  private String              model;
+  private String              dataType;
+  private CollectionType      colType;
+  private Boolean             entityOwned;
+  private Boolean             predicateMap;
+  private Set<CascadeType>    cascade;
+  private FetchType           fetchType;
+  private String              associatedEntity;
+  private IdentifierGenerator generator;
 
   /**
    * Creates a new RdfDefinition object.
    *
    * @param name   The name of this definition.
-   * @param uri the rdf predicate
-   * @param dataType of literals or null for un-typed
-   * @param inverse if this field is persisted with an inverse predicate
-   * @param model  the model where this field is persisted
-   * @param colType the collection type of this field
-   * @param entityOwned if the triples for this field is owned by the containing entity
-   * @param generator if there is a generator for this field
-   * @param cascade cascade options for this field
-   * @param fetchType fetch type for associations. Must be null otherwise
-   * @param associatedEntity the entity name for associations
-   * @param objectProperty if this is an object property 
+   * @param reference The definition to refer to resolve undefined attribiutes or null.
+   * @param uri the rdf predicate. Null to resolve from reference
+   * @param dataType of literals or null for un-typed or to resolve from reference
+   * @param inverse if this field is persisted with an inverse predicate. Null to resolve from reference
+   * @param model  the model where this field is persisted or null to resolve from reference
+   * @param colType the collection type of this field or null to resolve from reference
+   * @param entityOwned if the triples for this field is owned by the containing entity. 
+   *                    Null to resolve from reference.
+   * @param generator if there is a generator for this field. Null to resolve from reference (if any)
+   * @param cascade cascade options for this field. Null to resolve from reference.
+   * @param fetchType fetch type for associations. Null to resolve from reference.
+   * @param associatedEntity the entity name for associations. Null to resolve from reference.
+   * @param objectProperty if this is an object property. Null to resolve from reference.
    */
-  public RdfDefinition(String name, String uri, String dataType, boolean inverse, String model,
-                       CollectionType colType, boolean entityOwned, IdentifierGenerator generator,
-                       CascadeType[] cascade, FetchType fetchType, String associatedEntity,
-                       boolean objectProperty) {
-    super(name);
+  public RdfDefinition(String name, String reference, String uri, String dataType, Boolean inverse,
+                       String model, CollectionType colType, Boolean entityOwned,
+                       IdentifierGenerator generator, CascadeType[] cascade, FetchType fetchType,
+                       String associatedEntity, Boolean objectProperty) {
+    super(name, reference);
     this.uri                = uri;
     this.dataType           = dataType;
     this.inverse            = inverse;
@@ -70,7 +79,8 @@ public class RdfDefinition extends PropertyDefinition {
     this.colType            = colType;
     this.entityOwned        = entityOwned;
     this.generator          = generator;
-    this.cascade            = cascade;
+    this.cascade            = (cascade == null) ? null
+                              : Collections.unmodifiableSet(new HashSet<CascadeType>(Arrays.asList(cascade)));
     this.fetchType          = fetchType;
     this.associatedEntity   = associatedEntity;
     this.predicateMap       = false;
@@ -97,6 +107,75 @@ public class RdfDefinition extends PropertyDefinition {
     this.associatedEntity   = null;
     this.predicateMap       = true;
     this.objectProperty     = false;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  @Override
+  protected void resolve(SessionFactory sf, Definition def)
+                  throws OtmException {
+    if (def != null) {
+      if (!(def instanceof RdfDefinition))
+        throw new OtmException("Reference '" + def.getName() + "' in '" + getName()
+                               + "' is not an RDF property definition");
+
+      RdfDefinition ref = (RdfDefinition) def;
+
+      if (ref.predicateMap != predicateMap)
+        throw new OtmException("Reference '" + ref.getName() + "' in '" + getName()
+                               + "' cannot be used since there is a mismatch in the predicate-map attribute");
+      assert ref.getName().equals(getReference()); // this should be right. But just in case
+
+      uri                = (uri == null) ? ref.uri : uri;
+      inverse            = (inverse == null) ? ref.inverse : inverse;
+      model              = (model == null) ? ref.model : model;
+      dataType           = (dataType == null) ? ref.dataType : dataType;
+      colType            = (colType == null) ? ref.colType : colType;
+      associatedEntity   = (associatedEntity == null) ? ref.associatedEntity : associatedEntity;
+      objectProperty     = (objectProperty == null) ? ref.objectProperty : objectProperty;
+      entityOwned        = (entityOwned == null) ? ref.entityOwned : entityOwned;
+      generator          = (generator == null) ? ref.generator : generator;
+      cascade            = (cascade == null) ? ref.cascade : cascade;
+      fetchType          = (fetchType == null) ? ref.fetchType : fetchType;
+    }
+
+    // validate stuff
+
+    /* Disabled till we split the resolve() as a second pass
+    if ((associatedEntity != null)
+         && !(sf.getDefinition(associatedEntity) instanceof EntityDefinition))
+      throw new OtmException("Undefined association '" + associatedEntity + "' in '" + getName()
+                             + "'");
+    */
+  }
+
+  /**
+   * Tests if this definition refers to the same set of graph nodes as another.
+   *
+   * @param o the defenition to compare
+   *
+   * @return true if the predicate-uri, the graph and the inverse mapping is the same.
+   */
+  public boolean refersSameGraphNodes(RdfDefinition o) {
+    return same(uri, o.uri) && same(model, o.model) && same(inverse, o.inverse);
+  }
+
+  /**
+   * Tests if this definition has the same rdfs:range as another.
+   *
+   * @param o the definition to compare
+   *
+   * @return true if the rdfs:range matches
+   */
+  public boolean refersSameRange(RdfDefinition o) {
+    return same(dataType, o.dataType) && same(colType, o.colType)
+            && same(objectProperty, o.objectProperty)
+            && same(associatedEntity, o.associatedEntity);
+  }
+
+  private boolean same(Object o1, Object o2) {
+    return (o1 == null) ? (o2 == null) : o1.equals(o2);
   }
 
   /*
@@ -165,7 +244,7 @@ public class RdfDefinition extends PropertyDefinition {
   /*
    * inherited javadoc
    */
-  public CascadeType[] getCascade() {
+  public Set<CascadeType> getCascade() {
     return cascade;
   }
 

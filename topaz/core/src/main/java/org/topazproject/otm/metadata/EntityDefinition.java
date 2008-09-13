@@ -138,15 +138,9 @@ public class EntityDefinition extends ClassDefinition {
       Definition              def     = sf.getDefinition(prop);
 
       if (def == null)
-        throw new OtmException("No such property :" + prop);
+        throw new OtmException("No such property :'" + prop + "' bound to entity '" + getName());
 
-      while (def instanceof PropertyReferenceDefinition) {
-        String d = ((PropertyReferenceDefinition) def).getReferred();
-        def = sf.getDefinition(d);
-
-        if (def == null)
-          throw new OtmException("No such property :" + d + " referred from " + prop);
-      }
+      def.resolveReference(sf);
 
       if (def instanceof RdfDefinition)
         fields.add(new RdfMapperImpl((RdfDefinition) def, binders));

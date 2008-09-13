@@ -19,6 +19,7 @@
 package org.topazproject.otm.mapping;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.CollectionType;
@@ -112,7 +113,7 @@ public class RdfMapperImpl extends AbstractMapper implements RdfMapper {
   /*
    * inherited javadoc
    */
-  public CascadeType[] getCascade() {
+  public Set<CascadeType> getCascade() {
     return getDefinition().getCascade();
   }
 

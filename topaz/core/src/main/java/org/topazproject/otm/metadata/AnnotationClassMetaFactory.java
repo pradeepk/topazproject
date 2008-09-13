@@ -254,9 +254,14 @@ public class AnnotationClassMetaFactory {
         continue;
       }
 
-      FieldBinder b = fi.getBinder(sf, d);
-
       sf.addDefinition(d);
+
+      // XXX: This API hasn't changed. We should be doing two passes.
+      //      One for definition and one for Binder. Till then
+      //      references are resolved right here.
+
+      d.resolveReference(sf);
+      FieldBinder b = fi.getBinder(sf, d);
       bin.addAndBindProperty(d.getName(), EntityMode.POJO, b);
     }
 
@@ -510,7 +515,7 @@ public class AnnotationClassMetaFactory {
       if (serializer != null)
         ft = null;
 
-      return new RdfDefinition(getName(), uri, dt, inverse, model, mt, !notOwned, generator, ct,
+      return new RdfDefinition(getName(), null, uri, dt, inverse, model, mt, !notOwned, generator, ct,
                                ft, assoc, objectProperty);
     }
 
@@ -595,16 +600,6 @@ public class AnnotationClassMetaFactory {
 
     public FieldBinder getBinder(SessionFactory sf, PropertyDefinition pd)
                           throws OtmException {
-      if (pd instanceof Reference) {
-        String     ref = ((Reference) pd).getReferred();
-        Definition d   = sf.getDefinition(ref);
-
-        if (!(d instanceof PropertyDefinition))
-          throw new OtmException("Undefined/Invalid reference '" + ref + "' in '" + this);
-
-        return getBinder(sf, (PropertyDefinition) d);
-      }
-
       if (pd instanceof EmbeddedDefinition)
         return new EmbeddedClassFieldBinder(property.getReadMethod(), property.getWriteMethod());
 
