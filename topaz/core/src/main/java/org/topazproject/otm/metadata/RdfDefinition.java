@@ -58,6 +58,7 @@ public class RdfDefinition extends PropertyDefinition {
    *
    * @param name   The name of this definition.
    * @param reference The definition to refer to resolve undefined attribiutes or null.
+   * @param supersedes The definition that this supersedes or null.
    * @param uri the rdf predicate. Null to resolve from reference
    * @param dataType of literals or null for un-typed or to resolve from reference
    * @param inverse if this field is persisted with an inverse predicate. Null to resolve from reference
@@ -71,11 +72,11 @@ public class RdfDefinition extends PropertyDefinition {
    * @param associatedEntity the entity name for associations. Null to resolve from reference.
    * @param objectProperty if this is an object property. Null to resolve from reference.
    */
-  public RdfDefinition(String name, String reference, String uri, String dataType, Boolean inverse,
-                       String model, CollectionType colType, Boolean entityOwned,
-                       IdentifierGenerator generator, CascadeType[] cascade, FetchType fetchType,
-                       String associatedEntity, Boolean objectProperty) {
-    super(name, reference);
+  public RdfDefinition(String name, String reference, String supersedes, String uri, 
+                       String dataType, Boolean inverse, String model, CollectionType colType,
+                       Boolean entityOwned, IdentifierGenerator generator, CascadeType[] cascade,
+                       FetchType fetchType, String associatedEntity, Boolean objectProperty) {
+    super(name, reference, supersedes);
 
     // Normalize undefines
     if (colType == CollectionType.UNDEFINED)

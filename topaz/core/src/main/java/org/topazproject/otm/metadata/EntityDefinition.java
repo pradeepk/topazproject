@@ -142,9 +142,17 @@ public class EntityDefinition extends ClassDefinition {
 
       def.resolveReference(sf);
 
-      if (def instanceof RdfDefinition)
+      if (def instanceof RdfDefinition) {
+        if (def.getSupersedes() != null) {
+          for (RdfMapper m : fields) {
+            if (def.getSupersedes().equals(m.getDefinition().getName())) {
+              fields.remove(m);
+              break;
+            }
+          }
+        }
         fields.add(new RdfMapperImpl((RdfDefinition) def, binders));
-      else if (def instanceof IdDefinition) {
+      } else if (def instanceof IdDefinition) {
         if (idField != null)
           throw new OtmException("Duplicate Id field " + def.getName() + " in " + ref.getName());
 

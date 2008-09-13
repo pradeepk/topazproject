@@ -30,7 +30,7 @@ public class PropertyDefinition extends Definition {
    * @param name   The name of this definition.
    */
   public PropertyDefinition(String name) {
-    this(name, null);
+    this(name, null, null);
   }
 
   /**
@@ -38,8 +38,9 @@ public class PropertyDefinition extends Definition {
    *
    * @param name   The name of this definition.
    * @param reference The definition to refer to resolve undefined attribiutes or null.
+   * @param supersedes The definition that this supersedes or null.
    */
-  public PropertyDefinition(String name, String reference) {
-    super(name, reference);
+  public PropertyDefinition(String name, String reference, String supersedes) {
+    super(name, reference, supersedes);
   }
 }

@@ -40,6 +40,7 @@ public class Definition {
   private final String ns;
   private final String specific;
   private final String reference;
+  private final String supersedes;
   private State        state = State.UNRESOLVED;
 
   /**
@@ -48,7 +49,7 @@ public class Definition {
    * @param name   The unique name of this definition.
    */
   public Definition(String name) {
-    this(name, null);
+    this(name, null, null);
   }
 
   /**
@@ -56,10 +57,12 @@ public class Definition {
    *
    * @param name   The unique name of this definition.
    * @param reference The definition to refer to resolve undefined attribiutes or null.
+   * @param supersedes The definition that this supersedes or null.
    */
-  public Definition(String name, String reference) {
+  public Definition(String name, String reference, String supersedes) {
     this.name        = name;
     this.reference   = reference;
+    this.supersedes  = supersedes;
 
     String[] sp      = name.split(":", 2);
     specific         = sp[sp.length - 1];
@@ -100,6 +103,15 @@ public class Definition {
    */
   public String getReference() {
     return reference;
+  }
+
+  /**
+   * Gets the superseded definition.
+   *
+   * @return the definition this supersedes or null
+   */
+  public String getSupersedes() {
+    return supersedes;
   }
 
   /**

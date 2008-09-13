@@ -209,7 +209,7 @@ public class FieldDef {
       if (isId)
         m = [new IdMapperImpl(new IdDefinition(dn, idGen), [(EntityMode.POJO) : l])];
       else
-        m = [new RdfMapperImpl(new RdfDefinition(dn, null, pred, dtype, inverse, model, mt, owned, idGen,
+        m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, model, mt, owned, idGen,
 ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
     } else {
       String     collType = colType ? colType : rdf.defColType
@@ -224,7 +224,7 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
       else
         l = new CollectionFieldBinder(get, set, ser, compType);
 
-      m = [new RdfMapperImpl(new RdfDefinition(dn, null, pred, dtype, inverse, model, mt, owned,
+      m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, model, mt, owned,
                              idGen, ct, ft, cm?.getName(),
                   (ser == null) || inverse || "OBJECT".equals(propType)), [(EntityMode.POJO) : l])]
     }
