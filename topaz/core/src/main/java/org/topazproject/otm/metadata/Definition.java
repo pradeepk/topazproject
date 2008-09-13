@@ -89,7 +89,7 @@ public class Definition {
    *
    * @return the specific name
    */
-  public String getNamespaceSpecific() {
+  public String getLocalName() {
     return specific;
   }
 

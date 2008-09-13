@@ -58,7 +58,7 @@ public abstract class AbstractMapper implements Mapper {
    * inherited javadoc
    */
   public String getName() {
-    return getDefinition().getNamespaceSpecific();
+    return getDefinition().getLocalName();
   }
 
   /*
