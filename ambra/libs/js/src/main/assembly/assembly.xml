@@ -26,13 +26,18 @@
   <fileSets>
     <fileSet>
       <directory>target/dojo</directory>
-      <outputDirectory>/dojo</outputDirectory>
+      <outputDirectory>/javascript/dojo</outputDirectory>
       <includes>
         <include>**/dojo/ambra.js*</include> 
         <include>**/dojo/dojo.js*</include> 
         <include>**/dojo/_firebug/**</include> 
         <include>**/dojo/resources/**</include> 
-        <include>**/dijit/themes/dijit.css</include> 
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/dojo</directory>
+      <outputDirectory>/css/dojo</outputDirectory>
+      <includes>
         <include>**/dijit/themes/tundra/**</include> 
       </includes>
     </fileSet>

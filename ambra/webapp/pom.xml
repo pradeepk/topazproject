@@ -388,18 +388,7 @@
                   <version>${pom.parent.version}</version>
                   <type>zip</type>
                   <classifier>js</classifier>
-                  <includes>dojo/dojo/**</includes>
-                  <outputDirectory>${project.build.directory}/ambra/javascript</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.topazproject</groupId>
-                  <artifactId>ambra-js</artifactId>
-                  <version>${pom.parent.version}</version>
-                  <type>zip</type>
-                  <classifier>js</classifier>
-                  <includes>**/themes/**</includes>
-                  <excludes>**/dijit.css</excludes>
-                  <outputDirectory>${project.build.directory}/ambra/css</outputDirectory>
+                  <outputDirectory>${project.build.directory}/ambra</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
