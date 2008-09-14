@@ -353,6 +353,12 @@
           </systemProperties>
           <scanIntervalSeconds>5</scanIntervalSeconds>
           <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
+          <webAppConfig>
+            <contextPath>/ambra-webapp</contextPath>
+            <baseResource implementation="org.mortbay.resource.ResourceCollection">
+              <resourcesAsCSV>${project.build.sourceDirectory}/../webapp,jar:file:${settings.localRepository}/org/topazproject/ambra-js/${pom.parent.version}/ambra-js-${pom.parent.version}-js.zip!/</resourcesAsCSV>
+            </baseResource>
+          </webAppConfig>
         </configuration>
       </plugin>
       <plugin>
