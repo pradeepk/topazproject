@@ -175,7 +175,7 @@
     <constructor-arg index="2" value="${ambra.topaz.blobStore.fedora.password}"/>
   </bean>
   <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore">
-    <constructor-arg index="0" value="${java.io.tmpdir}/blob-store"/>
+    <constructor-arg index="0" value="${ambra.topaz.blobStore.simple.directory}"/>
   </bean>
   <bean id="otmFactory" class="org.topazproject.ambra.configuration.OtmConfiguration">
     <constructor-arg index="0" value="${ambra.topaz.tripleStore.mulgara.itql.uri}" />

@@ -53,6 +53,9 @@
             </annotation>
           </blobTypes>
         </fedora>
+        <simple>
+          <directory>${java.io.tmpdir}/blob-store</directory>
+        </simple>
       </blobStore>
     </topaz>
     
