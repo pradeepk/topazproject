@@ -373,7 +373,7 @@
         <version>2.0</version>
         <executions>
           <execution>
-            <id>unpack dojo js</id>
+            <id>unpack dojo js and css</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>unpack</goal>
@@ -386,31 +386,20 @@
                   <version>${pom.parent.version}</version>
                   <type>zip</type>
                   <classifier>js</classifier>
+                  <includes>dojo/dojo/**</includes>
                   <outputDirectory>${project.build.directory}/ambra/javascript</outputDirectory>
                 </artifactItem>
-              </artifactItems>
-              <includes>dojo/dojo/**</includes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack dojo css</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
                 <artifactItem>
                   <groupId>org.topazproject</groupId>
                   <artifactId>ambra-js</artifactId>
                   <version>${pom.parent.version}</version>
                   <type>zip</type>
                   <classifier>js</classifier>
+                  <includes>**/themes/**</includes>
+                  <excludes>**/dijit.css</excludes>
                   <outputDirectory>${project.build.directory}/ambra/css</outputDirectory>
                 </artifactItem>
               </artifactItems>
-              <includes>**/themes/**</includes>
-              <excludes>**/dijit.css</excludes>
             </configuration>
           </execution>
         </executions>
