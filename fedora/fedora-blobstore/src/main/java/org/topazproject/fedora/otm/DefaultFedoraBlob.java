@@ -118,8 +118,8 @@ public class DefaultFedoraBlob implements FedoraBlob {
               throws OtmException {
     Uploader   upld   = con.getUploader();
     FedoraAPIM apim   = con.getAPIM();
-    String     newPid = pid;
-    String     newDs  = dsId;
+    String[]   newPid = new String[] { pid };
+    String[]   newDs  = new String[] { dsId };
 
     try {
       String ref = upld.upload(blob);
@@ -129,64 +129,15 @@ public class DefaultFedoraBlob implements FedoraBlob {
       while (op != null && maxIter-- > 0) {
         switch (op) {
           case AddObj:
-            try {
-              if (log.isDebugEnabled())
-                log.debug("Ingesting '" + pid + "' with data-stream '" + dsId + "'");
-
-              newPid = apim.ingest(getFoxml(ref), "foxml1.0", "created");
-              op = null;
-            } catch (Exception e) {
-              if (log.isDebugEnabled())
-                log.debug("ingest failed: ", e);
-
-              if (isObjectExistsException(e))
-                op = INGEST_OP.AddDs;
-              else
-                throw e;
-            }
+            op = addObject(apim, ref, newPid);
             break;
 
           case AddDs:
-            try {
-              if (log.isDebugEnabled())
-                log.debug("Adding data-stream '" + dsId + "' for '" + pid + "'");
-
-              newDs = apim.addDatastream(pid, dsId, new String[0], getDatastreamLabel(), false,
-                                         getContentType(), null, ref, "M", "A", "created");
-              op = null;
-            } catch (Exception e) {
-              if (log.isDebugEnabled())
-                log.debug("add datastream failed: ", e);
-
-              if (isNoSuchObjectException(e))
-                op = INGEST_OP.AddObj;
-              else if (isDatastreamExistsException(e))
-                op = INGEST_OP.ModDs;
-              else
-                throw e;
-            }
+            op = addDatastream(apim, ref, newDs);
             break;
 
           case ModDs:
-            try {
-              if (log.isDebugEnabled())
-                log.debug("Modifying data-stream(by reference) '" + dsId + "' for '" + pid + "'");
-
-              apim.modifyDatastreamByReference(pid, dsId, new String[0], getDatastreamLabel(),
-                                               false, getContentType(), null, ref, "A", "updated",
-                                               false);
-              op = null;
-            } catch (Exception e) {
-              if (log.isDebugEnabled())
-                log.debug("ds-modify failed: ", e);
-
-              if (isNoSuchObjectException(e))
-                op = INGEST_OP.AddObj;
-              else if (isNoSuchDatastreamException(e))
-                op = INGEST_OP.AddDs;
-              else
-                throw e;
-            }
+            op = modifyDatastream(apim, ref);
             break;
 
           default:
@@ -205,17 +156,89 @@ public class DefaultFedoraBlob implements FedoraBlob {
       throw new OtmException("Write to Fedora failed", e);
     }
 
-    if (!pid.equals(newPid))
-      throw new OtmException("PID mismatch in ingest. Expecting '" + pid + "', got '" + newPid
+    if (!pid.equals(newPid[0]))
+      throw new OtmException("PID mismatch in ingest. Expecting '" + pid + "', got '" + newPid[0]
                              + "'");
 
-    if (!dsId.equals(newDs))
-      throw new OtmException("DS-ID mismatch in add-DS. Expecting '" + dsId + "', got '" + newDs
+    if (!dsId.equals(newDs[0]))
+      throw new OtmException("DS-ID mismatch in add-DS. Expecting '" + dsId + "', got '" + newDs[0]
                              + "'");
 
     if (log.isDebugEnabled())
       log.debug("Wrote " + blobId + " as " + pid + "/" + dsId);
   }
+
+  private INGEST_OP addObject(FedoraAPIM apim, String ref, String[] newPid) throws Exception {
+    INGEST_OP new_op;
+
+    try {
+      if (log.isDebugEnabled())
+        log.debug("Ingesting '" + pid + "' with data-stream '" + dsId + "'");
+
+      newPid[0] = apim.ingest(getFoxml(ref), "foxml1.0", "created");
+      new_op = null;
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("ingest failed: ", e);
+
+      if (isObjectExistsException(e))
+        new_op = INGEST_OP.AddDs;
+      else
+        throw e;
+    }
+
+    return new_op;
+  }
+
+  private INGEST_OP addDatastream(FedoraAPIM apim, String ref, String[] newDs) throws Exception {
+    INGEST_OP new_op;
+
+    try {
+      if (log.isDebugEnabled())
+        log.debug("Adding data-stream '" + dsId + "' for '" + pid + "'");
+
+      newDs[0] = apim.addDatastream(pid, dsId, new String[0], getDatastreamLabel(), false,
+                                    getContentType(), null, ref, "M", "A", "created");
+      new_op = null;
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("add datastream failed: ", e);
+
+      if (isNoSuchObjectException(e))
+        new_op = INGEST_OP.AddObj;
+      else if (isDatastreamExistsException(e))
+        new_op = INGEST_OP.ModDs;
+      else
+        throw e;
+    }
+
+    return new_op;
+  }
+
+  private INGEST_OP modifyDatastream(FedoraAPIM apim, String ref) throws Exception {
+    INGEST_OP new_op;
+
+    try {
+      if (log.isDebugEnabled())
+        log.debug("Modifying data-stream(by reference) '" + dsId + "' for '" + pid + "'");
+
+      apim.modifyDatastreamByReference(pid, dsId, new String[0], getDatastreamLabel(), false,
+                                       getContentType(), null, ref, "A", "updated", false);
+      new_op = null;
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("ds-modify failed: ", e);
+
+      if (isNoSuchObjectException(e))
+        new_op = INGEST_OP.AddObj;
+      else if (isNoSuchDatastreamException(e))
+        new_op = INGEST_OP.AddDs;
+      else
+        throw e;
+    }
+
+    return new_op;
+   }
 
   /**
    * Get the first operation to try when ingesting blob. Subclasses that know something of
