@@ -33,5 +33,5 @@
       </li>
     </#list>
   </#if>
-  <li><a href="/article/browse.action?field=date" title="Browse Articles">Browse all recently published articles</a></li>
+  <li><a href="${freemarker_config.context}/article/browse.action?field=date" title="Browse Articles">Browse all recently published articles</a></li>
 </ul>
