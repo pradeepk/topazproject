@@ -110,14 +110,18 @@ public class RdfDefTest extends TestCase {
     // FIXME assertFalse(ap3.refersSameRange(bp3));
   }
 
+  public void test04() {
+    sf.preload(Journal.class);
+  }
+
   @Entity(model="test", name="Base")
+  @UriPrefix("a:")
   public static class Base {
     public String getId() {return null;}
     @Id
     public void setId(String s) {}
   }
 
-  @UriPrefix("a:")
   @Entity(name="A")
   public static class A extends Base {
     public String getP1() {return null;}
@@ -151,5 +155,12 @@ public class RdfDefTest extends TestCase {
 
   @Entity(type="t:a2", name="Assoc2")
   public static class Assoc2 extends Assoc1 {
+  }
+
+  @Entity(name="Journal")
+  public static class Journal extends Base {
+    public String geteIssn() {return null;}
+    @Predicate
+    public void seteIssn(String s) {}
   }
 }

@@ -237,27 +237,59 @@ public class AnnotationClassMetaFactory {
 
   private static PropertyDescriptor toProperty(Method m)
                                         throws OtmException {
-    String propName = getPropertyName(m);
+    String capitalized = getCapitalizedPropertyName(m);
 
-    if ((propName == null) || Modifier.isStatic(m.getModifiers()))
+    if (capitalized == null)
       return null;
 
+    String propName = Introspector.decapitalize(capitalized);
+    Method setter   = null;
+    Method getter   = null;
+
+    if (m.getName().startsWith("set")) {
+      setter = m;
+
+      try {
+        getter = m.getDeclaringClass().getMethod("is" + capitalized);
+      } catch (Throwable t) {
+      }
+
+      try {
+        if ((getter == null) || !getter.getReturnType().equals(setter.getParameterTypes()[0]))
+          getter = m.getDeclaringClass().getMethod("get" + capitalized);
+      } catch (Throwable t) {
+      }
+    } else {
+      getter = m;
+
+      try {
+        setter = m.getDeclaringClass().getMethod("set" + capitalized, getter.getReturnType());
+      } catch (Throwable t) {
+      }
+    }
+
     try {
-      return new PropertyDescriptor(propName, m.getDeclaringClass());
+      // NOTE: PropertyDescriptor(propertyName, class) is buggy. 
+      // Hence all the work above to figure out getter and setter.
+      return new PropertyDescriptor(propName, getter, setter);
     } catch (IntrospectionException e) {
-      throw new OtmException("Failed to create a PropertyDescriptor for '" + propName + "'", e);
+      throw new OtmException("Failed to create a PropertyDescriptor for '" + propName + "' from '"
+                             + m.toGenericString() + "'", e);
     }
   }
 
-  private static String getPropertyName(Method m) {
+  private static String getCapitalizedPropertyName(Method m) {
+    if (Modifier.isStatic(m.getModifiers()))
+      return null;
+
     if (m.getName().startsWith("set") && (m.getParameterTypes().length == 1))
-      return Introspector.decapitalize(m.getName().substring(3));
+      return m.getName().substring(3);
 
     if (m.getName().startsWith("get") && (m.getParameterTypes().length == 0))
-      return Introspector.decapitalize(m.getName().substring(3));
+      return m.getName().substring(3);
 
     if (m.getName().startsWith("is") && (m.getParameterTypes().length == 0))
-      return Introspector.decapitalize(m.getName().substring(2));
+      return m.getName().substring(2);
 
     return null;
   }
