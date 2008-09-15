@@ -162,6 +162,9 @@ public class RdfDefinition extends PropertyDefinition {
     if (objectProperty)
       dataType = null;
 
+    if (UNTYPED.equals(dataType))
+      dataType = null;
+
     // validate stuff
 
     /* Disabled till we split the resolve() as a second pass

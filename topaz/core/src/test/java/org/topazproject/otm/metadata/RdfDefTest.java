@@ -125,7 +125,7 @@ public class RdfDefTest extends TestCase {
   @Entity(name="A")
   public static class A extends Base {
     public String getP1() {return null;}
-    @Predicate(model="test")
+    @Predicate(model="test", dataType=Predicate.UNTYPED)
     public void setP1(String s) {}
     public URI getP2() {return null;}
     @Predicate(model="test")
