@@ -108,6 +108,9 @@
       <blobStore>
         <!-- must match the name of a bean in the applicationContext.xml -->
         <beanName>fedoraBlobStore</beanName>
+        <simple>
+          <directory>${java.io.tmpdir}/blob-store</directory>
+        </simple>
       </blobStore>
     </topaz>
 
