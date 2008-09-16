@@ -36,4 +36,6 @@ class EqualsIgnoreCaseImpl extends StringCompareImpl {
 
   String  lowValue (String comp) { return comp.toUpperCase(); }
   String  highValue(String comp) { return comp.toLowerCase(); }
+
+  StringCompareImpl getOpposite() { return this; }
 }

@@ -30,6 +30,7 @@ import org.jrdf.graph.URIReference;
 
 import org.mulgara.query.Constraint;
 import org.mulgara.query.ConstraintElement;
+import org.mulgara.query.ConstraintImpl;
 import org.mulgara.query.LocalNode;
 import org.mulgara.query.QueryException;
 import org.mulgara.query.TuplesException;
@@ -141,7 +142,7 @@ public class StringCompareResolver implements Resolver {
 
     // doit
     try {
-      // check the constraint for consistency and get predicate and object
+      // find the function implementation for the predicate
       long predicate = ((LocalNode) constraint.getElement(1)).getValue();
       StringCompareImpl impl = null;
       for (int i = 0; i < impls.length; i++)
@@ -153,10 +154,22 @@ public class StringCompareResolver implements Resolver {
         throw new QueryException("Predicate '" + resolverSession.globalize(predicate) + "' not " +
                                  "supported by String Compare resolver");
 
+      // re-order 'const op var' to 'var op const'
+      if (constraint.getElement(2) instanceof Variable &&
+          !(constraint.getElement(0) instanceof Variable)) {
+        impl = impl.getOpposite();
+        constraint = new ConstraintImpl(constraint.getElement(2),
+                                        new LocalNode(impl.getNode()),
+                                        constraint.getElement(0),
+                                        constraint.getModel());
+      }
+
+      // we currently only support comparing against a constant
       if (constraint.getElement(2) instanceof Variable)
         throw new QueryException("Compare resolver does not support variables as the object: '" +
                                  constraint.getElement(2) + "'");
 
+      // extract the values from the constraint
       LocalNode object    = (LocalNode) constraint.getElement(2);
       Node      valueNode = resolverSession.globalize(object.getValue());
 
@@ -175,10 +188,10 @@ public class StringCompareResolver implements Resolver {
         throw new QueryException("Compare resolver only supports literals and URI's as the " +
                                  "object: '" + valueNode + "'");
 
-      // Evalute
       ConstraintElement subj = constraint.getElement(0);
       assert subj != null;
 
+      // Evaluate
       if (logger.isDebugEnabled())
         logger.debug("Evaluating " + subj + " " + impl.getOp() + " '" + comp + "'");
 

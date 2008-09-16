@@ -67,4 +67,7 @@ abstract class StringCompareImpl {
 
   void    setNode(long node) { this.node = node; }
   long    getNode() { return node; }
+
+  /** Return the implementation for reversed arguments */
+  abstract StringCompareImpl getOpposite();
 }

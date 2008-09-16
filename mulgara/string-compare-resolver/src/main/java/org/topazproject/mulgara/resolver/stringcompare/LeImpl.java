@@ -34,4 +34,6 @@ class LeImpl extends StringCompareImpl {
 
   String  highValue(String comp) { return comp; }
   boolean incHighValue() { return true; }
+
+  StringCompareImpl getOpposite() { return new GeImpl(); }
 }

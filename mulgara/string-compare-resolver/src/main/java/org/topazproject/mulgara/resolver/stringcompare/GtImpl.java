@@ -34,4 +34,6 @@ class GtImpl extends StringCompareImpl {
 
   String  lowValue(String comp) { return comp; }
   boolean incLowValue() { return false; }
+
+  StringCompareImpl getOpposite() { return new LtImpl(); }
 }

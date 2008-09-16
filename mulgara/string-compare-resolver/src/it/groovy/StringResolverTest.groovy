@@ -54,8 +54,13 @@ class StringResolverTest extends GroovyTestCase {
     def query = """select \$s from ${TEST_MODEL} 
                     where \$s <bar:is> \$o 
                       and \$o <topaz:equalsIgnoreCase> 'B' in ${RSLV_MODEL};"""
-    def results = itql.executeQueryToString(query)
-    def ans = new XmlSlurper().parseText(results)
+    def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
+    assert ans.query[0].solution.s.'@resource' == 'foo:2'
+
+    query = """select \$s from ${TEST_MODEL} 
+                where \$s <bar:is> \$o 
+                  and 'B' <topaz:equalsIgnoreCase> \$o in ${RSLV_MODEL};"""
+    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution.s.'@resource' == 'foo:2'
   }
 
@@ -63,6 +68,11 @@ class StringResolverTest extends GroovyTestCase {
     def query = """select \$s from ${TEST_MODEL}
                     where \$s <topaz:equalsIgnoreCase> <foo:x> in ${RSLV_MODEL};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
+    assert ans.query[0].solution.s.'@resource' == 'foo:X'
+
+    query = """select \$s from ${TEST_MODEL}
+                where <foo:x> <topaz:equalsIgnoreCase> \$s in ${RSLV_MODEL};"""
+    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution.s.'@resource' == 'foo:X'
   }
 
@@ -72,6 +82,12 @@ class StringResolverTest extends GroovyTestCase {
                       and \$o <topaz:lt> 'b' in ${RSLV_MODEL};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution.s.'@resource' == 'foo:1'
+
+    query = """select \$s from ${TEST_MODEL}
+                where \$s <bar:is> \$o
+                  and 'b' <topaz:gt> \$o in ${RSLV_MODEL};"""
+    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
+    assert ans.query[0].solution.s.'@resource' == 'foo:1'
   }
 
   void testLt2() {
@@ -79,6 +95,12 @@ class StringResolverTest extends GroovyTestCase {
                     where \$s <bar:is> \$o
                       and \$o <topaz:lt> 'c' in ${RSLV_MODEL};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
+    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
+
+    query = """select \$s from ${TEST_MODEL}
+                where \$s <bar:is> \$o
+                  and 'c' <topaz:gt> \$o in ${RSLV_MODEL};"""
+    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
   }
 
@@ -88,6 +110,12 @@ class StringResolverTest extends GroovyTestCase {
                       and \$o <topaz:le> 'b' in ${RSLV_MODEL};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
+
+    query = """select \$s from ${TEST_MODEL}
+                where \$s <bar:is> \$o
+                  and 'b' <topaz:ge> \$o in ${RSLV_MODEL};"""
+    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
+    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
   }
 
   void testGt1() {
@@ -96,6 +124,12 @@ class StringResolverTest extends GroovyTestCase {
                       and \$o <topaz:gt> 'b' in ${RSLV_MODEL};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution*.s.'@resource' == 'foo:X'
+
+    query = """select \$s from ${TEST_MODEL}
+                where \$s <bar:is> \$o
+                  and 'b' <topaz:lt> \$o in ${RSLV_MODEL};"""
+    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
+    assert ans.query[0].solution*.s.'@resource' == 'foo:X'
   }
 
   void testGe1() {
@@ -103,6 +137,12 @@ class StringResolverTest extends GroovyTestCase {
                     where \$s <bar:is> \$o
                       and \$o <topaz:ge> 'b' in ${RSLV_MODEL};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
+    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:2', 'foo:X' ]
+
+    query = """select \$s from ${TEST_MODEL}
+                where \$s <bar:is> \$o
+                  and 'b' <topaz:le> \$o in ${RSLV_MODEL};"""
+    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
     assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:2', 'foo:X' ]
   }
 }
