@@ -51,98 +51,40 @@ class StringResolverTest extends GroovyTestCase {
   }
 
   void testEqualIgnoresCase() {
-    def query = """select \$s from ${TEST_MODEL} 
-                    where \$s <bar:is> \$o 
-                      and \$o <topaz:equalsIgnoreCase> 'B' in ${RSLV_MODEL};"""
-    def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution.s.'@resource' == 'foo:2'
-
-    query = """select \$s from ${TEST_MODEL} 
-                where \$s <bar:is> \$o 
-                  and 'B' <topaz:equalsIgnoreCase> \$o in ${RSLV_MODEL};"""
-    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution.s.'@resource' == 'foo:2'
+    testFunction('equalsIgnoreCase', 'equalsIgnoreCase', 'B', [ 'foo:2' ], 'foo:x', [ 'foo:X' ])
   }
 
-  void testEqualIgnoreCaseSubject() {
-    def query = """select \$s from ${TEST_MODEL}
-                    where \$s <topaz:equalsIgnoreCase> <foo:x> in ${RSLV_MODEL};"""
-    def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution.s.'@resource' == 'foo:X'
-
-    query = """select \$s from ${TEST_MODEL}
-                where <foo:x> <topaz:equalsIgnoreCase> \$s in ${RSLV_MODEL};"""
-    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution.s.'@resource' == 'foo:X'
+  void testLt() {
+    testFunction('lt', 'gt', 'b', [ 'foo:1' ], 'foo:2', [ 'foo:1' ])
+    testFunction('lt', 'gt', 'c', [ 'foo:1', 'foo:2' ], 'foo:X', [ 'foo:1', 'foo:2' ])
   }
 
-  void testLt1() {
-    def query = """select \$s from ${TEST_MODEL}
-                    where \$s <bar:is> \$o
-                      and \$o <topaz:lt> 'b' in ${RSLV_MODEL};"""
-    def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution.s.'@resource' == 'foo:1'
-
-    query = """select \$s from ${TEST_MODEL}
-                where \$s <bar:is> \$o
-                  and 'b' <topaz:gt> \$o in ${RSLV_MODEL};"""
-    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution.s.'@resource' == 'foo:1'
+  void testLe() {
+    testFunction('le', 'ge', 'b', [ 'foo:1', 'foo:2' ], 'foo:2', [ 'foo:1', 'foo:2' ])
   }
 
-  void testLt2() {
+  void testGt() {
+    testFunction('gt', 'lt', 'b', [ 'foo:X' ], 'foo:2', [ 'foo:X' ])
+    testFunction('gt', 'lt', 'a', [ 'foo:2', 'foo:X' ], 'foo:1', [ 'foo:2', 'foo:X' ])
+  }
+
+  void testGe() {
+    testFunction('ge', 'le', 'b', [ 'foo:2', 'foo:X' ], 'foo:2', [ 'foo:2', 'foo:X' ])
+  }
+
+  void testFunction(String op, String revOp, String obj, def expObj, String subj, def expSubj) {
+    runQuery('$o',        "<topaz:${op}>",    "'${obj}'",  expObj)
+    runQuery("'${obj}'",  "<topaz:${revOp}>", '$o',        expObj)
+
+    runQuery('$s',        "<topaz:${op}>",    "<${subj}>", expSubj)
+    runQuery("<${subj}>", "<topaz:${revOp}>", '$s',        expSubj)
+  }
+
+  void runQuery(String subj, String pred, String obj, def expected) {
     def query = """select \$s from ${TEST_MODEL}
                     where \$s <bar:is> \$o
-                      and \$o <topaz:lt> 'c' in ${RSLV_MODEL};"""
+                      and ${subj} ${pred} ${obj} in ${RSLV_MODEL};"""
     def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
-
-    query = """select \$s from ${TEST_MODEL}
-                where \$s <bar:is> \$o
-                  and 'c' <topaz:gt> \$o in ${RSLV_MODEL};"""
-    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
-  }
-
-  void testLe1() {
-    def query = """select \$s from ${TEST_MODEL}
-                    where \$s <bar:is> \$o
-                      and \$o <topaz:le> 'b' in ${RSLV_MODEL};"""
-    def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
-
-    query = """select \$s from ${TEST_MODEL}
-                where \$s <bar:is> \$o
-                  and 'b' <topaz:ge> \$o in ${RSLV_MODEL};"""
-    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:1', 'foo:2' ]
-  }
-
-  void testGt1() {
-    def query = """select \$s from ${TEST_MODEL}
-                    where \$s <bar:is> \$o
-                      and \$o <topaz:gt> 'b' in ${RSLV_MODEL};"""
-    def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource' == 'foo:X'
-
-    query = """select \$s from ${TEST_MODEL}
-                where \$s <bar:is> \$o
-                  and 'b' <topaz:lt> \$o in ${RSLV_MODEL};"""
-    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource' == 'foo:X'
-  }
-
-  void testGe1() {
-    def query = """select \$s from ${TEST_MODEL}
-                    where \$s <bar:is> \$o
-                      and \$o <topaz:ge> 'b' in ${RSLV_MODEL};"""
-    def ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:2', 'foo:X' ]
-
-    query = """select \$s from ${TEST_MODEL}
-                where \$s <bar:is> \$o
-                  and 'b' <topaz:le> \$o in ${RSLV_MODEL};"""
-    ans = new XmlSlurper().parseText(itql.executeQueryToString(query))
-    assert ans.query[0].solution*.s.'@resource'.list() == [ 'foo:2', 'foo:X' ]
+    assert ans.query[0].solution*.s.'@resource'.list() == expected
   }
 }
