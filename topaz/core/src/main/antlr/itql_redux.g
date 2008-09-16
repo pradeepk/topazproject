@@ -530,6 +530,18 @@ options {
           if (s.getText().equals(o.getText()))
             removed = removeNode(node, prnt, prev);
         }
+
+        // change 'x <mulgara:equals> <const>' to 'x <mulgara:is> <const>'
+        if (p.getText().equals("<mulgara:equals>") && !o.isVar())
+          p.setText("<mulgara:is>");
+        else if (p.getText().equals("<mulgara:equals>") && !s.isVar()) {
+          p.setText("<mulgara:is>");
+          // swap subj and obj
+          s.setNextSibling(o.getNextSibling());
+          p.setNextSibling(s);
+          o.setNextSibling(p);
+          node.setFirstChild(o);
+        }
       } else {
         for (AST n = node.getFirstChild(), p = null; n != null; n = n.getNextSibling()) {
           if (applyReplacements(n, node, p, repl, is, types))
