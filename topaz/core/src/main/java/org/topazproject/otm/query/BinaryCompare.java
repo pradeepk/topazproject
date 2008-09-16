@@ -152,21 +152,34 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
     String modelUri = ASTUtil.getModelUri(modelType, sf);
 
     OqlAST res = ASTUtil.makeTree(af, AND, "and", af.dupTree(larg), af.dupTree(rarg));
-    if (name.equals("ge") || name.equals("le"))
-      /* do this when mulgara supports <mulgara:equals>
-      res.addChild(ASTUtil.makeTree(af, OR, "or",
-                                    ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af),
-                                    ASTUtil.makeTriple(lvar, "<mulgara:equals>", rvar, af)));
-      */
-      /* this requires the functions (minus) to support variables on both sides
-      res = ASTUtil.makeTree(af, MINUS, "minus", res,
-                             ASTUtil.makeTriple(lvar, iprd, rvar, modelUri, af));
-      */
-      res = ASTUtil.makeTree(af, MINUS, "minus", af.dupTree(res),
-              ASTUtil.makeTree(af, AND, "and", res,
-                               ASTUtil.makeTriple(lvar, iprd, rvar, modelUri, af)));
-    else
+    if (name.equals("ge") || name.equals("le")) {
+      if (isConstant(rarg)) {
+        // this relies on itql-redux to eliminate the equals and replace it with <mulgara:is>
+        res.addChild(ASTUtil.makeTree(af, OR, "or",
+                                      ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af),
+                                      ASTUtil.makeTriple(lvar, "<mulgara:equals>", rvar, af)));
+      } else if (isConstant(larg)) {
+        // this relies on itql-redux to eliminate the equals and replace it with <mulgara:is>
+        res.addChild(ASTUtil.makeTree(af, OR, "or",
+                                      ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af),
+                                      ASTUtil.makeTriple(rvar, "<mulgara:equals>", lvar, af)));
+      } else {
+        /* do this when mulgara supports <mulgara:equals>
+        res.addChild(ASTUtil.makeTree(af, OR, "or",
+                                      ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af),
+                                      ASTUtil.makeTriple(lvar, "<mulgara:equals>", rvar, af)));
+        */
+        /* this requires the functions (minus) to support variables on both sides
+        res = ASTUtil.makeTree(af, MINUS, "minus", res,
+                               ASTUtil.makeTriple(lvar, iprd, rvar, modelUri, af));
+        */
+        res = ASTUtil.makeTree(af, MINUS, "minus", af.dupTree(res),
+                ASTUtil.makeTree(af, AND, "and", res,
+                                 ASTUtil.makeTriple(lvar, iprd, rvar, modelUri, af)));
+      }
+    } else {
       res.addChild(ASTUtil.makeTriple(lvar, pred, rvar, modelUri, af));
+    }
 
     return res;
   }
@@ -185,5 +198,10 @@ class BinaryCompare implements BooleanConditionFunction, ConstraintsTokenTypes {
 
   private static boolean isDt(String v, String[] list) {
     return Arrays.binarySearch(list, v) >= 0;
+  }
+
+  private static boolean isConstant(OqlAST node) {
+    return node.getType() == TRIPLE &&
+           node.getFirstChild().getNextSibling().getText().equals("<mulgara:is>");
   }
 }
