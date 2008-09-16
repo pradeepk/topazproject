@@ -169,12 +169,12 @@
   <bean id="journalService" class="org.topazproject.ambra.journal.JournalService" init-method="init"/>
 
   <!-- OTM setups -->
-  <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore">
+  <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore" lazy-init="true">
     <constructor-arg index="0" value="${ambra.topaz.blobStore.fedora.uri}"/>
     <constructor-arg index="1" value="${ambra.topaz.blobStore.fedora.userName}"/>
     <constructor-arg index="2" value="${ambra.topaz.blobStore.fedora.password}"/>
   </bean>
-  <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore">
+  <bean name="simpleBlobStore" class="org.topazproject.otm.stores.SimpleBlobStore" lazy-init="true">
     <constructor-arg index="0" value="${ambra.topaz.blobStore.simple.directory}"/>
   </bean>
   <bean id="otmFactory" class="org.topazproject.ambra.configuration.OtmConfiguration">
