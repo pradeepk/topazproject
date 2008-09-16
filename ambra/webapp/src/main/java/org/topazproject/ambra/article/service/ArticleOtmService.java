@@ -195,9 +195,9 @@ public class ArticleOtmService {
 
     // apply date constraints
     if (startDate != null)
-      qry.append("(gt(d, :sd) or d = :sd) and ");
+      qry.append("ge(d, :sd) and ");
     if (endDate != null)
-      qry.append("(lt(d, :ed) or d = :ed) and ");
+      qry.append("le(d, :ed) and ");
 
     // match categories
     if (categories != null && categories.length > 0) {
