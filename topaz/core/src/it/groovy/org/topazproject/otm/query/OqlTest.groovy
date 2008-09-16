@@ -441,7 +441,20 @@ public class OqlTest extends AbstractTest {
         }
 
         r = s.createQuery(
+            "select t.name n from Test1 t where gt(${test[1]}, t.${test[0]}) order by n;").execute()
+        checker.verify(r) {
+          row { string ('Bob') }
+        }
+
+        r = s.createQuery(
             "select t.name n from Test1 t where le(t.${test[0]}, ${test[1]}) order by n;").execute()
+        checker.verify(r) {
+          row { string ('Bob') }
+          row { string ('Joe') }
+        }
+
+        r = s.createQuery(
+            "select t.name n from Test1 t where ge(${test[1]}, t.${test[0]}) order by n;").execute()
         checker.verify(r) {
           row { string ('Bob') }
           row { string ('Joe') }
@@ -454,7 +467,20 @@ public class OqlTest extends AbstractTest {
         }
 
         r = s.createQuery(
+            "select t.name n from Test1 t where lt(${test[1]}, t.${test[0]}) order by n;").execute()
+        checker.verify(r) {
+          row { string ('John') }
+        }
+
+        r = s.createQuery(
             "select t.name n from Test1 t where ge(t.${test[0]}, ${test[1]}) order by n;").execute()
+        checker.verify(r) {
+          row { string ('Joe')  }
+          row { string ('John') }
+        }
+
+        r = s.createQuery(
+            "select t.name n from Test1 t where le(${test[1]}, t.${test[0]}) order by n;").execute()
         checker.verify(r) {
           row { string ('Joe')  }
           row { string ('John') }
@@ -512,6 +538,16 @@ public class OqlTest extends AbstractTest {
       for (test in [['lt', ['Bob']],  ['le', ['Bob', 'Joe']],
                     ['gt', ['John']], ['ge', ['Joe', 'John']]]) {
         r = s.createQuery("select t.name n from Test1 t where ${test[0]}(t.birth, :b) order by n;").
+              setParameter("b", "1970-02-04").execute()
+        checker.verify(r) {
+          for (name in test[1])
+            row { string (name) }
+        }
+      }
+
+      for (test in [['gt', ['Bob']],  ['ge', ['Bob', 'Joe']],
+                    ['lt', ['John']], ['le', ['Joe', 'John']]]) {
+        r = s.createQuery("select t.name n from Test1 t where ${test[0]}(:b, t.birth) order by n;").
               setParameter("b", "1970-02-04").execute()
         checker.verify(r) {
           for (name in test[1])
