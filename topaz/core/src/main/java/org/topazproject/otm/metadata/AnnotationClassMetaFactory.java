@@ -23,20 +23,21 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 import java.net.URI;
 import java.net.URL;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -184,36 +185,38 @@ public class AnnotationClassMetaFactory {
     ClassBindings bin = sf.getClassBindings(def.getName());
     bin.bind(EntityMode.POJO, new ClassBinder(clazz));
 
-    String                  ours       = Id.class.getPackage().getName();
-
-    Set<PropertyDescriptor> properties = new HashSet<PropertyDescriptor>();
+    Map<String, PropertyInfo> properties = new HashMap<String, PropertyInfo>();
 
     for (Method method : clazz.getDeclaredMethods()) {
-      // We only care about annotated methods. Ignore everything else.
-      for (Annotation a : method.getAnnotations()) {
-        if (a.annotationType().getPackage().getName().equals(ours)) {
-          PropertyDescriptor property = toProperty(method);
+      if (!isAnnotated(method))
+        continue;
 
-          if (property == null)
-            throw new OtmException("'" + method.toGenericString()
-                                   + "' is not a valid getter or setter");
+      PropertyDescriptor property = toProperty(method);
 
-          validate(property, def, method);
-          properties.add(property);
+      if (property == null)
+        throw new OtmException("'" + method.toGenericString() + "' is not a valid getter or setter");
 
-          break;
-        }
+      validate(property, def, method);
+      properties.put(property.getName(), new PropertyInfo(def, property));
+    }
+
+    if (def instanceof EntityDefinition) {
+      if (clazz.getGenericSuperclass() instanceof ParameterizedType)
+        addGenericsSyntheticProps(def, clazz, properties);
+
+      Map<String, String> supersedes = new HashMap<String, String>(); // localName --> superseded def
+      buildSupersedes((EntityDefinition) def, supersedes);
+
+      for (String name : supersedes.keySet()) {
+        PropertyInfo pi = properties.get(name);
+
+        if (pi != null)
+          pi.setSupersedes(supersedes.get(name));
       }
     }
 
-    Map<String, String> supersedes = new HashMap<String, String>(); // localName --> superseded def
-
-    if (def instanceof EntityDefinition)
-      buildSupersedes((EntityDefinition) def, supersedes);
-
-    for (PropertyDescriptor property : properties) {
-      PropertyInfo       fi = new PropertyInfo(def, property, supersedes.get(property.getName()));
-      PropertyDefinition d  = fi.getDefinition(sf, uriPrefix);
+    for (PropertyInfo fi : properties.values()) {
+      PropertyDefinition d = fi.getDefinition(sf, uriPrefix);
 
       if (d == null) {
         log.info("Skipped (WTF) " + fi);
@@ -233,6 +236,120 @@ public class AnnotationClassMetaFactory {
     }
 
     return def.buildClassMetadata(sf);
+  }
+
+  private void addGenericsSyntheticProps(ClassDefinition def, Class clazz,
+                                         Map<String, PropertyInfo> properties)
+                                  throws OtmException {
+    for (Method m : clazz.getSuperclass().getDeclaredMethods()) {
+      if (!isAnnotated(m))
+        continue;
+
+      PropertyDescriptor property = toProperty(m);
+
+      if ((property == null) || properties.containsKey(property.getName()))
+        continue;
+
+      PropertyInfo pi = resolve(def, clazz, property);
+
+      if (pi != null)
+        properties.put(property.getName(), pi);
+    }
+  }
+
+  /**
+   * Resolves the generics property in the parameterized sub-class.
+   *
+   * @param def the definition
+   * @param clazz the parameterized sub-class
+   * @param property property in super-class
+   *
+   * @return the synthetic property in the parameterized sub-class or null
+   *
+   * @throws OtmException on an error
+   */
+  private PropertyInfo resolve(ClassDefinition def, Class clazz, PropertyDescriptor property)
+                        throws OtmException {
+    Method       m  = property.getReadMethod();
+    Type         t  = m.getGenericReturnType();
+    PropertyInfo pi = null;
+
+    if (t instanceof TypeVariable) {
+      Class<?> ptype = resolve((TypeVariable) t, clazz);
+
+      if (ptype == null)
+        log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
+                 + "' because the TypeVariable '" + t + "' is unresolved.");
+      else {
+        pi = new PropertyInfo(def, property.getName(), property.getReadMethod(),
+                              property.getWriteMethod(), ptype, null);
+      }
+    } else if (t instanceof ParameterizedType) {
+      Type[] args = ((ParameterizedType) t).getActualTypeArguments();
+
+      if (!Collection.class.isAssignableFrom(property.getPropertyType()) || (args.length != 1)
+           || !(args[0] instanceof TypeVariable))
+        log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
+                 + "' because it is not an instance of a Parameterized Collection.");
+      else {
+        Class<?> ptype = resolve((TypeVariable) args[0], clazz);
+
+        if (ptype == null)
+          log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
+                   + "' because the TypeVariable '" + args[0]
+                   + "' is unresolved in Parameterized Collection '" + t + "'.");
+        else {
+          pi = new PropertyInfo(def, property.getName(), property.getReadMethod(),
+                                property.getWriteMethod(), property.getPropertyType(), ptype);
+        }
+      }
+    } else if (t instanceof GenericArrayType) {
+      Type     comp  = ((GenericArrayType) t).getGenericComponentType();
+      Class<?> ptype;
+
+      if (!property.getPropertyType().isArray() || !(comp instanceof TypeVariable)
+           || ((ptype = resolve((TypeVariable) comp, clazz)) == null))
+        log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
+                 + "' because the GenericComponentType '" + comp
+                 + "' is unresolved in the GenericArrayType '" + t + "'.");
+      else {
+        pi           = new PropertyInfo(def, property.getName(), property.getReadMethod(),
+                                        property.getWriteMethod(), property.getPropertyType(), ptype);
+      }
+    }
+
+    return pi;
+  }
+
+  private static Class<?> resolve(TypeVariable t, Class<?> clazz) {
+    ParameterizedType pt    = (ParameterizedType) clazz.getGenericSuperclass();
+    TypeVariable[]    types = clazz.getSuperclass().getTypeParameters();
+
+    if (log.isDebugEnabled())
+      log.debug("TypeParameters " + Arrays.toString(types));
+
+    if (log.isDebugEnabled())
+      log.debug("ActualTypeArgs " + Arrays.toString(pt.getActualTypeArguments()));
+
+    for (int i = 0; i < types.length; i++) {
+      if (t.equals(types[i])) {
+        Type ptype = pt.getActualTypeArguments()[i];
+
+        return (ptype instanceof Class) ? (Class<?>) ptype : null;
+      }
+    }
+
+    return null;
+  }
+
+  private static boolean isAnnotated(Method method) {
+    String ours = Id.class.getPackage().getName();
+
+    for (Annotation a : method.getAnnotations())
+      if (a.annotationType().getPackage().getName().equals(ours))
+        return true;
+
+    return false;
   }
 
   private static PropertyDescriptor toProperty(Method m)
@@ -375,40 +492,52 @@ public class AnnotationClassMetaFactory {
   }
 
   private static class PropertyInfo {
-    final ClassDefinition    cd;
-    final String             name;
-    final PropertyDescriptor property;
-    final Class<?>           type;
-    final boolean            isArray;
-    final boolean            isCollection;
-    final String             supersedes;
+    final ClassDefinition cd;
+    final String          name;
+    final String          localName;
+    final Method          getter;
+    final Method          setter;
+    final Class<?>        ptype;
+    final Class<?>        type;
+    final boolean         isArray;
+    final boolean         isCollection;
+    String                supersedes;
 
-    public PropertyInfo(ClassDefinition cd, PropertyDescriptor property, String supersedes)
+    public PropertyInfo(ClassDefinition cd, PropertyDescriptor property)
                  throws OtmException {
-      this.cd           = cd;
-      this.property     = property;
-      this.name         = cd.getName() + ":" + property.getName();
-      this.supersedes   = supersedes;
+      this(cd, property.getName(), property.getReadMethod(), property.getWriteMethod(),
+           property.getPropertyType(), null);
+    }
 
-      Class<?> ptype    = property.getPropertyType();
+    public PropertyInfo(ClassDefinition cd, String localName, Method getter, Method setter,
+                        Class<?> ptype, Class<?> type)
+                 throws OtmException {
+      this.cd             = cd;
+      this.localName      = localName;
+      this.getter         = getter;
+      this.setter         = setter;
+      this.ptype          = ptype;
 
-      isArray           = ptype.isArray();
-      isCollection      = Collection.class.isAssignableFrom(ptype);
+      this.name           = cd.getName() + ":" + localName;
 
-      if (isArray)
-        type = ptype.getComponentType();
-      else if (isCollection)
-        type = collectionType(property.getWriteMethod());
-      else
-        type = ptype;
+      this.isArray        = ptype.isArray();
+      this.isCollection   = Collection.class.isAssignableFrom(ptype);
+
+      this.type           = (type != null) ? type
+                            : ((isArray ? ptype.getComponentType()
+                                : ((isCollection)
+                                   ? collectionType(setter.getGenericParameterTypes()[0]) : ptype)));
+    }
+
+    public void setSupersedes(String supersedes) {
+      this.supersedes = supersedes;
     }
 
     private Class<?> getDeclaringClass() {
-      return property.getWriteMethod().getDeclaringClass();
+      return setter.getDeclaringClass();
     }
 
-    private static Class collectionType(Method setter) {
-      Type  type   = setter.getGenericParameterTypes()[0];
+    private static Class collectionType(Type type) {
       Class result = Object.class;
 
       if (type instanceof ParameterizedType) {
@@ -417,6 +546,10 @@ public class AnnotationClassMetaFactory {
 
         if ((targs.length > 0) && (targs[0] instanceof Class))
           result = (Class) targs[0];
+
+        if ((targs.length > 0) && (targs[0] instanceof TypeVariable)
+             && ((TypeVariable) targs[0]).getBounds()[0] instanceof Class)
+          result = (Class) ((TypeVariable) targs[0]).getBounds()[0];
       }
 
       return result;
@@ -427,7 +560,7 @@ public class AnnotationClassMetaFactory {
     }
 
     public String toString() {
-      return "'" + property.getName() + "' in " + getDeclaringClass();
+      return "'" + localName + "' in " + getDeclaringClass();
     }
 
     public PropertyDefinition getDefinition(SessionFactory sf, String uriPrefix)
@@ -436,7 +569,7 @@ public class AnnotationClassMetaFactory {
       Annotation     ann  = null;
       String         ours = Id.class.getPackage().getName();
 
-      for (Method m : new Method[] { property.getWriteMethod(), property.getReadMethod() }) {
+      for (Method m : new Method[] { setter, getter }) {
         if (m == null)
           continue;
 
@@ -510,9 +643,9 @@ public class AnnotationClassMetaFactory {
       if (pre.equals("")) {
         pre   = ((uriPrefix == null) || uriPrefix.equals("")) ? Rdf.topaz : uriPrefix;
         // Compute default uriPrefix: Rdf.topaz/clazz/generatorClass#
-        pre   = Rdf.topaz + getDeclaringClass().getName() + '/' + property.getName() + '#';
+        pre   = Rdf.topaz + getDeclaringClass().getName() + '/' + localName + '#';
 
-        //pre = pre + cd.getName() + '/' + property.getName() + '/';
+        //pre = pre + cd.getName() + '/' + localName + '/';
       } else {
         try {
           // Validate that we have a valid uri
@@ -538,7 +671,7 @@ public class AnnotationClassMetaFactory {
 
       String uri =
         ((rdf != null) && !"".equals(rdf.uri())) ? sf.expandAlias(rdf.uri())
-        : (((ref == null) && (ns != null)) ? (ns + property.getName()) : null);
+        : (((ref == null) && (ns != null)) ? (ns + localName) : null);
 
       if ((uri == null) && (ref == null))
         throw new OtmException("Missing attribute 'uri' in @Predicate for " + this);
@@ -618,7 +751,7 @@ public class AnnotationClassMetaFactory {
 
     public VarDefinition getVarDefinition(SessionFactory sf, Projection proj)
                                    throws OtmException {
-      String     var        = "".equals(proj.value()) ? property.getName() : proj.value();
+      String     var        = "".equals(proj.value()) ? localName : proj.value();
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
@@ -649,10 +782,9 @@ public class AnnotationClassMetaFactory {
     public RdfDefinition getPredicateMapDefinition(SessionFactory sf, PredicateMap pmap)
                                             throws OtmException {
       String model = null; // TODO: allow predicate maps from other models
-      Type   type  = property.getWriteMethod().getGenericParameterTypes()[0];
+      Type   type  = setter.getGenericParameterTypes()[0];
 
-      if (Map.class.isAssignableFrom(property.getPropertyType())
-           && (type instanceof ParameterizedType)) {
+      if (Map.class.isAssignableFrom(getter.getReturnType()) && (type instanceof ParameterizedType)) {
         ParameterizedType ptype = (ParameterizedType) type;
         Type[]            targs = ptype.getActualTypeArguments();
 
@@ -694,7 +826,7 @@ public class AnnotationClassMetaFactory {
     public FieldBinder getBinder(SessionFactory sf, PropertyDefinition pd)
                           throws OtmException {
       if (pd instanceof EmbeddedDefinition)
-        return new EmbeddedClassFieldBinder(property.getReadMethod(), property.getWriteMethod());
+        return new EmbeddedClassFieldBinder(getter, setter);
 
       Serializer serializer;
 
@@ -716,14 +848,12 @@ public class AnnotationClassMetaFactory {
         serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       if (isArray)
-        return new ArrayFieldBinder(property.getReadMethod(), property.getWriteMethod(),
-                                    serializer, type);
+        return new ArrayFieldBinder(getter, setter, serializer, type);
 
       if (isCollection)
-        return new CollectionFieldBinder(property.getReadMethod(), property.getWriteMethod(),
-                                         serializer, type);
+        return new CollectionFieldBinder(getter, setter, serializer, type);
 
-      return new ScalarFieldBinder(property.getReadMethod(), property.getWriteMethod(), serializer);
+      return new ScalarFieldBinder(getter, setter, serializer);
     }
   }
 }
