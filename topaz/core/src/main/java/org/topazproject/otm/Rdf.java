@@ -31,7 +31,6 @@ public interface Rdf {
 
   /** help compose mulgara defined URIs */
   public static final String mulgara  = "http://mulgara.org/mulgara#";
-  public static final String tucana   = mulgara;
 
   /** help compose dc defined URIs */
   public static final String dc       = "http://purl.org/dc/elements/1.1/";
