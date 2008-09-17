@@ -558,8 +558,11 @@ public class AnnotationClassMetaFactory {
       Boolean objectProperty = null;
 
       if ((rdf == null) || PropType.UNDEFINED.equals(rdf.type())) {
-        if ((ref == null) && (URI.class.isAssignableFrom(type) || URL.class.isAssignableFrom(type)))
-          objectProperty = Boolean.TRUE;
+        if (URI.class.isAssignableFrom(type) || URL.class.isAssignableFrom(type)) {
+          if (ref == null)
+            objectProperty = Boolean.TRUE;
+        } else
+          objectProperty = assoc != null;
       } else if (PropType.OBJECT.equals(rdf.type())) {
         if (!"".equals(rdf.dataType()))
           throw new OtmException("Datatype cannot be specified for an object-Property " + this);

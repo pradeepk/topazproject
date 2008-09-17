@@ -158,9 +158,10 @@ public class RdfDefinition extends PropertyDefinition {
 
     if (objectProperty == null)
       objectProperty = (associatedEntity != null) || inverse;
-
-    if (objectProperty)
+    else if (objectProperty)
       dataType = null;
+    else
+      associatedEntity = null;
 
     if (UNTYPED.equals(dataType))
       dataType = null;

@@ -21,6 +21,7 @@ package org.topazproject.otm.metadata;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -29,6 +30,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.annotations.Entity;
@@ -38,17 +40,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 
 public class SupersedesTest extends TestCase {
   private SessionFactory sf = new SessionFactoryImpl();
-  private RdfDefinition assoc, extended;
 
-  public void setUp() throws OtmException {
-    sf.preload(B.class);
-    sf.preload(Extended.class);
-
-    assoc = (RdfDefinition)sf.getDefinition("A:assoc");
-    extended = (RdfDefinition)sf.getDefinition("B:assoc");
-
-    extended.resolveReference(sf);
-  }
 
   private void compare(RdfDefinition def, Object[] vals) {
     String message = "Testing '" + def.getName() + "': ";
@@ -66,7 +58,15 @@ public class SupersedesTest extends TestCase {
   }
 
   public void test01() {
-    Object[] vals = new Object[] {"a:assoc", true, "test", false, true, null, "Assoc",
+    sf.preload(B.class);
+    sf.preload(Extended.class);
+
+    RdfDefinition assoc, extended;
+    assoc = (RdfDefinition)sf.getDefinition("A:object");
+    extended = (RdfDefinition)sf.getDefinition("B:object");
+
+    extended.resolveReference(sf);
+    Object[] vals = new Object[] {"a:object", true, "test", false, true, null, "Assoc",
                                CollectionType.PREDICATE, FetchType.lazy,
                                Collections.singleton(CascadeType.peer), true};
 
@@ -79,39 +79,173 @@ public class SupersedesTest extends TestCase {
   }
 
   public void test02() {
+    sf.preload(B.class);
+    sf.preload(Extended.class);
     ClassMetadata cm = sf.getClassMetadata("A");
     assertEquals(1, cm.getRdfMappers().size());
-    assertEquals("assoc", cm.getRdfMappers().iterator().next().getName());
+    assertEquals("object", cm.getRdfMappers().iterator().next().getName());
     assertEquals("Assoc", cm.getRdfMappers().iterator().next().getAssociatedEntity());
 
     cm = sf.getClassMetadata("B");
     assertEquals(1, cm.getRdfMappers().size());
-    assertEquals("assoc", cm.getRdfMappers().iterator().next().getName());
+    assertEquals("object", cm.getRdfMappers().iterator().next().getName());
     assertEquals("Extended", cm.getRdfMappers().iterator().next().getAssociatedEntity());
   }
 
+  public void test03() {
+    sf.preload(S.class);
+
+    RdfDefinition base, def;
+    base = (RdfDefinition)sf.getDefinition("O:object");
+    def = (RdfDefinition)sf.getDefinition("S:object");
+    def.resolveReference(sf);
+
+    Object[] vals = new Object[] {"a:object", true, "test", false, false, null, null,
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), false};
+
+    compare(def, vals);
+
+    assertTrue(def.refersSameGraphNodes(base));
+    assertFalse(def.refersSameRange(base));
+  }
+
+  public void test04() {
+    sf.preload(I.class);
+
+    RdfDefinition base, def;
+    base = (RdfDefinition)sf.getDefinition("O:object");
+    def = (RdfDefinition)sf.getDefinition("I:object");
+    def.resolveReference(sf);
+
+    Object[] vals = new Object[] {"a:object", true, "test", false, false, null, null,
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), false};
+
+    compare(def, vals);
+
+    assertTrue(def.refersSameGraphNodes(base));
+    assertFalse(def.refersSameRange(base));
+  }
+
+  public void test05() {
+    sf.preload(II.class);
+
+    RdfDefinition base, def;
+    base = (RdfDefinition)sf.getDefinition("O:object");
+    def = (RdfDefinition)sf.getDefinition("II:object");
+    def.resolveReference(sf);
+
+    Object[] vals = new Object[] {"a:object", true, "test", false, false, Rdf.xsd + "int", null,
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), false};
+
+    compare(def, vals);
+
+    assertTrue(def.refersSameGraphNodes(base));
+    assertFalse(def.refersSameRange(base));
+  }
+
+  public void test06() {
+    sf.preload(AS.class);
+
+    RdfDefinition base, def;
+    base = (RdfDefinition)sf.getDefinition("O:object");
+    def = (RdfDefinition)sf.getDefinition("AS:object");
+    def.resolveReference(sf);
+
+    Object[] vals = new Object[] {"a:object", true, "test", false, false, null, null,
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), false};
+
+    compare(def, vals);
+
+    assertTrue(def.refersSameGraphNodes(base));
+    assertFalse(def.refersSameRange(base));
+  }
+
+  public void test07() {
+    sf.preload(SII.class);
+
+    RdfDefinition base, def;
+    base = (RdfDefinition)sf.getDefinition("O:object");
+    def = (RdfDefinition)sf.getDefinition("SII:object");
+    def.resolveReference(sf);
+
+    Object[] vals = new Object[] {"a:object", true, "test", false, false, Rdf.xsd + "int", null,
+                               CollectionType.RDFSEQ, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), false};
+
+    compare(def, vals);
+
+    assertTrue(def.refersSameGraphNodes(base));
+    assertFalse(def.refersSameRange(base));
+  }
+
   @Entity(model="test", name="Base")
-  public static class Base {
+  @UriPrefix("a:")
+  public static abstract class Base {
     public String getId() {return null;}
     @Id
     public void setId(String s) {}
   }
 
-  @UriPrefix("a:")
-  @Entity(name="A")
-  public static class A extends Base {
-    public Assoc getAssoc() {return null;}
+  @Entity(name="O")
+  public static abstract class O extends Base {
+    public Object getObject() {return null;}
     @Predicate(model="test")
-    public void setAssoc(Assoc a) {}
+    public void setObject(Object a) {}
+  }
+
+  @Entity(name="A")
+  public static class A extends O {
+    public Assoc getObject() {return null;}
+    @Predicate(model="test")
+    public void setObject(Assoc a) {}
   }
 
   @UriPrefix("b:")
   @Entity(name="B")
   public static class B extends A {
     @Override
-    public Extended getAssoc() {return null;}
+    public Extended getObject() {return null;}
     @Predicate
-    public void setAssoc(Extended a) {}
+    public void setObject(Extended a) {}
+  }
+
+  @Entity(name="S")
+  public static class S extends O {
+    public String getObject() {return null;}
+    @Predicate(model="test")
+    public void setObject(String a) {}
+  }
+
+  @Entity(name="I")
+  public static class I extends O {
+    public Integer getObject() {return null;}
+    @Predicate(model="test")
+    public void setObject(Integer a) {}
+  }
+
+  @Entity(name="II")
+  public static class II extends O {
+    public Integer getObject() {return null;}
+    @Predicate(model="test", dataType="xsd:int")
+    public void setObject(Integer a) {}
+  }
+
+  @Entity(name="AS")
+  public static class AS extends O {
+    public String[] getObject() {return null;}
+    @Predicate(model="test")
+    public void setObject(String[] a) {}
+  }
+
+  @Entity(name="SII")
+  public static class SII extends O {
+    @Predicate(model="test", dataType="xsd:int", collectionType=CollectionType.RDFSEQ)
+    public List<Integer> getObject() {return null;}
+    public void setObject(List<Integer> a) {}
   }
 
   @Entity(type="t:assoc", name="Assoc")
@@ -121,4 +255,5 @@ public class SupersedesTest extends TestCase {
   @Entity(type="t:extended", name="Extended")
   public static class Extended extends Assoc {
   }
+
 }
