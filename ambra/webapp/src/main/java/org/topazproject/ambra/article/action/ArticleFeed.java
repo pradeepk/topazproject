@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -72,8 +71,6 @@ public class ArticleFeed extends BaseActionSupport {
   private ArticleOtmService articleOtmService;
   private Cache feedCache;
 
-  private DocumentBuilderFactory factory;
-
   // WebWorks will set from URI param
   private String startDate;
   private String endDate;
@@ -108,11 +105,6 @@ public class ArticleFeed extends BaseActionSupport {
   @Transactional(readOnly = true)
   public String execute() throws Exception {
 
-    // Create a document builder factory and set the defaults
-    factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true);
-    factory.setValidating(false);
-
     // use native HTTP to avoid WebWorks
     HttpServletRequest request = ServletActionContext.getRequest();
     String pathInfo = request.getPathInfo();
@@ -144,7 +136,7 @@ public class ArticleFeed extends BaseActionSupport {
 
     // Get feed if cached or generate feed by querying OTM
     String cacheKey = getCacheKey();
-    wireFeed = feedCache.get(cacheKey, -1, 
+    wireFeed = feedCache.get(cacheKey, -1,
         new Cache.SynchronizedLookup<WireFeed, ApplicationException>(cacheKey.intern()) {
           public WireFeed lookup() throws ApplicationException {
             return getFeed(uri);
@@ -217,7 +209,7 @@ public class ArticleFeed extends BaseActionSupport {
     self.setRel("self");
     self.setHref(selfLink);
     self.setTitle(FEED_TITLE);
-    List<Link> otherLinks = new ArrayList();
+    List<Link> otherLinks = new ArrayList<Link>();
     otherLinks.add(self);
     feed.setOtherLinks(otherLinks);
 
@@ -253,7 +245,7 @@ public class ArticleFeed extends BaseActionSupport {
     plos.setEmail(JOURNAL_EMAIL_GENERAL);
     plos.setName(JOURNAL_NAME);
     plos.setUri(JOURNAL_URI);
-    List<Person> feedAuthors = new ArrayList();
+    List<Person> feedAuthors = new ArrayList<Person>();
     feedAuthors.add(plos);
     feed.setAuthors(feedAuthors);
 
@@ -262,7 +254,7 @@ public class ArticleFeed extends BaseActionSupport {
     // ignore endDate, default is null
 
     // was category= URI param specified?
-    List<String> categoriesList = new ArrayList();
+    List<String> categoriesList = new ArrayList<String>();
     if (category != null && category.length() > 0) {
       categoriesList.add(category);
       if (log.isDebugEnabled()) {
@@ -271,7 +263,7 @@ public class ArticleFeed extends BaseActionSupport {
     }
 
     // was author= URI param specified?
-    List<String> authorsList = new ArrayList();
+    List<String> authorsList = new ArrayList<String>();
     if (author != null) {
       authorsList.add(author);
       if (log.isDebugEnabled()) {
@@ -284,7 +276,7 @@ public class ArticleFeed extends BaseActionSupport {
       maxResults = 30;  // default
     }
 
-    List<Article> articles = null;
+    List<Article> articles;
     try {
       articles = articleOtmService.getArticles(
         startDate,             // start date
@@ -303,7 +295,7 @@ public class ArticleFeed extends BaseActionSupport {
     }
 
     // add each Article as a Feed Entry
-    List<Entry> entries = new ArrayList();
+    List<Entry> entries = new ArrayList<Entry>();
     for (Article article : articles) {
       Entry entry = new Entry();
       DublinCore dc = article.getDublinCore();
@@ -327,7 +319,7 @@ public class ArticleFeed extends BaseActionSupport {
       entry.setUpdated(dc.getAvailable());
 
       // links
-      List<Link> altLinks = new ArrayList();
+      List<Link> altLinks = new ArrayList<Link>();
 
       // must link to self, do it first so link is favored
       Link entrySelf = new Link();
@@ -399,56 +391,60 @@ public class ArticleFeed extends BaseActionSupport {
       }
       entry.setContributors(contributors);
 
-      // All our foreign markup
-      List<Element> foreignMarkup = new ArrayList<Element>();
-
-      // Volume & issue
-      if (extended && bc != null) {
-        // Add volume
-        if (bc.getVolume() != null) {
-          Element volume = new Element("volume", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
-          volume.setText(bc.getVolume().toString());
-          foreignMarkup.add(volume);
-        }
-        // Add issue
-        if (bc.getIssue() != null) {
-          Element issue = new Element("issue", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
-          issue.setText(bc.getIssue());
-          foreignMarkup.add(issue);
-        }
-      }
-
-      Set<Category> categories = article.getCategories();
-      if (categories != null) {
-        for (Category category : categories) {
-          // TODO: How can we get NS to be automatically filled in from Atom?
-          Element feedCategory = new Element("category", ATOM_NS);
-          feedCategory.setAttribute("term", category.getMainCategory());
-          // TODO: what's the URI for our categories
-          // feedCategory.setScheme();
-          feedCategory.setAttribute("label", category.getMainCategory());
-
-          // subCategory?
-          String subCategory = category.getSubCategory();
-          if (subCategory != null) {
-            Element feedSubCategory = new Element("category", ATOM_NS);
-            feedSubCategory.setAttribute("term", subCategory);
-            // TODO: what's the URI for our categories
-            // feedSubCategory.setScheme();
-            feedSubCategory.setAttribute("label", subCategory);
-            feedCategory.addContent(feedSubCategory);
-          }
-
-          foreignMarkup.add(feedCategory);
-        }
-      }
-
       // Add foreign markup
-      if (extended && foreignMarkup.size() > 0)
-        entry.setForeignMarkup(foreignMarkup);
+      if (extended) {
+
+        // All our foreign markup
+        List<Element> foreignMarkup = new ArrayList<Element>();
+
+        // Volume & issue
+        if (extended && bc != null) {
+          // Add volume
+          if (bc.getVolume() != null) {
+            Element volume = new Element("volume", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
+            volume.setText(bc.getVolume());
+            foreignMarkup.add(volume);
+          }
+          // Add issue
+          if (bc.getIssue() != null) {
+            Element issue = new Element("issue", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
+            issue.setText(bc.getIssue());
+            foreignMarkup.add(issue);
+          }
+        }
+
+        Set<Category> categories = article.getCategories();
+        if (categories != null) {
+          for (Category category : categories) {
+            // TODO: How can we get NS to be automatically filled in from Atom?
+            Element feedCategory = new Element("category", ATOM_NS);
+            feedCategory.setAttribute("term", category.getMainCategory());
+            // TODO: what's the URI for our categories
+            // feedCategory.setScheme();
+            feedCategory.setAttribute("label", category.getMainCategory());
+
+            // subCategory?
+            String subCategory = category.getSubCategory();
+            if (subCategory != null) {
+              Element feedSubCategory = new Element("category", ATOM_NS);
+              feedSubCategory.setAttribute("term", subCategory);
+              // TODO: what's the URI for our categories
+              // feedSubCategory.setScheme();
+              feedSubCategory.setAttribute("label", subCategory);
+              feedCategory.addContent(feedSubCategory);
+            }
+
+            foreignMarkup.add(feedCategory);
+          }
+        }
+
+        if (foreignMarkup.size() > 0) {
+          entry.setForeignMarkup(foreignMarkup);
+        }
+      }
 
       // atom:content
-      List <Content> contents = new ArrayList();
+      List <Content> contents = new ArrayList<Content>();
       Content description = new Content();
       description.setType("html");
       try {
@@ -503,7 +499,7 @@ public class ArticleFeed extends BaseActionSupport {
       key.put("cnt", Integer.toString(maxResults));
     if (!relativeLinks)
       key.put("rel", "true");
-    if (!extended)
+    if (extended)
       key.put("ext", "true");
     if (title != null)
       key.put("tit", title);

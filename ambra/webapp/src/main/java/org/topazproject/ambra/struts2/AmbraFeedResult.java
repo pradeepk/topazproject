@@ -24,7 +24,6 @@ import com.opensymphony.xwork2.Result;
 import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.io.WireFeedOutput;
 import java.io.Writer;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,8 +60,10 @@ public class AmbraFeedResult implements Result {
       throw new RuntimeException("Internal logic error, feedName, " + feedName + ", resolves to null.");
     }
 
+    if (log.isDebugEnabled()) {
+      log.debug(feed);
+    }
     // work w/HTTP directly, avoid WebWorks interactions
-    HttpServletRequest  request  = ServletActionContext.getRequest();
     HttpServletResponse response = ServletActionContext.getResponse();
 
     // TODO: any optimization of HTTP headers?
