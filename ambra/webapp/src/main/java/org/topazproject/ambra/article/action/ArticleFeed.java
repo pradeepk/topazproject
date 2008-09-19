@@ -497,7 +497,7 @@ public class ArticleFeed extends BaseActionSupport {
       key.put("aut", author);
     if (maxResults != -1)
       key.put("cnt", Integer.toString(maxResults));
-    if (!relativeLinks)
+    if (relativeLinks)
       key.put("rel", "true");
     if (extended)
       key.put("ext", "true");
