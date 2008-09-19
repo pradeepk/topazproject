@@ -19,7 +19,6 @@
 package org.topazproject.otm.mapping.java;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,13 +36,11 @@ public class ArrayFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new ArrayFieldBinder object.
    *
-   * @param getter the field get method (cannot be null)
-   * @param setter the field set method (cannot be null)
+   * @param property the java beans property
    * @param serializer the serializer or null
-   * @param componentType the array component type
    */
-  public ArrayFieldBinder(Method getter, Method setter, Serializer serializer, Class componentType) {
-    super(getter, setter, serializer, componentType);
+  public ArrayFieldBinder(Property property, Serializer serializer) {
+    super(property, serializer);
   }
 
   /**

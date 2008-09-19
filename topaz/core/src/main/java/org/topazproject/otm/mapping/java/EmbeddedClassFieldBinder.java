@@ -18,8 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Method;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,11 +39,10 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements Emb
   /**
    * Creates a new EmbeddedClassFieldBinder object.
    *
-   * @param getter the get method for this embedded class field
-   * @param setter the set method for this embedded classs field
+   * @param property the java bean property
    */
-  public EmbeddedClassFieldBinder(Method getter, Method setter) {
-    super(getter, setter, null, null);
+  public EmbeddedClassFieldBinder(Property property) {
+    super(property, null);
   }
 
   /**

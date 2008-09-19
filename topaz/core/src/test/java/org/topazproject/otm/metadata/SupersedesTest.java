@@ -20,6 +20,7 @@
 package org.topazproject.otm.metadata;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -192,60 +193,55 @@ public class SupersedesTest extends TestCase {
 
   @Entity(name="O")
   public static abstract class O extends Base {
-    public Object getObject() {return null;}
     @Predicate(model="test")
+    public Object getObject() {return null;}
     public void setObject(Object a) {}
+    public void setObject(Collection a) {}
+    public void setObject(Object[] a) {}
   }
 
   @Entity(name="A")
   public static class A extends O {
-    public Assoc getObject() {return null;}
     @Predicate(model="test")
-    public void setObject(Assoc a) {}
+    public Assoc getObject() {return null;}
   }
 
   @UriPrefix("b:")
   @Entity(name="B")
   public static class B extends A {
     @Override
-    public Extended getObject() {return null;}
     @Predicate
-    public void setObject(Extended a) {}
+    public Extended getObject() {return null;}
   }
 
   @Entity(name="S")
   public static class S extends O {
-    public String getObject() {return null;}
     @Predicate(model="test")
-    public void setObject(String a) {}
+    public String getObject() {return null;}
   }
 
   @Entity(name="I")
   public static class I extends O {
-    public Integer getObject() {return null;}
     @Predicate(model="test")
-    public void setObject(Integer a) {}
+    public Integer getObject() {return null;}
   }
 
   @Entity(name="II")
   public static class II extends O {
-    public Integer getObject() {return null;}
     @Predicate(model="test", dataType="xsd:int")
-    public void setObject(Integer a) {}
+    public Integer getObject() {return null;}
   }
 
   @Entity(name="AS")
   public static class AS extends O {
-    public String[] getObject() {return null;}
     @Predicate(model="test")
-    public void setObject(String[] a) {}
+    public String[] getObject() {return null;}
   }
 
   @Entity(name="SII")
   public static class SII extends O {
     @Predicate(model="test", dataType="xsd:int", collectionType=CollectionType.RDFSEQ)
     public List<Integer> getObject() {return null;}
-    public void setObject(List<Integer> a) {}
   }
 
   @Entity(type="t:assoc", name="Assoc")

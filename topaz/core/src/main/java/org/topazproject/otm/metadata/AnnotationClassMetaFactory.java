@@ -18,23 +18,15 @@
  */
 package org.topazproject.otm.metadata;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 
 import java.net.URI;
 import java.net.URL;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,12 +57,11 @@ import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.java.ArrayFieldBinder;
+import org.topazproject.otm.mapping.java.AbstractFieldBinder;
 import org.topazproject.otm.mapping.java.ClassBinder;
-import org.topazproject.otm.mapping.java.CollectionFieldBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
-import org.topazproject.otm.mapping.java.ScalarFieldBinder;
+import org.topazproject.otm.mapping.java.Property;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -191,12 +182,21 @@ public class AnnotationClassMetaFactory {
       if (!isAnnotated(method))
         continue;
 
-      PropertyDescriptor property = toProperty(method);
+      Property property = Property.toProperty(method);
 
       if (property == null)
         throw new OtmException("'" + method.toGenericString() + "' is not a valid getter or setter");
 
-      validate(property, def, method);
+      PropertyInfo pi = properties.get(property.getName());
+
+      if (pi != null) {
+        if (method.equals(pi.property.getReadMethod()) || method.equals(pi.property.getWriteMethod()))
+          continue;
+
+        throw new OtmException("Duplicate property " + property);
+      }
+
+      validate(property, def);
       properties.put(property.getName(), new PropertyInfo(def, property));
     }
 
@@ -204,7 +204,7 @@ public class AnnotationClassMetaFactory {
       if (clazz.getGenericSuperclass() instanceof ParameterizedType)
         addGenericsSyntheticProps(def, clazz, properties);
 
-      Map<String, String> supersedes = new HashMap<String, String>(); // localName --> superseded def
+      Map<String, String> supersedes = new HashMap<String, String>();
       buildSupersedes((EntityDefinition) def, supersedes);
 
       for (String name : supersedes.keySet()) {
@@ -238,205 +238,6 @@ public class AnnotationClassMetaFactory {
     return def.buildClassMetadata(sf);
   }
 
-  private void addGenericsSyntheticProps(ClassDefinition def, Class clazz,
-                                         Map<String, PropertyInfo> properties)
-                                  throws OtmException {
-    for (Method m : clazz.getSuperclass().getDeclaredMethods()) {
-      if (!isAnnotated(m))
-        continue;
-
-      PropertyDescriptor property = toProperty(m);
-
-      if ((property == null) || properties.containsKey(property.getName()))
-        continue;
-
-      PropertyInfo pi = resolve(def, clazz, property);
-
-      if (pi != null)
-        properties.put(property.getName(), pi);
-    }
-  }
-
-  /**
-   * Resolves the generics property in the parameterized sub-class.
-   *
-   * @param def the definition
-   * @param clazz the parameterized sub-class
-   * @param property property in super-class
-   *
-   * @return the synthetic property in the parameterized sub-class or null
-   *
-   * @throws OtmException on an error
-   */
-  private PropertyInfo resolve(ClassDefinition def, Class clazz, PropertyDescriptor property)
-                        throws OtmException {
-    Method       m  = property.getReadMethod();
-    Type         t  = m.getGenericReturnType();
-    PropertyInfo pi = null;
-
-    if (t instanceof TypeVariable) {
-      Class<?> ptype = resolve((TypeVariable) t, clazz);
-
-      if (ptype == null)
-        log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
-                 + "' because the TypeVariable '" + t + "' is unresolved.");
-      else {
-        pi = new PropertyInfo(def, property.getName(), property.getReadMethod(),
-                              property.getWriteMethod(), ptype, null);
-      }
-    } else if (t instanceof ParameterizedType) {
-      Type[] args = ((ParameterizedType) t).getActualTypeArguments();
-
-      if (!Collection.class.isAssignableFrom(property.getPropertyType()) || (args.length != 1)
-           || !(args[0] instanceof TypeVariable))
-        log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
-                 + "' because it is not an instance of a Parameterized Collection.");
-      else {
-        Class<?> ptype = resolve((TypeVariable) args[0], clazz);
-
-        if (ptype == null)
-          log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
-                   + "' because the TypeVariable '" + args[0]
-                   + "' is unresolved in Parameterized Collection '" + t + "'.");
-        else {
-          pi = new PropertyInfo(def, property.getName(), property.getReadMethod(),
-                                property.getWriteMethod(), property.getPropertyType(), ptype);
-        }
-      }
-    } else if (t instanceof GenericArrayType) {
-      Type     comp  = ((GenericArrayType) t).getGenericComponentType();
-      Class<?> ptype;
-
-      if (!property.getPropertyType().isArray() || !(comp instanceof TypeVariable)
-           || ((ptype = resolve((TypeVariable) comp, clazz)) == null))
-        log.warn("Synthetic property not generated for '" + property.getName() + "' in " + clazz
-                 + "' because the GenericComponentType '" + comp
-                 + "' is unresolved in the GenericArrayType '" + t + "'.");
-      else {
-        pi           = new PropertyInfo(def, property.getName(), property.getReadMethod(),
-                                        property.getWriteMethod(), property.getPropertyType(), ptype);
-      }
-    }
-
-    return pi;
-  }
-
-  private static Class<?> resolve(TypeVariable t, Class<?> clazz) {
-    ParameterizedType pt    = (ParameterizedType) clazz.getGenericSuperclass();
-    TypeVariable[]    types = clazz.getSuperclass().getTypeParameters();
-
-    if (log.isDebugEnabled())
-      log.debug("TypeParameters " + Arrays.toString(types));
-
-    if (log.isDebugEnabled())
-      log.debug("ActualTypeArgs " + Arrays.toString(pt.getActualTypeArguments()));
-
-    for (int i = 0; i < types.length; i++) {
-      if (t.equals(types[i])) {
-        Type ptype = pt.getActualTypeArguments()[i];
-
-        return (ptype instanceof Class) ? (Class<?>) ptype : null;
-      }
-    }
-
-    return null;
-  }
-
-  private static boolean isAnnotated(Method method) {
-    String ours = Id.class.getPackage().getName();
-
-    for (Annotation a : method.getAnnotations())
-      if (a.annotationType().getPackage().getName().equals(ours))
-        return true;
-
-    return false;
-  }
-
-  private static PropertyDescriptor toProperty(Method m)
-                                        throws OtmException {
-    String capitalized = getCapitalizedPropertyName(m);
-
-    if (capitalized == null)
-      return null;
-
-    String propName = Introspector.decapitalize(capitalized);
-    Method setter   = null;
-    Method getter   = null;
-
-    if (m.getName().startsWith("set")) {
-      setter = m;
-
-      try {
-        getter = m.getDeclaringClass().getMethod("is" + capitalized);
-      } catch (Throwable t) {
-      }
-
-      try {
-        if ((getter == null) || !getter.getReturnType().equals(setter.getParameterTypes()[0]))
-          getter = m.getDeclaringClass().getMethod("get" + capitalized);
-      } catch (Throwable t) {
-      }
-    } else {
-      getter = m;
-
-      try {
-        setter = m.getDeclaringClass().getMethod("set" + capitalized, getter.getReturnType());
-      } catch (Throwable t) {
-      }
-    }
-
-    try {
-      // NOTE: PropertyDescriptor(propertyName, class) is buggy. 
-      // Hence all the work above to figure out getter and setter.
-      return new PropertyDescriptor(propName, getter, setter);
-    } catch (IntrospectionException e) {
-      throw new OtmException("Failed to create a PropertyDescriptor for '" + propName + "' from '"
-                             + m.toGenericString() + "'", e);
-    }
-  }
-
-  private static String getCapitalizedPropertyName(Method m) {
-    if (Modifier.isStatic(m.getModifiers()))
-      return null;
-
-    if (m.getName().startsWith("set") && (m.getParameterTypes().length == 1))
-      return m.getName().substring(3);
-
-    if (m.getName().startsWith("get") && (m.getParameterTypes().length == 0))
-      return m.getName().substring(3);
-
-    if (m.getName().startsWith("is") && (m.getParameterTypes().length == 0))
-      return m.getName().substring(2);
-
-    return null;
-  }
-
-  private static void validate(PropertyDescriptor property, ClassDefinition def, Method m)
-                        throws OtmException {
-    Method setter = property.getWriteMethod();
-    Method getter = property.getReadMethod();
-
-    if (!m.equals(setter) && !m.equals(getter))
-      throw new OtmException("'" + m.toGenericString() + "' is not a getter or setter for '"
-                             + property.getName() + "'");
-
-    if (setter == null)
-      throw new OtmException("Missing setter for property '" + property.getName() + "' in "
-                             + m.getDeclaringClass());
-
-    if ((getter == null) && !(def instanceof ViewDefinition))
-      throw new OtmException("Missing getter for property '" + property.getName() + "' in "
-                             + m.getDeclaringClass());
-
-    if (Modifier.isFinal(setter.getModifiers()))
-      throw new OtmException("Setter can't be 'final' for  '" + property.getName() + "' in "
-                             + m.getDeclaringClass());
-
-    if ((getter != null) && Modifier.isFinal(setter.getModifiers()))
-      throw new OtmException("Getter can't be 'final' for  '" + property.getName() + "' in "
-                             + m.getDeclaringClass());
-  }
-
   private void buildSupersedes(EntityDefinition def, Map<String, String> supersedes) {
     if (def.getSuper() != null) {
       EntityDefinition sdef = (EntityDefinition) sf.getDefinition(def.getSuper());
@@ -455,6 +256,34 @@ public class AnnotationClassMetaFactory {
           supersedes.put(pd.getLocalName(), prop); // overwrite super-class
       }
     }
+  }
+
+  private void addGenericsSyntheticProps(ClassDefinition def, Class clazz,
+                                         Map<String, PropertyInfo> properties)
+                                  throws OtmException {
+    for (Method m : clazz.getSuperclass().getDeclaredMethods()) {
+      if (!isAnnotated(m))
+        continue;
+
+      Property property = Property.toProperty(m);
+
+      if ((property == null) || properties.containsKey(property.getName()))
+        continue;
+
+      property = property.resolveGenericsType(clazz);
+      if (property != null)
+        properties.put(property.getName(), new PropertyInfo(def, property));
+    }
+  }
+
+  private static boolean isAnnotated(Method method) {
+    String ours = Id.class.getPackage().getName();
+
+    for (Annotation a : method.getAnnotations())
+      if (a.annotationType().getPackage().getName().equals(ours))
+        return true;
+
+    return false;
   }
 
   private static String getName(Class<?> clazz) {
@@ -491,68 +320,39 @@ public class AnnotationClassMetaFactory {
     return getName(clazz);
   }
 
+  private static void validate(Property property, ClassDefinition def)
+                throws OtmException {
+    Method setter = property.getWriteMethod();
+    Method getter = property.getReadMethod();
+
+    if (setter == null)
+      throw new OtmException("Missing setter for property " + property);
+
+    if ((getter == null) && !(def instanceof ViewDefinition))
+      throw new OtmException("Missing getter for property " + property);
+
+    if (Modifier.isFinal(setter.getModifiers()))
+      throw new OtmException("Setter can't be 'final' for " + property);
+
+    if ((getter != null) && Modifier.isFinal(getter.getModifiers()))
+      throw new OtmException("Getter can't be 'final' for " + property);
+  }
+
   private static class PropertyInfo {
     final ClassDefinition cd;
+    final Property        property;
     final String          name;
-    final String          localName;
-    final Method          getter;
-    final Method          setter;
-    final Class<?>        ptype;
-    final Class<?>        type;
-    final boolean         isArray;
-    final boolean         isCollection;
     String                supersedes;
 
-    public PropertyInfo(ClassDefinition cd, PropertyDescriptor property)
-                 throws OtmException {
-      this(cd, property.getName(), property.getReadMethod(), property.getWriteMethod(),
-           property.getPropertyType(), null);
-    }
-
-    public PropertyInfo(ClassDefinition cd, String localName, Method getter, Method setter,
-                        Class<?> ptype, Class<?> type)
+    public PropertyInfo(ClassDefinition cd, Property property)
                  throws OtmException {
       this.cd             = cd;
-      this.localName      = localName;
-      this.getter         = getter;
-      this.setter         = setter;
-      this.ptype          = ptype;
-
-      this.name           = cd.getName() + ":" + localName;
-
-      this.isArray        = ptype.isArray();
-      this.isCollection   = Collection.class.isAssignableFrom(ptype);
-
-      this.type           = (type != null) ? type
-                            : ((isArray ? ptype.getComponentType()
-                                : ((isCollection)
-                                   ? collectionType(setter.getGenericParameterTypes()[0]) : ptype)));
+      this.property       = property;
+      this.name           = cd.getName() + ":" + property.getName();
     }
 
     public void setSupersedes(String supersedes) {
       this.supersedes = supersedes;
-    }
-
-    private Class<?> getDeclaringClass() {
-      return setter.getDeclaringClass();
-    }
-
-    private static Class collectionType(Type type) {
-      Class result = Object.class;
-
-      if (type instanceof ParameterizedType) {
-        ParameterizedType ptype = (ParameterizedType) type;
-        Type[]            targs = ptype.getActualTypeArguments();
-
-        if ((targs.length > 0) && (targs[0] instanceof Class))
-          result = (Class) targs[0];
-
-        if ((targs.length > 0) && (targs[0] instanceof TypeVariable)
-             && ((TypeVariable) targs[0]).getBounds()[0] instanceof Class)
-          result = (Class) ((TypeVariable) targs[0]).getBounds()[0];
-      }
-
-      return result;
     }
 
     public String getName() {
@@ -560,16 +360,17 @@ public class AnnotationClassMetaFactory {
     }
 
     public String toString() {
-      return "'" + localName + "' in " + getDeclaringClass();
+      return property.toString();
     }
 
     public PropertyDefinition getDefinition(SessionFactory sf, String uriPrefix)
                                      throws OtmException {
       GeneratedValue gv   = null;
       Annotation     ann  = null;
+      Class<?>       decl = null;
       String         ours = Id.class.getPackage().getName();
 
-      for (Method m : new Method[] { setter, getter }) {
+      for (Method m : new Method[] { property.getWriteMethod(), property.getReadMethod() }) {
         if (m == null)
           continue;
 
@@ -577,11 +378,16 @@ public class AnnotationClassMetaFactory {
           if (a instanceof GeneratedValue)
             gv = (GeneratedValue) a;
           else if (a.annotationType().getPackage().getName().equals(ours)) {
-            if (ann != null)
-              throw new OtmException("Only one of @Id, @Predicate, @Blob, @Projection, @PredicateMap"
-                                     + " or @Embedded can be applied to " + this);
+            if (ann != null) {
+              if (!ann.getClass().equals(a.getClass())
+                   || !decl.isAssignableFrom(m.getDeclaringClass())
+                   || (decl == m.getDeclaringClass()))
+                throw new OtmException("Only one of @Id, @Predicate, @Blob, @Projection, @PredicateMap"
+                                       + " or @Embedded can be applied to " + this);
+            }
 
-            ann = a;
+            ann    = a;
+            decl   = m.getDeclaringClass();
           }
         }
       }
@@ -643,9 +449,9 @@ public class AnnotationClassMetaFactory {
       if (pre.equals("")) {
         pre   = ((uriPrefix == null) || uriPrefix.equals("")) ? Rdf.topaz : uriPrefix;
         // Compute default uriPrefix: Rdf.topaz/clazz/generatorClass#
-        pre   = Rdf.topaz + getDeclaringClass().getName() + '/' + localName + '#';
+        pre   = Rdf.topaz + property.getContainingClass().getName() + '/' + property.getName() + '#';
 
-        //pre = pre + cd.getName() + '/' + localName + '/';
+        //pre = pre + cd.getName() + '/' + property.getName() + '/';
       } else {
         try {
           // Validate that we have a valid uri
@@ -664,6 +470,7 @@ public class AnnotationClassMetaFactory {
     public RdfDefinition getRdfDefinition(SessionFactory sf, String ns, Predicate rdf,
                                           IdentifierGenerator generator)
                                    throws OtmException {
+      Class<?> type = property.getComponentType();
       String ref = ((rdf != null) && !"".equals(rdf.ref())) ? rdf.ref() : null;
 
       if (ref == null)
@@ -671,7 +478,7 @@ public class AnnotationClassMetaFactory {
 
       String uri =
         ((rdf != null) && !"".equals(rdf.uri())) ? sf.expandAlias(rdf.uri())
-        : (((ref == null) && (ns != null)) ? (ns + localName) : null);
+        : (((ref == null) && (ns != null)) ? (ns + property.getName()) : null);
 
       if ((uri == null) && (ref == null))
         throw new OtmException("Missing attribute 'uri' in @Predicate for " + this);
@@ -751,7 +558,8 @@ public class AnnotationClassMetaFactory {
 
     public VarDefinition getVarDefinition(SessionFactory sf, Projection proj)
                                    throws OtmException {
-      String     var        = "".equals(proj.value()) ? localName : proj.value();
+      Class<?> type = property.getComponentType();
+      String     var        = "".equals(proj.value()) ? property.getName() : proj.value();
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
@@ -765,6 +573,7 @@ public class AnnotationClassMetaFactory {
 
     public IdDefinition getIdDefinition(SessionFactory sf, Id id, IdentifierGenerator generator)
                                  throws OtmException {
+      Class<?> type = property.getComponentType();
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
         throw new OtmException("@Id property '" + this + "' must be a String, URI or URL.");
 
@@ -773,7 +582,7 @@ public class AnnotationClassMetaFactory {
 
     public BlobDefinition getBlobDefinition(SessionFactory sf, Blob blob)
                                      throws OtmException {
-      if (!isArray || !type.equals(Byte.TYPE))
+      if (!property.isArray() || !property.getComponentType().equals(Byte.TYPE))
         throw new OtmException("@Blob may only be applied to a 'byte[]' property : " + this);
 
       return new BlobDefinition(getName());
@@ -782,9 +591,10 @@ public class AnnotationClassMetaFactory {
     public RdfDefinition getPredicateMapDefinition(SessionFactory sf, PredicateMap pmap)
                                             throws OtmException {
       String model = null; // TODO: allow predicate maps from other models
-      Type   type  = setter.getGenericParameterTypes()[0];
+      Type   type  = property.getGenericType();
 
-      if (Map.class.isAssignableFrom(getter.getReturnType()) && (type instanceof ParameterizedType)) {
+      if (Map.class.isAssignableFrom(property.getPropertyType()) 
+          && (type instanceof ParameterizedType)) {
         ParameterizedType ptype = (ParameterizedType) type;
         Type[]            targs = ptype.getActualTypeArguments();
 
@@ -810,15 +620,14 @@ public class AnnotationClassMetaFactory {
 
     public EmbeddedDefinition getEmbeddedDefinition(SessionFactory sf)
                                              throws OtmException {
-      Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
+      boolean simpleType = sf.getSerializerFactory().mustSerialize(property.getComponentType());
 
-      if (isArray || isCollection || (serializer != null))
+      if (property.isArray() || property.isCollection() || simpleType)
         throw new OtmException("@Embedded class property " + this
                                + " can't be an array, collection or a simple data type");
 
-      sf.preload(type);
-
-      ClassMetadata cm = sf.getClassMetadata(type);
+      sf.preload(property.getComponentType());
+      ClassMetadata cm = sf.getClassMetadata(property.getComponentType());
 
       return new EmbeddedDefinition(getName(), cm.getName());
     }
@@ -826,9 +635,10 @@ public class AnnotationClassMetaFactory {
     public FieldBinder getBinder(SessionFactory sf, PropertyDefinition pd)
                           throws OtmException {
       if (pd instanceof EmbeddedDefinition)
-        return new EmbeddedClassFieldBinder(getter, setter);
+        return new EmbeddedClassFieldBinder(property);
 
       Serializer serializer;
+      Class<?> type = property.getComponentType();
 
       if (pd instanceof BlobDefinition)
         serializer = null;
@@ -847,13 +657,7 @@ public class AnnotationClassMetaFactory {
       } else
         serializer = sf.getSerializerFactory().getSerializer(type, null);
 
-      if (isArray)
-        return new ArrayFieldBinder(getter, setter, serializer, type);
-
-      if (isCollection)
-        return new CollectionFieldBinder(getter, setter, serializer, type);
-
-      return new ScalarFieldBinder(getter, setter, serializer);
+      return AbstractFieldBinder.getBinder(property, serializer);
     }
   }
 }

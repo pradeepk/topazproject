@@ -32,6 +32,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
 import org.topazproject.otm.annotations.Entity;
@@ -79,12 +80,13 @@ public class GenericsTest extends TestCase {
   private void testCm(String A, String B) {
 
     ClassMetadata cm = sf.getClassMetadata(A);
-    assertEquals(2, cm.getRdfMappers().size());
+    int expected = "A".equals(A) ? 3 : 2;
+    assertEquals(expected, cm.getRdfMappers().size());
     assertNotNull(cm.getMapperByName("assoc"));
     assertNotNull(cm.getMapperByName("u"));
 
     cm = sf.getClassMetadata(B);
-    assertEquals(2, cm.getRdfMappers().size());
+    assertEquals(expected, cm.getRdfMappers().size());
     assertNotNull(cm.getMapperByName("assoc"));
     assertNotNull(cm.getMapperByName("u"));
   }
@@ -112,6 +114,29 @@ public class GenericsTest extends TestCase {
     assertFalse(def.refersSameRange(base));
   }
 
+  private void testV(String A, String B) {
+    Object[] bvals = new Object[] {"a:v", true, "test", false, true, null, "Object",
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), true};
+
+    Object[] vals = new Object[] {"a:v", true, "test", false, false, Rdf.xsd + "int", null,
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), false};
+
+
+
+    RdfDefinition base, def;
+    base = (RdfDefinition)sf.getDefinition(A + ":v");
+    def = (RdfDefinition)sf.getDefinition(B + ":v");
+
+    def.resolveReference(sf);
+    compare(def, vals);
+    compare(base, bvals);
+
+    assertTrue(def.refersSameGraphNodes(base));
+    assertFalse(def.refersSameRange(base));
+  }
+
   private void test(String A, String B) {
     testAssoc(A, B);
     testU(A, B);
@@ -123,6 +148,7 @@ public class GenericsTest extends TestCase {
     sf.preload(Extended.class);
 
     test("A", "B");
+    testV("A", "B");
   }
 
   public void test02() {
@@ -148,18 +174,23 @@ public class GenericsTest extends TestCase {
 
   @UriPrefix("a:")
   @Entity(name="A")
-  public static class A<T extends Assoc, U> extends Base {
+  public static class A<T extends Assoc, U, V> extends Base {
     public T getAssoc() {return null;}
     @Predicate(model="test")
     public void setAssoc(T a) {}
     public U getU() { return null; }
     @Predicate(model="test")
     public void setU(U a) {}
+    public V getV() { return null; }
+    @Predicate(model="test")
+    public void setV(U a) {}
   }
 
   @UriPrefix("b:")
   @Entity(name="B")
-  public static class B extends A<Extended, String> {
+  public static class B extends A<Extended, String, Integer> {
+    @Predicate(dataType="xsd:int")
+    public Integer getV() { return null; }
   }
 
   @UriPrefix("a:")

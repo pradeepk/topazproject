@@ -18,8 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.beans.Introspector;
-
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
@@ -42,28 +40,17 @@ import org.topazproject.otm.serializer.Serializer;
  */
 public abstract class AbstractFieldBinder implements FieldBinder {
   private final Serializer serializer;
-  private final Method     getter;
-  private final Method     setter;
-  private final String     name;
-  private final Class      type;
-  private final Class      componentType;
+  private final Property   property;
 
   /**
    * Creates a new AbstractFieldBinder object for a regular class.
    *
-   * @param getter the field get method (cannot be null)
-   * @param setter the field set method (cannot be null)
+   * @param property the java beans property
    * @param serializer the serializer or null
-   * @param componentType of arrays and collections or type of functional properties
    */
-  public AbstractFieldBinder(Method getter, Method setter, Serializer serializer,
-                             Class componentType) {
-    this.getter          = getter;
-    this.setter          = setter;
-    this.serializer      = serializer;
-    this.name            = Introspector.decapitalize(setter.getName().substring(3));
-    this.type            = setter.getParameterTypes()[0];
-    this.componentType   = componentType;
+  public AbstractFieldBinder(Property property, Serializer serializer) {
+    this.property     = property;
+    this.serializer   = serializer;
   }
 
   /*
@@ -73,14 +60,14 @@ public abstract class AbstractFieldBinder implements FieldBinder {
     Object value;
 
     try {
-      value = getter.invoke(o);
+      value = getGetter().invoke(o);
 
       if ((value == null) && create) {
-        value = type.newInstance();
+        value = property.getPropertyType().newInstance();
         setRawValue(o, value);
       }
     } catch (Exception e) {
-      throw new OtmException("Failed to get a value from '" + getter.toGenericString() + "'", e);
+      throw new OtmException("Failed to get a value from '" + getGetter().toGenericString() + "'", e);
     }
 
     return value;
@@ -91,12 +78,13 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    */
   public void setRawValue(Object o, Object value) throws OtmException {
     try {
-      setter.invoke(o, value);
+      getSetter().invoke(o, value);
     } catch (Exception e) {
-      if ((value == null) && type.isPrimitive())
+      if ((value == null) && property.getPropertyType().isPrimitive())
         setRawValue(o, 0);
       else
-        throw new OtmException("Failed to set a value for '" + setter.toGenericString() + "'", e);
+        throw new OtmException("Failed to set a value for '" + getSetter().toGenericString() + "'",
+                               e);
     }
   }
 
@@ -104,35 +92,35 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public Method getGetter() {
-    return getter;
+    return property.getReadMethod();
   }
 
   /*
    * inherited javadoc
    */
   public Method getSetter() {
-    return setter;
+    return property.getWriteMethod();
   }
 
   /*
    * inherited javadoc
    */
   public String getName() {
-    return name;
+    return property.getName();
   }
 
   /*
    * inherited javadoc
    */
   public Class getType() {
-    return type;
+    return property.getPropertyType();
   }
 
   /*
    * inherited javadoc
    */
   public Class getComponentType() {
-    return componentType;
+    return property.getComponentType();
   }
 
   /*
@@ -253,9 +241,30 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public String toString() {
-    return getClass().getName() + "[property=" + name + ", type="
+    Class<?> type          = property.getPropertyType();
+    Class<?> componentType = property.getComponentType();
+
+    return getClass().getName() + "[property=" + property.getName() + ", type="
            + ((type != null) ? type.getName() : "-null-") + ", componentType="
            + ((componentType != null) ? componentType.getName() : "-null-") + ", serializer="
            + serializer + "]";
+  }
+
+  /**
+   * Create a Binder for the given Property.
+   *
+   * @param property the property
+   * @param serializer the serializer to use
+   *
+   * @return a newly created binder instance
+   */
+  public static FieldBinder getBinder(Property property, Serializer serializer) {
+    if (property.isArray())
+      return new ArrayFieldBinder(property, serializer);
+
+    if (property.isCollection())
+      return new CollectionFieldBinder(property, serializer);
+
+    return new ScalarFieldBinder(property, serializer);
   }
 }

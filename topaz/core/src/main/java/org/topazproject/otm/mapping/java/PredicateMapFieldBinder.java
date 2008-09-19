@@ -18,8 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.Method;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -34,11 +32,10 @@ public class PredicateMapFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new PredicateMapFieldBinder object.
    *
-   * @param getter the field get method
-   * @param setter the field set method
+   * @param property the java bean property
    */
-  public PredicateMapFieldBinder(Method getter, Method setter) {
-    super(getter, setter, null, null);
+  public PredicateMapFieldBinder(Property property) {
+    super(property, null);
   }
 
   /**
@@ -60,7 +57,7 @@ public class PredicateMapFieldBinder extends AbstractFieldBinder {
    * Sets the value from a 'raw' map.
    *
    * @param o the object
-   * @param vals the values to be set 
+   * @param vals the values to be set
    *
    * @throws OtmException if a property's value cannot be set
    */

@@ -33,14 +33,11 @@ import org.topazproject.otm.mapping.java.ArrayFieldBinder;
 import org.topazproject.otm.mapping.java.CollectionFieldBinder;
 import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 import org.topazproject.otm.mapping.java.FieldBinder;
+import org.topazproject.otm.mapping.java.Property;
 import org.topazproject.otm.mapping.java.ScalarFieldBinder;
-import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapperImpl;
 import org.topazproject.otm.mapping.IdMapperImpl;
 import org.topazproject.otm.mapping.EmbeddedMapperImpl;
-import org.topazproject.otm.metadata.EmbeddedDefinition;
-import org.topazproject.otm.metadata.IdDefinition;
-import org.topazproject.otm.metadata.RdfDefinition;
 import org.topazproject.otm.serializer.Serializer;
 
 import org.apache.commons.logging.Log;
@@ -196,14 +193,16 @@ public class FieldDef {
     if (maxCard == 1 && embedded) {
       def cm = classType.toClass()
       def metaDef = new EmbeddedDefinition(dn, cm.getName())
-      def binders = [(EntityMode.POJO) : new EmbeddedClassFieldBinder(get, set)]
+      def property = new Property(cls, name, get, set, f.getType())
+      def binders = [(EntityMode.POJO) : new EmbeddedClassFieldBinder(property)]
       def container = new EmbeddedMapperImpl(metaDef, binders, cm)
       m = cm.rdfMappers.collect{ container.promote(it) }
       m.add(container)
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
-      FieldBinder l = new ScalarFieldBinder(get, set, ser);
+      def property = new Property(cls, name, get, set, f.getType())
+      FieldBinder l = new ScalarFieldBinder(property, ser);
       if (ser != null)
         ft = null;
       if (isId)
@@ -218,11 +217,12 @@ ct, ft, cm?.getName(), (ser == null) || inverse || "OBJECT".equals(propType)), [
       ClassMetadata cm = (ser == null) ? getAssoc(rdf) : null;
       if (ser != null)
         ft = null;
+      def property = new Property(cls, name, get, set, f.getType(), compType)
       FieldBinder l;
       if (collType.toLowerCase() == 'array')
-        l = new ArrayFieldBinder(get, set, ser, compType);
+        l = new ArrayFieldBinder(property, ser);
       else
-        l = new CollectionFieldBinder(get, set, ser, compType);
+        l = new CollectionFieldBinder(property, ser);
 
       m = [new RdfMapperImpl(new RdfDefinition(dn, null, null, pred, dtype, inverse, model, mt, owned,
                              idGen, ct, ft, cm?.getName(),

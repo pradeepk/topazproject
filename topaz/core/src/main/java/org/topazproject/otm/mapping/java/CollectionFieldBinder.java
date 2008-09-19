@@ -20,7 +20,6 @@ package org.topazproject.otm.mapping.java;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 
 import java.util.AbstractList;
@@ -52,14 +51,11 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
   /**
    * Creates a new CollectionFieldBinder object.
    *
-   * @param getter the field get method (cannot be null)
-   * @param setter the field set method (cannot be null)
+   * @param property the bean property 
    * @param serializer the serializer or null
-   * @param componentType the collection component type
    */
-  public CollectionFieldBinder(Method getter, Method setter, Serializer serializer,
-                               Class componentType) {
-    super(getter, setter, serializer, componentType);
+  public CollectionFieldBinder(Property property, Serializer serializer) {
+    super(property, serializer);
   }
 
   /**
@@ -277,7 +273,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
            ? ((OtmInvocationHandler) Proxy.getInvocationHandler(val)).getRawFieldData() : null;
   }
 
-/**
+  /**
    * A marker interface to detect when it is ours
    */
   private static interface OtmInvocationHandler extends InvocationHandler {
