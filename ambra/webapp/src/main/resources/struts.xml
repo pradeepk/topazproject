@@ -416,7 +416,7 @@
       </result>
     </action>
 
-    <action name="fetchFirstRepresentation" class="org.topazproject.ambra.article.action.FetchObjectAction" method="fetchFirstObject">
+    <action name="fetchSingleRepresentation" class="org.topazproject.ambra.article.action.FetchObjectAction" method="fetchSingleRepresentation">
       <result name="success" type="ambraStream">
         <param name="isAttachment">true</param>
       </result>

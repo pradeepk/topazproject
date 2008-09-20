@@ -80,12 +80,15 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   /**
-   * Return the first representation of the uri
+   * Fetch the only representation of the object. If the object does not exist or
+   * it has no representations then an error is returned; if there are more than 1
+   * representations a random representation is chosen.
+   *
    * @return webwork status code
    * @throws Exception Exception
    */
   @Transactional(readOnly = true)
-  public String fetchFirstObject() throws Exception {
+  public String fetchSingleRepresentation() throws Exception {
     final ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
 
     if (null == objectInfo) {
@@ -98,6 +101,9 @@ public class FetchObjectAction extends BaseActionSupport {
       addActionMessage("No representations found for uri: " + uri);
       return ERROR;
     }
+    if (representations.size() > 1)
+      log.warn("Found " + representations.size() + " representations for '" + uri +
+               "' where only one was expected");
 
     setOutputStreamAndAttributes(representations.iterator().next());
     return SUCCESS;

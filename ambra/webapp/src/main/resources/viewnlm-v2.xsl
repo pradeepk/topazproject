@@ -1937,7 +1937,7 @@
    <xsl:element name="a">
      <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
      <xsl:attribute name="href">
-      <xsl:value-of select="concat($pubAppContext,'/article/fetchFirstRepresentation.action?uri=',
+      <xsl:value-of select="concat($pubAppContext,'/article/fetchSingleRepresentation.action?uri=',
                                    $objURI)"/>
     </xsl:attribute>
     <xsl:apply-templates select="label"/>
