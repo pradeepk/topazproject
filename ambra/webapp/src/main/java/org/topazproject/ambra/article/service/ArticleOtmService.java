@@ -80,7 +80,7 @@ public class ArticleOtmService {
    * @param force   if true don't check for duplicate and instead always (re-)ingest
    * @return the ingested article
    * @throws IngestException IngestException
-   * @throws DuplicateIdException DuplicateIdException
+   * @throws DuplicateArticleIdException DuplicateArticleIdException
    */
   @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(DataSource article, boolean force)
@@ -372,7 +372,7 @@ public class ArticleOtmService {
    *
    * @param uri URI of Article to get.
    * @return Article with specified URI or null if not found.
-   * @throws NoSuchArticleIDException NoSuchArticleIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   @Transactional(readOnly = true)
   public Article getArticle(final URI uri) throws NoSuchArticleIdException {
