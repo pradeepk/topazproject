@@ -75,6 +75,8 @@ public class ArticleOtmService {
    * @return the ingested article
    * @throws IngestException IngestException
    * @throws DuplicateArticleIdException DuplicateArticleIdException
+   * @throws ServiceException ServiceException
+   * @throws IOException IOException
    */
   @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(DataSource article, boolean force)
@@ -127,6 +129,7 @@ public class ArticleOtmService {
    * @param article the uri of the article
    * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
+   * @throws ServiceException ServiceException
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void delete(String article)
