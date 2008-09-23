@@ -78,7 +78,7 @@ public class ArticleOtmService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(DataSource article, boolean force)
-          throws DuplicateArticleIdException, IngestException, RemoteException, ServiceException,
+          throws DuplicateArticleIdException, IngestException, ServiceException,
                  IOException {
     pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
