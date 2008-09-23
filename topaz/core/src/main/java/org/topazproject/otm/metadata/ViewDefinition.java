@@ -63,12 +63,11 @@ public class ViewDefinition extends ClassDefinition {
   /*
    * inherited javadoc
    */
-  protected ClassMetadata buildClassMetadata(SessionFactory sf, ClassDefinition ref)
-                                      throws OtmException {
+  public ClassMetadata buildClassMetadata(SessionFactory sf) throws OtmException {
     IdMapper              idField = null;
     Collection<VarMapper> fields  = new ArrayList<VarMapper>();
 
-    ClassBindings         bin     = sf.getClassBindings(ref.getName());
+    ClassBindings         bin     = sf.getClassBindings(getName());
 
     for (String prop : bin.getProperties()) {
       Definition def = sf.getDefinition(prop);
@@ -89,13 +88,13 @@ public class ViewDefinition extends ClassDefinition {
         idField = new IdMapperImpl((IdDefinition) def, binders);
       } else {
         throw new OtmException("Invalid definition type '" + def.getClass() + "' for property "
-                               + def.getName() + " in " + ref.getName());
+                               + def.getName() + " in " + getName());
       }
     }
 
     if ((query != null) && (idField == null))
       throw new OtmException("Missing Id field in " + getName());
 
-    return new ClassMetadata(bin.getBinders(), ref.getName(), query, idField, fields);
+    return new ClassMetadata(bin.getBinders(), getName(), query, idField, fields);
   }
 }

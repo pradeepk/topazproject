@@ -73,6 +73,7 @@ public class DOITypeResolver {
     sf.setTripleStore(new ItqlStore(mulgaraUri));
     sf.preload(Resource.class);
     sf.preload(Annotation.class);
+    sf.validate();
     setGraph(GRAPH);
   }
 

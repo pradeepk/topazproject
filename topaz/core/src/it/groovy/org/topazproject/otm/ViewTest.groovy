@@ -50,6 +50,7 @@ public class ViewTest extends AbstractTest {
     rdf.sessFactory.preload(ViewFour.class);
     rdf.sessFactory.preload(ViewFourPart.class);
     rdf.sessFactory.preload(ViewFive.class);
+    rdf.sessFactory.validate()
   }
 
   void testGet() {

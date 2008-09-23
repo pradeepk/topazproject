@@ -97,7 +97,7 @@ public class EntityDefinition extends ClassDefinition {
   /*
    * inherited javadoc
    */
-  protected ClassMetadata buildClassMetadata(SessionFactory sf, ClassDefinition ref)
+  public ClassMetadata buildClassMetadata(SessionFactory sf)
                                       throws OtmException {
     Set<String>                types     = Collections.emptySet();
     String                     type      = null;
@@ -131,7 +131,7 @@ public class EntityDefinition extends ClassDefinition {
     if (this.graph != null)
       graph = this.graph;
 
-    ClassBindings bin = sf.getClassBindings(ref.getName());
+    ClassBindings bin = sf.getClassBindings(getName());
 
     for (String prop : bin.getProperties()) {
       Definition def = sf.getDefinition(prop);
@@ -157,12 +157,12 @@ public class EntityDefinition extends ClassDefinition {
         fields.add(new RdfMapperImpl((RdfDefinition) def, binders));
       } else if (def instanceof IdDefinition) {
         if (idField != null)
-          throw new OtmException("Duplicate Id field " + def.getName() + " in " + ref.getName());
+          throw new OtmException("Duplicate Id field " + def.getName() + " in " + getName());
 
         idField = new IdMapperImpl((IdDefinition) def, binders);
       } else if (def instanceof BlobDefinition) {
         if (blobField != null)
-          throw new OtmException("Duplicate Blob field " + def.getName() + " in " + ref.getName());
+          throw new OtmException("Duplicate Blob field " + def.getName() + " in " + getName());
 
         blobField = new BlobMapperImpl((BlobDefinition) def, binders);
       } else if (def instanceof EmbeddedDefinition) {
@@ -181,7 +181,7 @@ public class EntityDefinition extends ClassDefinition {
         if (ecm.getIdField() != null) {
           if (idField != null)
             throw new OtmException("Duplicate Id field " + ecm.getIdField().getName() + " in "
-                                   + ref.getName());
+                                   + getName());
 
           idField = (IdMapper) em.promote(ecm.getIdField());
         }
@@ -189,19 +189,19 @@ public class EntityDefinition extends ClassDefinition {
         if (ecm.getBlobField() != null) {
           if (blobField != null)
             throw new OtmException("Duplicate Blob field " + ecm.getBlobField().getName() + " in "
-                                   + ref.getName());
+                                   + getName());
 
           blobField = (BlobMapper) em.promote(ecm.getBlobField());
         }
       } else {
         throw new OtmException("Invalid definition type '" + def.getClass() + "' for property "
-                               + def.getName() + " in " + ref.getName());
+                               + def.getName() + " in " + getName());
       }
     }
 
     ignoreIdGetter(bin.getBinders(), idField);
 
-    return new ClassMetadata(bin.getBinders(), ref.getName(), type, types, graph, idField, fields,
+    return new ClassMetadata(bin.getBinders(), getName(), type, types, graph, idField, fields,
                              blobField, sup, embeds);
   }
 

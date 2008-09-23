@@ -171,6 +171,7 @@ public class QueryTest extends TestCase {
       SessionFactory factory = new SessionFactoryImpl();
       factory.preload(Article.class);
       factory.preload(Reply.class);
+      factory.validate();
 
       ModelConfig mc = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
       factory.addModel(mc);

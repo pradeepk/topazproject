@@ -35,7 +35,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
@@ -58,12 +57,13 @@ import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.java.ClassBinder;
+import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 import org.topazproject.otm.mapping.java.Property;
 import org.topazproject.otm.mapping.java.PropertyBinderFactory;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
- * A factory that processes annotations on a class and creates ClassMetadata for it.
+ * A factory that processes annotations on a class.
  *
  * @author Pradeep Krishnan
  */
@@ -85,17 +85,15 @@ public class AnnotationClassMetaFactory {
    *
    * @param clazz the class with annotations
    *
-   * @return a newly created ClassMetadata object
-   *
    * @throws OtmException on an error
    */
-  public ClassMetadata create(Class clazz) throws OtmException {
+  public void create(Class clazz) throws OtmException {
     addAliases(clazz);
 
     if ((clazz.getAnnotation(View.class) != null) || (clazz.getAnnotation(SubView.class) != null))
-      return createView(clazz);
-
-    return createEntity(clazz);
+      createView(clazz);
+    else
+      createEntity(clazz);
   }
 
   private void addAliases(Class<?> clazz) throws OtmException {
@@ -114,7 +112,7 @@ public class AnnotationClassMetaFactory {
     }
   }
 
-  private ClassMetadata createEntity(Class<?> clazz) throws OtmException {
+  private void createEntity(Class<?> clazz) throws OtmException {
     String type      = null;
     String model     = null;
     String uriPrefix = null;
@@ -145,10 +143,10 @@ public class AnnotationClassMetaFactory {
     if (uriPrefixAnn != null)
       uriPrefix = sf.expandAlias(uriPrefixAnn.value());
 
-    return createMeta(ed, clazz, uriPrefix);
+    createMeta(ed, clazz, uriPrefix);
   }
 
-  private ClassMetadata createView(Class<?> clazz) throws OtmException {
+  private void createView(Class<?> clazz) throws OtmException {
     String name;
     String query = null;
 
@@ -164,11 +162,11 @@ public class AnnotationClassMetaFactory {
 
     ViewDefinition vd = new ViewDefinition(name, query);
 
-    return createMeta(vd, clazz, null);
+    createMeta(vd, clazz, null);
   }
 
-  private ClassMetadata createMeta(ClassDefinition def, Class<?> clazz, String uriPrefix)
-                            throws OtmException {
+  private void createMeta(ClassDefinition def, Class<?> clazz, String uriPrefix)
+                   throws OtmException {
     sf.addDefinition(def);
 
     ClassBindings bin = sf.getClassBindings(def.getName());
@@ -188,7 +186,8 @@ public class AnnotationClassMetaFactory {
       PropertyInfo pi = properties.get(property.getName());
 
       if (pi != null) {
-        if (method.equals(pi.property.getReadMethod()) || method.equals(pi.property.getWriteMethod()))
+        if (method.equals(pi.property.getReadMethod())
+             || method.equals(pi.property.getWriteMethod()))
           continue;
 
         throw new OtmException("Duplicate property " + property);
@@ -225,8 +224,6 @@ public class AnnotationClassMetaFactory {
       sf.addDefinition(d);
       bin.addBinderFactory(new PropertyBinderFactory(fi.name, fi.property));
     }
-
-    return def.buildClassMetadata(sf);
   }
 
   private void buildSupersedes(EntityDefinition def, Map<String, String> supersedes) {
@@ -262,6 +259,7 @@ public class AnnotationClassMetaFactory {
         continue;
 
       property = property.resolveGenericsType(clazz);
+
       if (property != null)
         properties.put(property.getName(), new PropertyInfo(def, property));
     }
@@ -299,7 +297,14 @@ public class AnnotationClassMetaFactory {
     return getModel(clazz.getSuperclass());
   }
 
-  private static String getEntityName(Class<?> clazz) {
+  /**
+   * Gets the entity name for a class.
+   *
+   * @param clazz the clazz to look-up
+   *
+   * @return name from @Entity or the default short-name of the clazz.
+   */
+  public static String getEntityName(Class<?> clazz) {
     if (clazz == null)
       return null;
 
@@ -312,7 +317,7 @@ public class AnnotationClassMetaFactory {
   }
 
   private static void validate(Property property, ClassDefinition def)
-                throws OtmException {
+                        throws OtmException {
     Method setter = property.getWriteMethod();
     Method getter = property.getReadMethod();
 
@@ -337,9 +342,9 @@ public class AnnotationClassMetaFactory {
 
     public PropertyInfo(ClassDefinition cd, Property property)
                  throws OtmException {
-      this.cd             = cd;
-      this.property       = property;
-      this.name           = cd.getName() + ":" + property.getName();
+      this.cd         = cd;
+      this.property   = property;
+      this.name       = cd.getName() + ":" + property.getName();
     }
 
     public void setSupersedes(String supersedes) {
@@ -440,7 +445,8 @@ public class AnnotationClassMetaFactory {
       if (pre.equals("")) {
         pre   = ((uriPrefix == null) || uriPrefix.equals("")) ? Rdf.topaz : uriPrefix;
         // Compute default uriPrefix: Rdf.topaz/clazz/generatorClass#
-        pre   = Rdf.topaz + property.getContainingClass().getName() + '/' + property.getName() + '#';
+        pre   = Rdf.topaz + property.getContainingClass().getName() + '/' + property.getName()
+                + '#';
 
         //pre = pre + cd.getName() + '/' + property.getName() + '/';
       } else {
@@ -462,7 +468,7 @@ public class AnnotationClassMetaFactory {
                                           IdentifierGenerator generator)
                                    throws OtmException {
       Class<?> type = property.getComponentType();
-      String ref = ((rdf != null) && !"".equals(rdf.ref())) ? rdf.ref() : null;
+      String   ref  = ((rdf != null) && !"".equals(rdf.ref())) ? rdf.ref() : null;
 
       if (ref == null)
         ref = supersedes;
@@ -549,7 +555,7 @@ public class AnnotationClassMetaFactory {
 
     public VarDefinition getVarDefinition(SessionFactory sf, Projection proj)
                                    throws OtmException {
-      Class<?> type = property.getComponentType();
+      Class<?>   type       = property.getComponentType();
       String     var        = "".equals(proj.value()) ? property.getName() : proj.value();
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
@@ -565,6 +571,7 @@ public class AnnotationClassMetaFactory {
     public IdDefinition getIdDefinition(SessionFactory sf, Id id, IdentifierGenerator generator)
                                  throws OtmException {
       Class<?> type = property.getComponentType();
+
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
         throw new OtmException("@Id property '" + this + "' must be a String, URI or URL.");
 
@@ -584,8 +591,8 @@ public class AnnotationClassMetaFactory {
       String model = null; // TODO: allow predicate maps from other models
       Type   type  = property.getGenericType();
 
-      if (Map.class.isAssignableFrom(property.getPropertyType()) 
-          && (type instanceof ParameterizedType)) {
+      if (Map.class.isAssignableFrom(property.getPropertyType())
+           && (type instanceof ParameterizedType)) {
         ParameterizedType ptype = (ParameterizedType) type;
         Type[]            targs = ptype.getActualTypeArguments();
 
@@ -618,9 +625,8 @@ public class AnnotationClassMetaFactory {
                                + " can't be an array, collection or a simple data type");
 
       sf.preload(property.getComponentType());
-      ClassMetadata cm = sf.getClassMetadata(property.getComponentType());
 
-      return new EmbeddedDefinition(getName(), cm.getName());
+      return new EmbeddedDefinition(getName(), getEntityName(property.getComponentType()));
     }
   }
 }

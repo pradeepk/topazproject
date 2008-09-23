@@ -87,6 +87,7 @@ public interface SessionFactory {
    * @throws OtmException on an error
    */
   public void preload(Class<?> c) throws OtmException;
+  public void validate() throws OtmException;
 
   /**
    * Gets a previously added definition.

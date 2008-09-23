@@ -141,6 +141,8 @@ public class FedoraBlobTest {
 
     for (Class c : classes)
       factory.preload(c);
+
+    factory.validate();
   }
 
   private void initModels() throws OtmException {

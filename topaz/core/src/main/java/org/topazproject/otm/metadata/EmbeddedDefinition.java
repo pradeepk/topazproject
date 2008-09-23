@@ -18,6 +18,9 @@
  */
 package org.topazproject.otm.metadata;
 
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.SessionFactory;
+
 /**
  * The definition for a property that embeds an entity.
  *
@@ -44,5 +47,15 @@ public class EmbeddedDefinition extends PropertyDefinition {
    */
   public String getEmbedded() {
     return embedded;
+  }
+
+  @Override
+  protected void resolve(SessionFactory sf, Definition def)
+                  throws OtmException {
+    // validate 
+    if (!(sf.getDefinition(embedded) instanceof EntityDefinition))
+      throw new OtmException("Undefined embedded entity '" + embedded + "' in '" + getName()
+                             + "'");
+
   }
 }

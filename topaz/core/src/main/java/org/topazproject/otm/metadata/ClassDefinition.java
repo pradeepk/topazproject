@@ -46,22 +46,6 @@ public abstract class ClassDefinition extends Definition {
    *
    * @throws OtmException on an error
    */
-  public ClassMetadata buildClassMetadata(SessionFactory sf)
-                                   throws OtmException {
-    return buildClassMetadata(sf, this);
-  }
-
-  /**
-   * Build the ClassMetadata for the referee. Bindings of the referee will be used along with
-   * the definitions from here to build the metadata instance;
-   *
-   * @param sf the session factory
-   * @param ref the referee
-   *
-   * @return the newly created class-meta object
-   *
-   * @throws OtmException on an error
-   */
-  protected abstract ClassMetadata buildClassMetadata(SessionFactory sf, ClassDefinition ref)
-                                               throws OtmException;
+  public abstract ClassMetadata buildClassMetadata(SessionFactory sf)
+                                   throws OtmException;
 }

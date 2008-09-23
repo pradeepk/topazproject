@@ -146,6 +146,7 @@ public class GenericsTest extends TestCase {
   public void test01() {
     sf.preload(B.class);
     sf.preload(Extended.class);
+    sf.validate();
 
     test("A", "B");
     testV("A", "B");
@@ -154,6 +155,7 @@ public class GenericsTest extends TestCase {
   public void test02() {
     sf.preload(LB.class);
     sf.preload(Extended.class);
+    sf.validate();
 
     test("LA", "LB");
   }
@@ -161,6 +163,7 @@ public class GenericsTest extends TestCase {
   public void test03() {
     sf.preload(AB.class);
     sf.preload(Extended.class);
+    sf.validate();
 
     test("AA", "AB");
   }

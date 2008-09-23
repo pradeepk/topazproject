@@ -960,6 +960,7 @@ public class CriteriaTest extends AbstractOtmTest {
     log.info("Testing referrer criteria ...");
 
     factory.preload(AnnotationLink.class);
+    factory.validate();
 
     doInSession(new Action() {
         public void run(Session session) throws OtmException {

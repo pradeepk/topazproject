@@ -81,6 +81,7 @@ public class SessionTest extends AbstractOtmTest {
     try {
       initFactory();
       factory.preload(Serial.class);
+      factory.validate();
       initModels();
       setUpData();
     } catch (OtmException e) {

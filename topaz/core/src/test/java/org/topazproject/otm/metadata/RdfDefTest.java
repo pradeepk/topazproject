@@ -43,6 +43,7 @@ public class RdfDefTest extends TestCase {
     sf.preload(A.class);
     sf.preload(B.class);
     sf.preload(Assoc2.class);
+    sf.validate();
 
     ap1 = (RdfDefinition)sf.getDefinition("A:p1");
     ap2 = (RdfDefinition)sf.getDefinition("A:p2");
@@ -51,9 +52,6 @@ public class RdfDefTest extends TestCase {
     bp2 = (RdfDefinition)sf.getDefinition("B:p2");
     bp3 = (RdfDefinition)sf.getDefinition("B:p3");
 
-    bp1.resolveReference(sf);
-    bp2.resolveReference(sf);
-    bp3.resolveReference(sf);
   }
 
   private void compare(RdfDefinition def, Object[] vals) {
@@ -112,6 +110,7 @@ public class RdfDefTest extends TestCase {
 
   public void test04() {
     sf.preload(Journal.class);
+    sf.validate();
   }
 
   @Entity(model="test", name="Base")

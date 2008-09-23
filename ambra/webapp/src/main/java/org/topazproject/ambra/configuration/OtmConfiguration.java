@@ -89,6 +89,8 @@ public class OtmConfiguration {
         log.info("Could not preload class: " + className, ce);
       }
     }
+
+    factory.validate();
   }
 
   /**

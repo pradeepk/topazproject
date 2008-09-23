@@ -156,6 +156,8 @@ public class AmbraDAO {
 
     for (Class c : classes)
       factory.preload(c);
+
+    factory.validate();
   }
 
   /**

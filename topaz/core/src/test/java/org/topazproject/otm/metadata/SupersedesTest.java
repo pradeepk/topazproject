@@ -61,6 +61,7 @@ public class SupersedesTest extends TestCase {
   public void test01() {
     sf.preload(B.class);
     sf.preload(Extended.class);
+    sf.validate();
 
     RdfDefinition assoc, extended;
     assoc = (RdfDefinition)sf.getDefinition("A:object");
@@ -82,6 +83,7 @@ public class SupersedesTest extends TestCase {
   public void test02() {
     sf.preload(B.class);
     sf.preload(Extended.class);
+    sf.validate();
     ClassMetadata cm = sf.getClassMetadata("A");
     assertEquals(1, cm.getRdfMappers().size());
     assertEquals("object", cm.getRdfMappers().iterator().next().getName());
@@ -95,6 +97,7 @@ public class SupersedesTest extends TestCase {
 
   public void test03() {
     sf.preload(S.class);
+    sf.validate();
 
     RdfDefinition base, def;
     base = (RdfDefinition)sf.getDefinition("O:object");
@@ -113,6 +116,7 @@ public class SupersedesTest extends TestCase {
 
   public void test04() {
     sf.preload(I.class);
+    sf.validate();
 
     RdfDefinition base, def;
     base = (RdfDefinition)sf.getDefinition("O:object");
@@ -131,6 +135,7 @@ public class SupersedesTest extends TestCase {
 
   public void test05() {
     sf.preload(II.class);
+    sf.validate();
 
     RdfDefinition base, def;
     base = (RdfDefinition)sf.getDefinition("O:object");
@@ -149,6 +154,7 @@ public class SupersedesTest extends TestCase {
 
   public void test06() {
     sf.preload(AS.class);
+    sf.validate();
 
     RdfDefinition base, def;
     base = (RdfDefinition)sf.getDefinition("O:object");
@@ -167,6 +173,7 @@ public class SupersedesTest extends TestCase {
 
   public void test07() {
     sf.preload(SII.class);
+    sf.validate();
 
     RdfDefinition base, def;
     base = (RdfDefinition)sf.getDefinition("O:object");

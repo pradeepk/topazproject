@@ -67,6 +67,7 @@ public class OqlTest extends AbstractTest {
     rdf.sessFactory.preload(Article.class);
     rdf.sessFactory.preload(PublicAnnotation.class);
     rdf.sessFactory.preload(Reply.class);
+    rdf.sessFactory.validate()
   }
 
   void testBasic() {
@@ -1081,6 +1082,7 @@ public class OqlTest extends AbstractTest {
     // non-entity class with no model, but model on predicate
     o1 = cls1.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
     rdf.sessFactory.preload(NonEntity.class);
+    rdf.sessFactory.validate()
 
     doInTx { s ->
       s.saveOrUpdate(o1);

@@ -118,6 +118,8 @@ public abstract class AbstractOtmTest {
 
     for (Class c : classes)
       factory.preload(c);
+
+    factory.validate();
   }
 
   protected void initModels() throws OtmException {

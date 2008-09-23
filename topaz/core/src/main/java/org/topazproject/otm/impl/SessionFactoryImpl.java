@@ -56,11 +56,16 @@ import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.BinderFactory;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.java.ClassBinder;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.metadata.ClassDefinition;
 import org.topazproject.otm.metadata.PropertyDefinition;
 import org.topazproject.otm.metadata.ClassBindings;
+import org.topazproject.otm.metadata.EmbeddedDefinition;
+import org.topazproject.otm.metadata.EntityDefinition;
+import org.topazproject.otm.metadata.PropertyDefinition;
+import org.topazproject.otm.metadata.ViewDefinition;
 import org.topazproject.otm.query.DefaultQueryFunctionFactory;
 import org.topazproject.otm.query.QueryFunctionFactory;
 import org.topazproject.otm.serializer.SerializerFactory;
@@ -153,6 +158,7 @@ public class SessionFactoryImpl implements SessionFactory {
   private BlobStore                  blobStore;
   private TransactionManager         txMgr;
   private CurrentSessionContext      currentSessionContext;
+  private boolean                    validated = true;
 
   {
     // set up defaults
@@ -203,13 +209,71 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public void preload(Class<?> c) throws OtmException {
-    if ((c == null) || Object.class.equals(c))
+    // Check if already preloaded
+    ClassBindings cb = getClassBindings(cmf.getEntityName(c));
+
+    if (cb != null) {
+      EntityBinder b = cb.getBinders().get(EntityMode.POJO);
+
+      if ((b != null) && (b instanceof ClassBinder) && c.equals(((ClassBinder)b).getSourceClass()))
+        c = null;
+    }
+
+    if ((c != null) && !Object.class.equals(c)){
+      preload(c.getSuperclass());
+      cmf.create(c);
+    }
+  }
+
+  public void validate() throws OtmException {
+    if (validated)
       return;
 
-    preload(c.getSuperclass());
+    HashSet<EntityDefinition>  entities = new HashSet<EntityDefinition>();
+    HashSet<ViewDefinition>  views      = new HashSet<ViewDefinition>();
 
-    if (getClassMetadata(c) == null)
-      setClassMetadata(cmf.create(c));
+    for (Definition def : defs.values()) {
+      def.resolveReference(this);
+      if (def instanceof EntityDefinition)
+        entities.add((EntityDefinition)def);
+      else if (def instanceof ViewDefinition)
+        views.add((ViewDefinition)def);
+    }
+
+    for (EntityDefinition def : entities) {
+        buildClassMetadata(def);
+    }
+
+    for (ViewDefinition def : views) {
+      if (entitymap.get(def.getName()) == null)
+        setClassMetadata(def.buildClassMetadata(this));
+    }
+
+    validated = true;
+  }
+
+  private void buildClassMetadata(EntityDefinition def) throws OtmException {
+    if (entitymap.get(def.getName()) != null)
+      return;
+
+    String sup = def.getSuper();
+
+    if (sup != null) {
+      Definition d = defs.get(sup);
+
+      if (!(d instanceof EntityDefinition))
+        throw new OtmException("Invalid super '" + sup + "' in " + def.getName());
+
+      buildClassMetadata((EntityDefinition)d);
+    }
+
+    for (String prop : getClassBindings(def.getName()).getProperties()) {
+      Definition d = defs.get(prop);
+      if (d instanceof EmbeddedDefinition)
+        buildClassMetadata((EntityDefinition)defs.get(((EmbeddedDefinition)d).getEmbedded()));
+    }
+
+    setClassMetadata(def.buildClassMetadata(this));
   }
 
   /*
@@ -226,6 +290,7 @@ public class SessionFactoryImpl implements SessionFactory {
     if (defs.containsKey(def.getName()))
       throw new OtmException("Duplicate definition :" + def.getName());
 
+    validated = false;
     defs.put(def.getName(), def);
 
     if (log.isDebugEnabled())
@@ -239,6 +304,7 @@ public class SessionFactoryImpl implements SessionFactory {
    * inherited javadoc
    */
   public void removeDefinition(String name) {
+    validated = false;
     defs.remove(name);
     classDefs.remove(name);
 
@@ -642,7 +708,7 @@ public class SessionFactoryImpl implements SessionFactory {
 
       if (m != null)
         m.getBinders().put(bf.getEntityMode(), bf.createBinder(SessionFactoryImpl.this));
-     }
+    }
   }
 
   private static class SimpleXAResourceProducer implements XAResourceProducer {

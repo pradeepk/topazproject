@@ -286,6 +286,7 @@ public class IdGenTest {
   @Test(groups = { "tx" })
   public void annotationTest() throws OtmException {
     factory.preload(PublicAnnotation.class);
+    factory.validate();
     session.saveOrUpdate(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
   }
 
@@ -293,6 +294,7 @@ public class IdGenTest {
   public void controlTest() throws OtmException {
     // Seeing a bug in other tests... verify control keeps working after fix
     factory.preload(Kontrol.class);
+    factory.validate();
     Kontrol k = new Kontrol();
     String id = "http://www.topazproject.org/Kontrol";
     k.setId(id);
@@ -303,11 +305,13 @@ public class IdGenTest {
   @Test
   public void aInstanceTest() throws OtmException {
     factory.preload(A.class);
+    factory.validate();
   }
 
   @Test(groups = { "tx" })
   public void aCreateTest() throws OtmException {
     factory.preload(A.class);
+    factory.validate();
     A a = new A();
     session.saveOrUpdate(a);
     assert a.getId() != null;
@@ -321,11 +325,13 @@ public class IdGenTest {
   @Test
   public void bTest() throws OtmException {
     factory.preload(B.class);
+    factory.validate();
   }
 
   @Test(groups = { "tx" })
   public void bCreateTest() throws OtmException {
     factory.preload(C.class);
+    factory.validate();
     C c = new C();
     session.saveOrUpdate(c);
     assert c.getId() != null;
@@ -334,6 +340,7 @@ public class IdGenTest {
   @Test(groups = { "tx" })
   public void dCreateTest() throws OtmException {
     factory.preload(D.class);
+    factory.validate();
     D d = new D();
     session.saveOrUpdate(d);
     assert d.getUri() != null;
@@ -343,6 +350,7 @@ public class IdGenTest {
   @Test(groups = { "tx" })
   public void eCreateTest() throws OtmException {
     factory.preload(E.class);
+    factory.validate();
     E e = new E();
     session.saveOrUpdate(e);
     assert e.getId().startsWith(Rdf.topaz + E.class.getName() + "/id#") : e.getId();

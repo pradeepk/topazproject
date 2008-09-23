@@ -37,8 +37,8 @@ import org.topazproject.otm.mapping.EntityBinder;
  * @author Pradeep Krishnan
  */
 public abstract class ClassBindings {
-  private final ClassDefinition                      def;
-  private final Map<EntityMode, EntityBinder>        entityBinders =
+  private final ClassDefinition                             def;
+  private final Map<EntityMode, EntityBinder>               entityBinders =
     Collections.synchronizedMap(new HashMap<EntityMode, EntityBinder>());
   private final Map<String, Set<BinderFactory>> propBinders   =
     new HashMap<String, Set<BinderFactory>>();

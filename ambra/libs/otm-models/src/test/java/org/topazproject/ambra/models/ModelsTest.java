@@ -101,6 +101,8 @@ public class ModelsTest {
     for (Class c : classes)
       factory.preload(c);
 
+    factory.validate();
+
     FedoraBlobStore  blobStore =
       new FedoraBlobStore("http://localhost:9090/fedora/services/management", "fedoraAdmin", "fedoraAdmin");
     blobStore.addBlobFactory(new AnnotationFedoraBlobFactory("Ambra", "info:fedora/"));

@@ -37,6 +37,7 @@ public class TransactionTest extends AbstractTest {
     super.setUp()
 
     rdf.sessFactory.preload(Article.class)
+    rdf.sessFactory.validate()
   }
 
   void testCommit() {

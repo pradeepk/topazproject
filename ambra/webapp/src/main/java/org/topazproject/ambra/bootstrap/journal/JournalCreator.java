@@ -122,6 +122,8 @@ public class JournalCreator implements ServletContextListener {
       factory.preload(Volume.class);
       factory.preload(Article.class);
 
+      factory.validate();
+
       sess = factory.openSession();
 
       Integer count =
