@@ -108,6 +108,9 @@ public class Property {
    * @return a newly created property or null if this method is not a get or set method
    */
   public static Property toProperty(Method m) {
+    if (Modifier.isStatic(m.getModifiers()))
+      return null;
+
     String capitalized = getCapitalizedName(m);
 
     if (capitalized == null)
@@ -484,9 +487,6 @@ public class Property {
   }
 
   private static String getCapitalizedName(Method m) {
-    if (Modifier.isStatic(m.getModifiers()))
-      return null;
-
     if (m.getName().startsWith("set") && (m.getParameterTypes().length == 1))
       return m.getName().substring(3);
 
