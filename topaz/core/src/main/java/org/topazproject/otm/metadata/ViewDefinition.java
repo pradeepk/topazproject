@@ -71,13 +71,14 @@ public class ViewDefinition extends ClassDefinition {
     ClassBindings         bin     = sf.getClassBindings(ref.getName());
 
     for (String prop : bin.getProperties()) {
-      Map<EntityMode, Binder> binders = bin.getBinders(prop);
-      Definition              def     = sf.getDefinition(prop);
+      Definition def = sf.getDefinition(prop);
 
       if (def == null)
         throw new OtmException("No such property :" + prop);
 
       def.resolveReference(sf);
+
+      Map<EntityMode, Binder> binders = bin.resolveBinders(prop, sf);
 
       if (def instanceof VarDefinition)
         fields.add(new VarMapperImpl((VarDefinition) def, binders));

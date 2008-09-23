@@ -20,12 +20,15 @@ package org.topazproject.otm.metadata;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.BinderFactory;
 import org.topazproject.otm.mapping.EntityBinder;
 
 /**
@@ -37,8 +40,8 @@ public abstract class ClassBindings {
   private final ClassDefinition                      def;
   private final Map<EntityMode, EntityBinder>        entityBinders =
     Collections.synchronizedMap(new HashMap<EntityMode, EntityBinder>());
-  private final Map<String, Map<EntityMode, Binder>> propBinders   =
-    new HashMap<String, Map<EntityMode, Binder>>();
+  private final Map<String, Set<BinderFactory>> propBinders   =
+    new HashMap<String, Set<BinderFactory>>();
 
   /**
    * Creates a new ClassBindings object.
@@ -86,28 +89,29 @@ public abstract class ClassBindings {
   }
 
   /**
-   * Adds and binds a property to this class definition.
+   * Adds a binder factory for a property.
    *
-   * @param prop the property to bind
-   * @param mode the mode of the binder
-   * @param binder the binder
+   * @param factory the binder factory to add
    *
    * @throws OtmException on a duplicate binding
    */
-  public void addAndBindProperty(String prop, EntityMode mode, Binder binder)
-                          throws OtmException {
-    Map<EntityMode, Binder> binders = propBinders.get(prop);
+  public void addBinderFactory(BinderFactory factory) throws OtmException {
+    final String       prop = factory.getPropertyName();
+    final EntityMode   mode = factory.getEntityMode();
 
-    if (binders == null)
-      propBinders.put(prop, binders = Collections.synchronizedMap(new HashMap<EntityMode, Binder>()));
+    Set<BinderFactory> bfs  = propBinders.get(prop);
 
-    Binder b = binders.get(mode);
+    if (bfs == null) {
+      bfs = new HashSet<BinderFactory>();
+      propBinders.put(prop, bfs);
+    }
 
-    if (b != null)
-      throw new OtmException("Duplicate binding : <" + prop + ", " + mode + "> in '" + getName()
-                             + "'");
+    for (BinderFactory bf : bfs)
+      if (mode.equals(bf.getEntityMode()))
+        throw new OtmException("Duplicate binding : <" + prop + ", " + mode + "> in '" + getName()
+                               + "'");
 
-    binders.put(mode, binder);
+    bfs.add(factory);
   }
 
   /**
@@ -129,21 +133,27 @@ public abstract class ClassBindings {
   }
 
   /**
-   * Gets the binders for a property definition.
+   * Resolves the binders for a property definition.
    *
    * @param prop the property
+   * @param sf the session factory
    *
    * @return map of binders for this property
    *
    * @throws OtmException if the property is undefined
    */
-  public Map<EntityMode, Binder> getBinders(String prop)
-                                     throws OtmException {
-    Map<EntityMode, Binder> binders = propBinders.get(prop);
+  public Map<EntityMode, Binder> resolveBinders(String prop, SessionFactory sf)
+                                         throws OtmException {
+    Set<BinderFactory> bfs = propBinders.get(prop);
 
-    if (binders == null)
+    if (bfs == null)
       throw new OtmException("No such property '" + prop + "' in '" + getName() + "'");
 
-    return binders;
+    Map<EntityMode, Binder> binders = new HashMap<EntityMode, Binder>();
+
+    for (BinderFactory bf : bfs)
+      binders.put(bf.getEntityMode(), bf.createBinder(sf));
+
+    return Collections.synchronizedMap(binders);
   }
 }

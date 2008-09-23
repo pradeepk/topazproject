@@ -57,11 +57,9 @@ import org.topazproject.otm.annotations.SubView;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.java.AbstractFieldBinder;
 import org.topazproject.otm.mapping.java.ClassBinder;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
-import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.mapping.java.Property;
+import org.topazproject.otm.mapping.java.PropertyBinderFactory;
 import org.topazproject.otm.serializer.Serializer;
 
 /**
@@ -225,14 +223,7 @@ public class AnnotationClassMetaFactory {
       }
 
       sf.addDefinition(d);
-
-      // XXX: This API hasn't changed. We should be doing two passes.
-      //      One for definition and one for Binder. Till then
-      //      references are resolved right here.
-      d.resolveReference(sf);
-
-      FieldBinder b = fi.getBinder(sf, d);
-      bin.addAndBindProperty(d.getName(), EntityMode.POJO, b);
+      bin.addBinderFactory(new PropertyBinderFactory(fi.name, fi.property));
     }
 
     return def.buildClassMetadata(sf);
@@ -630,34 +621,6 @@ public class AnnotationClassMetaFactory {
       ClassMetadata cm = sf.getClassMetadata(property.getComponentType());
 
       return new EmbeddedDefinition(getName(), cm.getName());
-    }
-
-    public FieldBinder getBinder(SessionFactory sf, PropertyDefinition pd)
-                          throws OtmException {
-      if (pd instanceof EmbeddedDefinition)
-        return new EmbeddedClassFieldBinder(property);
-
-      Serializer serializer;
-      Class<?> type = property.getComponentType();
-
-      if (pd instanceof BlobDefinition)
-        serializer = null;
-      else if (pd instanceof RdfDefinition) {
-        RdfDefinition rd = (RdfDefinition) pd;
-        serializer = (rd.isAssociation()) ? null
-                     : sf.getSerializerFactory().getSerializer(type, rd.getDataType());
-
-        if ((serializer == null) && sf.getSerializerFactory().mustSerialize(type))
-          throw new OtmException("No serializer found for '" + type + "' with dataType '"
-                                 + rd.getDataType() + "' for " + this);
-      } else if (pd instanceof VarDefinition) {
-        VarDefinition vd = (VarDefinition) pd;
-        serializer = (vd.getAssociatedEntity() == null) ? null
-                     : sf.getSerializerFactory().getSerializer(type, null);
-      } else
-        serializer = sf.getSerializerFactory().getSerializer(type, null);
-
-      return AbstractFieldBinder.getBinder(property, serializer);
     }
   }
 }

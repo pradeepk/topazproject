@@ -134,23 +134,26 @@ public class EntityDefinition extends ClassDefinition {
     ClassBindings bin = sf.getClassBindings(ref.getName());
 
     for (String prop : bin.getProperties()) {
-      Map<EntityMode, Binder> binders = bin.getBinders(prop);
-      Definition              def     = sf.getDefinition(prop);
+      Definition def = sf.getDefinition(prop);
 
       if (def == null)
         throw new OtmException("No such property :'" + prop + "' bound to entity '" + getName());
 
       def.resolveReference(sf);
 
+      Map<EntityMode, Binder> binders = bin.resolveBinders(prop, sf);
+
       if (def instanceof RdfDefinition) {
         if (def.getSupersedes() != null) {
           for (RdfMapper m : fields) {
             if (def.getSupersedes().equals(m.getDefinition().getName())) {
               fields.remove(m);
+
               break;
             }
           }
         }
+
         fields.add(new RdfMapperImpl((RdfDefinition) def, binders));
       } else if (def instanceof IdDefinition) {
         if (idField != null)

@@ -53,10 +53,13 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.BinderFactory;
 import org.topazproject.otm.mapping.EntityBinder;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 import org.topazproject.otm.metadata.Definition;
 import org.topazproject.otm.metadata.ClassDefinition;
+import org.topazproject.otm.metadata.PropertyDefinition;
 import org.topazproject.otm.metadata.ClassBindings;
 import org.topazproject.otm.query.DefaultQueryFunctionFactory;
 import org.topazproject.otm.query.QueryFunctionFactory;
@@ -621,12 +624,25 @@ public class SessionFactoryImpl implements SessionFactory {
     }
 
     @Override
-    public void addAndBindProperty(String prop, EntityMode mode, Binder binder) throws OtmException {
-      if (getProperties().contains(prop) && entitymap.containsKey(getName()))
-        throw new OtmException("Cannot add a new property to " + getName() 
-            + " since a ClassMetadata is already created for this Class");
-      super.addAndBindProperty(prop, mode, binder);
-    }
+    public void addBinderFactory(BinderFactory bf) throws OtmException {
+      ClassMetadata cm = entitymap.get(getName());
+      Mapper m = null;
+      if (cm != null) {
+        Definition d = defs.get(bf.getPropertyName());
+        if (!(d instanceof PropertyDefinition))
+          throw new OtmException("No such property definition: " + bf.getPropertyName());
+
+        PropertyDefinition pd = (PropertyDefinition) d;
+        m  = cm.getMapperByName(pd.getLocalName());
+        if (m == null)
+          throw new OtmException("Cannot add a new property to " + getName() 
+             + " since a ClassMetadata is already created for this Class");
+      }
+      super.addBinderFactory(bf);
+
+      if (m != null)
+        m.getBinders().put(bf.getEntityMode(), bf.createBinder(SessionFactoryImpl.this));
+     }
   }
 
   private static class SimpleXAResourceProducer implements XAResourceProducer {
