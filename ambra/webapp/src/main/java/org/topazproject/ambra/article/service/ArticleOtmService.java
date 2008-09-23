@@ -195,14 +195,20 @@ public class ArticleOtmService {
 
     // match categories
     if (categories != null && categories.length > 0) {
-      for (String category : categories)
-        qry.append("art.categories.mainCategory = '" + category + "' and ");
+      for (String category : categories) {
+        qry.append("art.categories.mainCategory = '");
+        qry.append(category);
+        qry.append("' and ");
+      }
     }
 
     // match all authors
     if (authors != null && authors.length > 0) {
-      for (String author : authors)
-        qry.append("art.dublinCore.creators = '" + author + "' and ");
+      for (String author : authors) {
+        qry.append("art.dublinCore.creators = '");
+        qry.append(author);
+        qry.append("' and ");
+      }
     }
 
     // match all states
@@ -484,7 +490,7 @@ public class ArticleOtmService {
 
     // check access control on all Article results
     // logged in user is automatically resolved by the ServletActionContextAttribute
-    ArrayList<Article> returnArticles = new ArrayList();
+    ArrayList<Article> returnArticles = new ArrayList<Article>();
 
     commentedArticles.beforeFirst();
     while (commentedArticles.next()) {
