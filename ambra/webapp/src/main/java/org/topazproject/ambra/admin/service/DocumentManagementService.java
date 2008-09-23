@@ -60,7 +60,6 @@ import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Journal;
-import org.topazproject.otm.Session;
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -80,7 +79,6 @@ public class DocumentManagementService {
   private CrossRefPosterService crossRefPosterService;
   private File xslTemplate;
   private JournalService journalService;
-  private Session session;
   private String plosDoiUrl;
   private String plosEmail;
   private boolean sendToXref;
@@ -422,16 +420,6 @@ public class DocumentManagementService {
   @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
-  }
-
-  /**
-   * Sets the otm util.
-   *
-   * @param session The otm session to set.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
   }
 
   /**
