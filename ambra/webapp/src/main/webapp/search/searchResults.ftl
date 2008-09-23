@@ -149,11 +149,7 @@
           <li>
             <span class="date">Published ${hit.date?string("dd MMM yyyy")}</span>
             <span class="article">
-              <#if hit.contentModel == "PlosArticle" || hit.contentModel == "AmbraArticle">
-                <a href="/ambra-doi-resolver/${hit.pid?replace('info:doi/','')}">${hit.title}</a>
-              <#else>
-                <a href="#">${hit.title}</a>
-              </#if>
+              <a href="/ambra-doi-resolver/${hit.pid?replace('info:doi/','')}">${hit.title}</a>
             </span>       
             <span class="authors"> <!-- hitScore: ${hit.hitScore} --> ${hit.creator!""}</span>
             <span class="cite">${hit.highlight}</span>
