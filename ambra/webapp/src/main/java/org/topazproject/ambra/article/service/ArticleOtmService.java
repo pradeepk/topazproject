@@ -27,9 +27,7 @@ import java.text.ParseException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -47,11 +45,7 @@ import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.permission.service.PermissionsService;
-import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.criterion.Disjunction;
-import org.topazproject.otm.criterion.Order;
-import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
 
