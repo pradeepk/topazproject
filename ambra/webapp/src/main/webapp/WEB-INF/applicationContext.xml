@@ -166,7 +166,26 @@
 
   <bean id="searchWebService" class="org.topazproject.ambra.search.service.SearchWebService"/>
 
-  <bean id="journalService" class="org.topazproject.ambra.journal.JournalService" init-method="init"/>
+  <bean id="journalKeyService" class="org.topazproject.ambra.journal.JournalKeyService">
+    <constructor-arg index="0" ref="journalCache"/>
+    <constructor-arg index="1" value="KEY-"/>
+  </bean>
+
+  <bean id="journalFilterService" class="org.topazproject.ambra.journal.JournalFilterService">
+    <constructor-arg index="0" ref="otmSessionFactory"/>
+    <constructor-arg index="1" ref="journalCache"/>
+    <constructor-arg index="2" value="FILTER-"/>
+    <constructor-arg index="3" ref="journalKeyService"/>
+  </bean>
+
+  <bean id="journalCarrierService" class="org.topazproject.ambra.journal.JournalCarrierService">
+    <constructor-arg index="0" ref="otmSessionFactory"/>
+    <constructor-arg index="1" ref="carrierCache"/>
+    <constructor-arg index="2" ref="journalKeyService"/>
+    <constructor-arg index="3" ref="journalFilterService"/>
+  </bean>
+
+  <bean id="journalService" class="org.topazproject.ambra.journal.JournalService"/>
 
   <!-- OTM setups -->
   <bean name="fedoraBlobStore" class="org.topazproject.fedora.otm.FedoraBlobStore" lazy-init="true">
