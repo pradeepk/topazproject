@@ -19,8 +19,6 @@
 
 package org.topazproject.ambra.journal;
 
-import java.net.URI;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +29,6 @@ import org.apache.struts2.ServletActionContext;
 
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.cache.ObjectListener;
-import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.otm.ClassMetadata;
