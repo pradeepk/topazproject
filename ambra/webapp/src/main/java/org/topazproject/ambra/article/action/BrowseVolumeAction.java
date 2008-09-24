@@ -44,14 +44,13 @@ public class BrowseVolumeAction extends BaseActionSupport {
   private VolumeInfo currentVolume;
   private List<VolumeInfo> volumeInfos;
   private String gotoVolume;
-  private Session session;
   private String currentIssueDescription;
   private ArticleXMLUtils articleXmlUtils;
 
   @Override
   @Transactional(readOnly = true)
   public String execute() throws Exception {
-    Journal currentJournal = journalService.getCurrentJournal(session);
+    Journal currentJournal = journalService.getCurrentJournal();
 
     volumeInfos = browseService.getVolumeInfosForJournal(currentJournal);
     if (volumeInfos.size() > 0)
@@ -160,16 +159,6 @@ public class BrowseVolumeAction extends BaseActionSupport {
     this.gotoVolume = gotoVolume;
   }
 
-  /**
-   * Spring injected
-   * 
-   * @param session The OTM Session to set by Spring.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
-  }
-  
   /**
    * Spring injected
    * 

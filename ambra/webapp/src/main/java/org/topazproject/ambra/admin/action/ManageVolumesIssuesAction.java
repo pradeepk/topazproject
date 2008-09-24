@@ -85,7 +85,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     }
 
     // get the Journal
-    journal = journalService.getJournal();
+    journal = journalService.getCurrentJournal();
     if (journal == null) {
       final String errorMessage = "Error getting current Journal";
       addActionError(errorMessage);
@@ -170,7 +170,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     addActionMessage("Created Volume: " + newVolume.toString());
 
     // add Volume to current Journal
-    Journal currentJournal = journalService.getJournal();
+    Journal currentJournal = journalService.getCurrentJournal();
     currentJournal.getVolumes().add(doi);
     addActionMessage("Volume was added to current Journal: " + currentJournal);
 
@@ -185,7 +185,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
   private String updateVolume() {
     // the Volume to update
     Volume volume = session.get(Volume.class, doi.toString());
-    Journal currentJournal = journalService.getJournal();
+    Journal currentJournal = journalService.getCurrentJournal();
 
     // delete the Volume?
     if (aggregationToDelete != null && aggregationToDelete.toString().length() != 0) {
@@ -256,7 +256,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
     addActionMessage("Created Issue: " + newIssue.toString());
 
     // add Issue to latest Volume
-    final Journal currentJournal = journalService.getJournal();
+    final Journal currentJournal = journalService.getCurrentJournal();
     Volume latestVolume = session.get(Volume.class, currentJournal.getVolumes()
             .get(currentJournal.getVolumes().size() - 1).toString());
     latestVolume.getIssueList().add(doi);
@@ -289,7 +289,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
           addActionMessage("Deleted Issue from Volume: " + containingVolume);
         }
         // XXX: assume current Journal needs updating, should be smarter
-        final Journal currentJournal = journalService.getJournal();
+        final Journal currentJournal = journalService.getCurrentJournal();
         addActionMessage("Updated Journal: " + currentJournal);
       }
       return SUCCESS;

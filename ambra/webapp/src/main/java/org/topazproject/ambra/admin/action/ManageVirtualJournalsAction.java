@@ -128,7 +128,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
         || (articlesToAdd != null && articlesToAdd.length() != 0)
         || articlesToDelete != null)) {
       // get the Journal
-      Journal journal = journalService.getJournal();
+      Journal journal = journalService.getCurrentJournal();
       if (journal == null) {
         final String errorMessage = "Error getting journal to modify: " + journalToModify;
         addActionMessage(errorMessage);
@@ -197,7 +197,7 @@ public class ManageVirtualJournalsAction extends BaseAdminActionSupport {
     }
 
     // [re-]create the journal info value object
-    createJournalInfo(journalService.getJournal());
+    createJournalInfo(journalService.getCurrentJournal());
 
     // default action is just to display the template
     return SUCCESS;

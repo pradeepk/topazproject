@@ -78,7 +78,7 @@ public class JournalService {
   }
 
   /**
-   * Get the specified journal. This assumes an active transaction on the session.
+   * Get the specified journal.
    *
    * @param jName  the journal's name
    * @return the journal, or null if no found
@@ -88,24 +88,18 @@ public class JournalService {
     return journalKeyService.getJournal(jName, session);
   }
 
-  @Transactional(readOnly = true)
-  public Journal getJournal() {
-    return journalKeyService.getCurrentJournal(session);
-  }
-
   /**
-   * Get the current journal. This assumes an active transaction on the session.
+   * Get the current journal.
    *
-   * @return the journal, or null if none found.
-   * @see #getJournal(String jName).
+   * @return the current journal
    */
   @Transactional(readOnly = true)
-  public Journal getCurrentJournal(Session session) {
+  public Journal getCurrentJournal() {
     return journalKeyService.getCurrentJournal(session);
   }
 
   /**
-   * Get the set of all the known journals. This assumes an active transaction on the session.
+   * Get the set of all the known journals.
    *
    * @return all the journals, or the empty set if there are none
    */
@@ -114,15 +108,24 @@ public class JournalService {
     return journalKeyService.getAllJournals(session);
   }
 
+  /**
+   * Get the names of all the known journals.
+   *
+   * @return the list of names; may be empty if there are no known journals
+   */
   @Transactional(readOnly = true)
-  public Set<String> getAllJournalKeys() {
+  public Set<String> getAllJournalNames() {
     return journalKeyService.getAllJournalKeys(session);
   }
 
-  public String getCurrentJournalKey() {
+  /**
+   * Get the name of the current journal.
+   *
+   * @return the name of the current journal, or null if there is no current journal
+   */
+  public String getCurrentJournalName() {
     return journalKeyService.getCurrentJournalKey();
   }
-
 
   /**
    * Get the list of journals which carry the given object (e.g. article).
@@ -174,9 +177,5 @@ public class JournalService {
   @Required
   public void setJournalCarrierService(JournalCarrierService journalCarrierService) {
     this.journalCarrierService = journalCarrierService;
-  }
-
-  public JournalCarrierService getJournalCarrierService() {
-    return journalCarrierService;
   }
 }

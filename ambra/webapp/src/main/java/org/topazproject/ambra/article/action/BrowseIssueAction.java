@@ -50,7 +50,6 @@ public class BrowseIssueAction extends BaseActionSupport{
   private static final Log log  = LogFactory.getLog(BrowseIssueAction.class);
 
   private String issue;
-  private Session session;
   private JournalService journalService;
   private BrowseService browseService;
   private IssueInfo issueInfo;
@@ -68,7 +67,7 @@ public class BrowseIssueAction extends BaseActionSupport{
     // was issued specified, or use Journal.currentIssue?
     if (issue == null || issue.length() == 0) {
       // JournalService, OTM usage wants to be in a Transaction
-      Journal currentJournal = journalService.getCurrentJournal(session);
+      Journal currentJournal = journalService.getCurrentJournal();
 
       if (currentJournal != null) {
         URI currentIssueUri = currentJournal.getCurrentIssue();
@@ -226,16 +225,6 @@ public class BrowseIssueAction extends BaseActionSupport{
   @Required
   public void setJournalService(JournalService journalService) {
     this.journalService = journalService;
-  }
-
-  /**
-   * Spring injected method sets the OTM Session.
-   *
-   * @param session The OTM Session to set.
-   */
-  @Required
-  public void setOtmSession(Session session) {
-    this.session = session;
   }
 
   /**

@@ -120,7 +120,7 @@ public class BrowseService {
    */
   @Transactional(readOnly = true)
   public Years getArticleDates() {
-    return getArticleDates(true, getCurrentJournal());
+    return getArticleDates(true, getCurrentJournalName());
   }
 
   private Years getArticleDates(boolean load, String jnlName) {
@@ -183,7 +183,7 @@ public class BrowseService {
   @Transactional(readOnly = true)
   public List<ArticleInfo> getArticlesByDate(final Calendar startDate, final Calendar endDate,
                                              int pageNum, int pageSize, int[] numArt) {
-    String jnlName = getCurrentJournal();
+    String jnlName = getCurrentJournalName();
     String mod     = jnlName + "-" + startDate.getTimeInMillis() + "-" + endDate.getTimeInMillis();
     String key     = ARTBYDATE_LIST_KEY + mod;
     Object lock    = (ARTBYDATE_LIST_LOCK + mod).intern();
@@ -330,7 +330,7 @@ public class BrowseService {
   @Transactional(readOnly = true)
   public VolumeInfo getVolumeInfo(URI id) {
     // Attempt to get the volume infos from the cached journal list...
-    List<VolumeInfo> volumes = getVolumeInfosForJournal(journalService.getCurrentJournal(session));
+    List<VolumeInfo> volumes = getVolumeInfosForJournal(journalService.getCurrentJournal());
     for (VolumeInfo vol : volumes) {
       if (id.equals(vol.getId())) {
         return vol;
@@ -408,7 +408,7 @@ public class BrowseService {
   }
 
   private Object getCatInfo(String key, String desc, boolean load) {
-    return getCatInfo(key, desc, load, getCurrentJournal());
+    return getCatInfo(key, desc, load, getCurrentJournalName());
   }
 
   private Object getCatInfo(String key, String desc, boolean load, final String jnlName) {
@@ -425,8 +425,8 @@ public class BrowseService {
       });
   }
 
-  private String getCurrentJournal() {
-    return journalService.getCurrentJournalKey();
+  private String getCurrentJournalName() {
+    return journalService.getCurrentJournalName();
   }
 
   /**

@@ -50,7 +50,7 @@ public class HomePageAction extends BaseActionSupport {
 
   private void initRecentArticles() {
     ConfigurationStore config = ConfigurationStore.getInstance();
-    String journalKey = journalService.getCurrentJournalKey();
+    String journalKey = journalService.getCurrentJournalName();
     String rootKey = "ambra.virtualJournals." + journalKey + ".recentArticles";
 
     numDaysInPast = config.getConfiguration().getInteger(rootKey + ".numDaysInPast", 7).intValue();

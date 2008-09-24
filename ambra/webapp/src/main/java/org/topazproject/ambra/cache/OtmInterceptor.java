@@ -215,7 +215,7 @@ public class OtmInterceptor implements Interceptor {
     getCache(cm).remove(id);
 
     if (isFiltered(session, cm)) {
-      for (String journal : journalService.getAllJournalKeys())
+      for (String journal : journalService.getAllJournalNames())
         if (!"".equals(journal))
           objCache.remove(journal + "-" + id);
 
@@ -269,7 +269,7 @@ public class OtmInterceptor implements Interceptor {
   }
 
   private String getCurrentJournal() {
-    String journal = journalService.getCurrentJournalKey();
+    String journal = journalService.getCurrentJournalName();
 
     if ((journal == null) || "".equals(journal))
       journal = NO_JOURNAL;

@@ -57,7 +57,7 @@ public class SessionFiltersInterceptor extends AbstractInterceptor {
     HttpServletRequest request =
         (HttpServletRequest) invocation.getInvocationContext().get(StrutsStatics.HTTP_REQUEST);
 
-    String jName = journalService.getCurrentJournalKey();
+    String jName = journalService.getCurrentJournalName();
     if (jName == null)
       return;
 
