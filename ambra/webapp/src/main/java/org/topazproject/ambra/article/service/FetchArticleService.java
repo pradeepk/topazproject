@@ -22,7 +22,6 @@ package org.topazproject.ambra.article.service;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.rmi.RemoteException;
 import java.util.List;
 
 import javax.activation.DataSource;
@@ -73,18 +72,16 @@ public class FetchArticleService {
   private Cache articleAnnotationCache;
   private Invalidator invalidator;
 
-  private String getTransformedArticle(final String articleURI) throws ApplicationException {
+  private String getTransformedArticle(final String articleURI)
+      throws ApplicationException, NoSuchArticleIdException {
     try {
       return articleXmlUtils.getTransformedDocument(getAnnotatedContentAsDocument(articleURI));
+    } catch (ApplicationException ae) {
+      throw ae;
+    } catch (NoSuchArticleIdException nsae) {
+      throw nsae;
     } catch (Exception e) {
-      if (log.isErrorEnabled()) {
-        log.error ("Could not transform article: " + articleURI, e);
-      }
-      if (e instanceof ApplicationException) {
-        throw (ApplicationException)e;
-      } else {
-        throw new ApplicationException (e);
-      }
+      throw new ApplicationException (e);
     }
   }
 
@@ -93,16 +90,13 @@ public class FetchArticleService {
    * @param articleURI articleURI
    * @return String representing the annotated article as HTML
    * @throws org.topazproject.ambra.ApplicationException ApplicationException
-   * @throws java.rmi.RemoteException RemoteException
-   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public String getURIAsHTML(final String articleURI) throws ApplicationException,
-                          RemoteException, NoSuchArticleIdException {
+  public String getURIAsHTML(final String articleURI) throws Exception {
     final Object lock = (ARTICLE_LOCK + articleURI).intern();  // lock @ Article level
 
     return articleAnnotationCache.get(ARTICLE_KEY  + articleURI, -1,
-            new Cache.SynchronizedLookup<String, ApplicationException>(lock) {
-              public String lookup() throws ApplicationException {
+            new Cache.SynchronizedLookup<String, Exception>(lock) {
+              public String lookup() throws Exception {
                 return getTransformedArticle(articleURI);
               }
             });

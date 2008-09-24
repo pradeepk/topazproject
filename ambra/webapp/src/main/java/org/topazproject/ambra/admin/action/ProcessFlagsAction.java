@@ -19,8 +19,6 @@
 
 package org.topazproject.ambra.admin.action;
 
-import java.rmi.RemoteException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -218,14 +216,9 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    *  which may well get thrown and recover and continue (faster than going across
    *  teh web service tro see if the ID is valid then going out again to get its object).
    * @throws ApplicationException
-   * @throws ApplicationException
-   * @throws NoSuchAnnotationIdException
-   * @throws RemoteException
-   * @throws NoSuchAnnotationIdException
-   * @throws RemoteException
    */
   private void deleteTarget(String root, String target, String targetType)
-    throws ApplicationException, RemoteException {
+      throws ApplicationException {
     Reply[] replies;
     Flag[] flags = annotationService.listFlags(target);
 

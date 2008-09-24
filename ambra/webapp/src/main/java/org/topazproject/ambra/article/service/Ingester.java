@@ -33,7 +33,6 @@ import java.lang.reflect.WildcardType;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -245,7 +244,7 @@ public class Ingester {
   }
 
   private Article processObjectInfo(final Zip zip, Document objInfo, boolean force)
-      throws IngestException, DuplicateArticleIdException, RemoteException {
+      throws IngestException, DuplicateArticleIdException {
     Article art = null;
     final StringWriter msgs = new StringWriter();
 

@@ -19,7 +19,6 @@
 
 package org.topazproject.ambra.admin.service;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +59,7 @@ public class FlagManagementService {
   private UserService userService;
 
   @Transactional(readOnly = true)
-  public Collection<FlaggedCommentRecord> getFlaggedComments() throws RemoteException, ApplicationException {
+  public Collection<FlaggedCommentRecord> getFlaggedComments() throws ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
     Annotation[] annotations;
     Reply[] replies;

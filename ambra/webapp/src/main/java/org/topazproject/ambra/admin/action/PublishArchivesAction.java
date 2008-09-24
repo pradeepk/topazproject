@@ -19,7 +19,6 @@
 
 package org.topazproject.ambra.admin.action;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +45,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
    * over publish.
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String execute() throws RemoteException, ApplicationException {
+  public String execute() {
     try {
       deleteArticles();
       publishArticles();

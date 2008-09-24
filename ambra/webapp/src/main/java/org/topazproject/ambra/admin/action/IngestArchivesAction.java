@@ -20,7 +20,6 @@
 package org.topazproject.ambra.admin.action;
 
 import java.io.File;
-import java.rmi.RemoteException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +51,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
     this.session = session;
   }
 
-  public String execute() throws RemoteException, ApplicationException {
+  public String execute() {
     if (filesToIngest != null) {
       for (String filename : filesToIngest) {
         filename = filename.trim();

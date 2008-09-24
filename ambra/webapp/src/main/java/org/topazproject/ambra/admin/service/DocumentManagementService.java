@@ -246,11 +246,10 @@ public class DocumentManagementService {
    * @throws IngestException
    * @throws DuplicateArticleIdException
    * @throws IOException
-   * @throws ServiceException
    */
   @Transactional(rollbackFor = { Throwable.class })
   public Article ingest(File file, boolean force)
-      throws IngestException, DuplicateArticleIdException, IOException, ServiceException {
+      throws IngestException, DuplicateArticleIdException, IOException {
     if (log.isInfoEnabled()) {
       log.info("Ingesting: " + file);
     }

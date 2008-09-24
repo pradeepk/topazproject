@@ -19,7 +19,6 @@
 package org.topazproject.ambra.article.action;
 
 import java.net.URI;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -74,7 +73,7 @@ public class FetchArticleAction extends BaseActionSupport {
 
   @Override
   @Transactional(readOnly = true)
-  public String execute() throws Exception {
+  public String execute() {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
 
@@ -111,9 +110,9 @@ public class FetchArticleAction extends BaseActionSupport {
       journalList  = journalService.getJournalsForObject(URI.create(articleURI));
     } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
-      log.info("Could not find article: "+ articleURI, e);
+      log.info("Could not find article: " + articleURI, e);
       return ERROR;
-    } catch (RemoteException e) {
+    } catch (Exception e) {
       messages.add(e.getMessage());
       log.error("Error retrieving article: " + articleURI, e);
       return ERROR;
