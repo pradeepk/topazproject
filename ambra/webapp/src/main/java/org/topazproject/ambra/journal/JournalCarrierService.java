@@ -39,9 +39,7 @@ import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Interceptor.Updates;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.util.TransactionHelper;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.java.ClassBinder;
 
@@ -68,8 +66,9 @@ public class JournalCarrierService {
    * session-factory instance, and this must be done before the first session instance is created.
    *
    * @param sf           the session-factory to use
-   * @param journalCache the cache to use for caching journal definitions
    * @param objectCache  the cache to use for caching the list of journals that carry each object
+   * @param journalKeyService key service
+   * @param journalFilterService filter service
    */
   public JournalCarrierService(SessionFactory sf, Cache objectCache, 
       JournalKeyService journalKeyService, JournalFilterService journalFilterService) {
