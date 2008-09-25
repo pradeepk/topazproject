@@ -36,8 +36,8 @@ import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.CitationInfo;
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.util.ArticleXMLUtils;
 import org.topazproject.ambra.util.CitationUtils;
@@ -147,7 +147,7 @@ public class CreateCitation extends BaseActionSupport {
       invalidator = new Invalidator(articleAnnotationCache);
   }
 
-  private static class Invalidator implements ObjectListener {
+  private static class Invalidator extends AbstractObjectListener {
     private Cache articleAnnotationCache;
 
     public Invalidator(Cache articleAnnotationCache) {

@@ -35,8 +35,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Rating;
 import org.topazproject.ambra.models.RatingContent;
@@ -348,7 +348,7 @@ public class RatingsService {
     }
   }
 
-  private class Invalidator implements ObjectListener {
+  private class Invalidator extends AbstractObjectListener {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
       if (o instanceof RatingSummary) {

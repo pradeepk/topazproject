@@ -172,6 +172,15 @@ public class CacheManager implements CacheListener, ObjectListener {
         ((ObjectListener) listener).objectRemoved(session, cm, id, obj);
   }
 
+  /*
+   * inherited javadoc
+   */
+  public void removing(Session session, ClassMetadata cm, String id, Object obj) throws Exception {
+    for (Listener listener : listeners)
+      if (listener instanceof ObjectListener)
+        ((ObjectListener) listener).removing(session, cm, id, obj);
+  }
+
   /**
    * The cache events that are waiting for the transaction to complete.
    */

@@ -481,6 +481,8 @@ public class SessionImpl extends AbstractSession {
       if (log.isDebugEnabled())
         log.debug("deleting from store: " + id);
 
+     if (interceptor != null)
+       interceptor.onPreDelete(this, cm, id.getId(), o);
      states.remove(o);
      if (bf)
        bs.delete(cm, id.getId(), o, getBlobStoreCon());

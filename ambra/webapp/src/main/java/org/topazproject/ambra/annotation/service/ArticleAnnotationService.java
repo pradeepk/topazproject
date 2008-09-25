@@ -40,8 +40,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.topazproject.ambra.article.service.FetchArticleService;
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ArticleAnnotation;
@@ -638,7 +638,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     this.permissionsService = permissionsService;
   }
 
-  private class Invalidator implements ObjectListener {
+  private class Invalidator extends AbstractObjectListener {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
       handleEvent(id, o, updates, false);

@@ -27,8 +27,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.otm.ClassMetadata;
@@ -62,9 +62,7 @@ class JournalKeyService {
     this.journalCache   = journalCache;
     this.keyPrefix      = keyPrefix;
 
-    journalCache.getCacheManager().registerListener(new ObjectListener() {
-      public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
-      }
+    journalCache.getCacheManager().registerListener(new AbstractObjectListener() {
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
         if (o instanceof Journal) 
           journalRemoved(((Journal)o).getKey(), s);

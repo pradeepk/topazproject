@@ -36,6 +36,7 @@ import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Binder.RawFieldData;
@@ -226,6 +227,21 @@ public class OtmInterceptor implements Interceptor {
       journalChanged(((Journal) instance).getKey(), true);
 
     cacheManager.objectRemoved(session, cm, id, instance);
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPreDelete(Session session, ClassMetadata cm, String id, Object instance)
+                            throws OtmException {
+    if (log.isDebugEnabled())
+      log.debug(cm.getName() + " with id <" + id + "> is about to be deleted.");
+
+    try {
+      cacheManager.removing(session, cm, id, instance);
+    } catch (Exception e) {
+      throw new OtmException("Aborted delete of '" + cm.getName() + "' with id <" + id + ">", e);
+    }
   }
 
   private boolean isFiltered(Session session, ClassMetadata test) {

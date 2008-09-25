@@ -28,8 +28,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.models.Aggregation;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
@@ -88,7 +88,7 @@ class JournalFilterService {
     this.keyPrefix      = (keyPrefix == null) ? "" : keyPrefix;
     this.journalKeyService = journalKeyService;
 
-    filterCache.getCacheManager().registerListener(new ObjectListener() {
+    filterCache.getCacheManager().registerListener(new AbstractObjectListener() {
       public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
         /* Note: if a smart-collection rule was updated as opposed to
          * new rules added or deleted, we wouldn't be able to detect it.

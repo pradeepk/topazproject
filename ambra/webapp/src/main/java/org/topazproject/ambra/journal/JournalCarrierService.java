@@ -30,8 +30,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Journal;
 import org.topazproject.otm.ClassMetadata;
@@ -79,7 +79,7 @@ class JournalCarrierService {
 
     addObjectClassToSf();
 
-    objectCarriers.getCacheManager().registerListener(new ObjectListener() {
+    objectCarriers.getCacheManager().registerListener(new AbstractObjectListener() {
       public void objectChanged(Session s, ClassMetadata cm, String id, Object o, Updates updates) {
         /* Note: if a smart-collection rule was updated as opposed to
          * new rules added or deleted, we wouldn't be able to detect it.
@@ -102,6 +102,7 @@ class JournalCarrierService {
           objectCarriers.remove(((Article) o).getId());
         }
       }
+      @Override
       public void objectRemoved(Session s, ClassMetadata cm, String id, Object o) {
         if (o instanceof Journal)
           objectCarriers.removeAll();

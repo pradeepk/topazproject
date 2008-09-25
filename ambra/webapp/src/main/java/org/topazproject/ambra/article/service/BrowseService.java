@@ -33,8 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.model.IssueInfo;
 import org.topazproject.ambra.model.VolumeInfo;
@@ -644,7 +644,7 @@ public class BrowseService {
     browseCache.remove(BrowseService.ISSUE_KEY + issueDoi);
   }
 
-  private class Invalidator implements ObjectListener {
+  private class Invalidator extends AbstractObjectListener {
     @SuppressWarnings("synthetic-access")
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {

@@ -89,6 +89,21 @@ public interface Interceptor {
   public void onPostDelete(Session session, ClassMetadata cm, String id, Object instance);
 
   /**
+   * Called befora an entity instance is deleted from the store. Note that there is
+   * no guarantee that the delete will succeed. In addition, the interceptor could veto
+   * the delete by throwing an exception.
+   *
+   * @param session the session that is reporting this event
+   * @param cm class metadata for the entity
+   * @param id the id of the instance
+   * @param instance the instance that is about to be deleted.
+   *
+   * @throws OtmException to veto the delete operation
+   */
+  public void onPreDelete(Session session, ClassMetadata cm, String id, Object instance)
+                             throws OtmException;
+
+  /**
    * Change notification structure.
    */
   public static class Updates {

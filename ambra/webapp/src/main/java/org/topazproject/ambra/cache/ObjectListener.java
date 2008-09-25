@@ -49,4 +49,16 @@ public interface ObjectListener extends Listener {
    * @param object the object that got deleted
    */
   public void objectRemoved(Session session, ClassMetadata cm, String id, Object object);
+
+  /**
+   * Fired when an object is about to be removed from the cache.
+   *
+   * @param session the session that is reporting this change
+   * @param cm the cache
+   * @param id the key
+   * @param object the object that got deleted
+   *
+   * @throws Exception to abort the removal
+   */
+  public void removing(Session session, ClassMetadata cm, String id, Object object) throws Exception;
 }

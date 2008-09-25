@@ -41,8 +41,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.Annotator;
 import org.topazproject.ambra.annotation.service.ArticleAnnotationService;
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
-import org.topazproject.ambra.cache.ObjectListener;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.util.ArticleXMLUtils;
@@ -250,7 +250,7 @@ public class FetchArticleService {
     }
   }
 
-  private class Invalidator implements ObjectListener {
+  private class Invalidator extends AbstractObjectListener {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
       handleEvent(id, o, updates, false);
