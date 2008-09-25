@@ -724,7 +724,13 @@ options {
         at = getAssociationType(at, f.getText());
 
         Criteria c = makeParents(f, p, at);
-        p = c.createReferrerCriteria(cm.getName(), field, true);
+        try {
+          p = c.createReferrerCriteria(cm.getName(), field, true);
+        } catch (OtmException oe) {
+          throw (RecognitionException)
+              new RecognitionException("no field '" + field + "' in " 
+                                       + c.getClassMetadata()).initCause(oe);
+        }
       }
 
       if (id.getType() == CAST) {
