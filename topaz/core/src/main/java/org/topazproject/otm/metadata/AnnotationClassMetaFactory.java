@@ -172,7 +172,7 @@ public class AnnotationClassMetaFactory {
     ClassBindings bin = sf.getClassBindings(def.getName());
     bin.bind(EntityMode.POJO, new ClassBinder(clazz));
 
-    Map<String, PropertyInfo> properties = new HashMap<String, PropertyInfo>();
+    Map<String, PropertyDefFactory> factories = new HashMap<String, PropertyDefFactory>();
 
     for (Method method : clazz.getDeclaredMethods()) {
       if (!isAnnotated(method))
@@ -183,7 +183,7 @@ public class AnnotationClassMetaFactory {
       if (property == null)
         throw new OtmException("'" + method.toGenericString() + "' is not a valid getter or setter");
 
-      PropertyInfo pi = properties.get(property.getName());
+      PropertyDefFactory pi = factories.get(property.getName());
 
       if (pi != null) {
         if (method.equals(pi.property.getReadMethod())
@@ -194,25 +194,25 @@ public class AnnotationClassMetaFactory {
       }
 
       validate(property, def);
-      properties.put(property.getName(), new PropertyInfo(def, property));
+      factories.put(property.getName(), new PropertyDefFactory(def, property));
     }
 
     if (def instanceof EntityDefinition) {
       if (clazz.getGenericSuperclass() instanceof ParameterizedType)
-        addGenericsSyntheticProps(def, clazz, properties);
+        addGenericsSyntheticProps(def, clazz, factories);
 
       Map<String, String> supersedes = new HashMap<String, String>();
       buildSupersedes((EntityDefinition) def, supersedes);
 
       for (String name : supersedes.keySet()) {
-        PropertyInfo pi = properties.get(name);
+        PropertyDefFactory pi = factories.get(name);
 
         if (pi != null)
           pi.setSupersedes(supersedes.get(name));
       }
     }
 
-    for (PropertyInfo fi : properties.values()) {
+    for (PropertyDefFactory fi : factories.values()) {
       PropertyDefinition d = fi.getDefinition(sf, uriPrefix);
 
       if (d == null) {
@@ -247,7 +247,7 @@ public class AnnotationClassMetaFactory {
   }
 
   private void addGenericsSyntheticProps(ClassDefinition def, Class clazz,
-                                         Map<String, PropertyInfo> properties)
+                                         Map<String, PropertyDefFactory> factories)
                                   throws OtmException {
     for (Method m : clazz.getSuperclass().getDeclaredMethods()) {
       if (!isAnnotated(m))
@@ -255,13 +255,13 @@ public class AnnotationClassMetaFactory {
 
       Property property = Property.toProperty(m);
 
-      if ((property == null) || properties.containsKey(property.getName()))
+      if ((property == null) || factories.containsKey(property.getName()))
         continue;
 
       property = property.resolveGenericsType(clazz);
 
       if (property != null)
-        properties.put(property.getName(), new PropertyInfo(def, property));
+        factories.put(property.getName(), new PropertyDefFactory(def, property));
     }
   }
 
@@ -300,9 +300,10 @@ public class AnnotationClassMetaFactory {
   /**
    * Gets the entity name for a class.
    *
-   * @param clazz the clazz to look-up
+   * @param clazz the class to look-up
    *
-   * @return name from @Entity or the default short-name of the clazz.
+   * @return name from {@link org.topazproject.otm.annotations.Entity @Entity} annotation or the
+   *         default short-name of the clazz.
    */
   public static String getEntityName(Class<?> clazz) {
     if (clazz == null)
@@ -334,14 +335,14 @@ public class AnnotationClassMetaFactory {
       throw new OtmException("Getter can't be 'final' for " + property);
   }
 
-  private static class PropertyInfo {
+  private static class PropertyDefFactory {
     final ClassDefinition cd;
     final Property        property;
     final String          name;
     String                supersedes;
 
-    public PropertyInfo(ClassDefinition cd, Property property)
-                 throws OtmException {
+    public PropertyDefFactory(ClassDefinition cd, Property property)
+                       throws OtmException {
       this.cd         = cd;
       this.property   = property;
       this.name       = cd.getName() + ":" + property.getName();
