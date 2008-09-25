@@ -87,6 +87,15 @@ public interface SessionFactory {
    * @throws OtmException on an error
    */
   public void preload(Class<?> c) throws OtmException;
+
+  /**
+   * Validate the registered definitions and bindings and build the {@link ClassMetadata}
+   * for all entities. Could be called incrementally as new definitions are added. But
+   * the added definitions must all have resolvable references. eg. referece to an undefined 
+   * association or an undefined property definition could result in a failure here.
+   *
+   * @throws OtmException on an error
+   */
   public void validate() throws OtmException;
 
   /**
