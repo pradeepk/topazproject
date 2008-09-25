@@ -44,7 +44,7 @@ import org.topazproject.otm.criterion.Restrictions;
  *
  * @author Ronald Tschalär
  */
-public class JournalKeyService {
+class JournalKeyService {
   private static final Log    log = LogFactory.getLog(JournalKeyService.class);
 
   private final Cache                  journalCache;          // key    -> Journal

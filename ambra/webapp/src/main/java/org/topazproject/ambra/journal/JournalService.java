@@ -26,7 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.ambra.models.Journal;
+import org.topazproject.ambra.cache.Cache;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 
 
 import org.springframework.beans.factory.annotation.Required;
@@ -51,6 +53,10 @@ public class JournalService {
   private static final Log    log = LogFactory.getLog(JournalService.class);
   private static final String RI_MODEL = "ri";
 
+  private SessionFactory sf;
+  private Cache journalCache;          // key    -> Journal
+  private Cache objectCarriers;        // obj-id -> Set<journal-key>
+
   private JournalKeyService      journalKeyService;
   private JournalFilterService   journalFilterService;
   private JournalCarrierService  journalCarrierService;
@@ -62,6 +68,16 @@ public class JournalService {
    * session-factory instance, and this must be done before the first session instance is created.
    */
   public JournalService() {
+  }
+
+  /**
+   * Initialize this service. Must be called after all properties are set.
+   */
+  public void init() {
+    journalKeyService = new JournalKeyService(journalCache, "KEY-");
+    journalFilterService = new JournalFilterService(sf, journalCache, "FILTER-", journalKeyService);
+    journalCarrierService = new JournalCarrierService(sf, objectCarriers,
+                                                      journalKeyService, journalFilterService);
   }
 
   /**
@@ -150,32 +166,32 @@ public class JournalService {
   }
 
   /**
-   * Set the key service. Called by spring's bean wiring.
+   * Set the OTM session-facctory. Called by spring's bean wiring.
    *
-   * @param journalKeyService key service
+   * @param sf the otm session-facctory
    */
   @Required
-  public void setJournalKeyService(JournalKeyService journalKeyService) {
-    this.journalKeyService = journalKeyService;
+  public void setOtmSessionFactory(SessionFactory sf) {
+    this.sf = sf;
   }
 
   /**
-   * Set the filter service. Called by spring's bean wiring.
+   * Set the journal cache. Called by spring's bean wiring.
    *
-   * @param journalFilterService filter service
+   * @param journalCache the journal cache
    */
   @Required
-  public void setJournalFilterService(JournalFilterService journalFilterService) {
-    this.journalFilterService = journalFilterService;
+  public void setJournalCache(Cache journalCache) {
+    this.journalCache = journalCache;
   }
 
   /**
-   * Set the carrier service. Called by spring's bean wiring.
+   * Set the carrier cache. Called by spring's bean wiring.
    *
-   * @param journalCarrierService carrier service
+   * @param objectCache the carrier cache
    */
   @Required
-  public void setJournalCarrierService(JournalCarrierService journalCarrierService) {
-    this.journalCarrierService = journalCarrierService;
+  public void setObjectCache(Cache objectCache) {
+    this.objectCarriers = objectCache;
   }
 }

@@ -63,7 +63,7 @@ import org.topazproject.otm.mapping.java.ClassBinder;
  *
  * @author Ronald Tschalär
  */
-public class JournalFilterService {
+class JournalFilterService {
   private static final Log    log = LogFactory.getLog(JournalFilterService.class);
 
   private final SessionFactory           sf;

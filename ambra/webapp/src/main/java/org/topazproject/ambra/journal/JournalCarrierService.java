@@ -52,7 +52,7 @@ import org.topazproject.otm.mapping.java.ClassBinder;
  *
  * @author Ronald Tschalär
  */
-public class JournalCarrierService {
+class JournalCarrierService {
   private static final Log    log = LogFactory.getLog(JournalCarrierService.class);
   private static final String RI_MODEL = "ri";
 
