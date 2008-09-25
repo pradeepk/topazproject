@@ -19,6 +19,7 @@
 package org.topazproject.ambra.article.action;
 
 import java.io.UnsupportedEncodingException;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.text.ParseException;
@@ -27,9 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -135,9 +134,11 @@ public class ArticleFeed extends BaseActionSupport {
     }
 
     // Get feed if cached or generate feed by querying OTM
-    String cacheKey = getCacheKey();
+    Key cacheKey = new Key(getCurrentJournal(), startDate, endDate ,category, author, maxResults, relativeLinks, extended, title, selfLink);
+
+
     wireFeed = feedCache.get(cacheKey, -1,
-        new Cache.SynchronizedLookup<WireFeed, ApplicationException>(cacheKey.intern()) {
+        new Cache.SynchronizedLookup<WireFeed, ApplicationException>(cacheKey) {
           public WireFeed lookup() throws ApplicationException {
             return getFeed(uri);
           }
@@ -484,31 +485,6 @@ public class ArticleFeed extends BaseActionSupport {
     this.articleOtmService = articleOtmService;
   }
 
-  private String getCacheKey() {
-    Map<String, String> key = new TreeMap<String, String>();
-    key.put("journal", getCurrentJournal());
-    if (startDate != null)
-      key.put("sd", startDate);
-    if (endDate != null)
-      key.put("ed", endDate);
-    if (category != null && category.length() > 0)
-      key.put("cat", category);
-    if (author != null)
-      key.put("aut", author);
-    if (maxResults != -1)
-      key.put("cnt", Integer.toString(maxResults));
-    if (relativeLinks)
-      key.put("rel", "true");
-    if (extended)
-      key.put("ext", "true");
-    if (title != null)
-      key.put("tit", title);
-    if (selfLink != null)
-      key.put("self", selfLink);
-
-    return key.toString();
-  }
-
   /**
    * Set ehcache instance via spring
    *
@@ -618,4 +594,195 @@ public class ArticleFeed extends BaseActionSupport {
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
     this.articleXmlUtils = articleXmlUtils;
   }
+
+  /**
+   * Cache key for article feeds.
+   */
+  public class Key implements Serializable, Comparable {
+
+    private String journal;
+    private String startDate;
+    private String endDate;
+    private String category;
+    private String author;
+    private int count;
+    private boolean relativeLinks;
+    private boolean extended;
+    private String title;
+    private String selfLink;
+
+    private int hashCode;
+
+    public Key(String journal, String startDate, String endDate, String category, String author, int count, boolean relativeLinks, boolean extended, String title, String selfLink) {
+      this.journal = journal;
+      this.startDate = startDate;
+      this.endDate = endDate;
+      if (category != null && category.length() > 0)
+        this.category = category;
+      if (author != null && author.length() > 0)
+        this.author = author.trim();
+      this.count = count;
+      this.relativeLinks = relativeLinks;
+      this.extended = extended;
+      if (title != null && title.length() > 0)
+        this.title = title;
+      if (selfLink != null && selfLink.length() > 0)
+        this.selfLink = selfLink;
+
+      this.hashCode = calculateHashKey();
+    }
+
+    private int calculateHashKey() {
+      int hash = 0;
+      if (this.journal != null) hash += this.journal.hashCode();
+      if (this.startDate != null) hash += this.startDate.hashCode();
+      if (this.endDate != null) hash += this.endDate.hashCode();
+      if (this.category != null) hash += this.category.hashCode();
+      if (this.author != null) hash += this.author.hashCode();
+      hash += this.count;
+      hash += this.relativeLinks?1:0;
+      hash += this.extended?1:0;
+      if (this.title != null) hash += this.title.hashCode();
+      if (this.selfLink != null) hash += this.selfLink.hashCode();
+
+      return hash;
+    }
+
+    public String getJournal() {
+      return journal;
+    }
+
+    public String getStartDate() {
+      return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+      this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+      return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+      this.endDate = endDate;
+    }
+
+    public String getCategory() {
+      return category;
+    }
+
+    public String getAuthor() {
+      return author;
+    }
+
+    public int getCount() {
+      return count;
+    }
+
+    public boolean isRelativeLinks() {
+      return relativeLinks;
+    }
+
+    public boolean isExtended() {
+      return extended;
+    }
+
+    public String getTitle() {
+      return title;
+    }
+
+    public String getSelfLink() {
+      return selfLink;
+    }
+
+    @Override
+    public int hashCode() {
+      return this.hashCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null || !(o instanceof Key)) return false;
+      Key key = (Key)o;
+      return (
+          key.hashCode == this.hashCode
+          &&
+          (key.getJournal()==null && this.journal == null
+              || key.getJournal() != null && key.getJournal().equals(this.journal))
+          &&
+          (key.getStartDate()==null && this.startDate == null
+              || key.getStartDate() != null && key.getStartDate().equals(this.startDate))
+          &&
+          (key.getEndDate()==null && this.endDate == null
+              || key.getEndDate() != null && key.getEndDate().equals(this.endDate))
+          &&
+          (key.getCategory()==null && this.category == null
+              || key.getCategory() != null && key.getCategory().equals(this.category))
+          &&
+          key.isExtended() == this.extended
+          &&
+          key.isRelativeLinks() == this.relativeLinks
+          &&
+          (key.getAuthor()==null && this.author == null
+              || key.getAuthor() != null && key.getAuthor().equals(this.author))
+          &&
+          key.getCount()==this.count
+          &&
+          (key.getSelfLink()==null && this.selfLink == null
+              || key.getSelfLink() != null && key.getSelfLink().equals(this.selfLink))
+          &&
+          (key.getTitle()==null && this.title == null
+              || key.getTitle() != null && key.getTitle().equals(this.title))
+          );
+    }
+
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      builder.append("journal=");
+      builder.append(journal);
+      if (startDate != null) {
+        builder.append("; startDate=");
+        builder.append(startDate);
+      }
+      if (endDate != null) {
+        builder.append("; endDate=");
+        builder.append(endDate);
+      }
+      if (category != null) {
+        builder.append("; category=");
+        builder.append(category);
+      }
+      if (extended)
+        builder.append("; extended=true");
+      if (relativeLinks)
+        builder.append("; relativeLinks=true");
+      if (author != null) {
+        builder.append("; author=");
+        builder.append(author);
+      }
+      if (title != null) {
+        builder.append("; title=");
+        builder.append(title);
+      }
+      if (count != -1) {
+        builder.append("; count=");
+        builder.append(count);
+      }
+      if (selfLink != null) {
+        builder.append("; selfLink=");
+        builder.append(selfLink);
+      }
+
+      return builder.toString();
+    }
+
+    public int compareTo(Object o) {
+      if (o == null) return 1;
+      return toString().compareTo(o.toString());
+    }
+  }
+
 }

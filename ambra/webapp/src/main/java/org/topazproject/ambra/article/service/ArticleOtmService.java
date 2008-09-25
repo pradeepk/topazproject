@@ -28,6 +28,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -44,9 +45,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.ObjectInfo;
 import org.topazproject.ambra.models.Representation;
+import org.topazproject.ambra.models.Category;
+import org.topazproject.ambra.models.DublinCore;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.permission.service.PermissionsService;
+import org.topazproject.ambra.cache.Cache;
+import org.topazproject.ambra.cache.AbstractObjectListener;
+import org.topazproject.ambra.article.action.ArticleFeed;
+import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Query;
+import org.topazproject.otm.Interceptor;
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -62,6 +72,10 @@ public class ArticleOtmService {
   private ArticlePEP         pep;
   private Session            session;
   private PermissionsService permissionsService;
+
+  private JournalService     journalService;
+  private Cache              feedCache;
+  private Invalidator        invalidator;
 
   public ArticleOtmService() throws IOException {
     pep = new ArticlePEP();
@@ -556,6 +570,27 @@ public class ArticleOtmService {
     this.permissionsService = permissionsService;
   }
 
+  /**
+   * @param journalService the journal service to use
+   */
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
+  }
+
+  /**
+   * Set ehcache instance via spring
+   *
+   * @param feedCache the ehcache instance
+   */
+  public void setFeedCache(final Cache feedCache) {
+    this.feedCache = feedCache;
+    if (invalidator == null) {
+      invalidator = new Invalidator();
+      this.feedCache.getCacheManager().registerListener(invalidator);
+    }
+  }
+
   private static class ByteArrayDataSource implements DataSource {
     private final Representation rep;
 
@@ -580,4 +615,93 @@ public class ArticleOtmService {
       throw new IOException("writing not supported");
     }
   }
+
+  /**
+   * Invalidate feedCache on every injest or delete
+   */
+  private class Invalidator extends AbstractObjectListener {
+
+    @Override
+    public void objectChanged(Session session, ClassMetadata cm, String id, Object object,
+        Interceptor.Updates updates) {
+      invalidateFeedCache(object);
+    }
+
+    @Override
+    public void removing(Session session, ClassMetadata cm, String id, Object object) throws Exception {
+      invalidateFeedCache(object);
+    }
+
+    private void invalidateFeedCache(Object object) {
+      if (object instanceof Article && ((Article)object).getState() == Article.STATE_ACTIVE)
+        for (ArticleFeed.Key key : (Set<ArticleFeed.Key>)feedCache.getKeys()) {
+          if (matches(key, (Article)object))
+            feedCache.remove(key);
+        }
+    }
+
+    private boolean matches(ArticleFeed.Key key, Article article){
+
+      if (key.getJournal() != null) {
+        boolean matches = false;
+        for (Journal journal : journalService.getJournalsForObject(article.getId())) {
+          if (journal.getKey().equals(key.getJournal())) {
+            matches = true;
+            break;
+          }
+        }
+
+        if (!matches) return false;
+      }
+
+
+      DublinCore dc = article.getDublinCore();
+
+      Date articleDate = dc.getDate();
+      if (articleDate != null) {
+        try {
+          Date startDate = parseDateParam(key.getStartDate());
+          Date endDate = parseDateParam(key.getEndDate());
+          if (startDate != null && startDate.after(articleDate))
+            return false;
+          if (endDate != null && endDate.before(articleDate))
+            return false;
+        } catch (ParseException e) {
+          throw new RuntimeException(e);
+        }
+      }
+
+      if (key.getCategory() != null) {
+        boolean matches = false;
+        for (Category category : article.getCategories()) {
+          if (category.getMainCategory().equals(key.getCategory())) {
+            matches = true;
+            break;
+          }
+        }
+
+        // article is not in the category specified in the cache key
+        if (!matches) return false;
+      }
+
+      if (key.getAuthor() != null) {
+        boolean matches = false;
+        for (String author: dc.getCreators()) {
+            if (key.getAuthor().equalsIgnoreCase(author)) {
+              matches = true;
+              break;
+            }
+        }
+
+        // author from the key is not found in the article
+        if (!matches) return false;
+      }
+
+      if (key.getTitle() != null && !key.getTitle().equalsIgnoreCase(dc.getTitle()))
+        return false;
+
+      return true;
+    }
+  }
+
 }
