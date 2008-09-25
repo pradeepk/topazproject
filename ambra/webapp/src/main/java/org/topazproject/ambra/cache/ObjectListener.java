@@ -35,7 +35,7 @@ public interface ObjectListener extends Listener {
    * @param cm the key
    * @param id the value
    * @param object the object that changed
-   * @param update the changes or null if previous state is unavailable
+   * @param updates the changes or null if previous state is unavailable
    */
   public void objectChanged(Session session, ClassMetadata cm, String id, Object object, 
           Interceptor.Updates updates);
