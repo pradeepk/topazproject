@@ -657,16 +657,23 @@ public class ArticleFeed extends BaseActionSupport {
 
     private int calculateHashKey() {
       int hash = 0;
-      if (this.journal != null) hash += this.journal.hashCode();
-      if (this.startDate != null) hash += this.startDate.hashCode();
-      if (this.endDate != null) hash += this.endDate.hashCode();
-      if (this.category != null) hash += this.category.hashCode();
-      if (this.author != null) hash += this.author.hashCode();
+      if (this.journal != null)
+        hash += this.journal.hashCode();
+      if (this.startDate != null)
+        hash += this.startDate.hashCode();
+      if (this.endDate != null)
+        hash += this.endDate.hashCode();
+      if (this.category != null)
+        hash += this.category.hashCode();
+      if (this.author != null)
+        hash += this.author.hashCode();
       hash += this.count;
       hash += this.relativeLinks ? 1 : 0;
       hash += this.extended ? 1 : 0;
-      if (this.title != null) hash += this.title.hashCode();
-      if (this.selfLink != null) hash += this.selfLink.hashCode();
+      if (this.title != null)
+        hash += this.title.hashCode();
+      if (this.selfLink != null)
+        hash += this.selfLink.hashCode();
 
       return hash;
     }
@@ -795,7 +802,8 @@ public class ArticleFeed extends BaseActionSupport {
     }
 
     public int compareTo(Object o) {
-      if (o == null) return 1;
+      if (o == null)
+        return 1;
       return toString().compareTo(o.toString());
     }
   }
@@ -835,7 +843,8 @@ public class ArticleFeed extends BaseActionSupport {
           }
         }
 
-        if (!matches) return false;
+        if (!matches)
+          return false;
       }
 
       DublinCore dc = article.getDublinCore();
@@ -858,7 +867,8 @@ public class ArticleFeed extends BaseActionSupport {
         }
 
         // article is not in the category specified in the cache key
-        if (!matches) return false;
+        if (!matches)
+          return false;
       }
 
       if (key.getAuthor() != null) {
@@ -871,7 +881,8 @@ public class ArticleFeed extends BaseActionSupport {
         }
 
         // author from the key is not found in the article
-        if (!matches) return false;
+        if (!matches)
+          return false;
       }
 
       if (key.getTitle() != null && !key.getTitle().equalsIgnoreCase(dc.getTitle()))
