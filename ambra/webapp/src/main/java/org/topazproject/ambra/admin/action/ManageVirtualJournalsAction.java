@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.models.Journal;
-import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.DetachedCriteria;
 
 /**
