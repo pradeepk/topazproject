@@ -43,6 +43,7 @@ import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
+import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.configuration.ConfigurationStore;
@@ -816,61 +817,94 @@ public class ArticleFeed extends BaseActionSupport {
     @Override
     public void objectChanged(Session session, ClassMetadata cm, String id, Object object,
                               Interceptor.Updates updates) {
-      invalidateFeedCache(object);
+      if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE) {
+        invalidateFeedCacheForArticle((Article)object);
+      }
+      else if (object instanceof Journal) {
+        invalidateFeedCacheForJournal((Journal)object, updates);
+      }
     }
 
     @Override
     public void removing(Session session, ClassMetadata cm, String id, Object object) throws Exception {
-      invalidateFeedCache(object);
-    }
-
-    private void invalidateFeedCache(Object object) {
       if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE)
-        for (ArticleFeed.Key key : (Set<ArticleFeed.Key>) feedCache.getKeys()) {
-          if (matches(key, (Article) object))
-            feedCache.remove(key);
-        }
+        invalidateFeedCacheForArticle((Article)object);
     }
 
-    private boolean matches(ArticleFeed.Key key, Article article) {
+    private void invalidateFeedCacheForJournal(Journal journal, Interceptor.Updates updates) {
+      List<Article> articles = new ArrayList<Article>();
 
-      if (key.getJournal() != null) {
-        boolean matches = false;
-        for (Journal journal : journalService.getJournalsForObject(article.getId())) {
-          if (journal.getKey().equals(key.getJournal())) {
-            matches = true;
-            break;
+      for (URI articleKey : journal.getSimpleCollection()) {
+        try {
+          articles.add(articleOtmService.getArticle(articleKey));
+        } catch (NoSuchArticleIdException e) {
+          if (log.isDebugEnabled())
+            log.debug("Ignoring "+articleKey);
+        }
+      }
+
+      List<String> oldArticles = updates.getOldValue("simpleCollection");
+      if (oldArticles != null) {
+        for (String oldArticleUri : oldArticles) {
+          try {
+            articles.add(articleOtmService.getArticle(URI.create(oldArticleUri)));
+          } catch (NoSuchArticleIdException e) {
+            if (log.isDebugEnabled())
+              log.debug("Ignoring old "+oldArticleUri);
           }
         }
-
-        if (!matches)
-          return false;
       }
+
+      if (!articles.isEmpty())
+        invalidateFeedCacheForJournalArticle(journal, articles);
+
+    }
+
+    private void invalidateFeedCacheForArticle(Article article) {
+      for (Key key : (Set<Key>) feedCache.getKeys()) {
+        if (matches(key, article, true))
+          feedCache.remove(key);
+      }
+    }
+
+    private void invalidateFeedCacheForJournalArticle(Journal journal, List<Article> articles) {
+      for (Key key : (Set<Key>) feedCache.getKeys()) {
+        if (key.getJournal().equals(journal.getKey())) {
+          for (Article article : articles) {
+            if (matches(key, article, false))
+              feedCache.remove(key);
+          }
+        }
+      }
+    }
+
+    private boolean matches(ArticleFeed.Key key, Article article, boolean checkJournal) {
+
+      if (checkJournal && matchesJournal(key, article))
+        return false;
 
       DublinCore dc = article.getDublinCore();
 
-      Date articleDate = dc.getDate();
-      if (articleDate != null) {
-        if (key.getStartDate() != null && key.getStartDate().after(articleDate))
-          return false;
-        if (key.getEndDate() != null && key.getEndDate().before(articleDate))
-          return false;
-      }
+      if (matchesDates(key, dc))
+        return false;
 
-      if (key.getCategory() != null) {
-        boolean matches = false;
-        for (Category category : article.getCategories()) {
-          if (category.getMainCategory().equals(key.getCategory())) {
-            matches = true;
-            break;
-          }
-        }
+      if (matchesCategory(key, article))
+        return false;
 
-        // article is not in the category specified in the cache key
-        if (!matches)
-          return false;
-      }
+      if (matchesAuthor(key, dc))
+        return false;
 
+      if (matchesTitle(key, dc))
+        return false;
+
+      return true;
+    }
+
+    private boolean matchesTitle(Key key, DublinCore dc) {
+      return key.getTitle() != null && !key.getTitle().equalsIgnoreCase(dc.getTitle());
+    }
+
+    private boolean matchesAuthor(Key key, DublinCore dc) {
       if (key.getAuthor() != null) {
         boolean matches = false;
         for (String author : dc.getCreators()) {
@@ -882,13 +916,53 @@ public class ArticleFeed extends BaseActionSupport {
 
         // author from the key is not found in the article
         if (!matches)
-          return false;
+          return true;
       }
+      return false;
+    }
 
-      if (key.getTitle() != null && !key.getTitle().equalsIgnoreCase(dc.getTitle()))
-        return false;
+    private boolean matchesCategory(Key key, Article article) {
+      if (key.getCategory() != null) {
+        boolean matches = false;
+        for (Category category : article.getCategories()) {
+          if (category.getMainCategory().equals(key.getCategory())) {
+            matches = true;
+            break;
+          }
+        }
 
-      return true;
+        // article is not in the category specified in the cache key
+        if (!matches)
+          return true;
+      }
+      return false;
+    }
+
+    private boolean matchesDates(Key key, DublinCore dc) {
+      Date articleDate = dc.getDate();
+      if (articleDate != null) {
+        if (key.getStartDate() != null && key.getStartDate().after(articleDate))
+          return true;
+        if (key.getEndDate() != null && key.getEndDate().before(articleDate))
+          return true;
+      }
+      return false;
+    }
+
+    private boolean matchesJournal(Key key, Article article) {
+      if (key.getJournal() != null) {
+        boolean matches = false;
+        for (Journal journal : journalService.getJournalsForObject(article.getId())) {
+          if (journal.getKey().equals(key.getJournal())) {
+            matches = true;
+            break;
+          }
+        }
+
+        if (!matches)
+          return true;
+      }
+      return false;
     }
   }
 
