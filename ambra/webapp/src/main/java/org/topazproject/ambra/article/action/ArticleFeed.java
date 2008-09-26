@@ -38,10 +38,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
 import org.jdom.Element;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.ApplicationException;
+import org.topazproject.ambra.journal.JournalService;
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.cache.Cache;
+import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Category;
@@ -49,8 +52,12 @@ import org.topazproject.ambra.models.Citation;
 import org.topazproject.ambra.models.DublinCore;
 import org.topazproject.ambra.models.Representation;
 import org.topazproject.ambra.models.UserProfile;
+import org.topazproject.ambra.models.Journal;
 import org.topazproject.ambra.util.ArticleXMLUtils;
 import org.topazproject.ambra.web.VirtualJournalContext;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.Interceptor;
 
 import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.feed.atom.Content;
@@ -83,6 +90,10 @@ public class ArticleFeed extends BaseActionSupport {
 
   // WebWorks AmbraFeedResult parms
   private WireFeed wireFeed;
+
+  private JournalService journalService;
+  private Invalidator invalidator;
+
 
   /**
    * Ambra Configuration
@@ -134,7 +145,7 @@ public class ArticleFeed extends BaseActionSupport {
     }
 
     // Get feed if cached or generate feed by querying OTM
-    Key cacheKey = new Key(getCurrentJournal(), startDate, endDate ,category, author, maxResults, relativeLinks, extended, title, selfLink);
+    Key cacheKey = new Key(getCurrentJournal(), ArticleOtmService.parseDateParam(startDate), ArticleOtmService.parseDateParam(endDate) ,category, author, maxResults, relativeLinks, extended, title, selfLink);
 
 
     wireFeed = feedCache.get(cacheKey, -1,
@@ -490,8 +501,12 @@ public class ArticleFeed extends BaseActionSupport {
    *
    * @param feedCache the ehcache instance
    */
-  public void setFeedCache(final Cache feedCache) {
+  public void setFeedCache(Cache feedCache) {
     this.feedCache = feedCache;
+    if (invalidator == null) {
+      invalidator = new Invalidator();
+      this.feedCache.getCacheManager().registerListener(invalidator);
+    }
   }
 
   /**
@@ -596,13 +611,21 @@ public class ArticleFeed extends BaseActionSupport {
   }
 
   /**
+   * @param journalService the journal service to use
+   */
+  @Required
+  public void setJournalService(JournalService journalService) {
+    this.journalService = journalService;
+  }
+
+  /**
    * Cache key for article feeds.
    */
   public class Key implements Serializable, Comparable {
 
     private String journal;
-    private String startDate;
-    private String endDate;
+    private Date startDate;
+    private Date endDate;
     private String category;
     private String author;
     private int count;
@@ -613,7 +636,7 @@ public class ArticleFeed extends BaseActionSupport {
 
     private int hashCode;
 
-    public Key(String journal, String startDate, String endDate, String category, String author, int count, boolean relativeLinks, boolean extended, String title, String selfLink) {
+    public Key(String journal, Date startDate, Date endDate, String category, String author, int count, boolean relativeLinks, boolean extended, String title, String selfLink) {
       this.journal = journal;
       this.startDate = startDate;
       this.endDate = endDate;
@@ -640,8 +663,8 @@ public class ArticleFeed extends BaseActionSupport {
       if (this.category != null) hash += this.category.hashCode();
       if (this.author != null) hash += this.author.hashCode();
       hash += this.count;
-      hash += this.relativeLinks?1:0;
-      hash += this.extended?1:0;
+      hash += this.relativeLinks ? 1 : 0;
+      hash += this.extended ? 1 : 0;
       if (this.title != null) hash += this.title.hashCode();
       if (this.selfLink != null) hash += this.selfLink.hashCode();
 
@@ -652,20 +675,12 @@ public class ArticleFeed extends BaseActionSupport {
       return journal;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
       return startDate;
     }
 
-    public void setStartDate(String startDate) {
-      this.startDate = startDate;
-    }
-
-    public String getEndDate() {
+    public Date getEndDate() {
       return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-      this.endDate = endDate;
     }
 
     public String getCategory() {
@@ -704,37 +719,37 @@ public class ArticleFeed extends BaseActionSupport {
     @Override
     public boolean equals(Object o) {
       if (o == null || !(o instanceof Key)) return false;
-      Key key = (Key)o;
+      Key key = (Key) o;
       return (
-          key.hashCode == this.hashCode
-          &&
-          (key.getJournal()==null && this.journal == null
-              || key.getJournal() != null && key.getJournal().equals(this.journal))
-          &&
-          (key.getStartDate()==null && this.startDate == null
-              || key.getStartDate() != null && key.getStartDate().equals(this.startDate))
-          &&
-          (key.getEndDate()==null && this.endDate == null
-              || key.getEndDate() != null && key.getEndDate().equals(this.endDate))
-          &&
-          (key.getCategory()==null && this.category == null
-              || key.getCategory() != null && key.getCategory().equals(this.category))
-          &&
-          key.isExtended() == this.extended
-          &&
-          key.isRelativeLinks() == this.relativeLinks
-          &&
-          (key.getAuthor()==null && this.author == null
-              || key.getAuthor() != null && key.getAuthor().equals(this.author))
-          &&
-          key.getCount()==this.count
-          &&
-          (key.getSelfLink()==null && this.selfLink == null
-              || key.getSelfLink() != null && key.getSelfLink().equals(this.selfLink))
-          &&
-          (key.getTitle()==null && this.title == null
-              || key.getTitle() != null && key.getTitle().equals(this.title))
-          );
+        key.hashCode == this.hashCode
+        &&
+        (key.getJournal() == null && this.journal == null
+            || key.getJournal() != null && key.getJournal().equals(this.journal))
+        &&
+        (key.getStartDate() == null && this.startDate == null
+            || key.getStartDate() != null && key.getStartDate().equals(this.startDate))
+        &&
+        (key.getEndDate() == null && this.endDate == null
+            || key.getEndDate() != null && key.getEndDate().equals(this.endDate))
+        &&
+        (key.getCategory() == null && this.category == null
+            || key.getCategory() != null && key.getCategory().equals(this.category))
+        &&
+        key.isExtended() == this.extended
+        &&
+        key.isRelativeLinks() == this.relativeLinks
+        &&
+        (key.getAuthor() == null && this.author == null
+            || key.getAuthor() != null && key.getAuthor().equals(this.author))
+        &&
+        key.getCount() == this.count
+        &&
+        (key.getSelfLink() == null && this.selfLink == null
+            || key.getSelfLink() != null && key.getSelfLink().equals(this.selfLink))
+        &&
+        (key.getTitle() == null && this.title == null
+            || key.getTitle() != null && key.getTitle().equals(this.title))
+      );
     }
 
 
@@ -782,6 +797,87 @@ public class ArticleFeed extends BaseActionSupport {
     public int compareTo(Object o) {
       if (o == null) return 1;
       return toString().compareTo(o.toString());
+    }
+  }
+
+  /**
+   * Invalidate feedCache on every injest or delete
+   */
+  private class Invalidator extends AbstractObjectListener {
+
+    @Override
+    public void objectChanged(Session session, ClassMetadata cm, String id, Object object,
+                              Interceptor.Updates updates) {
+      invalidateFeedCache(object);
+    }
+
+    @Override
+    public void removing(Session session, ClassMetadata cm, String id, Object object) throws Exception {
+      invalidateFeedCache(object);
+    }
+
+    private void invalidateFeedCache(Object object) {
+      if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE)
+        for (ArticleFeed.Key key : (Set<ArticleFeed.Key>) feedCache.getKeys()) {
+          if (matches(key, (Article) object))
+            feedCache.remove(key);
+        }
+    }
+
+    private boolean matches(ArticleFeed.Key key, Article article) {
+
+      if (key.getJournal() != null) {
+        boolean matches = false;
+        for (Journal journal : journalService.getJournalsForObject(article.getId())) {
+          if (journal.getKey().equals(key.getJournal())) {
+            matches = true;
+            break;
+          }
+        }
+
+        if (!matches) return false;
+      }
+
+      DublinCore dc = article.getDublinCore();
+
+      Date articleDate = dc.getDate();
+      if (articleDate != null) {
+        if (key.getStartDate() != null && key.getStartDate().after(articleDate))
+          return false;
+        if (key.getEndDate() != null && key.getEndDate().before(articleDate))
+          return false;
+      }
+
+      if (key.getCategory() != null) {
+        boolean matches = false;
+        for (Category category : article.getCategories()) {
+          if (category.getMainCategory().equals(key.getCategory())) {
+            matches = true;
+            break;
+          }
+        }
+
+        // article is not in the category specified in the cache key
+        if (!matches) return false;
+      }
+
+      if (key.getAuthor() != null) {
+        boolean matches = false;
+        for (String author : dc.getCreators()) {
+          if (key.getAuthor().equalsIgnoreCase(author)) {
+            matches = true;
+            break;
+          }
+        }
+
+        // author from the key is not found in the article
+        if (!matches) return false;
+      }
+
+      if (key.getTitle() != null && !key.getTitle().equalsIgnoreCase(dc.getTitle()))
+        return false;
+
+      return true;
     }
   }
 
