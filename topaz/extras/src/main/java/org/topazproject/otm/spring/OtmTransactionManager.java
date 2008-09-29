@@ -173,7 +173,7 @@ public class OtmTransactionManager extends AbstractPlatformTransactionManager {
    *
    * <p>Changing this flag does not affect any current transaction, only new ones.
    *
-   * @param clearSessionOnRB true if Session.flush's should skipped in read-only transactions
+   * @param skipFlushForRoTx true if Session.flush's should skipped in read-only transactions
    */
   public void setSkipFlushOnReadonlyTx(boolean skipFlushForRoTx) {
     this.skipFlushForRoTx = skipFlushForRoTx;
