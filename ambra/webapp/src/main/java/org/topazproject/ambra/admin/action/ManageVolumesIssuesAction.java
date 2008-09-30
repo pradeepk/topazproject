@@ -117,6 +117,7 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
         for (final URI issueDoi : volume.getIssueList()) {
           final Issue issue = session.get(Issue.class, issueDoi.toString());
             if (issue != null) {
+              if (!issuePresent(issue))
                 issues.add(issue);
             } else {
               final String errorMessage = "Error getting issue: " + issueDoi;
@@ -133,6 +134,14 @@ public class ManageVolumesIssuesAction extends BaseAdminActionSupport {
 
     // default action is just to display the template
     return SUCCESS;
+  }
+
+  private boolean issuePresent(Issue issue) {
+    for (Issue issue1 : issues) {
+      if(issue1.getId().equals(issue.getId()))
+        return true;
+    }
+    return false;
   }
 
   /**
