@@ -341,7 +341,7 @@ public class UserService {
   public String lookUpUserByAccountId(final String accountId) throws ApplicationException {
     pep.checkAccessAE(UsersPEP.LOOKUP_USER, URI.create("account:" + accountId));
 
-    UserAccount account = session.get(UserAccount.class, session.getSessionFactory().listAliases().get("id") + "account/" + accountId);
+    UserAccount account = session.get(UserAccount.class, accountId);
 
     if (account != null)
       return account.getId().toString();
