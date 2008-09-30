@@ -29,7 +29,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SearchUserAction extends UserActionSupport {
   private String authId;
+  private String accountId;
   private String emailAddress;
+  private String name;
   private String[] topazUserIdList;
 
   private static final Log log = LogFactory.getLog(SearchUserAction.class);
@@ -52,6 +54,54 @@ public class SearchUserAction extends UserActionSupport {
       topazUserIdList = new String[]{topazUserId};
     } catch (final ApplicationException ex) {
       addFieldError("authId", ex.getMessage());
+      return INPUT;
+    }
+
+    return SUCCESS;
+  }
+
+  /**
+   * Find user with a given account id
+   * @return webwork status
+   * @throws Exception Exception
+   */
+  @Transactional(readOnly = true)
+  public String executeFindUserByAccountId() throws Exception {
+    try {
+      if (log.isDebugEnabled()) {
+        log.debug("Finding user with AccountID: " + accountId);
+      }
+      final String userId = getUserService().lookUpUserByAccountId(accountId);
+      if (null == userId) {
+        throw new ApplicationException("No user found with the accounid:" + accountId);
+      }
+      topazUserIdList = new String[]{userId};
+    } catch (final ApplicationException ex) {
+      addFieldError("accountId", ex.getMessage());
+      return INPUT;
+    }
+
+    return SUCCESS;
+  }
+
+  /**
+   * Find user with a given name
+   * @return webwork status
+   * @throws Exception Exception
+   */
+  @Transactional(readOnly = true)
+  public String executeFindUserByName() throws Exception {
+    try {
+      if (log.isDebugEnabled()) {
+        log.debug("Finding user with name: " + name);
+      }
+      final String userId = getUserService().lookUpUserByDisplayName(name);
+      if (null == userId) {
+        throw new ApplicationException("No user found with the name:" + name);
+      }
+      topazUserIdList = new String[]{userId};
+    } catch (final ApplicationException ex) {
+      addFieldError("name", ex.getMessage());
       return INPUT;
     }
 
@@ -100,6 +150,22 @@ public class SearchUserAction extends UserActionSupport {
   }
 
   /**
+   * Getter for accountId.
+   * @return Value of accountId.
+   */
+  public String getAccountId() {
+    return accountId;
+  }
+
+  /**
+   * Setter for accountId.
+   * @param accountId Value to set for accountId.
+   */
+  public void setAccountId(String accountId) {
+    this.accountId = accountId;
+  }
+
+  /**
    * Getter for emailAddress.
    * @return Value of emailAddress.
    */
@@ -113,6 +179,22 @@ public class SearchUserAction extends UserActionSupport {
    */
   public void setEmailAddress(final String emailAddress) {
     this.emailAddress = emailAddress;
+  }
+
+  /**
+   * Getter for displayName.
+   * @return Value of displayName.
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Setter for displayName
+   * @param name Value to set for displayName.
+   */
+  public void setName(String name) {
+    this.name = name;
   }
 
   /**

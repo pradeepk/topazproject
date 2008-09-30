@@ -83,7 +83,7 @@ public class UserService {
 
   /**
    * Constructor
-   * @throws IOException
+   * @throws IOException IOException
    */
   public UserService() throws IOException {
     pep = new UsersPEP();
@@ -148,6 +148,7 @@ public class UserService {
    * Get the account info for the given user.
    * @param topazUserId the Topaz User ID
    * @throws ApplicationException ApplicationException
+   * @return UserAccount
    */
   private UserAccount getUserAccount(final String topazUserId) throws ApplicationException {
     UserAccount ua = session.get(UserAccount.class, topazUserId);
@@ -330,6 +331,25 @@ public class UserService {
   }
 
   /**
+   * Returns the Topaz userID the account ID passed in is associated with
+   *
+   * @param accountId account ID you are looking up
+   * @return Topaz userID for a given account ID
+   * @throws ApplicationException on access-check failure
+   */
+  @Transactional(readOnly = true)
+  public String lookUpUserByAccountId(final String accountId) throws ApplicationException {
+    pep.checkAccessAE(UsersPEP.LOOKUP_USER, URI.create("account:" + accountId));
+
+    UserAccount account = session.get(UserAccount.class, session.getSessionFactory().listAliases().get("id") + "account/" + accountId);
+
+    if (account != null)
+      return account.getId().toString();
+    else
+      return null;
+  }
+
+  /**
    * Lookup the topaz id of the user with a given email address
    * @param emailAddress emailAddress
    * @return topaz id of the user
@@ -338,6 +358,22 @@ public class UserService {
   @Transactional(readOnly = true)
   public String lookUpUserByEmailAddress(final String emailAddress) throws ApplicationException {
     return lookUpUserByProfile("email", URI.create("mailto:" + emailAddress));
+  }
+
+
+  /**
+   * Lookup the topaz id of the user with a given name
+   * @param name user display name
+   * @return topaz id of the user
+   * @throws ApplicationException on access-check failure
+   */
+  @Transactional(readOnly = true)
+  public String lookUpUserByDisplayName(final String name) throws ApplicationException {
+
+    pep.checkAccessAE(UsersPEP.LOOKUP_USER, URI.create("account:" + name));
+
+    return lookUpUserByProfile("displayName", name);
+
   }
 
   private String lookUpUserByProfile(final String field, final Object value)
@@ -622,6 +658,8 @@ public class UserService {
   /**
    * Get the roles for the user.
    * @param topazId topazId
+   * @return roles
+   * @throws ApplicationException
    */
   @Transactional(readOnly = true)
   public String[] getRole(final String topazId) throws ApplicationException {
@@ -638,6 +676,7 @@ public class UserService {
   }
   /**
    * Checks the action guard.
+   * @return boolean
    */
   @Transactional(readOnly = true)
   public boolean allowAdminAction() {

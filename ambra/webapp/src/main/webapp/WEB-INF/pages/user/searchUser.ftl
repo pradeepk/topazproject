@@ -35,10 +35,20 @@
 
     <p>
       <fieldset>
-          <legend><b>Find User by Id</b></legend>
-          <@s.form name="findUserByUserIdForm" action="findUserByUserId" namespace="/admin" method="post">
-            <@s.textfield name="authId" label="User Id" required="true"/>
-            <@s.submit value="Find User Id" />
+          <legend><b>Find User by Authorization Id</b></legend>
+          <@s.form name="findUserByUserIdForm" action="findUserByAuthId" namespace="/admin" method="post">
+            <@s.textfield name="authId" label="Auth Id" required="true"/>
+            <@s.submit value="Find Auth Id" />
+          </@s.form>
+      </fieldset>
+    </p>
+
+    <p>
+      <fieldset>
+          <legend><b>Find User by Account Id</b></legend>
+          <@s.form name="findUserByUserIdForm" action="findUserByAccountId" namespace="/admin" method="post">
+            <@s.textfield name="accountId" label="Account Id" required="true"/>
+            <@s.submit value="Find Account Id" />
           </@s.form>
       </fieldset>
     </p>
@@ -49,6 +59,16 @@
           <@s.form name="findUserByEmailAddressForm" action="findUserByEmailAddress" namespace="/admin" method="post">
             <@s.textfield name="emailAddress" label="Email Address" required="true"/>
             <@s.submit value="Find User Email" />
+          </@s.form>
+      </fieldset>
+    </p>
+
+    <p>
+      <fieldset>
+          <legend><b>Find User by Name</b></legend>
+          <@s.form name="findUserByNameForm" action="findUserByName" namespace="/admin" method="post">
+            <@s.textfield name="name" label="User Name" required="true"/>
+            <@s.submit value="Find User Name" />
           </@s.form>
       </fieldset>
     </p>

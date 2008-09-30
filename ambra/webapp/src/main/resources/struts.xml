@@ -875,12 +875,22 @@
         <result>/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
 
-    <action name="findUserByUserId" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByAuthId">
+    <action name="findUserByAuthId" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByAuthId">
+      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+    </action>
+
+    <action name="findUserByAccountId" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByAccountId">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
 
     <action name="findUserByEmailAddress" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByEmailAddress">
+      <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
+      <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
+    </action>
+
+    <action name="findUserByName" class="org.topazproject.ambra.user.action.SearchUserAction" method="executeFindUserByName">
       <result name="success">/WEB-INF/pages/user/searchUser.ftl</result>
       <result name="input">/WEB-INF/pages/user/searchUser.ftl</result>
     </action>
