@@ -180,10 +180,10 @@ public class VirtualJournalContextFilter implements Filter {
 
     // process all <virtualjournal><journals> entries looking for a match
     final List<String> journals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
-    final Iterator onJournal = journals.iterator();
+    final Iterator<String> onJournal = journals.iterator();
     while(onJournal.hasNext()
       && virtualJournal == null) {
-      final String journal = (String) onJournal.next();
+      final String journal = onJournal.next();
 
       if (log.isTraceEnabled()) {
         log.trace("processing virtual journal: " + journal);
@@ -192,8 +192,7 @@ public class VirtualJournalContextFilter implements Filter {
       // get the <rules> for this journal
       final String rulesPrefix = CONF_VIRTUALJOURNALS + "." + journal + ".rules";
       final Iterator rules = configuration.getKeys(rulesPrefix);
-      while (rules.hasNext()
-        && virtualJournal == null) {
+      while (rules.hasNext()) {
         final String rule       = (String) rules.next();
         final String httpHeader = rule.substring(rulesPrefix.length() + 1);
         final String httpValue  = configuration.getString(rule);
