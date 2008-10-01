@@ -169,7 +169,7 @@ public class VirtualJournalContextFilter implements Filter {
    *
    * @param configuration <code>Configuration</code> that contains the rules.
    * @param request <code>HttpServletRequest</code> to apply the rules against.
-   * @ return VirtualJournalContext.  May be <code>null</code>.
+   * @return VirtualJournalContext.  May be <code>null</code>.
    */
   private VirtualJournalContext processVirtualJournalRules(
     Configuration configuration, HttpServletRequest request) {
