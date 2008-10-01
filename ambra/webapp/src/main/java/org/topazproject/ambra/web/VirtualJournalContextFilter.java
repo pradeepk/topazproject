@@ -99,18 +99,16 @@ public class VirtualJournalContextFilter implements Filter {
     String mappingPrefix  = null;
 
     // need to do <rule> based processing?
-    if (journalName == null) {
-      final VirtualJournalContext ruleValues = processVirtualJournalRules(
-        configuration, (HttpServletRequest) request);
-      if (ruleValues != null) {
-        journalName = ruleValues.getJournal();
-        description    = ruleValues.getDescription();
-        mappingPrefix  = ruleValues.getMappingPrefix();
-        if (journalName != null) {
-          if (log.isTraceEnabled()) {
-            log.trace("virtual journal from rules: journal = \"" + journalName + "\""
-              + ", mappingPrefix = \"" + mappingPrefix + "\"");
-          }
+    final VirtualJournalContext ruleValues = processVirtualJournalRules(
+      configuration, (HttpServletRequest) request);
+    if (ruleValues != null) {
+      journalName = ruleValues.getJournal();
+      description    = ruleValues.getDescription();
+      mappingPrefix  = ruleValues.getMappingPrefix();
+      if (journalName != null) {
+        if (log.isTraceEnabled()) {
+          log.trace("virtual journal from rules: journal = \"" + journalName + "\""
+            + ", mappingPrefix = \"" + mappingPrefix + "\"");
         }
       }
     }
@@ -154,19 +152,15 @@ public class VirtualJournalContextFilter implements Filter {
 
     // establish a "Nested Diagnostic Context" for logging, e.g. prefix log entries w/journal name
     // http://logging.apache.org/log4j/docs/api/org/apache/log4j/NDC.html
-    if (journalName != null) {
-      NDC.push(journalName);
-    }
+    NDC.push(journalName);
 
     try {
       // continue the Filter chain ...
       filterChain.doFilter(request, response);
     } finally {
       // cleanup "Nested Diagnostic Context" for logging
-      if (journalName != null) {
-        NDC.pop();
-        NDC.remove(); // TODO: appropriate place to cleanup for Thread?
-      }
+      NDC.pop();
+      NDC.remove(); // TODO: appropriate place to cleanup for Thread?
     }
   }
 
