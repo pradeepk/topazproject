@@ -19,7 +19,6 @@
 package org.topazproject.ambra.struts2;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import java.net.URL;
 
