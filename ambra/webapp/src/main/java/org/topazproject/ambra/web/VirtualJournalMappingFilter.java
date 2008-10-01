@@ -142,21 +142,21 @@ public class VirtualJournalMappingFilter implements Filter {
       String sp      = request.getServletPath();
       String pi      = request.getPathInfo();
 
-      mapped         = getMappedPaths(context, context.virtualizeUri(cp, sp, pi));
+      mapped         = getMappedPaths(context.virtualizeUri(cp, sp, pi));
 
       if (mapped == null)
-        mapped = getMappedPaths(context, context.defaultUri(cp, sp, pi));
+        mapped = getMappedPaths(context.defaultUri(cp, sp, pi));
 
       if ((mapped != null) && mapped[3].equals(request.getRequestURI()))
         mapped = null;
 
-      cache.put(element = new Element(key, new CachedValue(mapped)));
+      cache.put(new Element(key, new CachedValue(mapped)));
     }
 
     return (mapped == null) ? request : wrapRequest(request, mapped);
   }
 
-  private String[] getMappedPaths(VirtualJournalContext context, String[] paths)
+  private String[] getMappedPaths(String[] paths)
                            throws ServletException {
     String resource = paths[3].substring(paths[0].length());
 
