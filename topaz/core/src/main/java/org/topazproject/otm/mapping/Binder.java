@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.otm.Filter;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.serializer.Serializer;
@@ -136,6 +137,7 @@ public interface Binder {
   public static interface RawFieldData {
     public List<String> getValues();
     Map<String, Set<String>> getTypeLookAhead();
+    List<Filter> getFilters();
   }
 
 }

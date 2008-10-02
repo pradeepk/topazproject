@@ -198,15 +198,54 @@ public interface TripleStore extends Store {
   public void setCriterionBuilder(String func, CriterionBuilder builder)
                            throws OtmException;
 
+  /**
+   * Gets an rdf:list collection property values.
+   *
+   * @param id the subject id
+   * @param pUri the predicate uri that points to the rdf:list node
+   * @param mUri the graph uri
+   * @param con the connection
+   * @param types the type look-ahead to be updated
+   * @param m the mapper for this field
+   * @param sf the session factory
+   * @param filters filters to use
+   *
+   * @return the collection values in order
+   *
+   * @throws OtmException on an error
+   */
+  public List<String> getRdfList(String id, String pUri, String mUri, Connection isc,
+                                 Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
+                                 List<Filter> filters)
+                          throws OtmException;
+
+  /**
+   * Gets an rdf:bag container property values.
+   *
+   * @param id the subject id
+   * @param pUri the predicate uri that points to the rdf:list node
+   * @param mUri the graph uri
+   * @param con the connection
+   * @param types the type look-ahead to be updated
+   * @param m the mapper for this field
+   * @param sf the session factory
+   * @param filters filters to use
+   *
+   * @return the container values in order
+   *
+   * @throws OtmException on an error
+   */
+  public List<String> getRdfBag(String id, String pUri, String mUri, Connection isc,
+                                Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
+                                List<Filter> filters) throws OtmException;
+
   public interface Result {
-    public TripleStore               getTripleStore();
-    public Session                   getSession();
-    public Connection                getConnection();
-    public String                    getId();
     public Map<String, List<String>> getFValues();
+
     public Map<String, List<String>> getRValues();
-    public Map<String, Set<String>>  getTypes();
-    public List<String>              getRdfList(String puri, String muri, RdfMapper m);
-    public List<String>              getRdfBag(String puri, String muri, RdfMapper m);
+
+    public Map<String, Set<String>> getTypes();
+
+    public List<Filter> getFilters();
   }
 }

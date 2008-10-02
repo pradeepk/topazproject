@@ -43,8 +43,10 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
+import org.topazproject.otm.Connection;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
+import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -147,10 +149,8 @@ public class ClassBinder<T> implements EntityBinder {
   /*
    * inherited javadoc
    */
-  public Object loadInstance(Object instance, TripleStore.Result result)
+  public Object loadInstance(Object instance, String id, TripleStore.Result result, Session session)
                       throws OtmException {
-    final String id = result.getId();
-
     if (log.isDebugEnabled())
       log.debug("Instantiating object with '" + id + "' for " + cm);
 
@@ -163,7 +163,8 @@ public class ClassBinder<T> implements EntityBinder {
     final Map<String, List<String>> fvalues = result.getFValues();
     final Map<String, List<String>> rvalues = result.getRValues();
     final Map<String, Set<String>>  types   = result.getTypes();
-    final SessionFactory            sf      = result.getSession().getSessionFactory();
+    final List<Filter>              filters = result.getFilters();
+    final SessionFactory            sf      = session.getSessionFactory();
 
     Map<String, List<String>>       pmap    = null;
 
@@ -178,10 +179,10 @@ public class ClassBinder<T> implements EntityBinder {
         continue;
 
       if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-        v = loadCollection(result, m);
+        v = loadCollection(id, filters, types, m, session);
 
       Binder b = m.getBinder(EntityMode.POJO);
-      b.load(instance, v, types, m, result.getSession());
+      b.load(instance, v, types, m, session);
 
       if (log.isDebugEnabled() && !b.isLoaded(instance))
         log.debug("Lazy collection '" + m.getName() + "' created for " + id);
@@ -200,31 +201,34 @@ public class ClassBinder<T> implements EntityBinder {
     return instance;
   }
 
-  private List<String> loadCollection(TripleStore.Result result, RdfMapper m)
+  private List<String> loadCollection(String id, List<Filter> filters,
+                                      Map<String, Set<String>> types, RdfMapper m, Session session)
                                throws OtmException {
-    final Map<String, List<String>> fvalues = result.getFValues();
-    final SessionFactory            sf      = result.getSession().getSessionFactory();
-    String                          p       = m.getUri();
-    String                          model   = m.getModel();
+    SessionFactory sf    = session.getSessionFactory();
+    String         p     = m.getUri();
+    String         model = m.getModel();
 
     if (model == null)
       model = cm.getModel();
 
-    String       mUri = getModelUri(model, sf);
+    String       mUri  = getModelUri(model, sf);
     List<String> vals;
+
+    TripleStore  store = sf.getTripleStore();
+    Connection   con   = session.getTripleStoreCon();
 
     // load from the triple-store
     if (m.getColType() == CollectionType.RDFLIST)
-      vals = result.getRdfList(p, mUri, m);
+      vals = store.getRdfList(id, p, mUri, con, types, m, sf, filters);
     else
-      vals = result.getRdfBag(p, mUri, m);
+      vals = store.getRdfBag(id, p, mUri, con, types, m, sf, filters);
 
     return vals;
   }
 
   private String getModelUri(String modelId, SessionFactory sf)
                       throws OtmException {
-    ModelConfig mc    = sf.getModel(modelId);
+    ModelConfig mc = sf.getModel(modelId);
 
     if (mc == null) // Happens if using a Class but the model was not added
       throw new OtmException("Unable to find model '" + modelId + "'");

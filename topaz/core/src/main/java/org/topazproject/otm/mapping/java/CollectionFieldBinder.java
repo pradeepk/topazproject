@@ -37,6 +37,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.topazproject.otm.FetchType;
+import org.topazproject.otm.Filter;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.RdfMapper;
@@ -227,6 +228,10 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
 
               public Map<String, Set<String>> getTypeLookAhead() {
                 return types;
+              }
+
+              public List<Filter> getFilters() {
+                return null;
               }
             };
         }

@@ -566,7 +566,7 @@ public class SessionImpl extends AbstractSession {
         instance = loadView(cm, id.getId(), instance);
       else {
         if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0) {
-          instance = instantiate(instance, cm, store.get(cm, id.getId(), getTripleStoreCon(), 
+          instance = instantiate(instance, id, store.get(cm, id.getId(), getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj));
           if (instance != null)
             cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
@@ -609,36 +609,34 @@ public class SessionImpl extends AbstractSession {
     return instance;
   }
 
-  private Object instantiate(Object instance, ClassMetadata cm, TripleStore.Result result) 
+  private Object instantiate(Object instance, Id id, TripleStore.Result result) 
                             throws OtmException {
     final Map<String, List<String>> fvalues = result.getFValues();
     final Map<String, List<String>> rvalues = result.getRValues();
     final Map<String, Set<String>> types = result.getTypes();
-    final String id = result.getId();
 
     if (fvalues.size() == 0 && rvalues.size() == 0) {
       if (log.isDebugEnabled())
-        log.debug("No statements found about '" + id + "' for " + cm);
+        log.debug("No statements found about '" + id.getId() + "' for " + id.getClassMetadata());
       return null;
     }
 
     // figure out sub-class to instantiate
     // XXX: should this be narrowed down based on other restrictions?
     List<String> t = fvalues.get(Rdf.rdf + "type");
-    ClassMetadata sup = cm;
-    cm = getSessionFactory().getSubClassMetadata(cm, getEntityMode(), t);
+    ClassMetadata cm = getSessionFactory().getSubClassMetadata(id.getClassMetadata(), getEntityMode(), t);
     if (cm == null) {
       HashSet<String> props = new HashSet<String>(fvalues.keySet());
       props.addAll(rvalues.keySet());
       log.warn("Properties " + props + " on '" + id 
-          + "' does not satisfy the restrictions imposed by " + sup
+          + "' does not satisfy the restrictions imposed by " + id.getClassMetadata()
           + ". No object will be instantiated.");
       return null;
     }
     if (t != null)
       t.removeAll(cm.getTypes());
 
-    return cm.getEntityBinder(this).loadInstance(instance, result);
+    return cm.getEntityBinder(this).loadInstance(instance, id.getId(), result, this);
   }
 
   private Object loadView(ClassMetadata cm, String id, Object instance) throws OtmException {

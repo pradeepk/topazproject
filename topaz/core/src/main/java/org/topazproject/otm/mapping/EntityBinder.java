@@ -66,13 +66,15 @@ public interface EntityBinder {
    * Load results onto an instance or if the instance is null create one and load.
    *
    * @param instance the instance to load to or null
+   * @param id the entity id
    * @param result the Rdf statements
+   * @param sess the session that is loading this
    *
    * @return the loaded instance
    *
    * @throws OtmException on an error
    */
-  public Object loadInstance(Object instance, TripleStore.Result result)
+  public Object loadInstance(Object instance, String id, TripleStore.Result result, Session sess)
                       throws OtmException;
 
   /**

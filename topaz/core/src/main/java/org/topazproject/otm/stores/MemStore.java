@@ -40,6 +40,7 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
@@ -108,7 +109,7 @@ public class MemStore extends AbstractTripleStore {
    * inherited javadoc
    */
   public TripleStore.Result get(ClassMetadata cm, final String id, Connection con,
-                   List<Filter> filters, boolean filterObj) throws OtmException {
+                   final List<Filter> filters, boolean filterObj) throws OtmException {
     if (filters != null && filters.size() > 0)
       throw new OtmException("Filters are not supported");
 
@@ -140,22 +141,6 @@ public class MemStore extends AbstractTripleStore {
     }
 
     return new TripleStore.Result() {
-      public TripleStore getTripleStore() {
-        return MemStore.this;
-      }
-
-      public Session getSession() {
-        return msc.getSession();
-      }
-
-      public Connection getConnection() {
-        return msc;
-      }
-
-      public String getId() {
-        return id;
-      }
-
       public Map<String, List<String>> getFValues() {
         return value;
       }
@@ -168,12 +153,8 @@ public class MemStore extends AbstractTripleStore {
         return types;
       }
 
-      public List<String> getRdfList(String pUri, String mUri, RdfMapper m) throws OtmException {
-        throw new OtmException("Unsupported");
-      }
-
-      public List<String> getRdfBag(String puri, String muri, RdfMapper m) throws OtmException {
-        throw new OtmException("Unsupported");
+      public List<Filter> getFilters() {
+        return filters;
       }
     };
   }
@@ -246,6 +227,24 @@ public class MemStore extends AbstractTripleStore {
    */
   public void setCriterionBuilder(String func, CriterionBuilder builder)
                            throws OtmException {
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public List<String> getRdfList(String id, String pUri, String mUri, Connection isc,
+                                  Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
+                                  List<Filter> filters) throws OtmException {
+    throw new OtmException("Not implemented yet");
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public List<String> getRdfBag(String id, String pUri, String mUri, Connection isc,
+                                  Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
+                                  List<Filter> filters) throws OtmException {
+    throw new OtmException("Not implemented yet");
   }
 
   private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage)

@@ -444,22 +444,6 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     return new TripleStore.Result() {
-      public TripleStore getTripleStore() {
-        return ItqlStore.this;
-      }
-
-      public Session getSession() {
-        return isc.getSession();
-      }
-
-      public Connection getConnection() {
-        return isc;
-      }
-
-      public String getId() {
-        return id;
-      }
-
       public Map<String, List<String>> getFValues() {
         return fvalues;
       }
@@ -472,12 +456,8 @@ public class ItqlStore extends AbstractTripleStore {
         return types;
       }
 
-      public List<String> getRdfList(String pUri, String mUri, RdfMapper m) throws OtmException {
-        return ItqlStore.this.getRdfList(id, pUri, mUri, isc, types, m, sf, filters);
-      }
-
-      public List<String> getRdfBag(String pUri, String mUri, RdfMapper m) throws OtmException {
-        return ItqlStore.this.getRdfBag(id, pUri, mUri, isc, types, m, sf, filters);
+      public List<Filter> getFilters() {
+        return filters;
       }
     };
   }
@@ -680,10 +660,11 @@ public class ItqlStore extends AbstractTripleStore {
     return classes;
   }
 
-  private List<String> getRdfList(String sub, String pred, String modelUri, ItqlStoreConnection isc,
+  public List<String> getRdfList(String sub, String pred, String modelUri, Connection con,
                                   Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
                                   List<Filter> filters)
         throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
     String tmodel = modelUri;
     if (m.isAssociation())
       tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), isc);
@@ -701,10 +682,11 @@ public class ItqlStore extends AbstractTripleStore {
     return execCollectionsQry(qry.toString(), isc, types);
   }
 
-  private List<String> getRdfBag(String sub, String pred, String modelUri, ItqlStoreConnection isc,
+  public List<String> getRdfBag(String sub, String pred, String modelUri, Connection con,
                                  Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
                                  List<Filter> filters)
         throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) con;
     String tmodel = modelUri;
     if (m.isAssociation())
       tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), isc);
