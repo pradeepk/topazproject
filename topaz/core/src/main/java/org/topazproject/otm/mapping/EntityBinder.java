@@ -133,5 +133,16 @@ public interface EntityBinder {
    * An interface implemented by all Lazy loaded objects.
    */
   public static interface LazyLoaded {
+    /**
+     * Gets the lazy-loader associated with this instance.
+     *
+     * @param This must be same as 'this'. Provided purely to avoid name clashes with
+     *        application's own methods.
+     *
+     * @return the lazy loader for this object.
+     *
+     * @throws OtmException if (This != this) or any other error
+     */
+    LazyLoader getLazyLoader(LazyLoaded This) throws OtmException;
   }
 }

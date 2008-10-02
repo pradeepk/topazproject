@@ -189,6 +189,10 @@ public class ClassBinder<T> implements EntityBinder {
           && (self instanceof Serializable))
         return getReplacement(self);
 
+      if ("getLazyLoader".equals(thisMethod.getName()) && (args.length == 1) 
+          && (args[0] == self))
+        return ll;
+
       try {
         return proceed.invoke(self, args);
       } catch (InvocationTargetException ite) {

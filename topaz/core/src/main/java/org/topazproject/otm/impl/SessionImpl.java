@@ -72,7 +72,6 @@ public class SessionImpl extends AbstractSession {
   private final Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
-  private final Map<Id, LazyLoader>            proxies        = new HashMap<Id, LazyLoader>();
   private final Map<Id, Set<Wrapper>>          orphanTrack    = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
   private boolean flushing                                    = false;
@@ -187,7 +186,6 @@ public class SessionImpl extends AbstractSession {
     cleanMap.clear();
     dirtyMap.clear();
     deleteMap.clear();
-    proxies.clear();
     orphanTrack.clear();
   }
 
@@ -261,7 +259,6 @@ public class SessionImpl extends AbstractSession {
 
       cleanMap.remove(id);
       dirtyMap.remove(id);
-      proxies.remove(id);
 
       ClassMetadata cm     = id.getClassMetadata();
       Set<Wrapper>     assocs = new HashSet<Wrapper>();
@@ -464,7 +461,10 @@ public class SessionImpl extends AbstractSession {
   }
 
   private <T> boolean isPristineProxy(Id id, T o) {
-    LazyLoader llm           = (o instanceof LazyLoaded) ? proxies.get(id) : null;
+    if (!(o instanceof LazyLoaded))
+      return false;
+    LazyLoaded ll  = (LazyLoaded) o;
+    LazyLoader llm = ll.getLazyLoader(ll);
     return (llm != null) ? !llm.isLoaded() : false;
   }
 
@@ -1046,7 +1046,6 @@ public class SessionImpl extends AbstractSession {
 
     ClassMetadata cm = id.getClassMetadata();
     LazyLoaded o = cm.getEntityBinder(getEntityMode()).newLazyLoadedInstance(mi);
-    proxies.put(id, mi);
 
     if (log.isDebugEnabled())
       log.debug("Lazy loaded instance created for " + id);
