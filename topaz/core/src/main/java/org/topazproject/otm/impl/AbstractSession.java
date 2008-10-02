@@ -305,13 +305,10 @@ abstract class AbstractSession implements Session {
     return (String) ids.get(0);
   }
 
-  /** 
-   * Get the connection to the triple-store. If the connection does not exist yet it is created;
-   * otherwise the existing one is returned. 
-   * 
-   * @return the triple-store connection
+  /*
+   * inherited javadoc
    */
-  protected Connection getTripleStoreCon() throws OtmException {
+  public Connection getTripleStoreCon() throws OtmException {
     if (tsCon == null) {
       ensureTxActive(false, -1);
       tsCon = sessionFactory.getTripleStore().openConnection(this, txnIsRO);
@@ -320,13 +317,10 @@ abstract class AbstractSession implements Session {
     return tsCon;
   }
 
-  /** 
-   * Get the connection to the blob-store. If the connection does not exist yet it is created;
-   * otherwise the existing one is returned. 
-   * 
-   * @return the blob-store connection
+  /*
+   * inherited javadoc
    */
-  protected Connection getBlobStoreCon() throws OtmException {
+  public Connection getBlobStoreCon() throws OtmException {
     if (bsCon == null) {
       ensureTxActive(false, -1);
       bsCon = sessionFactory.getBlobStore().openConnection(this, txnIsRO);

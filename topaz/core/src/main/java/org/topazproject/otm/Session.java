@@ -468,4 +468,20 @@ public interface Session {
    * @param field the field that is lazy loaded
    */
   public void delayedLoadComplete(Object o, RdfMapper field) throws OtmException;
+
+  /** 
+   * Get the connection to the triple-store. If the connection does not exist yet it is created;
+   * otherwise the existing one is returned. 
+   * 
+   * @return the triple-store connection
+   */
+  public Connection getTripleStoreCon() throws OtmException;
+
+  /** 
+   * Get the connection to the blob-store. If the connection does not exist yet it is created;
+   * otherwise the existing one is returned. 
+   * 
+   * @return the blob-store connection
+   */
+  public Connection getBlobStoreCon() throws OtmException;
 }
