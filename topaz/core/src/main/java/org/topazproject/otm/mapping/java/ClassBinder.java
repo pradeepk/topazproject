@@ -149,41 +149,7 @@ public class ClassBinder<T> implements EntityBinder {
    */
   public Object loadInstance(Object instance, TripleStore.Result result)
                       throws OtmException {
-    final Map<String, List<String>> fvalues = result.getFValues();
-    final Map<String, List<String>> rvalues = result.getRValues();
-    final Map<String, Set<String>>  types   = result.getTypes();
-    final String                    id      = result.getId();
-    final SessionFactory            sf      = result.getSession().getSessionFactory();
-
-    // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
-    String      modelUri = getModelUri(cm.getModel(), sf);
-    Set<String> replaced = null;
-
-    for (RdfMapper m : cm.getRdfMappers()) {
-      if (m.hasInverseUri() || !fvalues.containsKey(m.getUri())
-           || (m.getColType() == CollectionType.PREDICATE))
-        continue;
-
-      String       p    = m.getUri();
-      String       mUri = (m.getModel() != null) ? getModelUri(m.getModel(), sf) : modelUri;
-      List<String> vals;
-
-      // load from the triple-store
-      if (m.getColType() == CollectionType.RDFLIST)
-        vals = result.getRdfList(p, mUri, m);
-      else
-        vals = result.getRdfBag(p, mUri, m);
-
-      if (replaced == null)
-        replaced = new HashSet<String>();
-
-      if (replaced.contains(p))
-        fvalues.get(p).addAll(vals);
-      else {
-        fvalues.put(p, vals);
-        replaced.add(p);
-      }
-    }
+    final String id = result.getId();
 
     if (log.isDebugEnabled())
       log.debug("Instantiating object with '" + id + "' for " + cm);
@@ -194,74 +160,71 @@ public class ClassBinder<T> implements EntityBinder {
     if (cm.getIdField() != null)
       cm.getIdField().getBinder(EntityMode.POJO).set(instance, Collections.singletonList(id));
 
-    // re-map values based on the rdf:type look ahead
-    Map<RdfMapper, List<String>> mvalues = new HashMap();
-    boolean                      inverse = false;
+    final Map<String, List<String>> fvalues = result.getFValues();
+    final Map<String, List<String>> rvalues = result.getRValues();
+    final Map<String, Set<String>>  types   = result.getTypes();
+    final SessionFactory            sf      = result.getSession().getSessionFactory();
 
-    for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
-      for (String p : values.keySet()) {
-        for (String o : values.get(p)) {
-          RdfMapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
+    Map<String, List<String>>       pmap    = null;
 
-          if (m != null) {
-            List<String> v = mvalues.get(m);
+    // look for predicate-maps
+    if (cm.getMapperByUri(sf, null, false, null) != null)
+      pmap = new HashMap<String, List<String>>(fvalues);
 
-            if (v == null)
-              mvalues.put(m, v = new ArrayList<String>());
+    for (RdfMapper m : cm.getRdfMappers()) {
+      List<String> v = m.hasInverseUri() ? rvalues.get(m.getUri()) : fvalues.get(m.getUri());
 
-            v.add(o);
-          }
-        }
-      }
+      if ((v == null) || (v.size() == 0))
+        continue;
 
-      inverse = true;
-    }
+      if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
+        v = loadCollection(result, m);
 
-    // now assign values to fields
-    for (RdfMapper m : mvalues.keySet()) {
       Binder b = m.getBinder(EntityMode.POJO);
-      b.load(instance, mvalues.get(m), types, m, result.getSession());
+      b.load(instance, v, types, m, result.getSession());
 
       if (log.isDebugEnabled() && !b.isLoaded(instance))
         log.debug("Lazy collection '" + m.getName() + "' created for " + id);
+
+      if ((pmap != null) && !m.hasInverseUri())
+        pmap.remove(m.getUri());
     }
 
-    boolean found = false;
-
-    for (RdfMapper m : cm.getRdfMappers()) {
-      if (m.isPredicateMap()) {
-        found = true;
-
-        break;
-      }
-    }
-
-    if (found) {
-      Map<String, List<String>> map = new HashMap<String, List<String>>();
-      map.putAll(fvalues);
-
+    if (pmap != null) {
       for (RdfMapper m : cm.getRdfMappers()) {
         if (m.isPredicateMap())
-          continue;
-
-        if (m.hasInverseUri())
-          continue;
-
-        map.remove(m.getUri());
-      }
-
-      for (RdfMapper m : cm.getRdfMappers()) {
-        if (m.isPredicateMap())
-          m.getBinder(EntityMode.POJO).setRawValue(instance, map);
+          m.getBinder(EntityMode.POJO).setRawValue(instance, pmap);
       }
     }
 
     return instance;
   }
 
+  private List<String> loadCollection(TripleStore.Result result, RdfMapper m)
+                               throws OtmException {
+    final Map<String, List<String>> fvalues = result.getFValues();
+    final SessionFactory            sf      = result.getSession().getSessionFactory();
+    String                          p       = m.getUri();
+    String                          model   = m.getModel();
+
+    if (model == null)
+      model = cm.getModel();
+
+    String       mUri = getModelUri(model, sf);
+    List<String> vals;
+
+    // load from the triple-store
+    if (m.getColType() == CollectionType.RDFLIST)
+      vals = result.getRdfList(p, mUri, m);
+    else
+      vals = result.getRdfBag(p, mUri, m);
+
+    return vals;
+  }
+
   private String getModelUri(String modelId, SessionFactory sf)
                       throws OtmException {
-    ModelConfig mc = sf.getModel(modelId);
+    ModelConfig mc    = sf.getModel(modelId);
 
     if (mc == null) // Happens if using a Class but the model was not added
       throw new OtmException("Unable to find model '" + modelId + "'");
