@@ -18,8 +18,6 @@
  */
 package org.topazproject.otm.impl;
 
-import java.io.Serializable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,23 +39,18 @@ import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.mapping.VarMapper;
-import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.query.Results;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Interceptor;
-import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.Rdf;
 
@@ -645,118 +638,7 @@ public class SessionImpl extends AbstractSession {
     if (t != null)
       t.removeAll(cm.getTypes());
 
-    // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
-    String modelUri = getModelUri(cm.getModel());
-    Set<String> replaced = null;
-    for (RdfMapper m : cm.getRdfMappers()) {
-      if (m.hasInverseUri() || !fvalues.containsKey(m.getUri()) || 
-          (m.getColType() == CollectionType.PREDICATE))
-        continue;
-
-      String p = m.getUri();
-      String mUri = (m.getModel() != null) ? getModelUri(m.getModel()) : modelUri;
-      List<String> vals;
-      if (m.getColType() == CollectionType.RDFLIST)
-        vals = result.getRdfList(p, mUri, m);
-      else
-        vals = result.getRdfBag(p, mUri, m);
-
-      if (replaced == null)
-        replaced = new HashSet<String>();
-
-      if (replaced.contains(p))
-        fvalues.get(p).addAll(vals);
-      else {
-        fvalues.put(p, vals);
-        replaced.add(p);
-      }
-    }
-
-    if (log.isDebugEnabled())
-      log.debug("Instantiating object with '" + id + "' for " + cm);
-
-    return instantiate(instance, cm, id, fvalues, rvalues, types);
-  }
-
-  private Object instantiate(Object instance, ClassMetadata cm, String id,
-                              Map<String, List<String>> fvalues,
-                              Map<String, List<String>> rvalues, Map<String, Set<String>> types)
-                        throws OtmException {
-    SessionFactory sf    = getSessionFactory();
-
-    if (instance == null)
-      instance = cm.getEntityBinder(this).newInstance();
-    cm.getIdField().getBinder(this).set(instance, Collections.singletonList(id));
-
-    // re-map values based on the rdf:type look ahead
-    Map<RdfMapper, List<String>> mvalues = new HashMap();
-    boolean                   inverse = false;
-
-    for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
-      for (String p : values.keySet()) {
-        for (String o : values.get(p)) {
-          RdfMapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
-
-          if (m != null) {
-            List<String> v = mvalues.get(m);
-
-            if (v == null)
-              mvalues.put(m, v = new ArrayList<String>());
-
-            v.add(o);
-          }
-        }
-      }
-
-      inverse = true;
-    }
-
-    // now assign values to fields
-    for (RdfMapper m : mvalues.keySet()) {
-      Binder b = m.getBinder(this);
-      b.load(instance, mvalues.get(m), types, m, this);
-      if (log.isDebugEnabled() && !b.isLoaded(instance))
-        log.debug("Lazy collection '" + m.getName() + "' created for " + id);
-    }
-
-    boolean found = false;
-
-    for (RdfMapper m : cm.getRdfMappers()) {
-      if (m.isPredicateMap()) {
-        found = true;
-
-        break;
-      }
-    }
-
-    if (found) {
-      Map<String, List<String>> map = new HashMap<String, List<String>>();
-      map.putAll(fvalues);
-
-      for (RdfMapper m : cm.getRdfMappers()) {
-        if (m.isPredicateMap())
-          continue;
-
-        if (m.hasInverseUri())
-          continue;
-
-        map.remove(m.getUri());
-      }
-
-      for (RdfMapper m : cm.getRdfMappers()) {
-        if (m.isPredicateMap())
-          m.getBinder(this).setRawValue(instance, map);
-      }
-    }
-
-    return instance;
-  }
-
-  private String getModelUri(String modelId) throws OtmException {
-    ModelConfig mc = getSessionFactory().getModel(modelId);
-    if (mc == null) // Happens if using a Class but the model was not added
-      throw new OtmException("Unable to find model '" + modelId + "'");
-    return mc.getUri().toString();
+    return cm.getEntityBinder(this).loadInstance(instance, result);
   }
 
   private Object loadView(ClassMetadata cm, String id, Object instance) throws OtmException {
@@ -770,80 +652,13 @@ public class SessionImpl extends AbstractSession {
     Results r = q.setParameter("id", id).execute();
 
     if (r.next())
-      instance = createInstance(cm, instance, id, r);
+      instance = cm.getEntityBinder(this).loadInstance(instance, id, r, this);
     else
       instance = null;
 
     r.close();
 
     return instance;
-  }
-
-  private Object createInstance(ClassMetadata cm, Object obj, String id, Results r)
-      throws OtmException {
-    if (obj == null)
-      obj = cm.getEntityBinder(getEntityMode()).newInstance();
-
-    if (id != null && cm.getIdField() != null)
-      cm.getIdField().getBinder(getEntityMode()).set(obj, Collections.singletonList(id));
-
-    // a proj-var may appear multiple times, so have to delay closing of subquery results
-    Set<Results> sqr = new HashSet<Results>();
-
-    for (VarMapper m : cm.getVarMappers()) {
-      int    idx = r.findVariable(m.getProjectionVar());
-      // XXX: Other EntityModes
-      Object val = getValue(r, idx, ((FieldBinder)m.getBinder(getEntityMode())).getComponentType(),
-                               m.getFetchType() == FetchType.eager, sqr);
-      Binder b = m.getBinder(getEntityMode());
-      if (val instanceof List)
-        b.set(obj, (List) val);
-      else
-        b.setRawValue(obj, val);
-    }
-
-    for (Results sr : sqr)
-      sr.close();
-
-    return obj;
-  }
-
-  private Object getValue(Results r, int idx, Class<?> type, boolean eager, Set<Results> sqr)
-      throws OtmException {
-    switch (r.getType(idx)) {
-      case CLASS:
-        return (type == String.class) ? r.getString(idx) : r.get(idx, eager);
-
-      case LITERAL:
-        return (type == String.class) ? r.getString(idx) : r.getLiteralAs(idx, type);
-
-      case URI:
-        return (type == String.class) ? r.getString(idx) : r.getURIAs(idx, type);
-
-      case SUBQ_RESULTS:
-        ClassMetadata scm = sessionFactory.getClassMetadata(type);
-        boolean isSubView = scm != null && !scm.isView() && !scm.isPersistable();
-
-        List<Object> vals = new ArrayList<Object>();
-
-        Results sr = r.getSubQueryResults(idx);
-        sr.setAutoClose(false);
-
-        sr.beforeFirst();
-        while (sr.next())
-          vals.add(isSubView ? createInstance(scm, null, null, sr) :
-                               getValue(sr, 0, type, eager, null));
-
-        if (sqr != null)
-          sqr.add(sr);
-        else
-          sr.close();
-
-        return vals;
-
-      default:
-        throw new Error("unknown type " + r.getType(idx) + " encountered");
-    }
   }
 
   /**

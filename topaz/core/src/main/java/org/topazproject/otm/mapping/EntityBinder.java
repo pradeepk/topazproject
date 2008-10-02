@@ -21,6 +21,8 @@ package org.topazproject.otm.mapping;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.TripleStore;
+import org.topazproject.otm.query.Results;
 
 /**
  * Binds an entity to an {@link org.topazproject.otm.EntityMode} specific implementation. 
@@ -33,7 +35,7 @@ public interface EntityBinder {
    *
    * @param cm the ClassMetadata of the entity which this binder is bound to
    *
-   * @throws OtmException 
+   * @throws OtmException
    */
   public void bindComplete(ClassMetadata cm) throws OtmException;
 
@@ -59,6 +61,34 @@ public interface EntityBinder {
    */
   public LazyLoaded newLazyLoadedInstance(LazyLoader lazyLoader)
                                    throws OtmException;
+
+  /**
+   * Load results onto an instance or if the instance is null create one and load.
+   *
+   * @param instance the instance to load to or null
+   * @param result the Rdf statements
+   *
+   * @return the loaded instance
+   *
+   * @throws OtmException on an error
+   */
+  public Object loadInstance(Object instance, TripleStore.Result result)
+                      throws OtmException;
+
+  /**
+   * Load an instance with View query results.
+   *
+   * @param obj the instance or null
+   * @param id the view id
+   * @param r the query results
+   * @param sess the session that is loading this
+   *
+   * @return the loaded instance
+   *
+   * @throws OtmException on an error
+   */
+  public Object loadInstance(Object obj, String id, Results r, Session sess)
+                      throws OtmException;
 
   /**
    * Tests if this entity is instantiable and not an abstract super-class.
@@ -135,7 +165,8 @@ public interface EntityBinder {
      *
      * @throws OtmException on an error
      */
-    void ensureDataLoad(LazyLoaded self, String operation) throws OtmException;
+    void ensureDataLoad(LazyLoaded self, String operation)
+                 throws OtmException;
   }
 
   /**
@@ -145,8 +176,8 @@ public interface EntityBinder {
     /**
      * Gets the lazy-loader associated with this instance.
      *
-     * @param This must be same as 'this'. Provided purely to avoid name clashes with
-     *        application's own methods.
+     * @param This must be same as 'this'. Provided purely to avoid name clashes with application's
+     *        own methods.
      *
      * @return the lazy loader for this object.
      *

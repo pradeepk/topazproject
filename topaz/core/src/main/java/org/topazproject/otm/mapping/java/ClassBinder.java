@@ -25,7 +25,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
@@ -36,13 +42,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.EntityMode;
+import org.topazproject.otm.FetchType;
+import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.RdfMapper;
+import org.topazproject.otm.mapping.VarMapper;
+import org.topazproject.otm.query.Results;
 
 /**
  * Binds an entity to an {@link org.topazproject.otm.EntityMode#POJO} specific implementation.
@@ -52,10 +67,11 @@ import org.topazproject.otm.mapping.Mapper;
  * @param <T> The object type instantiated by this class
  */
 public class ClassBinder<T> implements EntityBinder {
-  private final Class<T>          clazz;
-  private Class<?extends T>       proxy;
-  private final boolean           instantiable;
-  private static final Log        log = LogFactory.getLog(ClassBinder.class);
+  private final Class<T>    clazz;
+  private ClassMetadata     cm;
+  private Class<?extends T> proxy;
+  private final boolean     instantiable;
+  private static final Log  log = LogFactory.getLog(ClassBinder.class);
 
   /**
    * Creates a new ClassBinder object.
@@ -66,30 +82,36 @@ public class ClassBinder<T> implements EntityBinder {
     this.clazz = clazz;
 
     int mod = clazz.getModifiers();
-    instantiable   = !Modifier.isAbstract(mod) && !Modifier.isInterface(mod)
-                      && Modifier.isPublic(mod);
+    instantiable = !Modifier.isAbstract(mod) && !Modifier.isInterface(mod)
+                    && Modifier.isPublic(mod);
   }
 
   /*
    * inherited javadoc
    */
   public void bindComplete(ClassMetadata cm) throws OtmException {
+    if (this.cm != null)
+      throw new OtmException(clazz + " already bound to " + this.cm + ". Cannot bind to " + cm);
+
+    this.cm = cm;
+
     if (!instantiable)
       proxy = null;
     else {
-      Method idGetter = getIdGetter(cm);
-      proxy          = createProxy(clazz,
-          (idGetter != null) ?new Method[]{idGetter} : new Method[]{});
+      Method idGetter = getIdGetter();
+      proxy = createProxy(clazz, (idGetter != null) ? new Method[] { idGetter } : new Method[] {  });
     }
   }
 
-  private Method getIdGetter(ClassMetadata cm) {
-     Mapper idField = cm.getIdField();
-     if (idField == null)
-       return null;
-     Method getter = ((FieldBinder) idField.getBinders().get(EntityMode.POJO)).getGetter();
+  private Method getIdGetter() {
+    Mapper idField = cm.getIdField();
 
-     return getter.getDeclaringClass().isAssignableFrom(clazz) ? getter : null;
+    if (idField == null)
+      return null;
+
+    Method getter = ((FieldBinder) idField.getBinders().get(EntityMode.POJO)).getGetter();
+
+    return getter.getDeclaringClass().isAssignableFrom(clazz) ? getter : null;
   }
 
   /*
@@ -109,8 +131,7 @@ public class ClassBinder<T> implements EntityBinder {
   public LazyLoaded newLazyLoadedInstance(LazyLoader ll)
                                    throws OtmException {
     try {
-      Object        o  = proxy.newInstance();
-      ClassMetadata cm = ll.getClassMetadata();
+      Object o = proxy.newInstance();
 
       if (cm.getIdField() != null)
         cm.getIdField().getBinder(EntityMode.POJO).set(o, Collections.singletonList(ll.getId()));
@@ -120,6 +141,205 @@ public class ClassBinder<T> implements EntityBinder {
       return (LazyLoaded) o;
     } catch (Exception t) {
       throw new OtmException("Failed to create a new lazy-loaded instance of " + clazz, t);
+    }
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Object loadInstance(Object instance, TripleStore.Result result)
+                      throws OtmException {
+    final Map<String, List<String>> fvalues = result.getFValues();
+    final Map<String, List<String>> rvalues = result.getRValues();
+    final Map<String, Set<String>>  types   = result.getTypes();
+    final String                    id      = result.getId();
+    final SessionFactory            sf      = result.getSession().getSessionFactory();
+
+    // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
+    String      modelUri = getModelUri(cm.getModel(), sf);
+    Set<String> replaced = null;
+
+    for (RdfMapper m : cm.getRdfMappers()) {
+      if (m.hasInverseUri() || !fvalues.containsKey(m.getUri())
+           || (m.getColType() == CollectionType.PREDICATE))
+        continue;
+
+      String       p    = m.getUri();
+      String       mUri = (m.getModel() != null) ? getModelUri(m.getModel(), sf) : modelUri;
+      List<String> vals;
+
+      // load from the triple-store
+      if (m.getColType() == CollectionType.RDFLIST)
+        vals = result.getRdfList(p, mUri, m);
+      else
+        vals = result.getRdfBag(p, mUri, m);
+
+      if (replaced == null)
+        replaced = new HashSet<String>();
+
+      if (replaced.contains(p))
+        fvalues.get(p).addAll(vals);
+      else {
+        fvalues.put(p, vals);
+        replaced.add(p);
+      }
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("Instantiating object with '" + id + "' for " + cm);
+
+    if (instance == null)
+      instance = newInstance();
+
+    if (cm.getIdField() != null)
+      cm.getIdField().getBinder(EntityMode.POJO).set(instance, Collections.singletonList(id));
+
+    // re-map values based on the rdf:type look ahead
+    Map<RdfMapper, List<String>> mvalues = new HashMap();
+    boolean                      inverse = false;
+
+    for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
+      for (String p : values.keySet()) {
+        for (String o : values.get(p)) {
+          RdfMapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
+
+          if (m != null) {
+            List<String> v = mvalues.get(m);
+
+            if (v == null)
+              mvalues.put(m, v = new ArrayList<String>());
+
+            v.add(o);
+          }
+        }
+      }
+
+      inverse = true;
+    }
+
+    // now assign values to fields
+    for (RdfMapper m : mvalues.keySet()) {
+      Binder b = m.getBinder(EntityMode.POJO);
+      b.load(instance, mvalues.get(m), types, m, result.getSession());
+
+      if (log.isDebugEnabled() && !b.isLoaded(instance))
+        log.debug("Lazy collection '" + m.getName() + "' created for " + id);
+    }
+
+    boolean found = false;
+
+    for (RdfMapper m : cm.getRdfMappers()) {
+      if (m.isPredicateMap()) {
+        found = true;
+
+        break;
+      }
+    }
+
+    if (found) {
+      Map<String, List<String>> map = new HashMap<String, List<String>>();
+      map.putAll(fvalues);
+
+      for (RdfMapper m : cm.getRdfMappers()) {
+        if (m.isPredicateMap())
+          continue;
+
+        if (m.hasInverseUri())
+          continue;
+
+        map.remove(m.getUri());
+      }
+
+      for (RdfMapper m : cm.getRdfMappers()) {
+        if (m.isPredicateMap())
+          m.getBinder(EntityMode.POJO).setRawValue(instance, map);
+      }
+    }
+
+    return instance;
+  }
+
+  private String getModelUri(String modelId, SessionFactory sf)
+                      throws OtmException {
+    ModelConfig mc = sf.getModel(modelId);
+
+    if (mc == null) // Happens if using a Class but the model was not added
+      throw new OtmException("Unable to find model '" + modelId + "'");
+
+    return mc.getUri().toString();
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public Object loadInstance(Object obj, String id, Results r, Session sess)
+                      throws OtmException {
+    if (obj == null)
+      obj = newInstance();
+
+    if ((id != null) && (cm.getIdField() != null))
+      cm.getIdField().getBinder(EntityMode.POJO).set(obj, Collections.singletonList(id));
+
+    // a proj-var may appear multiple times, so have to delay closing of subquery results
+    Set<Results> sqr = new HashSet<Results>();
+
+    for (VarMapper m : cm.getVarMappers()) {
+      int    idx = r.findVariable(m.getProjectionVar());
+      Object val =
+        getValue(r, idx, ((FieldBinder) m.getBinder(EntityMode.POJO)).getComponentType(),
+                 m.getFetchType() == FetchType.eager, sqr, sess);
+      Binder b   = m.getBinder(EntityMode.POJO);
+
+      if (val instanceof List)
+        b.set(obj, (List) val);
+      else
+        b.setRawValue(obj, val);
+    }
+
+    for (Results sr : sqr)
+      sr.close();
+
+    return obj;
+  }
+
+  private Object getValue(Results r, int idx, Class<?> type, boolean eager, Set<Results> sqr,
+                          Session sess) throws OtmException {
+    switch (r.getType(idx)) {
+    case CLASS:
+      return (type == String.class) ? r.getString(idx) : r.get(idx, eager);
+
+    case LITERAL:
+      return (type == String.class) ? r.getString(idx) : r.getLiteralAs(idx, type);
+
+    case URI:
+      return (type == String.class) ? r.getString(idx) : r.getURIAs(idx, type);
+
+    case SUBQ_RESULTS:
+
+      ClassMetadata scm       = sess.getSessionFactory().getClassMetadata(type);
+      boolean       isSubView = (scm != null) && !scm.isView() && !scm.isPersistable();
+
+      List<Object>  vals      = new ArrayList<Object>();
+
+      Results       sr        = r.getSubQueryResults(idx);
+      sr.setAutoClose(false);
+
+      sr.beforeFirst();
+
+      while (sr.next())
+        vals.add(isSubView
+                 ? scm.getEntityBinder(EntityMode.POJO).loadInstance(null, null, sr, sess)
+                 : getValue(sr, 0, type, eager, null, sess));
+
+      if (sqr != null)
+        sqr.add(sr);
+      else
+        sr.close();
+
+      return vals;
+
+    default:
+      throw new Error("unknown type " + r.getType(idx) + " encountered");
     }
   }
 
@@ -153,7 +373,7 @@ public class ClassBinder<T> implements EntityBinder {
     return clazz;
   }
 
-  public static <T> Class<?extends T> createProxy(Class<T> clazz, final Method[] ignoreList) {
+  private static <T> Class<?extends T> createProxy(Class<T> clazz, final Method[] ignoreList) {
     MethodFilter mf =
       new MethodFilter() {
         public boolean isHandled(Method m) {
@@ -205,12 +425,11 @@ public class ClassBinder<T> implements EntityBinder {
                   throws Throwable {
       ll.ensureDataLoad((LazyLoaded) self, thisMethod.getName());
 
-      if ("writeReplace".equals(thisMethod.getName()) && (args.length == 0) 
-          && (self instanceof Serializable))
+      if ("writeReplace".equals(thisMethod.getName()) && (args.length == 0)
+           && (self instanceof Serializable))
         return getReplacement(self);
 
-      if ("getLazyLoader".equals(thisMethod.getName()) && (args.length == 1) 
-          && (args[0] == self))
+      if ("getLazyLoader".equals(thisMethod.getName()) && (args.length == 1) && (args[0] == self))
         return ll;
 
       try {
@@ -222,9 +441,8 @@ public class ClassBinder<T> implements EntityBinder {
     }
 
     private Object getReplacement(Object o) throws Throwable {
-      ClassMetadata cm  = ll.getClassMetadata();
-      EntityMode    em  = ll.getSession().getEntityMode();
-      Object        rep = cm.getEntityBinder(em).newInstance();
+      EntityMode em  = ll.getSession().getEntityMode();
+      Object     rep = cm.getEntityBinder(em).newInstance();
 
       for (Mapper m : new Mapper[] { cm.getIdField(), cm.getBlobField() })
         if (m != null) {
