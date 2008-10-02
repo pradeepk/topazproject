@@ -128,6 +128,10 @@ public class ClassMetadata {
     this.uriMap  = Collections.unmodifiableMap(uriMap);
     this.nameMap = Collections.unmodifiableMap(nameMap);
     this.varMap  = null;
+
+    // Notify binders
+    for (EntityBinder b : binders.values())
+      b.bindComplete(this);
   }
 
   /**
@@ -171,6 +175,10 @@ public class ClassMetadata {
     this.uriMap  = null;
     this.nameMap = Collections.unmodifiableMap(nameMap);
     this.varMap  = Collections.unmodifiableMap(varMap);
+
+    // Notify binders
+    for (EntityBinder b : binders.values())
+      b.bindComplete(this);
   }
 
   private static Set<String> buildNames(String name, Collection<EntityBinder> binders) {

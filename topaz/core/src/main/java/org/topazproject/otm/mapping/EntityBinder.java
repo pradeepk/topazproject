@@ -29,6 +29,15 @@ import org.topazproject.otm.Session;
  */
 public interface EntityBinder {
   /**
+   * A notification from ClassMetadata.
+   *
+   * @param cm the ClassMetadata of the entity which this binder is bound to
+   *
+   * @throws OtmException 
+   */
+  public void bindComplete(ClassMetadata cm) throws OtmException;
+
+  /**
    * Constructs a new instance using a no-argument constructor. TODO: support constructor
    * arguments
    *

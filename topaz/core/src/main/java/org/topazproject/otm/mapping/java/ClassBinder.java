@@ -53,7 +53,7 @@ import org.topazproject.otm.mapping.Mapper;
  */
 public class ClassBinder<T> implements EntityBinder {
   private final Class<T>          clazz;
-  private final Class<?extends T> proxy;
+  private Class<?extends T>       proxy;
   private final boolean           instantiable;
   private static final Log        log = LogFactory.getLog(ClassBinder.class);
 
@@ -61,15 +61,35 @@ public class ClassBinder<T> implements EntityBinder {
    * Creates a new ClassBinder object.
    *
    * @param clazz the java class to bind this entity to
-   * @param ignore the methods to ignore when lazily loaded
    */
-  public ClassBinder(Class<T> clazz, Method... ignore) {
+  public ClassBinder(Class<T> clazz) {
     this.clazz = clazz;
 
     int mod = clazz.getModifiers();
     instantiable   = !Modifier.isAbstract(mod) && !Modifier.isInterface(mod)
                       && Modifier.isPublic(mod);
-    proxy          = instantiable ? createProxy(clazz, ignore) : null;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void bindComplete(ClassMetadata cm) throws OtmException {
+    if (!instantiable)
+      proxy = null;
+    else {
+      Method idGetter = getIdGetter(cm);
+      proxy          = createProxy(clazz,
+          (idGetter != null) ?new Method[]{idGetter} : new Method[]{});
+    }
+  }
+
+  private Method getIdGetter(ClassMetadata cm) {
+     Mapper idField = cm.getIdField();
+     if (idField == null)
+       return null;
+     Method getter = ((FieldBinder) idField.getBinders().get(EntityMode.POJO)).getGetter();
+
+     return getter.getDeclaringClass().isAssignableFrom(clazz) ? getter : null;
   }
 
   /*

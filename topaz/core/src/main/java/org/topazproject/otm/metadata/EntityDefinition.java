@@ -199,32 +199,7 @@ public class EntityDefinition extends ClassDefinition {
       }
     }
 
-    ignoreIdGetter(bin.getBinders(), idField);
-
     return new ClassMetadata(bin.getBinders(), getName(), type, types, graph, idField, fields,
                              blobField, sup, embeds);
-  }
-
-  /**
-   * Hack to ignore the get-method on the id field from triggering a load on lazy loaded
-   * objects.
-   *
-   * @param binders the entity binders to hack
-   * @param idField the id field
-   */
-  private void ignoreIdGetter(Map<EntityMode, EntityBinder> binders, IdMapper idField) {
-    if (idField == null)
-      return;
-
-    FieldBinder fb = (FieldBinder) idField.getBinder(EntityMode.POJO);
-
-    if ((fb == null) || (fb.getGetter() == null))
-      return;
-
-    Class<?>    clazz = ((ClassBinder) binders.get(EntityMode.POJO)).getSourceClass();
-
-    ClassBinder cb    = new ClassBinder(clazz, fb.getGetter());
-
-    binders.put(EntityMode.POJO, cb);
   }
 }
