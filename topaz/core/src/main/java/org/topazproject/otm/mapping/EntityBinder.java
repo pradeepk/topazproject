@@ -18,9 +18,9 @@
  */
 package org.topazproject.otm.mapping;
 
-import javassist.util.proxy.ProxyObject;
-
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Session;
 
 /**
  * Binds an entity to an {@link org.topazproject.otm.EntityMode} specific implementation. 
@@ -42,11 +42,14 @@ public interface EntityBinder {
    * Constructs a proxy instance using a no-argument constructor. TODO: support constructor
    * arguments
    *
+   * @param lazyLoader the loader for the new instance
+   *
    * @return the newly created instance
    *
    * @throws OtmException on an error
    */
-  public ProxyObject newProxyInstance() throws OtmException;
+  public LazyLoaded newLazyLoadedInstance(LazyLoader lazyLoader)
+                                   throws OtmException;
 
   /**
    * Tests if this entity is instantiable and not an abstract super-class.
@@ -56,8 +59,8 @@ public interface EntityBinder {
   public boolean isInstantiable();
 
   /**
-   * Tests if the given object is an instance of this entity. Sub-class instances
-   * also qualify as instances of this entity.
+   * Tests if the given object is an instance of this entity. Sub-class instances also
+   * qualify as instances of this entity.
    *
    * @param o the object to test
    *
@@ -66,7 +69,8 @@ public interface EntityBinder {
   public boolean isInstance(Object o);
 
   /**
-   * Tests if the instances of this binder are assignment compatible with instances of another.
+   * Tests if the instances of this binder are assignment compatible with instances of
+   * another.
    *
    * @param other the other binder to test
    *
@@ -75,10 +79,59 @@ public interface EntityBinder {
   public boolean isAssignableFrom(EntityBinder other);
 
   /**
-   * Gets all unique alias names by which this entity is known. For java classes
-   * this is the class name.
+   * Gets all unique alias names by which this entity is known. For java classes this is the
+   * class name.
    *
    * @return the alternate unique names for this entity published by this Binder.
    */
   public String[] getNames();
+
+  /**
+   * The lazy loader for an instance. 
+   */
+  public static interface LazyLoader {
+    /**
+     * Gets the Session of this lazy-loader.
+     *
+     * @return the session
+     */
+    Session getSession();
+
+    /**
+     * Gets the ClassMetadata of the {@link LazyLoaded}  instance.
+     *
+     * @return the class-metadata
+     */
+    ClassMetadata getClassMetadata();
+
+    /**
+     * Gets the id of the {@link LazyLoaded} instance.
+     *
+     * @return the id
+     */
+    String getId();
+
+    /**
+     * A test to see if the triples for this object have been loaded.
+     *
+     * @return true if a load was performed
+     */
+    boolean isLoaded();
+
+    /**
+     * Load the data from Store.
+     *
+     * @param self the lazy-loaded object
+     * @param operation the method that is causing this load
+     *
+     * @throws OtmException on an error
+     */
+    void ensureDataLoad(LazyLoaded self, String operation) throws OtmException;
+  }
+
+  /**
+   * An interface implemented by all Lazy loaded objects.
+   */
+  public static interface LazyLoaded {
+  }
 }

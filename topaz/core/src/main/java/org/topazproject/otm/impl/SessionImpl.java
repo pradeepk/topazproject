@@ -20,9 +20,6 @@ package org.topazproject.otm.impl;
 
 import java.io.Serializable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,6 +37,8 @@ import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.IdMapper;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.VarMapper;
@@ -76,7 +72,7 @@ public class SessionImpl extends AbstractSession {
   private final Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
-  private final Map<Id, LazyLoadMethodHandler> proxies        = new HashMap<Id, LazyLoadMethodHandler>();
+  private final Map<Id, LazyLoader>            proxies        = new HashMap<Id, LazyLoader>();
   private final Map<Id, Set<Wrapper>>          orphanTrack    = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
   private boolean flushing                                    = false;
@@ -340,7 +336,7 @@ public class SessionImpl extends AbstractSession {
       o = dirtyMap.get(id);
 
     if (o == null) {
-      o = newDynamicProxy(id);
+      o = newLazyLoadedInstance(id);
       cleanMap.put(id, o);
     }
     return o;
@@ -400,7 +396,7 @@ public class SessionImpl extends AbstractSession {
       }
     }
 
-    if (o instanceof ProxyObject)
+    if (o instanceof LazyLoaded)
         o.equals(null); // ensure it is loaded
 
     return o;
@@ -468,7 +464,7 @@ public class SessionImpl extends AbstractSession {
   }
 
   private <T> boolean isPristineProxy(Id id, T o) {
-    LazyLoadMethodHandler llm           = (o instanceof ProxyObject) ? proxies.get(id) : null;
+    LazyLoader llm           = (o instanceof LazyLoaded) ? proxies.get(id) : null;
     return (llm != null) ? !llm.isLoaded() : false;
   }
 
@@ -1005,19 +1001,18 @@ public class SessionImpl extends AbstractSession {
     return o;
   }
 
-  private Object newDynamicProxy(final Id id)
+  private LazyLoaded newLazyLoadedInstance(final Id id)
                           throws OtmException {
-    LazyLoadMethodHandler mi =
-      new LazyLoadMethodHandler() {
+    LazyLoader mi =
+      new LazyLoader() {
         private boolean loaded = false;
         private boolean loading = false;
 
-        public Object invoke(Object self, Method m, Method proceed, Object[] args)
-                      throws Throwable {
+        public void ensureDataLoad(LazyLoaded self, String operation) throws OtmException {
           if (!loaded && !loading) {
             if (log.isDebugEnabled())
-              log.debug(m.getName() + " on " + id + " is forcing a load from store",
-                   trimStackTrace(new Throwable("trimmed-stack-trace"), 3, 8));
+              log.debug(operation + " on " + id + " is forcing a load from store",
+                   trimStackTrace(new Throwable("trimmed-stack-trace"), 4, 8));
 
             loading = true;
             try {
@@ -1028,56 +1023,35 @@ public class SessionImpl extends AbstractSession {
             loaded = true;
           }
 
-          try {
-            if (m.getName().equals("writeReplace") && (self instanceof Serializable) 
-                && (args.length == 0))
-              return getSerializableReplacement(self);
-            return proceed.invoke(self, args);
-          } catch (InvocationTargetException ite) {
-            if (log.isDebugEnabled())
-              log.debug("Caught ite while invoking '" + proceed + "' on '" + self + "'", ite);
-            throw ite.getCause();
-          }
         }
 
         public boolean isLoaded() {
           return loaded;
         }
 
-        private Object getSerializableReplacement(Object o) throws Throwable {
-          ClassMetadata cm = id.getClassMetadata();
-          Object rep = cm.getEntityBinder(getEntityMode()).newInstance();
-          for (Mapper m : new Mapper[] {cm.getIdField(), cm.getBlobField()})
-            if (m != null) {
-              Binder b = m.getBinder(getEntityMode());
-              b.setRawValue(rep, b.getRawValue(o, false));
-            }
-          for (Mapper m : cm.getRdfMappers()) {
-            Binder b = m.getBinder(getEntityMode());
-            b.setRawValue(rep, b.getRawValue(o, false));
-          }
-
-          if (log.isDebugEnabled())
-            log.debug("Serializable replacement created for " + o);
-
-          return rep;
+        public Session getSession() {
+          return SessionImpl.this;
         }
+
+        public String getId() {
+          return id.getId();
+        }
+
+        public ClassMetadata getClassMetadata() {
+          return id.getClassMetadata();
+        }
+
+
       };
 
-    try {
-      ClassMetadata cm = id.getClassMetadata();
-      ProxyObject o = cm.getEntityBinder(getEntityMode()).newProxyInstance();
-      cm.getIdField().getBinder(getEntityMode()).set(o, Collections.singletonList(id.getId()));
-      o.setHandler(mi);
-      proxies.put(id, mi);
+    ClassMetadata cm = id.getClassMetadata();
+    LazyLoaded o = cm.getEntityBinder(getEntityMode()).newLazyLoadedInstance(mi);
+    proxies.put(id, mi);
 
-      if (log.isDebugEnabled())
-        log.debug("Dynamic proxy created for " + id);
+    if (log.isDebugEnabled())
+      log.debug("Lazy loaded instance created for " + id);
 
-      return o;
-    } catch (Exception e) {
-      throw new OtmException("Dynamic proxy instantiation failed", e);
-    }
+    return o;
   }
 
   private Id checkObject(RdfMapper assoc, Object o, boolean isUpdate, boolean dupCheck) throws OtmException {
@@ -1168,7 +1142,4 @@ public class SessionImpl extends AbstractSession {
     }
   }
 
-  private interface LazyLoadMethodHandler extends MethodHandler {
-    public boolean isLoaded();
-  }
 }

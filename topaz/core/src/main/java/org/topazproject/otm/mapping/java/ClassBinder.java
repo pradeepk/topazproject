@@ -21,15 +21,28 @@ package org.topazproject.otm.mapping.java;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import java.util.Collections;
+
 import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.EntityBinder;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
+import org.topazproject.otm.mapping.Mapper;
 
 /**
  * Binds an entity to an {@link org.topazproject.otm.EntityMode#POJO} specific implementation.
@@ -42,6 +55,7 @@ public class ClassBinder<T> implements EntityBinder {
   private final Class<T>          clazz;
   private final Class<?extends T> proxy;
   private final boolean           instantiable;
+  private static final Log        log = LogFactory.getLog(ClassBinder.class);
 
   /**
    * Creates a new ClassBinder object.
@@ -53,7 +67,6 @@ public class ClassBinder<T> implements EntityBinder {
     this.clazz = clazz;
 
     int mod = clazz.getModifiers();
-
     instantiable   = !Modifier.isAbstract(mod) && !Modifier.isInterface(mod)
                       && Modifier.isPublic(mod);
     proxy          = instantiable ? createProxy(clazz, ignore) : null;
@@ -73,11 +86,20 @@ public class ClassBinder<T> implements EntityBinder {
   /*
    * inherited javadoc
    */
-  public ProxyObject newProxyInstance() throws OtmException {
+  public LazyLoaded newLazyLoadedInstance(LazyLoader ll)
+                                   throws OtmException {
     try {
-      return (ProxyObject) proxy.newInstance();
+      Object        o  = proxy.newInstance();
+      ClassMetadata cm = ll.getClassMetadata();
+
+      if (cm.getIdField() != null)
+        cm.getIdField().getBinder(EntityMode.POJO).set(o, Collections.singletonList(ll.getId()));
+
+      ((ProxyObject) o).setHandler(new Handler(ll));
+
+      return (LazyLoaded) o;
     } catch (Exception t) {
-      throw new OtmException("Failed to create a new proxy instance of " + clazz, t);
+      throw new OtmException("Failed to create a new lazy-loaded instance of " + clazz, t);
     }
   }
 
@@ -130,7 +152,9 @@ public class ClassBinder<T> implements EntityBinder {
     f.setSuperclass(clazz);
 
     if (Serializable.class.isAssignableFrom(clazz))
-      f.setInterfaces(new Class[] { WriteReplace.class });
+      f.setInterfaces(new Class[] { WriteReplace.class, LazyLoaded.class });
+    else
+      f.setInterfaces(new Class[] { LazyLoaded.class });
 
     f.setFilter(mf);
 
@@ -148,5 +172,51 @@ public class ClassBinder<T> implements EntityBinder {
 
   public static interface WriteReplace {
     public Object writeReplace() throws ObjectStreamException;
+  }
+
+  private class Handler implements MethodHandler {
+    private final LazyLoader ll;
+
+    public Handler(LazyLoader ll) {
+      this.ll = ll;
+    }
+
+    public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args)
+                  throws Throwable {
+      ll.ensureDataLoad((LazyLoaded) self, thisMethod.getName());
+
+      if ("writeReplace".equals(thisMethod.getName()) && (args.length == 0) 
+          && (self instanceof Serializable))
+        return getReplacement(self);
+
+      try {
+        return proceed.invoke(self, args);
+      } catch (InvocationTargetException ite) {
+        log.warn("Caught ite while invoking '" + proceed + "' on '" + self + "'", ite);
+        throw ite.getCause();
+      }
+    }
+
+    private Object getReplacement(Object o) throws Throwable {
+      ClassMetadata cm  = ll.getClassMetadata();
+      EntityMode    em  = ll.getSession().getEntityMode();
+      Object        rep = cm.getEntityBinder(em).newInstance();
+
+      for (Mapper m : new Mapper[] { cm.getIdField(), cm.getBlobField() })
+        if (m != null) {
+          Binder b = m.getBinder(em);
+          b.setRawValue(rep, b.getRawValue(o, false));
+        }
+
+      for (Mapper m : cm.getRdfMappers()) {
+        Binder b = m.getBinder(em);
+        b.setRawValue(rep, b.getRawValue(o, false));
+      }
+
+      if (log.isDebugEnabled())
+        log.debug("Serializable replacement created for " + o);
+
+      return rep;
+    }
   }
 }

@@ -42,6 +42,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
@@ -50,7 +51,6 @@ import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
 
-import javassist.util.proxy.ProxyObject;
 
 /**
  * Session tests.
@@ -294,8 +294,8 @@ public class SessionTest extends AbstractOtmTest {
             Serial l1 = session.load(Serial.class, "foo:id/l1");
             l1.equals(null); // force load
             l1.ch.equals(null); // force load
-            assertTrue(l1 instanceof ProxyObject);
-            assertTrue(l1.ch instanceof ProxyObject);
+            assertTrue(l1 instanceof LazyLoaded);
+            assertTrue(l1.ch instanceof LazyLoaded);
 
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bo);
