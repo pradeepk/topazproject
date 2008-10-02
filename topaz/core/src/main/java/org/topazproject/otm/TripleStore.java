@@ -20,6 +20,8 @@ package org.topazproject.otm;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.RdfMapper;
@@ -99,17 +101,16 @@ public interface TripleStore extends Store {
    *
    * @param cm the class metadata for the object
    * @param id the id/subject-uri for the object
-   * @param instance the instance to be refreshed or null 
    * @param con the connection to use
    * @param filters the filters to use, or null if there are none
    * @param filterObj whether the object itself needs filtering (if false only the fields are
    *                  filtered)
    *
-   * @return the result instance
+   * @return the result
    *
    * @throws OtmException on an error
    */
-  public Object get(ClassMetadata cm, String id, Object  instance, Connection con,
+  public Result get(ClassMetadata cm, String id, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException;
 
   /**
@@ -196,4 +197,16 @@ public interface TripleStore extends Store {
    */
   public void setCriterionBuilder(String func, CriterionBuilder builder)
                            throws OtmException;
+
+  public interface Result {
+    public TripleStore               getTripleStore();
+    public Session                   getSession();
+    public Connection                getConnection();
+    public String                    getId();
+    public Map<String, List<String>> getFValues();
+    public Map<String, List<String>> getRValues();
+    public Map<String, Set<String>>  getTypes();
+    public List<String>              getRdfList(String puri, String muri, RdfMapper m);
+    public List<String>              getRdfBag(String puri, String muri, RdfMapper m);
+  }
 }

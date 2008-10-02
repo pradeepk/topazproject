@@ -40,6 +40,7 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.CriterionBuilder;
@@ -106,17 +107,18 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public Object get(ClassMetadata cm, String id, Object instance, Connection con,
+  public TripleStore.Result get(ClassMetadata cm, final String id, Connection con,
                    List<Filter> filters, boolean filterObj) throws OtmException {
     if (filters != null && filters.size() > 0)
       throw new OtmException("Filters are not supported");
 
-    MemStoreConnection        msc     = (MemStoreConnection) con;
+    final MemStoreConnection        msc     = (MemStoreConnection) con;
     Storage                   storage = msc.getStorage();
     String                    model   = cm.getModel();
 
-    Map<String, List<String>> value   = new HashMap<String, List<String>>();
-    Map<String, List<String>> rvalue  = new HashMap<String, List<String>>();
+    final Map<String, List<String>> value   = new HashMap<String, List<String>>();
+    final Map<String, List<String>> rvalue  = new HashMap<String, List<String>>();
+    final Map<String, Set<String>> types  = new HashMap<String, Set<String>>();
 
     value.put(Rdf.rdf + "type",
               new ArrayList<String>(storage.getProperty(model, id, Rdf.rdf + "type")));
@@ -137,8 +139,43 @@ public class MemStore extends AbstractTripleStore {
       }
     }
 
-    return instantiate(msc.getSession(), instance, cm, id, value, rvalue, 
-        new HashMap<String, Set<String>>());
+    return new TripleStore.Result() {
+      public TripleStore getTripleStore() {
+        return MemStore.this;
+      }
+
+      public Session getSession() {
+        return msc.getSession();
+      }
+
+      public Connection getConnection() {
+        return msc;
+      }
+
+      public String getId() {
+        return id;
+      }
+
+      public Map<String, List<String>> getFValues() {
+        return value;
+      }
+
+      public Map<String, List<String>> getRValues() {
+        return rvalue;
+      }
+
+      public Map<String, Set<String>> getTypes() {
+        return types;
+      }
+
+      public List<String> getRdfList(String pUri, String mUri, RdfMapper m) throws OtmException {
+        throw new OtmException("Unsupported");
+      }
+
+      public List<String> getRdfBag(String puri, String muri, RdfMapper m) throws OtmException {
+        throw new OtmException("Unsupported");
+      }
+    };
   }
 
   /*

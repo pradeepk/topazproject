@@ -51,6 +51,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.RdfUtil;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.filter.AbstractFilterImpl;
 import org.topazproject.otm.mapping.Binder;
@@ -388,10 +389,10 @@ public class ItqlStore extends AbstractTripleStore {
     return (qry.length() > len);
   }
 
-  public Object get(ClassMetadata cm, String id, Object instance, Connection con,
-                   List<Filter> filters, boolean filterObj) throws OtmException {
-    ItqlStoreConnection isc = (ItqlStoreConnection) con;
-    SessionFactory      sf  = isc.getSession().getSessionFactory();
+  public TripleStore.Result get(ClassMetadata cm, final String id, Connection con,
+                   final List<Filter> filters, boolean filterObj) throws OtmException {
+    final ItqlStoreConnection isc = (ItqlStoreConnection) con;
+    final SessionFactory      sf  = isc.getSession().getSessionFactory();
 
     // do query
     String get = buildGetSelect(cm, id, isc, filters, filterObj);
@@ -408,10 +409,9 @@ public class ItqlStore extends AbstractTripleStore {
     }
 
     // parse
-    Map<String, List<String>> fvalues = new HashMap<String, List<String>>();
-    Map<String, List<String>> rvalues = new HashMap<String, List<String>>();
-    Map<String, Set<String>> types = new HashMap<String, Set<String>>();
-
+    final Map<String, List<String>> fvalues = new HashMap<String, List<String>>();
+    final Map<String, List<String>> rvalues = new HashMap<String, List<String>>();
+    final Map<String, Set<String>> types = new HashMap<String, Set<String>>();
 
     try {
       Map<String, List<String>> values = fvalues;
@@ -443,59 +443,43 @@ public class ItqlStore extends AbstractTripleStore {
       throw new OtmException("Error parsing answer", ae);
     }
 
-    if (fvalues.size() == 0 && rvalues.size() == 0) {
-      if (log.isDebugEnabled())
-        log.debug("No statements found about '" + id + "' for " + cm);
-      return null;
-    }
-
-    // figure out sub-class to instantiate
-    // XXX: should this be narrowed down based on other restrictions?
-    List<String> t = fvalues.get(Rdf.rdf + "type");
-    ClassMetadata sup = cm;
-    cm = sf.getSubClassMetadata(cm, isc.getSession().getEntityMode(), t);
-    if (cm == null) {
-      HashSet<String> props = new HashSet<String>(fvalues.keySet());
-      props.addAll(rvalues.keySet());
-      log.warn("Properties " + props + " on '" + id 
-          + "' does not satisfy the restrictions imposed by " + sup
-          + ". No object will be instantiated.");
-      return null;
-    }
-    if (t != null)
-      t.removeAll(cm.getTypes());
-
-    // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
-    String modelUri = getModelUri(cm.getModel(), isc);
-    Set<String> replaced = null;
-    for (RdfMapper m : cm.getRdfMappers()) {
-      if (m.hasInverseUri() || !fvalues.containsKey(m.getUri()) || 
-          (m.getColType() == CollectionType.PREDICATE))
-        continue;
-
-      String p = m.getUri();
-      String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), isc) : modelUri;
-      List<String> vals;
-      if (m.getColType() == CollectionType.RDFLIST)
-        vals = getRdfList(id, p, mUri, isc, types, m, sf, filters);
-      else
-        vals = getRdfBag(id, p, mUri, isc, types, m, sf, filters);
-
-      if (replaced == null)
-        replaced = new HashSet<String>();
-
-      if (replaced.contains(p))
-        fvalues.get(p).addAll(vals);
-      else {
-        fvalues.put(p, vals);
-        replaced.add(p);
+    return new TripleStore.Result() {
+      public TripleStore getTripleStore() {
+        return ItqlStore.this;
       }
-    }
 
-    if (log.isDebugEnabled())
-      log.debug("Instantiating object with '" + id + "' for " + cm);
+      public Session getSession() {
+        return isc.getSession();
+      }
 
-    return instantiate(isc.getSession(), instance, cm, id, fvalues, rvalues, types);
+      public Connection getConnection() {
+        return isc;
+      }
+
+      public String getId() {
+        return id;
+      }
+
+      public Map<String, List<String>> getFValues() {
+        return fvalues;
+      }
+
+      public Map<String, List<String>> getRValues() {
+        return rvalues;
+      }
+
+      public Map<String, Set<String>> getTypes() {
+        return types;
+      }
+
+      public List<String> getRdfList(String pUri, String mUri, RdfMapper m) throws OtmException {
+        return ItqlStore.this.getRdfList(id, pUri, mUri, isc, types, m, sf, filters);
+      }
+
+      public List<String> getRdfBag(String pUri, String mUri, RdfMapper m) throws OtmException {
+        return ItqlStore.this.getRdfBag(id, pUri, mUri, isc, types, m, sf, filters);
+      }
+    };
   }
 
   private String buildGetSelect(ClassMetadata cm, String id, ItqlStoreConnection isc,

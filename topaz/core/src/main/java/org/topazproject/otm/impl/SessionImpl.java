@@ -50,15 +50,18 @@ import org.topazproject.otm.mapping.java.FieldBinder;
 import org.topazproject.otm.query.Results;
 
 import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Interceptor;
+import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.BlobStore;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.Rdf;
 
@@ -574,8 +577,8 @@ public class SessionImpl extends AbstractSession {
         instance = loadView(cm, id.getId(), instance);
       else {
         if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0) {
-          instance = store.get(cm, id.getId(), instance, getTripleStoreCon(), 
-                                  new ArrayList<Filter>(filters.values()), filterObj);
+          instance = instantiate(instance, cm, store.get(cm, id.getId(), getTripleStoreCon(), 
+                                  new ArrayList<Filter>(filters.values()), filterObj));
           if (instance != null)
             cm = sessionFactory.getInstanceMetadata(cm, getEntityMode(), instance);
         }
@@ -615,6 +618,149 @@ public class SessionImpl extends AbstractSession {
     if (log.isDebugEnabled())
       log.debug("Object loaded from " + (found ? "interceptor: " : "store: ") + id.getId());
     return instance;
+  }
+
+  private Object instantiate(Object instance, ClassMetadata cm, TripleStore.Result result) 
+                            throws OtmException {
+    final Map<String, List<String>> fvalues = result.getFValues();
+    final Map<String, List<String>> rvalues = result.getRValues();
+    final Map<String, Set<String>> types = result.getTypes();
+    final String id = result.getId();
+
+    if (fvalues.size() == 0 && rvalues.size() == 0) {
+      if (log.isDebugEnabled())
+        log.debug("No statements found about '" + id + "' for " + cm);
+      return null;
+    }
+
+    // figure out sub-class to instantiate
+    // XXX: should this be narrowed down based on other restrictions?
+    List<String> t = fvalues.get(Rdf.rdf + "type");
+    ClassMetadata sup = cm;
+    cm = getSessionFactory().getSubClassMetadata(cm, getEntityMode(), t);
+    if (cm == null) {
+      HashSet<String> props = new HashSet<String>(fvalues.keySet());
+      props.addAll(rvalues.keySet());
+      log.warn("Properties " + props + " on '" + id 
+          + "' does not satisfy the restrictions imposed by " + sup
+          + ". No object will be instantiated.");
+      return null;
+    }
+    if (t != null)
+      t.removeAll(cm.getTypes());
+
+    // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
+    String modelUri = getModelUri(cm.getModel());
+    Set<String> replaced = null;
+    for (RdfMapper m : cm.getRdfMappers()) {
+      if (m.hasInverseUri() || !fvalues.containsKey(m.getUri()) || 
+          (m.getColType() == CollectionType.PREDICATE))
+        continue;
+
+      String p = m.getUri();
+      String mUri = (m.getModel() != null) ? getModelUri(m.getModel()) : modelUri;
+      List<String> vals;
+      if (m.getColType() == CollectionType.RDFLIST)
+        vals = result.getRdfList(p, mUri, m);
+      else
+        vals = result.getRdfBag(p, mUri, m);
+
+      if (replaced == null)
+        replaced = new HashSet<String>();
+
+      if (replaced.contains(p))
+        fvalues.get(p).addAll(vals);
+      else {
+        fvalues.put(p, vals);
+        replaced.add(p);
+      }
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("Instantiating object with '" + id + "' for " + cm);
+
+    return instantiate(instance, cm, id, fvalues, rvalues, types);
+  }
+
+  private Object instantiate(Object instance, ClassMetadata cm, String id,
+                              Map<String, List<String>> fvalues,
+                              Map<String, List<String>> rvalues, Map<String, Set<String>> types)
+                        throws OtmException {
+    SessionFactory sf    = getSessionFactory();
+
+    if (instance == null)
+      instance = cm.getEntityBinder(this).newInstance();
+    cm.getIdField().getBinder(this).set(instance, Collections.singletonList(id));
+
+    // re-map values based on the rdf:type look ahead
+    Map<RdfMapper, List<String>> mvalues = new HashMap();
+    boolean                   inverse = false;
+
+    for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
+      for (String p : values.keySet()) {
+        for (String o : values.get(p)) {
+          RdfMapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
+
+          if (m != null) {
+            List<String> v = mvalues.get(m);
+
+            if (v == null)
+              mvalues.put(m, v = new ArrayList<String>());
+
+            v.add(o);
+          }
+        }
+      }
+
+      inverse = true;
+    }
+
+    // now assign values to fields
+    for (RdfMapper m : mvalues.keySet()) {
+      Binder b = m.getBinder(this);
+      b.load(instance, mvalues.get(m), types, m, this);
+      if (log.isDebugEnabled() && !b.isLoaded(instance))
+        log.debug("Lazy collection '" + m.getName() + "' created for " + id);
+    }
+
+    boolean found = false;
+
+    for (RdfMapper m : cm.getRdfMappers()) {
+      if (m.isPredicateMap()) {
+        found = true;
+
+        break;
+      }
+    }
+
+    if (found) {
+      Map<String, List<String>> map = new HashMap<String, List<String>>();
+      map.putAll(fvalues);
+
+      for (RdfMapper m : cm.getRdfMappers()) {
+        if (m.isPredicateMap())
+          continue;
+
+        if (m.hasInverseUri())
+          continue;
+
+        map.remove(m.getUri());
+      }
+
+      for (RdfMapper m : cm.getRdfMappers()) {
+        if (m.isPredicateMap())
+          m.getBinder(this).setRawValue(instance, map);
+      }
+    }
+
+    return instance;
+  }
+
+  private String getModelUri(String modelId) throws OtmException {
+    ModelConfig mc = getSessionFactory().getModel(modelId);
+    if (mc == null) // Happens if using a Class but the model was not added
+      throw new OtmException("Unable to find model '" + modelId + "'");
+    return mc.getUri().toString();
   }
 
   private Object loadView(ClassMetadata cm, String id, Object instance) throws OtmException {
