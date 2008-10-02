@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Alias;
 import org.topazproject.otm.annotations.Aliases;
@@ -228,7 +229,7 @@ public class ObjectInfo {
   /**
    * @param isPartOf the isPartOf to set
    */
-  @Predicate(uri = Rdf.dc_terms + "isPartOf")
+  @Predicate(uri = Rdf.dc_terms + "isPartOf", fetch=FetchType.eager)
   public void setIsPartOf(Article isPartOf) {
     this.isPartOf = isPartOf;
   }

@@ -1324,8 +1324,8 @@ public class OqlTest extends AbstractTest {
 
     Class cls = rdf.class('Test1') {
       state (type:'xsd:int')
-      info () {
-        name (className:'Name2', extendsClass:'Name') {
+      info (fetch:'eager') {
+        name (className:'Name2', extendsClass:'Name', fetch:'eager') {
           middleName ()
         }
       }

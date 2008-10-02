@@ -138,6 +138,7 @@ public interface Binder {
     public List<String> getValues();
     Map<String, Set<String>> getTypeLookAhead();
     List<Filter> getFilters();
+    public EntityBinder.LazyLoaded getRootInstance();
   }
 
 }

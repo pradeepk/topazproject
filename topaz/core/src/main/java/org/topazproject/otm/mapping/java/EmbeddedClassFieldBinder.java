@@ -22,9 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.EntityBinder;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EmbeddedBinder;
 import org.topazproject.otm.mapping.Mapper;
 
@@ -36,13 +41,44 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements EmbeddedBinder {
+  private final ClassMetadata ecm;
+  private final EntityBinder eb;
   /**
    * Creates a new EmbeddedClassFieldBinder object.
    *
    * @param property the java bean property
+   * @param ecm the embedded class metadata
    */
-  public EmbeddedClassFieldBinder(Property property) {
+  public EmbeddedClassFieldBinder(Property property, ClassMetadata ecm) {
     super(property, null);
+    this.ecm = ecm;
+    this.eb = ecm.getEntityBinder(EntityMode.POJO);
+  }
+
+  public Object getRawValue(Object o, boolean create) throws OtmException {
+    if (!(o instanceof LazyLoaded))
+      return super.getRawValue(o, create);
+
+    Object value;
+
+    try {
+      value = getGetter().invoke(o);
+
+      if (create && !(value instanceof LazyLoaded)) {
+        LazyLoaded ll = (LazyLoaded) o;
+
+        // Share the same lazy loader as the embedding class.
+        // This means the stashed area is all shared.
+        // We just have a proxy that can intercept method calls.
+        // The stashing will be done by embedding class.
+        value = eb.newLazyLoadedInstance(ll.getLazyLoader(ll));
+        setRawValue(o, value);
+      }
+    } catch (Exception e) {
+      throw new OtmException("Failed to get a value from '" + getGetter().toGenericString() + "'", e);
+    }
+
+    return value;
   }
 
   /**

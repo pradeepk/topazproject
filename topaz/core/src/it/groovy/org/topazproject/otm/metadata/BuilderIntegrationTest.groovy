@@ -209,9 +209,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     // predicate stored with child model
     Class cls = rdf.class('Test1', model:'m1') {
       foo1 ()
-      bar1 (className:'Bar11', model:'m2', inverse:true) {
+      bar1 (className:'Bar11', model:'m2', inverse:true, fetch:'eager') {
         foo2 ()
-        bar2 (className:'Bar21', model:'m3') {
+        bar2 (className:'Bar21', model:'m3', fetch:'eager') {
           foo3 ()
         }
       }

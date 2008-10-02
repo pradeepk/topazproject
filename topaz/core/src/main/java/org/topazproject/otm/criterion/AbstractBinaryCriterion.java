@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Predicate;
 
 /**
@@ -131,7 +132,7 @@ public abstract class AbstractBinaryCriterion extends AbstractUnaryCriterion {
    *
    * @param parameter the value to set.
    */
-  @Predicate
+  @Predicate(fetch=FetchType.eager)
   public void setParameter(Parameter parameter) {
     this.parameter   = parameter;
     this.value       = parameter;

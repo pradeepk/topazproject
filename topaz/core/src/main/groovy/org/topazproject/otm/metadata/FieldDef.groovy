@@ -194,7 +194,7 @@ public class FieldDef {
       def cm = classType.toClass()
       def metaDef = new EmbeddedDefinition(dn, cm.getName())
       def property = new Property(cls, name, get, set, f.getType())
-      def binders = [(EntityMode.POJO) : new EmbeddedClassFieldBinder(property)]
+      def binders = [(EntityMode.POJO) : new EmbeddedClassFieldBinder(property, cm)]
       def container = new EmbeddedMapperImpl(metaDef, binders, cm)
       m = cm.rdfMappers.collect{ container.promote(it) }
       m.add(container)

@@ -42,9 +42,9 @@ public class FilterTest extends AbstractTest {
     for (inv in [false, true]) {
       Class cls = rdf.class("Test_${inv}") {
         state (type:'xsd:int')
-        info (className:"Info_${inv}") {
-          name (type:'ExtName', inverse:inv)
-          addr (type:'Addr', inverse:inv)
+        info (className:"Info_${inv}", fetch:'eager') {
+          name (type:'ExtName', inverse:inv, fetch:'eager')
+          addr (type:'Addr', inverse:inv, fetch:'eager')
         }
       }
 

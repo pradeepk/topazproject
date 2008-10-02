@@ -146,22 +146,24 @@ public class CriteriaTest extends AbstractOtmTest {
   public void testUnrestricted() throws OtmException {
     log.info("Testing unrestricted ...");
 
-    final List<Annotation> al = new ArrayList();
     doInSession(new Action() {
         public void run(Session session) throws OtmException {
+          final List<Annotation> al = new ArrayList();
+      
           al.addAll(session.createCriteria(Annotation.class).list());
+          
+          assertNotNull(al);
+          assertEquals(4, al.size());
+
+          for (Annotation a : al) {
+            if (a.getSupersedes() != null)
+              assertTrue(a == a.getSupersedes().getSupersededBy());
+
+            if (a.getSupersededBy() != null)
+              assertTrue(a == a.getSupersededBy().getSupersedes());
+          }
         }
       });
-    assertNotNull(al);
-    assertEquals(4, al.size());
-
-    for (Annotation a : al) {
-      if (a.getSupersedes() != null)
-        assertTrue(a == a.getSupersedes().getSupersededBy());
-
-      if (a.getSupersededBy() != null)
-        assertTrue(a == a.getSupersededBy().getSupersedes());
-    }
   }
 
   /**

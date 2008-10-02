@@ -30,6 +30,8 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
+import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.serializer.Serializer;
 
@@ -226,7 +228,12 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * inherited javadoc
    */
   public boolean isLoaded(Object instance) throws OtmException {
-    return true;
+    if (!(instance instanceof LazyLoaded))
+      return true;
+    LazyLoaded ll = (LazyLoaded) instance;
+    LazyLoader lh = ll.getLazyLoader(ll);
+
+    return lh.isLoaded(this);
   }
 
   /*
@@ -234,7 +241,12 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    */
   public RawFieldData getRawFieldData(Object instance)
                                throws OtmException {
-    return null;
+    if (!(instance instanceof LazyLoaded))
+      return null;
+    LazyLoaded ll = (LazyLoaded) instance;
+    LazyLoader lh = ll.getLazyLoader(ll);
+
+    return lh.getRawFieldData(this);
   }
 
   /*

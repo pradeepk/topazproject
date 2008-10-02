@@ -71,7 +71,8 @@ public class PropertyBinderFactory implements BinderFactory {
     Definition pd = sf.getDefinition(propertyName);
 
     if (pd instanceof EmbeddedDefinition)
-      return new EmbeddedClassFieldBinder(property);
+      return new EmbeddedClassFieldBinder(property, 
+                                       sf.getClassMetadata(((EmbeddedDefinition)pd).getEmbedded()));
 
     Serializer serializer;
     Class<?>   type = property.getComponentType();

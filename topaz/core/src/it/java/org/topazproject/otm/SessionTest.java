@@ -391,7 +391,7 @@ public class SessionTest extends AbstractOtmTest {
      *
      * @param ch the value to set.
      */
-    @Predicate
+    @Predicate(fetch=FetchType.eager)
     public void setCh(Serial ch) {
       this.ch = ch;
     }

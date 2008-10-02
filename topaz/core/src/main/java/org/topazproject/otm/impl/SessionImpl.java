@@ -818,8 +818,9 @@ public class SessionImpl extends AbstractSession {
                           throws OtmException {
     LazyLoader mi =
       new LazyLoader() {
-        private boolean loaded = false;
         private boolean loading = false;
+        private boolean loaded = false;
+        private Map<Binder, Binder.RawFieldData> rawData = new HashMap<Binder, Binder.RawFieldData>();
 
         public void ensureDataLoad(LazyLoaded self, String operation) throws OtmException {
           if (!loaded && !loading) {
@@ -830,16 +831,30 @@ public class SessionImpl extends AbstractSession {
             loading = true;
             try {
               getFromStore(id, self, false);
+              loaded = true;
             } finally {
               loading = false;
             }
-            loaded = true;
           }
-
         }
 
         public boolean isLoaded() {
           return loaded;
+        }
+
+        public boolean isLoaded(Binder b) {
+          return loaded && !rawData.containsKey(b);
+        }
+
+        public void setRawFieldData(Binder b, Binder.RawFieldData d) {
+          if (d == null)
+            rawData.remove(b);
+          else
+            rawData.put(b, d);
+        }
+
+        public Binder.RawFieldData getRawFieldData(Binder b) {
+          return rawData.get(b);
         }
 
         public Session getSession() {
@@ -853,8 +868,6 @@ public class SessionImpl extends AbstractSession {
         public ClassMetadata getClassMetadata() {
           return id.getClassMetadata();
         }
-
-
       };
 
     ClassMetadata cm = id.getClassMetadata();

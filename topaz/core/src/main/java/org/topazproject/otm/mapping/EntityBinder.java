@@ -160,6 +160,33 @@ public interface EntityBinder {
     boolean isLoaded();
 
     /**
+     * A test to see if a property has been loaded.
+     *
+     * @param b the binder to test
+     *
+     * @return true if a load was performed
+     */
+    boolean isLoaded(Binder b);
+
+    /**
+     * Stash/Clear the raw-data for a lazy-loaded field.
+     *
+     * @param b the binder to set the raw-data for
+     * 
+     * @param d the raw-data to set or null to clear
+     */
+    void setRawFieldData(Binder b, Binder.RawFieldData d);
+
+    /**
+     * Get the raw-data for a field.
+     *
+     * @param b the binder to get the raw-data for
+     * 
+     * @return the raw-data or null if the field is loaded
+     */
+    Binder.RawFieldData getRawFieldData(Binder b);
+
+    /**
      * Load the data from Store.
      *
      * @param self the lazy-loaded object

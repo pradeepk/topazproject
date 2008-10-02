@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
@@ -95,7 +96,7 @@ public class ObjectInfo implements Serializable {
   /** 
    * @param isPartOf the isPartOf to set 
    */
-  @Predicate(uri = "dcterms:isPartOf")
+  @Predicate(uri = "dcterms:isPartOf", fetch = FetchType.eager)
   public void setIsPartOf(Article isPartOf) {
     this.isPartOf = isPartOf;
   }

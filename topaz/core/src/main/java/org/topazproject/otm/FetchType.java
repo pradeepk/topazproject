@@ -20,7 +20,7 @@
 package org.topazproject.otm;
 
 /**
- * Enum defining how associations should be fetched.
+ * Enum defining how properties should be fetched.
  *
  * @author Pradeep Krishnan
  */

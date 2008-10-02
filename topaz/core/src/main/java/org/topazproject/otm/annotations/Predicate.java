@@ -144,9 +144,11 @@ public @interface Predicate {
   CascadeType[] cascade() default {CascadeType.undefined};
 
   /**
-   * Fetch preferences for this field. Valid only for association fields. Default is
-   * {@link org.topazproject.otm.FetchType#lazy} when there is no {@link #ref reference}
-   * configured.
+   * Fetch preferences for this field. Default is {@link org.topazproject.otm.FetchType#lazy} 
+   * when there is no {@link #ref reference} configured for associations and fields with 
+   * {@link #collectionType} value of {@link org.topazproject.otm.CollectionType#PREDICATE}.
+   * For all others this attribute is ignored and the effect is equivalent to specifying
+   * {@link.org.topazproject.otm.FetchType#eager}.
    */
   FetchType fetch() default FetchType.undefined;
 }

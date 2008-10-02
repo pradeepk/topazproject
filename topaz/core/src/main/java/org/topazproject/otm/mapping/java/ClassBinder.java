@@ -53,6 +53,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
@@ -69,11 +70,12 @@ import org.topazproject.otm.query.Results;
  * @param <T> The object type instantiated by this class
  */
 public class ClassBinder<T> implements EntityBinder {
-  private final Class<T>    clazz;
-  private ClassMetadata     cm;
-  private Class<?extends T> proxy;
-  private final boolean     instantiable;
-  private static final Log  log = LogFactory.getLog(ClassBinder.class);
+  private final Class<T>           clazz;
+  private final boolean            instantiable;
+  private ClassMetadata            cm;
+  private Map<Method, FieldBinder> llInterceptors = new HashMap<Method, FieldBinder>();
+  private Class<?extends T>        proxy;
+  private static final Log         log            = LogFactory.getLog(ClassBinder.class);
 
   /**
    * Creates a new ClassBinder object.
@@ -103,6 +105,21 @@ public class ClassBinder<T> implements EntityBinder {
       Method idGetter = getIdGetter();
       proxy = createProxy(clazz, (idGetter != null) ? new Method[] { idGetter } : new Method[] {  });
     }
+
+    if (cm.getRdfMappers() != null) {
+      for (RdfMapper m : cm.getRdfMappers()) {
+        if (m.isAssociation() || (m.getColType() != CollectionType.PREDICATE)) {
+          FieldBinder fb = (FieldBinder) m.getBinder(EntityMode.POJO);
+          addInterceptor(fb.getGetter(), fb);
+          addInterceptor(fb.getSetter(), fb);
+        }
+      }
+    }
+  }
+
+  private void addInterceptor(Method m, FieldBinder fb) {
+    if ((m != null) && m.getDeclaringClass().isAssignableFrom(clazz))
+      llInterceptors.put(m, fb);
   }
 
   private Method getIdGetter() {
@@ -135,6 +152,15 @@ public class ClassBinder<T> implements EntityBinder {
     try {
       Object o = proxy.newInstance();
 
+      if (cm.getEmbeddedMappers() != null) {
+        for (EmbeddedMapper em : cm.getEmbeddedMappers()) {
+          em.getBinder(EntityMode.POJO)
+             .setRawValue(o,
+                           em.getEmbeddedClass().getEntityBinder(EntityMode.POJO)
+                              .newLazyLoadedInstance(ll));
+        }
+      }
+
       if (cm.getIdField() != null)
         cm.getIdField().getBinder(EntityMode.POJO).set(o, Collections.singletonList(ll.getId()));
 
@@ -146,6 +172,56 @@ public class ClassBinder<T> implements EntityBinder {
     }
   }
 
+  private Object newLazyLoadedInstance(Session session, String id)
+                                throws OtmException {
+    LazyLoader ll = createLazyLoader(session, id);
+
+    return newLazyLoadedInstance(ll);
+  }
+
+  private LazyLoader createLazyLoader(final Session session, final String id) {
+    return new LazyLoader() {
+        private Map<Binder, Binder.RawFieldData> rawData =
+           new HashMap<Binder, Binder.RawFieldData>();
+
+        public void ensureDataLoad(LazyLoaded self, String operation)
+                            throws OtmException {
+          // nothing to do
+        }
+
+        public boolean isLoaded() {
+          return true;
+        }
+
+        public boolean isLoaded(Binder b) {
+          return !rawData.containsKey(b);
+        }
+
+        public void setRawFieldData(Binder b, Binder.RawFieldData d) {
+          if (d == null)
+            rawData.remove(b);
+          else
+            rawData.put(b, d);
+        }
+
+        public Binder.RawFieldData getRawFieldData(Binder b) {
+          return rawData.get(b);
+        }
+
+        public Session getSession() {
+          return session;
+        }
+
+        public String getId() {
+          return id;
+        }
+
+        public ClassMetadata getClassMetadata() {
+          return cm;
+        }
+      };
+  }
+
   /*
    * inherited javadoc
    */
@@ -155,7 +231,7 @@ public class ClassBinder<T> implements EntityBinder {
       log.debug("Instantiating object with '" + id + "' for " + cm);
 
     if (instance == null)
-      instance = newInstance();
+      instance = newLazyLoadedInstance(session, id);
 
     if (cm.getIdField() != null)
       cm.getIdField().getBinder(EntityMode.POJO).set(instance, Collections.singletonList(id));
@@ -166,7 +242,13 @@ public class ClassBinder<T> implements EntityBinder {
     final List<Filter>              filters = result.getFilters();
     final SessionFactory            sf      = session.getSessionFactory();
 
+    LazyLoader                      lh      = null;
     Map<String, List<String>>       pmap    = null;
+
+    if (instance instanceof LazyLoaded) {
+      LazyLoaded ll = (LazyLoaded) instance;
+      lh = ll.getLazyLoader(ll);
+    }
 
     // look for predicate-maps
     if (cm.getMapperByUri(sf, null, false, null) != null)
@@ -178,17 +260,24 @@ public class ClassBinder<T> implements EntityBinder {
       if ((v == null) || (v.size() == 0))
         continue;
 
+      if ((pmap != null) && !m.hasInverseUri())
+        pmap.remove(m.getUri());
+
+      Binder b = m.getBinder(EntityMode.POJO);
+
+      if ((lh != null) && (m.isAssociation() || (m.getColType() != CollectionType.PREDICATE))) {
+        lh.setRawFieldData(b = getLocal(b), newRawFieldData((LazyLoaded) instance, v, result));
+
+        if (log.isDebugEnabled())
+          log.debug("Stashed away raw-data for " + b + " on '" + id);
+
+        continue;
+      }
+
       if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
         v = loadCollection(id, filters, types, m, session);
 
-      Binder b = m.getBinder(EntityMode.POJO);
       b.load(instance, v, types, m, session);
-
-      if (log.isDebugEnabled() && !b.isLoaded(instance))
-        log.debug("Lazy collection '" + m.getName() + "' created for " + id);
-
-      if ((pmap != null) && !m.hasInverseUri())
-        pmap.remove(m.getUri());
     }
 
     if (pmap != null) {
@@ -199,6 +288,51 @@ public class ClassBinder<T> implements EntityBinder {
     }
 
     return instance;
+  }
+
+  private Binder getLocal(Binder b) {
+    if (b instanceof EmbeddedClassMemberFieldBinder)
+      return getLocal(((EmbeddedClassMemberFieldBinder) b).getFieldBinder());
+
+    return b;
+  }
+
+  private RdfMapper getRootMapper(ClassMetadata cm, Binder b)
+                           throws OtmException {
+    // quick check for the most common case
+    Mapper m = cm.getMapperByName(b.getName());
+
+    if (m instanceof RdfMapper)
+      return (RdfMapper) m;
+
+    // now scan for match with localized in embedded
+    for (RdfMapper rm : cm.getRdfMappers())
+      if (b.equals(getLocal(rm.getBinder(EntityMode.POJO))))
+        return rm;
+
+    throw new OtmException("Cannot find binder " + b + " in " + cm);
+  }
+
+  private Binder.RawFieldData newRawFieldData(final LazyLoaded instance, final List<String> values,
+                                              final TripleStore.Result r)
+                                       throws OtmException {
+    return new Binder.RawFieldData() {
+        public List<String> getValues() {
+          return values;
+        }
+
+        public Map<String, Set<String>> getTypeLookAhead() {
+          return r.getTypes();
+        }
+
+        public List<Filter> getFilters() {
+          return r.getFilters();
+        }
+
+        public LazyLoaded getRootInstance() {
+          return instance;
+        }
+      };
   }
 
   private List<String> loadCollection(String id, List<Filter> filters,
@@ -216,6 +350,9 @@ public class ClassBinder<T> implements EntityBinder {
 
     TripleStore  store = sf.getTripleStore();
     Connection   con   = session.getTripleStoreCon();
+
+    if (log.isDebugEnabled())
+      log.debug("Loading rdf:list/bag for " + m + " on '" + id);
 
     // load from the triple-store
     if (m.getColType() == CollectionType.RDFLIST)
@@ -390,14 +527,38 @@ public class ClassBinder<T> implements EntityBinder {
 
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args)
                   throws Throwable {
+      if ("getLazyLoader".equals(thisMethod.getName()) && (args.length == 1) && (args[0] == self))
+        return ll;
+
       ll.ensureDataLoad((LazyLoaded) self, thisMethod.getName());
 
       if ("writeReplace".equals(thisMethod.getName()) && (args.length == 0)
            && (self instanceof Serializable))
         return getReplacement(self);
 
-      if ("getLazyLoader".equals(thisMethod.getName()) && (args.length == 1) && (args[0] == self))
-        return ll;
+      Binder b = llInterceptors.get(thisMethod);
+
+      if (b != null) {
+        Binder.RawFieldData d = ll.getRawFieldData(b);
+
+        if (d != null) {
+          if (log.isDebugEnabled())
+            log.debug("Retrieved stashed raw-data for " + b + " on '" + ll.getId());
+
+          ll.setRawFieldData(b, null);
+
+          RdfMapper m = getRootMapper(ll.getClassMetadata(), b);
+          b = m.getBinder(EntityMode.POJO);
+
+          List<String> v = d.getValues();
+
+          if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
+            v = loadCollection(ll.getId(), d.getFilters(), d.getTypeLookAhead(), m, ll.getSession());
+
+          b.load(d.getRootInstance(), v, d.getTypeLookAhead(), m, ll.getSession());
+          ll.getSession().delayedLoadComplete(d.getRootInstance(), m);
+        }
+      }
 
       try {
         return proceed.invoke(self, args);
