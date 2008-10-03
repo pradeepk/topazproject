@@ -533,19 +533,19 @@ public class SessionImpl extends AbstractSession {
         wroteSomething = true;
       }
       if (bf) {
-        switch(states.digestUpdate(o, cm, this)) {
-        case delete:
-          bs.delete(cm, id.getId(), o, getBlobStoreCon());
-          break;
-        case update:
-          bs.delete(cm, id.getId(), o, getBlobStoreCon());
-        case insert:
-          bs.insert(cm, id.getId(), o, getBlobStoreCon());
-          break;
-        case noChange:
-        default:
-          bf = false;
-          break;
+        switch (states.digestUpdate(o, cm, this)) {
+          case delete:
+            bs.delete(cm, id.getId(), o, getBlobStoreCon());
+            break;
+          case update:
+            bs.delete(cm, id.getId(), o, getBlobStoreCon());
+          case insert:
+            bs.insert(cm, id.getId(), o, getBlobStoreCon());
+            break;
+          case noChange:
+          default:
+            bf = false;
+            break;
         }
         if (updates != null)
           updates.blobChanged = bf;
