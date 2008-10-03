@@ -381,5 +381,9 @@ class IndexFunction implements ProjectionFunction, ConstraintsTokenTypes, Transf
     public Answer getSubQueryResults(int idx) throws AnswerException {
       return delegate.getSubQueryResults(mapIndex(idx));
     }
+
+    public boolean isNull(int idx) throws AnswerException {
+      return delegate.isNull(idx);
+    }
   }
 }

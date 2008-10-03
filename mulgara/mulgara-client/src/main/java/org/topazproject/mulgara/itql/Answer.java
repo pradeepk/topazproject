@@ -174,7 +174,7 @@ public interface Answer {
    * Tests if the value of the specified column in the current row is a subquery result.
    * 
    * @param idx the column index (0-based)
-   * @return true if the column has a non-null value and is a URI 
+   * @return true if the column has a non-null value and is a subquery result
    */
   public boolean isSubQueryResults(int idx) throws AnswerException;
 
@@ -195,4 +195,12 @@ public interface Answer {
    * @throws AnswerException if the value isn't a subquery result
    */
   public Answer getSubQueryResults(String var) throws AnswerException;
+
+  /** 
+   * Tests if the value of the specified column in the current row is null (no value).
+   * 
+   * @param idx the column index (0-based)
+   * @return true if the column has a null value
+   */
+  public boolean isNull(int idx) throws AnswerException;
 }

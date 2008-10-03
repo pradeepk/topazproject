@@ -258,4 +258,8 @@ class XmlAnswer extends AbstractAnswer {
 
     throw new AnswerException("is not a sub-query answer");
   }
+
+  public boolean isNull(int idx) {
+    return (rows.get(curPos)[idx] == null);
+  }
 }

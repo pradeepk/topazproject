@@ -270,15 +270,19 @@ public abstract class Results {
   }
 
   public String getString(int idx) throws OtmException {
+    Object obj = get(idx);
+    if (obj == null)
+      return null;
+
     switch (types[idx]) {
       case CLASS:
-        return get(idx).toString();
+        return obj.toString();
       case LITERAL:
-        return ((Literal) get(idx)).getValue();
+        return ((Literal) obj).getValue();
       case URI:
-        return ((URI) get(idx)).toString();
+        return ((URI) obj).toString();
       case BLANK_NODE:
-        return (String) get(idx);
+        return (String) obj;
       case SUBQ_RESULTS:
         throw new QueryException("cannot convert subquery result to a string");
 
@@ -313,6 +317,9 @@ public abstract class Results {
 
   public <T> T getLiteralAs(int idx, Class<T> type) throws OtmException {
     Literal lit = getLiteral(idx);
+    if (lit == null)
+      return null;
+
     String  dt  = (lit.getDatatype() != null) ? lit.getDatatype().toString() : null;
 
     Serializer<T> serializer = sf.getSerializerFactory().getSerializer(type, dt);
@@ -359,8 +366,11 @@ public abstract class Results {
     if (type == URI.class)
       return (T) getURI(idx);
 
-    URI     uri = getURI(idx);
-    String  dt  = sf.getSerializerFactory().getDefaultDataType(type);
+    URI uri = getURI(idx);
+    if (uri == null)
+      return null;
+
+    String dt = sf.getSerializerFactory().getDefaultDataType(type);
 
     Serializer<T> serializer = sf.getSerializerFactory().getSerializer(type, dt);
     if (serializer == null)

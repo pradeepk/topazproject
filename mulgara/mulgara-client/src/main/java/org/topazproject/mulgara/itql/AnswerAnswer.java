@@ -268,4 +268,12 @@ class AnswerAnswer extends AbstractAnswer {
 
     throw new AnswerException("is not a sub-query answer");
   }
+
+  public boolean isNull(int idx) throws AnswerException {
+    try {
+      return getObject(idx, true) == null;
+    } catch (TuplesException te) {
+      throw new AnswerException(te);
+    }
+  }
 }

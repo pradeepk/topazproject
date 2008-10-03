@@ -129,6 +129,9 @@ abstract class ItqlResults extends Results {
    */
   protected Object getResult(int idx, Type type, boolean eager)
       throws OtmException, AnswerException {
+    if (qa.isNull(idx))
+      return null;
+
     switch (type) {
       case LITERAL:
         String dt = qa.getLiteralDataType(idx);
