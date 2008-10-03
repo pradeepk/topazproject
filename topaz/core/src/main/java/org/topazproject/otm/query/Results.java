@@ -95,6 +95,10 @@ public abstract class Results {
     public URI getDatatype() {
       return dtype;
     }
+
+    public String toString() {
+      return value + (lang != null ? "@" + lang : "") + (dtype != null ? "^^<" + dtype + ">" : "");
+    }
   }
 
   protected Results(String[] variables, Type[] types, String[] warnings, SessionFactory sf) {
