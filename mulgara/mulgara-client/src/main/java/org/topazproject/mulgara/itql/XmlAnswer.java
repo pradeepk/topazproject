@@ -26,9 +26,9 @@ import java.util.List;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-/** 
+/**
  * This parses an XML representation of an answer.
- * 
+ *
  * @author Ronald Tschalär
  */
 class XmlAnswer extends AbstractAnswer {
@@ -44,9 +44,9 @@ class XmlAnswer extends AbstractAnswer {
   private List<Element[]> rows;
   private int             curPos = -1;
 
-  /** 
+  /**
    * Parse the xml answer.
-   * 
+   *
    * @param xml the xml answer
    * @return the list of parsed answers
    * @throws AnswerException if an exception occurred while parsing the query response
@@ -136,7 +136,7 @@ class XmlAnswer extends AbstractAnswer {
     }
   }
 
-  /** 
+  /**
    * Parse a single solution (row).
    *
    * @param solution the solution element

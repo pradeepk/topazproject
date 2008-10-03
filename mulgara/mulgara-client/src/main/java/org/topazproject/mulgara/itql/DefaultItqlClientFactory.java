@@ -33,7 +33,7 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
 
   private String dbDir = null;
 
-  /** 
+  /**
    * Create a new itql-client instance. Uri schemes are currently mapped as follows:
    * <dl>
    *   <dt>rmi</dt>
@@ -47,10 +47,10 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
    *   <dt>mem</dt>
    *   <dd>Create an in-memory embedded mulgara instance</dd>
    * </dl>
-   * 
+   *
    * @param uri  the server's URI
    * @return the new client
-   * @throws Exception 
+   * @throws Exception
    */
   public ItqlClient createClient(URI uri) throws Exception {
     String scheme = uri.getScheme();
@@ -68,10 +68,10 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
     throw new IllegalArgumentException("Unsupported scheme '" + scheme + "' from '" + uri + "'");
   }
 
-  /** 
+  /**
    * Set the database directory to use for all embedded instances. If finer grained control is
    * needed, override {@link #getDbDir(URI) getDbDir} instead.
-   * 
+   *
    * @param dir the directory to use; if null, a (different) temporary directory will be used
    *            for each instance.
    */
@@ -79,9 +79,9 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
     dbDir = dir;
   }
 
-  /** 
+  /**
    * Get the database to use for an embedded instance.
-   * 
+   *
    * @param uri the uri of the database
    * @return the directory to use for the database; if null, a (different) temporary directory will
    *         be used for each instance.
@@ -91,9 +91,9 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
     return dbDir;
   }
 
-  /** 
+  /**
    * Get the mulgara-config to use for a disk-based embedded instance.
-   * 
+   *
    * @param uri the uri of the database
    * @return the URL of the config to use.
    */
@@ -101,9 +101,9 @@ public class DefaultItqlClientFactory implements ItqlClientFactory {
     return DefaultItqlClientFactory.class.getResource(DEF_DSK_CONF);
   }
 
-  /** 
+  /**
    * Get the mulgara-config to use for an in-memory embedded instance.
-   * 
+   *
    * @param uri the uri of the database
    * @return the URL of the config to use.
    */

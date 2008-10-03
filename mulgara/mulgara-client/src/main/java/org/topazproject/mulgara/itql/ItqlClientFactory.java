@@ -27,9 +27,9 @@ import java.net.URI;
  * @author Ronald Tschalär
  */
 public interface ItqlClientFactory {
-  /** 
+  /**
    * Create a new itql-client instance.
-   * 
+   *
    * @param uri  the server's URI
    * @return the new client
    * @throws Exception on error

@@ -37,7 +37,7 @@ import org.mulgara.query.Answer;
 import org.mulgara.query.QueryException;
 import org.mulgara.query.operation.Command;
 
-/** 
+/**
  * A mulgara client using TqlInterpreter directly.
  *
  * @author Ronald Tschalär

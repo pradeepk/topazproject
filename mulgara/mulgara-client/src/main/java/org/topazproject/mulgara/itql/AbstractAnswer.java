@@ -21,9 +21,9 @@ package org.topazproject.mulgara.itql;
 
 import java.net.URI;
 
-/** 
- * Partial implementation of an Answer that manages the list of variables. 
- * 
+/**
+ * Partial implementation of an Answer that manages the list of variables.
+ *
  * @author Ronald Tschalär
  */
 public abstract class AbstractAnswer implements Answer {

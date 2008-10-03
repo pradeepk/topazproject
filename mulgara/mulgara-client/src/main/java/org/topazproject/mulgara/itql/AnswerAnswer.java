@@ -32,9 +32,9 @@ import org.mulgara.query.Answer;
 import org.mulgara.query.TuplesException;
 import org.mulgara.query.Variable;
 
-/** 
+/**
  * This wraps a mulgara Answer object.
- * 
+ *
  * @author Ronald Tschalär
  */
 class AnswerAnswer extends AbstractAnswer {
@@ -46,9 +46,9 @@ class AnswerAnswer extends AbstractAnswer {
   private final boolean[]      needsClose;
   private       boolean        closed;
 
-  /** 
+  /**
    * Create a query answer.
-   * 
+   *
    * @param ans the mulgara answer
    */
   public AnswerAnswer(Answer ans) {
@@ -64,9 +64,9 @@ class AnswerAnswer extends AbstractAnswer {
     this.needsClose = new boolean[vars.length];
   }
 
-  /** 
+  /**
    * Create a non-query answer.
-   * 
+   *
    * @param msg the message
    */
   public AnswerAnswer(String msg) {

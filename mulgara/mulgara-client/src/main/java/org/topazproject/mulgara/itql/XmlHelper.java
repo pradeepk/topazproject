@@ -36,18 +36,18 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.w3c.dom.Text;
 
-/** 
+/**
  * Some XML parsing helpers.
- * 
+ *
  * @author Ronald Tschalär
  */
 class XmlHelper {
   private XmlHelper() {
   }
 
-  /** 
+  /**
    * Helper to parse an XML string into a DOM.
-   * 
+   *
    * @param xml the xml string
    * @return the document
    * @throws AnswerException if an error occured parsing the xml
@@ -73,11 +73,11 @@ class XmlHelper {
     }
   }
 
-  /** 
+  /**
    * Get all immediate element children with the given name. This differs from {@link
    * org.w3c.dom.Element#getElementsByTagName getElementsByTagName} in that this only returns
    * direct children, not all descendents.
-   * 
+   *
    * @param parent    the parent node
    * @param childName the name of the children elements to get; may be null or "*" to indicate all
    *                  element children
@@ -110,10 +110,10 @@ class XmlHelper {
     };
   }
 
-  /** 
+  /**
    * Get a single child element with the given name. If more than one child with the given name
    * exists, a warning is logged.
-   * 
+   *
    * @param parent the parent node
    * @param name   the name of the child element to get; may be null or "*" to indicate any
    *               element child
@@ -131,10 +131,10 @@ class XmlHelper {
     return (Element) children.item(0);
   }
 
-  /** 
+  /**
    * Get the first child element with the given name.  This differs from {@link
    * org.w3c.dom.Node#getFirstChild Node.getFirstChild} in that this only returns elements.
-   * 
+   *
    * @param parent the parent node for which to get the first child
    * @param name   the name of the child element to get; may be null or "*" to indicate the
    *               first child element of any name
@@ -152,10 +152,10 @@ class XmlHelper {
     return null;
   }
 
-  /** 
+  /**
    * Get the next sibling element with the given name.  This differs from {@link
    * org.w3c.dom.Node#getNextSibling Node.getNextSibling} in that this only returns elements.
-   * 
+   *
    * @param node   the current node for which to get the next sibling
    * @param name   the name of the next sibling element to get; may be null or "*" to indicate the
    *               next sibling of any name
@@ -173,10 +173,10 @@ class XmlHelper {
     return null;
   }
 
-  /** 
+  /**
    * Get the text from the given node. This assumes the node contains a single child that is a text
    * node.
-   * 
+   *
    * @param node the node from which to extract the text
    * @return the raw text, or the empty string if the element has no children
    * @throws IllegalArgumentException if the first child is not a text node

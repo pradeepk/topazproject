@@ -36,7 +36,7 @@ import org.mulgara.itql.ItqlInterpreterException;
 import org.mulgara.query.Answer;
 import org.mulgara.query.QueryException;
 
-/** 
+/**
  * A mulgara client using ItqlInterpreterBean directly. This is a thin wrapper around
  * ItqlInterpreterBean.
  *

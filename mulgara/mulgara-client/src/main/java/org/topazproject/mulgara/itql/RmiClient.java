@@ -27,7 +27,7 @@ import org.mulgara.connection.Connection;
 import org.mulgara.connection.ConnectionException;
 import org.mulgara.connection.SessionConnection;
 
-/** 
+/**
  * A mulgara client using RMI.
  *
  * @author Ronald Tschalär
@@ -59,7 +59,7 @@ public class RmiClient extends TIClient {
     Runtime.getRuntime().addShutdownHook(shutdownHook);
   }
 
-  /** 
+  /**
    * Release all static resources associated with this class. This is meant to be used in an
    * environment where classes are reloaded in order to make sure all references to this class
    * or to related classes are removed. Note that this closes all session-factories, so the
@@ -70,9 +70,9 @@ public class RmiClient extends TIClient {
     shutdownHook.run();
   }
 
-  /** 
+  /**
    * Create a new instance pointed at the given database.
-   * 
+   *
    * @param database  the url of the database
    * @param icf       the client-factory instance creating this
    * @throws ConnectionException if an error occurred setting up the connector

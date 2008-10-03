@@ -41,7 +41,7 @@ import org.mulgara.query.QueryException;
 import org.mulgara.resolver.Database;
 import org.mulgara.server.SessionFactory;
 
-/** 
+/**
  * A mulgara client to an embedded mulgara instance. A separate embedded mulgara instance is
  * created for each unique server-URI; mulgara instances are shared across ItqlClientFactory
  * instances, though.
@@ -89,7 +89,7 @@ public class EmbeddedClient extends TIClient {
     Runtime.getRuntime().addShutdownHook(shutdownHook);
   }
 
-  /** 
+  /**
    * Release all static resources associated with this class. This is meant to be used in an
    * environment where classes are reloaded in order to make sure all references to this class
    * or to related classes are removed. Note that this closes all session-factories, so the
@@ -101,10 +101,10 @@ public class EmbeddedClient extends TIClient {
     FileCleaner.exitWhenFinished();
   }
 
-  /** 
+  /**
    * Create a new instance pointed at the given database. If no database instance exists for the
    * given URI then a new instance is created; otherwise the existing one is used.
-   * 
+   *
    * @param uri   the database uri
    * @param dbDir the directory for the database; if null, a temporary directory is used. May not
    *              be used if the database is in-memory only

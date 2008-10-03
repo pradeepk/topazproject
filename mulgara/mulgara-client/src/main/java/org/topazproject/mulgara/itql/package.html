@@ -50,7 +50,7 @@
       cl.doUpdate("create &lt;local:///myproject#test&gt;;");
       cl.doUpdate("insert &lt;s:1&gt; &lt;p:1&gt; 'foo' into &lt;local:///myproject#test&gt;;");
 
-      List&lt;Answer&gt; answers = cl.doQuery("select $s $p $o from &lt;local:///myproject#test&gt; where $s $p $o;"); 
+      List&lt;Answer&gt; answers = cl.doQuery("select $s $p $o from &lt;local:///myproject#test&gt; where $s $p $o;");
       Answer a = answers.get(0);
       a.beforeFirst();
       while (a.next())
