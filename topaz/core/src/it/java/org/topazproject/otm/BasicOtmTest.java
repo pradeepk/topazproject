@@ -151,7 +151,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertNull(a);
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
           assertNull(a);
@@ -174,7 +174,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           session.saveOrUpdate(new NoRdfType("http://localhost/noRdfType/1"));
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           NoRdfType n = session.get(NoRdfType.class, "http://localhost/noRdfType/1");
           assertNotNull(n);
@@ -200,7 +200,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           session.saveOrUpdate(new NoPredicate("http://localhost/noPredicate/1"));
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           NoPredicate np = session.get(NoPredicate.class, "http://localhost/noPredicate/1");
           assertNotNull(np);
@@ -228,7 +228,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           session.saveOrUpdate(c);
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           ClassWithEnum c = session.get(ClassWithEnum.class, "http://localhost/ClassWithEnum/1");
           assertNotNull(c);
@@ -262,7 +262,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           session.saveOrUpdate(a);
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/1/1");
 
@@ -336,7 +336,7 @@ public class BasicOtmTest extends AbstractOtmTest {
     log.info("Testing implicit delete of associations ...");
 
     // see testInverse for the data setup
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
 
@@ -476,7 +476,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertTrue(n == a);
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
 
@@ -515,7 +515,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertTrue(n == a);
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
           assertNotNull(a);
@@ -554,7 +554,7 @@ public class BasicOtmTest extends AbstractOtmTest {
         }
       });
 
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Article a = session.get(Article.class, aid.toString());
           assertNotNull(a);
@@ -583,7 +583,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           session.flush();
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Annotation a = session.get(Annotation.class, "http://localhost/annotation/2");
 
@@ -625,7 +625,7 @@ public class BasicOtmTest extends AbstractOtmTest {
         }
       });
 
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Article a = session.get(Article.class, aid.toString());
           assertNotNull(a);
@@ -684,7 +684,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           m.getAlt().add("a11");
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
@@ -730,7 +730,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           m.getAlt().remove("a11");
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
           assertNotNull(m);
@@ -770,7 +770,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           session.saveOrUpdate(g);
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Grants g = session.get(Grants.class, "http://localhost/articles/1");
           assertNotNull(g);
@@ -836,7 +836,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           session.saveOrUpdate(a);
         }
       });
-    doInSession(new Action() {
+    doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
           Article a = session.get(Article.class, aid.toString());
 

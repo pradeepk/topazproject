@@ -146,11 +146,19 @@ public abstract class AbstractOtmTest {
    * @return the value returned by the action
    */
   protected void doInSession(Action action) throws OtmException {
+    doInSession(false, action);
+  }
+
+  protected void doInReadOnlySession(Action action) throws OtmException {
+    doInSession(true, action);
+  }
+
+  protected void doInSession(boolean readOnly, Action action) throws OtmException {
     Session     session = factory.openSession();
     Transaction tx      = null;
 
     try {
-      tx = session.beginTransaction();
+      tx = session.beginTransaction(readOnly, -1);
       action.run(session);
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {

@@ -153,6 +153,9 @@ class StateCache {
     public <T>InstanceState(T instance, ClassMetadata cm, Session session) throws OtmException {
       vmap                   = new HashMap<RdfMapper, List<String>>();
 
+      if (log.isDebugEnabled())
+        log.debug("--Starting to read object state(initial)--");
+
       for (RdfMapper m : cm.getRdfMappers()) {
         Binder b = m.getBinder(session);
         if (m.isPredicateMap())
@@ -163,17 +166,25 @@ class StateCache {
           vmap.put(m, nv);
         }
       }
+      if (log.isDebugEnabled())
+        log.debug("--Finished reading object state(initial)--");
     }
 
     public void delayedLoadComplete(Object o, RdfMapper m, Session session) throws OtmException {
+      if (log.isDebugEnabled())
+        log.debug("--Starting to read object state(delayed field only)--");
       Binder b = m.getBinder(session);
       vmap.put(m, !m.isAssociation() ? b.get(o) : session.getIds(b.get(o)));
+      if (log.isDebugEnabled())
+        log.debug("--Finished reading object state(delayed field only)--");
     }
 
     public <T> Updates update(T instance, ClassMetadata cm, Session session)
         throws OtmException {
       Updates u = new Updates();
 
+      if (log.isDebugEnabled())
+        log.debug("--Starting to read object state(update)--");
       for (RdfMapper m : cm.getRdfMappers()) {
         Binder b = m.getBinder(session);
         if (m.isPredicateMap()) {
@@ -197,6 +208,8 @@ class StateCache {
           }
         }
       }
+      if (log.isDebugEnabled())
+        log.debug("--Finished reading object state(update)--");
 
       return u;
     }

@@ -374,15 +374,22 @@ public class SessionImpl extends AbstractSession {
       o = dirtyMap.get(id);
 
     if (o == null) {
-      o = getFromStore(id, null, filterObj);
+      Wrapper w = getFromStore(id, null, filterObj);
 
-      if (o != null) {
+      if (w != null) {
         // Must merge here. Associations may have a back-pointer to this Id.
         // If those associations are loaded from the store even before
         // we complete this get() operation, there will be an instance
         // in our cache for this same Id.
-        if (!cm.isView())
-          o = sync(o, id, true, false, null, true);
+        if (cm.isView())
+          o = w.get();
+        else {
+          o = sync(w.get(), w.getId(), true, false, null, true);
+          if (w.get() == o)    // only track if we are going to use this 
+            startTracking(w);
+          else
+            log.warn("Discarding loaded instance in favor of one already in session");
+        }
       }
     }
 
@@ -448,8 +455,11 @@ public class SessionImpl extends AbstractSession {
     Id id = checkObject(null, o, false, true);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
-      o = getFromStore(id, o, true);
-      sync(o, id, true, false, CascadeType.refresh, true);
+      Wrapper w = getFromStore(id, o, true);
+      if (w != null) {
+        sync(w.get(), id, true, false, CascadeType.refresh, true);
+        startTracking(w);
+      }
     }
   }
 
@@ -546,7 +556,7 @@ public class SessionImpl extends AbstractSession {
     }
   }
 
-  private Object getFromStore(Id id, Object instance, boolean filterObj)
+  private Wrapper getFromStore(Id id, Object instance, boolean filterObj)
                        throws OtmException {
     TripleStore store = sessionFactory.getTripleStore();
     ClassMetadata cm = id.getClassMetadata();
@@ -598,18 +608,13 @@ public class SessionImpl extends AbstractSession {
     if (instance instanceof PostLoadEventListener)
       ((PostLoadEventListener)instance).onPostLoad(this, instance);
 
-    if (!cm.isView()) {
-      states.insert(instance, cm, this);
-      if (cm.getBlobField() != null)
-        states.digestUpdate(instance, cm, this);
-    }
-
     if (log.isDebugEnabled())
       log.debug("Object loaded from " + (found ? "interceptor: " : "store: ") + id.getId());
-    return instance;
+
+    return new Wrapper(new Id(cm, id.getId()), instance);
   }
 
-  private Object instantiate(Object instance, Id id, TripleStore.Result result) 
+  private Object instantiate(Object instance, Id id, TripleStore.Result result)
                             throws OtmException {
     final Map<String, List<String>> fvalues = result.getFValues();
     final Map<String, List<String>> rvalues = result.getRValues();
@@ -657,6 +662,15 @@ public class SessionImpl extends AbstractSession {
     r.close();
 
     return instance;
+  }
+
+  private void startTracking(Wrapper w) {
+    ClassMetadata cm = w.getId().getClassMetadata();
+    if (!cm.isView()) {
+      states.update(w.get(), cm, this);
+      if (cm.getBlobField() != null)
+        states.digestUpdate(w.get(), cm, this);
+    }
   }
 
   /**
@@ -826,12 +840,14 @@ public class SessionImpl extends AbstractSession {
           if (!loaded && !loading) {
             if (log.isDebugEnabled())
               log.debug(operation + " on " + id + " is forcing a load from store",
-                   trimStackTrace(new Throwable("trimmed-stack-trace"), 4, 8));
+                   trimStackTrace(new Throwable("trimmed-stack-trace"), 3, 8));
 
             loading = true;
             try {
-              getFromStore(id, self, false);
+              Wrapper w = getFromStore(id, self, false);
               loaded = true;
+              if (w != null)
+                startTracking(w);
             } finally {
               loading = false;
             }
