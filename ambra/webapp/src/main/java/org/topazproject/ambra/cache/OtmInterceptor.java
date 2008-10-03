@@ -300,7 +300,6 @@ public class OtmInterceptor implements Interceptor {
   private static class Entry implements Serializable {
     private final Set<String>               types;
     private final Map<String, List<String>> values;
-    private final Map<String, Set<String>>  tla;
     private Map<String, List<String>>       pmap;
     private byte[]                          blob;
 
@@ -309,7 +308,6 @@ public class OtmInterceptor implements Interceptor {
       pmap     = null;
       types    = new HashSet<String>();
       values   = new HashMap<String, List<String>>();
-      tla      = new HashMap<String, Set<String>>();
     }
 
     public Entry(Entry other) {
@@ -317,7 +315,6 @@ public class OtmInterceptor implements Interceptor {
       blob     = copy(other.blob);
       pmap     = copy(other.pmap);
       values   = copy(other.values);
-      tla      = copyS(other.tla);
     }
 
     public Object get(Session sess, ClassMetadata cm, String id, Object instance) {
@@ -339,7 +336,7 @@ public class OtmInterceptor implements Interceptor {
 
           if (val == null)
             return null;    // Not all properties for this are in cache. Fetch the rest.
-          mapper.getBinder(sess).load(instance, val, tla, mapper, sess);
+          mapper.getBinder(sess).load(instance, val, mapper, sess);
         }
       }
 
@@ -363,10 +360,6 @@ public class OtmInterceptor implements Interceptor {
         if (data != null) {
           values.put(getName(mapper, sess), data.getValues());
 
-          Map<String, Set<String>> m = data.getTypeLookAhead();
-
-          if (m != null)
-            tla.putAll(m);
         } else if (mapper.isPredicateMap())
           pmap = copy((Map<String, List<String>>) binder.getRawValue(instance, false));
         else if (!mapper.isAssociation())
@@ -382,7 +375,6 @@ public class OtmInterceptor implements Interceptor {
               sess.getSessionFactory().getInstanceMetadata(am, sess.getEntityMode(), o);
             String        oid = (String) aom.getIdField().getBinder(sess).get(o).get(0);
             v.add(oid);
-            tla.put(oid, aom.getTypes());
           }
 
           values.put(getName(mapper, sess), v);
@@ -408,18 +400,6 @@ public class OtmInterceptor implements Interceptor {
 
       for (String name : src.keySet())
         dest.put(name, new ArrayList(src.get(name)));
-
-      return dest;
-    }
-
-    private static Map<String, Set<String>> copyS(Map<String, Set<String>> src) {
-      if (src == null)
-        return null;
-
-      Map<String, Set<String>> dest = new HashMap<String, Set<String>>(src.size());
-
-      for (String name : src.keySet())
-        dest.put(name, new HashSet(src.get(name)));
 
       return dest;
     }

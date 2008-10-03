@@ -623,7 +623,6 @@ public class SessionImpl extends AbstractSession {
                             throws OtmException {
     final Map<String, List<String>> fvalues = result.getFValues();
     final Map<String, List<String>> rvalues = result.getRValues();
-    final Map<String, Set<String>> types = result.getTypes();
 
     if (fvalues.size() == 0 && rvalues.size() == 0) {
       if (log.isDebugEnabled())

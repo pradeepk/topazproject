@@ -23,8 +23,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
@@ -171,17 +169,17 @@ public abstract class AbstractFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public final void load(Object instance, List<String> values, Map<String, Set<String>> types,
+  public final void load(Object instance, List<String> values,
                          RdfMapper mapper, Session session)
                   throws OtmException {
-    load(instance, instance, values, types, mapper, session);
+    load(instance, instance, values, mapper, session);
   }
 
   /*
    * inherited javadoc
    */
   public void load(Object root, Object instance, List<String> values,
-                   Map<String, Set<String>> types, RdfMapper mapper, Session session)
+                   RdfMapper mapper, Session session)
             throws OtmException {
     if (!mapper.isAssociation()) {
       this.set(instance, values);
@@ -190,7 +188,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
     }
 
     List assocs = new ArrayList();
-    loadAssocs(values, types, session, assocs, mapper);
+    loadAssocs(values, session, assocs, mapper);
     this.set(instance, assocs);
   }
 
@@ -198,7 +196,6 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    * Instantiate and load the associations into the given list.
    *
    * @param ids the association ids
-   * @param types the type look ahead for associations
    * @param session the session under which the load is performed. Used for resolving associations
    *        etc.
    * @param assocs the collection to load association instances to
@@ -206,17 +203,15 @@ public abstract class AbstractFieldBinder implements FieldBinder {
    *
    * @throws OtmException on a failure in instantiating associations
    */
-  protected void loadAssocs(List<String> ids, Map<String, Set<String>> types, Session session,
+  protected void loadAssocs(List<String> ids, Session session,
                             Collection assocs, RdfMapper mapper)
                      throws OtmException {
     SessionFactory sf = session.getSessionFactory();
     ClassMetadata  cm = sf.getClassMetadata(mapper.getAssociatedEntity());
 
-    for (String id : ids) {
-      ClassMetadata c = sf.getSubClassMetadata(cm, session.getEntityMode(), types.get(id));
-
-      if (c != null) {
-        Object a = session.get(c, id, false);
+    if (cm != null) {
+      for (String id : ids) {
+        Object a = session.get(cm, id, true);
 
         if (a != null)
           assocs.add(a);

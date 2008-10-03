@@ -22,8 +22,6 @@ import java.lang.reflect.Method;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -104,18 +102,18 @@ class EmbeddedClassMemberFieldBinder implements FieldBinder {
   /*
    * inherited javadoc
    */
-  public void load(Object instance, List<String> values, Map<String, Set<String>> types,
+  public void load(Object instance, List<String> values,
                    RdfMapper mapper, Session session) throws OtmException {
-    load(instance, instance, values, types, mapper, session);
+    load(instance, instance, values, mapper, session);
   }
 
   /*
    * inherited javadoc
    */
   public void load(Object root, Object instance, List<String> values,
-                   Map<String, Set<String>> types, RdfMapper mapper, Session session)
+                   RdfMapper mapper, Session session)
             throws OtmException {
-    field.load(root, container.getRawValue(instance, true), values, types, mapper, session);
+    field.load(root, container.getRawValue(instance, true), values, mapper, session);
   }
 
   /*

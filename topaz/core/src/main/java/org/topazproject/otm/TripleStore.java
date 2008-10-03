@@ -21,7 +21,6 @@ package org.topazproject.otm;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.RdfMapper;
@@ -205,18 +204,12 @@ public interface TripleStore extends Store {
    * @param pUri the predicate uri that points to the rdf:list node
    * @param mUri the graph uri
    * @param con the connection
-   * @param types the type look-ahead to be updated
-   * @param m the mapper for this field
-   * @param sf the session factory
-   * @param filters filters to use
    *
    * @return the collection values in order
    *
    * @throws OtmException on an error
    */
-  public List<String> getRdfList(String id, String pUri, String mUri, Connection isc,
-                                 Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
-                                 List<Filter> filters)
+  public List<String> getRdfList(String id, String pUri, String mUri, Connection isc)
                           throws OtmException;
 
   /**
@@ -226,26 +219,18 @@ public interface TripleStore extends Store {
    * @param pUri the predicate uri that points to the rdf:list node
    * @param mUri the graph uri
    * @param con the connection
-   * @param types the type look-ahead to be updated
-   * @param m the mapper for this field
-   * @param sf the session factory
-   * @param filters filters to use
    *
    * @return the container values in order
    *
    * @throws OtmException on an error
    */
-  public List<String> getRdfBag(String id, String pUri, String mUri, Connection isc,
-                                Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
-                                List<Filter> filters) throws OtmException;
+  public List<String> getRdfBag(String id, String pUri, String mUri, Connection isc)
+                          throws OtmException;
 
   public interface Result {
     public Map<String, List<String>> getFValues();
 
     public Map<String, List<String>> getRValues();
 
-    public Map<String, Set<String>> getTypes();
-
-    public List<Filter> getFilters();
   }
 }

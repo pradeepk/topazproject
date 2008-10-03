@@ -18,9 +18,6 @@
  */
 package org.topazproject.otm.mapping.java;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import java.util.AbstractList;
 import java.util.AbstractSequentialList;
@@ -31,16 +28,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.topazproject.otm.FetchType;
-import org.topazproject.otm.Filter;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.serializer.Serializer;
 
 /**

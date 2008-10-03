@@ -40,7 +40,6 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
@@ -119,7 +118,6 @@ public class MemStore extends AbstractTripleStore {
 
     final Map<String, List<String>> value   = new HashMap<String, List<String>>();
     final Map<String, List<String>> rvalue  = new HashMap<String, List<String>>();
-    final Map<String, Set<String>> types  = new HashMap<String, Set<String>>();
 
     value.put(Rdf.rdf + "type",
               new ArrayList<String>(storage.getProperty(model, id, Rdf.rdf + "type")));
@@ -147,14 +145,6 @@ public class MemStore extends AbstractTripleStore {
 
       public Map<String, List<String>> getRValues() {
         return rvalue;
-      }
-
-      public Map<String, Set<String>> getTypes() {
-        return types;
-      }
-
-      public List<Filter> getFilters() {
-        return filters;
       }
     };
   }
@@ -232,18 +222,16 @@ public class MemStore extends AbstractTripleStore {
   /*
    * inherited javadoc
    */
-  public List<String> getRdfList(String id, String pUri, String mUri, Connection isc,
-                                  Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
-                                  List<Filter> filters) throws OtmException {
+  public List<String> getRdfList(String id, String pUri, String mUri, Connection isc)
+                                   throws OtmException {
     throw new OtmException("Not implemented yet");
   }
 
   /*
    * inherited javadoc
    */
-  public List<String> getRdfBag(String id, String pUri, String mUri, Connection isc,
-                                  Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
-                                  List<Filter> filters) throws OtmException {
+  public List<String> getRdfBag(String id, String pUri, String mUri, Connection isc)
+                                  throws OtmException {
     throw new OtmException("Not implemented yet");
   }
 

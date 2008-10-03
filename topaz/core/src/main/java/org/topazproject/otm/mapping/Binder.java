@@ -19,10 +19,7 @@
 package org.topazproject.otm.mapping;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.topazproject.otm.Filter;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.serializer.Serializer;
@@ -96,14 +93,13 @@ public interface Binder {
    *
    * @param instance the object
    * @param values the values to set
-   * @param types the type look ahead for associations
    * @param mapper the mapper that this loader is associated to
    * @param session the session under which the load is performed. Used for resolving associations
    *        etc.
    *
    * @throws OtmException if a field's value cannot be set
    */
-  public void load(Object instance, List<String> values, Map<String, Set<String>> types,
+  public void load(Object instance, List<String> values, 
                    RdfMapper mapper, Session session) throws OtmException;
 
   /**
@@ -136,8 +132,6 @@ public interface Binder {
    */
   public static interface RawFieldData {
     public List<String> getValues();
-    Map<String, Set<String>> getTypeLookAhead();
-    List<Filter> getFilters();
     public EntityBinder.LazyLoaded getRootInstance();
   }
 

@@ -46,7 +46,6 @@ import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.FetchType;
-import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -238,8 +237,6 @@ public class ClassBinder<T> implements EntityBinder {
 
     final Map<String, List<String>> fvalues = result.getFValues();
     final Map<String, List<String>> rvalues = result.getRValues();
-    final Map<String, Set<String>>  types   = result.getTypes();
-    final List<Filter>              filters = result.getFilters();
     final SessionFactory            sf      = session.getSessionFactory();
 
     LazyLoader                      lh      = null;
@@ -275,9 +272,9 @@ public class ClassBinder<T> implements EntityBinder {
       }
 
       if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-        v = loadCollection(id, filters, types, m, session);
+        v = loadCollection(id, m, session);
 
-      b.load(instance, v, types, m, session);
+      b.load(instance, v, m, session);
     }
 
     if (pmap != null) {
@@ -321,22 +318,13 @@ public class ClassBinder<T> implements EntityBinder {
           return values;
         }
 
-        public Map<String, Set<String>> getTypeLookAhead() {
-          return r.getTypes();
-        }
-
-        public List<Filter> getFilters() {
-          return r.getFilters();
-        }
-
         public LazyLoaded getRootInstance() {
           return instance;
         }
       };
   }
 
-  private List<String> loadCollection(String id, List<Filter> filters,
-                                      Map<String, Set<String>> types, RdfMapper m, Session session)
+  private List<String> loadCollection(String id, RdfMapper m, Session session)
                                throws OtmException {
     SessionFactory sf    = session.getSessionFactory();
     String         p     = m.getUri();
@@ -356,9 +344,9 @@ public class ClassBinder<T> implements EntityBinder {
 
     // load from the triple-store
     if (m.getColType() == CollectionType.RDFLIST)
-      vals = store.getRdfList(id, p, mUri, con, types, m, sf, filters);
+      vals = store.getRdfList(id, p, mUri, con);
     else
-      vals = store.getRdfBag(id, p, mUri, con, types, m, sf, filters);
+      vals = store.getRdfBag(id, p, mUri, con);
 
     return vals;
   }
@@ -553,9 +541,9 @@ public class ClassBinder<T> implements EntityBinder {
           List<String> v = d.getValues();
 
           if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-            v = loadCollection(ll.getId(), d.getFilters(), d.getTypeLookAhead(), m, ll.getSession());
+            v = loadCollection(ll.getId(), m, ll.getSession());
 
-          b.load(d.getRootInstance(), v, d.getTypeLookAhead(), m, ll.getSession());
+          b.load(d.getRootInstance(), v, m, ll.getSession());
           ll.getSession().delayedLoadComplete(d.getRootInstance(), m);
         }
       }

@@ -18,11 +18,8 @@
  */
 package org.topazproject.otm.stores;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,12 +28,8 @@ import org.topazproject.otm.AbstractStore;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.criterion.CriterionBuilder;
-import org.topazproject.otm.mapping.Binder;
-import org.topazproject.otm.mapping.RdfMapper;
 
 /**
  * A common base class for triple-store impls.

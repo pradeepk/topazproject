@@ -411,7 +411,6 @@ public class ItqlStore extends AbstractTripleStore {
     // parse
     final Map<String, List<String>> fvalues = new HashMap<String, List<String>>();
     final Map<String, List<String>> rvalues = new HashMap<String, List<String>>();
-    final Map<String, Set<String>> types = new HashMap<String, Set<String>>();
 
     try {
       Map<String, List<String>> values = fvalues;
@@ -432,8 +431,6 @@ public class ItqlStore extends AbstractTripleStore {
           if (v == null)
             values.put(p, v = new ArrayList<String>());
           v.add(o);
-
-          updateTypeMap(qa.getSubQueryResults(2), o, types);
         }
         qa.close();
         // prepare to read inverse query results (if not already done)
@@ -451,14 +448,6 @@ public class ItqlStore extends AbstractTripleStore {
       public Map<String, List<String>> getRValues() {
         return rvalues;
       }
-
-      public Map<String, Set<String>> getTypes() {
-        return types;
-      }
-
-      public List<Filter> getFilters() {
-        return filters;
-      }
     };
   }
 
@@ -472,25 +461,19 @@ public class ItqlStore extends AbstractTripleStore {
 
     StringBuilder qry = new StringBuilder(500);
 
-    qry.append("select $p $o subquery (select $t from ").append(tmdls).append(" where ");
-    qry.append("$o <rdf:type> $t) ");
-    qry.append("from ").append(models).append(" where ");
+    qry.append("select $p $o from ").append(models).append(" where ");
     qry.append("<").append(id).append("> $p $o");
     if (filterObj) {
       if (applyObjectFilters(qry, cm, "$s", filters, sf))
         qry.append(" and $s <mulgara:is> <").append(id).append(">");
     }
-    applyFieldFilters(qry, assoc, true, id, filters, sf);
 
-    qry.append("; select $p $s subquery (select $t from ").append(models).append(" where ");
-    qry.append("$s <rdf:type> $t) ");
-    qry.append("from ").append(models).append(" where ");
+    qry.append("; select $p $s from ").append(models).append(" where ");
     qry.append("$s $p <").append(id).append(">");
     if (filterObj) {
       if (applyObjectFilters(qry, cm, "$o", filters, sf))
         qry.append(" and $o <mulgara:is> <").append(id).append(">");
     }
-    applyFieldFilters(qry, assoc, false, id, filters, sf);
     qry.append(";");
 
     return qry.toString();
@@ -528,79 +511,6 @@ public class ItqlStore extends AbstractTripleStore {
     qry.append(")");
 
     return true;
-  }
-
-  private void applyFieldFilters(StringBuilder qry, List<RdfMapper> assoc, boolean fwd, String id,
-                                 List<Filter> filters, SessionFactory sf)
-        throws OtmException {
-    // avoid work if possible
-    if (filters == null || filters.size() == 0 || assoc.size() == 0)
-      return;
-
-    // build predicate->filter map
-    Map<String, Set<Filter>> applicFilters = new HashMap<String, Set<Filter>>();
-    for (RdfMapper m : assoc) {
-      ClassMetadata mc = sf.getClassMetadata(m.getAssociatedEntity());
-
-      for (Filter f : filters) {
-        ClassMetadata fc = sf.getClassMetadata(f.getFilterDefinition().getFilteredClass());
-        if (fc == null)
-          continue;       // bug???
-
-        if (fc.isAssignableFrom(mc)) {
-          Set<Filter> fset = applicFilters.get(m.getUri());
-          if (fset == null)
-            applicFilters.put(m.getUri(), fset = new HashSet<Filter>());
-          fset.add(f);
-        }
-      }
-    }
-
-    if (applicFilters.size() == 0)
-      return;
-
-    // a little optimization: try to group filters
-    Map<Set<Filter>, Set<String>> filtersToPred = new HashMap<Set<Filter>, Set<String>>();
-    for (String p : applicFilters.keySet()) {
-      Set<Filter> fset = applicFilters.get(p);
-      Set<String> pset = filtersToPred.get(fset);
-      if (pset == null)
-        filtersToPred.put(fset, pset = new HashSet<String>());
-      pset.add(p);
-    }
-
-    // apply filters
-    StringBuilder predList = new StringBuilder(500);
-    qry.append(" and (");
-
-    int idx = 0;
-    for (Set<Filter> fset : filtersToPred.keySet()) {
-      qry.append("(");
-
-      qry.append("(");
-      Set<String> pset = filtersToPred.get(fset);
-      for (String pred : pset) {
-        String predExpr = "$p <mulgara:is> <" + pred + "> or ";
-        qry.append(predExpr);
-        predList.append(predExpr);
-      }
-      qry.setLength(qry.length() - 4);
-      qry.append(") and ((");
-
-      for (Filter f : fset) {
-        ItqlCriteria.buildFilter((AbstractFilterImpl) f, qry, fwd ? "$o" : "$s", "$gff" + idx++);
-        qry.append(") and (");
-      }
-      qry.setLength(qry.length() - 7);
-      qry.append("))) or ");
-    }
-
-    predList.setLength(predList.length() - 4);
-    if (fwd)
-      qry.append("(<").append(id).append("> $p $any1 minus (");
-    else
-      qry.append("($any1 $p <").append(id).append("> minus (");
-    qry.append(predList).append(")))");
   }
 
   private static String getModelsExpr(Set<? extends ClassMetadata> cmList,
@@ -660,36 +570,22 @@ public class ItqlStore extends AbstractTripleStore {
     return classes;
   }
 
-  public List<String> getRdfList(String sub, String pred, String modelUri, Connection con,
-                                  Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
-                                  List<Filter> filters)
+  public List<String> getRdfList(String sub, String pred, String modelUri, Connection con)
         throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
-    String tmodel = modelUri;
-    if (m.isAssociation())
-      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), isc);
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o $s $n subquery (select $t from <").append(tmodel)
-       .append("> where $o <rdf:type> $t) from <").append(modelUri).append("> where ")
+    qry.append("select $o $s $n from <").append(modelUri).append("> where ")
        .append("(trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <")
        .append(sub).append("> <").append(pred).append("> $s) and <")
        .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o")
-       .append(" and $s <rdf:rest> $n");
-    if (m.isAssociation())
-      applyObjectFilters(qry, sf.getClassMetadata(m.getAssociatedEntity()), "$o", filters, sf);
-    qry.append(";");
+       .append(" and $s <rdf:rest> $n;");
 
-    return execCollectionsQry(qry.toString(), isc, types);
+    return execCollectionsQry(qry.toString(), isc);
   }
 
-  public List<String> getRdfBag(String sub, String pred, String modelUri, Connection con,
-                                 Map<String, Set<String>> types, RdfMapper m, SessionFactory sf,
-                                 List<Filter> filters)
+  public List<String> getRdfBag(String sub, String pred, String modelUri, Connection con)
         throws OtmException {
     ItqlStoreConnection isc = (ItqlStoreConnection) con;
-    String tmodel = modelUri;
-    if (m.isAssociation())
-      tmodel = getModelUri(sf.getClassMetadata(m.getAssociatedEntity()).getModel(), isc);
 
     /* Optimization note: using
      *   ($s $p $o and <foo> <bar> $s) minus ($s <rdf:type> $o and <foo> <bar> $s)
@@ -697,21 +593,15 @@ public class ItqlStore extends AbstractTripleStore {
      *   ($s $p $o minus $s <rdf:type> $o) and <foo> <bar> $s
      */
     StringBuilder qry = new StringBuilder(500);
-    qry.append("select $o $p subquery (select $t from <").append(tmodel)
-       .append("> where $o <rdf:type> $t) from <")
+    qry.append("select $o $p from <")
        .append(modelUri).append("> where ")
        .append("(($s $p $o and <").append(sub).append("> <").append(pred).append("> $s) minus ")
-       .append("($s <rdf:type> $o and <").append(sub).append("> <").append(pred).append("> $s)) ");
+       .append("($s <rdf:type> $o and <").append(sub).append("> <").append(pred).append("> $s));");
 
-    if (m.isAssociation())
-      applyObjectFilters(qry, sf.getClassMetadata(m.getAssociatedEntity()), "$o", filters, sf);
-    qry.append(";");
-
-    return execCollectionsQry(qry.toString(), isc, types);
+    return execCollectionsQry(qry.toString(), isc);
   }
 
-  private List<String> execCollectionsQry(String qry, ItqlStoreConnection isc,
-      Map<String, Set<String>> types) throws OtmException {
+  private List<String> execCollectionsQry(String qry, ItqlStoreConnection isc) throws OtmException {
     if (log.isDebugEnabled())
       log.debug("rdf:List/rdf:Bag query : " + qry);
 
@@ -746,7 +636,6 @@ public class ItqlStore extends AbstractTripleStore {
           objs.put(node, assoc);
           fwd.put(node, next);
           rev.put(next, node);
-          updateTypeMap(qa.getSubQueryResults(3), assoc, types);
         }
 
         if (objs.size() == 0)
@@ -767,7 +656,6 @@ public class ItqlStore extends AbstractTripleStore {
             res.add(null);
           String assoc = qa.getString("o");
           res.set(i, assoc);
-          updateTypeMap(qa.getSubQueryResults(2), assoc, types);
         }
       }
       // XXX: Type map will contain rdf:Bag, rdf:List, rdf:Seq, rdf:Alt.
@@ -780,18 +668,6 @@ public class ItqlStore extends AbstractTripleStore {
       throw new OtmException("Error parsing answer", ae);
     }
     return res;
-  }
-
-  private void updateTypeMap(Answer qa, String assoc, Map<String, Set<String>> types)
-      throws AnswerException {
-    qa.beforeFirst();
-    while (qa.next()) {
-      Set<String> v = types.get(assoc);
-      if (v == null)
-        types.put(assoc, v = new HashSet<String>());
-      v.add(qa.getString("t"));
-    }
-    qa.close();
   }
 
   public List list(Criteria criteria, Connection con) throws OtmException {

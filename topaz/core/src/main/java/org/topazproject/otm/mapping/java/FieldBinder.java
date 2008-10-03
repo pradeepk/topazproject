@@ -21,8 +21,6 @@ package org.topazproject.otm.mapping.java;
 import java.lang.reflect.Method;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -70,7 +68,6 @@ public interface FieldBinder extends Binder {
    * @param root     the root object instance tracked by session
    * @param instance the current nested embedded instance
    * @param values   the values to set
-   * @param types    the type look ahead for associations
    * @param mapper   the mapper that this loader is associated to
    * @param session  the session under which the load is performed.
    *                 Used for resolving associations etc.
@@ -78,6 +75,5 @@ public interface FieldBinder extends Binder {
    * @throws OtmException if a field's value cannot be set
    */
   public void load(Object root, Object instance, List<String> values, 
-          Map<String, Set<String>> types, RdfMapper mapper, 
-          Session session) throws OtmException;
+          RdfMapper mapper, Session session) throws OtmException;
 }

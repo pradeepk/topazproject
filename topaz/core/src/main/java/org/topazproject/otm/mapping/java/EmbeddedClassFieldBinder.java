@@ -19,8 +19,6 @@
 package org.topazproject.otm.mapping.java;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.EntityMode;
@@ -28,7 +26,6 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.EntityBinder;
-import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EmbeddedBinder;
 import org.topazproject.otm.mapping.Mapper;
@@ -110,7 +107,7 @@ public class EmbeddedClassFieldBinder extends AbstractFieldBinder implements Emb
    * inherited javadoc
    */
   public void load(Object root, Object instance, List<String> values,
-                   Map<String, Set<String>> types, Mapper mapper, Session session)
+                   Mapper mapper, Session session)
             throws OtmException {
     throw new UnsupportedOperationException("Only raw get/set allowed");
   }
