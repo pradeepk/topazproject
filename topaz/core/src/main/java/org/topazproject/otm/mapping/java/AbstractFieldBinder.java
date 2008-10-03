@@ -216,7 +216,7 @@ public abstract class AbstractFieldBinder implements FieldBinder {
       ClassMetadata c = sf.getSubClassMetadata(cm, session.getEntityMode(), types.get(id));
 
       if (c != null) {
-        Object a = session.load(c, id);
+        Object a = session.get(c, id, false);
 
         if (a != null)
           assocs.add(a);

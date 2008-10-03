@@ -67,6 +67,7 @@ public class SessionImpl extends AbstractSession {
   private final Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
   private final Map<Id, Set<Wrapper>>          orphanTrack    = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
+  private final Map<Id, Wrapper>               currentGets    = new HashMap<Id, Wrapper>();
   private boolean flushing                                    = false;
   private int flushLoopLimit                                  = 100; // XXX: expose this to the app
 
@@ -376,7 +377,7 @@ public class SessionImpl extends AbstractSession {
     if (o == null) {
       Wrapper w = getFromStore(id, null, filterObj);
 
-      if (w != null) {
+      if (w.get() != null) {
         // Must merge here. Associations may have a back-pointer to this Id.
         // If those associations are loaded from the store even before
         // we complete this get() operation, there will be an instance
@@ -456,7 +457,7 @@ public class SessionImpl extends AbstractSession {
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
       Wrapper w = getFromStore(id, o, true);
-      if (w != null) {
+      if (w.get() != null) {
         sync(w.get(), id, true, false, CascadeType.refresh, true);
         startTracking(w);
       }
@@ -558,6 +559,9 @@ public class SessionImpl extends AbstractSession {
 
   private Wrapper getFromStore(Id id, Object instance, boolean filterObj)
                        throws OtmException {
+    Wrapper w = currentGets.get(id);
+    if (w != null)
+      return w;
     TripleStore store = sessionFactory.getTripleStore();
     ClassMetadata cm = id.getClassMetadata();
 
@@ -584,34 +588,35 @@ public class SessionImpl extends AbstractSession {
         if (cm.getBlobField() != null)
           instance = sessionFactory.getBlobStore().get(cm, id.getId(), instance, getBlobStoreCon());
       }
+    }
+
+    try {
+      w = new Wrapper(new Id(cm, id.getId()), instance);
+      currentGets.put(w.getId(), w);
+
+      if (!cm.isView() && (instance != null)) {
+        for (RdfMapper m : cm.getRdfMappers())
+          if (m.getFetchType() == FetchType.eager)
+            m.getBinder(getEntityMode()).get(instance);
+      }
 
       if (interceptor != null)
         interceptor.onPostRead(this, cm, id.getId(), instance);
+
+      if (instance instanceof PostLoadEventListener)
+        ((PostLoadEventListener)instance).onPostLoad(this, instance);
+
+      if (log.isDebugEnabled()) {
+        if (instance == null)
+          log.debug("Object not found in store: " + id.getId());
+        else
+          log.debug("Object loaded from " + (found ? "interceptor: " : "store: ") + id.getId());
+      }
+
+      return w;
+    } finally {
+      currentGets.remove(id);
     }
-
-    if (instance == null) {
-      if (log.isDebugEnabled())
-        log.debug("Object not found in store: " + id.getId());
-      return null;
-    }
-
-    if (!cm.isView()) {
-      for (RdfMapper m : cm.getRdfMappers())
-        if (m.getFetchType() == FetchType.eager) {
-          Binder b = m.getBinder(getEntityMode());
-          for (Object o : b.get(instance))
-            if (o != null)
-              o.equals(null);
-        }
-    }
-
-    if (instance instanceof PostLoadEventListener)
-      ((PostLoadEventListener)instance).onPostLoad(this, instance);
-
-    if (log.isDebugEnabled())
-      log.debug("Object loaded from " + (found ? "interceptor: " : "store: ") + id.getId());
-
-    return new Wrapper(new Id(cm, id.getId()), instance);
   }
 
   private Object instantiate(Object instance, Id id, TripleStore.Result result)
@@ -846,7 +851,7 @@ public class SessionImpl extends AbstractSession {
             try {
               Wrapper w = getFromStore(id, self, false);
               loaded = true;
-              if (w != null)
+              if (w.get() != null)
                 startTracking(w);
             } finally {
               loading = false;
