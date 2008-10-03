@@ -200,41 +200,41 @@ public class ItqlStore extends AbstractTripleStore {
       String dt, boolean objIsUri, CollectionType mt, String prefix, boolean inverse) {
     int i = 0;
     switch (mt) {
-    case PREDICATE:
-      for (String obj : objs)
-        if (!inverse)
-          addStmt(buf, subj, pred, obj, dt, objIsUri);
-        else
-          addStmt(buf, obj, pred, subj, dt, true);
-      break;
-    case RDFLIST:
-      if (objs.size() > 0)
-        buf.append("<").append(subj).append("> <").append(pred).append("> ")
-           .append(prefix).append("0 ");
-      for (String obj : objs) {
-        addStmt(buf, prefix+i, "rdf:type", "rdf:List", null, true);
-        addStmt(buf, prefix+i, "rdf:first", obj, dt, objIsUri);
+      case PREDICATE:
+        for (String obj : objs)
+          if (!inverse)
+            addStmt(buf, subj, pred, obj, dt, objIsUri);
+          else
+            addStmt(buf, obj, pred, subj, dt, true);
+        break;
+      case RDFLIST:
+        if (objs.size() > 0)
+          buf.append("<").append(subj).append("> <").append(pred).append("> ")
+             .append(prefix).append("0 ");
+        for (String obj : objs) {
+          addStmt(buf, prefix+i, "rdf:type", "rdf:List", null, true);
+          addStmt(buf, prefix+i, "rdf:first", obj, dt, objIsUri);
+          if (i > 0)
+            buf.append(prefix).append(i-1).append(" <rdf:rest> ")
+                .append(prefix).append(i).append(" ");
+          i++;
+        }
         if (i > 0)
-          buf.append(prefix).append(i-1).append(" <rdf:rest> ")
-              .append(prefix).append(i).append(" ");
-        i++;
-      }
-      if (i > 0)
-        addStmt(buf, prefix+(i-1), "rdf:rest", "rdf:nil", null, true);
-      break;
-    case RDFBAG:
-    case RDFSEQ:
-    case RDFALT:
-      String rdfType = (CollectionType.RDFBAG == mt) ? "<rdf:Bag> " :
-                       ((CollectionType.RDFSEQ == mt) ? "<rdf:Seq> " : "<rdf:Alt> ");
-      if (objs.size() > 0) {
-        buf.append("<").append(subj).append("> <").append(pred).append("> ")
-           .append(prefix).append(" ");
-        buf.append(prefix).append(" <rdf:type> ").append(rdfType);
-      }
-      for (String obj : objs)
-        addStmt(buf, prefix, "rdf:_" + ++i, obj, dt, objIsUri);
-      break;
+          addStmt(buf, prefix+(i-1), "rdf:rest", "rdf:nil", null, true);
+        break;
+      case RDFBAG:
+      case RDFSEQ:
+      case RDFALT:
+        String rdfType = (CollectionType.RDFBAG == mt) ? "<rdf:Bag> " :
+                         ((CollectionType.RDFSEQ == mt) ? "<rdf:Seq> " : "<rdf:Alt> ");
+        if (objs.size() > 0) {
+          buf.append("<").append(subj).append("> <").append(pred).append("> ")
+             .append(prefix).append(" ");
+          buf.append(prefix).append(" <rdf:type> ").append(rdfType);
+        }
+        for (String obj : objs)
+          addStmt(buf, prefix, "rdf:_" + ++i, obj, dt, objIsUri);
+        break;
     }
   }
 
