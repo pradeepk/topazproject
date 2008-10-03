@@ -459,7 +459,7 @@ public interface Session {
   public EntityMode getEntityMode();
 
   /** 
-   * Internal api; do not use. Called by field loaders to notify when a 
+   * Internal method. DO NOT USE. Called by field loaders to notify when a 
    * lazy loaded field is loaded completely. The session can now start
    * doing change-track monitoring and orphan-delete tracking on this field 
    * too.
@@ -470,16 +470,16 @@ public interface Session {
   public void delayedLoadComplete(Object o, RdfMapper field) throws OtmException;
 
   /** 
-   * Get the connection to the triple-store. If the connection does not exist yet it is created;
-   * otherwise the existing one is returned. 
+   * Internal method. DO NOT USE. Get the connection to the triple-store. 
+   * If the connection does not exist yet it is created; otherwise the existing one is returned. 
    * 
    * @return the triple-store connection
    */
   public Connection getTripleStoreCon() throws OtmException;
 
   /** 
-   * Get the connection to the blob-store. If the connection does not exist yet it is created;
-   * otherwise the existing one is returned. 
+   * Internal method. DO NOT USE. Get the connection to the blob-store. 
+   * If the connection does not exist yet it is created; otherwise the existing one is returned. 
    * 
    * @return the blob-store connection
    */
