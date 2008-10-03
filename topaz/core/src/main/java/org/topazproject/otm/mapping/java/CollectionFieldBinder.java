@@ -92,7 +92,7 @@ public class CollectionFieldBinder extends AbstractFieldBinder {
    * @throws OtmException if a property's value cannot be de-serialized and set
    */
   public void set(Object o, List vals) throws OtmException {
-    Collection value = (Collection) getRawValue(o, false);
+    Collection value = (getGetter() == null) ? null: (Collection) getRawValue(o, false);
     boolean create = (value == null);
 
     if (create)
