@@ -130,7 +130,7 @@ public class ClassBinder<T> implements EntityBinder {
 
     Method getter = ((FieldBinder) idField.getBinders().get(EntityMode.POJO)).getGetter();
 
-    return getter.getDeclaringClass().isAssignableFrom(clazz) ? getter : null;
+    return (getter != null) && getter.getDeclaringClass().isAssignableFrom(clazz) ? getter : null;
   }
 
   /*
