@@ -40,9 +40,9 @@ import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 
 
 /**
- * A webwork interceptor that maps the authenticated user id to an internal ambra-user-id. The ambra
- * user-id is setup in the HttpSession using the key {@link #USER_KEY}. The original user id is
- * available using the session key {@link #AUTH_KEY}. In addition a wrapper for
+ * A webwork interceptor that maps the authentication id to an internal ambra-user-id. The ambra
+ * user-id is setup in the HttpSession using the key {@link #USER_KEY}. The original authentication
+ * id is available using the session key {@link #AUTH_KEY}. In addition a wrapper for
  * <code>HttpServletRequest</code> is setup so that the <code>getRemoteUser</code> and
  * <code>getUserPrincipal</code> returns the ambra-user.
  *
@@ -139,7 +139,7 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
   protected String lookupUser(HttpServletRequest request) throws Exception {
     HttpSession session = request.getSession(true);
     String      user    = (String) session.getAttribute(USER_KEY);
-    String      authId  = getAuthenticatedUser(request);
+    String      authId  = getAuthenticationId(request);
     String      current = (String) session.getAttribute(AUTH_KEY);
     boolean     same    = (current == null) ? (authId == null) : current.equals(authId);
 
@@ -173,13 +173,13 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
   }
 
   /**
-   * Returns the currently authenticated user for a servlet request.
+   * Returns the current authentication id for a servlet request.
    *
    * @param request the servlet request
    *
    * @return returns the authenticated-id
    */
-  protected String getAuthenticatedUser(HttpServletRequest request) {
+  protected String getAuthenticationId(HttpServletRequest request) {
     HttpSession session = request.getSession(true);
     return (String)session.getAttribute(Constants.SINGLE_SIGNON_USER_KEY);
   }
