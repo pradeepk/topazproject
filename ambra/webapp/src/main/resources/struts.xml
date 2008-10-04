@@ -78,13 +78,13 @@
         <interceptor-ref name="timer" />
         <interceptor-ref name="logger"/>
         <interceptor-ref name="alias"/>
-        <interceptor-ref name="servlet-config"/>
+        <interceptor-ref name="servletConfig"/>
         <interceptor-ref name="prepare"/>
         <interceptor-ref name="i18n"/>
         <interceptor-ref name="debugging"/>
-        <interceptor-ref name="model-driven"/>
+        <interceptor-ref name="modelDriven"/>
         <interceptor-ref name="fileUpload"/>
-        <interceptor-ref name="static-params"/>
+        <interceptor-ref name="staticParams"/>
         <interceptor-ref name="params">
           <param name="excludeParams">ticket</param>
         </interceptor-ref>
