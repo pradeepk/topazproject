@@ -52,7 +52,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.filter.FilterDefinition;
-import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.BinderFactory;
 import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.Mapper;
@@ -64,7 +63,6 @@ import org.topazproject.otm.metadata.PropertyDefinition;
 import org.topazproject.otm.metadata.ClassBindings;
 import org.topazproject.otm.metadata.EmbeddedDefinition;
 import org.topazproject.otm.metadata.EntityDefinition;
-import org.topazproject.otm.metadata.PropertyDefinition;
 import org.topazproject.otm.metadata.ViewDefinition;
 import org.topazproject.otm.query.DefaultQueryFunctionFactory;
 import org.topazproject.otm.query.QueryFunctionFactory;
@@ -635,7 +633,7 @@ public class SessionFactoryImpl implements SessionFactory {
   }
 
   public Set<QueryFunctionFactory> listQueryFunctionFactories() {
-    return new HashSet(qffMap.values());
+    return new HashSet<QueryFunctionFactory>(qffMap.values());
   }
 
   public QueryFunctionFactory getQueryFunctionFactory(String funcName) {
@@ -732,7 +730,7 @@ public class SessionFactoryImpl implements SessionFactory {
       XAResourceHolder resHolder = (resHolderRef != null) ? resHolderRef.get() : null;
 
       if (resHolder == null)
-        xaresHolders.put(xaResource, new WeakReference(resHolder = createResHolder(xaResource)));
+        xaresHolders.put(xaResource, new WeakReference<XAResourceHolder>(resHolder = createResHolder(xaResource)));
 
       return resHolder;
     }
