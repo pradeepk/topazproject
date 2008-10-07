@@ -109,7 +109,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
   }
 
   private void updateUserEmailAddress(AmbraUser user, String authId) throws ApplicationException {
-    String emailAddress = fetchUserEmailAddress(user, authId);
+    String emailAddress = fetchUserEmailAddress(authId);
     if (emailAddress != null) {
       if (!emailAddress.equals(user.getEmail())) {
         user.setEmail(emailAddress);
@@ -130,7 +130,7 @@ public class EnsureUserAccountInterceptor extends AbstractInterceptor {
     }
   }
 
-  private String fetchUserEmailAddress(AmbraUser user, String authId) throws ApplicationException {
+  private String fetchUserEmailAddress(String authId) throws ApplicationException {
     String presetEmail = (String) getUserSessionMap().get(SINGLE_SIGNON_EMAIL_KEY);
     if (presetEmail != null)
       return presetEmail;
