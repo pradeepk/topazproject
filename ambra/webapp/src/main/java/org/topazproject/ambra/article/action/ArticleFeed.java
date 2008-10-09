@@ -93,7 +93,7 @@ public class ArticleFeed extends BaseActionSupport {
   private WireFeed wireFeed;
 
   private JournalService journalService;
-  private Invalidator invalidator;
+  private static Invalidator invalidator;
 
 
   /**
