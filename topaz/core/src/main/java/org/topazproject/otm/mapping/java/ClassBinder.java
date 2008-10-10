@@ -260,21 +260,19 @@ public class ClassBinder<T> implements EntityBinder {
       if ((pmap != null) && !m.hasInverseUri())
         pmap.remove(m.getUri());
 
+      if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
+        v = loadCollection(id, m, session);
+
       Binder b = m.getBinder(EntityMode.POJO);
 
-      if ((lh != null) && (m.isAssociation() || (m.getColType() != CollectionType.PREDICATE))) {
+      if ((lh == null) || !m.isAssociation())
+        b.load(instance, v, m, session);
+      else {
         lh.setRawFieldData(b = getLocal(b), newRawFieldData((LazyLoaded) instance, v, result));
 
         if (log.isDebugEnabled())
           log.debug("Stashed away raw-data for " + b + " on '" + id);
-
-        continue;
       }
-
-      if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-        v = loadCollection(id, m, session);
-
-      b.load(instance, v, m, session);
     }
 
     if (pmap != null) {
@@ -539,9 +537,6 @@ public class ClassBinder<T> implements EntityBinder {
           b = m.getBinder(EntityMode.POJO);
 
           List<String> v = d.getValues();
-
-          if (!m.hasInverseUri() && (m.getColType() != CollectionType.PREDICATE))
-            v = loadCollection(ll.getId(), m, ll.getSession());
 
           b.load(d.getRootInstance(), v, m, ll.getSession());
           ll.getSession().delayedLoadComplete(d.getRootInstance(), m);
