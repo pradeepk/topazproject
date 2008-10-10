@@ -20,6 +20,7 @@ package org.topazproject.ambra.models;
 
 import java.util.Date;
 
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
@@ -98,7 +99,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    * @param object the object
    */
   @Predicate(uri = "topaz:hasRepresentation", inverse=Predicate.BT.TRUE, 
-             notOwned=Predicate.BT.TRUE)
+             notOwned=Predicate.BT.TRUE, fetch=FetchType.eager)
   public void setObject(ObjectInfo object) {
     this.object = object;
     modified = true;
