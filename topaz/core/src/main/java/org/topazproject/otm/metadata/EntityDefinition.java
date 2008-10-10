@@ -34,13 +34,10 @@ import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.BlobMapperImpl;
 import org.topazproject.otm.mapping.EmbeddedMapper;
 import org.topazproject.otm.mapping.EmbeddedMapperImpl;
-import org.topazproject.otm.mapping.EntityBinder;
 import org.topazproject.otm.mapping.IdMapper;
 import org.topazproject.otm.mapping.IdMapperImpl;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.mapping.RdfMapperImpl;
-import org.topazproject.otm.mapping.java.ClassBinder;
-import org.topazproject.otm.mapping.java.FieldBinder;
 
 /**
  * Defines entities.

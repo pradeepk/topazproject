@@ -20,7 +20,6 @@ package org.topazproject.otm;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -34,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import static org.testng.AssertJUnit.*;
 
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -43,7 +41,6 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
-import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;

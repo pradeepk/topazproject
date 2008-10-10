@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import static org.testng.AssertJUnit.*;
 
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import org.topazproject.otm.criterion.Criterion;
@@ -38,7 +37,6 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.criterion.SubjectCriterion;
-import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.PublicAnnotation;

@@ -20,13 +20,9 @@
 package org.topazproject.otm.metadata;
 
 import java.net.URI;
-import java.util.Collections;
 
 import junit.framework.TestCase;
 
-import org.topazproject.otm.CollectionType;
-import org.topazproject.otm.FetchType;
-import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;

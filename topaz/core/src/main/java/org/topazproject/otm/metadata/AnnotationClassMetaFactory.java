@@ -57,7 +57,6 @@ import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.View;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.java.ClassBinder;
-import org.topazproject.otm.mapping.java.EmbeddedClassFieldBinder;
 import org.topazproject.otm.mapping.java.Property;
 import org.topazproject.otm.mapping.java.PropertyBinderFactory;
 import org.topazproject.otm.serializer.Serializer;
