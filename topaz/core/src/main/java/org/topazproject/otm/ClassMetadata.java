@@ -364,6 +364,25 @@ public class ClassMetadata {
   }
 
   /**
+   * Gets the field mappers for a predicate-uri.
+   *
+   * @param uri the uri
+   * @param inverse the inverse flag
+   * @return the mappers or an empty list
+   */
+  public List<RdfMapper> getMappersByUri(String uri, boolean inverse) {
+    List<RdfMapper> l       = new ArrayList<RdfMapper>();
+    List<RdfMapper> mappers = uriMap.get(uri);
+
+    if (mappers != null)
+      for (RdfMapper m : mappers)
+        if (m.hasInverseUri() == inverse)
+          l.add(m);
+
+    return l;
+  }
+
+  /**
    * Gets a field mapper by its field name.
    *
    * @param name the field name.
