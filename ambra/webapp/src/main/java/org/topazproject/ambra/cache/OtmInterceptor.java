@@ -22,7 +22,6 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,13 +37,11 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Binder.RawFieldData;
 import org.topazproject.otm.mapping.BlobMapper;
-import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
-import org.topazproject.otm.metadata.Definition;
-import org.topazproject.otm.metadata.RdfDefinition;
 
 /**
  * An interceptor that listens to changes from OTM and maintains an object cache  that acts as
@@ -299,22 +296,25 @@ public class OtmInterceptor implements Interceptor {
    */
   private static class Entry implements Serializable {
     private final Set<String>               types;
-    private final Map<String, List<String>> values;
-    private Map<String, List<String>>       pmap;
+    private final Set<String>               entities;
+    private final Map<String, List<String>> fvalues;
+    private final Map<String, List<String>> rvalues;
     private byte[]                          blob;
 
     public Entry() {
       blob     = null;
-      pmap     = null;
       types    = new HashSet<String>();
-      values   = new HashMap<String, List<String>>();
+      entities = new HashSet<String>();
+      fvalues   = new HashMap<String, List<String>>();
+      rvalues   = new HashMap<String, List<String>>();
     }
 
     public Entry(Entry other) {
-      types    = new HashSet<String>(other.types);
       blob     = copy(other.blob);
-      pmap     = copy(other.pmap);
-      values   = copy(other.values);
+      types    = new HashSet<String>(other.types);
+      entities = new HashSet<String>(other.entities);
+      fvalues   = copy(other.fvalues);
+      rvalues   = copy(other.rvalues);
     }
 
     public Object get(Session sess, ClassMetadata cm, String id, Object instance) {
@@ -323,27 +323,36 @@ public class OtmInterceptor implements Interceptor {
       if (cm == null)
         return null;
 
-      if (instance == null)
-        instance = cm.getEntityBinder(sess).newInstance();
+      if (!isEntityLoaded(cm))
+        return null;
 
-      cm.getIdField().getBinder(sess).set(instance, Collections.singletonList(id));
+      final Map<String, List<String>> f = copy(fvalues);
+      final Map<String, List<String>> r = copy(rvalues);
 
-      for (RdfMapper mapper : cm.getRdfMappers()) {
-        if (mapper.isPredicateMap())
-          mapper.getBinder(sess).setRawValue(instance, copy(pmap));
-        else {
-          List<String> val = values.get(getName(mapper, sess));
+      TripleStore.Result result = new TripleStore.Result() {
+        public Map<String, List<String>> getFValues() { return f; }
+        public Map<String, List<String>> getRValues() { return r; }
+      };
 
-          if (val == null)
-            return null;    // Not all properties for this are in cache. Fetch the rest.
-          mapper.getBinder(sess).load(instance, val, mapper, sess);
-        }
-      }
-
+      instance = cm.getEntityBinder(sess).loadInstance(instance, id, result, sess);
       if (cm.getBlobField() != null)
         cm.getBlobField().getBinder(sess).setRawValue(instance, copy(blob));
 
       return instance;
+    }
+
+    private boolean isEntityLoaded(ClassMetadata cm) {
+      if (entities.contains(cm.getName()))
+        return true;
+      for (RdfMapper mapper : cm.getRdfMappers()) {
+        if (!mapper.isPredicateMap()) {
+          Map<String, List<String>> values = mapper.hasInverseUri() ? rvalues : fvalues;
+          if (!values.containsKey(mapper.getUri()))
+            return false;
+        }
+      }
+      entities.add(cm.getName());
+      return true;
     }
 
     public void set(Session sess, ClassMetadata cm, String id, Object instance,
@@ -353,22 +362,61 @@ public class OtmInterceptor implements Interceptor {
       if (blobField != null)
         blob = copy((byte[]) blobField.getBinder(sess).getRawValue(instance, false));
 
-      for (RdfMapper mapper : fields) {
-        Binder       binder = mapper.getBinder(sess);
-        RawFieldData data   = binder.getRawFieldData(instance);
+      if (fields.size() != cm.getRdfMappers().size()) {
+        // Get other fields to create the spliced 
+        Collection<RdfMapper> l = new ArrayList<RdfMapper>();
+        for (RdfMapper m : fields) {
+          if (!m.isPredicateMap())
+            l.addAll(cm.getMappersByUri(m.getUri(), m.hasInverseUri()));
+          else {
+            l = cm.getRdfMappers();
+            break;
+          }
+        }
 
-        if (data != null) {
-          values.put(getName(mapper, sess), data.getValues());
+        fields = l;
+      }
 
-        } else if (mapper.isPredicateMap())
-          pmap = copy((Map<String, List<String>>) binder.getRawValue(instance, false));
-        else if (!mapper.isAssociation())
-          values.put(getName(mapper, sess), binder.get(instance));
+      // special handling for predicate-map
+      RdfMapper predMap = null;
+      for (RdfMapper m : fields) {
+        if (m.isPredicateMap()) {
+          predMap = m;
+          fvalues.clear();    // predicate-map + fields indicates complete set. Clear everything.
+          Binder       b = m.getBinder(sess);
+          // cache predicate-map values
+          Map<String, List<String>> pmap = (Map<String, List<String>>) b.getRawValue(instance, true);
+          for (String uri : pmap.keySet())
+            fvalues.put(uri, new ArrayList(pmap.get(uri)));
+          break;
+        }
+      }
+
+      // clear old values
+      if (predMap == null) {
+        for (RdfMapper m : fields) {
+          Map<String, List<String>> vmap =  m.hasInverseUri() ? rvalues : fvalues;
+          vmap.remove(m.getUri());
+        }
+      }
+
+      // splice together the uri maps
+      for (RdfMapper m : fields) {
+        if (m.isPredicateMap())
+          continue;
+        Binder       b = m.getBinder(sess);
+        RawFieldData data   = b.getRawFieldData(instance);
+        List<String> nv;
+
+        if (data != null)
+          nv = data.getValues();
+        else if (!m.isAssociation())
+          nv = b.get(instance);
         else {
-          List          a  = binder.get(instance);
+          List          a  = b.get(instance);
           List<String>  v  = new ArrayList(a.size());
           ClassMetadata am =
-            sess.getSessionFactory().getClassMetadata(mapper.getAssociatedEntity());
+            sess.getSessionFactory().getClassMetadata(m.getAssociatedEntity());
 
           for (Object o : a) {
             ClassMetadata aom =
@@ -377,9 +425,19 @@ public class OtmInterceptor implements Interceptor {
             v.add(oid);
           }
 
-          values.put(getName(mapper, sess), v);
+          nv = v;
         }
+
+        Map<String, List<String>> vmap =  m.hasInverseUri() ? rvalues : fvalues;
+
+        List<String> v = vmap.get(m.getUri());
+        if (v != null)
+          v.addAll(nv);
+        else
+          vmap.put(m.getUri(), nv);
       }
+
+      entities.add(cm.getName());
     }
 
     private static byte[] copy(byte[] src) {
@@ -404,25 +462,9 @@ public class OtmInterceptor implements Interceptor {
       return dest;
     }
 
-    private String getName(Mapper mapper, Session sess) {
-      return getName(mapper.getDefinition(), sess);
-    }
-
-    private String getName(Definition def, Session sess) {
-      if ((def.getReference() == null) || !(def instanceof RdfDefinition))
-        return def.getName();
-
-      RdfDefinition ref = (RdfDefinition)sess.getSessionFactory().getDefinition(def.getReference());
-
-      if (((RdfDefinition)def).refersSameGraphNodes(ref) 
-          && ((RdfDefinition)def).refersSameRange(ref))
-        return getName(ref, sess);
-
-      return def.getName();
-    }
-
     public String toString() {
-      return "types = " + types + ", values = " + values;
+      return "entities = " + entities + ", types = " + types + ", fvalues = " + fvalues
+        + ", rvalues = " + rvalues + ", blob-size = " + ((blob == null) ? 0 : blob.length);
     }
   }
 }
