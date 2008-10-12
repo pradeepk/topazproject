@@ -16,11 +16,7 @@
 
   <modules>
     <module>otm-models</module>
-    <module>article-util</module>
     <module>conf-helper</module>
-    <module>runscripts</module>
-    <module>util</module>
-    <module>scripts</module>
     <module>trackback-util</module>
     <module>dom-ranges-helper</module>
     <module>entity-resolver</module>
