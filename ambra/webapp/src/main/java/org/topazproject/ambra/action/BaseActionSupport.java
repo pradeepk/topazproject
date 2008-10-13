@@ -93,7 +93,7 @@ public abstract class BaseActionSupport extends ActionSupport {
    * @param profaneWords profaneWords
    * @param fieldName fieldName
    */
-  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName) {
+  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName, final String readableFieldName) {
     if (!profaneWords.isEmpty()) {
       final String joinedWords = StringUtils.join(profaneWords.toArray(), ", ");
       String  msg;
