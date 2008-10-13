@@ -18,14 +18,11 @@
  */
 package org.topazproject.ambra.action;
 
-import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -91,21 +88,12 @@ public abstract class BaseActionSupport extends ActionSupport {
     return feedBasePath + feedDefaultFile;
   }
 
-  private HttpServletResponse getResponse() {
-    return ServletActionContext.getResponse();
-  }
-
-  private HttpServletRequest getRequest() {
-    return ServletActionContext.getRequest();
-  }
-
   /**
    * Add profane words together into a message.
    * @param profaneWords profaneWords
    * @param fieldName fieldName
-   * @param readableFieldName readableFieldName
    */
-  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName, final String readableFieldName) {
+  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName) {
     if (!profaneWords.isEmpty()) {
       final String joinedWords = StringUtils.join(profaneWords.toArray(), ", ");
       String  msg;
