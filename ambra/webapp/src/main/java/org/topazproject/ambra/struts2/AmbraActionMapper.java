@@ -24,7 +24,6 @@ import com.opensymphony.xwork2.config.ConfigurationManager;
 import com.opensymphony.xwork2.config.entities.ActionConfig;
 import com.opensymphony.xwork2.config.entities.PackageConfig;
 
-import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,7 +59,7 @@ public class AmbraActionMapper extends DefaultActionMapper {
   public ActionMapping getMapping(HttpServletRequest request, ConfigurationManager configManager) {
 
     final String origUri = request.getRequestURI();
-    ActionMapping actionMapping = null;
+    ActionMapping actionMapping;
 
     // do not care about "null"
     if (origUri == null) {
@@ -172,8 +171,6 @@ public class AmbraActionMapper extends DefaultActionMapper {
    // placeholder for real REST URIs
 
    // TODO: possible to use common config?
-   HashMap<String, String> parms = new HashMap();
-   parms.put("feedName", "wireFeed");  // parms passed as null, for now
 
    return new ActionMapping(
      "getFeed",                              // name
