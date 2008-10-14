@@ -39,7 +39,18 @@ import org.topazproject.ambra.web.VirtualJournalMappingFilter;
 /**
  * Custom WebWork ActionMapper.
  *
+ * Does two things:
+ *
+ * <ul>
+ * <li>
+ * Looks into Struts configuration to check if ActionMapping for particular journal exists. If it does not exist, it will use the default ActionMapping.
+ * <br>
+ * For example if URI is /static/whypublish.action it will first try to find Action in default journal package /journals/plosone/static . If it finds it, it will remap Action to /journals/plosone/static/whypublish.action otherwise it will use the default package /static/whypublish.action
+ * </li>
+ * <li>
  * Map friendly URIs, e.g. "/article/feed" to WebWork actions w/o WebWorks URIs, "/article/articleFeed.action?parms"
+ * </li>
+ * </ul>
  *
  * @author Jeff Suttor
  *
