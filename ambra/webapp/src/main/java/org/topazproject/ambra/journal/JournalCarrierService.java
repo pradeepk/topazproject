@@ -120,8 +120,8 @@ class JournalCarrierService {
     Map<EntityMode, EntityBinder> binders = new HashMap<EntityMode, EntityBinder>();
     binders.put(EntityMode.POJO, new ClassBinder(Object.class));
     sf.setClassMetadata(new ClassMetadata(binders, "Object",
-          null, Collections.EMPTY_SET, RI_MODEL, null, Collections.EMPTY_SET, null, null,
-          Collections.EMPTY_SET));
+          Collections.EMPTY_SET, Collections.EMPTY_SET, RI_MODEL, null, Collections.EMPTY_SET, null,
+          Collections.EMPTY_SET, Collections.EMPTY_SET));
   }
 
   private static <K, T> void put(Map<K, Set<T>> map, K key, T value) {
