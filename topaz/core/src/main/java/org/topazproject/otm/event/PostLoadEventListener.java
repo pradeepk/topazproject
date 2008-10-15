@@ -19,6 +19,7 @@
 package org.topazproject.otm.event;
 
 import org.topazproject.otm.Session;
+import org.topazproject.otm.mapping.Mapper;
 
 /**
  * Called after loading from the datastore
@@ -27,10 +28,20 @@ import org.topazproject.otm.Session;
  */
 public interface PostLoadEventListener {
   /**
-   * Do any post-load processing. 
+   * Do any post-load processing. Note that only eager loaded fields
+   * are loaded at this point.
    *
    * @param session the session that is reporting this event
    * @param object the object for which the event is being generated
    */
   public void onPostLoad(Session session, Object object);
+
+  /**
+   * Do any post-load processing of a delayed load of a lazy loaded field.
+   *
+   * @param session the session that is reporting this event
+   * @param object the object for which the event is being generated
+   * @param field the field for which the event is being generated
+   */
+  public void onPostLoad(Session session, Object object, Mapper field);
 }

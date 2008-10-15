@@ -28,6 +28,7 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.event.PreInsertEventListener;
+import org.topazproject.otm.mapping.Mapper;
 
 /**
  * This holds the information returned about a representation of an object.
@@ -44,6 +45,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
   private ObjectInfo                                                       object;
 
   private transient boolean modified = true;
+  private transient boolean blobModified = true;
 
   /**
    * No argument constructor for OTM to instantiate.
@@ -182,22 +184,27 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
   @Id @GeneratedValue(uriPrefix = "id:representation/")
   public void setId(String id) {
     this.id = id;
-    modified = true;
   }
 
   public void setBody(byte[] body) {
     super.setBody(body);
-    modified = true;
+    blobModified = true;
   }
 
   public void onPostLoad(Session session, Object object) {
     modified = false;
   }
 
+  public void onPostLoad(Session session, Object object, Mapper field) {
+    if ("body".equals(field.getName()))
+      blobModified = false;
+  }
+
   public void onPreInsert(Session session, Object object) {
-    if (modified) {
+    if (modified || blobModified) {
       setLastModified(new Date());
       modified = false;
+      blobModified = false;
     }
   }
 }

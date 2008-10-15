@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.mapping.Binder;
 import org.topazproject.otm.mapping.Binder.RawFieldData;
 import org.topazproject.otm.mapping.BlobMapper;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 
 /**
@@ -172,6 +174,19 @@ public class OtmInterceptor implements Interceptor {
      * may have depended on prior writes that we are not aware of.
      */
     attach(session, cm, id, instance, cm.getRdfMappers(), cm.getBlobField());
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void onPostRead(Session session, ClassMetadata cm, String id, Object instance, Mapper m) {
+    if (log.isDebugEnabled())
+      log.debug(m.getName() + " in " + cm.getName() + " for id <" + id + "> is loaded");
+
+    Collection rdf  = (m instanceof RdfMapper)  ? Collections.singleton(m) : Collections.emptySet();
+    BlobMapper blob = (m instanceof BlobMapper) ? (BlobMapper) m           : null;
+
+    attach(session, cm, id, instance, (Collection<RdfMapper>) rdf, blob);
   }
 
   /*

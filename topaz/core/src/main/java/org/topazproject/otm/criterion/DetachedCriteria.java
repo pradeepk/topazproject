@@ -378,6 +378,10 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
     }
   }
 
+  public void onPostLoad(Session session, Object object, Mapper field) {
+    // ignore since we are already loading the rest
+  }
+
   /*
    * inherited javadoc
    */

@@ -21,6 +21,7 @@ package org.topazproject.otm;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.RdfMapper;
 
 /**
@@ -56,8 +57,8 @@ public interface Interceptor {
   public Object getEntity(Session session, ClassMetadata cm, String id, Object instance);
 
   /**
-   * Called after an entity instance is loaded from the store. Interceptor may
-   * modify the instance value.
+   * Called after all eager loaded fields of an entity instance is loaded from the store.
+   * Interceptor may modify the instance value.
    *
    * @param session the session that is reporting this event
    * @param cm class metadata for the entity
@@ -65,6 +66,18 @@ public interface Interceptor {
    * @param instance the instance that was loaded or nul if the object does not exist
    */
   public void onPostRead(Session session, ClassMetadata cm, String id, Object instance);
+
+  /**
+   * Called after a delayed load of a field for an entity instance.
+   * Interceptor may modify the instance value.
+   *
+   * @param session the session that is reporting this event
+   * @param cm class metadata for the entity
+   * @param id the id of the instance
+   * @param instance the instance for which the field was loaded
+   * @param field the field that was loaded
+   */
+  public void onPostRead(Session session, ClassMetadata cm, String id, Object instance, Mapper field);
 
   /**
    * Called after an entity instance is written out to the store.

@@ -34,6 +34,7 @@ import org.topazproject.otm.event.PreInsertEventListener;
 import org.topazproject.otm.event.PostLoadEventListener;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.Binder;
+import org.topazproject.otm.mapping.BlobMapper;
 import org.topazproject.otm.mapping.IdMapper;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoaded;
 import org.topazproject.otm.mapping.EntityBinder.LazyLoader;
@@ -403,7 +404,7 @@ public class SessionImpl extends AbstractSession {
   /*
    * inherited javadoc
    */
-  public void delayedLoadComplete(Object o, RdfMapper field) throws OtmException {
+  public void delayedLoadComplete(Object o, Mapper field) throws OtmException {
     Id id = checkObject(null, o, true, false);
 
     if (log.isDebugEnabled())
@@ -413,19 +414,29 @@ public class SessionImpl extends AbstractSession {
     if (deleteMap.get(id) != null)
       return;
 
-    states.delayedLoadComplete(o, field, this);
+    if (interceptor != null)
+      interceptor.onPostRead(this, id.getClassMetadata(), id.getId(), o, field);
 
-    if (!field.isCascadable(CascadeType.deleteOrphan))
-      return;
+    if (o instanceof PostLoadEventListener)
+      ((PostLoadEventListener)o).onPostLoad(this, o, field);
 
-    Set<Wrapper> assocs = orphanTrack.get(id);
-    if (assocs == null)
-      orphanTrack.put(id, assocs = new HashSet<Wrapper>());
+    if (field instanceof BlobMapper)
+      states.digestUpdate(o, id.getClassMetadata(), this);
+    else if (field instanceof RdfMapper) {
+      RdfMapper m = (RdfMapper) field;
+      states.delayedLoadComplete(o, m, this);
 
-    Binder b = field.getBinder(getEntityMode());
-    for (Object ao : b.get(o)) {
-      Id aid = checkObject(field, ao, true, false);
-      assocs.add(new Wrapper(aid, ao));
+      if (m.isCascadable(CascadeType.deleteOrphan)) {
+        Set<Wrapper> assocs = orphanTrack.get(id);
+        if (assocs == null)
+          orphanTrack.put(id, assocs = new HashSet<Wrapper>());
+
+        Binder b = m.getBinder(getEntityMode());
+        for (Object ao : b.get(o)) {
+          Id aid = checkObject(m, ao, true, false);
+          assocs.add(new Wrapper(aid, ao));
+        }
+      }
     }
   }
 
