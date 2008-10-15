@@ -37,7 +37,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Jeff Suttor
  */
 @UriPrefix("topaz:RatingContent/")
-@Entity(model = "ri", type = "topaz:RatingContent")
+@Entity(model = "ri", types = {"topaz:RatingContent"})
 public class RatingContent implements Serializable {
   /**
    * Weight to use for single-rating calculation.

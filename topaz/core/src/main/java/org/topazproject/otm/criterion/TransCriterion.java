@@ -35,7 +35,7 @@ import org.topazproject.otm.mapping.RdfMapper;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.RDF_TYPE + "/trans")
+@Entity(types = {Criterion.RDF_TYPE + "/trans"})
 public class TransCriterion extends AbstractBinaryCriterion {
   /**
    * Creates a new TransCriterion object.

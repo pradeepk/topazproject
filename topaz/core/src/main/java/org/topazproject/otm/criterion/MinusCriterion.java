@@ -34,7 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.RDF_TYPE + "/minus")
+@Entity(types = {Criterion.RDF_TYPE + "/minus"})
 public class MinusCriterion extends Criterion {
   private Criterion minuend;
   private Criterion subtrahend;

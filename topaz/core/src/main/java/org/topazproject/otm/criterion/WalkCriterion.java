@@ -39,7 +39,7 @@ import org.topazproject.otm.mapping.RdfMapper;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type=Criterion.RDF_TYPE + "/walk")
+@Entity(types={Criterion.RDF_TYPE + "/walk"})
 public class WalkCriterion extends AbstractBinaryCriterion {
 
   public WalkCriterion() {

@@ -249,11 +249,11 @@ public class SupersedesTest extends TestCase {
     public List<Integer> getObject() {return null;}
   }
 
-  @Entity(type="t:assoc", name="Assoc")
+  @Entity(types={"t:assoc"}, name="Assoc")
   public static class Assoc extends Base {
   }
 
-  @Entity(type="t:extended", name="Extended")
+  @Entity(types={"t:extended"}, name="Extended")
   public static class Extended extends Assoc {
   }
 

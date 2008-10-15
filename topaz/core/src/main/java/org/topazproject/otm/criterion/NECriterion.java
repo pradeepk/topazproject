@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Entity;
  * @see NotCriterion
  * @see EQCriterion
  */
-@Entity(type = Criterion.RDF_TYPE + "/ne")
+@Entity(types = {Criterion.RDF_TYPE + "/ne"})
 public class NECriterion extends AbstractBinaryCriterion {
   /**
    * Creates a new NECriterion object.

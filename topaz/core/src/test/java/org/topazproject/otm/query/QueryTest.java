@@ -373,7 +373,7 @@ public class QueryTest extends TestCase {
     assertTrue(errs.length() == 0);
   }
 
-  @Entity(type = Rdf.topaz + "Article", name = "Article", model = "ri")
+  @Entity(types = {Rdf.topaz + "Article"}, name = "Article", model = "ri")
   private static class Article {
     private URI uri;
     private String      title;
@@ -457,7 +457,7 @@ public class QueryTest extends TestCase {
     }
   }
 
-  @Entity(type = Rdf.topaz + "Reply", name = "Reply", model = "ri")
+  @Entity(types = {Rdf.topaz + "Reply"}, name = "Reply", model = "ri")
   private static class Reply {
     private URI id;
     private String type;

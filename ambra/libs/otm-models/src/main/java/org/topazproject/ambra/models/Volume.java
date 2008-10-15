@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Jeff Suttor, Alex Worden
  */
-@Entity(type = "plos:Volume", model = "ri")
+@Entity(types = {"plos:Volume"}, model = "ri")
 public class Volume extends Aggregation {
   private String displayName;
   private URI image;

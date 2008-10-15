@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Annotation.RDF_TYPE)
+@Entity(types = {Annotation.RDF_TYPE})
 public abstract class Annotation extends Annotea {
   private URI                                                               id;
   private URI                                                               annotates;

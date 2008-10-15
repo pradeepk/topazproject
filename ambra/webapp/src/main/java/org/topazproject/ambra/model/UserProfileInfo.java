@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
 /**
  * Just the full name.
  */
-@Entity(type = "foaf:Person", model = "profiles")
+@Entity(types = {"foaf:Person"}, model = "profiles")
 public class UserProfileInfo implements Serializable {
   private URI id;
   private String realName;

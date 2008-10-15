@@ -33,7 +33,7 @@ import org.topazproject.otm.annotations.Predicate;
 /**
  * Just the list of authors.
  */
-@Entity(type = "bibtex:Entry", model = "ri")
+@Entity(types = {"bibtex:Entry"}, model = "ri")
 public class CitationInfo implements Serializable {
   private URI id;
   private List<UserProfileInfo> authors = new ArrayList<UserProfileInfo>();

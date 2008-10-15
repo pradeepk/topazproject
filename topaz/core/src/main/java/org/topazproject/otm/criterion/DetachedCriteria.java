@@ -56,7 +56,7 @@ import org.topazproject.otm.mapping.RdfMapper;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.NS + "Criteria", model = Criterion.MODEL)
+@Entity(types = {Criterion.NS + "Criteria"}, model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
 public class DetachedCriteria implements PreInsertEventListener, PostLoadEventListener {
   private static final Log       log               = LogFactory.getLog(DetachedCriteria.class);

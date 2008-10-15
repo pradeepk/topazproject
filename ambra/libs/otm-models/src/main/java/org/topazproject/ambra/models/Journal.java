@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = "plos:Journal", model = "ri")
+@Entity(types = {"plos:Journal"}, model = "ri")
 public class Journal extends Aggregation {
   private String  key;
   private String  eIssn;

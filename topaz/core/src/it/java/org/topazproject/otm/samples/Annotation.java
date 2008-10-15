@@ -34,7 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Annotea.NS + "Annotation")
+@Entity(types = {Annotea.NS + "Annotation"})
 public abstract class Annotation extends Annotea {
   private URI                                                                       id;
   private URI                                                                       annotates;

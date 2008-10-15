@@ -37,7 +37,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author Ronald Tschalär
  */
 @UriPrefix("foaf:")
-@Entity(type = "foaf:Person")
+@Entity(types = {"foaf:Person"})
 public class FoafPerson implements Serializable, Cloneable {
   private URI      id;
   private String   realName;

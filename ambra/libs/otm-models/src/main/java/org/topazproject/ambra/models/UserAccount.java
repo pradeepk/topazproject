@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Ronald Tschalär
  */
-@Entity(type = "foaf:OnlineAccount", model = "users")
+@Entity(types = {"foaf:OnlineAccount"}, model = "users")
 public class UserAccount implements Serializable {
   /** the state indicating the user account is active: {@value} */
   public static final int ACNT_ACTIVE    = 0;

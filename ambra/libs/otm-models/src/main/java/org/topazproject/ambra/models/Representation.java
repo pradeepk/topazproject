@@ -35,7 +35,7 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-@Entity(model = "ri", type = "topaz:Representation")
+@Entity(model = "ri", types = {"topaz:Representation"})
 public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
   private String                                                           id;
   private String                                                           name;

@@ -28,7 +28,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Jeff Suttor
  */
-@Entity(type = "plos:Issue", model = "ri")
+  @Entity(types = {"plos:Issue"}, model = "ri")
 public class Issue extends Aggregation {
   private String displayName;
   private URI image;

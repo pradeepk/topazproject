@@ -177,11 +177,11 @@ public class RdfDefTest extends TestCase {
     public void setP3(Assoc2 a) {}
   }
 
-  @Entity(type="t:a1", name="Assoc1")
+  @Entity(types={"t:a1"}, name="Assoc1")
   public static class Assoc1 extends Base {
   }
 
-  @Entity(type="t:a2", name="Assoc2")
+  @Entity(types={"t:a2"}, name="Assoc2")
   public static class Assoc2 extends Assoc1 {
   }
 

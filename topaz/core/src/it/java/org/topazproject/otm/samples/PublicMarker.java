@@ -25,7 +25,7 @@ import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
-@Entity(type=Annotea.NS + "Public", model="ri")
+@Entity(types={Annotea.NS + "Public", Annotea.NS + "Note"}, model="ri")
 public interface PublicMarker {
   /**
    * Get note.

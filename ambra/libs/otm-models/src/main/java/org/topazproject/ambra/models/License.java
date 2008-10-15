@@ -29,7 +29,7 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Amit Kapoor
  */
-@Entity(type = "cc:License", model = "ri")
+@Entity(types = {"cc:License"}, model = "ri")
 public abstract class License implements Serializable {
   private URI   id;
 

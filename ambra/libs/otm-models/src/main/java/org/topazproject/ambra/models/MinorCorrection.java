@@ -25,7 +25,7 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @author Alex Worden
   */
-@Entity(type = MinorCorrection.RDF_TYPE)
+@Entity(types = {MinorCorrection.RDF_TYPE})
 public class MinorCorrection extends Correction {
   private static final long   serialVersionUID = -5374711498322357045L;
   public  static final String RDF_TYPE         = Annotea.TOPAZ_TYPE_NS + "MinorCorrection";

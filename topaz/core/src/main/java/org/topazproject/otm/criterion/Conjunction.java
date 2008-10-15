@@ -25,7 +25,7 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.RDF_TYPE + "/and")
+@Entity(types = {Criterion.RDF_TYPE + "/and"})
 public class Conjunction extends Junction {
   /**
    * Creates a new Conjunction object.

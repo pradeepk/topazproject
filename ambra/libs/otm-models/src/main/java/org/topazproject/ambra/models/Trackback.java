@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Stephen Cheng
  */
-@Entity(type = "topaz:TrackbackAnnotation")
+@Entity(types = {"topaz:TrackbackAnnotation"})
 public class Trackback extends Annotation {
   private static final long serialVersionUID = -1224471659454172666L;
 

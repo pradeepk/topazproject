@@ -36,7 +36,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Pradeep Krishnan
   */
-@Entity(type = "plos:EditorialBoard", model = "ri")
+@Entity(types = {"plos:EditorialBoard"}, model = "ri")
 public class EditorialBoard implements Serializable {
   private URI            id;
   private EditorialBoard supersedes;

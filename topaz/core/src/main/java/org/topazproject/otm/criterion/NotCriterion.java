@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @see MinusCriterion
  * @see PredicateCriterion
  */
-@Entity(type = Criterion.RDF_TYPE + "/not")
+@Entity(types = {Criterion.RDF_TYPE + "/not"})
 public class NotCriterion extends Criterion {
   private Criterion criterion;
 

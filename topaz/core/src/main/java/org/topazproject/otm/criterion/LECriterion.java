@@ -27,7 +27,7 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.RDF_TYPE + "/le")
+@Entity(types = {Criterion.RDF_TYPE + "/le"})
 public class LECriterion extends AbstractComparisonCriterion {
   /**
    * Creates a new LECriterion object.

@@ -45,7 +45,7 @@ public class IdGenTest {
   private Session session = null;
   private Transaction tx = null;
 
-  @Entity(type = Rdf.topaz + "A", model = "idtest")
+  @Entity(types = {Rdf.topaz + "A"}, model = "idtest")
   public static class A {
     private String id;
     private String name;
@@ -90,7 +90,7 @@ public class IdGenTest {
     }
   }
 
-  @Entity(type = Rdf.topaz + "B")
+  @Entity(types = {Rdf.topaz + "B"})
   public static class B extends A {
     private String extra;
 
@@ -114,11 +114,11 @@ public class IdGenTest {
     }
   }
 
-  @Entity(type = Rdf.topaz + "C")
+  @Entity(types = {Rdf.topaz + "C"})
   public static class C extends B {
   }
 
-  @Entity(type = Rdf.topaz + "D", model = "idtest")
+  @Entity(types = {Rdf.topaz + "D"}, model = "idtest")
   public static class D {
     private URI uri;
     private String data;
@@ -162,7 +162,7 @@ public class IdGenTest {
     }
   }
 
-  @Entity(type = Rdf.topaz + "E", model = "idtest")
+  @Entity(types = {Rdf.topaz + "E"}, model = "idtest")
   public static class E {
     private String id;
 
@@ -186,7 +186,7 @@ public class IdGenTest {
     }
   }
 
-  @Entity(type = Rdf.topaz + "Kontrol", model = "idtest")
+  @Entity(types = {Rdf.topaz + "Kontrol"}, model = "idtest")
   public static class Kontrol {
     private String id;
     private String data;

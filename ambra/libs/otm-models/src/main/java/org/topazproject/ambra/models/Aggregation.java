@@ -41,7 +41,7 @@ import org.topazproject.otm.criterion.DetachedCriteria;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(type = "http://purl.org/dc/dcmitype/Collection", model = "ri")
+@Entity(types = {"http://purl.org/dc/dcmitype/Collection"}, model = "ri")
 public class Aggregation implements Serializable {
   private URI                            id;
   private EditorialBoard                 editorialBoard;

@@ -29,7 +29,7 @@ import org.topazproject.otm.annotations.Predicate;
  *
  * @author Stephen Cheng
  */
-@Entity(type = Rating.RDF_TYPE)
+@Entity(types = {Rating.RDF_TYPE})
 public class Rating extends Annotation {
   private static final long serialVersionUID = 849445395175525204L;
 

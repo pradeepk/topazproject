@@ -114,7 +114,7 @@ public class AnnotationClassMetaFactory {
   }
 
   private void createEntity(Class<?> clazz) throws OtmException {
-    Set<String> type = new HashSet<String>();
+    Set<String> types = new HashSet<String>();
     Set<String> sup  = new HashSet<String>();
     String model     = null;
     String uriPrefix = null;
@@ -128,8 +128,8 @@ public class AnnotationClassMetaFactory {
       if (!"".equals(entity.model()))
         model = entity.model();
 
-      if (!"".equals(entity.type()))
-        type.add(sf.expandAlias(entity.type()));
+       for (String t : entity.types())
+         types.add(sf.expandAlias(t));
     }
 
     String   name = getEntityName(clazz);
@@ -145,7 +145,7 @@ public class AnnotationClassMetaFactory {
       for (Class<?> c : s.getInterfaces())
         sup.remove(getEntityName(c));
 
-    EntityDefinition ed           = new EntityDefinition(name, type, model, sup);
+    EntityDefinition ed           = new EntityDefinition(name, types, model, sup);
     UriPrefix        uriPrefixAnn = clazz.getAnnotation(UriPrefix.class);
 
     if (uriPrefixAnn != null)

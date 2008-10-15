@@ -27,7 +27,7 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.RDF_TYPE + "/ge")
+@Entity(types = {Criterion.RDF_TYPE + "/ge"})
 public class GECriterion extends AbstractComparisonCriterion {
   /**
    * Creates a new EqualsCriterion object.

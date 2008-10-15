@@ -31,7 +31,7 @@ import org.topazproject.otm.annotations.Entity;
  * @see SubjectCriterion
  * @see PredicateCriterion
  */
-@Entity(type = Criterion.RDF_TYPE + "/eq")
+@Entity(types = {Criterion.RDF_TYPE + "/eq"})
 public class EQCriterion extends AbstractBinaryCriterion {
   /**
    * Creates a new EQCriterion object.

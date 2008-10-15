@@ -37,7 +37,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(type = "topaz:ObjectInfo", model = "ri")
+@Entity(types = {"topaz:ObjectInfo"}, model = "ri")
 public class ObjectInfo implements Serializable {
   private static final long serialVersionUID = 4074534426473235595L;
 

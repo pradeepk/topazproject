@@ -38,7 +38,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
  *
  * @author Ronald Tschalär
  */
-@Entity(type = "plos:RelatedArticle", model = "ri")
+@Entity(types = {"plos:RelatedArticle"}, model = "ri")
 public class RelatedArticle  implements Serializable {
   private static final long serialVersionUID = -4229157024423830497L;
 

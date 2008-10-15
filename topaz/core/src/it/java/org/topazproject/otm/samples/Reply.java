@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Reply.NS + "Reply")
+@Entity(types = {Reply.NS + "Reply"})
 @UriPrefix(Reply.NS)
 public class Reply extends Annotea {
   public static final String NS = "http://www.w3.org/2001/03/thread#";

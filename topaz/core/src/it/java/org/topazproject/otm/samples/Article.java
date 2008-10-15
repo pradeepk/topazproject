@@ -36,7 +36,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Eric Brown
  * @version $Id$
  */
-@Entity(type = "topaz:Article", model = "ri")
+@Entity(types = {"topaz:Article"}, model = "ri")
 public class Article extends ObjectInfo {
   private Date     articleDate;
   private String[] subjects;

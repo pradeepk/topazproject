@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @see PredicateCriterion
  */
-@Entity(type = Criterion.RDF_TYPE + "/exists")
+@Entity(types = {Criterion.RDF_TYPE + "/exists"})
 public class ExistsCriterion extends AbstractUnaryCriterion {
 
   /**

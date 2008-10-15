@@ -35,7 +35,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Reply.RDF_TYPE)
+@Entity(types = {Reply.RDF_TYPE})
 @UriPrefix(Reply.NS)
 public class Reply extends Annotea {
   public static final String RDF_TYPE = Reply.NS + "Reply";

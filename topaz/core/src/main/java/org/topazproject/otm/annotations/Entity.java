@@ -40,7 +40,7 @@ public @interface Entity {
   /**
    * The rdf:type for this entity. Defaults to super-class.
    */
-  String type() default "";
+  String[] types() default {};
 
   /**
    * The graph/model where this entity is to be persisted. Defaults to super-class.
