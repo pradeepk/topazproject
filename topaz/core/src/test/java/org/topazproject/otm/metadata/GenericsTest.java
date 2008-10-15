@@ -22,6 +22,7 @@ package org.topazproject.otm.metadata;
 import java.lang.reflect.*;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -84,6 +85,7 @@ public class GenericsTest extends TestCase {
     assertNotNull(cm.getMapperByName("u"));
 
     cm = sf.getClassMetadata(B);
+    expected = "B".equals(B) ? 4 : 2;
     assertEquals(expected, cm.getRdfMappers().size());
     assertNotNull(cm.getMapperByName("assoc"));
     assertNotNull(cm.getMapperByName("u"));
@@ -121,11 +123,30 @@ public class GenericsTest extends TestCase {
                                CollectionType.PREDICATE, FetchType.lazy,
                                Collections.singleton(CascadeType.peer), false};
 
-
-
     RdfDefinition base, def;
     base = (RdfDefinition)sf.getDefinition(A + ":v");
     def = (RdfDefinition)sf.getDefinition(B + ":v");
+
+    def.resolveReference(sf);
+    compare(def, vals);
+    compare(base, bvals);
+
+    assertTrue(def.refersSameGraphNodes(base));
+    assertFalse(def.refersSameRange(base));
+  }
+
+  private void testW(String A, String B) {
+    Object[] bvals = new Object[] {"a:w", true, "test", false, true, null, "Object",
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), true};
+
+    Object[] vals = new Object[] {"a:w", true, "test", false, false, Rdf.xsd + "dateTime", null,
+                               CollectionType.PREDICATE, FetchType.lazy,
+                               Collections.singleton(CascadeType.peer), false};
+
+    RdfDefinition base, def;
+    base = (RdfDefinition)sf.getDefinition(A + ":w");
+    def = (RdfDefinition)sf.getDefinition(B + ":w");
 
     def.resolveReference(sf);
     compare(def, vals);
@@ -148,6 +169,7 @@ public class GenericsTest extends TestCase {
 
     test("A", "B");
     testV("A", "B");
+    testW("W", "B");
   }
 
   public void test02() {
@@ -174,8 +196,24 @@ public class GenericsTest extends TestCase {
   }
 
   @UriPrefix("a:")
+  @Entity(name="U")
+  public static interface UProvider<U> {
+    public U getU();
+    @Predicate(model="test")
+    public void setU(U a);
+  }
+
+  @UriPrefix("a:")
+  @Entity(name="W")
+  public static interface WProvider<W> {
+    public W getW();
+    @Predicate(model="test")
+    public void setW(W a);
+  }
+
+  @UriPrefix("a:")
   @Entity(name="A")
-  public static class A<T extends Assoc, U, V> extends Base {
+  public static abstract class A<T extends Assoc, U, V> extends Base implements UProvider<U> {
     public T getAssoc() {return null;}
     @Predicate(model="test")
     public void setAssoc(T a) {}
@@ -189,9 +227,12 @@ public class GenericsTest extends TestCase {
 
   @UriPrefix("b:")
   @Entity(name="B")
-  public static class B extends A<Extended, String, Integer> {
+  public static class B extends A<Extended, String, Integer> implements WProvider<Date> {
     @Predicate(dataType="xsd:int")
     public Integer getV() { return null; }
+    public Date getW() { return null; }
+    @Predicate(dataType="xsd:dateTime")
+    public void setW(Date a) {}
   }
 
   @UriPrefix("a:")

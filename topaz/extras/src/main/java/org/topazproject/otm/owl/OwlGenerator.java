@@ -20,7 +20,9 @@ package org.topazproject.otm.owl;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,10 +88,7 @@ public class OwlGenerator {
   private boolean isTypedEntity(ClassMetadata cm) {
     if (cm == null)
       return false;
-    if (cm.getType() == null)
-      return false;
-
-    return true;
+    return !cm.getTypes().isEmpty();
   }
 
   /**
@@ -119,7 +118,10 @@ public class OwlGenerator {
    *
    * @return the OWLClass either from cache or newly created
    */
-  private OWLClass getOWLClass(String type, String name) {
+  private OWLClass getOWLClass(Set<String> types, String name) {
+    if (types.size() > 1)
+      throw new OtmException("fix me");
+    String type = types.iterator().next();
     OWLClass owlClass = (OWLClass)classMap.get(type);
     if (owlClass == null) {
       owlClass = factory.getOWLClass(URI.create(type));
@@ -214,10 +216,10 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      String type = cm.getType();
-      if (type == null)
+      Set<String> types = cm.getTypes();
+      if (types.isEmpty())
         continue;
-      OWLClass domain = getOWLClass(type,cm.getName());
+      OWLClass domain = getOWLClass(types, cm.getName());
 
       // Now let's iterate over the fields to define 'restrictions' on properties
       for (RdfMapper m: cm.getRdfMappers()) {
@@ -282,14 +284,14 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      String type = cm.getType();
+      Set<String> types = cm.getTypes();
       // Ignore anonymous classes
-      if (type == null) {
+      if (types.isEmpty()) {
         continue;
       }
 
       // Get the corresponding OWL class
-      OWLClass owlClass = getOWLClass(type,cm.getName());
+      OWLClass owlClass = getOWLClass(types, cm.getName());
       ontologyManager.applyChange(new AddAxiom(ontology, factory.getOWLDeclarationAxiom(owlClass)));
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
@@ -299,7 +301,7 @@ public class OwlGenerator {
         if (!isTypedEntity(scm))
           continue;
         log.debug("Processing super-class: " + scm.getName());
-        OWLClass superOwlClass = getOWLClass(scm.getType(),scm.getName());
+        OWLClass superOwlClass = getOWLClass(scm.getTypes(), scm.getName());
 
         // Because of pre-computed types.
         if (superOwlClass == owlClass)
@@ -320,14 +322,14 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      String type = cm.getType();
+      Set<String> types = cm.getTypes();
       // Ignore anonymous classes
-      if (type == null) {
+      if (types.isEmpty()) {
         continue;
       }
 
       // Get the corresponding OWL class
-      OWLClass domain = getOWLClass(type,cm.getName());
+      OWLClass domain = getOWLClass(types, cm.getName());
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
@@ -382,14 +384,14 @@ public class OwlGenerator {
     // Loop over all classes in factory
     for (ClassMetadata cm: otmFactory.listClassMetadata()) {
       log.debug("Parsing OTM Class metadata: " + cm.getName());
-      String type = cm.getType();
+      Set<String> types = cm.getTypes();
       // Ignore anonymous classes
-      if (type == null) {
+      if (types.isEmpty()) {
         continue;
       }
 
       // Get the corresponding OWL class
-      OWLClass domain = getOWLClass(type,cm.getName());
+      OWLClass domain = getOWLClass(types, cm.getName());
       HashMap<String, Class> superClasses = getSuperClasses(getSourceClass(cm));
 
       // Now let's iterate over the fields to define 'restrictions' on properties
@@ -434,10 +436,10 @@ public class OwlGenerator {
     return ((ClassBinder)cm.getEntityBinder(EntityMode.POJO)).getSourceClass();
   }
 
-  private String getRdfType(RdfMapper m) {
+  private Set<String> getRdfType(RdfMapper m) {
     ClassMetadata cm = otmFactory.getClassMetadata(m.getAssociatedEntity());
     if (cm != null)
-      return cm.getType();
-    return null;
+      return cm.getTypes();
+    return Collections.emptySet();
   }
 }

@@ -253,9 +253,9 @@ fclause[OqlAST tc]
     :   #(COMMA fclause[tc] fclause[tc])
     |   cls:ID var:ID {
           ClassMetadata cm   = ((OqlAST) #var).getExprType().getMeta();
-          String        type = cm.getType();
-          if (type != null && addTypeConstr)
-            tc.addChild(
+          if (addTypeConstr)
+            for (String type : cm.getTypes())
+              tc.addChild(
                     makeTriple(#var, "<rdf:type>", "<" + type + ">", getModelUri(cm.getModel())));
         }
     ;

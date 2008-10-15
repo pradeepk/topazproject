@@ -24,9 +24,11 @@ import java.util.Collections;
 
 import junit.framework.TestCase;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.CollectionType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.EntityMode;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
@@ -51,7 +53,6 @@ public class RdfDefTest extends TestCase {
     bp1 = (RdfDefinition)sf.getDefinition("B:p1");
     bp2 = (RdfDefinition)sf.getDefinition("B:p2");
     bp3 = (RdfDefinition)sf.getDefinition("B:p3");
-
   }
 
   private void compare(RdfDefinition def, Object[] vals) {
@@ -111,13 +112,41 @@ public class RdfDefTest extends TestCase {
   public void test04() {
     sf.preload(Journal.class);
     sf.validate();
+    assertNotNull(sf.getClassMetadata(Journal.class).getMapperByName("eIssn"));
+  }
+
+  public void test05() {
+    ClassMetadata cm = sf.getClassMetadata(RdfNode.class);
+    assertEquals(0, cm.getSuperEntities().size());
+
+    for (Class e : new Class[] {A.class, B.class, Assoc1.class, Assoc2.class}) {
+      cm = sf.getClassMetadata(e);
+      assertEquals(1, cm.getSuperEntities().size());
+      assertEquals(sf.getClassMetadata(e.getSuperclass()).getName(), cm.getSuperEntities().iterator().next());
+    }
+
+    cm = sf.getClassMetadata(Base.class);
+    assertEquals(1, cm.getSuperEntities().size());
+    assertEquals("RdfNode", cm.getSuperEntities().iterator().next());
+  }
+
+  public void test06() throws Exception {
+    for (Class e : new Class[] {A.class, B.class, Assoc1.class, Assoc2.class})
+      assertEquals(sf.getClassMetadata(e), sf.getInstanceMetadata(null, EntityMode.POJO, e.newInstance()));
+  }
+
+  @Entity(model="test", name="RdfNode")
+  @UriPrefix("a:")
+  public static interface RdfNode {
+    public String getId();
+    @Id
+    public void setId(String s);
   }
 
   @Entity(model="test", name="Base")
   @UriPrefix("a:")
-  public static class Base {
+  public static class Base implements RdfNode {
     public String getId() {return null;}
-    @Id
     public void setId(String s) {}
   }
 

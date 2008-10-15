@@ -169,6 +169,9 @@ public class SessionFactoryImpl implements SessionFactory {
     addAlias("dcterms",  Rdf.dc_terms);
     addAlias("mulgara",  Rdf.mulgara);
     addAlias("topaz",    Rdf.topaz);
+
+    // set up root of sub-class heirarchy
+    subClasses.put(null, new HashSet<ClassMetadata>());
   }
 
   /*
@@ -217,9 +220,13 @@ public class SessionFactoryImpl implements SessionFactory {
         c = null;
     }
 
-    if ((c != null) && !Object.class.equals(c)){
+    if ((c != null) && !Object.class.equals(c)) {
       preload(c.getSuperclass());
+      for (Class<?> i : c.getInterfaces())
+        preload(i);
       cmf.create(c);
+      if (log.isDebugEnabled())
+        log.debug("pre-loaded: " + c);
     }
   }
 
@@ -254,9 +261,7 @@ public class SessionFactoryImpl implements SessionFactory {
     if (entitymap.get(def.getName()) != null)
       return;
 
-    String sup = def.getSuper();
-
-    if (sup != null) {
+    for (String sup : def.getSuperEntities()) {
       Definition d = defs.get(sup);
 
       if (!(d instanceof EntityDefinition))
@@ -343,11 +348,11 @@ public class SessionFactoryImpl implements SessionFactory {
   private ClassMetadata getSubClassMetadata(ClassMetadata clazz, EntityMode mode, 
                                 Collection<String> typeUris, boolean instantiable) {
     if ((typeUris == null) || (typeUris.size() == 0))
-      return (clazz == null) ? null : ((clazz.getType() != null) ? null : clazz);
+      return (clazz == null) ? null : (!clazz.getTypes().isEmpty() ? null : clazz);
 
     Set<ClassMetadata> solutions = null;
 
-    if ((clazz != null) && (clazz.getType() == null)) {
+    if ((clazz != null) && clazz.getTypes().isEmpty()) {
       solutions = new HashSet<ClassMetadata>();
       solutions.add(clazz);
     }
@@ -363,7 +368,7 @@ public class SessionFactoryImpl implements SessionFactory {
       for (ClassMetadata cl : classes) {
         if (instantiable && !cl.getEntityBinder(mode).isInstantiable())
           continue;
-        if (typeUris.contains(cl.getType()) &&
+        if (typeUris.containsAll(cl.getTypes()) &&
            ((clazz == null) || clazz.isAssignableFrom(cl)))
           candidates.add(cl);
       }
@@ -424,10 +429,13 @@ public class SessionFactoryImpl implements SessionFactory {
         throw new OtmException("An entity with name or alias of '" + name + "' already exists.");
     }
 
-    for (String name : cm.getNames())
+    for (String name : cm.getNames()) {
       entitymap.put(name, cm);
+      if (log.isDebugEnabled())
+        log.info("Registered: " + name + " as " + cm);
+    }
 
-    for (String type : cm.getTypes()) {
+    for (String type : cm.getAllTypes()) {
       Set<ClassMetadata> set = typemap.get(type);
 
       if (set == null) {
@@ -438,16 +446,19 @@ public class SessionFactoryImpl implements SessionFactory {
       set.add(cm);
     }
 
-    String             sup = cm.getSuperEntity();
-    Set<ClassMetadata> set = subClasses.get(sup);
+    Set<ClassMetadata> set = null;
+    for (String sup : cm.getSuperEntities()) {
+      set = subClasses.get(sup);
 
+      if (set == null)
+        subClasses.put(sup, set = new HashSet<ClassMetadata>());
+
+      set.add(cm);
+    }
+
+    // add to root
     if (set == null)
-      subClasses.put(sup, set = new HashSet<ClassMetadata>());
-
-    set.add(cm);
-
-    if (log.isDebugEnabled())
-      log.debug("Registered " + cm);
+      subClasses.get(null).add(cm);
   }
 
   /*

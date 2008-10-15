@@ -21,12 +21,10 @@ package org.topazproject.otm.samples;
 
 import java.net.URI;
 
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Predicate;
 
-@Entity(type=Annotea.NS + "Public")
-public class PublicAnnotation extends Annotation {
+@Entity()
+public class PublicAnnotation extends Annotation implements PublicMarker {
   private String note;
 
   public PublicAnnotation() {
@@ -50,7 +48,6 @@ public class PublicAnnotation extends Annotation {
    *
    * @param note the value to set.
    */
-  @Predicate(uri = Rdf.topaz + "hasNote")
   public void setNote(String note) {
     this.note = note;
   }

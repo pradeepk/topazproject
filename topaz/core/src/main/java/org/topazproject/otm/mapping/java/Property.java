@@ -153,22 +153,13 @@ public class Property {
    * property in that sub-class.
    *
    * @param sub the parameterized sub-class of this class
+   * @param pt  the parameterized this class in the sub-class declaration
    *
    * @return the synthetic property in the parameterized sub-class or null
    */
-  public Property resolveGenericsType(Class sub) {
-    if (!clazz.equals(sub.getSuperclass()))
-      return null;
-
-    Type t = sub.getGenericSuperclass();
-
-    if (!(t instanceof ParameterizedType))
-      return null;
-
-    ParameterizedType pt    = (ParameterizedType) t;
+  public Property resolveGenericsType(Class sub, ParameterizedType pt) {
     TypeVariable[]    types = clazz.getTypeParameters();
-
-    t                       = getGenericType();
+    Type t                  = getGenericType();
 
     if (t instanceof TypeVariable) {
       Class<?> ptype = resolve((TypeVariable) t, pt, types);

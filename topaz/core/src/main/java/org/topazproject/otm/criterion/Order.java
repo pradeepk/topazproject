@@ -194,7 +194,7 @@ public class Order {
         ClassMetadata assoc = ses.getSessionFactory().getClassMetadata(m.getAssociatedEntity());
 
         if (assoc != null)
-          da.setRdfType(assoc.getTypes());
+          da.setRdfType(assoc.getAllTypes());
       }
 
       if (log.isDebugEnabled())

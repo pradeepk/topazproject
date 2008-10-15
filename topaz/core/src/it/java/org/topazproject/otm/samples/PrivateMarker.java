@@ -23,13 +23,6 @@ import java.net.URI;
 
 import org.topazproject.otm.annotations.Entity;
 
-@Entity()
-public class PrivateAnnotation extends Annotation implements PrivateMarker {
-
-  public PrivateAnnotation() {
-  }
-
-  public PrivateAnnotation(URI id) {
-    super(id);
-  }
+@Entity(type=Annotea.NS + "Private", model="ri")
+public interface PrivateMarker {
 }

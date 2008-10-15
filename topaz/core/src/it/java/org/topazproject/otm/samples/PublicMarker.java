@@ -21,15 +21,24 @@ package org.topazproject.otm.samples;
 
 import java.net.URI;
 
+import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 
-@Entity()
-public class PrivateAnnotation extends Annotation implements PrivateMarker {
+@Entity(type=Annotea.NS + "Public", model="ri")
+public interface PublicMarker {
+  /**
+   * Get note.
+   *
+   * @return note as String.
+   */
+  public String getNote();
 
-  public PrivateAnnotation() {
-  }
-
-  public PrivateAnnotation(URI id) {
-    super(id);
-  }
+  /**
+   * Set note.
+   *
+   * @param note the value to set.
+   */
+  @Predicate(uri = Rdf.topaz + "hasNote")
+  public void setNote(String note);
 }

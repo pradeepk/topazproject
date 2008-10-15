@@ -76,7 +76,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertEquals('http://rdf.topazproject.org/RDF/Test1', cm.type)
+    assertEquals(['http://rdf.topazproject.org/RDF/Test1'] as Set, cm.types)
     assertEquals('ri', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -95,7 +95,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertEquals('http://rdf.topazproject.org/RDF/Test2', cm.type)
+    assertEquals(['http://rdf.topazproject.org/RDF/Test2'] as Set, cm.types)
     assertEquals('m2', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -115,7 +115,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertEquals('foo:Test3', cm.type)
+    assertEquals(['foo:Test3'] as Set, cm.types)
     assertEquals('m3', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -139,7 +139,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertEquals('foo:Test4', cm.type)
+    assertEquals(['foo:Test4'] as Set, cm.types)
     assertEquals('m4', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -155,7 +155,7 @@ public class BuilderTest extends GroovyTestCase {
 
     cm = rdf.sessFactory.getClassMetadata('State')
 
-    assertEquals('bar4:State', cm.type)
+    assertEquals(['bar4:State'] as Set, cm.types)
     assertEquals('m41', cm.model)
     assertEquals(2, cm.rdfMappers.size())
 
@@ -181,7 +181,7 @@ public class BuilderTest extends GroovyTestCase {
 
     cm = rdf.sessFactory.getClassMetadata('History')
 
-    assertEquals('bar4:History', cm.type)
+    assertEquals(['bar4:History'] as Set, cm.types)
     assertEquals('m41', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -200,7 +200,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertEquals('foo:Test5', cm.type)
+    assertEquals(['foo:Test5'] as Set, cm.types)
     assertEquals('m5', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -220,7 +220,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertEquals('p6:Test6', cm.type)
+    assertEquals(['p6:Test6'] as Set, cm.types)
     assertEquals('ri', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -269,7 +269,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertNull(cm.type)
+    assertEquals(0, cm.types.size())
     assertEquals('ri', cm.model)
     assertEquals(1, cm.rdfMappers.size())
 
@@ -290,7 +290,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertNull(cm.type)
+    assertEquals(0, cm.types.size())
     assertEquals('ri', cm.model)
     assertEquals(2, cm.rdfMappers.size())
 
@@ -748,17 +748,17 @@ public class BuilderTest extends GroovyTestCase {
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals('org.foo.Test1', cls.name)
-    assertEquals('http://rdf.topazproject.org/RDF/org.foo.Test1', cm.type)
+    assertEquals(['http://rdf.topazproject.org/RDF/org.foo.Test1'] as Set, cm.types)
 
     cm = rdf.sessFactory.getClassMetadata('Test1')
 
     assertEquals('org.foo.Test1', cls.name)
-    assertEquals('http://rdf.topazproject.org/RDF/org.foo.Test1', cm.type)
+    assertEquals(['http://rdf.topazproject.org/RDF/org.foo.Test1'] as Set, cm.types)
 
     cm = rdf.sessFactory.getClassMetadata('org.foo.Test1')
 
     assertEquals('org.foo.Test1', cls.name)
-    assertEquals('http://rdf.topazproject.org/RDF/org.foo.Test1', cm.type)
+    assertEquals(['http://rdf.topazproject.org/RDF/org.foo.Test1'] as Set, cm.types)
 
     // default package
     cls = rdf.class('Test2') {
@@ -767,12 +767,12 @@ public class BuilderTest extends GroovyTestCase {
     cm = rdf.sessFactory.getClassMetadata(cls)
 
     assertEquals('Test2', cls.name)
-    assertEquals('http://rdf.topazproject.org/RDF/Test2', cm.type)
+    assertEquals(['http://rdf.topazproject.org/RDF/Test2'] as Set, cm.types)
 
     cm = rdf.sessFactory.getClassMetadata('Test2')
 
     assertEquals('Test2', cls.name)
-    assertEquals('http://rdf.topazproject.org/RDF/Test2', cm.type)
+    assertEquals(['http://rdf.topazproject.org/RDF/Test2'] as Set, cm.types)
   }
 
   void testErrorHandling() {
@@ -909,7 +909,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assertEquals('foo:Test1', cm.type)
+    assertEquals(['foo:Test1'] as Set, cm.types)
     assertEquals('m1', cm.model)
     assertEquals(3, cm.rdfMappers.size())
 

@@ -102,7 +102,7 @@ public abstract class AbstractUnaryCriterion extends Criterion {
         ClassMetadata assoc = ses.getSessionFactory().getClassMetadata(m.getAssociatedEntity());
 
         if (assoc != null)
-          da.setRdfType(assoc.getTypes());
+          da.setRdfType(assoc.getAllTypes());
       }
 
       if (log.isDebugEnabled())

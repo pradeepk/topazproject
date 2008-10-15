@@ -247,8 +247,10 @@ public class ClassDef {
 
     def blobBinder = null
     def binders = [(EntityMode.POJO) : new ClassBinder(clazz)]
-    metadata = new ClassMetadata(binders, getShortName(clazz), type, allTypes, model,
-                                 idmapper, rdfs, blobBinder, extendsClass, embeds)
+    def ts = (type == null) ? [] as Set : [type] as Set;
+    def sups = (extendsClass == null) ? [] as Set : [extendsClass] as Set;
+    metadata = new ClassMetadata(binders, getShortName(clazz), ts, allTypes, model,
+                                 idmapper, rdfs, blobBinder, sups, embeds)
 
     if (log.debugEnabled)
       log.debug "created metadata for class '${clazz.name}': ${metadata}"

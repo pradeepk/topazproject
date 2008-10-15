@@ -45,32 +45,32 @@ import org.topazproject.otm.mapping.RdfMapperImpl;
  * @author Pradeep Krishnan
  */
 public class EntityDefinition extends ClassDefinition {
-  private final String type;
+  private final Set<String> types;
+  private final Set<String> sups;
   private final String graph;
-  private final String sup;
 
   /**
    * Creates a new EntityDefinition object.
    *
    * @param name   The name of this definition.
-   * @param type   The rdf:type or null
+   * @param types   The declared rdf:types
    * @param graph  The graph or null
-   * @param sup    The super class or null
+   * @param sups    The super class or null
    */
-  public EntityDefinition(String name, String type, String graph, String sup) {
+  public EntityDefinition(String name, Set<String> types, String graph, Set<String> sups) {
     super(name);
-    this.type    = type;
+    this.types    = Collections.unmodifiableSet(new HashSet<String>(types));
+    this.sups     = Collections.unmodifiableSet(new HashSet<String>(sups));
     this.graph   = graph;
-    this.sup     = sup;
   }
 
   /**
    * Get type.
    *
-   * @return rdf:type or null
+   * @return declared rdf:types
    */
-  public String getType() {
-    return type;
+  public Set<String> getTypes() {
+    return types;
   }
 
   /**
@@ -83,12 +83,12 @@ public class EntityDefinition extends ClassDefinition {
   }
 
   /**
-   * Get the super entity.
+   * Get the super entities.
    *
-   * @return graph or null
+   * @return super entities
    */
-  public String getSuper() {
-    return sup;
+  public Set<String> getSuperEntities() {
+    return sups;
   }
 
   /*
@@ -96,37 +96,60 @@ public class EntityDefinition extends ClassDefinition {
    */
   public ClassMetadata buildClassMetadata(SessionFactory sf)
                                       throws OtmException {
-    Set<String>                types     = Collections.emptySet();
-    String                     type      = null;
-    String                     graph     = null;
-    IdMapper                   idField   = null;
-    BlobMapper                 blobField = null;
-    Collection<RdfMapper>      fields    = new ArrayList<RdfMapper>();
-    Collection<EmbeddedMapper> embeds    = new ArrayList<EmbeddedMapper>();
+    Set<String>                allTypes    = new HashSet<String>();
+    Set<String>                types       = new HashSet<String>();
+    Collection<RdfMapper>      fields      = new ArrayList<RdfMapper>();
+    Collection<EmbeddedMapper> embeds      = new ArrayList<EmbeddedMapper>();
+    Set<String>                superGraphs = new HashSet<String>();
+    Set<IdMapper>              superIds    = new HashSet<IdMapper>();
+    Set<BlobMapper>            superBlobs  = new HashSet<BlobMapper>();
 
-    if (sup != null) {
-      ClassMetadata superMeta = sf.getClassMetadata(sup);
-      graph       = superMeta.getModel();
-      type        = superMeta.getType();
-      types       = superMeta.getTypes();
-      idField     = superMeta.getIdField();
-      blobField   = superMeta.getBlobField();
+    for (String s : sups) {
+      ClassMetadata superMeta = sf.getClassMetadata(s);
+
+      superGraphs.add(superMeta.getModel());
+      superIds.add(superMeta.getIdField());
+      superBlobs.add(superMeta.getBlobField());
+
+      types.addAll(superMeta.getTypes());
+      allTypes.addAll(superMeta.getAllTypes());
       fields.addAll(superMeta.getRdfMappers());
       embeds.addAll(superMeta.getEmbeddedMappers());
     }
 
-    if (this.type != null) {
-      types = new HashSet<String>(types);
+    superGraphs.remove(null);
+    superIds.remove(null);
+    superBlobs.remove(null);
 
-      if (!types.add(this.type))
-        throw new OtmException("Duplicate rdf:type '" + this.type + "'in class hierarchy "
+    if (!this.types.isEmpty()) {
+      for (String t : this.types)
+        if (!allTypes.add(t))
+          throw new OtmException("Duplicate rdf:type '" + t + "'in class hierarchy "
                                + getName());
 
-      type = this.type;
+      types = this.types;
     }
 
+    String                     graph     = null;
     if (this.graph != null)
       graph = this.graph;
+    else if (superGraphs.size() > 1)
+      throw new OtmException(superGraphs + " are all possible candidates for model/graph for '" 
+          + getName() + "'. Need an explicit model/graph definition to disambiguate");
+    else if (superGraphs.size() == 1)
+      graph = superGraphs.iterator().next();
+
+    IdMapper                   idField   = null;
+    if (superIds.size() > 1)
+      throw new OtmException("Duplicate inherited Id fields " + superIds + " in " + getName());
+    else if (superIds.size() == 1)
+      idField = superIds.iterator().next();
+
+    BlobMapper                 blobField = null;
+    if (superBlobs.size() > 1)
+      throw new OtmException("Duplicate inherited Blob fields " + superBlobs + " in " + getName());
+    else if (superBlobs.size() == 1)
+      blobField = superBlobs.iterator().next();
 
     ClassBindings bin = sf.getClassBindings(getName());
 
@@ -196,7 +219,7 @@ public class EntityDefinition extends ClassDefinition {
       }
     }
 
-    return new ClassMetadata(bin.getBinders(), getName(), type, types, graph, idField, fields,
-                             blobField, sup, embeds);
+    return new ClassMetadata(bin.getBinders(), getName(), types, allTypes, graph, idField, fields,
+                             blobField, sups, embeds);
   }
 }

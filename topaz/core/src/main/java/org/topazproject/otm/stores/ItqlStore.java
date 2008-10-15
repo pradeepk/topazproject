@@ -119,7 +119,7 @@ public class ItqlStore extends AbstractTripleStore {
         isc.getInserts().put(m, insert = new StringBuilder(500));
 
       if (m.equals(cm.getModel())) {
-        for (String type : cm.getTypes())
+        for (String type : cm.getAllTypes())
           addStmt(insert, id, Rdf.rdf + "type", type, null, true);
       }
 
@@ -159,7 +159,7 @@ public class ItqlStore extends AbstractTripleStore {
                                                                Collection<RdfMapper> fields) {
     Map<String, List<RdfMapper>> mappersByModel = new HashMap<String, List<RdfMapper>>();
 
-    if (cm.getTypes().size() > 0)
+    if (cm.getAllTypes().size() > 0)
       mappersByModel.put(cm.getModel(), new ArrayList<RdfMapper>());
 
     for (RdfMapper p : fields) {
@@ -269,7 +269,7 @@ public class ItqlStore extends AbstractTripleStore {
       int len = delete.length();
       delete.append("delete ");
       if (buildDeleteSelect(delete, getModelUri(m, isc), mappersByModel.get(m),
-                        !partialDelete && m.equals(cm.getModel()) && cm.getTypes().size() > 0, id))
+                        !partialDelete && m.equals(cm.getModel()) && cm.getAllTypes().size() > 0, id))
         delete.append("from <").append(getModelUri(m, isc)).append(">;");
       else
         delete.setLength(len);
@@ -538,7 +538,7 @@ public class ItqlStore extends AbstractTripleStore {
 
     for (RdfMapper p : cm.getRdfMappers()) {
       ClassMetadata c = sf.getClassMetadata(p.getAssociatedEntity());
-      if ((c != null) && ((c.getTypes().size() + c.getRdfMappers().size()) > 0))
+      if ((c != null) && ((c.getAllTypes().size() + c.getRdfMappers().size()) > 0))
         clss.add(c);
     }
 

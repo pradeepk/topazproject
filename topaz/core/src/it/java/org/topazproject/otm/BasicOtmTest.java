@@ -99,6 +99,7 @@ public class BasicOtmTest extends AbstractOtmTest {
           a.setType(Annotation.NS + "Comment");
           a.setBody(new Body(blob));
           session.saveOrUpdate(a);
+          assertEquals(a, session.get("PublicMarker", "http://localhost/annotation/1"));
         }
       });
     doInSession(new Action() {
@@ -153,7 +154,7 @@ public class BasicOtmTest extends AbstractOtmTest {
       });
     doInReadOnlySession(new Action() {
         public void run(Session session) throws OtmException {
-          Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+          Annotation a = (Annotation) session.get("PublicMarker", "http://localhost/annotation/1");
           assertNull(a);
         }
       });
@@ -918,35 +919,49 @@ public class BasicOtmTest extends AbstractOtmTest {
           assertTrue(id3.equals(a3.getId()));
           assertEquals(foo, a3.getAnnotates());
 
-          List l =
+          List<Annotation> l =
                 session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", foo))
                         .list();
           assertEquals(3, l.size());
 
-          for (Object o : l) {
-            assertEquals(foo, ((Annotation) o).getAnnotates());
+          for (Annotation o : l) {
+            assertEquals(foo, o.getAnnotates());
 
             if (o instanceof PublicAnnotation)
               assertTrue((a1 == o) || (a2 == o));
           }
 
           Results r =
-                session.createQuery("select a from Annotation a where a.annotates = <foo:1>;")
+                session.createQuery("select p from PublicMarker p where cast(p, Annotation).annotates = <foo:1>;")
                         .execute();
           l.clear();
 
           while (r.next())
-            l.add(r.get(0));
+            l.add((Annotation) r.get(0));
 
           r.close();
 
-          assertEquals(3, l.size());
+          assertEquals(2, l.size());
 
-          for (Object o : l) {
-            assertEquals(foo, ((Annotation) o).getAnnotates());
+          for (Annotation o : l) {
+            assertEquals(foo, o.getAnnotates());
+            assertTrue((a1 == o) || (a2 == o));
+          }
 
-            if (o instanceof PublicAnnotation)
-              assertTrue((a1 == o) || (a2 == o));
+          r = session.createQuery("select p from PrivateMarker p where cast(p, Annotation).annotates = <foo:1>;")
+                        .execute();
+          l.clear();
+
+          while (r.next())
+            l.add((Annotation) r.get(0));
+
+          r.close();
+
+          assertEquals(1, l.size());
+
+          for (Annotation o : l) {
+            assertEquals(foo, o.getAnnotates());
+            assertTrue(a3 == o);
           }
 
           session.delete(a);
@@ -966,7 +981,7 @@ public class BasicOtmTest extends AbstractOtmTest {
     log.info("Testing aliases ...");
 
     ClassMetadata cm = factory.getClassMetadata(Article.class);
-    assertEquals(Rdf.topaz + "Article", cm.getType());
+    assertEquals(Collections.singleton(Rdf.topaz + "Article"), cm.getTypes());
 
     RdfMapper m = (RdfMapper)cm.getMapperByName("date");
     assertNotNull(m);

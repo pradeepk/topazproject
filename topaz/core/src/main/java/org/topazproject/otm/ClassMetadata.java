@@ -46,10 +46,10 @@ import org.topazproject.otm.mapping.EntityBinder;
 public class ClassMetadata {
   private static final Log                log = LogFactory.getLog(ClassMetadata.class);
 
+  private final Set<String>               allTypes;
   private final Set<String>               types;
-  private final String                    type;
   private final String                    name;
-  private final String                    superEntity;
+  private final Set<String>               superEntities;
   private final String                    model;
   private final IdMapper                  idField;
   private final BlobMapper                blobField;
@@ -67,29 +67,29 @@ public class ClassMetadata {
    *
    * @param binders the entity binders
    * @param name the entity name for use in queries
-   * @param type the most specific rdf:type that identify this class
-   * @param types set of rdf:type values that identify this class
+   * @param types the most specific rdf:type that identify this class
+   * @param allTypes set of rdf:type values that identify this class
    * @param model the graph/model where this class is persisted
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
    * @param blobField loader for the blob
-   * @param superEntity a super class entity for which this is a sub-class of
+   * @param superEntities super class entities for which this is a sub-class of
    * @param embeds fields that are embeds
    */
-  public ClassMetadata(Map<EntityMode, EntityBinder> binders, String name, String type, Set<String> types,
+  public ClassMetadata(Map<EntityMode, EntityBinder> binders, String name, Set<String> types, Set<String> allTypes,
                        String model, IdMapper idField, Collection<RdfMapper> fields, BlobMapper blobField,
-                       String superEntity, Collection<EmbeddedMapper> embeds)
+                       Set<String> superEntities, Collection<EmbeddedMapper> embeds)
                 throws OtmException {
     this.binders                              = binders;
     this.name                                 = name;
     this.query                                = null;
-    this.type                                 = type;
     this.model                                = model;
     this.idField                              = idField;
     this.blobField                            = blobField;
-    this.superEntity                          = superEntity;
 
+    this.superEntities                        = Collections.unmodifiableSet(new HashSet<String>(superEntities));
     this.types                                = Collections.unmodifiableSet(new HashSet<String>(types));
+    this.allTypes                             = Collections.unmodifiableSet(new HashSet<String>(allTypes));
     this.embeds                               = Collections.unmodifiableCollection(new ArrayList<EmbeddedMapper>(embeds));
     this.rdfFields                            = Collections.unmodifiableCollection(new ArrayList<RdfMapper>(fields));
     this.varFields                            = null;
@@ -146,19 +146,19 @@ public class ClassMetadata {
   public ClassMetadata(Map<EntityMode, EntityBinder> binders, String name, String query, IdMapper idField,
                        Collection<VarMapper> fields)
                 throws OtmException {
-    this.binders     = binders;
-    this.name        = name;
-    this.query       = query;
-    this.type        = null;
-    this.model       = null;
-    this.idField     = idField;
-    this.blobField   = null;
-    this.superEntity = null;
+    this.binders       = binders;
+    this.name          = name;
+    this.query         = query;
+    this.model         = null;
+    this.idField       = idField;
+    this.blobField     = null;
 
-    this.types       = Collections.emptySet();
-    this.varFields   = Collections.unmodifiableCollection(new ArrayList<VarMapper>(fields));
-    this.rdfFields   = null;
-    this.embeds      = null;
+    this.superEntities = Collections.emptySet();
+    this.types         = Collections.emptySet();
+    this.allTypes      = Collections.emptySet();
+    this.varFields     = Collections.unmodifiableCollection(new ArrayList<VarMapper>(fields));
+    this.rdfFields     = null;
+    this.embeds        = null;
 
     Map<String, List<VarMapper>> varMap  = new HashMap<String, List<VarMapper>>();
     Map<String, Mapper>       nameMap = new HashMap<String, Mapper>();
@@ -246,8 +246,8 @@ public class ClassMetadata {
    *
    * @return the rdf:type uri or null
    */
-  public String getType() {
-    return type;
+  public Set<String> getTypes() {
+    return types;
   }
 
   /**
@@ -255,8 +255,8 @@ public class ClassMetadata {
    *
    * @return set of rdf:type uri values or an empty set; null for views
    */
-  public Set<String> getTypes() {
-    return types;
+  public Set<String> getAllTypes() {
+    return allTypes;
   }
 
   /**
@@ -264,8 +264,8 @@ public class ClassMetadata {
    *
    * @return the super entity or null
    */
-  public String getSuperEntity() {
-    return superEntity;
+  public Set<String> getSuperEntities() {
+    return superEntities;
   }
 
   /**
@@ -348,14 +348,14 @@ public class ClassMetadata {
       ClassMetadata assoc = !m.isAssociation() ? null
                             : sf.getClassMetadata(m.getAssociatedEntity());
 
-      if ((assoc == null) || (assoc.getType() == null))
+      if ((assoc == null) || assoc.getTypes().isEmpty())
         continue;
 
-      if (uris.contains(assoc.getType())) {
+      if (uris.containsAll(assoc.getTypes())) {
         if (uris == typeUris)
           uris = new HashSet<String>(typeUris); // lazy copy
 
-        uris.removeAll(assoc.getTypes());
+        uris.removeAll(assoc.getAllTypes());
         candidate = m;
       }
     }
@@ -418,7 +418,7 @@ public class ClassMetadata {
    * inherited javadoc
    */
   public String toString() {
-    return "ClassMetadata[name=" + getName() + ", type=" + getType() + "]";
+    return "ClassMetadata[name=" + getName() + ", type=" + getTypes() + "]";
   }
 
   /**
@@ -433,7 +433,7 @@ public class ClassMetadata {
       return false;
     if (model != null)
       return true;
-    return ((types.size() + rdfFields.size()) == 0) && (blobField != null);
+    return ((allTypes.size() + rdfFields.size()) == 0) && (blobField != null);
   }
 
   /**
@@ -484,7 +484,7 @@ public class ClassMetadata {
    * @return true if instances of this is assignable from instances of the other
    */
   public boolean isAssignableFrom(ClassMetadata other) {
-    if (!other.types.containsAll(this.types))
+    if (!other.allTypes.containsAll(this.allTypes))
       return false;
 
     for (EntityMode mode : binders.keySet()) {

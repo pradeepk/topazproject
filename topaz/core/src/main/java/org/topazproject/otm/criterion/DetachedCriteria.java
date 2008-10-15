@@ -329,7 +329,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
       if (cm == null)
         log.warn("onPreInsert: Entity name '" + alias + "' is not found in session factory.");
       else {
-        da.setRdfType(cm.getTypes());
+        da.setRdfType(cm.getAllTypes());
         da.setPredicateUri(null);
         da.setInverse(false);
 
@@ -360,7 +360,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
             cm = sf.getClassMetadata(m.getAssociatedEntity());
 
           if (cm != null)
-            da.setRdfType(cm.getTypes());
+            da.setRdfType(cm.getAllTypes());
 
           da.setPredicateUri(URI.create(m.getUri()));
           da.setInverse(m.hasInverseUri());
@@ -396,7 +396,7 @@ public class DetachedCriteria implements PreInsertEventListener, PostLoadEventLi
       if (cm == null) {
         cm = sf.getClassMetadata(alias);
 
-        if ((cm != null) && !cm.getTypes().containsAll(da.getRdfType()))
+        if ((cm != null) && !cm.getAllTypes().containsAll(da.getRdfType()))
           cm = null;
       }
 

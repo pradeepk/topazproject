@@ -28,8 +28,10 @@ import java.net.URI;
 import java.net.URL;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,10 +114,10 @@ public class AnnotationClassMetaFactory {
   }
 
   private void createEntity(Class<?> clazz) throws OtmException {
-    String type      = null;
+    Set<String> type = new HashSet<String>();
+    Set<String> sup  = new HashSet<String>();
     String model     = null;
     String uriPrefix = null;
-    String sup       = null;
 
     if (log.isDebugEnabled())
       log.debug("Creating class-meta for " + clazz);
@@ -127,14 +129,21 @@ public class AnnotationClassMetaFactory {
         model = entity.model();
 
       if (!"".equals(entity.type()))
-        type = sf.expandAlias(entity.type());
+        type.add(sf.expandAlias(entity.type()));
     }
 
     String   name = getEntityName(clazz);
     Class<?> s    = clazz.getSuperclass();
 
     if ((s != null) && !s.equals(Object.class))
-      sup = getEntityName(s);
+      sup.add(getEntityName(s));
+
+    for (Class<?> c : clazz.getInterfaces())
+      sup.add(getEntityName(c));
+
+    if (s != null)
+      for (Class<?> c : s.getInterfaces())
+        sup.remove(getEntityName(c));
 
     EntityDefinition ed           = new EntityDefinition(name, type, model, sup);
     UriPrefix        uriPrefixAnn = clazz.getAnnotation(UriPrefix.class);
@@ -198,7 +207,12 @@ public class AnnotationClassMetaFactory {
 
     if (def instanceof EntityDefinition) {
       if (clazz.getGenericSuperclass() instanceof ParameterizedType)
-        addGenericsSyntheticProps(def, clazz, factories);
+        addGenericsSyntheticProps(def, clazz, (ParameterizedType) clazz.getGenericSuperclass(),
+                                  factories);
+
+      for (Type t : clazz.getGenericInterfaces())
+        if (t instanceof ParameterizedType)
+          addGenericsSyntheticProps(def, clazz, (ParameterizedType) t, factories);
 
       Map<String, String> supersedes = new HashMap<String, String>();
       buildSupersedes((EntityDefinition) def, supersedes);
@@ -226,8 +240,8 @@ public class AnnotationClassMetaFactory {
   }
 
   private void buildSupersedes(EntityDefinition def, Map<String, String> supersedes) {
-    if (def.getSuper() != null) {
-      EntityDefinition sdef = (EntityDefinition) sf.getDefinition(def.getSuper());
+    for (String sup : def.getSuperEntities()) {
+      EntityDefinition sdef = (EntityDefinition) sf.getDefinition(sup);
 
       if (sdef != null)
         buildSupersedes(sdef, supersedes);
@@ -246,9 +260,10 @@ public class AnnotationClassMetaFactory {
   }
 
   private void addGenericsSyntheticProps(ClassDefinition def, Class clazz,
+                                         ParameterizedType psup,
                                          Map<String, PropertyDefFactory> factories)
                                   throws OtmException {
-    for (Method m : clazz.getSuperclass().getDeclaredMethods()) {
+    for (Method m : ((Class) psup.getRawType()).getDeclaredMethods()) {
       if (!isAnnotated(m))
         continue;
 
@@ -257,7 +272,7 @@ public class AnnotationClassMetaFactory {
       if ((property == null) || factories.containsKey(property.getName()))
         continue;
 
-      property = property.resolveGenericsType(clazz);
+      property = property.resolveGenericsType(clazz, psup);
 
       if (property != null)
         factories.put(property.getName(), new PropertyDefFactory(def, property));

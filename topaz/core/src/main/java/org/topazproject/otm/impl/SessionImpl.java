@@ -489,7 +489,7 @@ public class SessionImpl extends AbstractSession {
     TripleStore           store         = sessionFactory.getTripleStore();
     BlobStore             bs            = sessionFactory.getBlobStore();
     boolean               bf            = (cm.getBlobField() != null);
-    boolean               tp            = (cm.getRdfMappers().size() + cm.getTypes().size()) > 0;
+    boolean               tp            = (cm.getRdfMappers().size() + cm.getAllTypes().size()) > 0;
 
     if (delete) {
       if (log.isDebugEnabled())
@@ -590,7 +590,7 @@ public class SessionImpl extends AbstractSession {
       if (cm.isView())
         instance = loadView(cm, id.getId(), instance);
       else {
-        if ((cm.getTypes().size() + cm.getRdfMappers().size()) > 0) {
+        if ((cm.getAllTypes().size() + cm.getRdfMappers().size()) > 0) {
           instance = instantiate(instance, id, store.get(cm, id.getId(), getTripleStoreCon(), 
                                   new ArrayList<Filter>(filters.values()), filterObj));
           if (instance != null)
@@ -654,7 +654,7 @@ public class SessionImpl extends AbstractSession {
       return null;
     }
     if (t != null)
-      t.removeAll(cm.getTypes());
+      t.removeAll(cm.getAllTypes());
 
     return cm.getEntityBinder(this).loadInstance(instance, id.getId(), result, this);
   }

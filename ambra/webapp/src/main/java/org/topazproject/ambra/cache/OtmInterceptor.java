@@ -372,7 +372,7 @@ public class OtmInterceptor implements Interceptor {
 
     public void set(Session sess, ClassMetadata cm, String id, Object instance,
                     Collection<RdfMapper> fields, BlobMapper blobField) {
-      types.addAll(cm.getTypes());
+      types.addAll(cm.getAllTypes());
 
       if (blobField != null)
         blob = copy((byte[]) blobField.getBinder(sess).getRawValue(instance, false));

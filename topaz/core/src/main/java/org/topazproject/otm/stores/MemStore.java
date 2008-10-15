@@ -76,7 +76,7 @@ public class MemStore extends AbstractTripleStore {
     MemStoreConnection msc     = (MemStoreConnection) con;
     Storage            storage = msc.getStorage();
 
-    storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getTypes().toArray(new String[0]));
+    storage.insert(cm.getModel(), id, Rdf.rdf + "type", cm.getAllTypes().toArray(new String[0]));
 
     for (RdfMapper m : fields) {
       if (m.hasInverseUri())
@@ -287,7 +287,7 @@ public class MemStore extends AbstractTripleStore {
     } else if (c instanceof SubjectCriterion) {
       String  id     = ((SubjectCriterion) c).getId();
       boolean exists =
-        (cm.getType() != null) ? (storage.getProperty(model, id, Rdf.rdf + "type").size() != 0)
+        (!cm.getTypes().isEmpty()) ? (storage.getProperty(model, id, Rdf.rdf + "type").size() != 0)
         : storage.exists(model, id);
 
       if (!exists)

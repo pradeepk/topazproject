@@ -1176,13 +1176,13 @@ public class CriteriaTest extends AbstractOtmTest {
   }
 
   private void verifyDC(DetachedCriteria dc) {
-    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(Annotation.class).getTypes());
+    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(Annotation.class).getAllTypes());
     assertEquals("" + dc.getOrderList().iterator().next().getDa().getPredicateUri(),
                  getMapper(Annotation.class, "annotates").getUri());
 
     assertEquals(1, dc.getChildCriteriaList().size());
     dc = dc.getChildCriteriaList().iterator().next();
-    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(Annotation.class).getTypes());
+    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(Annotation.class).getAllTypes());
     assertEquals("" + dc.getDa().getPredicateUri(),
                  getMapper(Annotation.class, "supersedes").getUri());
     assertEquals("" + dc.getOrderList().iterator().next().getDa().getPredicateUri(),
@@ -1190,7 +1190,7 @@ public class CriteriaTest extends AbstractOtmTest {
 
     assertEquals(1, dc.getChildCriteriaList().size());
     dc = dc.getChildCriteriaList().iterator().next();
-    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(AnnotationLink.class).getTypes());
+    assertEquals(dc.getDa().getRdfType(), factory.getClassMetadata(AnnotationLink.class).getAllTypes());
     assertEquals("" + dc.getDa().getPredicateUri(),
                  getMapper(AnnotationLink.class, "ann1").getUri());
   }

@@ -131,9 +131,11 @@ public class ItqlCriteria {
     ClassMetadata cm    = criteria.getClassMetadata();
     String        model = getModelUri(criteria, cm.getModel());
 
-    if (needType && cm.getType() != null)
-      qry.append(subject).append(" <rdf:type> <").append(cm.getType()).append("> in <").append(model)
-          .append("> and ");
+    if (needType) {
+      for (String type : cm.getTypes())
+        qry.append(subject).append(" <rdf:type> <").append(type).append("> in <").append(model)
+            .append("> and ");
+    }
 
     //XXX: there is problem with this auto generated where clause
     //XXX: it could potentially limit the result set returned by a trans() criteriom
