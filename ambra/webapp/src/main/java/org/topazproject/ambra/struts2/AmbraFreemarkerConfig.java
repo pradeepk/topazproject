@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Class to configure the FreeMarker templates with css and javascript files and the title of page.
@@ -92,10 +91,7 @@ public class AmbraFreemarkerConfig {
     processVirtualJournalConfig(myConfig);
 
     if (log.isTraceEnabled()){
-      Set<Entry<String, JournalConfig>> allJournals = journals.entrySet();
-      Iterator<Entry<String, JournalConfig>> iter = allJournals.iterator();
-      while (iter.hasNext()) {
-        Entry<String, JournalConfig> e = iter.next();
+      for (Entry<String, JournalConfig> e : journals.entrySet()) {
         JournalConfig j = e.getValue();
         log.trace("Journal: " + e.getKey());
         log.trace("Journal url: " + j.getUrl());
@@ -103,27 +99,18 @@ public class AmbraFreemarkerConfig {
         log.trace("Default CSS: " + printArray(j.getDefaultCss()));
         log.trace("Default JavaScript: " + printArray(j.getDefaultCss()));
         HashMap<String, String[]> map = j.getCssFiles();
-        Set<String> pageNames = map.keySet();
-        Iterator<String> pgIter = pageNames.iterator();
-        while (pgIter.hasNext()) {
-          String name = pgIter.next();
+        for (String name : map.keySet()) {
           log.trace("PageName: " + name);
           log.trace("CSS FILES: " + printArray(map.get(name)));
         }
         map = j.getJavaScriptFiles();
-        pageNames = map.keySet();
-        pgIter = pageNames.iterator();
-        while (pgIter.hasNext()) {
-          String name = pgIter.next();
+        for (String name : map.keySet()) {
           log.trace("PageName: " + name);
           log.trace("JS FILES: " + printArray(map.get(name)));
         }
 
         HashMap<String, String> m = j.getTitles();
-        pageNames = m.keySet();
-        pgIter = pageNames.iterator();
-        while (pgIter.hasNext()) {
-          String name = pgIter.next();
+        for (String name : m.keySet()) {
           log.trace("PageName: " + name);
           log.trace("Title: " + m.get(name));
         }
@@ -153,11 +140,12 @@ public class AmbraFreemarkerConfig {
     }
   }
 
-  private void loadConfig2(Configuration oneConfig) {
-      int numJournals = oneConfig.getList("ambra.freemarker.journal.name").size();
+  private void loadConfig2(Configuration configuration) {
+
+      int numJournals = configuration.getList("ambra.freemarker.journal.name").size();
       for (int k = 0; k < numJournals; k++) {
         final String journal = "ambra.freemarker.journal(" + k + ")";
-        final String journalName = oneConfig.getString(journal + ".name");
+        final String journalName = configuration.getString(journal + ".name");
         if (log.isDebugEnabled()) {
           log.debug("reading journal name: " + journalName);
         }
@@ -171,55 +159,55 @@ public class AmbraFreemarkerConfig {
         }
 
         if (jc.getDefaultTitle() == null) {
-          final String title = oneConfig.getString(journal + ".default.title");
+          final String title = configuration.getString(journal + ".default.title");
           if (title != null) {
             jc.setDefaultTitle(title);
           }
         }
 
         if (jc.getMetaDescription() == null) {
-          final String metaDescription = oneConfig.getString(journal + ".metaDescription");
+          final String metaDescription = configuration.getString(journal + ".metaDescription");
           if (metaDescription != null) {
             jc.setMetaDescription(metaDescription);
           }
         }
 
         if (jc.getMetaKeywords() == null) {
-          final String metaKeywords= oneConfig.getString(journal + ".metaKeywords");
+          final String metaKeywords= configuration.getString(journal + ".metaKeywords");
           if (metaKeywords != null) {
             jc.setMetaKeywords(metaKeywords);
           }
         }
 
         if (jc.getDisplayName() == null) {
-          final String displayName = oneConfig.getString(journal + ".displayName");
+          final String displayName = configuration.getString(journal + ".displayName");
           if (displayName != null) {
             jc.setDisplayName(displayName);
           }
         }
 
         if (jc.getArticleTitlePrefix() == null) {
-          final String articleTitlePrefix= oneConfig.getString(journal + ".articleTitlePrefix");
+          final String articleTitlePrefix= configuration.getString(journal + ".articleTitlePrefix");
           if (articleTitlePrefix != null) {
             jc.setArticleTitlePrefix(articleTitlePrefix);
           }
         }
 
         if (jc.getDefaultCss() == null) {
-          final List fileList = oneConfig.getList(journal + ".default.css.file");
+          final List fileList = configuration.getList(journal + ".default.css.file");
           String[] defaultCss;
           if (fileList.size() > 0) {
             defaultCss = new String[fileList.size()];
             Iterator iter = fileList.iterator();
             for (int i = 0; i < fileList.size(); i++) {
-              defaultCss[i] = dirPrefix + subdirPrefix + (String)iter.next();
+              defaultCss[i] = dirPrefix + subdirPrefix + iter.next();
             }
             jc.setDefaultCss(defaultCss);
           }
         }
 
         if (jc.getDefaultJavaScript() == null) {
-          final List fileList = oneConfig.getList(journal + ".default.javascript.file");
+          final List fileList = configuration.getList(journal + ".default.javascript.file");
           String javascriptFile;
           String[] defaultJavaScript;
           if (fileList.size() > 0) {
@@ -237,7 +225,7 @@ public class AmbraFreemarkerConfig {
           }
         }
 
-        final int numPages = oneConfig.getList(journal + ".page.name").size();
+        final int numPages = configuration.getList(journal + ".page.name").size();
         int numCss, numJavaScript, j;
         String pageName, page;
 
@@ -254,29 +242,29 @@ public class AmbraFreemarkerConfig {
           javaScriptFiles = new HashMap<String, String[]>();
         }
 
-        String[] cssArray = null;
-        String[] javaScriptArray = null;
+        String[] cssArray;
+        String[] javaScriptArray;
 
         for (int i = 0; i < numPages; i++) {
           page = journal + ".page(" + i + ")";
-          pageName = oneConfig.getString(page + ".name");
+          pageName = configuration.getString(page + ".name");
           if (log.isDebugEnabled())
             log.debug("Reading config for page name: " + pageName);
 
           if (!titles.containsKey(pageName)) {
-            final String title = oneConfig.getString(page + ".title");
+            final String title = configuration.getString(page + ".title");
             if (title != null) {
               titles.put(pageName, title);
             }
           }
 
           if (!cssFiles.containsKey(pageName)) {
-            Object obj = oneConfig.getProperty(page+".css");
+            Object obj = configuration.getProperty(page+".css");
             final boolean isDefined = (obj != null);
-            numCss = oneConfig.getList(page + ".css.file").size();
+            numCss = configuration.getList(page + ".css.file").size();
             cssArray = new String[numCss];
             for (j = 0; j < numCss; j++) {
-              cssArray[j] =  dirPrefix + subdirPrefix + oneConfig.getString(page + ".css.file(" + j + ")");
+              cssArray[j] =  dirPrefix + subdirPrefix + configuration.getString(page + ".css.file(" + j + ")");
             }
             if ((numCss > 0) || (numCss == 0 && isDefined)) {
               cssFiles.put(pageName, cssArray);
@@ -284,13 +272,13 @@ public class AmbraFreemarkerConfig {
           }
 
           if (!javaScriptFiles.containsKey(pageName)) {
-            Object obj = oneConfig.getProperty(page+".javascript");
+            Object obj = configuration.getProperty(page+".javascript");
             final boolean isDefined = (obj != null);
-            numJavaScript = oneConfig.getList(page + ".javascript.file").size();
+            numJavaScript = configuration.getList(page + ".javascript.file").size();
             javaScriptArray = new String[numJavaScript];
 
             for (j = 0; j < numJavaScript; j++) {
-              String fileName = oneConfig.getString(page + ".javascript.file(" + j + ")");
+              String fileName = configuration.getString(page + ".javascript.file(" + j + ")");
               String filePath;
               if (fileName.endsWith(".ftl")) {
                 filePath = subdirPrefix + fileName;
@@ -325,7 +313,7 @@ public class AmbraFreemarkerConfig {
   private void processVirtualJournalConfig (Configuration configuration) {
     final Collection<String> virtualJournals = configuration.getList(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_JOURNALS);
     String defaultVirtualJournal = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
-    JournalConfig jour = null;
+    JournalConfig jour;
 
     if ((defaultVirtualJournal != null) && (!"".equals(defaultVirtualJournal))) {
       jour = journals.get(defaultVirtualJournal);
@@ -335,13 +323,11 @@ public class AmbraFreemarkerConfig {
       }
     }
 
-    final Iterator allJournals = virtualJournals.iterator();
-    while(allJournals.hasNext()) {
-      final String journalName = (String) allJournals.next();
+    for (final String journalName : virtualJournals) {
       jour = journals.get(journalName);
       if (jour != null) {
         jour.setUrl(configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS +
-                                            "." + journalName + ".url"));
+            "." + journalName + ".url"));
       }
     }
   }
@@ -350,8 +336,8 @@ public class AmbraFreemarkerConfig {
    * Gets the title for the given template and journal name.
    * Return the default value if not defined
    *
-   * @param templateName
-   * @param journalName
+   * @param templateName Template name
+   * @param journalName Journal name
    * @return Returns the title given a template name.
    */
   public String getTitle(String templateName, String journalName) {
@@ -397,7 +383,7 @@ public class AmbraFreemarkerConfig {
   /**
    * Gets title for page defined in templateName and uses the defaultJournal name
    *
-   * @param templateName
+   * @param templateName Template name
    * @return page title
    */
   public String getTitle(String templateName) {
@@ -408,8 +394,8 @@ public class AmbraFreemarkerConfig {
    * Gets the array of CSS files associated with templateName and journalName
    * or returns the default values if not available.
    *
-   * @param templateName
-   * @param journalName
+   * @param templateName Template name
+   * @param journalName Journal name
    * @return Returns list of css files given a template name.
    */
   public String[] getCss(String templateName, String journalName) {
@@ -436,7 +422,7 @@ public class AmbraFreemarkerConfig {
   /**
    * Retrieves css files for given page in the default journal
    *
-   * @param templateName
+   * @param templateName Template name
    * @return array of css filename for the page
    */
   public String[] getCss (String templateName){
@@ -447,8 +433,8 @@ public class AmbraFreemarkerConfig {
    * Gets the array of JavaScript files associated with templateName and journalName
    * or returns the default values if not available.
    *
-   * @param templateName
-   * @param journalName
+   * @param templateName Template name
+   * @param journalName Journal name
    * @return Returns the list of JavaScript files given a template name.
    */
   public String[] getJavaScript(String templateName, String journalName) {
@@ -475,7 +461,7 @@ public class AmbraFreemarkerConfig {
   /**
    * Gets the array of javascript files for the default journal and the specificed page name
    *
-   * @param templateName
+   * @param templateName Template name
    * @return list of javascript files for the given page
    */
   public String[] getJavaScript (String templateName){
@@ -485,7 +471,7 @@ public class AmbraFreemarkerConfig {
   /**
    * Gets meta keywords for journal
    *
-   * @param journalName
+   * @param journalName Journal name
    * @return meta keywords
    */
   public String getMetaKeywords(String journalName) {
@@ -506,7 +492,7 @@ public class AmbraFreemarkerConfig {
   /**
    * gets meta description for journal
    *
-   * @param journalName
+   * @param journalName Journal name
    * @return meta description
    */
   public String getMetaDescription(String journalName) {
@@ -527,7 +513,7 @@ public class AmbraFreemarkerConfig {
   /**
    * Gets display name for journal
    *
-   * @param journalName
+   * @param journalName Journal name
    * @return display name
    */
   public String getDisplayName(String journalName) {
@@ -549,7 +535,7 @@ public class AmbraFreemarkerConfig {
   /**
    * gets prefix for article title
    *
-   * @param journalName
+   * @param journalName Journal name
    * @return article title prefix
    */
   public String getArticleTitlePrefix (String journalName) {
@@ -703,7 +689,7 @@ public class AmbraFreemarkerConfig {
   /**
    * Returns the URL for a given journal given its key
    *
-   * @param journalKey
+   * @param journalKey Journal key
    * @return URL of journal
    */
   public String getJournalUrl (String journalKey) {
