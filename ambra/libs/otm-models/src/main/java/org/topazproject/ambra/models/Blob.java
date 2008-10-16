@@ -30,6 +30,7 @@ import org.topazproject.otm.annotations.Entity;
  */
 @Entity()
 public abstract class Blob implements Serializable {
+  private static final long serialVersionUID = -783693796375733488L;
   private byte[] body;
 
   /**

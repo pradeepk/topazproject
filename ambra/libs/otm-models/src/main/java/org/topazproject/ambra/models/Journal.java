@@ -32,10 +32,11 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(types = {"plos:Journal"}, model = "ri")
 public class Journal extends Aggregation {
+  private static final long serialVersionUID = -934335511929534393L;
   private String  key;
   private String  eIssn;
   private URI currentIssue;
-  private List<URI> volumes = new ArrayList();
+  private List<URI> volumes = new ArrayList<URI>();
   private URI image;
 
   /**

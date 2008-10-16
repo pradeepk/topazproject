@@ -22,7 +22,6 @@ import java.net.URI;
 
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
-import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -38,6 +37,7 @@ import org.topazproject.otm.annotations.UriPrefix;
 @Entity(types = {Reply.RDF_TYPE})
 @UriPrefix(Reply.NS)
 public class Reply extends Annotea {
+  private static final long serialVersionUID = -7017370426011708052L;
   public static final String RDF_TYPE = Reply.NS + "Reply";
   /**
    * Thread Namespace

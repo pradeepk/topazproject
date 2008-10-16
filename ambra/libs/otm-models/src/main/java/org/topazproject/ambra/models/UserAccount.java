@@ -37,6 +37,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(types = {"foaf:OnlineAccount"}, model = "users")
 public class UserAccount implements Serializable {
+  private static final long serialVersionUID = 5552880968060090198L;
   /** the state indicating the user account is active: {@value} */
   public static final int ACNT_ACTIVE    = 0;
   /** the state indicating the user account is suspended: {@value} */

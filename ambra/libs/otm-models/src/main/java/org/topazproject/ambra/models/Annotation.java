@@ -32,6 +32,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(types = {Annotation.RDF_TYPE})
 public abstract class Annotation extends Annotea {
+  private static final long serialVersionUID = -8982085063664548872L;
   private URI                                                               id;
   private URI                                                               annotates;
   private String                                                            context;

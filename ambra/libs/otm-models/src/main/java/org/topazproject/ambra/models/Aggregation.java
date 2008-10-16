@@ -43,11 +43,12 @@ import org.topazproject.otm.criterion.DetachedCriteria;
  */
 @Entity(types = {"http://purl.org/dc/dcmitype/Collection"}, model = "ri")
 public class Aggregation implements Serializable {
+  private static final long serialVersionUID = -5388685823985053203L;
   private URI                            id;
   private EditorialBoard                 editorialBoard;
   private DublinCore                     dublinCore;
-  private List<URI>                      simpleCollection = new ArrayList();
-  private List<DetachedCriteria>         smartCollectionRules = new ArrayList();
+  private List<URI>                      simpleCollection = new ArrayList<URI>();
+  private List<DetachedCriteria>         smartCollectionRules = new ArrayList<DetachedCriteria>();
   private Aggregation                    supersedes;
   private Aggregation                    supersededBy;
 

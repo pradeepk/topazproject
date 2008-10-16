@@ -29,6 +29,7 @@ import org.topazproject.otm.annotations.Id;
  */
 @Entity()
 public class ReplyBlob extends Blob {
+  private static final long serialVersionUID = -1561876836328885263L;
   private String id;
 
   /**

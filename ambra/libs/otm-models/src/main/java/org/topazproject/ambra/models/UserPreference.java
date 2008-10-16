@@ -34,6 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "preferences")
 public class UserPreference implements Serializable {
+  private static final long serialVersionUID = 6852214623240068537L;
   private URI    id;
   private String name;
   private String[] values;

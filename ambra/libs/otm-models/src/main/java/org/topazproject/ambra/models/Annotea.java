@@ -201,7 +201,7 @@ public abstract class Annotea implements Serializable {
   /**
    * Gets the created date as a formatted String in UTC.
    *
-   * @retun created date as a string
+   * @return created date as a string
    */
   public String getCreatedAsString() {
     if (created == null)

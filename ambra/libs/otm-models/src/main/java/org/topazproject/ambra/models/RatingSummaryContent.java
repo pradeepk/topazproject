@@ -38,6 +38,8 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix("topaz:RatingSummaryContent/")
 @Entity(model = "ri", types = {"topaz:RatingSummaryContent"})
 public class RatingSummaryContent implements Serializable {
+  private static final long serialVersionUID = -1692051472824346967L;
+
   private String id;
 
   private int    insightNumRatings;
@@ -85,9 +87,9 @@ public class RatingSummaryContent implements Serializable {
   /**
    * Constructor - For aggregating {@link RatingContent}s that 
    * are representative of single valued ratings.
-   * @param singleRatingNumRatings
-   * @param singleRatingTotal
-   * @param numUsersThatRated
+   * @param singleRatingNumRatings number of single value ratings
+   * @param singleRatingTotal the total ratings
+   * @param numUsersThatRated the number of users who rated
    */
   public RatingSummaryContent(int singleRatingNumRatings, double singleRatingTotal,
       int numUsersThatRated) {
@@ -345,7 +347,7 @@ public class RatingSummaryContent implements Serializable {
    * Set the number of ratings.
    *
    * @param ratingType Type of Rating.
-   * @param numRatings
+   * @param numRatings the number of ratings
    */
   public void assignNumRatings(String ratingType, int numRatings) {
 

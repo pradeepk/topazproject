@@ -57,10 +57,10 @@ public class TrackbackContent implements Serializable {
   /**
    * Creates a new TrackbackContent object with specified values.
    *
-   * @param title
-   * @param excerpt
-   * @param blog_name
-   * @param url
+   * @param title the title from the track back
+   * @param excerpt the excerpt from the track back
+   * @param blog_name the name of the blog
+   * @param url the track back url
    */
   public TrackbackContent(String title, String excerpt, String blog_name, URL url) {
     this.title = title;

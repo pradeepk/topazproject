@@ -38,10 +38,11 @@ import org.topazproject.otm.annotations.Predicate;
   */
 @Entity(types = {"plos:EditorialBoard"}, model = "ri")
 public class EditorialBoard implements Serializable {
+  private static final long serialVersionUID = -6743645522997185310L;
   private URI            id;
   private EditorialBoard supersedes;
   private EditorialBoard supersededBy;
-  private List<UserProfile>      editors = new ArrayList();
+  private List<UserProfile>      editors = new ArrayList<UserProfile>();
 
   /**
    * Get id.

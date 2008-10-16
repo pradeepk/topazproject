@@ -18,9 +18,6 @@
  */
 package org.topazproject.ambra.models.support.fedora;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.topazproject.fedora.otm.DefaultFedoraBlob;
 
 import org.topazproject.otm.ClassMetadata;
@@ -31,7 +28,6 @@ import org.topazproject.otm.ClassMetadata;
  * @author Pradeep Krishnan
  */
 public class RepresentationFedoraBlob extends DefaultFedoraBlob {
-  private static final Log log          = LogFactory.getLog(RepresentationFedoraBlob.class);
   private String           contentType;
   private String           contentModel;
 

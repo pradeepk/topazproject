@@ -18,10 +18,6 @@
  */
 package org.topazproject.ambra.models;
 
-import java.net.URI;
-
-import java.util.Date;
-
 import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
@@ -39,6 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity()
 public abstract class ArticleAnnotation extends Annotation {
+  private static final long serialVersionUID = -1459464321766238970L;
   private AnnotationBlob body;
 
   /**

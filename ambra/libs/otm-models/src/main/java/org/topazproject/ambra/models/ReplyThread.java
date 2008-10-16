@@ -31,6 +31,7 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Pradeep Krishnan
  */
 public class ReplyThread extends Reply {
+  private static final long serialVersionUID = -9038228618699242422L;
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**

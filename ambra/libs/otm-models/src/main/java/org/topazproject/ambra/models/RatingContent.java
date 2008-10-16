@@ -39,6 +39,8 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix("topaz:RatingContent/")
 @Entity(model = "ri", types = {"topaz:RatingContent"})
 public class RatingContent implements Serializable {
+  private static final long serialVersionUID = -8354040136278478548L;
+
   /**
    * Weight to use for single-rating calculation.
    */
@@ -71,12 +73,12 @@ public class RatingContent implements Serializable {
 
   /**
    * Constructor - Used for single ratings (just one overall rating "category")
-   * @param singleRatingValue
-   * @param commentTitle
-   * @param commentValue
+   * 
+   * @param singleRatingValue the rating value to assign
+   * @param commentTitle the comment title
+   * @param commentValue the comment body
    */
   public RatingContent(int singleRatingValue, String commentTitle, String commentValue) {
-    super();
     this.singleRatingValue   = singleRatingValue;
     this.commentTitle        = commentTitle;
     this.commentValue        = commentValue;
@@ -84,6 +86,12 @@ public class RatingContent implements Serializable {
 
   /**
    * Creates a new RatingContent object with specified values.
+   * 
+   * @param insight the insight rating value
+   * @param reliability the reliability rating value
+   * @param style the style rating value
+   * @param commentTitle the comment title
+   * @param commentValue the comment body
    */
   public RatingContent(int insight, int reliability, int style, String commentTitle,
                        String commentValue) {

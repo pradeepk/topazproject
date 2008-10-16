@@ -77,8 +77,8 @@ import org.topazproject.fedora.otm.FedoraBlobStore;
  */
 public class ModelsTest {
   private SessionFactory factory = new SessionFactoryImpl();
-  private Class[]        classes =
-    new Class[] {
+  private Class<?>[]        classes =
+    new Class<?>[] {
                   Annotation.class, Annotea.class, Article.class, AuthenticationId.class,
                   Category.class, Citation.class, Comment.class, Correction.class, DublinCore.class,
                   FoafPerson.class, ObjectInfo.class, Ambra.class, Rating.class, RatingContent.class,
@@ -98,7 +98,7 @@ public class ModelsTest {
   @Test
   public void preloadTest() throws OtmException {
     factory.addAlias("annoteaBodyId", "info:fedora/");
-    for (Class c : classes)
+    for (Class<?> c : classes)
       factory.preload(c);
 
     factory.validate();

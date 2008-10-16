@@ -37,6 +37,7 @@ import org.topazproject.otm.mapping.Mapper;
  */
 @Entity(model = "ri", types = {"topaz:Representation"})
 public class Representation extends Blob implements PostLoadEventListener, PreInsertEventListener {
+  private static final long serialVersionUID = 8927830952382002736L;
   private String                                                           id;
   private String                                                           name;
   private String                                                           contentType;
@@ -160,7 +161,6 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
    * Set the last-modified date.
    *
    * @param lastModified the date the object was last modified
-   * @see #getModified
    */
   @Predicate(uri = "dcterms:modified", dataType = "xsd:dateTime")
   public void setLastModified(Date lastModified) {

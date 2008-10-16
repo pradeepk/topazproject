@@ -30,6 +30,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
   @Entity(types = {"plos:Issue"}, model = "ri")
 public class Issue extends Aggregation {
+  private static final long serialVersionUID = -4532961080689709771L;
   private String displayName;
   private URI image;
 

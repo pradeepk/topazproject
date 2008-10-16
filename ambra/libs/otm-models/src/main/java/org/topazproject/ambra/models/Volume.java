@@ -35,6 +35,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(types = {"plos:Volume"}, model = "ri")
 public class Volume extends Aggregation {
+  private static final long serialVersionUID = -8134172321127413292L;
   private String displayName;
   private URI image;
 
@@ -100,6 +101,7 @@ public class Volume extends Aggregation {
 
   /**
    * Retrieves an ordered list of issue DOIs contained in this volume
+   *
    * @return ordered list of issue DOIs contained in this volume. 
    */
   public List<URI> getIssueList() {
@@ -118,7 +120,8 @@ public class Volume extends Aggregation {
 
   /**
    * Set the ordered list of issue DOIs contained in this volume
-   * @param issueList
+   *
+   * @param issueList the list of issues
    */
   @Predicate(uri = "dcterms:issueList", collectionType = CollectionType.RDFSEQ)
   public void setIssueList(List<URI> issueList) {

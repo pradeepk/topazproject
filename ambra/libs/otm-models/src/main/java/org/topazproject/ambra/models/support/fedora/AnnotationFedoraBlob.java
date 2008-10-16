@@ -18,10 +18,6 @@
  */
 package org.topazproject.ambra.models.support.fedora;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-
 import org.topazproject.ambra.models.AnnotationBlob;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.fedora.otm.DefaultFedoraBlob;
@@ -37,8 +33,6 @@ import org.topazproject.otm.mapping.java.ClassBinder;
  * @author Pradeep Krishnan
  */
 public class AnnotationFedoraBlob extends DefaultFedoraBlob {
-  private static final Log log = LogFactory.getLog(AnnotationFedoraBlob.class);
-
   /**
    * Creates a new AnnotationFedoraBlob object.
    *
@@ -70,8 +64,8 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
    * @throws Error if the ClassMetadata is for an entity that we don't handle
    */
   public String getContentModel() {
-    ClassBinder b = (ClassBinder) getClassMetadata().getEntityBinder(EntityMode.POJO);
-    Class       c = b.getSourceClass();
+    ClassBinder<?> b = (ClassBinder<?>) getClassMetadata().getEntityBinder(EntityMode.POJO);
+    Class<?>       c = b.getSourceClass();
 
     if (AnnotationBlob.class.isAssignableFrom(c))
       return "Annotation";
@@ -92,8 +86,8 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
    * @throws Error if the ClassMetadata is for an entity that we don't handle
    */
   public String getDatastreamLabel() {
-    ClassBinder b = (ClassBinder) getClassMetadata().getEntityBinder(EntityMode.POJO);
-    Class       c = b.getSourceClass();
+    ClassBinder<?> b = (ClassBinder<?>) getClassMetadata().getEntityBinder(EntityMode.POJO);
+    Class<?>       c = b.getSourceClass();
 
     if (AnnotationBlob.class.isAssignableFrom(c))
       return "Annotation Body";
@@ -110,6 +104,10 @@ public class AnnotationFedoraBlob extends DefaultFedoraBlob {
   }
 
   /**
+   * Purge test. Always true.
+   * 
+   * @param con the fedora connection handle
+   * 
    * @return true, because we only use a single datastream per object
    */
   protected Boolean canPurgeObject(FedoraConnection con) {

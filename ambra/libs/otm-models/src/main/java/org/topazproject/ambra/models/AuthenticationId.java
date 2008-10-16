@@ -35,6 +35,8 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "users")
 public class AuthenticationId implements Serializable {
+  private static final long serialVersionUID = -8238246091436588024L;
+
   private static final String DEF_REALM = "local";
 
   private URI id;

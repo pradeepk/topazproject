@@ -34,6 +34,7 @@ import org.topazproject.otm.annotations.Predicate;
  */
 @Entity(model = "users")
 public class UserRole implements Serializable {
+  private static final long serialVersionUID = 5354238965669244098L;
   private URI    id;
   private String role;
 
@@ -45,6 +46,8 @@ public class UserRole implements Serializable {
 
   /**
    * Create new role given role.
+   *
+   * @param role the role
    */
   public UserRole(String role) {
     this.role = role;
