@@ -407,12 +407,15 @@ public class SessionImpl extends AbstractSession {
   public void delayedLoadComplete(Object o, Mapper field) throws OtmException {
     Id id = checkObject(null, o, true, false);
 
-    if (log.isDebugEnabled())
-      log.debug("loaded lazy loaded field '" + field.getName() + "' on " + id, 
-          trimStackTrace(new Throwable("trimmed-stack-trace"), 3, 8));
-
-    if (deleteMap.get(id) != null)
+    if ((deleteMap.get(id) != null) || (currentGets.get(id) != null)) {
+      if (log.isDebugEnabled())
+        log.debug("delayedLoadComplete ignored for '" + field.getName() + "' on " + id);
       return;
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("delayedLoadComplete for '" + field.getName() + "' on " + id, 
+          trimStackTrace(new Throwable("trimmed-stack-trace"), 3, 8));
 
     if (interceptor != null)
       interceptor.onPostRead(this, id.getClassMetadata(), id.getId(), o, field);
