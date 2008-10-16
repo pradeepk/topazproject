@@ -193,6 +193,7 @@ public class Representation extends Blob implements PostLoadEventListener, PreIn
 
   public void onPostLoad(Session session, Object object) {
     modified = false;
+    blobModified = false;
   }
 
   public void onPostLoad(Session session, Object object, Mapper field) {
