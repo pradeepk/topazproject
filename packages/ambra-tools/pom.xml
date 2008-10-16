@@ -17,6 +17,8 @@
       <groupId>org.topazproject</groupId>
       <artifactId>ambra-scripts</artifactId>
       <version>${pom.version}</version>
+     <type>jar</type>
+     <classifier>scripts</classifier>
     </dependency>
   </dependencies>
 
@@ -91,6 +93,9 @@
                   <sources>
                     <source>
                       <location>${project.build.directory}/${project.build.finalName}-ambra-tools.dir/lib</location>
+                      <excludes>
+                        <exclude>ambra-script*.jar</exclude>
+                      </excludes>
                     </source>
                   </sources>
                 </mapping>

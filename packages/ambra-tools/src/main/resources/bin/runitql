@@ -17,8 +17,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Load the common functions
-. /usr/local/topaz/bin/tools
-
-java -cp `getJars` RunItql "$@"
+/usr/local/topaz/bin/rungroovy /usr/local/topaz/scripts/RunItql.groovy "$@"
 exit $?

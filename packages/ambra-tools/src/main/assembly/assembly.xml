@@ -40,23 +40,19 @@
         <include>*:jar</include>
       </includes>
     </dependencySet>
+
     <dependencySet>
+      <outputDirectory>/scripts</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
       <unpackOptions>
         <excludes>
           <exclude>META-INF/**</exclude>
-          <exclude>org/**</exclude>
-          <exclude>RunItql*</exclude>
-          <exclude>RunGroovy*</exclude>
         </excludes>
-        <includes>
-          <include>scripts/*</include>
-        </includes>
       </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>org.topazproject:ambra-scripts:jar</include>
+        <include>org.topazproject:ambra-scripts:jar:scripts</include>
       </includes>
     </dependencySet>
   </dependencySets>
