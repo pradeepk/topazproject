@@ -17,5 +17,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-/usr/local/topaz/bin/rungroovy /usr/local/topaz/scripts/org/topazproject/ambra/sip/PrepareSIP.groovy "$@"
+/usr/local/topaz/bin/run-groovy /usr/local/topaz/scripts/org/topazproject/ambra/sip/PrepareSIP.groovy "$@"
 exit $?

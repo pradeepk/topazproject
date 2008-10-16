@@ -18,7 +18,7 @@
 # limitations under the License.
 
 # Load the common functions
-. /usr/local/topaz/bin/tools
+. /usr/local/topaz/bin/commons-funcs
 
-java -cp `getJars` RunGroovy "$@"
+java -cp `getJars` groovy.ui.GroovyMain /usr/local/topaz/scripts/RunGroovy.groovy "$@"
 exit $?
