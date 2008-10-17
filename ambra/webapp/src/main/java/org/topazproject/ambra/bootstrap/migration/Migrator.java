@@ -103,7 +103,7 @@ public class Migrator implements ServletContextListener {
       // Now do the main stuff (switch over to new)
       tx = sess.beginTransaction(false, 60*60);
       count += migrateArticleParts(sess) +
-        migrateReps(sess);
+        migrateReps(sess) + addXsdIntToTopazState(sess);
       tx.commit();
       tx = null;
       // Now do the cleanup of stuff that new app doesn't care about
@@ -504,5 +504,78 @@ public class Migrator implements ServletContextListener {
     }
 
     return cnt;
+  }
+
+  /**
+   * Add xsd:int to topaz:state.
+   *
+   * @param sess the otm session to use
+   * @return the number of migrations performed
+   * @throws OtmException on an error
+   */
+  public int addXsdIntToTopazState(Session sess) throws OtmException {
+    String marker = "<migrator:migrations> <method:addXsdIntToTopazState> ";
+    log.info("Adding xsd:int to topaz:state fields ...");
+
+    // FIXME: Remove the marker. Blocked on  http://mulgara.org/trac/ticket/153
+    Results r = sess.doNativeQuery("select $o from <" + RI + "> where " + marker + "$o;");
+
+    if (r.next() && "1".equals(r.getString(0))) {
+     log.info("Marker statement says this migration is already done.");
+     // log.info("Did not find any <topaz:state> statements without an <xsd:int> data-type.");
+      return 0;
+    }
+
+    r = sess.doNativeQuery("select $s $o from <" + RI + "> where $s <topaz:state> $o;");
+    Map<String, String> map = new HashMap<String, String>();  // not that many; so this is fine.
+    while(r.next()) {
+      Results.Literal v = r.getLiteral(1);
+      if (v.getDatatype() == null)
+        map.put(r.getString(0), v.getValue());
+    }
+
+    StringBuffer b = new StringBuffer(2500);
+    b.append("delete ");
+    for (String k : map.keySet()) {
+      b.append("<" + k + "> <topaz:state> '" + map.get(k) + "' ");
+      if (b.length() > 2000) {
+        b.append(" from <" + RI + ">;");
+        if (log.isDebugEnabled())
+          log.debug(b.toString());
+        sess.doNativeUpdate(b.toString());
+        b.setLength(0);
+        b.append("delete ");
+      }
+    }
+
+    if (b.length() > 7) {
+      b.append(" from <" + RI + ">;");
+      if (log.isDebugEnabled())
+        log.debug(b.toString());
+      sess.doNativeUpdate(b.toString());
+    }
+
+    b.setLength(0);
+    b.append("insert ");
+    for (String k : map.keySet()) {
+      b.append("<" + k + "> <topaz:state> '" + map.get(k) + "'^^<xsd:int> ");
+      if (b.length() > 2000) {
+        b.append(" into <" + RI + ">;");
+        if (log.isDebugEnabled())
+          log.debug(b.toString());
+        sess.doNativeUpdate(b.toString());
+        b.setLength(0);
+        b.append("insert ");
+      }
+    }
+
+    b.append(marker).append("'1' into <" + RI + ">;");
+    if (log.isDebugEnabled())
+      log.debug(b.toString());
+    sess.doNativeUpdate(b.toString());
+
+    log.warn("Added ^^<xsd:int> to " + map.size() + " <topaz:state> literals.");
+
+    return map.size();
   }
 }

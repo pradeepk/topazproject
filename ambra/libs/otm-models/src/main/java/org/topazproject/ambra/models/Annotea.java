@@ -180,7 +180,7 @@ public abstract class Annotea<T> implements Serializable {
    *
    * @param state the value to set.
    */
-  @Predicate(uri = "topaz:state", dataType = Predicate.UNTYPED)
+  @Predicate(uri = "topaz:state")
   public void setState(int state) {
     this.state = state;
   }
