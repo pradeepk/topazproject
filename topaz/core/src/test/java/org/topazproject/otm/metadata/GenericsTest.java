@@ -262,9 +262,14 @@ public class GenericsTest extends TestCase {
     public void setU(U[] a) {}
   }
 
+  @UriPrefix("a:")
+  @Entity(name="AAA")
+  public static class AAA<R extends Assoc, S> extends AA<R, S> {
+  }
+
   @UriPrefix("b:")
   @Entity(name="AB")
-  public static class AB extends AA<Extended, String> {
+  public static class AB extends AAA<Extended, String> {
   }
 
 

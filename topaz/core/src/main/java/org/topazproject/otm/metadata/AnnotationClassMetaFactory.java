@@ -263,7 +263,7 @@ public class AnnotationClassMetaFactory {
                                          ParameterizedType psup,
                                          Map<String, PropertyDefFactory> factories)
                                   throws OtmException {
-    for (Method m : ((Class) psup.getRawType()).getDeclaredMethods()) {
+    for (Method m : ((Class) psup.getRawType()).getMethods()) {
       if (!isAnnotated(m))
         continue;
 
