@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -231,7 +230,7 @@ public class CacheManager implements CacheListener, ObjectListener {
                   + txn);
 
       boolean committed = (status == Status.STATUS_COMMITTED);
-      if ((locked == false) && committed)
+      if (!locked && committed)
         log.warn("afterCompletion: called without acquiring the update-lock");
 
       CacheEvent ev;
