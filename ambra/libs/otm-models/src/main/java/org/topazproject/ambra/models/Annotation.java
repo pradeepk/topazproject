@@ -28,16 +28,18 @@ import org.topazproject.otm.annotations.Predicate;
 /**
  * Annotation meta-data.
  *
+ * @param <T> The annotation body type
+ * 
  * @author Pradeep Krishnan
  */
 @Entity(types = {Annotation.RDF_TYPE})
-public abstract class Annotation extends Annotea {
+public abstract class Annotation<T> extends Annotea<T> {
   private static final long serialVersionUID = -8982085063664548872L;
   private URI                                                               id;
   private URI                                                               annotates;
   private String                                                            context;
-  private Annotation                                                        supersedes;
-  private Annotation                                                        supersededBy;
+  private Annotation<T>                                                     supersedes;
+  private Annotation<T>                                                     supersededBy;
   public static final String RDF_TYPE = Annotea.W3C_NS + "Annotation";
 
   /**
@@ -89,7 +91,7 @@ public abstract class Annotation extends Annotea {
    *
    * @return supersedes.
    */
-  public Annotation getSupersedes() {
+  public Annotation<T> getSupersedes() {
     return supersedes;
   }
 
@@ -99,7 +101,7 @@ public abstract class Annotation extends Annotea {
    * @param supersedes the value to set.
    */
   @Predicate(uri = "dcterms:replaces")
-  public void setSupersedes(Annotation supersedes) {
+  public void setSupersedes(Annotation<T> supersedes) {
     this.supersedes = supersedes;
   }
 
@@ -108,7 +110,7 @@ public abstract class Annotation extends Annotea {
    *
    * @return supersededBy.
    */
-  public Annotation getSupersededBy() {
+  public Annotation<T> getSupersededBy() {
     return supersededBy;
   }
 
@@ -118,7 +120,7 @@ public abstract class Annotation extends Annotea {
    * @param supersededBy the value to set.
    */
   @Predicate(uri = "dcterms:isReplacedBy")
-  public void setSupersededBy(Annotation supersededBy) {
+  public void setSupersededBy(Annotation<T> supersededBy) {
     this.supersededBy = supersededBy;
   }
 

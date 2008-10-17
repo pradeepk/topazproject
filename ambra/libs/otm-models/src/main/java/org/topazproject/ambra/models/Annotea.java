@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.SimpleTimeZone;
 
+import org.topazproject.otm.CascadeType;
+import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Entity;
@@ -35,12 +37,14 @@ import org.topazproject.otm.annotations.Predicate.PropType;
  * This is the base class to capture common predicates between Annotations and
  * Replies (discussion threads).
  *
+ * @param <T> The annotation body type
+ * 
  * @author Pradeep Krishnan
  */
 @Entity(model = "ri")
 @UriPrefix("annotea:")
-public abstract class Annotea implements Serializable {
-  private static final long serialVersionUID = 7228784439724175998L;
+public abstract class Annotea<T> implements Serializable {
+  private static final long serialVersionUID = 3367287552290220606L;
   private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   /**
@@ -51,13 +55,14 @@ public abstract class Annotea implements Serializable {
   public static final String W3C_TYPE_NS = "http://www.w3.org/2000/10/annotationType#";
   public static final String TOPAZ_TYPE_NS = Rdf.topaz + "2008/01/annotationType#";
 
-  private Date                                              created;
-  private String                                            type;
-  private String                                            creator;
-  private String                                            anonymousCreator;
-  private String                                            title;
-  private String                                            mediator;
-  private int                                               state;
+  private Date   created;
+  private String type;
+  private String creator;
+  private String anonymousCreator;
+  private String title;
+  private String mediator;
+  private int    state;
+  private T      body;
 
   static {
     fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
@@ -223,5 +228,24 @@ public abstract class Annotea implements Serializable {
             + ", created: " + getCreated()
             + ", creator: " + getCreator()
             + ", title: "   + getTitle() + "}";
+  }
+
+  /**
+   * Gets the body as a blob. 
+   *
+   * @return Returns the body of the article annotation
+   */
+  public T getBody() {
+    return body;
+  }
+
+  /**
+   * Sets the blob for the body.
+   *
+   * @param body The body of the article annotation
+   */
+  @Predicate(uri = "annotea:body", cascade = { CascadeType.child}, fetch = FetchType.eager)
+  public void setBody(T body) {
+    this.body = body;
   }
 }

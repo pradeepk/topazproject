@@ -18,10 +18,7 @@
  */
 package org.topazproject.ambra.models;
 
-import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Predicate;
 
 /**
  * General base rating class to store a RatingSummaryContent body.
@@ -29,29 +26,6 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Stephen Cheng
  */
 @Entity(types = {"topaz:RatingSummaryAnnotation"})
-public class RatingSummary extends Annotation {
-  private static final long serialVersionUID = -8110763767878695617L;
-
-  private RatingSummaryContent body;
-
-  /**
-   * Creates a new RatingSummary object.
-   */
-  public RatingSummary() {
-  }
-
-  /**
-   * @return Returns the rating.
-   */
-  public RatingSummaryContent getBody() {
-    return this.body;
-  }
-
-  /**
-   * @param ratingSummaryContent The rating to set.
-   */
-  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = { CascadeType.child })
-  public void setBody(RatingSummaryContent ratingSummaryContent) {
-    this.body = ratingSummaryContent;
-  }
+public class RatingSummary extends Annotation<RatingSummaryContent> {
+  private static final long serialVersionUID = 185069387294534599L;
 }

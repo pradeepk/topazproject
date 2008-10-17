@@ -20,8 +20,6 @@ package org.topazproject.ambra.models;
 
 import java.net.URI;
 
-import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
@@ -36,8 +34,8 @@ import org.topazproject.otm.annotations.UriPrefix;
  */
 @Entity(types = {Reply.RDF_TYPE})
 @UriPrefix(Reply.NS)
-public class Reply extends Annotea {
-  private static final long serialVersionUID = -7017370426011708052L;
+public class Reply extends Annotea<ReplyBlob> {
+  private static final long serialVersionUID = 1101839685707158323L;
   public static final String RDF_TYPE = Reply.NS + "Reply";
   /**
    * Thread Namespace
@@ -46,9 +44,8 @@ public class Reply extends Annotea {
   private URI                                                           id;
   private String                                                       root;
   private String                                                       inReplyTo;
-  private ReplyBlob                                                    body;
 
-/**
+  /**
    * Creates a new Reply object.
    */
   public Reply() {
@@ -99,24 +96,6 @@ public class Reply extends Annotea {
   @Predicate(type=PropType.OBJECT)
   public void setInReplyTo(String inReplyTo) {
     this.inReplyTo = inReplyTo;
-  }
-
-  /**
-   *
-   * @return Returns the body.
-   */
-  public ReplyBlob getBody() {
-    return body;
-  }
-
-  /**
-   *
-   * @param body The body to set.
-   */
-  @Predicate(uri = "annotea:body", cascade = { CascadeType.child }, 
-             fetch = FetchType.eager) // XXX: lazy?
-  public void setBody(ReplyBlob body) {
-    this.body = body;
   }
 
   /**

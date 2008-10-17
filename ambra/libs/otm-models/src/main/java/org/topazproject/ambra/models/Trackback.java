@@ -21,9 +21,7 @@ package org.topazproject.ambra.models;
 
 import java.net.URL;
 
-import org.topazproject.otm.CascadeType;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Predicate;
 
 /**
  * Represents a trackback on a resource.
@@ -31,32 +29,14 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Stephen Cheng
  */
 @Entity(types = {"topaz:TrackbackAnnotation"})
-public class Trackback extends Annotation {
-  private static final long serialVersionUID = -1224471659454172666L;
-
-  private TrackbackContent body;
-
-  /**
-   * @return Returns the body.
-   */
-  public TrackbackContent getBody() {
-    return body;
-  }
-
-  /**
-   * @param body The body to set.
-   */
-  @Predicate(uri = "annotea:body", cascade = { CascadeType.child })
-  public void setBody(TrackbackContent body) {
-    this.body = body;
-  }
-
+public class Trackback extends Annotation<TrackbackContent> {
+  private static final long serialVersionUID = -7569629877623116742L;
   /**
    * @return Returns the url.
    */
   public URL getUrl() {
     if (getBody() != null)
-      return body.getUrl();
+      return getBody().getUrl();
     return null;
   }
 
@@ -65,7 +45,7 @@ public class Trackback extends Annotation {
    */
   public String getTitle() {
     if (getBody() != null)
-      return body.getTitle();
+      return getBody().getTitle();
     return "";
   }
 
@@ -74,7 +54,7 @@ public class Trackback extends Annotation {
    */
   public String getExcerpt() {
     if (getBody() != null)
-      return body.getExcerpt();
+      return getBody().getExcerpt();
     return "";
   }
 
@@ -83,7 +63,7 @@ public class Trackback extends Annotation {
    */
   public String getBlog_name() {
     if (getBody() != null)
-      return body.getBlog_name();
+      return getBody().getBlog_name();
     return "";
   }
 

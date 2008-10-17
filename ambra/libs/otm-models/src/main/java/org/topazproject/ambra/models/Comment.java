@@ -27,7 +27,7 @@ import org.topazproject.otm.annotations.Entity;
  */
 @Entity(types = {Comment.RDF_TYPE})
 public class Comment extends ArticleAnnotation {
-  private static final long  serialVersionUID = 7759871310632000347L;
+  private static final long serialVersionUID = 2167106987991125344L;
   public  static final String RDF_TYPE = Annotea.W3C_TYPE_NS + "Comment";
 
   public String getType() {

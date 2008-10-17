@@ -19,7 +19,6 @@
 package org.topazproject.ambra.models;
 
 import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.FetchType;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
 
@@ -34,27 +33,20 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Alex Worden
  */
 @Entity()
-public abstract class ArticleAnnotation extends Annotation {
-  private static final long serialVersionUID = -1459464321766238970L;
-  private AnnotationBlob body;
+public abstract class ArticleAnnotation extends Annotation<AnnotationBlob> {
+  private static final long serialVersionUID = 6984744078071258702L;
 
   /**
-   * Gets the body as a blob. 
+   * Gets the body as a blob. Note that the override here is only
+   * for the changed cascade type. The CascadeType.deleteOrphan is
+   * removed since the conversion of Comment to Correction re-uses
+   * the body by switching/moving the reference.
    *
    * @return Returns the body of the article annotation
    */
+  @Predicate(cascade = { CascadeType.peer, CascadeType.delete })
   public AnnotationBlob getBody() {
-    return body;
+    return super.getBody();
   }
 
-  /**
-   * Sets the blob for the body.
-   *
-   * @param body The body of the article annotation
-   */
-  @Predicate(uri = "annotea:body", cascade = { CascadeType.peer, CascadeType.delete },
-             fetch = FetchType.eager) // XXX: lazy?
-  public void setBody(AnnotationBlob body) {
-    this.body = body;
-  }
-}
+ }

@@ -28,6 +28,6 @@ import org.topazproject.otm.annotations.Entity;
  */
 @Entity(types = {Annotea.W3C_TYPE_NS + "Change"})
 public class Correction extends ArticleAnnotation {
-  private static final long serialVersionUID = -8174779804923945692L;
+  private static final long serialVersionUID = -7581290891099274371L;
 }
 

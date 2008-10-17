@@ -18,11 +18,8 @@
  */
 package org.topazproject.ambra.models;
 
-import org.topazproject.otm.CascadeType;
-import org.topazproject.otm.FetchType;
 import org.topazproject.otm.Rdf;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Predicate;
 
 /**
  * General base Rating class to store a RatingContent body.
@@ -30,8 +27,8 @@ import org.topazproject.otm.annotations.Predicate;
  * @author Stephen Cheng
  */
 @Entity(types = {Rating.RDF_TYPE})
-public class Rating extends Annotation {
-  private static final long serialVersionUID = 849445395175525204L;
+public class Rating extends Annotation<RatingContent> {
+  private static final long serialVersionUID = -3002676533472572796L;
 
   public static final String RDF_TYPE = Rdf.topaz + "RatingsAnnotation";
   /** Style */
@@ -44,29 +41,6 @@ public class Rating extends Annotation {
   public static final String OVERALL_TYPE = Rdf.topaz + "OverallRating";
   /** Single Rating */
   public static final String SINGLE_RATING_TYPE = Rdf.topaz + "SingleRating";
-
-  private RatingContent body;
-
-  /**
-   * Creates a new Rating object.
-   */
-  public Rating() {
-  }
-
-  /**
-   * @return Returns the rating.
-   */
-  public RatingContent getBody() {
-    return this.body;
-  }
-
-  /**
-   * @param rating The rating to set.
-   */
-  @Predicate(uri = "annotea:body", fetch = FetchType.eager, cascade = {CascadeType.child})
-  public void setBody(RatingContent rating) {
-    this.body = rating;
-  }
 
   public String getType() {
     return RDF_TYPE;

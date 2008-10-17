@@ -29,9 +29,11 @@ import java.io.ObjectOutputStream;
 
 import org.testng.annotations.Test;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.impl.SessionFactoryImpl;
+import org.topazproject.otm.mapping.RdfMapper;
 import org.topazproject.ambra.models.Aggregation;
 import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.AnnotationBlob;
@@ -124,6 +126,12 @@ public class ModelsTest {
     assert "Reply Body".equals(b.getDatastreamLabel());
     assert "Ambra:42".equals(b.getPid());
     assert "BODY".equals(b.getDsId());
+
+    ClassMetadata cm = factory.getClassMetadata(Rating.class);
+    RdfMapper m = cm.getMapperByUri(factory, factory.expandAlias("annotea:body"), false, null);
+    assert m != null;
+    assert m.isAssociation();
+    assert m.getAssociatedEntity().equals("RatingContent");
   }
 
   /**
