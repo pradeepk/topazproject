@@ -16,27 +16,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * This package
+ */
 package org.topazproject.ambra.article.action;
 
-import java.io.UnsupportedEncodingException;
+
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
-import org.jdom.Element;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ambra.ApplicationException;
@@ -46,569 +45,264 @@ import org.topazproject.ambra.article.service.ArticleOtmService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.cache.Cache;
 import org.topazproject.ambra.cache.AbstractObjectListener;
-import org.topazproject.ambra.configuration.ConfigurationStore;
 import org.topazproject.ambra.models.Article;
 import org.topazproject.ambra.models.Category;
-import org.topazproject.ambra.models.Citation;
 import org.topazproject.ambra.models.DublinCore;
 import org.topazproject.ambra.models.Representation;
-import org.topazproject.ambra.models.UserProfile;
 import org.topazproject.ambra.models.Journal;
-import org.topazproject.ambra.util.ArticleXMLUtils;
 import org.topazproject.ambra.web.VirtualJournalContext;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Interceptor;
-
-import com.sun.syndication.feed.WireFeed;
-import com.sun.syndication.feed.atom.Content;
-import com.sun.syndication.feed.atom.Entry;
-import com.sun.syndication.feed.atom.Feed;
-import com.sun.syndication.feed.atom.Link;
-import com.sun.syndication.feed.atom.Person;
+import com.opensymphony.xwork2.ModelDriven;
 
 /**
- * Get a variety of Article Feeds.
+ * <h4>Description</h4>
+ * The <code>class ArticleFeed</code> provides an API for criteria based retrieval
+ * of articles and article information. The <code>class ArticleFeed</code> implements the Struts ModelDriven
+ * interface. The data model used for <code>ArticleFeed</code> is <code>class Key</code>. The
+ * the field <code>ArticleFeed.cacheKey</code> is accessible to Struts through the <code>ArticleFeed.getModel</code> and
+ * <code>ArticleFeed.getCacheKey</code> bean getter. The ModelDriven Interceptor parses the input parameters, converts
+ * them to the appropriate Java types then assigns them to fields in the data model.
+ * <p>
+ * The <code>ArticleFeed.cacheKey</code> serves the following purposes:
+ * <ul>
+ * <li> Receives and validates the parameters passed in during a Post/Get.
+ * <li> Uses these parameters to compute a hashcode for cache lookups.
+ * <li> Used to pass these parameters to AmbraFeedResult via the ValueStack.
+ * <li> Registers a cache Invalidator as a cache listner.
+ * </ul>
+ * <p>
+ * ArticleFeed implements the <code>ArticleFeed.exceute</code> and <code>ArticleFeed.validate</code> Struts entry points.
+ * The <code>ArticleFeed.validate</code> method assigns default values to fields not provided by user input
+ * and checks parameters that are provided by the user. By the time Struts invokes the
+ * <code>ArticleFeed.execute</code> all model data variables should be in a known and exceptable state
+ * for execution. <code>ArticleFeed.execute</code> first checks the feed cache for identical queries or calls
+ * <code>ArticleFeed.getFeedData</code> if there is a miss. A list of article ID's is the result. It is up to
+ * the result handler to fetch the articles and serialize the output.
+ * <p>
+ * <ul>
+ * <li>Define a hard limit of 200 articles returned in one query.
+ * <li>If startDate > endDate then startDate set to endDate.
+ * </ul>
+ *  
+ * <h4>Action URI</h4>
+ * http://.../article/feed
+ * <h4>Parameters</h4>
+ * <pre>
+ * <strong>
+ * Param        Format        Required     Default                             Description </strong>
+ * startDate ISO yyyy/MM/dd     No         -3 months             Start Date - search for articles dated >= to sDate
+ * endDate   ISO yyyy/MM/dd     No         today                 End Date - search for articles dated <= to eDate
+ * category    String           No         none                  Article Category
+ * author      String           No         none                  Article Author name ex: John+Smith
+ * relLinks    Boolean          No         false                 If relLinks=true; internal links will be relative to xmlbase
+ * extended    Boolean          No         false                 If extended=true; provide additional feed information
+ * title       String           No         none                  Sets the title of the feed
+ * selfLink    String           No         none                  URL of feed that is to be put in the feed data
+ * maxResults  Integer          No         30                    The maximun number of result to return.
+ * </pre>
+ * <h4>TODO:</h4>
+ * <pre>
+ * WTO:  Struts ActionDispatch has been subclassed to do some things I do not fully understand.
+ *       One thing that it does is dispatches /article/feed to Feed.action  the default method
+ *       of dispatching. This is probably not necessary and can be handled as configuration.
  *
- * @author Jeff Suttor
- * @author Eric Brown
+ * WTO:  Need to determine method for specifying different result types (JSON, ATOM etc).
+ *
+ * WTO:  This journal string is a mystery to me. It doesn't seem to be used any where. Keeping it for
+ *       now until I can find out what is has to do with queries.
+ * 
+ * WTO:  The journal does not seem to play a role in the query? Should it?
+ * </pre>
+ * <h4>Change History</h4>
+ * <pre><strong>
+ * Bug      Date    Initial                                Description      </strong>
+ * ##### 2008/10/10 (WTO)        Changed hash calculation to only use query parameters. Prevent cache misses due to
+ *                               hash collisons by parameters that do not affect the query results. Added maxResult
+ *                               to these calculation because it does affect the result.
+ * ##### 2008/10/9  (WTO)        Found invalidator bug. New invalidators being created with each request.
+ * ##### 2008/10/8  (WTO)        Completely reworked. Moved the wirefeed result to {@link org.topazproject.ambra.struts2.AmbraFeedResult}
+ *                               We now only cache the article IDs that result from the search. This
+ *                               enables us to target different result formats with the same query. It
+ *                               is up to the result to serialize the data.
+ * </pre>
+ * 
+ * @see       Key
+ * @see       Invalidator
+ * @see       org.topazproject.ambra.struts2.AmbraFeedResult
  */
-public class ArticleFeed extends BaseActionSupport {
-
-  private ArticleOtmService articleOtmService;
-  private Cache feedCache;
-
-  // WebWorks will set from URI param
-  private String startDate;
-  private String endDate;
-  private String category;
-  private String author;
-  private int maxResults = -1;
-  private boolean relativeLinks = false;
-  private boolean extended = false;
-  private String title;
-  private String selfLink;
-
-  // WebWorks AmbraFeedResult parms
-  private WireFeed wireFeed;
-
-  private JournalService journalService;
-  private static Invalidator invalidator;
-
-
-  /**
-   * Ambra Configuration
-   */
-  private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
+public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
-  private static final String ATOM_NS = "http://www.w3.org/2005/Atom"; // Tmp hack for categories
-
-  private ArticleXMLUtils articleXmlUtils;
+  //TODO: WTO: we need to move these to BaseAction support and standardize on result dispatching.
+  private static final String ATOM_RESULT = "ATOM1.0";   // Return value SUCCESS or ATOM_RESULT routes to AmbraFeedResult
+  private static final String JSON_RESULT = "JSON";      // Return value JSON_RESULT to route the AmbraJSONResult
 
   /**
-   * Returns a feed based on interpreting the URI.
+   * Cache invalidator (there can be only one) must be static.
+   */
+  private static Invalidator       invalidator;         // Cache listner (must be static; there can be only one!)
+  private        ArticleOtmService articleOtmService;   //**OTM service Spring injected.
+  private        Cache             feedCache;           //Feed Cache Spring injected
+  private        JournalService    journalService;      //
+  private        Key               cacheKey=new Key();  // The cache key and action data model
+  private        List<String>      articleIDs;          // List of Article IDs; result of search
+
+
+  
+  /**
+   * Try and find the query in the feed cache or query the Article OTM Service if nothing
+   * is found. The parameters are valid by this point.
    *
-   * @return webwork status code
    * @throws Exception Exception
    */
   @Transactional(readOnly = true)
   public String execute() throws Exception {
 
-    // use native HTTP to avoid WebWorks
-    HttpServletRequest request = ServletActionContext.getRequest();
-    String pathInfo = request.getPathInfo();
-    final URI uri = (pathInfo == null) ? URI.create("/") : URI.create(pathInfo);
-
-    int feedDuration = 3;
-    try {
-      feedDuration = Integer.valueOf(journalConfGetString(configuration, getCurrentJournal(),
-                                                          "ambra.services.feed.defaultDuration", "3"));
-    } catch (NumberFormatException nfe) {
-      log.error("NumberFormatException occurred parsing ambra.services.feed.defaultDuration from configuration", nfe);
-    }
-
-    // Compute startDate default as it is needed to compute cache-key (its default is tricky)
-    if (startDate == null) {
-        // default is to go back <= N months
-        GregorianCalendar monthsAgo = new GregorianCalendar();
-        monthsAgo.add(Calendar.MONTH, -feedDuration);
-        monthsAgo.set(Calendar.HOUR_OF_DAY, 0);
-        monthsAgo.set(Calendar.MINUTE, 0);
-        monthsAgo.set(Calendar.SECOND, 0);
-        startDate = monthsAgo.getTime().toString();
-    }
-    if (startDate.length() == 0)
-      startDate = null; // shortuct for no startDate, show all articles
-    if (log.isDebugEnabled()) {
-      log.debug("generating feed w/startDate=" + startDate);
-    }
-
-    // Get feed if cached or generate feed by querying OTM
-    Key cacheKey = new Key(getCurrentJournal(), ArticleOtmService.parseDateParam(startDate), ArticleOtmService.parseDateParam(endDate) ,category, author, maxResults, relativeLinks, extended, title, selfLink);
-
-
-    wireFeed = feedCache.get(cacheKey, -1,
-        new Cache.SynchronizedLookup<WireFeed, ApplicationException>(cacheKey) {
-          public WireFeed lookup() throws ApplicationException {
-            return getFeed(uri);
+    // Create a local lookup based on the feed URI.
+    Cache.Lookup<List<String>, ApplicationException> lookUp = new Cache.SynchronizedLookup<List<String>, ApplicationException>(cacheKey) {
+          public List<String> lookup() throws ApplicationException {
+            return getFeedData();
           }
-        });
+    };
 
-    // Action response type is AmbraFeedResult, it will return wireFeed as a response.
+    // Get articel ID's from the feed cache or add it 
+    articleIDs = feedCache.get(cacheKey, -1, lookUp);
 
-    // tell WebWorks success
     return SUCCESS;
   }
 
-  /*
-   * Parse the URI to generate an OTM query.  Return the results as a WireFeed.
+  /**
+   * Validate the input parameters or create defaults when they are not provided.
+   * Struts calles this automagically after the parameters are parsed and
+   * the proper fields are set in the data model. It is assumed that all
+   * necessary fields are checked for validity and created if not specified.
+   * The <code>ArticleFeed.execute</code> should be able to use them without
+   * any further checks.
    *
-   * @parm uri URI to parse to generate an OTM query.
-   * @return Query results as a WireFeed.
+   *
    */
-  private WireFeed getFeed(URI uri) throws ApplicationException {
+  @Override
+  public void validate () {
 
-    // get default values from config file
-    final String journal = getCurrentJournal();
-    // must end w/trailing slash
-    String JOURNAL_URI  = configuration.getString("ambra.virtualJournals." + journal + ".url",
-      configuration.getString("ambra.platform.webserver-url", "http://plosone.org/"));
-    if (!JOURNAL_URI.endsWith("/")) {
-        JOURNAL_URI += "/";
-    }
-    final String JOURNAL_NAME = journalConfGetString(configuration, journal,
-            "ambra.platform.name", "Public Library of Science");
-    final String JOURNAL_EMAIL_GENERAL = journalConfGetString(configuration, journal,
-            "ambra.platform.email.general", "webmaster@plos.org");
-    final String JOURNAL_COPYRIGHT = journalConfGetString(configuration, journal,
-            "ambra.platform.copyright",
-            "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
-    final String FEED_TITLE = journalConfGetString(configuration, journal,
-            "ambra.services.feed.title", "PLoS ONE");
-    final String FEED_TAGLINE = journalConfGetString(configuration, journal,
-            "ambra.services.feed.tagline", "Publishing science, accelerating research");
-    final String FEED_ICON = journalConfGetString(configuration, journal,
-            "ambra.services.feed.icon", JOURNAL_URI + "images/favicon.ico");
-    final String FEED_ID = journalConfGetString(configuration, journal,
-            "ambra.services.feed.id", "info:doi/10.1371/feed.pone");
-    final String FEED_EXTENDED_NS = journalConfGetString(configuration, journal,
-            "ambra.services.feed.extended.namespace", "http://www.plos.org/atom/ns#plos");
-    final String FEED_EXTENDED_PREFIX = journalConfGetString(configuration, journal,
-            "ambra.services.feed.extended.prefix", "plos");
+     // The cacheKey must have both the current Journal and start date.
+     // Current Journal is set here and startDate will be set in the data
+     // model validator.
+     cacheKey.setJournal(getCurrentJournal());
+     cacheKey.validate(this);
+  }
 
-    // use WebWorks to get Action URIs
-    // TODO: WebWorks ActionMapper is broken, hand-code URIs
-    final String fetchObjectAttachmentAction = "article/fetchObjectAttachment.action";
+  /*
+   * Use the OTM Service to build a list of article ID's that match the query.
+   * Build the category and author list needed by the article ID query
+   * then make the query
+   *
+   * @return Query results as a list of article ID's.
+   */
+  private List<String> getFeedData() throws ApplicationException {
 
-    // Atom 1.0 is default
-    Feed feed = new Feed("atom_1.0");
+    List<String> IDs;
 
-    feed.setEncoding("UTF-8");
-    feed.setXmlBase(JOURNAL_URI);
-
-    String xmlBase = (relativeLinks ? "" : JOURNAL_URI);
-    if (selfLink == null || selfLink.equals("")) {
-      if (uri.toString().startsWith("/")) {
-        selfLink = JOURNAL_URI.substring(0, JOURNAL_URI.length() - 1) + uri;
-      } else {
-        selfLink = JOURNAL_URI + uri;
-      }
-    }
-
-    // must link to self
-    Link self = new Link();
-    self.setRel("self");
-    self.setHref(selfLink);
-    self.setTitle(FEED_TITLE);
-    List<Link> otherLinks = new ArrayList<Link>();
-    otherLinks.add(self);
-    feed.setOtherLinks(otherLinks);
-
-    String id = FEED_ID;
-    if (category != null && category.length() > 0)
-      id += "?category=" + category;
-    if (author != null)
-      id += "?author=" + author;
-    feed.setId(id);
-
-    if (title != null)
-      feed.setTitle(title);
-    else {
-      String feedTitle = FEED_TITLE;
-      if (category != null && category.length() > 0)
-        feedTitle += " - Category " + category;
-      if (author != null)
-        feedTitle += " - Author " + author;
-      feed.setTitle(feedTitle);
-    }
-
-    Content tagline = new Content();
-    tagline.setValue(FEED_TAGLINE);
-    feed.setTagline(tagline);
-    feed.setUpdated(new Date());
-    // TODO: bug in Rome ignores icon/logo :(
-    feed.setIcon(FEED_ICON);
-    feed.setLogo(FEED_ICON);
-    feed.setCopyright(JOURNAL_COPYRIGHT);
-
-    // make PLoS the author of the feed
-    Person plos = new Person();
-    plos.setEmail(JOURNAL_EMAIL_GENERAL);
-    plos.setName(JOURNAL_NAME);
-    plos.setUri(JOURNAL_URI);
-    List<Person> feedAuthors = new ArrayList<Person>();
-    feedAuthors.add(plos);
-    feed.setAuthors(feedAuthors);
-
-    // build up OTM query, take URI params first, then sensible defaults
-
-    // ignore endDate, default is null
-
-    // was category= URI param specified?
     List<String> categoriesList = new ArrayList<String>();
-    if (category != null && category.length() > 0) {
-      categoriesList.add(category);
-      if (log.isDebugEnabled()) {
-        log.debug("generating feed w/category=" + category);
-      }
+    if (cacheKey.category != null && cacheKey.category.length() > 0) {
+      categoriesList.add(cacheKey.category);
     }
 
-    // was author= URI param specified?
     List<String> authorsList = new ArrayList<String>();
-    if (author != null) {
-      authorsList.add(author);
-      if (log.isDebugEnabled()) {
-        log.debug("generating feed w/author=" + author);
-      }
+    if (cacheKey.author != null) {
+      authorsList.add(cacheKey.author);
     }
 
-    // was maxResults= URI param specified?
-    if (maxResults <= 0) {
-      maxResults = 30;  // default
-    }
-
-    List<Article> articles;
     try {
-      articles = articleOtmService.getArticles(
-        startDate,             // start date
-        endDate,               // end date
-        categoriesList.toArray(new String[categoriesList.size()]),  // categories
-        authorsList.toArray(new String[authorsList.size()]),        // authors
-        Article.ACTIVE_STATES, // states
-        false,                 // sort by descending date
-        maxResults);           // max results
+      String start = cacheKey.sDate.toString();
+      String end = cacheKey.eDate.toString();
+
+      IDs = articleOtmService.getArticleIds(
+                     start,             // start date
+                     end,               // end date
+                     categoriesList.toArray(new String[categoriesList.size()]),  // categories
+                     authorsList.toArray(new String[authorsList.size()]),        // authors
+                     Article.ACTIVE_STATES, // states
+                     false,                 // sort by descending date
+                     cacheKey.maxResults);  // max results
     } catch (ParseException ex) {
       throw new ApplicationException(ex);
     }
 
-    if (log.isDebugEnabled()) {
-      log.debug("feed query returned " + articles.size() + " articles");
-    }
-
-    // add each Article as a Feed Entry
-    List<Entry> entries = new ArrayList<Entry>();
-    for (Article article : articles) {
-      Entry entry = new Entry();
-      DublinCore dc = article.getDublinCore();
-
-      // TODO: how much more meta-data is possible
-      // e.g. article.getDc_type(), article.getFormat(), etc.
-
-      entry.setId(dc.getIdentifier());
-
-      // respect Article specific rights
-      String rights = dc.getRights();
-      if (rights != null) {
-        entry.setRights(rights);
-      } else {
-        // default is CC BY SA 3.0
-        entry.setRights(JOURNAL_COPYRIGHT);
-      }
-
-      entry.setTitle(dc.getTitle());
-      entry.setPublished(dc.getAvailable());
-      entry.setUpdated(dc.getAvailable());
-
-      // links
-      List<Link> altLinks = new ArrayList<Link>();
-
-      // must link to self, do it first so link is favored
-      Link entrySelf = new Link();
-      entrySelf.setRel("alternate");
-      try {
-        entrySelf.setHref(xmlBase + "article/" + URLEncoder.encode(dc.getIdentifier(), "UTF-8"));
-      } catch(UnsupportedEncodingException uee) {
-        entrySelf.setHref(xmlBase + "article/" + dc.getIdentifier());
-        log.error("UTF-8 not supported?", uee);
-      }
-      entrySelf.setTitle(dc.getTitle());
-      altLinks.add(entrySelf);
-
-      // alternative representation links
-      Set<Representation> representations = article.getRepresentations();
-      if (representations != null) {
-        for (Representation representation : representations) {
-          Link altLink = new Link();
-          altLink.setHref(xmlBase + fetchObjectAttachmentAction + "?uri=" + dc.getIdentifier() + "&representation=" + representation.getName());
-          altLink.setRel("related");
-          altLink.setTitle("(" + representation.getName() + ") " + dc.getTitle());
-          altLink.setType(representation.getContentType());
-          altLinks.add(altLink);
-        }
-      }
-
-      // set all alternative links
-      entry.setAlternateLinks(altLinks);
-
-      // Authors
-      String authorNames = ""; // Sometimes added to article content for feed
-      List<Person> authors = new ArrayList<Person>();
-      Citation bc = article.getDublinCore().getBibliographicCitation();
-      if (bc != null) {
-        List<UserProfile> authorProfiles = bc.getAuthors();
-        for (UserProfile profile: authorProfiles) {
-          Person person = new Person();
-          person.setName(profile.getRealName());
-          authors.add(person);
-
-          if (authorNames.length() > 0)
-            authorNames += ", ";
-          authorNames += profile.getRealName();
-        }
-      } else // This should only happen for older, unmigrated articles
-        log.warn("No bibliographic citation (is article '" + article.getId() + "' migrated?)");
-
-      // We only want one author on the regular feed
-      if (extended)
-        entry.setAuthors(authors);
-      else if (authors.size() >= 1) {
-        List<Person> oneAuthor = new ArrayList<Person>(1);
-        String name = authors.get(0).getName();
-        Person person = new Person();
-        if (authors.size() > 1)
-          person.setName(name + " et al.");
-        else
-          person.setName(name);
-        oneAuthor.add(person);
-        entry.setAuthors(oneAuthor);
-      }
-
-      // Contributors - TODO: Get ordered list when available
-      List<Person> contributors = new ArrayList<Person>();
-      for (String contributor: article.getDublinCore().getContributors()) {
-        Person person = new Person();
-        person.setName(contributor);
-        contributors.add(person);
-      }
-      entry.setContributors(contributors);
-
-      // Add foreign markup
-      if (extended) {
-
-        // All our foreign markup
-        List<Element> foreignMarkup = new ArrayList<Element>();
-
-        // Volume & issue
-        if (extended && bc != null) {
-          // Add volume
-          if (bc.getVolume() != null) {
-            Element volume = new Element("volume", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
-            volume.setText(bc.getVolume());
-            foreignMarkup.add(volume);
-          }
-          // Add issue
-          if (bc.getIssue() != null) {
-            Element issue = new Element("issue", FEED_EXTENDED_PREFIX, FEED_EXTENDED_NS);
-            issue.setText(bc.getIssue());
-            foreignMarkup.add(issue);
-          }
-        }
-
-        Set<Category> categories = article.getCategories();
-        if (categories != null) {
-          for (Category category : categories) {
-            // TODO: How can we get NS to be automatically filled in from Atom?
-            Element feedCategory = new Element("category", ATOM_NS);
-            feedCategory.setAttribute("term", category.getMainCategory());
-            // TODO: what's the URI for our categories
-            // feedCategory.setScheme();
-            feedCategory.setAttribute("label", category.getMainCategory());
-
-            // subCategory?
-            String subCategory = category.getSubCategory();
-            if (subCategory != null) {
-              Element feedSubCategory = new Element("category", ATOM_NS);
-              feedSubCategory.setAttribute("term", subCategory);
-              // TODO: what's the URI for our categories
-              // feedSubCategory.setScheme();
-              feedSubCategory.setAttribute("label", subCategory);
-              feedCategory.addContent(feedSubCategory);
-            }
-
-            foreignMarkup.add(feedCategory);
-          }
-        }
-
-        if (foreignMarkup.size() > 0) {
-          entry.setForeignMarkup(foreignMarkup);
-        }
-      }
-
-      // atom:content
-      List <Content> contents = new ArrayList<Content>();
-      Content description = new Content();
-      description.setType("html");
-      try {
-        StringBuffer text = new StringBuffer();
-        // If this is a nomral feed (not extended) and there's more than one author, add to content
-        if ((!extended) && authors.size() > 1) {
-          text.append("<p>by ").append(authorNames).append("</p>\n");
-        }
-        if (dc.getDescription() != null) {
-          text.append(articleXmlUtils.transformArticleDescriptionToHtml(dc.getDescription()));
-        }
-        description.setValue(text.toString());
-      } catch (Exception e) {
-        log.error(e);
-        description.setValue("<p>Internal server error.</p>");
-        // keep generating feed
-      }
-      contents.add(description);
-      entry.setContents(contents);
-
-      // add completed Entry to List
-      entries.add(entry);
-    }
-
-    // set feed entries to the articles
-    feed.setEntries(entries);
-
-   return feed;
+    return IDs;
   }
 
   /**
-   * Set articleOtmService
+   * Set <code>articleOtmService</code> field to the article OTM service
+   * singleton. This
    *
-   * @param articleOtmService articleOtmService
+   * @param  articleOtmService  the object transaction model reference
    */
   public void setArticleOtmService(final ArticleOtmService articleOtmService) {
     this.articleOtmService = articleOtmService;
   }
 
   /**
-   * Set ehcache instance via spring
+   * Allows Spring to set the feed cache singleton
+   * with each new instantiation of the <code>ArticleFeed</code>. It also
+   * initializes the static field <code>invalidator</code> with a cache
+   * listener that removes cache entries when new articles are ingested or deleted.
    *
    * @param feedCache the ehcache instance
    */
   public void setFeedCache(Cache feedCache) {
     this.feedCache = feedCache;
     if (invalidator == null) {
-      invalidator = new Invalidator();
-      this.feedCache.getCacheManager().registerListener(invalidator);
+       invalidator = new Invalidator();
+       //CacheManager is a singleton and will notify all caches
+       //registered when a commit to the datastore is executed
+       this.feedCache.getCacheManager().registerListener(invalidator);
     }
   }
 
   /**
-   * Allow WebWorks to get the param wireFeed
+   * This is the results of the query which consist of a list
+   * of article ID's.
    *
-   * @return The WireFeed.
+   * @return the list of article ID's returned from the query.
    */
-  public WireFeed getWireFeed() {
-    return wireFeed;
+  public List<String> getArticleIDs() {
+    return articleIDs;
   }
 
   /**
-   * WebWorks will set from URI param.
+   * Return the cache key being used by this action.
+   * 
+   * @return  Key to the cache which is also the data model of the action
    */
-  public void setStartDate(final String startDate) {
-    this.startDate = startDate;
+  public Key getCacheKey() {
+      return this.cacheKey;
   }
 
   /**
-   * WebWorks will set from URI param.
+   * Return the a cahce key which is also the data modle for the model driven
+   * interface.
+   * 
+   * @return Key to the cache which is also the data model of the action
    */
-  public void setEndDate(final String endDate) {
-    this.endDate = endDate;
+  public Object getModel() {
+      return cacheKey;
   }
 
   /**
-   * WebWorks will set from URI param.
-   */
-  public void setCategory(final String category) {
-    this.category = category;
-  }
-
-  /**
-   * WebWorks will set from URI param.
-   */
-  public void setAuthor(final String author) {
-    this.author = author;
-  }
-
-  /**
-   * WebWorks will set from URI param.
-   */
-  public void setMaxResults(final int maxResults) {
-    this.maxResults = maxResults;
-  }
-
-  /**
-   * WebWorks will set from URI param
-   */
-  public void setRelativeLinks(final boolean relativeLinks) {
-    this.relativeLinks = relativeLinks;
-  }
-
-  /**
-   * WebWorks will set from URI param
-   */
-  public void setExtended(final boolean extended) {
-    this.extended = extended;
-  }
-
-  /**
-   * WebWroks will set from URI param
-   */
-  public void setTitle(final String title) {
-    this.title = title;
-  }
-
-  /**
-   * WebWorks will set from URI param
-   */
-  public void setSelfLink(final String selfLink) {
-    this.selfLink = selfLink;
-  }
-
-  /**
-   *  Get a String from the Configuration looking first for a Journal override.
+   * Retreive the <code>VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT</code>
+   * from the servlet container. This is set by the
+   * <code>VirtualJournalCodntextFilter.doFilter</code>
+   * 
+   * @see org.topazproject.ambra.web.VirtualJournalContextFilter
    *
-   * @param configuration to use.
-   * @param journal name.
-   * @param key to lookup.
-   * @param defaultValue if key is not found.
-   * @return value for key.
+   * @return String virtual journal of request
    */
-  private String journalConfGetString(Configuration configuration, String journal, String key,
-          String defaultValue) {
-    return configuration.getString("ambra.virtualJournals." + journal + "." + key,
-            configuration.getString(key, defaultValue));
-  }
-
   private String getCurrentJournal() {
     return ((VirtualJournalContext) ServletActionContext.getRequest().
       getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
-  }
-
-  /**
-   * Called by Spring to initialize an articleXmlUtils reference.
-   *
-   * @param articleXmlUtils The articleXmlUtils to set.
-   */
-  public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
-    this.articleXmlUtils = articleXmlUtils;
   }
 
   /**
@@ -619,218 +313,456 @@ public class ArticleFeed extends BaseActionSupport {
     this.journalService = journalService;
   }
 
-  /**
-   * Cache key for article feeds.
-   */
+ /**
+  * <h4>Description</h4>
+  * The <code>class Key</code> serves three function:
+  * <ul>
+  * <li> It provides the data model used by the action.
+  * <li> It is the cache key to the article ID's that reside in the feed cache
+  * <li> It relays these input parameters to AmbraFeedResult.
+  * </ul>
+  * Since the parameters uniquely idententfy the query they are used to
+  * generate the hash code for the key. Only the parameters that
+  * can affect query results are used for this purpose. The cache key
+  * is also made available to the AmbraFeedResult because it also
+  * contains parameters that affect the output.
+  *
+  * <h4>Parameters</h4>
+  * <pre>
+  * <strong>
+  * Param        Format        Required     Default                             Description </strong>
+  * </pre>
+  * <h4>TODO:</h4>
+  * <pre>
+  * </pre>
+  * <h4>Change History</h4>
+  * <pre><strong>
+  * Bug      Date    Initial                                Descriptiom      </strong>
+  * ##### 2008/10/13   WTO            Fixed "matches" logic to better identify items to remove from the cache.
+  * ##### 2008/10/12   WTO            Changed hash code calculation to use relative primes to reduce collisions.
+  * ##### 2008/10/11   WTO            Removed Title from hash code calc.
+  * </pre>
+  *
+  * @see       ArticleFeed
+  * @see       Invalidator
+  * @see       org.topazproject.ambra.struts2.AmbraFeedResult
+  */
   public class Key implements Serializable, Comparable {
 
     private String journal;
-    private Date startDate;
-    private Date endDate;
-    private String category;
-    private String author;
-    private int count;
-    private boolean relativeLinks;
-    private boolean extended;
-    private String title;
-    private String selfLink;
+    private Date   sDate;
+    private Date   eDate;
 
+    // Fields set by Struts 
+    private String  startDate;
+    private String  endDate;
+    private String  category;
+    private String  author;
+    private boolean relLinks = false;
+    private boolean extended = false;
+    private String  title;
+    private String  selfLink;
+    private int     maxResults;
+
+    Set<Representation> representations;
+
+    final SimpleDateFormat dateFrmt = new SimpleDateFormat("yyyy/MM/dd");
     private int hashCode;
 
-    public Key(String journal, Date startDate, Date endDate, String category, String author, int count, boolean relativeLinks, boolean extended, String title, String selfLink) {
-      this.journal = journal;
-      this.startDate = startDate;
-      this.endDate = endDate;
-      if (category != null && category.length() > 0)
-        this.category = category;
-      if (author != null && author.length() > 0)
-        this.author = author.trim();
-      this.count = count;
-      this.relativeLinks = relativeLinks;
-      this.extended = extended;
-      if (title != null && title.length() > 0)
-        this.title = title;
-      if (selfLink != null && selfLink.length() > 0)
-        this.selfLink = selfLink;
-
-      this.hashCode = calculateHashKey();
+    /**
+     * Key Constructor - currently does nothing.
+     */
+    public Key() {
+          //To change body of created methods use File | Settings | File Templates.
     }
 
+    /**
+     * Calulates a hash code based on the query parameters. Parameters that do not
+     * affect the results of the query (selfLink, relLinks, title etc) should not be included
+     * in the hash calculation because this will improve the probability of a cache hit.
+     *
+     * @return  integer hash code
+     */
+    
     private int calculateHashKey() {
-      int hash = 0;
-      if (this.journal != null)
-        hash += this.journal.hashCode();
-      if (this.startDate != null)
-        hash += this.startDate.hashCode();
-      if (this.endDate != null)
-        hash += this.endDate.hashCode();
-      if (this.category != null)
-        hash += this.category.hashCode();
-      if (this.author != null)
-        hash += this.author.hashCode();
-      hash += this.count;
-      hash += this.relativeLinks ? 1 : 0;
-      hash += this.extended ? 1 : 0;
-      if (this.title != null)
-        hash += this.title.hashCode();
-      if (this.selfLink != null)
-        hash += this.selfLink.hashCode();
+      final int ODD_PRIME_NUMBER = 37;  //Make values relatively prime
+      int hash = 23;                    //Seed value
 
+      if (this.journal != null)
+        hash += ODD_PRIME_NUMBER * hash + this.journal.hashCode();
+      if (this.sDate != null)
+        hash += ODD_PRIME_NUMBER * hash + this.sDate.hashCode();
+      if (this.eDate != null)
+        hash += ODD_PRIME_NUMBER * hash + this.eDate.hashCode();
+      if (this.category != null)
+        hash += ODD_PRIME_NUMBER * hash + this.category.hashCode();
+      if (this.author != null)
+        hash += ODD_PRIME_NUMBER * hash + this.author.hashCode();
+
+      hash += ODD_PRIME_NUMBER * hash + this.maxResults;
+       
       return hash;
     }
 
-    public String getJournal() {
-      return journal;
-    }
-
-    public Date getStartDate() {
-      return startDate;
-    }
-
-    public Date getEndDate() {
-      return endDate;
-    }
-
-    public String getCategory() {
-      return category;
-    }
-
-    public String getAuthor() {
-      return author;
-    }
-
-    public int getCount() {
-      return count;
-    }
-
-    public boolean isRelativeLinks() {
-      return relativeLinks;
-    }
-
-    public boolean isExtended() {
-      return extended;
-    }
-
-    public String getTitle() {
-      return title;
-    }
-
-    public String getSelfLink() {
-      return selfLink;
-    }
-
+    /**
+     * The hash code is caculated after the validation is complete. The
+     * results are stored here.
+     *
+     * @return  integer hash code
+     */
     @Override
     public int hashCode() {
       return this.hashCode;
     }
 
+    /**
+     * Does a complete equality comparison of fields in the Key.
+     * Only fields that will affect the results are used.
+     *
+     */
     @Override
     public boolean equals(Object o) {
       if (o == null || !(o instanceof Key)) return false;
       Key key = (Key) o;
       return (
-        key.hashCode == this.hashCode
+        key.hashCode == this.hashCode   // WTO: not sure we need hascode here since it is calculated from the rest of this stuff
         &&
         (key.getJournal() == null && this.journal == null
             || key.getJournal() != null && key.getJournal().equals(this.journal))
         &&
-        (key.getStartDate() == null && this.startDate == null
-            || key.getStartDate() != null && key.getStartDate().equals(this.startDate))
+        (key.getSDate() == null && this.sDate == null
+            || key.getSDate() != null && key.getSDate().equals(this.sDate))
         &&
-        (key.getEndDate() == null && this.endDate == null
-            || key.getEndDate() != null && key.getEndDate().equals(this.endDate))
+        (key.getEDate() == null && this.eDate == null
+            || key.getEDate() != null && key.getEDate().equals(this.eDate))
         &&
         (key.getCategory() == null && this.category == null
             || key.getCategory() != null && key.getCategory().equals(this.category))
         &&
-        key.isExtended() == this.extended
-        &&
-        key.isRelativeLinks() == this.relativeLinks
-        &&
         (key.getAuthor() == null && this.author == null
             || key.getAuthor() != null && key.getAuthor().equals(this.author))
         &&
-        key.getCount() == this.count
-        &&
-        (key.getSelfLink() == null && this.selfLink == null
-            || key.getSelfLink() != null && key.getSelfLink().equals(this.selfLink))
-        &&
-        (key.getTitle() == null && this.title == null
-            || key.getTitle() != null && key.getTitle().equals(this.title))
+        (key.getMaxResults() ==  this.maxResults)
       );
     }
 
-
+    /**
+     * Builds a string using the data model prarmeters.
+     * Only parameters that affect the search results are used.
+     * <p>
+     * WTO: It would be nice to say why we had to override the original.
+     *      Also if we are using this for compareTo is just slows thigs down
+     *      ro have the string so long. Cache it?
+     *
+     * @return a string representation of all the query parameters.
+     */
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
+
       builder.append("journal=");
       builder.append(journal);
-      if (startDate != null) {
+
+      if (sDate != null) {
         builder.append("; startDate=");
-        builder.append(startDate);
+        builder.append(sDate);
       }
-      if (endDate != null) {
+      if (eDate != null) {
         builder.append("; endDate=");
-        builder.append(endDate);
+        builder.append(eDate);
       }
       if (category != null) {
         builder.append("; category=");
         builder.append(category);
       }
-      if (extended)
-        builder.append("; extended=true");
-      if (relativeLinks)
-        builder.append("; relativeLinks=true");
       if (author != null) {
         builder.append("; author=");
         builder.append(author);
       }
-      if (title != null) {
-        builder.append("; title=");
-        builder.append(title);
-      }
-      if (count != -1) {
-        builder.append("; count=");
-        builder.append(count);
-      }
-      if (selfLink != null) {
-        builder.append("; selfLink=");
-        builder.append(selfLink);
-      }
+
+      builder.append("; maxResults=");
+      builder.append(maxResults);
 
       return builder.toString();
     }
 
+    /**
+     * Implementation of the comparable interface.
+     *
+     * @param o   the object to compare to.
+     * @return    the value 0 if the argument is a string lexicographically equal to this string;
+     *            a value less than 0 if the argument is a string lexicographically greater than this string;
+     *            and a value greater than 0 if the argument is a string lexicographically less than this string.
+     */
     public int compareTo(Object o) {
+      //TODO: WTO: not sure I agree with this, doesn't follow documented comparable interface
+      //return null as less than any string? Should throw ClassCastException
       if (o == null)
         return 1;
       return toString().compareTo(o.toString());
     }
+
+    /**
+     * The ArticleFeed supports the ModelDriven interface.
+     * The Key class is the data model used by ArticleFeed and
+     * validates user input parameters. By the time
+     * ArticleFeed.excute is invoked the parameters should be
+     * a usable state.
+     *
+     * Defined a Maximum number of result = 200 articles.
+     * Both sDate and eDate will not be null by the end of validate.
+     * If sDate > eDate then set sDate = eDate.
+     *
+     * @param action - the BaseSupportAcion allows reporting of
+     *                 field errors. Pass in a reference incase
+     *                 we want to report them.
+     * @see ArticleFeed
+     */
+    public void validate(BaseActionSupport action) {
+
+       final int defaultMaxResult = 30;
+       final int MAXIMUM_RESULTS = 200;
+
+       assert(journal != null); // Action validator should have set this
+
+       if (startDate != null) {
+         setSDate(startDate);           // Convert to Date
+       } else {
+         setSDate(defaultStartDate());  // Set default
+       }
+
+       //Either set the date or it is right now
+       if (endDate != null)
+         setEDate(endDate);     // Convert to date
+       else
+         setEDate(new Date());  // Use today's date as default.
+
+       // If start > end then just use end.
+       if (sDate.after(eDate)) {
+         sDate = eDate;
+       }
+        
+       //Need a positive non-zero number of results
+       if (maxResults <= 0)
+           maxResults = defaultMaxResult;
+       else if (maxResults > MAXIMUM_RESULTS)   // Don't let them crash our servers.
+           maxResults = MAXIMUM_RESULTS;
+
+       hashCode = calculateHashKey();
+    }
+
+    /**
+     * Create a default start date some time in the past.
+     *
+     * @return todays date some default time in the past.
+     */
+    private Date defaultStartDate() {
+
+          // defaultDuration - the default number of months
+          //                   to subtract from todays date.
+          final int defaultDuration = 3;
+          // The startDate was not specified so create a default
+          GregorianCalendar defaultDate = new GregorianCalendar();
+
+          defaultDate.add(Calendar.MONTH, -defaultDuration);
+          defaultDate.set(Calendar.HOUR_OF_DAY, 0);
+          defaultDate.set(Calendar.MINUTE, 0);
+          defaultDate.set(Calendar.SECOND, 0);
+          return defaultDate.getTime();
+    }
+
+    // Bean Setter/Gettter go after here.
+    public String getJournal() {
+       return journal;
+    }
+    public void setJournal(String journal) {
+      this.journal = journal;
+    }
+    public Date getSDate() {
+      return sDate;
+    }
+    /**
+     * Convert the string to a date if possible
+     * else leave the startDate null.
+     *
+     * @param date string date to be converted to Date
+     *
+     * TODO: WTO: Struts supports addError functionallity
+     * we don't.
+     */
+    public void setSDate(String date) {
+      try {
+        this.sDate = dateFrmt.parse(date);
+      } catch (ParseException e) {
+        this.sDate = null;
+      }
+    }
+    public void setSDate(Date date) {
+       this.sDate = date;
+    }
+
+    public Date getEDate() {
+      return eDate;
+    }
+    /**
+     * Convert the string to a date if possible
+     * else leave the endDate null.
+     *
+     * @param date string date to be converted to Date
+     * 
+     * TODO: WTO: Struts supports addError functionallity
+     * we don't.
+     */
+    public void setEDate(String date) {
+      try {
+        this.eDate = dateFrmt.parse(date);
+      } catch (ParseException e) {
+        this.eDate = null;
+      }
+    }
+    public void setEDate(Date date) {
+      this.eDate = date;
+    }
+    public String getCategory() {
+      return category;
+    }
+    public void setCategory(String category) {
+      this.category = category;
+    }
+    public String getAuthor() {
+      return author;
+    }
+    public void setAuthor(String author) {
+      this.author = author;
+    }
+    public boolean isRelLinks() {
+      return relLinks;
+    }
+    public boolean getRelativeLinks() {
+      return relLinks;
+    }
+    public void setRelativeLinks(boolean relative) {
+      this.relLinks = relative;
+    }
+    public boolean isExtended() {
+      return extended;
+    }
+    public boolean getExtended() {
+      return extended;
+    }
+    public void setExtended(boolean extended) {
+      this.extended = extended;
+    }
+    public String getTitle() {
+      return title;
+    }
+    public void setTitle(String title) {
+      this.title = title;
+    }
+    public String getSelfLink() {
+      return selfLink;
+    }
+    public void setSelfLink(String link) {
+      this.selfLink = link;
+    }
+    public String getStartDate() {
+      return startDate;
+    }
+    public void setStartDate(String date) {
+      this.startDate = date;
+    }
+    public String getEndDate() {
+      return endDate;
+    }
+    public void setEndDate(String date) {
+      this.endDate = date;
+    }
+    public int getMaxResults() {
+      return maxResults;
+    }
+    public void setMaxResults(int max) {
+      this.maxResults = max;
+    }
+  //END class Key
   }
 
   /**
-   * Invalidate feedCache on every injest or delete
+   * <h4>Description</h4>
+   * Invalidate feedCache if new articles are ingested or
+   * articles are deleted. This is accomplished via a listener
+   * registered with the feed cache. This listener is notified when articles
+   * are added or deleted which could potentially affect the results cached.
+   * The <code>Invalidator</code> uses two
+   * entry points to accomplish this.
+   * <p>
+   * <code>Invalidator.objectChanged</code> is called whenever an article or journal is updated.
+   * <code>Invalidator.removing</code> is called whenever an article is removed.
+   * <p>
+   * The basic process is the same for both. Loop through all the feed cache keys and see if
+   * the articles that changed could potentially affect the query results of the cache
+   * entry. If it does then remove that cache entry.
+   * 
+   * @see ArticleFeed
+   *
+   * <h4>TODO:</h4>
+   * <pre>
+   * </pre>
+   * <h4>Change History</h4>
+   * <pre><strong>
+   * Bug      Date    Initial                                Descriptiom      </strong>
+   *  
    */
-  private class Invalidator extends AbstractObjectListener {
+  public class Invalidator extends AbstractObjectListener {
 
+     /**
+      * Notify the <code>Invalidator</code> that an object in the
+      * cache may have changed.
+      * 
+      * @param session  session info (unused)
+      * @param cm    class metadata  (unused)
+      * @param id    (unused)
+      * @param object  either <code>class Article</code> or <code>class Journal<code>
+      * @param updates  journal updates
+      */
     @Override
     public void objectChanged(Session session, ClassMetadata cm, String id, Object object,
                               Interceptor.Updates updates) {
+
+      // If this is an Active Article check to see if it invalidates the feed cache
+      // Else if this is a Journal change invalidate for journals.
       if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE) {
         invalidateFeedCacheForArticle((Article)object);
-      }
-      else if (object instanceof Journal) {
+      } else if (object instanceof Journal) {
         invalidateFeedCacheForJournal((Journal)object, updates);
       }
     }
 
+    /**
+     * Notify that an article is being removed. If it matches a cache entry's
+     * query criteria then remove that entry from the cache.
+     * 
+     * @param session session info (unused)
+     * @param cm    class metadata (unused)
+     * @param id    (unused)
+     * @param object must be <code>class Article</code>
+     * @throws Exception
+     */
     @Override
     public void removing(Session session, ClassMetadata cm, String id, Object object) throws Exception {
+      // If this is an Active Article check to see if it invalidates the feed cache
       if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE)
         invalidateFeedCacheForArticle((Article)object);
     }
 
+    /**
+     * WTO: Somebody else needs to explain this stuff to me.
+     *      It would be nice to see some documentation on what
+     *      this journal stuff is and under waht circumstance is
+     *      it called.
+     *
+     * @param journal  the journal name
+     * @param updates  updates to articles
+     */
     private void invalidateFeedCacheForJournal(Journal journal, Interceptor.Updates updates) {
       List<Article> articles = new ArrayList<Article>();
 
@@ -857,9 +789,15 @@ public class ArticleFeed extends BaseActionSupport {
 
       if (!articles.isEmpty())
         invalidateFeedCacheForJournalArticle(journal, articles);
+     }
 
-    }
-
+    /**
+     * Loop through the feed cache keys and match key parameters to
+     * the article. If the article matches those found in the cache key
+     * then that query is invalid and remove it.
+     *
+     * @param article the article which might change the cash.
+     */
     private void invalidateFeedCacheForArticle(Article article) {
       for (Key key : (Set<Key>) feedCache.getKeys()) {
         if (matches(key, article, true))
@@ -867,6 +805,13 @@ public class ArticleFeed extends BaseActionSupport {
       }
     }
 
+    /**
+     * Invalidate the cache entries based on a journal and a list
+     * of article that are part of that journal.
+     *
+     * @param journal  the journal of interest
+     * @param articles articles that are part of the journal
+     */
     private void invalidateFeedCacheForJournalArticle(Journal journal, List<Article> articles) {
       for (Key key : (Set<Key>) feedCache.getKeys()) {
         if (key.getJournal().equals(journal.getKey())) {
@@ -878,92 +823,157 @@ public class ArticleFeed extends BaseActionSupport {
       }
     }
 
+    /**
+     * This is the linchpin to the entire process. Basically, query results
+     * are currently affected by 5 parameters:
+     * <ul>
+     * <li>startDate/endDate
+     * <li>author
+     * <li>category
+     * <li>maxResult
+     * </ul>
+     * If the article affects the results of any one of these parameters then
+     * then the query could be different and hence needs to be ejected from
+     * the cache.
+     *
+     * @param key the cache key and input parameters
+     * @param article article that has caused the change
+     * @param checkJournal include journal as part of match if true.
+     * @return boolean true if we need to remove this entry from the cache
+     * 
+     */
     private boolean matches(ArticleFeed.Key key, Article article, boolean checkJournal) {
 
-      if (checkJournal && matchesJournal(key, article))
-        return false;
+      //If it doesn't match the journal nothing else matters
+      if (checkJournal && !matchesJournal(key, article))
+        return false;        //Don't remove
 
       DublinCore dc = article.getDublinCore();
 
-      if (matchesDates(key, dc))
-        return false;
+      //If the date isn't between Start and End date then
+      if (!matchesDates(key, dc))
+        return false;       //Don't remove
 
-      if (matchesCategory(key, article))
-        return false;
+      //                                                                      desired result
+      // matchesCat       matchesAuthor     (!matchesCat and !matchesAuthor)   removeEntry
+      //     F                  F                         T                       F
+      //     F                  T                         F                       T
+      //     T                  F                         F                       T
+      //     T                  T                         F                       T
+      //
+      // If both do not match then don't remove the key
+      if (!matchesCategory(key, article) && !matchesAuthor(key, dc))
+        return false;       //Don't remove
 
-      if (matchesAuthor(key, dc))
-        return false;
-
-      if (matchesTitle(key, dc))
-        return false;
-
-      return true;
+      //It matched all the critera therefore
+      return true;   // Remove
     }
 
-    private boolean matchesTitle(Key key, DublinCore dc) {
-      return key.getTitle() != null && !key.getTitle().equalsIgnoreCase(dc.getTitle());
-    }
-
+    /**
+     * Compares the author in the cache key to the
+     * creators specified in Dublin core.
+     *
+     * If key.author = null return true
+     * If key.author != one of the creators return false;
+     * Else return true.
+     *
+     * @param key the cache key
+     * @param dc Dublin core field from Article
+     * @return  boolean true if there is a match
+     */
     private boolean matchesAuthor(Key key, DublinCore dc) {
+      boolean matches = false;
+
+      //If the key.author is null then author was
+      //not specified in the query. This is identical to
+      //a wild card match.
       if (key.getAuthor() != null) {
-        boolean matches = false;
+        //Since the key.author was specified then we need to
+        //comapre it against all the creators.
         for (String author : dc.getCreators()) {
           if (key.getAuthor().equalsIgnoreCase(author)) {
             matches = true;
             break;
           }
         }
+      } else
+         matches = true;
 
-        // author from the key is not found in the article
-        if (!matches)
-          return true;
-      }
-      return false;
+      return matches;
     }
 
+    /**
+     * Compare key.categery to the article.category
+     * If the key.category = null return true
+     * If the key.category != article category then return false
+     * Else return true for a match.
+     * 
+     * @param key a cache key and actiopn data model
+     * @param article  the article
+     * @return boolean true if the category matches (key.category = null is wildcard)
+     */
     private boolean matchesCategory(Key key, Article article) {
+      boolean matches = false;
+
       if (key.getCategory() != null) {
-        boolean matches = false;
         for (Category category : article.getCategories()) {
           if (category.getMainCategory().equals(key.getCategory())) {
             matches = true;
             break;
           }
         }
-
-        // article is not in the category specified in the cache key
-        if (!matches)
-          return true;
       }
-      return false;
+      return matches;
     }
 
+    /**
+     * Check to see if the article date is between the start and
+     * end date specified in the key. If it is then return true
+     * and the entry for this key should be removed.
+     *
+     * @param key cache key
+     * @param dc  Dublincore field from the article
+     * @return  boolean true if the article date falls between the start and end date
+     */
     private boolean matchesDates(Key key, DublinCore dc) {
       Date articleDate = dc.getDate();
+      boolean matches = false;
+
+      //Articles without dates should not be allowed.
       if (articleDate != null) {
-        if (key.getStartDate() != null && key.getStartDate().after(articleDate))
-          return true;
-        if (key.getEndDate() != null && key.getEndDate().before(articleDate))
-          return true;
+        //Key dates should never be null
+        if (articleDate.after(key.getSDate()) && articleDate.before(key.getEDate()))
+          matches = true;
       }
-      return false;
+      return matches;
     }
 
+    /**
+     * Loop thorugh the Journals to see if the key.journal matches
+     * one of the journals the list of journals the article belongs to.
+     *
+     * @param key a cache key and actiopn data model
+     * @param article  the article
+     * @return boolean true if key.journal matches one of the journals returned
+     *         by the journal service.
+     */
     private boolean matchesJournal(Key key, Article article) {
+      boolean matches = false;
+
       if (key.getJournal() != null) {
-        boolean matches = false;
         for (Journal journal : journalService.getJournalsForObject(article.getId())) {
           if (journal.getKey().equals(key.getJournal())) {
             matches = true;
             break;
           }
         }
+      } else
+         matches = true;
 
-        if (!matches)
-          return true;
-      }
-      return false;
+      return matches;
     }
+  // End class Invalidator
   }
 
+//End class ArticleResults
 }

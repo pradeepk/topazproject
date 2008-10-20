@@ -35,8 +35,8 @@ import org.topazproject.ambra.configuration.ConfigurationStore;
  * Base class for all actions.
  */
 public abstract class BaseActionSupport extends ActionSupport {
-  private static final Log           log  = LogFactory.getLog(BaseActionSupport.class);
-  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+  private   static final Log           log  = LogFactory.getLog(BaseActionSupport.class);
+  protected static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   protected static final String feedBasePath    = CONF.getString("ambra.services.feed.basePath", "/article/");
   private   static final String feedDefaultFile = CONF.getString("ambra.services.feed.defaultFile", "feed");
