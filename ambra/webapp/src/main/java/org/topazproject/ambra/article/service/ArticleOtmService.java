@@ -294,16 +294,6 @@ public class ArticleOtmService {
     return articleList;
   }
 
-  @Transactional(readOnly = true)
-  public List<Article> getArticles(List<String> articleIds) throws ParseException {
-
-    List<Article> articleList = new ArrayList<Article>();
-    for (String id : articleIds)
-      articleList.add(session.get(Article.class, id));
-
-    return articleList;
-  }
-
   /**
    * Convert a date passed in as a string to a Date object. Support both string representations
    * of the Date object and iso8601 formatted dates.
