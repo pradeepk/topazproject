@@ -18,14 +18,17 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Create a flag for a given annotation or reply
  */
+@SuppressWarnings("serial")
 public class CreateFlagAction extends AnnotationActionSupport {
   private String target;
   private String comment;
@@ -40,6 +43,7 @@ public class CreateFlagAction extends AnnotationActionSupport {
    *
    * @return WebWorks SUCCESS or ERROR.
    */
+  @Transactional(rollbackFor = { Throwable.class })
   public String createRatingFlag() {
     try {
       annotationId = getAnnotationService().createRatingFlag(target, reasonCode, comment, mimeType);
@@ -54,15 +58,21 @@ public class CreateFlagAction extends AnnotationActionSupport {
 
   /**
    * Create a flag for a given annotation
+   *
+   * @return SUCCESS or ERROR
    */
-  public String createAnnotationFlag() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String createAnnotationFlag() {
     return createFlag(true);
   }
 
   /**
    * Create a flag for a given reply
+   *
+   * @return SUCCESS or ERROR
    */
-  public String createReplyFlag() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String createReplyFlag() {
     return createFlag(false);
   }
 

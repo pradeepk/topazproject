@@ -18,14 +18,17 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Action to delete an annotation
  */
+@SuppressWarnings("serial")
 public class DeleteAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
   private boolean deletePreceding;
@@ -35,9 +38,9 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
   /**
    * Annotation deletion action.
    * @return status
-   * @throws Exception Exception
    */
-  public String deletePrivateAnnotation() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String deletePrivateAnnotation() {
     try {
       getAnnotationService().deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (final ApplicationException e) {
@@ -52,9 +55,9 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
   /**
    * Delete public annotation.
    * @return status
-   * @throws Exception Exception
    */
-  public String deletePublicAnnotation() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String deletePublicAnnotation() {
     try {
       getAnnotationService().deletePublicAnnotation(annotationId);
     } catch (final ApplicationException e) {

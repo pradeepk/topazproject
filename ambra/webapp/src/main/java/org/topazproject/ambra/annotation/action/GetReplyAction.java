@@ -18,21 +18,26 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.WebReply;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Used to fetch a reply given an id.
  */
+@SuppressWarnings("serial")
 public class GetReplyAction extends AnnotationActionSupport {
   private String replyId;
   private WebReply reply;
 
   private static final Log log = LogFactory.getLog(GetReplyAction.class);
 
+  @Transactional(readOnly = true)
+  @Override
   public String execute() throws Exception {
     try {
       reply = getAnnotationService().getReply(replyId);

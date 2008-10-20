@@ -20,7 +20,7 @@ package org.topazproject.ambra.annotation;
 
 /**
  * Simple encapsulation of properties that define an annotation context.
- * 
+ *
  * @author jkirton
  */
 public class Context {
@@ -39,12 +39,12 @@ public class Context {
 
   /**
    * Constructor
-   * 
-   * @param startPath
-   * @param startOffset
-   * @param endPath
-   * @param endOffset
-   * @param target
+   *
+   * @param startPath xpath to the start
+   * @param startOffset offset in start
+   * @param endPath xpath to the end
+   * @param endOffset offset in end
+   * @param target the target article
    */
   public Context(String startPath, int startOffset, String endPath, int endOffset, String target) {
     super();
@@ -94,7 +94,7 @@ public class Context {
   public void setTarget(String target) {
     this.target = target;
   }
-  
+
   @Override
   public String toString() {
     StringBuffer sb = new StringBuffer(512);

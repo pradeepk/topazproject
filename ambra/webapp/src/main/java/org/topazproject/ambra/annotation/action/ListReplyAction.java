@@ -60,6 +60,7 @@ public class ListReplyAction extends AnnotationActionSupport {
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
+  @Transactional(readOnly = true)
   @Override
   public String execute() throws Exception {
     try {
@@ -75,12 +76,11 @@ public class ListReplyAction extends AnnotationActionSupport {
   /**
    * List all the replies for a given root and inRelyTo in a threaded tree
    * structure.
-   * 
+   *
    * @return webwork status for the call
-   * @throws Exception Exception
    */
   @Transactional(readOnly = true)
-  public String listAllReplies() throws Exception {
+  public String listAllReplies() {
     try {
       // Allow a single 'root' param to be accepted. If 'inReplyTo' is null or
       // empty string, set to root value.
@@ -104,6 +104,7 @@ public class ListReplyAction extends AnnotationActionSupport {
         CitationInfo result = articleAnnotationCache.get(
                 CreateCitation.CITATION_KEY + articleId, -1,
                 new Cache.SynchronizedLookup<CitationInfo, ApplicationException>(lock) {
+                  @Override
                   public CitationInfo lookup() throws ApplicationException {
 
                     XStream xstream = new XStream();
@@ -178,8 +179,8 @@ public class ListReplyAction extends AnnotationActionSupport {
   /**
    * @param fetchArticleService The fetchArticleService to set.
    */
-  public void setFetchArticleService(FetchArticleService s) {
-    this.fetchArticleService = s;
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 
   /**

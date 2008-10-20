@@ -18,29 +18,25 @@
  */
 package org.topazproject.ambra.annotation.service;
 
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.DELETE_MASK;
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
+
 import java.io.IOException;
-
 import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.DELETE_MASK;
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.models.ReplyBlob;
 import org.topazproject.ambra.models.ReplyThread;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.user.AmbraUser;
+import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -89,10 +85,10 @@ public class ReplyService extends BaseAnnotationService {
   public String createReply(final String mimeType, final String root, final String inReplyTo,
                             final String title, final String body)
                      throws Exception {
-    pep.checkAccess(pep.CREATE_REPLY, URI.create(root));
+    pep.checkAccess(RepliesPEP.CREATE_REPLY, URI.create(root));
 
     if (!root.equals(inReplyTo))
-      pep.checkAccess(pep.CREATE_REPLY, URI.create(inReplyTo));
+      pep.checkAccess(RepliesPEP.CREATE_REPLY, URI.create(inReplyTo));
 
     final String contentType = getContentType(mimeType);
     String       user        = AmbraUser.getCurrentUser().getUserId();
@@ -130,7 +126,7 @@ public class ReplyService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void deleteReply(final String replyId) throws OtmException, SecurityException {
-    pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
+    pep.checkAccess(RepliesPEP.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a = session.get(Reply.class, replyId);
     a.setState(DELETE_MASK);
@@ -145,6 +141,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @SuppressWarnings("unchecked")
   @Transactional(rollbackFor = { Throwable.class })
   public void deleteReplies(final String root, final String inReplyTo)
                      throws OtmException, SecurityException {
@@ -169,14 +166,14 @@ public class ReplyService extends BaseAnnotationService {
     if (log.isDebugEnabled())
       log.debug("deleting reply and descendants with id: " + target);
 
-    final List<Reply> all  = new ArrayList();
+    final List<Reply> all  = new ArrayList<Reply>();
     final ReplyThread root = session.get(ReplyThread.class, target);
 
     if (root != null)
       add(all, root);
 
     for (Reply r : all) {
-      pep.checkAccess(pep.DELETE_REPLY, r.getId());
+      pep.checkAccess(RepliesPEP.DELETE_REPLY, r.getId());
       permissionsService.cancelPropagatePermissions(r.getId().toString(),
                                                new String[] { r.getBody().getId() });
     }
@@ -205,7 +202,7 @@ public class ReplyService extends BaseAnnotationService {
   @Transactional(readOnly = true)
   public Reply getReply(final String replyId)
                          throws OtmException, SecurityException, IllegalArgumentException {
-    pep.checkAccess(pep.GET_REPLY_INFO, URI.create(replyId));
+    pep.checkAccess(RepliesPEP.GET_REPLY_INFO, URI.create(replyId));
 
     Reply a = session.get(Reply.class, replyId);
 
@@ -226,6 +223,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public Reply[] listReplies(final String root, final String inReplyTo)
                           throws OtmException, SecurityException {
@@ -233,11 +231,11 @@ public class ReplyService extends BaseAnnotationService {
       session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
               .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
 
-    List<Reply> l   = new ArrayList(all.size());
+    List<Reply> l   = new ArrayList<Reply>(all.size());
 
     for (Reply a : all) {
       try {
-        pep.checkAccess(pep.GET_REPLY_INFO, a.getId());
+        pep.checkAccess(RepliesPEP.GET_REPLY_INFO, a.getId());
         l.add(a);
       } catch (Throwable t) {
         if (log.isDebugEnabled())
@@ -261,6 +259,7 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public Reply[] listAllReplies(final String root, final String inReplyTo)
                              throws OtmException, SecurityException {
@@ -272,11 +271,11 @@ public class ReplyService extends BaseAnnotationService {
       all = session.createCriteria(Reply.class).add(Restrictions.eq("root", root))
               .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
 
-    List<Reply> l   = new ArrayList(all.size());
+    List<Reply> l   = new ArrayList<Reply>(all.size());
 
     for (Reply a : all) {
       try {
-        pep.checkAccess(pep.GET_REPLY_INFO, a.getId());
+        pep.checkAccess(RepliesPEP.GET_REPLY_INFO, a.getId());
         l.add(a);
       } catch (Throwable t) {
         if (log.isDebugEnabled())
@@ -298,7 +297,7 @@ public class ReplyService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void unflagReply(final String replyId) throws OtmException, SecurityException {
-    pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
+    pep.checkAccess(RepliesPEP.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a = session.get(Reply.class, replyId);
     a.setState(a.getState() & ~FLAG_MASK);
@@ -314,7 +313,7 @@ public class ReplyService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setFlagged(final String replyId) throws OtmException, SecurityException {
-    pep.checkAccess(pep.SET_REPLY_STATE, URI.create(replyId));
+    pep.checkAccess(RepliesPEP.SET_REPLY_STATE, URI.create(replyId));
 
     Reply a = session.get(Reply.class, replyId);
     a.setState(a.getState() | FLAG_MASK);
@@ -332,10 +331,11 @@ public class ReplyService extends BaseAnnotationService {
    * @throws OtmException on an error
    * @throws SecurityException if a security policy prevented this operation
    */
+  @SuppressWarnings("unchecked")
   @Transactional(readOnly = true)
   public Reply[] listReplies(final String mediator, final int state)
                           throws OtmException, SecurityException {
-    pep.checkAccess(pep.LIST_REPLIES_IN_STATE, pep.ANY_RESOURCE);
+    pep.checkAccess(RepliesPEP.LIST_REPLIES_IN_STATE, AbstractSimplePEP.ANY_RESOURCE);
 
     Criteria c = session.createCriteria(Reply.class);
 

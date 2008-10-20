@@ -20,6 +20,7 @@ package org.topazproject.ambra.annotation.action;
 
 import org.topazproject.ambra.annotation.service.Flag;
 
+@SuppressWarnings("serial")
 public class GetFlagAction extends BaseGetAnnotationAction {
   public Flag getFlag() {
     return new Flag(getAnnotation());

@@ -184,11 +184,12 @@ public class Annotator {
     }
 
 
+    @SuppressWarnings("unchecked")
     public Element createElement(String nsUri, String elemQName, String annotationsQName,
                                  String idAttrQName) {
       int     length = size();
       Element root = document.createElementNS(nsUri, elemQName + "s");
-      
+
       for (int i = 0; i < length; i++) {
         Element rNode = document.createElementNS(nsUri, elemQName);
         rNode.setAttributeNS(nsUri, idAttrQName, "" + (i + 1));
@@ -197,16 +198,16 @@ public class Annotator {
         int numMinorCorrections = 0;
         int numFormalCorrections = 0;
 
-        List annotations = get(i).getUserDataList();
+        List<ArticleAnnotation> annotations = get(i).getUserDataList();
 
         int  c = annotations.size();
 
         for (int j = 0; j < c; j++) {
-          ArticleAnnotation a     = (ArticleAnnotation) annotations.get(j);
+          ArticleAnnotation a     = annotations.get(j);
           Element        aNode = document.createElementNS(nsUri, annotationsQName);
           aNode.setAttributeNS(nsUri, idAttrQName, a.getId().toString());
           rNode.appendChild(aNode);
-          
+
           assert a.getType() != null;
           String atype = a.getType().toLowerCase();
           if(atype.indexOf("comment") >= 0) {
@@ -219,11 +220,11 @@ public class Annotator {
             numFormalCorrections++;
           }
         }
-        
+
         rNode.setAttributeNS(nsUri, "aml:numComments", Integer.toString(numComments));
         rNode.setAttributeNS(nsUri, "aml:numMinorCorrections", Integer.toString(numMinorCorrections));
         rNode.setAttributeNS(nsUri, "aml:numFormalCorrections", Integer.toString(numFormalCorrections));
-        
+
         root.appendChild(rNode);
       }
 

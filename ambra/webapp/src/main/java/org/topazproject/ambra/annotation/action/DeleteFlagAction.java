@@ -20,6 +20,7 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -27,16 +28,14 @@ import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 /**
  * Action to delete a flag
  */
+@SuppressWarnings("serial")
 public class DeleteFlagAction extends AnnotationActionSupport {
   private String flagId;
 
   private static final Log log = LogFactory.getLog(DeleteFlagAction.class);
 
-  /**
-   * Flag deletion action.
-   * @return status
-   * @throws Exception
-   */
+  @Override
+  @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
     try {
       getAnnotationService().deleteFlag(flagId);

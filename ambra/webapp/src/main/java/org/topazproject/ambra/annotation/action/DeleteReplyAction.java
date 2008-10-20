@@ -20,11 +20,13 @@ package org.topazproject.ambra.annotation.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 
 /**
  * Action class to delete a given reply.
  */
+@SuppressWarnings("serial")
 public class DeleteReplyAction extends AnnotationActionSupport {
   private String id;
   private String root;
@@ -35,9 +37,9 @@ public class DeleteReplyAction extends AnnotationActionSupport {
   /**
    * Delete a reply given a reply id
    * @return operation return code
-   * @throws Exception Exception
    */
-  public String deleteReplyWithId() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String deleteReplyWithId() {
     try {
       getAnnotationService().deleteReply(id);
     } catch (final ApplicationException e) {
@@ -51,9 +53,9 @@ public class DeleteReplyAction extends AnnotationActionSupport {
   /**
    * Delete a reply given a root and inReplyTo
    * @return operation return code
-   * @throws Exception Exception
    */
-  public String deleteReplyWithRootAndReplyTo() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String deleteReplyWithRootAndReplyTo() {
     try {
       getAnnotationService().deleteReply(root, inReplyTo);
     } catch (final ApplicationException e) {

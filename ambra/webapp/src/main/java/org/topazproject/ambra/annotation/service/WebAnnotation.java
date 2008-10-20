@@ -18,9 +18,11 @@
  */
 package org.topazproject.ambra.annotation.service;
 
+import java.net.URI;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Correction;
@@ -29,9 +31,6 @@ import org.topazproject.ambra.models.MinorCorrection;
 import org.topazproject.ambra.user.service.UserService;
 
 import com.googlecode.jsonplugin.annotations.JSON;
-
-import java.net.URI;
-import java.util.Date;
 
 /**
  *  View level wrapper for Annotations. It provides
@@ -146,6 +145,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * Get state.
    * @return state as int.
    */
+  @Override
   public int getState() {
     return annotation.getState();
   }
@@ -155,7 +155,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return supersededBy as String.
    */
   public String getSupersededBy() {
-    Annotation a = annotation.getSupersededBy();
+    Annotation<?> a = annotation.getSupersededBy();
     return (a == null) ? null : a.getId().toString();
   }
 
@@ -164,7 +164,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
    * @return supersedes as String.
    */
   public String getSupersedes() {
-    Annotation a = annotation.getSupersedes();
+    Annotation<?> a = annotation.getSupersedes();
     return (a == null) ? null : a.getId().toString();
   }
 
@@ -193,11 +193,11 @@ public abstract class WebAnnotation extends BaseAnnotation {
   public String getType() {
     return annotation.getType();
   }
-  
+
   public boolean isFormalCorrection() {
     return annotation instanceof FormalCorrection;
   }
-  
+
   public boolean isMinorCorrection() {
     return annotation instanceof MinorCorrection;
   }
@@ -205,7 +205,7 @@ public abstract class WebAnnotation extends BaseAnnotation {
   public boolean isCorrection() {
     return annotation instanceof Correction;
   }
-  
+
   public WebAnnotation(final ArticleAnnotation annotation) {
     this.annotation = annotation;
   }
@@ -213,9 +213,9 @@ public abstract class WebAnnotation extends BaseAnnotation {
   /**
    * Constructor that takes in an UserService object in addition to the annotation in order
    * to do username lookups.
-   * 
-   * @param annotation
-   * @param userSvc
+   *
+   * @param annotation the annotation
+   * @param userSvc the user service
    */
   public WebAnnotation(final ArticleAnnotation annotation, final UserService userSvc) {
     this.annotation = annotation;

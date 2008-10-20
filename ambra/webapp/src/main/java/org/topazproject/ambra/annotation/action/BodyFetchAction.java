@@ -18,19 +18,20 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.util.TextUtils;
 
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 
 /**
  * Get the content/text/body of the annotation or reply.
  * Useful when we want to change the content before presenting it to the web layer.
  */
+@SuppressWarnings("serial")
 public class BodyFetchAction extends AnnotationActionSupport {
   private String body;
   private String bodyURL;
@@ -38,6 +39,7 @@ public class BodyFetchAction extends AnnotationActionSupport {
   private static final Log log = LogFactory.getLog(BodyFetchAction.class);
 
   @Transactional(readOnly = true)
+  @Override
   public String execute() throws Exception {
     try {
       final String bodyContent = getAnnotationService().getBody(bodyURL);

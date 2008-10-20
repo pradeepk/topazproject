@@ -18,17 +18,19 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 /**
  * Used to fetch an annotation given an id.
  *
  */
+@SuppressWarnings("serial")
 public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
   private WebAnnotation annotation;
@@ -37,6 +39,7 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   private static final Log log = LogFactory.getLog(BaseGetAnnotationAction.class);
 
   @Transactional(readOnly = true)
+  @Override
   public String execute() throws Exception {
     try {
       annotation = getAnnotationService().getAnnotation(annotationId);

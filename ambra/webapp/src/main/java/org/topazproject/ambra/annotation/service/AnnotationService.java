@@ -18,6 +18,9 @@
  */
 package org.topazproject.ambra.annotation.service;
 
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,17 +30,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.struts2.ServletActionContext;
-
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
-import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
-
-
 import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.Constants;
 import org.topazproject.ambra.annotation.Commentary;
 import org.topazproject.ambra.annotation.FlagUtil;
-import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.Annotea;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
@@ -187,7 +184,7 @@ public class AnnotationService {
    * @param body body
    * @param mimeType mime-type
    * @return unique identifier for the newly created flag
-   * @throws org.topazproject.ambra.ApplicationException
+   * @throws ApplicationException on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String createRatingFlag(final String target, final String reasonCode, final String body,
@@ -200,12 +197,12 @@ public class AnnotationService {
       ratingsService.setFlagged(target);
       return flagId;
     } catch (Exception e) {
-      throw new ApplicationException(e);
+      throw new ApplicationException("Failed to create a flag for Ratings Annotation", e);
     }
   }
 
   /**
-   * Unflag the given annotation
+   * Unflag the given annotation.
    *
    * @param annotationId annotationId
    * @throws ApplicationException ApplicationException
@@ -236,7 +233,7 @@ public class AnnotationService {
    * Unflag the given Rating
    *
    * @param ratingId the id of the Rating object for which a flag is to be removed
-   * @throws ApplicationException
+   * @throws ApplicationException on an error
    */
   public void unflagRating(final String ratingId) throws ApplicationException {
     ratingsService.unflagRating(ratingId);
@@ -317,7 +314,7 @@ public class AnnotationService {
   }
 
   /**
-   * Lists all annotations for the given target DOI. 
+   * Lists all annotations for the given target DOI.
    *
    * @param target target of the annotation
    * @throws ApplicationException ApplicationException
@@ -329,11 +326,11 @@ public class AnnotationService {
   }
 
   /**
-   * Lists all correction annotations for the given target DOI. 
-   * 
-   * @param target
-   * @return
-   * @throws ApplicationException
+   * Lists all correction annotations for the given target DOI.
+   *
+   * @param target the target article to list correction annotations on
+   * @return the list of corrections
+   * @throws ApplicationException on an error
    */
   @Transactional(readOnly = true)
   public WebAnnotation[] listCorrections(String target) throws ApplicationException {
@@ -341,11 +338,11 @@ public class AnnotationService {
   }
 
   /**
-   * Lists all comment annotations for the given target DOI. 
-   * 
-   * @param target
-   * @return
-   * @throws ApplicationException
+   * Lists all comment annotations for the given target DOI.
+   *
+   * @param target the target article to list comment annotations on
+   * @return the list of comments
+   * @throws ApplicationException on an error
    */
   @Transactional(readOnly = true)
   public WebAnnotation[] listComments(String target) throws ApplicationException {
@@ -355,14 +352,15 @@ public class AnnotationService {
   /**
    * Retrieve all Annotation instances that annotate the given target DOI. If
    * annotationClassTypes is null, then all annotation types are retrieved. If annotationClassTypes
-   * is not null, only the Annotation class types in the annotationClassTypes Set are returned. 
-   * 
+   * is not null, only the Annotation class types in the annotationClassTypes Set are returned.
+   *
    * Each Class in annotationClassTypes should extend Annotation. E.G. Comment.class or
    * FormalCorrection.class
    *
    * @param target target doi that the listed annotations annotate
-   * @param annotationClassTypes a set of Annotation class types to filter the results
+   * @param annotationTypeClasses a set of Annotation class types to filter the results
    * @return a list of annotations
+   * @throws ApplicationException on an error
    */
   @Transactional(readOnly = true)
   public WebAnnotation[] listAnnotations(String target,
@@ -519,7 +517,7 @@ public class AnnotationService {
    * Obtain a list of flagged ratings
    *
    * @return a list of flagged ratings
-   * @throws ApplicationException
+   * @throws ApplicationException on an error
    */
   public Rating[] listFlaggedRatings() throws ApplicationException {
     return ratingsService.listRatings(null, FLAG_MASK | PUBLIC_MASK);
@@ -608,16 +606,16 @@ public class AnnotationService {
   }
 
   /**
-   * Convert the annotation with the given DOI to the annotation class type newAnnotationClassType. 
-   * The existing annotation and the newAnnotationClassType must both implement ArticleAnnotation. 
-   * 
-   * @param targetId
-   * @param newAnnotationClassType
-   * @return
-   * @throws Exception
+   * Convert the annotation with the given DOI to the annotation class type newAnnotationClassType.
+   * The existing annotation and the newAnnotationClassType must both implement ArticleAnnotation.
+   *
+   * @param targetId the annotation id to convert
+   * @param newAnnotationClassType the new type
+   * @return the new annotation id
+   * @throws Exception on an error
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String convertArticleAnnotationToType(String targetId, Class newAnnotationClassType)
+  public String convertArticleAnnotationToType(String targetId, Class<? extends ArticleAnnotation> newAnnotationClassType)
         throws Exception {
     String newAnnotationId = articleAnnotationService.
       convertArticleAnnotationToType(targetId, newAnnotationClassType);
@@ -626,12 +624,12 @@ public class AnnotationService {
   }
 
   /**
-   * Returns the PubApp type name for the given Annotea object. 
-   * @param ann
-   * @return
+   * Returns the PubApp type name for the given Annotea object.
+   * @param ann the Annotea base class
+   * @return the type
    */
   @Transactional(readOnly = true)
-  public static String getWebType(Annotea ann) {
+  public static String getWebType(Annotea<?> ann) {
     if (ann == null || ann.getType() == null){
       return null;
     }
@@ -649,7 +647,7 @@ public class AnnotationService {
       return AnnotationService.WEB_TYPE_REPLY;
     }
     if (ann.getType().equals(Comment.RDF_TYPE)) {
-      if (((Annotation)ann).getContext() != null) {
+      if (((ArticleAnnotation)ann).getContext() != null) {
         return AnnotationService.WEB_TYPE_NOTE;
       } else {
         return AnnotationService.WEB_TYPE_COMMENT;

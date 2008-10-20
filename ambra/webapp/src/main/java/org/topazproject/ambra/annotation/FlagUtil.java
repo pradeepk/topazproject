@@ -18,21 +18,18 @@
  */
 package org.topazproject.ambra.annotation;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.util.TextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-
 
 /**
  * Util functions to be used for Flag related tasks like created and extracting flag attributes.

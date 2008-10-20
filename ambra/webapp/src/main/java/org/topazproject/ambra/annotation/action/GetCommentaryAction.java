@@ -31,7 +31,6 @@ import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
 import org.topazproject.ambra.models.Article;
 
-
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
@@ -55,20 +54,18 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   /**
    * Provides a list of comments for the target.
    * @return Array of {@link WebAnnotation}s representing the target's comments
-   * @throws ApplicationException
    */
   @Transactional(readOnly = true)
-  public final String listComments() throws Exception {
+  public final String listComments() {
     return list(false);
   }
 
   /**
    * Provides a list of corrections for the target.
    * @return Array of {@link WebAnnotation}s representing the target's corrections
-   * @throws ApplicationException
    */
   @Transactional(readOnly = true)
-  public final String listCorrections() throws Exception {
+  public final String listCorrections() {
     return list(true);
   }
 
@@ -76,9 +73,8 @@ public class GetCommentaryAction extends AnnotationActionSupport {
    * Pulls either all corrections or all non-correction comments for the given target.
    * @param isCorrections Pull corrections?
    * @return status
-   * @throws Exception
    */
-  private String list(boolean isCorrections) throws Exception {
+  private String list(boolean isCorrections) {
     try {
       article = fetchArticleService.getArticleInfo(target);
       WebAnnotation[] annotations = isCorrections? getAnnotationService().listCorrections(target) : getAnnotationService().listComments(target);
@@ -135,7 +131,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   }
 
   /**
-   * @param articleOtmService The articleOtmService to set.
+   * @param service The fetchArticleService to set.
    */
   public final void setFetchArticleService(FetchArticleService service) {
     this.fetchArticleService = service;

@@ -18,8 +18,8 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.net.URI;
+
 import org.topazproject.ambra.models.Annotation;
 import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.otm.Rdf;
@@ -27,18 +27,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-
-import java.net.URI;
-
 /**
  * Annotation meta-data.
  *
  * @author Pradeep Krishnan
  */
 public class AnnotationModel {
-  private static final Log log = LogFactory.getLog(AnnotationModel.class);
-
-  //
   static final URI a               = URI.create("http://www.w3.org/2000/10/annotation-ns#");
   static final URI r               = URI.create(Rdf.rdf);
   static final URI d               = URI.create(Rdf.dc);
@@ -115,7 +109,7 @@ public class AnnotationModel {
     node.setAttributeNS(rNs, "r:resource", annotation.getBody().getId());
     parent.appendChild(node);
 
-    Annotation supersedes = annotation.getSupersedes();
+    Annotation<?> supersedes = annotation.getSupersedes();
 
     if (supersedes != null) {
       node = document.createElementNS(dtNs, "dt:replaces");
@@ -123,7 +117,7 @@ public class AnnotationModel {
       parent.appendChild(node);
     }
 
-    Annotation supersededBy = annotation.getSupersededBy();
+    Annotation<?> supersededBy = annotation.getSupersededBy();
 
     if (supersededBy != null) {
       node = document.createElementNS(dtNs, "dt:isReplacedBy");

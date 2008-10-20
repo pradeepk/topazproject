@@ -18,26 +18,26 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.Flag;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Action class to get a list of flags for a given uri.
  */
+@SuppressWarnings("serial")
 public class ListFlagAction extends AnnotationActionSupport {
   private String target;
   private Flag[] flags;
 
   private static final Log log = LogFactory.getLog(ListFlagAction.class);
 
-  /**
-   * List flags.
-   * @return status
-   * @throws Exception
-   */
+  @Transactional(readOnly = true)
+  @Override
   public String execute() throws Exception {
     try {
       flags = getAnnotationService().listFlags(target);

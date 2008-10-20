@@ -18,15 +18,14 @@
  */
 package org.topazproject.ambra.annotation.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.topazproject.ambra.models.Reply;
-import org.topazproject.ambra.user.service.UserService;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.topazproject.ambra.models.Reply;
+import org.topazproject.ambra.user.service.UserService;
 
 /**
  * Ambra wrapper around the Reply from topaz service. It provides
@@ -48,9 +47,9 @@ public abstract class WebReply extends BaseAnnotation {
   /**
    * Constructor that takes in a UserService object in addition to Reply in order
    * to retrieve the username.
-   * 
-   * @param reply
-   * @param userSvc
+   *
+   * @param reply the reply
+   * @param userSvc the userSvc
    */
   public WebReply(final Reply reply, UserService userSvc) {
     this.reply = reply;
@@ -125,6 +124,7 @@ public abstract class WebReply extends BaseAnnotation {
    *
    * @return state as int.
    */
+  @Override
   public int getState() {
     return reply.getState();
   }
@@ -162,7 +162,7 @@ public abstract class WebReply extends BaseAnnotation {
     return replies.toArray(new WebReply[replies.size()]);
   }
 
-  /** see BaseAnnotation#isPublic */
+  @Override
   public boolean isPublic() {
     throw new UnsupportedOperationException("A reply is always public, so please don't call this");
   }

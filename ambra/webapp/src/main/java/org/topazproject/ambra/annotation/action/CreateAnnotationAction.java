@@ -30,7 +30,6 @@ import org.topazproject.ambra.annotation.Context;
 import org.topazproject.ambra.annotation.ContextFormatter;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 
-
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
@@ -67,10 +66,9 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   /**
    * Save the discussion
    * @return webwork status
-   * @throws Exception Exception
    */
   @Transactional(rollbackFor = { Throwable.class })
-  public String executeSaveDiscussion() throws Exception {
+  public String executeSaveDiscussion() {
     return createAnnotation();
   }
 
@@ -207,12 +205,12 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     return isPublic;
   }
 
-  /** @param isCorrection <code>true</code> if the annotation is a correction */
+  /** @param noteType the note type */
   public void setNoteType(final String noteType) {
     this.noteType = noteType;
   }
 
-  /** @return <code>true</code> if the annotation is a correction */
+  /** @return the note type*/
   public String getNoteType() {
     return noteType;
   }

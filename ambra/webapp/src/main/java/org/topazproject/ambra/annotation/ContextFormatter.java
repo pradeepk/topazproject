@@ -28,7 +28,7 @@ import org.topazproject.ambra.util.XPointerUtils;
 
 /**
  * ContextFormatter - Responsible for String-izing a {@link Context}.
- * 
+ *
  * @author jkirton
  */
 public abstract class ContextFormatter {
@@ -46,7 +46,7 @@ public abstract class ContextFormatter {
    * 2) string-range(/article[1]/body[1]/sec[1]/p[2],"",194,344)
    * <p>
    * ---------------------
-   * 
+   *
    * @param c The context
    * @return xpath string
    * @throws ApplicationException When an encoding related problem arises

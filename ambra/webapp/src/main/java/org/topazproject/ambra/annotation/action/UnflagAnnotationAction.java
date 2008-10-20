@@ -18,14 +18,17 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.topazproject.ambra.ApplicationException;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Mark an annotation as unflagged.
  */
+@SuppressWarnings("serial")
 public class UnflagAnnotationAction extends AnnotationActionSupport {
   private String targetId;
 
@@ -34,9 +37,9 @@ public class UnflagAnnotationAction extends AnnotationActionSupport {
   /**
    * Unflag the Annotation.
    * @return status
-   * @throws Exception Exception
    */
-  public String unflagAnnotation() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String unflagAnnotation() {
     try {
       getAnnotationService().unflagAnnotation(targetId);
     } catch (final ApplicationException e) {
@@ -51,9 +54,9 @@ public class UnflagAnnotationAction extends AnnotationActionSupport {
   /**
    * Unflag the Reply.
    * @return status
-   * @throws Exception Exception
    */
-  public String unflagReply() throws Exception {
+  @Transactional(rollbackFor = { Throwable.class })
+  public String unflagReply() {
     try {
       getAnnotationService().unflagReply(targetId);
     } catch (final ApplicationException e) {

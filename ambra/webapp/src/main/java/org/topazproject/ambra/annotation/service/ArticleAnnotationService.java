@@ -18,10 +18,11 @@
  */
 package org.topazproject.ambra.annotation.service;
 
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
+import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
+
 import java.io.IOException;
-
 import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -32,13 +33,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import static org.topazproject.ambra.annotation.service.WebAnnotation.FLAG_MASK;
-import static org.topazproject.ambra.annotation.service.WebAnnotation.PUBLIC_MASK;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.topazproject.ambra.article.service.FetchArticleService;
 import org.topazproject.ambra.cache.AbstractObjectListener;
 import org.topazproject.ambra.cache.Cache;
@@ -48,12 +44,13 @@ import org.topazproject.ambra.models.ArticleAnnotation;
 import org.topazproject.ambra.models.Comment;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.user.AmbraUser;
+import org.topazproject.ambra.xacml.AbstractSimplePEP;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.Interceptor.Updates;
+import org.topazproject.otm.Session.FlushMode;
 import org.topazproject.otm.criterion.Restrictions;
 
 /**
@@ -204,7 +201,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     AnnotationBlob          blob       =
       new AnnotationBlob(contentType, body.getBytes(getEncodingCharset()));
 
-    final ArticleAnnotation annotation = (ArticleAnnotation) annotationClass.newInstance();
+    final ArticleAnnotation annotation = annotationClass.newInstance();
 
     annotation.setMediator(getApplicationId());
     annotation.setAnnotates(URI.create(target));
@@ -240,7 +237,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void unflagAnnotation(final String annotationId) throws OtmException, SecurityException {
-    pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
+    pep.checkAccess(AnnotationsPEP.SET_ANNOTATION_STATE, URI.create(annotationId));
 
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
     a.setState(a.getState() & ~FLAG_MASK);
@@ -258,7 +255,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   @Transactional(rollbackFor = { Throwable.class })
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding)
     throws OtmException, SecurityException {
-    pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
+    pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
     deleteAnnotation(annotationId);
   }
 
@@ -273,7 +270,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   @Transactional(rollbackFor = { Throwable.class })
   public void deletePublicAnnotation(final String annotationId)
     throws OtmException, SecurityException {
-    pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(annotationId));
+    pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(annotationId));
     deleteAnnotation(annotationId);
   }
 
@@ -287,7 +284,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void deleteFlag(final String flagId) throws OtmException, SecurityException {
-    pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(flagId));
+    pep.checkAccess(AnnotationsPEP.DELETE_ANNOTATION, URI.create(flagId));
     deleteAnnotation(flagId);
   }
 
@@ -336,6 +333,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     List<ArticleAnnotation> allAnnotations =
       articleAnnotationCache.get(ANNOTATED_KEY + target, -1,
           new Cache.SynchronizedLookup<List<ArticleAnnotation>, OtmException>(lock) {
+          @Override
           public List<ArticleAnnotation> lookup() throws OtmException {
             return listAnnotations(target, getApplicationId(), -1, ALL_ANNOTATION_CLASSES);
           }
@@ -353,7 +351,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       ArrayList<ArticleAnnotation>(allAnnotations.size());
 
     for (ArticleAnnotation a : allAnnotations) {
-      for (Class classType : annotationClassTypes) {
+      for (Class<? extends ArticleAnnotation> classType : annotationClassTypes) {
         if (classType.isInstance(a)) {
           filteredAnnotations.add(a);
 
@@ -365,15 +363,16 @@ public class ArticleAnnotationService extends BaseAnnotationService {
     return filteredAnnotations;
   }
 
+  @SuppressWarnings("unchecked")
   private List<ArticleAnnotation> listAnnotations(final String target, final String mediator,
       final int state, final Set<Class<?extends ArticleAnnotation>> classTypes)
     throws OtmException {
     List<ArticleAnnotation> combinedAnnotations = new ArrayList<ArticleAnnotation>();
 
-    for (Class anClass : classTypes) {
+    for (Class<? extends ArticleAnnotation> anClass : classTypes) {
       Criteria c = session.createCriteria(anClass);
       setRestrictions(c, target, mediator, state);
-      combinedAnnotations.addAll((List<ArticleAnnotation>) c.list());
+      combinedAnnotations.addAll(c.list());
     }
 
     if (log.isDebugEnabled()) {
@@ -414,7 +413,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    * See listAnnotations(target, annotationClassTypes). This method returns the result of
    * that method that with annoationClassTypes set to null.
    *
-   * @param target
+   * @param target the target for annotations
    *
    * @return a list of annotations
    *
@@ -447,11 +446,11 @@ public class ArticleAnnotationService extends BaseAnnotationService {
 
 
     List<ArticleAnnotation> all      = listAnnotationsForTarget(target, annotationClassTypes);
-    List<ArticleAnnotation> filtered = new ArrayList(all.size());
+    List<ArticleAnnotation> filtered = new ArrayList<ArticleAnnotation>(all.size());
 
     for (ArticleAnnotation a : all) {
       try {
-        pep.checkAccess(pep.GET_ANNOTATION_INFO, a.getId());
+        pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, a.getId());
         filtered.add(a);
       } catch (Throwable t) {
         if (log.isDebugEnabled())
@@ -476,7 +475,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   @Transactional(readOnly = true)
   public ArticleAnnotation getAnnotation(final String annotationId)
     throws OtmException, SecurityException {
-    pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
+    pep.checkAccess(AnnotationsPEP.GET_ANNOTATION_INFO, URI.create(annotationId));
     // comes from object-cache.
     ArticleAnnotation   a = session.get(ArticleAnnotation.class, annotationId);
     if (a == null)
@@ -495,7 +494,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setPublic(final String annotationDoi) throws OtmException, SecurityException {
-    pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
+    pep.checkAccess(AnnotationsPEP.SET_ANNOTATION_STATE, URI.create(annotationDoi));
 
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationDoi);
     a.setState(a.getState() | PUBLIC_MASK);
@@ -511,7 +510,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public void setFlagged(final String annotationId) throws OtmException, SecurityException {
-    pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
+    pep.checkAccess(AnnotationsPEP.SET_ANNOTATION_STATE, URI.create(annotationId));
 
     ArticleAnnotation a = session.get(ArticleAnnotation.class, annotationId);
     a.setState(a.getState() | FLAG_MASK);
@@ -532,7 +531,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   @Transactional(readOnly = true)
   public ArticleAnnotation[] listAnnotations(final String mediator, final int state)
                                    throws OtmException {
-    pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
+    pep.checkAccess(AnnotationsPEP.LIST_ANNOTATIONS_IN_STATE, AbstractSimplePEP.ANY_RESOURCE);
     List<ArticleAnnotation> annotations =
       listAnnotations(null, mediator, state, ALL_ANNOTATION_CLASSES);
 
@@ -557,7 +556,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String convertArticleAnnotationToType(final String srcAnnotationId,
-      final Class newAnnotationClassType) throws Exception {
+      final Class<? extends ArticleAnnotation> newAnnotationClassType) throws Exception {
     ArticleAnnotation srcAnnotation = session.get(ArticleAnnotation.class, srcAnnotationId);
 
     if (srcAnnotation == null) {
@@ -566,8 +565,8 @@ public class ArticleAnnotationService extends BaseAnnotationService {
       return null;
     }
 
-    ArticleAnnotation oldAn = (ArticleAnnotation) srcAnnotation;
-    ArticleAnnotation newAn = (ArticleAnnotation) newAnnotationClassType.newInstance();
+    ArticleAnnotation oldAn = srcAnnotation;
+    ArticleAnnotation newAn = newAnnotationClassType.newInstance();
 
     BeanUtils.copyProperties(newAn, oldAn);
     /*
@@ -576,7 +575,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
      */
     newAn.setId(null);
 
-    pep.checkAccess(pep.CREATE_ANNOTATION, oldAn.getAnnotates());
+    pep.checkAccess(AnnotationsPEP.CREATE_ANNOTATION, oldAn.getAnnotates());
 
     String newId    = session.saveOrUpdate(newAn);
     URI    newIdUri = new URI(newId);
@@ -639,10 +638,12 @@ public class ArticleAnnotationService extends BaseAnnotationService {
   }
 
   private class Invalidator extends AbstractObjectListener {
+    @Override
     public void objectChanged(Session session, ClassMetadata cm, String id, Object o,
         Updates updates) {
       handleEvent(id, o, updates, false);
     }
+    @Override
     public void objectRemoved(Session session, ClassMetadata cm, String id, Object o) {
       handleEvent(id, o, null, true);
     }
@@ -653,7 +654,7 @@ public class ArticleAnnotationService extends BaseAnnotationService {
         articleAnnotationCache.remove(ANNOTATED_KEY + id);
       } else if (o instanceof ArticleAnnotation) {
         if (log.isDebugEnabled())
-          log.debug("ArticleAnnotation changed/deleted. Invalidating annotation list " + 
+          log.debug("ArticleAnnotation changed/deleted. Invalidating annotation list " +
               " for the target this was annotating or is about to annotate.");
         articleAnnotationCache.remove(ANNOTATED_KEY + ((ArticleAnnotation)o).getAnnotates().toString());
         if ((updates != null) && updates.isChanged("annotates")) {

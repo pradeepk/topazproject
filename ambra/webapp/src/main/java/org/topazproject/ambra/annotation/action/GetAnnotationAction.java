@@ -29,5 +29,6 @@ package org.topazproject.ambra.annotation.action;
  * been exactly 1 to be able to autowire property 'getAnnotationAction' of bean 'org.topazproject.ambra.annotation.action.AnnotationActionsTest'.
  * Consider using autowire by name instead.
  */
+@SuppressWarnings("serial")
 public class GetAnnotationAction extends BaseGetAnnotationAction {
 }

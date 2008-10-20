@@ -18,9 +18,6 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.topazproject.ambra.action.BaseActionSupport;
 import org.topazproject.ambra.annotation.service.AnnotationService;
 import org.topazproject.ambra.user.service.UserService;
@@ -29,11 +26,10 @@ import org.topazproject.ambra.user.service.UserService;
  * To be subclassed by Action classes for Annotations and Replies that can use
  * common stuff among them
  */
+@SuppressWarnings("serial")
 public abstract class AnnotationActionSupport extends BaseActionSupport {
   private AnnotationService annotationService;
   private UserService userService;
-
-  private static final Log log = LogFactory.getLog(AnnotationActionSupport.class);
 
   /**
    * Set the annotations service.

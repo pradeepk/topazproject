@@ -28,7 +28,6 @@ import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
 import org.topazproject.ambra.models.FormalCorrection;
 
-
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
@@ -57,11 +56,6 @@ public class ListAnnotationAction extends AnnotationActionSupport {
     return SUCCESS;
   }
 
-  /**
-   * List annotations.
-   * @return status
-   * @throws Exception
-   */
   @Override
   @Transactional(readOnly = true)
   public String execute() throws Exception {

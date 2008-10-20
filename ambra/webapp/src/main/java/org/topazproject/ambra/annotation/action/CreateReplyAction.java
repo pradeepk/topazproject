@@ -18,7 +18,8 @@
  */
 package org.topazproject.ambra.annotation.action;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +27,12 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.util.ProfanityCheckingService;
 
-import java.util.List;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Action for creating a reply.
  */
+@SuppressWarnings("serial")
 public class CreateReplyAction extends AnnotationActionSupport {
   private String replyId;
   private String root;
@@ -44,6 +46,7 @@ public class CreateReplyAction extends AnnotationActionSupport {
   private static final Log log = LogFactory.getLog(CreateReplyAction.class);
 
   @Transactional(rollbackFor = { Throwable.class })
+  @Override
   public String execute() throws Exception {
     try {
       final List<String> profaneWordsInTitle = profanityCheckingService.validate(commentTitle);

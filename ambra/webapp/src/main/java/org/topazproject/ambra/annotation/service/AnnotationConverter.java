@@ -40,10 +40,9 @@ public class AnnotationConverter {
   /**
    * @param annotations an array of annotations
    * @return an array of Annotation objects as required by the web layer
-   * @throws org.topazproject.ambra.ApplicationException
    */
   @Transactional(readOnly = true)
-  public WebAnnotation[] convert(final ArticleAnnotation[] annotations) throws ApplicationException {
+  public WebAnnotation[] convert(final ArticleAnnotation[] annotations) {
     final WebAnnotation wa[]  = new WebAnnotation[annotations.length];
 
     for (int i = 0; i < annotations.length; i++)
@@ -55,11 +54,12 @@ public class AnnotationConverter {
   /**
    * @param annotation annotation
    * @return the Annotation
-   * @throws ApplicationException
    */
   @Transactional(readOnly = true)
-  public WebAnnotation convert(final ArticleAnnotation annotation) throws ApplicationException {
+  public WebAnnotation convert(final ArticleAnnotation annotation) {
     return new WebAnnotation(annotation, userService) {
+      @Override
+      @Transactional(readOnly = true)
       protected String getOriginalBodyContent() throws ApplicationException {
         try {
           return annotation.getBody().getText();
@@ -73,7 +73,7 @@ public class AnnotationConverter {
 
   /**
    * Creates a hierarchical array of replies based on the flat array passed in.
-   * 
+   *
    * @param replies an array of Replies
    * @return an array of Reply objects as required by the web layer
    * @throws org.topazproject.ambra.ApplicationException ApplicationException
@@ -86,14 +86,13 @@ public class AnnotationConverter {
   /**
    * Creates a hierarchical array of replies based on the flat array passed in.
    * Fills in Commentary com parameter as appropriate
-   * 
-   * @param replies
-   * @param com
+   *
+   * @param replies the list of replies to convert
+   * @param com the commentary
    * @return the hierarchical replies
-   * @throws ApplicationException
    */
   @Transactional(readOnly = true)
-  public WebReply[] convert(final Reply[] replies, Commentary com) throws ApplicationException {
+  public WebReply[] convert(final Reply[] replies, Commentary com) {
     final List<WebReply> webReplies = new ArrayList<WebReply>();
     final LinkedHashMap<String, WebReply> repliesMap = new LinkedHashMap<String, WebReply>(replies.length);
     int numReplies = replies.length;
@@ -145,12 +144,12 @@ public class AnnotationConverter {
   /**
    * @param reply reply
    * @return the reply for the web layer
-   * @throws ApplicationException ApplicationException
    */
-  @Transactional(readOnly = true)
-  public WebReply convert(final Reply reply) throws ApplicationException {
+  public WebReply convert(final Reply reply) {
 
     return new WebReply(reply, userService) {
+      @Override
+      @Transactional(readOnly = true)
       protected String getOriginalBodyContent() throws ApplicationException {
         try {
           return reply.getBody().getText();

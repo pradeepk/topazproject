@@ -19,6 +19,9 @@
 
 package org.topazproject.ambra.annotation;
 
+import java.util.Comparator;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.annotation.service.WebAnnotation;
@@ -26,13 +29,10 @@ import org.topazproject.ambra.annotation.service.WebReply;
 import org.topazproject.ambra.util.DateParser;
 import org.topazproject.ambra.util.InvalidDateException;
 
-import java.util.Comparator;
-import java.util.Date;
-
 /**
  * Simple wrapper class around an Annotation and the associated list of replies.
  * Implements the compartor interface to sort by reverse chronological order.
- * 
+ *
  * @author Stephen Cheng
  *
  */
@@ -77,9 +77,9 @@ public class Commentary implements Comparator<Commentary> {
   /**
    * This comparator does a reverse sort based on the last reply to the annotation.  If not replies
    * are present, the annotation time is used.
-   * 
-   * @param a
-   * @param b
+   *
+   * @param a the first Commentary object to be compared
+   * @param b the second Commentary object to be compared
    * @return a number less than 0 if <var>a</var> less than <var>b</var>, a number greater than 0 if <var>a</var> greater than <var>b</var>, or 0 if <var>a</var> equals <var>b</var>
    */
   public int compare (Commentary a, Commentary b){
