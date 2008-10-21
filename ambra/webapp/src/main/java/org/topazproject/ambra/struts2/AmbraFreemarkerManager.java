@@ -107,8 +107,12 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
         if (r != null)
           return r;
 
-        // FIXME: theme name and parent is hard coded
-        // NOTE: The real fix is in struts. See WW-1961
+        // FIXME: theme inheritance is hard coded
+        // NOTE: The real fix is in struts. See WW-1832
+        r = s.findTemplateSource(name);
+        if (r != null)
+          return r;
+
         return s.findTemplateSource(name.replace("ambra-theme", "simple"));
 
       }
