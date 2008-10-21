@@ -298,7 +298,7 @@
 
         <!-- defaults -->
         <page>
-          <name>/static/serverError.ftl</name>
+          <name>/static/error.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -324,7 +324,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosJournals/static/figure_guidelines.ftl</name>
+          <name>/journals/plosJournals/static/figureGuidelines.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -528,7 +528,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/plosone/static/rss_feeds.ftl</name>
+          <name>/journals/plosone/static/rssFeeds.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>

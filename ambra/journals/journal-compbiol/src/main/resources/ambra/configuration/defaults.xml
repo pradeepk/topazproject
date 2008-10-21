@@ -89,7 +89,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/compbiol/static/ae_checklist.ftl</name>
+          <name>/journals/compbiol/static/aeChecklist.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -170,7 +170,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/compbiol/static/reviewer_guidelines.ftl</name>
+          <name>/journals/compbiol/static/reviewerGuidelines.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -178,7 +178,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/compbiol/static/revised_checklist.ftl</name>
+          <name>/journals/compbiol/static/revisedChecklist.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>

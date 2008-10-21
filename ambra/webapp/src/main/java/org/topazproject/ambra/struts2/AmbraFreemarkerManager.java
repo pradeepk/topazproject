@@ -21,6 +21,7 @@ package org.topazproject.ambra.struts2;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +47,7 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
   /**
    * Sets the custom configuration object via Spring injection
    *
-   * @param fmConfig
+   * @param fmConfig Freemarker configuration
    */
   public AmbraFreemarkerManager(AmbraFreemarkerConfig fmConfig) {
     this.fmConfig = fmConfig;
@@ -65,22 +66,48 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
 
   protected TemplateLoader getTemplateLoader(ServletContext context) {
     final TemplateLoader s = super.getTemplateLoader(context);
+
     return new StatefulTemplateLoader() {
       public void closeTemplateSource(Object source) throws IOException {
         s.closeTemplateSource(source);
       }
 
       public Object findTemplateSource(String name) throws IOException {
-        Object r = s.findTemplateSource(name);
-        if (r == null)
-          r = s.findTemplateSource("struts/" + name);
+
+        // requests are in form /jorurnals/<journal_name>/<package>/template.ftl
+
+        // First: look in journal-specific folders
+        Object  r = s.findTemplateSource("struts/" + name);
+        if (r != null) return r;
+
+        // Trim the beginning "journals/<journal_name>"
+        StringTokenizer tokenizer = new StringTokenizer(name,"/");
+        StringBuilder templateName = new StringBuilder();
+        while(tokenizer.hasMoreTokens()) {
+          String token = tokenizer.nextToken();
+          if (token.equals("journals")) {
+            // skip next
+            tokenizer.nextToken();
+          }
+          else {
+            if (templateName.length() != 0)
+              templateName.append('/');
+            templateName.append(token);
+          }
+        }
+
+        // Second: look in plos default folders
+        r = s.findTemplateSource("journals/plosJournals/" + templateName);
+        if (r != null) return r;
+
+        // Third: look in the ambra default folders
+        r = s.findTemplateSource(templateName.toString());
+        if (r != null) return r;
 
         // FIXME: theme name and parent is hard coded
         // NOTE: The real fix is in struts. See WW-1961
-        if (r == null)
-          r = s.findTemplateSource(name.replace("ambra-theme", "simple"));
+        return s.findTemplateSource(name.replace("ambra-theme", "simple"));
 
-        return r;
       }
 
       public long getLastModified(Object source) {

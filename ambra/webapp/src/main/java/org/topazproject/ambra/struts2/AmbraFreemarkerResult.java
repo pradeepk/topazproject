@@ -25,8 +25,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.views.freemarker.FreemarkerResult;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.topazproject.ambra.web.VirtualJournalContext;
 
 import freemarker.template.SimpleHash;
+import freemarker.template.TemplateModelException;
+import freemarker.ext.servlet.HttpRequestHashModel;
 
 /**
  * Custom Freemarker Result class so that we can pass the templateFile name into the template
@@ -36,6 +41,7 @@ import freemarker.template.SimpleHash;
  *
  */
 public class AmbraFreemarkerResult extends FreemarkerResult {
+  private static final Log log = LogFactory.getLog(AmbraFreemarkerResult.class);
   private String templateFile;
   private boolean noCache = false;
   /**
@@ -52,9 +58,39 @@ public class AmbraFreemarkerResult extends FreemarkerResult {
     this.templateFile = templateFile;
   }
 
+
+  /**
+   * Add journal context path at the beginning of each Freemarker template
+   * @param template template
+   * @param model model
+   * @return super.preTemplateProcess(template, model)
+   * @throws IOException
+   */
   protected boolean preTemplateProcess(freemarker.template.Template template,
-                                       freemarker.template.TemplateModel model) throws IOException{
-    ((SimpleHash)model).put("templateFile", this.templateFile);
+                                       freemarker.template.TemplateModel model) throws IOException {
+    SimpleHash modelHash = (SimpleHash) model;
+    String templateFileName = templateFile;
+
+
+    if (templateFile != null && !templateFile.startsWith("/journals/")) {
+      try {
+        HttpRequestHashModel requestModel = (HttpRequestHashModel)modelHash.get("Request");
+        final VirtualJournalContext virtualJournalContext = (VirtualJournalContext) requestModel
+          .getRequest()
+          .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
+        if (virtualJournalContext != null) {
+          templateFileName = virtualJournalContext.getMappingPrefix()+templateFile;
+          if (log.isDebugEnabled()) {
+            log.debug("Changed "+templateFile+" to "+templateFileName);
+          }
+        }
+
+      } catch (TemplateModelException e) {
+        throw new RuntimeException("Error in preTemplateProcess for "+templateFile, e);
+      }
+    }
+
+    modelHash.put("templateFile", templateFileName);
     if (noCache) {
       HttpServletResponse response = ServletActionContext.getResponse();
       // HTTP 1.1 browsers should defeat caching on this header

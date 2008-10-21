@@ -19,12 +19,8 @@
 
 package org.topazproject.ambra.struts2;
 
-import com.opensymphony.xwork2.config.Configuration;
 import com.opensymphony.xwork2.config.ConfigurationManager;
-import com.opensymphony.xwork2.config.entities.ActionConfig;
-import com.opensymphony.xwork2.config.entities.PackageConfig;
 
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -33,24 +29,11 @@ import org.apache.struts2.dispatcher.mapper.ActionMapping;
 import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
 import org.topazproject.ambra.configuration.ConfigurationStore;
-import org.topazproject.ambra.web.VirtualJournalContext;
-import org.topazproject.ambra.web.VirtualJournalMappingFilter;
 
 /**
  * Custom WebWork ActionMapper.
  *
- * Does two things:
- *
- * <ul>
- * <li>
- * Looks into Struts configuration to check if ActionMapping for particular journal exists. If it does not exist, it will use the default ActionMapping.
- * <br>
- * For example if URI is /static/whypublish.action it will first try to find Action in default journal package /journals/plosone/static . If it finds it, it will remap Action to /journals/plosone/static/whypublish.action otherwise it will use the default package /static/whypublish.action
- * </li>
- * <li>
  * Map friendly URIs, e.g. "/article/feed" to WebWork actions w/o WebWorks URIs, "/article/articleFeed.action?parms"
- * </li>
- * </ul>
  *
  * @author Jeff Suttor
  *
@@ -69,91 +52,13 @@ public class AmbraActionMapper extends DefaultActionMapper {
    */
   public ActionMapping getMapping(HttpServletRequest request, ConfigurationManager configManager) {
 
-    final String origUri = request.getRequestURI();
-    ActionMapping actionMapping;
-
-    // do not care about "null"
-    if (origUri == null) {
-      return super.getMapping(request, configManager);
-    }
-
-    // does a virtual journal context exist?
-    final VirtualJournalContext virtualJournalContext = (VirtualJournalContext) request
-      .getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT);
-    final String mappingPrefix;
-    if (virtualJournalContext != null) {
-      mappingPrefix = virtualJournalContext.getMappingPrefix();
-    } else {
-      mappingPrefix = null;
-    }
-    if (mappingPrefix == null || mappingPrefix.length() == 0) {
-      // no override in effect, use default
-      actionMapping = super.getMapping(request, configManager);
-      if (log.isDebugEnabled()) {
-        log.debug("no mappingPrefix, using default action: " + debugActionMapping(actionMapping));
-      }
-    } else {
-      // look for an override Action in the mappingPrefix namespace
-      // will need to examine Request Path Elements, get virtualized URI values
-      final String[] virtualizedValues = virtualJournalContext.virtualizeUri(
-        request.getContextPath(), request.getServletPath(), request.getPathInfo());
-
-      // get an ActionMapping for the re-written URI
-      actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request,
-         virtualizedValues), configManager);
-
-      // does created ActionMapping actually exist in config?
-      if (actionMapping != null) {
-        boolean actionMappingExists = false;
-
-        final Configuration configuration = configManager.getConfiguration();
-        final Map<String, PackageConfig> packageConfigs = configuration.getPackageConfigs();
-        for (final PackageConfig packageConfig : packageConfigs.values()) {
-          // is package in our namespace?
-          if (!packageConfig.getNamespace().equals(actionMapping.getNamespace())) {
-            continue;
-          }
-
-          // does package contain this action?
-          final Map<String, ActionConfig> actionConfigs = packageConfig.getAllActionConfigs();
-          if (actionConfigs.containsKey(actionMapping.getName())) {
-            actionMappingExists = true;
-            break;
-          }
-        }
-
-        if (!actionMappingExists) {
-          actionMapping = null;
-        }
-      }
-
-      // if no override, use default
-      if (actionMapping == null) {
-        // get defaulted URI values
-        final String[] defaultedValues = virtualJournalContext.defaultUri(
-          request.getContextPath(), request.getServletPath(), request.getPathInfo());
-
-        actionMapping = super.getMapping(VirtualJournalMappingFilter.wrapRequest(request, 
-           defaultedValues), configManager);
-        if (log.isDebugEnabled()) {
-          log.debug("using default action for mappingPrefix: " + mappingPrefix
-            + ", action: " + debugActionMapping(actionMapping));
-        }
-      } else {
-        if (log.isDebugEnabled()) {
-          log.debug("override action for mappingPrefix: " + mappingPrefix
-            + ", action: " + debugActionMapping(actionMapping));
-        }
-      }
-    }
-
     // ATOM feed hook: only care about "/article/feed"
     // will factor out with comprehensive REST URI mapping
-    if (origUri.startsWith(PUB_APP_CONTEXT + "/article/feed")) {
+    if (request.getRequestURI().startsWith(PUB_APP_CONTEXT + "/article/feed")) {
       return mapUriToAction();
     }
 
-    return actionMapping;
+    return super.getMapping(request, configManager);
   }
 
   /**
@@ -190,16 +95,4 @@ public class AmbraActionMapper extends DefaultActionMapper {
      null);                                  // parms
  }
 
- /**
-  * Create a debug String from  an ActionMapping.
-  */
- private String debugActionMapping(final ActionMapping actionMapping) {
-
-   if (actionMapping == null) {
-     return null;
-   }
-
-   return actionMapping.getName() + "#" + actionMapping.getMethod()
-    + "(" + actionMapping.getParams() + ") in namespace " + actionMapping.getNamespace();
- }
 }

@@ -116,8 +116,6 @@
 
     <default-interceptor-ref name="ambraUserStack" />
 
-    <default-action-ref name="pageNotFound" />
-
     <global-results>
       <result name="new-profile" type="redirect-action">
         <param name="actionName">prePopulateNewUser</param>
@@ -212,6 +210,9 @@
   </package>
 
   <package name="search" extends="default" namespace="/search">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="searchStart" class="org.topazproject.ambra.action.NoOpAction">
       <result name="input" type="ambraFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
@@ -238,59 +239,17 @@
   </package>
 
   <package name="static" extends="default" namespace="/static">
-    <action name="browse" class="org.topazproject.ambra.action.NoOpAction">
+    <action name="*" class="org.topazproject.ambra.action.NoOpAction">
       <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/browse.ftl</param>
-      </result>
-    </action>
-    <action name="commentGuidelines" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/commentGuidelines.ftl</param>
-      </result>
-    </action>
-    <action name="help" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/help.ftl</param>
-      </result>
-    </action>
-    <action name="ratingGuidelines" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/ratingGuidelines.ftl</param>
-      </result>
-    </action>
-    <action name="releaseNotes" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/releaseNotes.ftl</param>
-      </result>
-    </action>
-    <action name="rssFeeds" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/rssFeeds.ftl</param>
-      </result>
-    </action>
-    <action name="rssInfo" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/rssInfo.ftl</param>
-      </result>
-    </action>
-    <action name="error" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/serverError.ftl</param>
-      </result>
-    </action>
-    <action name="sitemap" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/sitemap.ftl</param>
-      </result>
-    </action>
-    <action name="users" class="org.topazproject.ambra.action.NoOpAction">
-      <result name="success" type="ambraFreemarker">
-        <param name="templateFile">/static/users.ftl</param>
+        <param name="templateFile">/static/{1}.ftl</param>
       </result>
     </action>
   </package>
 
   <package name="rate" extends="default" namespace="/rate">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="getAverageRatingsForArticle" class="org.topazproject.ambra.rating.action.GetAverageRatingsAction">
       <interceptor-ref name="chain">
         <param name="excludes">targetSource, callbacks, exposeProxy</param>
@@ -319,6 +278,9 @@
   </package>
 
   <package name="rate-secure" extends="default" namespace="/rate/secure">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="rateArticle" class="org.topazproject.ambra.rating.action.RateAction" method="rateArticle">
       <result name="input" type="json"/>
       <result name="success" type="json"/>
@@ -339,6 +301,9 @@
   </package>
 
   <package name="article" extends="default" namespace="/article">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="listTrackbacks" class="org.topazproject.ambra.action.TrackbackAction" method="getTrackbacksForArticle">
       <result name="success" type="ambraFreemarker">
         <param name="templateFile">/article/trackbackList.ftl</param>
@@ -480,6 +445,9 @@
   </package>
 
   <package name="article-feed" extends="default" namespace="/article/feed">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="getFeed" class="org.topazproject.ambra.article.action.ArticleFeed" method="execute">
       <result name="success" type="feed">
         <param name="feedName">wireFeed</param>
@@ -488,6 +456,9 @@
   </package>
 
   <package name="annotation" extends="default" namespace="/annotation">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="listAnnotation" class="org.topazproject.ambra.annotation.action.ListAnnotationAction">
       <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
     </action>
@@ -558,6 +529,9 @@
   </package>
 
   <package name="annotation-secure" extends="default" namespace="/annotation/secure">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="createAnnotation">
       <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>
@@ -636,6 +610,9 @@
   </package>
 
   <package name="user-secure" extends="default" namespace="/user/secure">
+
+    <default-action-ref name="pageNotFound" />
+
     <action name="secureRedirect" class="org.topazproject.ambra.action.RedirectAction">
       <result type="redirect">
         <param name="location">${goTo}</param>
@@ -754,6 +731,8 @@
   <package name="user" extends="default" namespace="/user">
     <default-interceptor-ref name="ambraBaseStack" />
 
+    <default-action-ref name="pageNotFound" />
+
     <action name="prePopulateNewUser" class="org.topazproject.ambra.user.action.MemberUserProfileAction" method="prePopulateUserDetails">
       <result name="new-profile" type="user">
         <param name="templateFile">/journals/plosJournals/user/createNewUser.ftl</param>
@@ -794,6 +773,8 @@
 
   <package name="admin" extends="default" namespace="/admin">
     <default-interceptor-ref name="ambraAdminStack" />
+
+    <default-action-ref name="pageNotFound" />
 
     <action name="adminTop" class="org.topazproject.ambra.admin.action.AdminTopAction">
       <result name="success" type="ambraFreemarker">
