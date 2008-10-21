@@ -88,7 +88,7 @@ public class AmbraFeedResult extends Feed implements Result {
   protected static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private   static final Log           log = LogFactory.getLog(AmbraFeedResult.class);
   private   static final String        ATOM_NS = "http://www.w3.org/2005/Atom"; // Tmp hack for categories
-  // TODO: WTO: what is this non-sense about?
+  // TODO:  what is this non-sense about?
   private final String fetchObjectAttachmentAction = "article/fetchObjectAttachment.action";
 
  //TODO: WTO Need to put these in a resource bundle.
@@ -135,12 +135,6 @@ public class AmbraFeedResult extends Feed implements Result {
    * is the Results responsiblility to get the article information and constuct the actual
    * Atom feed formated output. The feed result is not currently cached.
    *
-   *<h4>TODO:</h4>
-   * <pre>
-   * WTO: If we need to cache the feed result we could just create an
-   *      object that would have fields for the Aritcle ID's and a Feed Result, JSON etc.
-   *
-   * </pre>
    * @param ai  action invocation context
    * @throws Exception
    */

@@ -116,7 +116,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
-  //TODO: WTO: we need to move these to BaseAction support and standardize on result dispatching.
+  //TODO: we need to move these to BaseAction support and standardize on result dispatching.
   private static final String ATOM_RESULT = "ATOM1.0"; // Return value SUCCESS or ATOM_RESULT routes to AmbraFeedResult
   private static final String JSON_RESULT = "JSON";    // Return value JSON_RESULT to route the AmbraJSONResult
 
@@ -458,6 +458,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * Implementation of the comparable interface. TODO: doesn't comform to
      * compare interface standard.
      *
+     * TODO: shouldn't this comform to compareTo standard?
+     * 
      * @param o   the object to compare to.
      * @return    the value 0 if the argument is a string lexicographically equal to this string;
      *            a value less than 0 if the argument is a string lexicographically greater than
