@@ -403,7 +403,22 @@ public class ArticleOtmService {
     return article;
   }
 
+    /**
+     * Get articles based on a list of Article id's.
+     *
+     * @param articleIds  list of article id's
+     * @return <code>List&lt;Article&gt;</code> of articles requested
+     * @throws ParseException
+     */
+  @Transactional(readOnly = true)
+  public List<Article> getArticles(List<String> articleIds) throws ParseException {
 
+    List<Article> articleList = new ArrayList<Article>();
+    for (String id : articleIds)
+      articleList.add(session.get(Article.class, id));
+
+    return articleList;
+  }
   /**
    * Return the list of secondary objects
    * @param article uri
