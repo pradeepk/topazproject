@@ -21,6 +21,7 @@ package org.topazproject.ambra.annotation.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.ApplicationException;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -46,6 +47,7 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not delete annotation: " + annotationId, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     addActionMessage("Annotation deleted with id:" + annotationId);
@@ -63,6 +65,7 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not delete annotation: " + annotationId, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     addActionMessage("Annotation marked as deleted with id:" + annotationId);

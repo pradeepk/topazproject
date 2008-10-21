@@ -21,6 +21,7 @@ package org.topazproject.ambra.annotation.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.ApplicationException;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -50,6 +51,7 @@ public class CreateFlagAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not create flag for target: " + target, e);
       addActionError("Flag creation failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     addActionMessage("Flag created with id:" + annotationId);
@@ -63,7 +65,12 @@ public class CreateFlagAction extends AnnotationActionSupport {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String createAnnotationFlag() {
-    return createFlag(true);
+    String status = createFlag(true);
+
+    if ("ERROR".equals(status))
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+    return status;
   }
 
   /**
@@ -73,7 +80,12 @@ public class CreateFlagAction extends AnnotationActionSupport {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String createReplyFlag() {
-    return createFlag(false);
+    String status = createFlag(true);
+
+    if ("ERROR".equals(status))
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+    return status;
   }
 
   private String createFlag(final boolean isAnnotation) {

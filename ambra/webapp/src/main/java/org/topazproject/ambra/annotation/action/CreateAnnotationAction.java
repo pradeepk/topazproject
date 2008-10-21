@@ -60,7 +60,12 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   @Override
   @Transactional(rollbackFor = { Throwable.class })
   public String execute() throws Exception {
-    return createAnnotation();
+    String status = createAnnotation();
+
+    if ("ERROR".equals(status))
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+    return status;
   }
 
   /**
@@ -69,7 +74,12 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    */
   @Transactional(rollbackFor = { Throwable.class })
   public String executeSaveDiscussion() {
-    return createAnnotation();
+    String status = createAnnotation();
+
+    if ("ERROR".equals(status))
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+    return status;
   }
 
   private String createAnnotation() {
@@ -97,7 +107,6 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not create annotation", e);
       addActionError("Annotation creation failed with error message: " + e.getMessage());
-      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     addActionMessage("Annotation created with id:" + annotationId);

@@ -21,6 +21,7 @@ package org.topazproject.ambra.annotation.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.ApplicationException;
 
 /**
@@ -45,6 +46,7 @@ public class DeleteReplyAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not delete reply: " + id, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     return SUCCESS;
@@ -61,6 +63,7 @@ public class DeleteReplyAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error("Could not delete reply with root: " + root + " replyTo: " + inReplyTo, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     return SUCCESS;

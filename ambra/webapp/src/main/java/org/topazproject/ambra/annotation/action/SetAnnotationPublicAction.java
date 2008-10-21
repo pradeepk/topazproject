@@ -21,6 +21,7 @@ package org.topazproject.ambra.annotation.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.topazproject.ambra.ApplicationException;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -44,6 +45,7 @@ public class SetAnnotationPublicAction extends AnnotationActionSupport {
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Annotation creation failed with error message: " + e.getMessage());
+      TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       return ERROR;
     }
     return SUCCESS;
