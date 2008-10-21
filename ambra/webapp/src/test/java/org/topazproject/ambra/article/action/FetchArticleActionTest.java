@@ -18,12 +18,10 @@
  */
  package org.topazproject.ambra.article.action;
 
-import com.opensymphony.xwork2.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ambra.ApplicationException;
 import org.topazproject.ambra.BaseAmbraTestCase;
-import org.topazproject.ambra.annotation.action.BodyFetchAction;
 import org.topazproject.ambra.article.action.FetchArticleAction;
 import org.topazproject.ambra.article.service.DuplicateArticleIdException;
 import org.topazproject.ambra.article.service.NoSuchArticleIdException;
@@ -38,7 +36,6 @@ import java.util.Collection;
 public class FetchArticleActionTest extends BaseAmbraTestCase {
   public static final Log log = LogFactory.getLog(FetchArticleActionTest.class);
   private String BASE_TEST_PATH = "src/test/resources/";
-  private String testXmlTarget = "file:src/test/resources/test.xml";
 
   public void testShouldReturnTransformedArticle() throws Exception {
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
@@ -69,15 +66,6 @@ public class FetchArticleActionTest extends BaseAmbraTestCase {
     }
 
     assertNotNull(transformedArticle);
-  }
-
-  public void testFetchArticleReturnsLinkifiedText() throws Exception {
-    final BodyFetchAction bodyFetchAction = getBodyFetchAction();
-    bodyFetchAction.setBodyUrl(testXmlTarget);
-    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
-    final String articleBody = bodyFetchAction.getBody();
-    log.debug(articleBody);
-    assertTrue(articleBody.contains("href=\""));
   }
 
   public void testShouldInjestArticle() throws Exception {

@@ -488,10 +488,6 @@
   </package>
 
   <package name="annotation" extends="default" namespace="/annotation">
-    <action name="fetchBody" class="org.topazproject.ambra.annotation.action.BodyFetchAction">
-      <result name="success">/WEB-INF/pages/annotation/showCommentBody.ftl</result>
-    </action>
-
     <action name="listAnnotation" class="org.topazproject.ambra.annotation.action.ListAnnotationAction">
       <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
     </action>

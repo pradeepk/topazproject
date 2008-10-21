@@ -21,7 +21,6 @@ package org.topazproject.ambra.annotation.service;
 import static org.topazproject.ambra.annotation.service.BaseAnnotation.FLAG_MASK;
 import static org.topazproject.ambra.annotation.service.BaseAnnotation.PUBLIC_MASK;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -46,7 +45,6 @@ import org.topazproject.ambra.models.Reply;
 import org.topazproject.ambra.permission.service.PermissionsService;
 import org.topazproject.ambra.rating.service.RatingsService;
 import org.topazproject.ambra.user.AmbraUser;
-import org.topazproject.ambra.util.FileUtils;
 
 /**
  * Used for both annotation and reply services.
@@ -533,21 +531,6 @@ public class AnnotationService {
 
   public void setRatingsService(final RatingsService ratingsService) {
     this.ratingsService = ratingsService;
-  }
-
-  /**
-   * Get the bodyUrl of the annotation.
-   *
-   * @param bodyUrl bodyUrl
-   * @return content of the annotation
-   * @throws ApplicationException ApplicationException
-   */
-  public String getBody(final String bodyUrl) throws ApplicationException {
-    try {
-      return FileUtils.getTextFromUrl(bodyUrl);
-    } catch (IOException e) {
-      throw new ApplicationException(e);
-    }
   }
 
   /**

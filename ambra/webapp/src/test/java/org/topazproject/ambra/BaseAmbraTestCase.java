@@ -20,7 +20,6 @@
 package org.topazproject.ambra;
 
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
-import org.topazproject.ambra.annotation.action.BodyFetchAction;
 import org.topazproject.ambra.annotation.action.CreateAnnotationAction;
 import org.topazproject.ambra.annotation.action.CreateFlagAction;
 import org.topazproject.ambra.annotation.action.CreateReplyAction;
@@ -65,7 +64,6 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
   private ListReplyAction listReplyAction;
   private DeleteReplyAction deleteReplyAction;
   private CreateReplyAction createReplyAction;
-  private BodyFetchAction bodyFetchAction;
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
   private MemberUserProfileAction memberUserProfileAction;
@@ -183,14 +181,6 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
     this.createReplyAction = createReplyAction;
   }
 
-  public void setAnnotationBodyFetcherAction(final BodyFetchAction bodyFetchAction) {
-    this.bodyFetchAction = bodyFetchAction;
-  }
-
-  public BodyFetchAction getAnnotationBodyFetcherAction() {
-    return bodyFetchAction;
-  }
-
   public GetAnnotationAction getGetAnnotationAction() {
     return getAnnotationAction;
   }
@@ -213,20 +203,6 @@ public abstract class BaseAmbraTestCase extends AbstractDependencyInjectionSprin
 
   public void setGetReplyAction(final GetReplyAction getReplyAction) {
     this.getReplyAction = getReplyAction;
-  }
-
-  /**
-   * @return Returns the bodyFetchAction.
-   */
-  public BodyFetchAction getBodyFetchAction() {
-    return bodyFetchAction;
-  }
-
-  /**
-   * @param bodyFetchAction The bodyFetchAction to set.
-   */
-  public void setBodyFetchAction(BodyFetchAction bodyFetchAction) {
-    this.bodyFetchAction = bodyFetchAction;
   }
 
   /**
