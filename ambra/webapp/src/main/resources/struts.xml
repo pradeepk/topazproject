@@ -33,7 +33,6 @@
   allow the mapping of friendly URIs, 
   e.g. "/article/feed" v. requiring "/article/articleFeed.action?parms"
   -->
-  <constant name="struts.mapper.class" value="org.topazproject.ambra.struts2.AmbraActionMapper"/>
 
   <include file="struts-default.xml" />
 
@@ -448,7 +447,7 @@
 
     <default-action-ref name="pageNotFound" />
 
-    <action name="getFeed" class="org.topazproject.ambra.article.action.ArticleFeed" method="execute">
+    <action name="getFeed" class="org.topazproject.ambra.article.action.ArticleFeed">
       <result name="success" type="feed">
         <param name="feedName">wireFeed</param>
       </result>

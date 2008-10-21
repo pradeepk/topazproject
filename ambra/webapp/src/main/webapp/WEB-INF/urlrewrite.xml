@@ -78,4 +78,23 @@
     <from>^(/.+)?/annotation/listThread.action\?root=(info%3Adoi%2F10\.1371%2F.+)</from>
     <to>$1/annotation/$2</to>
   </outbound-rule>
+
+  <rule>
+    <note>
+      re-write incoming Feed URIs.
+      /article/feed?... -> /article/feed/getFeed.action?...
+    </note>
+    <from>^(/.+)?/article/feed(\?.*)?</from>
+    <to>$1/article/feed/getFeed.action$2</to>
+  </rule>
+
+  <outbound-rule>
+    <note>
+      re-write outbound Feed URIs.
+     /article/feed/getFeed.action?... -> /article/feed?...
+    </note>
+    <from>^(/.+)?/article/feed/getFeed.action(.*)?</from>
+    <to last="true">$1/article/feed$2</to>
+  </outbound-rule>
+
 </urlrewrite>
