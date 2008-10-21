@@ -78,7 +78,8 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
 
         // First: look in journal-specific folders
         Object  r = s.findTemplateSource("struts/" + name);
-        if (r != null) return r;
+        if (r != null)
+          return r;
 
         // Trim the beginning "journals/<journal_name>"
         StringTokenizer tokenizer = new StringTokenizer(name,"/");
@@ -98,11 +99,13 @@ public class AmbraFreemarkerManager extends FreemarkerManager {
 
         // Second: look in plos default folders
         r = s.findTemplateSource("journals/plosJournals/" + templateName);
-        if (r != null) return r;
+        if (r != null)
+          return r;
 
         // Third: look in the ambra default folders
         r = s.findTemplateSource(templateName.toString());
-        if (r != null) return r;
+        if (r != null)
+          return r;
 
         // FIXME: theme name and parent is hard coded
         // NOTE: The real fix is in struts. See WW-1961
