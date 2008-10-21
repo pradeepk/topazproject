@@ -89,7 +89,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/ntd/static/ae_checklist.ftl</name>
+          <name>/journals/ntd/static/aeChecklist.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -170,7 +170,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/ntd/static/hotez_who.ftl</name>
+          <name>/journals/ntd/static/hotezWho.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -194,7 +194,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/ntd/static/reviewer_guidelines.ftl</name>
+          <name>/journals/ntd/static/reviewerGuidelines.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
@@ -202,7 +202,7 @@
           </css>
         </page>
         <page>
-          <name>/journals/ntd/static/revised_checklist.ftl</name>
+          <name>/journals/ntd/static/revisedChecklist.ftl</name>
           <css>
             <file>/css/screen.css</file>
             <file>/css/iepc.css</file>
