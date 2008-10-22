@@ -66,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <pre>
  * <strong>
  * Param                                                Description </strong>
- * List&lt;String&gt; IDs            List of article IDs that resulted from the the query.
+ * List&lt;String&gt; IDs      List of article IDs that resulted from the the query.
  *                             Set via the ValueStack <code>ai.getStack().findValue("articleIDs")
  *                             </code> call
  *
@@ -82,7 +82,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author jsuttor
  */
 public class AmbraFeedResult extends Feed implements Result {
-
   private List<Article>     articles;
   private ArticleOtmService articleOtmService;
   private ArticleXMLUtils   articleXmlUtils;
@@ -103,8 +102,8 @@ public class AmbraFeedResult extends Feed implements Result {
   private static final String  PREFIX_DEF = "plos";
   private static final String  EMAIL_DEF = "webmaster@plos.org";
   private static final String  COPYRIGHT_DEF = "This work is licensed under a Creative Commons " +
-      "Attribution-Share Alike 3.0 License, " +
-      "http://creativecommons.org/licenses/by-sa/3.0/";
+                                               "Attribution-Share Alike 3.0 License, " +
+                                               "http://creativecommons.org/licenses/by-sa/3.0/";
 
   private String JRNL_URI() {
     String URI = CONF.getString("ambra.virtualJournals." + getCurrentJournal() + ".url",
@@ -167,7 +166,6 @@ public class AmbraFeedResult extends Feed implements Result {
    */
   @Transactional(readOnly = true)
   public void execute(ActionInvocation ai) throws Exception {
-
     HttpServletRequest request = ServletActionContext.getRequest();
     String pathInfo = request.getPathInfo();
 
@@ -212,7 +210,6 @@ public class AmbraFeedResult extends Feed implements Result {
     List<Entry> entries = new ArrayList<Entry>();
 
     for (Article article : articles) {
-
       Entry entry = newEntry(article);
 
       List<Link> altLinks = new ArrayList<Link>();
@@ -237,9 +234,7 @@ public class AmbraFeedResult extends Feed implements Result {
       // List will be created by newAuthorsList 
       List<Person> authors = new ArrayList<Person>();
 
-      /* Returns Comma delimitted string of author names
-       * and Adds People to the authors list.
-       */
+      // Returns Comma delimitted string of author names and Adds People to the authors list.
       String authorNames = newAuthorsList(cacheKey, article, authors);
       entry.setAuthors(authors);
 
@@ -269,7 +264,7 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   /**
-   * Creates a <code>List&lt;Element&gt;</code> that consist of foreign markup elements
+   * Creates a <code>List&lt;Element&gt;</code> that consist of foreign markup elements.
    * In this case the elements created consist of volume, issue category information.
    *
    * @param article   the article
@@ -319,13 +314,13 @@ public class AmbraFeedResult extends Feed implements Result {
         foreignMarkup.add(feedCategory);
       }
     }
+
     return  foreignMarkup;
   }
 
   /**
-   * Creates a description of article contents in HTML format. Currently the description
-   * consist of the Author (or Authors if extended format) and the DublinCore description
-   * of the article.
+   * Creates a description of article contents in HTML format. Currently the description consist of
+   * the Author (or Authors if extended format) and the DublinCore description of the article.
    *
    * @param cacheKey  cache key and input parameters
    * @param article   the article
@@ -335,7 +330,6 @@ public class AmbraFeedResult extends Feed implements Result {
    */
   private List<Content>newContentsList(ArticleFeed.Key cacheKey,
                                        Article article, String authorNames, int numAuthors) {
-
     List<Content> contents = new ArrayList<Content>();
     Content description = new Content();
     DublinCore dc = article.getDublinCore();
@@ -360,18 +354,18 @@ public class AmbraFeedResult extends Feed implements Result {
       description.setValue("<p>Internal server error.</p>");
     }
     contents.add(description);
+
     return contents;
   }
 
   /**
-   * Create a <code>List&lt;Person&gt;</code> of DublinCore specified that
-   * contributed to this article.
+   * Create a <code>List&lt;Person&gt;</code> of DublinCore specified that contributed to this
+   * article.
    *
    * @param article the article
    * @return <code>List&lt;Person&gt;</code> of contributors to the article.
    */
   private List<Person> newContributorsList(Article article) {
-
     List<Person> newContributors = new ArrayList<Person>();
     Set<String> contributors = article.getDublinCore().getContributors();
 
@@ -380,6 +374,7 @@ public class AmbraFeedResult extends Feed implements Result {
       person.setName(contributor);
       newContributors.add(person);
     }
+
     return newContributors;
   }
 
@@ -393,7 +388,6 @@ public class AmbraFeedResult extends Feed implements Result {
    * @return String of authors names.
    */
   private String newAuthorsList(ArticleFeed.Key cacheKey, Article article, List<Person> authors) {
-
     Citation bc = article.getDublinCore().getBibliographicCitation();
     String authorNames = "";
 
@@ -452,7 +446,6 @@ public class AmbraFeedResult extends Feed implements Result {
    * @return  Link  an alternate link to the article
    */
   private Link newAltLink (Article article, Representation rep, String xmlBase) {
-
     Link altLink = new Link();
     DublinCore dc = article.getDublinCore();
 
@@ -473,7 +466,6 @@ public class AmbraFeedResult extends Feed implements Result {
    * @return  link to the article
    */
   private Link newSelfLink (Article article, String xmlBase) {
-
     Link link = new Link();
     DublinCore dc = article.getDublinCore();
 
@@ -487,18 +479,17 @@ public class AmbraFeedResult extends Feed implements Result {
     }
 
     link.setTitle(dc.getTitle());
+
     return link;
   }
 
   /**
-   * Create a feed entry with Id, Rights, Title, Published and Updated
-   * set.
+   * Create a feed entry with Id, Rights, Title, Published and Updated set.
    *
    * @param article  the article
    * @return Entry  feed entry
    */
   private Entry newEntry(Article article) {
-
     Entry entry = new Entry();
     DublinCore dc = article.getDublinCore();
 
@@ -536,15 +527,14 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   /**
-   * If a self link was provided by the user create a <code>Link</code>
-   * based on the user input information contained in the cachekey.
+   * If a self link was provided by the user create a <code>Link</code> based on the user input
+   * information contained in the cachekey.
    *
    * @param cacheKey cache and data model
    * @param uri uri of regquest
    * @return <code>Link</code> user provide link.
    */
   private Link newLink(ArticleFeed.Key cacheKey, String uri) {
-
     if (cacheKey.getSelfLink() == null || cacheKey.getSelfLink().equals("")) {
       if (uri.startsWith("/")) {
         cacheKey.setSelfLink(JRNL_URI().substring(0, JRNL_URI().length() - 1) + uri);
@@ -578,8 +568,7 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   /**
-   * Create a feed Title string from the the key.Category and key.Author
-   * fields in the cache entry.
+   * Create a feed Title string from the the key.Category and key.Author fields in the cache entry.
    *
    * @param cacheKey  cache key and input parameters
    * @return String feed title.
@@ -622,8 +611,9 @@ public class AmbraFeedResult extends Feed implements Result {
       respStrm.close();
     }
   }
+
   /**
-   *  Get a String from the Configuration looking first for a Journal override.
+   * Get a String from the Configuration looking first for a Journal override.
    *
    * @param key to lookup.
    * @param defaultValue if key is not found.

@@ -54,13 +54,14 @@ import com.opensymphony.xwork2.ModelDriven;
 
 /**
  * <h4>Description</h4>
- * The <code>class ArticleFeed</code> provides an API for criteria based retrieval
- * of articles and article information. The <code>class ArticleFeed</code> implements
- * the Struts ModelDrive interface. The data model used for <code>ArticleFeed</code> is
- * <code>class Key</code>. The the field <code>ArticleFeed.cacheKey</code> is accessible
- * to Struts through the <code>ArticleFeed.getModel</code> and <code>ArticleFeed.getCacheKey</code>
- * bean getter. The ModelDriven Interceptor parses the input parameters, converts
- * them to the appropriate Java types then assigns them to fields in the data model.
+ * The <code>class ArticleFeed</code> provides an API for criteria based retrieval of articles and
+ * article information. The <code>class ArticleFeed</code> implements the Struts ModelDrive
+ * interface. The data model used for <code>ArticleFeed</code> is <code>class Key</code>. The the
+ * field <code>ArticleFeed.cacheKey</code> is accessible to Struts through the
+ * <code>ArticleFeed.getModel</code> and <code>ArticleFeed.getCacheKey</code> bean getter. The
+ * ModelDriven Interceptor parses the input parameters, converts them to the appropriate Java types
+ * then assigns them to fields in the data model.
+ *
  * <p>
  * The <code>ArticleFeed.cacheKey</code> serves the following purposes:
  * <ul>
@@ -70,18 +71,20 @@ import com.opensymphony.xwork2.ModelDriven;
  * <li> Registers a cache Invalidator as a cache listner.
  * </ul>
  * <p>
+ *
  * ArticleFeed implements the <code>ArticleFeed.exceute</code> and <code>ArticleFeed.validate
- * </code> Struts entry points. The <code>ArticleFeed.validate</code> method assigns default
- * values to fields not provided by user input and checks parameters that are provided by the
- * user. By the time Struts invokes the <code>ArticleFeed.execute</code> all model data variables
- * should be in a known and exceptable state for execution. <code>ArticleFeed.execute</code>
- * first checks the feed cache for identical queries or calls <code>ArticleFeed.getFeedData</code>
- * if there is a miss. A list of article ID's is the result. It is up to the result handler to
- * fetch the articles and serialize the output.
+ * </code> Struts entry points. The <code>ArticleFeed.validate</code> method assigns default values
+ * to fields not provided by user input and checks parameters that are provided by the user. By the
+ * time Struts invokes the <code>ArticleFeed.execute</code> all model data variables should be in a
+ * known and exceptable state for execution. <code>ArticleFeed.execute</code> first checks the feed
+ * cache for identical queries or calls <code>ArticleFeed.getFeedData</code> if there is a miss. A
+ * list of article ID's is the result. It is up to the result handler to fetch the articles and
+ * serialize the output.
+ *
  * <p>
  * <ul>
  * <li>Define a hard limit of 200 articles returned in one query.
- * <li>If startDate > endDate then startDate set to endDate.
+ * <li>If startDate &gt; endDate then startDate set to endDate.
  * </ul>
  *
  * <h4>Action URI</h4>
@@ -91,7 +94,7 @@ import com.opensymphony.xwork2.ModelDriven;
  * <strong>
  * Param        Format        Required     Default                 Description </strong>
  * startDate ISO yyyy/MM/dd     No         -3 months   Start Date - search for articles
- *                                                     dated >= to sDate
+ *                                                     dated &gt;= to sDate
  * endDate   ISO yyyy/MM/dd     No         today       End Date - search for articles
  *                                                     dated <= to eDate
  * category    String           No         none        Article Category
@@ -114,24 +117,18 @@ import com.opensymphony.xwork2.ModelDriven;
  * @author Eric Brown
  */
 public class ArticleFeed extends BaseActionSupport implements ModelDriven {
-
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
   //TODO: move these to BaseAction support and standardize on result dispatching.
   private static final String ATOM_RESULT = "ATOM1_0";
   private static final String JSON_RESULT = "json";
 
-  /**
-   * Cache invalidator (there can be only one) must be static.
-   */
-  private static Invalidator       invalidator;         // Cache listner (must be static)
-  private        ArticleOtmService articleOtmService;   // OTM service Spring injected.
-  private        Cache             feedCache;           // Feed Cache Spring injected
-  private        JournalService    journalService;      // Journal service Spring injected.
-  private        Key               cacheKey=new Key();  // The cache key and action data model
-  private        List<String>      articleIDs;          // List of Article IDs; result of search
-
-
+  private static Invalidator       invalidator;           // Cache listener (must be static)
+  private        ArticleOtmService articleOtmService;     // OTM service Spring injected.
+  private        Cache             feedCache;             // Feed Cache Spring injected
+  private        JournalService    journalService;        // Journal service Spring injected.
+  private        Key               cacheKey = new Key();  // The cache key and action data model
+  private        List<String>      articleIDs;            // List of Article IDs; result of search
 
   /**
    * Try and find the query in the feed cache or query the Article OTM Service if nothing
@@ -141,14 +138,13 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    */
   @Transactional(readOnly = true)
   public String execute() throws Exception {
-
     // Create a local lookup based on the feed URI.
     Cache.Lookup<List<String>, ApplicationException> lookUp =
-        new Cache.SynchronizedLookup<List<String>, ApplicationException>(cacheKey) {
-          public List<String> lookup() throws ApplicationException {
-            return getFeedData();
-          }
-        };
+      new Cache.SynchronizedLookup<List<String>, ApplicationException>(cacheKey) {
+        public List<String> lookup() throws ApplicationException {
+          return getFeedData();
+        }
+      };
 
     // Get articel ID's from the feed cache or add it 
     articleIDs = feedCache.get(cacheKey, -1, lookUp);
@@ -157,34 +153,27 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * Validate the input parameters or create defaults when they are not provided.
-   * Struts calles this automagically after the parameters are parsed and
-   * the proper fields are set in the data model. It is assumed that all
-   * necessary fields are checked for validity and created if not specified.
-   * The <code>ArticleFeed.execute</code> should be able to use them without
-   * any further checks.
-   *
+   * Validate the input parameters or create defaults when they are not provided.  Struts calls this
+   * automagically after the parameters are parsed and the proper fields are set in the data model.
+   * It is assumed that all necessary fields are checked for validity and created if not specified.
+   * The <code>ArticleFeed.execute</code> should be able to use them without any further checks.
    */
   @Override
   public void validate () {
-
-    /* The cacheKey must have both the current Journal and start date.
-     * Current Journal is set here and startDate will be set in the data
-     * model validator.
+    /* The cacheKey must have both the current Journal and start date.  Current Journal is set here
+     * and startDate will be set in the data model validator.
      */
     cacheKey.setJournal(getCurrentJournal());
     cacheKey.validate(this);
   }
 
   /*
-   * Use the OTM Service to build a list of article ID's that match the query.
-   * Build the category and author list needed by the article ID query
-   * then make the query
+   * Use the OTM Service to build a list of article ID's that match the query.  Build the category
+   * and author list needed by the article ID query then make the query
    *
    * @return Query results as a list of article ID's.
    */
   private List<String> getFeedData() throws ApplicationException {
-
     List<String> IDs;
 
     List<String> categoriesList = new ArrayList<String>();
@@ -217,8 +206,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * Set <code>articleOtmService</code> field to the article OTM service
-   * singleton. This
+   * Set <code>articleOtmService</code> field to the article OTM service singleton. This
    *
    * @param  articleOtmService  the object transaction model reference
    */
@@ -227,10 +215,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * Allows Spring to set the feed cache singleton
-   * with each new instantiation of the <code>ArticleFeed</code>. It also
-   * initializes the static field <code>invalidator</code> with a cache
-   * listener that removes cache entries when new articles are ingested or deleted.
+   * Allows Spring to set the feed cache singleton with each new instantiation of the
+   * <code>ArticleFeed</code>. It also initializes the static field <code>invalidator</code> with a
+   * cache listener that removes cache entries when new articles are ingested or deleted.
    *
    * @param feedCache the ehcache instance
    */
@@ -238,16 +225,15 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     this.feedCache = feedCache;
     if (invalidator == null) {
       invalidator = new Invalidator();
-      /*CacheManager is a singleton and will notify all caches
-       *registered when a commit to the datastore is executed
+      /* CacheManager is a singleton and will notify all caches registered when a commit to the
+       * datastore is executed
        */
       this.feedCache.getCacheManager().registerListener(invalidator);
     }
   }
 
   /**
-   * This is the results of the query which consist of a list
-   * of article ID's.
+   * This is the results of the query which consist of a list of article ID's.
    *
    * @return the list of article ID's returned from the query.
    */
@@ -265,8 +251,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * Return the a cahce key which is also the data modle for the model driven
-   * interface.
+   * Return the a cahce key which is also the data modle for the model driven interface.
    *
    * @return Key to the cache which is also the data model of the action
    */
@@ -275,9 +260,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * Retreive the <code>VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT</code>
-   * from the servlet container. This is set by the
-   * <code>VirtualJournalCodntextFilter.doFilter</code>
+   * Retreive the <code>VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT</code> from the servlet
+   * container. This is set by the <code>VirtualJournalCodntextFilter.doFilter</code>
    *
    * @see org.topazproject.ambra.web.VirtualJournalContextFilter
    *
@@ -304,11 +288,11 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * <li> It is the cache key to the article ID's that reside in the feed cache
    * <li> It relays these input parameters to AmbraFeedResult.
    * </ul>
-   * Since the parameters uniquely idententfy the query they are used to
-   * generate the hash code for the key. Only the parameters that
-   * can affect query results are used for this purpose. The cache key
-   * is also made available to the AmbraFeedResult because it also
-   * contains parameters that affect the output.
+   *
+   * Since the parameters uniquely idententfy the query they are used to generate the hash code for
+   * the key. Only the parameters that can affect query results are used for this purpose. The cache
+   * key is also made available to the AmbraFeedResult because it also contains parameters that
+   * affect the output.
    *
    * <h4>Parameters</h4>
    * <pre>
@@ -321,7 +305,6 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * @see       org.topazproject.ambra.struts2.AmbraFeedResult
    */
   public class Key implements Serializable, Comparable {
-
     private String journal;
     private Date   sDate;
     private Date   eDate;
@@ -346,19 +329,18 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * Key Constructor - currently does nothing.
      */
     public Key() {
-
     }
 
     /**
-     * Calulates a hash code based on the query parameters. Parameters that do not
-     * affect the results of the query (selfLink, relLinks, title etc) should not be included
-     * in the hash calculation because this will improve the probability of a cache hit.
+     * Calculates a hash code based on the query parameters. Parameters that do not affect the
+     * results of the query (selfLink, relLinks, title etc) should not be included in the hash
+     * calculation because this will improve the probability of a cache hit.
      *
      * @return  <code>int hash code</code>
      */
     private int calculateHashKey() {
-      final int ODD_PRIME_NUMBER = 37;  //Make values relatively prime
-      int hash = 23;                    //Seed value
+      final int ODD_PRIME_NUMBER = 37;  // Make values relatively prime
+      int hash = 23;                    // Seed value
 
       if (this.journal != null)
         hash += ODD_PRIME_NUMBER * hash + this.journal.hashCode();
@@ -377,8 +359,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * The hash code is caculated after the validation is complete. The
-     * results are stored here.
+     * The hash code is calculated after the validation is complete. The results are stored here.
      *
      * @return  integer hash code
      */
@@ -388,9 +369,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Does a complete equality comparison of fields in the Key.
-     * Only fields that will affect the results are used.
-     *
+     * Does a complete equality comparison of fields in the Key.  Only fields that will affect the
+     * results are used.
      */
     @Override
     public boolean equals(Object o) {
@@ -398,29 +378,29 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
       Key key = (Key) o;
       return (
           key.hashCode == this.hashCode
-              &&
-              (key.getJournal() == null && this.journal == null
-                  || key.getJournal() != null && key.getJournal().equals(this.journal))
-              &&
-              (key.getSDate() == null && this.sDate == null
-                  || key.getSDate() != null && key.getSDate().equals(this.sDate))
-              &&
-              (key.getEDate() == null && this.eDate == null
-                  || key.getEDate() != null && key.getEDate().equals(this.eDate))
-              &&
-              (key.getCategory() == null && this.category == null
-                  || key.getCategory() != null && key.getCategory().equals(this.category))
-              &&
-              (key.getAuthor() == null && this.author == null
-                  || key.getAuthor() != null && key.getAuthor().equals(this.author))
-              &&
-              (key.getMaxResults() ==  this.maxResults)
-      );
+          &&
+          (key.getJournal() == null && this.journal == null
+           || key.getJournal() != null && key.getJournal().equals(this.journal))
+          &&
+          (key.getSDate() == null && this.sDate == null
+           || key.getSDate() != null && key.getSDate().equals(this.sDate))
+          &&
+          (key.getEDate() == null && this.eDate == null
+           || key.getEDate() != null && key.getEDate().equals(this.eDate))
+          &&
+          (key.getCategory() == null && this.category == null
+           || key.getCategory() != null && key.getCategory().equals(this.category))
+          &&
+          (key.getAuthor() == null && this.author == null
+           || key.getAuthor() != null && key.getAuthor().equals(this.author))
+          &&
+          (key.getMaxResults() ==  this.maxResults)
+          );
     }
 
     /**
-     * Builds a string using the data model prarmeters.
-     * Only parameters that affect the search results are used.
+     * Builds a string using the data model prarmeters.  Only parameters that affect the search
+     * results are used.
      *
      * @return a string representation of all the query parameters.
      */
@@ -455,10 +435,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Implementation of the comparable interface. TODO: doesn't comform to
-     * compare interface standard.
-     *
-     * TODO: shouldn't this comform to compareTo standard?
+     * Implementation of the comparable interface. TODO: doesn't comform to compare interface
+     * standard.
      *
      * @param o   the object to compare to.
      * @return    the value 0 if the argument is a string lexicographically equal to this string;
@@ -473,23 +451,19 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * The ArticleFeed supports the ModelDriven interface.
-     * The Key class is the data model used by ArticleFeed and
-     * validates user input parameters. By the time
-     * ArticleFeed.excute is invoked the parameters should be
-     * a usable state.
+     * The ArticleFeed supports the ModelDriven interface.  The Key class is the data model used by
+     * ArticleFeed and validates user input parameters. By the time ArticleFeed.excute is invoked
+     * the parameters should be a usable state.
      *
-     * Defined a Maximum number of result = 200 articles.
-     * Both sDate and eDate will not be null by the end of validate.
-     * If sDate > eDate then set sDate = eDate.
+     * Defined a Maximum number of result = 200 articles.  Both sDate and eDate will not be null by
+     * the end of validate.  If sDate &gt; eDate then set sDate = eDate.
      *
-     * @param action - the BaseSupportAcion allows reporting of
-     *                 field errors. Pass in a reference incase
-     *                 we want to report them.
+     * @param action - the BaseSupportAction allows reporting of field errors. Pass in a reference
+     *                 incase we want to report them.
+     *
      * @see ArticleFeed
      */
     public void validate(BaseActionSupport action) {
-
       final int defaultMaxResult = 30;
       final int MAXIMUM_RESULTS = 200;
 
@@ -525,7 +499,6 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * @return todays date some default time in the past.
      */
     private Date defaultStartDate() {
-
       final int defaultDuration = 3;
       // The startDate was not specified so create a default
       GregorianCalendar defaultDate = new GregorianCalendar();
@@ -540,7 +513,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
     public String getJournal() {
       return journal;
-    }                               
+    }
 
     public void setJournal(String journal) {
       this.journal = journal;
@@ -551,8 +524,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Convert the string to a date if possible
-     * else leave the startDate null.
+     * Convert the string to a date if possible else leave the startDate null.
      *
      * @param date string date to be converted to Date
      *
@@ -574,8 +546,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Convert the string to a date if possible
-     * else leave the endDate null.
+     * Convert the string to a date if possible else leave the endDate null.
      *
      * @param date string date to be converted to Date
      *
@@ -599,7 +570,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     public void setCategory(String category) {
       this.category = category;
     }
-    
+
     public String getAuthor() {
       return author;
     }
@@ -675,26 +646,25 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
   /**
    * <h4>Description</h4>
-   * Invalidate feedCache if new articles are ingested or
-   * articles are deleted. This is accomplished via a listener
-   * registered with the feed cache. This listener is notified when articles
-   * are added or deleted which could potentially affect the results cached.
-   * The <code>Invalidator</code> uses two
-   * entry points to accomplish this.
+   * Invalidate feedCache if new articles are ingested or articles are deleted. This is accomplished
+   * via a listener registered with the feed cache. This listener is notified when articles are
+   * added or deleted which could potentially affect the results cached.
+   *
+   * The <code>Invalidator</code> uses two entry points to accomplish this.
    * <p>
    * <code>Invalidator.objectChanged</code> is called whenever an article or journal is updated.
    * <code>Invalidator.removing</code> is called whenever an article is removed.
    * <p>
-   * The basic process is the same for both. Loop through all the feed cache keys and see if
-   * the articles that changed could potentially affect the query results of the cache
-   * entry. If it does then remove that cache entry.
+   *
+   * The basic process is the same for both. Loop through all the feed cache keys and see if the
+   * articles that changed could potentially affect the query results of the cache entry. If it does
+   * then remove that cache entry.
    *
    * @see ArticleFeed
    */
   public class Invalidator extends AbstractObjectListener {
     /**
-     * Notify the <code>Invalidator</code> that an object in the
-     * cache may have changed.
+     * Notify the <code>Invalidator</code> that an object in the cache may have changed.
      *
      * @param session  session info (unused)
      * @param cm    class metadata  (unused)
@@ -706,8 +676,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     public void objectChanged(Session session, ClassMetadata cm, String id, Object object,
                               Interceptor.Updates updates) {
 
-      /* If this is an Active Article check to see if it invalidates the feed cache
-       * Else if this is a Journal change invalidate for journals.
+      /* If this is an Active Article check to see if it invalidates the feed cache Else if this is
+       * a Journal change invalidate for journals.
        */
       if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE) {
         invalidateFeedCacheForArticle((Article)object);
@@ -717,8 +687,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Notify that an article is being removed. If it matches a cache entry's
-     * query criteria then remove that entry from the cache.
+     * Notify that an article is being removed. If it matches a cache entry's query criteria then
+     * remove that entry from the cache.
      *
      * @param session session info (unused)
      * @param cm    class metadata (unused)
@@ -767,9 +737,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Loop through the feed cache keys and match key parameters to
-     * the article. If the article matches those found in the cache key
-     * then that query is invalid and remove it.
+     * Loop through the feed cache keys and match key parameters to the article. If the article
+     * matches those found in the cache key then that query is invalid and remove it.
      *
      * @param article the article which might change the cash.
      */
@@ -781,8 +750,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Invalidate the cache entries based on a journal and a list
-     * of article that are part of that journal.
+     * Invalidate the cache entries based on a journal and a list of article that are part of that
+     * journal.
      *
      * @param journal  the journal of interest
      * @param articles articles that are part of the journal
@@ -799,8 +768,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * This is the linchpin to the entire process. Basically, query results
-     * are currently affected by 5 parameters:
+     * This is the linchpin to the entire process. Basically, query results are currently affected
+     * by 5 parameters:
+     *
      * <ul>
      * <li>startDate/endDate
      * <li>author
@@ -808,9 +778,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * <li>maxResult
      * </ul>
      *
-     * If the article affects the results of any one of these parameters then
-     * then the query could be different and hence needs to be ejected from
-     * the cache.
+     * If the article affects the results of any one of these parameters then then the query could
+     * be different and hence needs to be ejected from the cache.
      *
      * Match criteria:
      *
@@ -833,7 +802,6 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      *
      */
     private boolean matches(ArticleFeed.Key key, Article article, boolean checkJournal) {
-
       if (checkJournal && !matchesJournal(key, article))
         return false;
 
@@ -849,8 +817,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Compares the author in the cache key to the
-     * creators specified in Dublin core.
+     * Compares the author in the cache key to the creators specified in Dublin core.
      *
      * If key.author = null return match
      * If key.author = one of the creators return match
@@ -870,8 +837,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
             break;
           }
         }
-      } else
+      } else {
         matches = true;
+      }
 
       return matches;
     }
@@ -903,11 +871,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Check to see if the article date is between the start and
-     * end date specified in the key. If it is then return true
-     * and the entry for this key should be removed. If the user
-     * did not specify the end date then any article after the
-     * start date invalidates the cache key.
+     * Check to see if the article date is between the start and end date specified in the key. If
+     * it is then return true and the entry for this key should be removed. If the user did not
+     * specify the end date then any article after the start date invalidates the cache key.
      *
      * @param key cache key
      * @param dc  Dublincore field from the article
@@ -924,12 +890,13 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
           matches = true;
         }
       }
+
       return matches;
     }
 
     /**
-     * Loop thorugh the Journals to see if the key.journal matches
-     * one of the journals the list of journals the article belongs to.
+     * Loop thorugh the Journals to see if the key.journal matches one of the journals the list of
+     * journals the article belongs to.
      *
      * @param key a cache key and actiopn data model
      * @param article  the article

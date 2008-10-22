@@ -295,8 +295,8 @@ public class ArticleOtmService {
   }
 
   /**
-   * Convert a date passed in as a string to a Date object. Support both string representations
-   * of the Date object and iso8601 formatted dates.
+   * Convert a date passed in as a string to a Date object. Support both string representations of
+   * the Date object and iso8601 formatted dates.
    *
    * @param date the string to convert to a Date object
    * @return a date object (or null if date is null)
@@ -403,24 +403,25 @@ public class ArticleOtmService {
     return article;
   }
 
-    /**
-     * Get articles based on a list of Article id's.
-     *
-     * @param articleIds  list of article id's
-     * @return <code>List&lt;Article&gt;</code> of articles requested
-     * @throws ParseException
-     */
+  /**
+   * Get articles based on a list of Article id's.
+   *
+   * @param articleIds  list of article id's
+   * @return <code>List&lt;Article&gt;</code> of articles requested
+   * @throws ParseException
+   */
   @Transactional(readOnly = true)
   public List<Article> getArticles(List<String> articleIds) throws ParseException {
-
     List<Article> articleList = new ArrayList<Article>();
     for (String id : articleIds)
       articleList.add(session.get(Article.class, id));
 
     return articleList;
   }
+
   /**
    * Return the list of secondary objects
+   *
    * @param article uri
    * @return the secondary objects of the article
    * @throws NoSuchArticleIdException NoSuchArticleIdException
@@ -481,9 +482,8 @@ public class ArticleOtmService {
   }
 
   /**
-   * Get the most commented Articles.
-   * The actual # of Articles returned maybe &lt; maxArticles
-   * as PEP filtering is done on the results.
+   * Get the most commented Articles.  The actual # of Articles returned maybe &lt; maxArticles as
+   * PEP filtering is done on the results.
    *
    * @param maxArticles Maximum # of Articles to retrieve.
    * @return Article[] of most commented Articles.
@@ -504,8 +504,9 @@ public class ArticleOtmService {
 
     Results commentedArticles = session.createQuery(oqlQuery).execute();
 
-    // check access control on all Article results
-    // logged in user is automatically resolved by the ServletActionContextAttribute
+    /* Check access control on all Article results logged in user is automatically resolved by the
+     * ServletActionContextAttribute
+     */
     ArrayList<Article> returnArticles = new ArrayList<Article>();
 
     commentedArticles.beforeFirst();
@@ -531,6 +532,7 @@ public class ArticleOtmService {
 
   /**
    * Set the small image representation
+   *
    * @param smallImageRep smallImageRep
    */
   public void setSmallImageRep(final String smallImageRep) {
@@ -539,6 +541,7 @@ public class ArticleOtmService {
 
   /**
    * Set the medium image representation
+   *
    * @param mediumImageRep mediumImageRep
    */
   public void setMediumImageRep(final String mediumImageRep) {
@@ -547,6 +550,7 @@ public class ArticleOtmService {
 
   /**
    * Set the large image representation
+   *
    * @param largeImageRep largeImageRep
    */
   public void setLargeImageRep(final String largeImageRep) {
@@ -595,5 +599,4 @@ public class ArticleOtmService {
       throw new IOException("writing not supported");
     }
   }
-
 }
