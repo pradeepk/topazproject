@@ -17,11 +17,7 @@
  * limitations under the License.
  */
 
-/**
- * This package
- */
 package org.topazproject.ambra.article.action;
-
 
 import java.io.Serializable;
 import java.net.URI;
@@ -98,7 +94,8 @@ import com.opensymphony.xwork2.ModelDriven;
  * endDate   ISO yyyy/MM/dd     No         today          End Date - search for articles dated <= to eDate
  * category    String           No         none           Article Category
  * author      String           No         none           Article Author name ex: John+Smith
- * relLinks    Boolean          No         false          If relLinks=true; internal links will be relative to xmlbase
+ * relLinks    Boolean          No         false          If relLinks=true; internal links will be relative
+ *                                                        to xmlbase
  * extended    Boolean          No         false          If extended=true; provide additional feed information
  * title       String           No         none           Sets the title of the feed
  * selfLink    String           No         none           URL of feed that is to be put in the feed data
@@ -116,14 +113,14 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
-  //TODO: we need to move these to BaseAction support and standardize on result dispatching.
-  private static final String ATOM_RESULT = "ATOM1.0"; // Return value SUCCESS or ATOM_RESULT routes to AmbraFeedResult
-  private static final String JSON_RESULT = "JSON";    // Return value JSON_RESULT to route the AmbraJSONResult
+  //TODO: move these to BaseAction support and standardize on result dispatching.
+  private static final String ATOM_RESULT = "ATOM1_0";
+  private static final String JSON_RESULT = "json";
 
   /**
    * Cache invalidator (there can be only one) must be static.
    */
-  private static Invalidator       invalidator;         // Cache listner (must be static; there can be only one!)
+  private static Invalidator       invalidator;         // Cache listner (must be static)
   private        ArticleOtmService articleOtmService;   // OTM service Spring injected.
   private        Cache             feedCache;           // Feed Cache Spring injected
   private        JournalService    journalService;      // Journal service Spring injected.
@@ -143,11 +140,11 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
     // Create a local lookup based on the feed URI.
     Cache.Lookup<List<String>, ApplicationException> lookUp =
-       new Cache.SynchronizedLookup<List<String>, ApplicationException>(cacheKey) {
+        new Cache.SynchronizedLookup<List<String>, ApplicationException>(cacheKey) {
           public List<String> lookup() throws ApplicationException {
-          return getFeedData();
-       }
-    };
+            return getFeedData();
+          }
+        };
 
     // Get articel ID's from the feed cache or add it 
     articleIDs = feedCache.get(cacheKey, -1, lookUp);
@@ -167,12 +164,12 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   @Override
   public void validate () {
 
-     /* The cacheKey must have both the current Journal and start date.
-      * Current Journal is set here and startDate will be set in the data
-      * model validator.
-      */
-     cacheKey.setJournal(getCurrentJournal());
-     cacheKey.validate(this);
+    /* The cacheKey must have both the current Journal and start date.
+     * Current Journal is set here and startDate will be set in the data
+     * model validator.
+     */
+    cacheKey.setJournal(getCurrentJournal());
+    cacheKey.validate(this);
   }
 
   /*
@@ -201,13 +198,13 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
       String end = cacheKey.eDate.toString();
 
       IDs = articleOtmService.getArticleIds(
-                     start,
-                     end,
-                     categoriesList.toArray(new String[categoriesList.size()]),
-                     authorsList.toArray(new String[authorsList.size()]),
-                     Article.ACTIVE_STATES,
-                     false,
-                     cacheKey.maxResults); 
+          start,
+          end,
+          categoriesList.toArray(new String[categoriesList.size()]),
+          authorsList.toArray(new String[authorsList.size()]),
+          Article.ACTIVE_STATES,
+          false,
+          cacheKey.maxResults);
     } catch (ParseException ex) {
       throw new ApplicationException(ex);
     }
@@ -236,11 +233,11 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   public void setFeedCache(Cache feedCache) {
     this.feedCache = feedCache;
     if (invalidator == null) {
-       invalidator = new Invalidator();
-       /*CacheManager is a singleton and will notify all caches
-        *registered when a commit to the datastore is executed
-        */
-       this.feedCache.getCacheManager().registerListener(invalidator);
+      invalidator = new Invalidator();
+      /*CacheManager is a singleton and will notify all caches
+       *registered when a commit to the datastore is executed
+       */
+      this.feedCache.getCacheManager().registerListener(invalidator);
     }
   }
 
@@ -260,7 +257,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * @return  Key to the cache which is also the data model of the action
    */
   public Key getCacheKey() {
-      return this.cacheKey;
+    return this.cacheKey;
   }
 
   /**
@@ -270,7 +267,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * @return Key to the cache which is also the data model of the action
    */
   public Object getModel() {
-      return cacheKey;
+    return cacheKey;
   }
 
   /**
@@ -284,7 +281,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    */
   private String getCurrentJournal() {
     return ((VirtualJournalContext) ServletActionContext.getRequest().
-      getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
+        getAttribute(VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT)).getJournal();
   }
 
   /**
@@ -295,30 +292,30 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     this.journalService = journalService;
   }
 
- /**
-  * <h4>Description</h4>
-  * The <code>class Key</code> serves three function:
-  * <ul>
-  * <li> It provides the data model used by the action.
-  * <li> It is the cache key to the article ID's that reside in the feed cache
-  * <li> It relays these input parameters to AmbraFeedResult.
-  * </ul>
-  * Since the parameters uniquely idententfy the query they are used to
-  * generate the hash code for the key. Only the parameters that
-  * can affect query results are used for this purpose. The cache key
-  * is also made available to the AmbraFeedResult because it also
-  * contains parameters that affect the output.
-  *
-  * <h4>Parameters</h4>
-  * <pre>
-  * <strong>
-  * Param        Format        Required     Default                             Description </strong>
-  * </pre>
-  *
-  * @see       ArticleFeed
-  * @see       Invalidator
-  * @see       org.topazproject.ambra.struts2.AmbraFeedResult
-  */
+  /**
+   * <h4>Description</h4>
+   * The <code>class Key</code> serves three function:
+   * <ul>
+   * <li> It provides the data model used by the action.
+   * <li> It is the cache key to the article ID's that reside in the feed cache
+   * <li> It relays these input parameters to AmbraFeedResult.
+   * </ul>
+   * Since the parameters uniquely idententfy the query they are used to
+   * generate the hash code for the key. Only the parameters that
+   * can affect query results are used for this purpose. The cache key
+   * is also made available to the AmbraFeedResult because it also
+   * contains parameters that affect the output.
+   *
+   * <h4>Parameters</h4>
+   * <pre>
+   * <strong>
+   * Param        Format        Required     Default               Description </strong>
+   * </pre>
+   *
+   * @see       ArticleFeed
+   * @see       Invalidator
+   * @see       org.topazproject.ambra.struts2.AmbraFeedResult
+   */
   public class Key implements Serializable, Comparable {
 
     private String journal;
@@ -345,7 +342,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * Key Constructor - currently does nothing.
      */
     public Key() {
-          //To change body of created methods use File | Settings | File Templates.
+
     }
 
     /**
@@ -353,9 +350,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * affect the results of the query (selfLink, relLinks, title etc) should not be included
      * in the hash calculation because this will improve the probability of a cache hit.
      *
-     * @return  integer hash code
+     * @return  <code>int hash code</code>
      */
-
     private int calculateHashKey() {
       final int ODD_PRIME_NUMBER = 37;  //Make values relatively prime
       int hash = 23;                    //Seed value
@@ -397,24 +393,24 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
       if (o == null || !(o instanceof Key)) return false;
       Key key = (Key) o;
       return (
-        key.hashCode == this.hashCode
-        &&
-        (key.getJournal() == null && this.journal == null
-            || key.getJournal() != null && key.getJournal().equals(this.journal))
-        &&
-        (key.getSDate() == null && this.sDate == null
-            || key.getSDate() != null && key.getSDate().equals(this.sDate))
-        &&
-        (key.getEDate() == null && this.eDate == null
-            || key.getEDate() != null && key.getEDate().equals(this.eDate))
-        &&
-        (key.getCategory() == null && this.category == null
-            || key.getCategory() != null && key.getCategory().equals(this.category))
-        &&
-        (key.getAuthor() == null && this.author == null
-            || key.getAuthor() != null && key.getAuthor().equals(this.author))
-        &&
-        (key.getMaxResults() ==  this.maxResults)
+          key.hashCode == this.hashCode
+              &&
+              (key.getJournal() == null && this.journal == null
+                  || key.getJournal() != null && key.getJournal().equals(this.journal))
+              &&
+              (key.getSDate() == null && this.sDate == null
+                  || key.getSDate() != null && key.getSDate().equals(this.sDate))
+              &&
+              (key.getEDate() == null && this.eDate == null
+                  || key.getEDate() != null && key.getEDate().equals(this.eDate))
+              &&
+              (key.getCategory() == null && this.category == null
+                  || key.getCategory() != null && key.getCategory().equals(this.category))
+              &&
+              (key.getAuthor() == null && this.author == null
+                  || key.getAuthor() != null && key.getAuthor().equals(this.author))
+              &&
+              (key.getMaxResults() ==  this.maxResults)
       );
     }
 
@@ -459,7 +455,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * compare interface standard.
      *
      * TODO: shouldn't this comform to compareTo standard?
-     * 
+     *
      * @param o   the object to compare to.
      * @return    the value 0 if the argument is a string lexicographically equal to this string;
      *            a value less than 0 if the argument is a string lexicographically greater than
@@ -490,35 +486,33 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      */
     public void validate(BaseActionSupport action) {
 
-       final int defaultMaxResult = 30;
-       final int MAXIMUM_RESULTS = 200;
+      final int defaultMaxResult = 30;
+      final int MAXIMUM_RESULTS = 200;
 
-       assert(journal != null); // Action validator should have set this
+      if (startDate != null) {
+        setSDate(startDate);
+      } else {
+        setSDate(defaultStartDate());
+      }
 
-       if (startDate != null) {
-         setSDate(startDate);           // Convert to Date
-       } else {
-         setSDate(defaultStartDate());  // Set default
-       }
+      // Either set the date or it is right now
+      if (endDate != null)
+        setEDate(endDate);     // Convert to date
+      else
+        setEDate(new Date());  // Use today's date as default.
 
-       //Either set the date or it is right now
-       if (endDate != null)
-         setEDate(endDate);     // Convert to date
-       else
-         setEDate(new Date());  // Use today's date as default.
+      // If start > end then just use end.
+      if (sDate.after(eDate)) {
+        sDate = eDate;
+      }
 
-       // If start > end then just use end.
-       if (sDate.after(eDate)) {
-         sDate = eDate;
-       }
+      // Need a positive non-zero number of results
+      if (maxResults <= 0)
+        maxResults = defaultMaxResult;
+      else if (maxResults > MAXIMUM_RESULTS)   // Don't let them crash our servers.
+        maxResults = MAXIMUM_RESULTS;
 
-       //Need a positive non-zero number of results
-       if (maxResults <= 0)
-           maxResults = defaultMaxResult;
-       else if (maxResults > MAXIMUM_RESULTS)   // Don't let them crash our servers.
-           maxResults = MAXIMUM_RESULTS;
-
-       hashCode = calculateHashKey();
+      hashCode = calculateHashKey();
     }
 
     /**
@@ -528,29 +522,30 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      */
     private Date defaultStartDate() {
 
-          // defaultDuration - the default number of months
-          //                   to subtract from todays date.
-          final int defaultDuration = 3;
-          // The startDate was not specified so create a default
-          GregorianCalendar defaultDate = new GregorianCalendar();
+      final int defaultDuration = 3;
+      // The startDate was not specified so create a default
+      GregorianCalendar defaultDate = new GregorianCalendar();
 
-          defaultDate.add(Calendar.MONTH, -defaultDuration);
-          defaultDate.set(Calendar.HOUR_OF_DAY, 0);
-          defaultDate.set(Calendar.MINUTE, 0);
-          defaultDate.set(Calendar.SECOND, 0);
-          return defaultDate.getTime();
+      defaultDate.add(Calendar.MONTH, -defaultDuration);
+      defaultDate.set(Calendar.HOUR_OF_DAY, 0);
+      defaultDate.set(Calendar.MINUTE, 0);
+      defaultDate.set(Calendar.SECOND, 0);
+
+      return defaultDate.getTime();
     }
 
-    // Bean Setter/Gettter go after here.
     public String getJournal() {
-       return journal;
-    }
+      return journal;
+    }                               
+
     public void setJournal(String journal) {
       this.journal = journal;
     }
+
     public Date getSDate() {
       return sDate;
     }
+
     /**
      * Convert the string to a date if possible
      * else leave the startDate null.
@@ -565,13 +560,15 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
         this.sDate = defaultStartDate();
       }
     }
+
     public void setSDate(Date date) {
-       this.sDate = date;
+      this.sDate = date;
     }
 
     public Date getEDate() {
       return eDate;
     }
+
     /**
      * Convert the string to a date if possible
      * else leave the endDate null.
@@ -583,73 +580,92 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
       try {
         this.eDate = dateFrmt.parse(date);
       } catch (ParseException e) {
-        this.eDate =new Date();
+        this.eDate = new Date();
       }
     }
+
     public void setEDate(Date date) {
       this.eDate = date;
     }
+
     public String getCategory() {
       return category;
     }
+
     public void setCategory(String category) {
       this.category = category;
     }
     public String getAuthor() {
       return author;
     }
+
     public void setAuthor(String author) {
       this.author = author;
     }
+
     public boolean isRelLinks() {
       return relLinks;
     }
+
     public boolean getRelativeLinks() {
       return relLinks;
     }
+
     public void setRelativeLinks(boolean relative) {
       this.relLinks = relative;
     }
+
     public boolean isExtended() {
       return extended;
     }
+
     public boolean getExtended() {
       return extended;
     }
+
     public void setExtended(boolean extended) {
       this.extended = extended;
     }
+
     public String getTitle() {
       return title;
     }
+
     public void setTitle(String title) {
       this.title = title;
     }
+
     public String getSelfLink() {
       return selfLink;
     }
+
     public void setSelfLink(String link) {
       this.selfLink = link;
     }
+
     public String getStartDate() {
-      return startDate;
+      return this.startDate;
     }
+
     public void setStartDate(String date) {
       this.startDate = date;
     }
+
     public String getEndDate() {
       return endDate;
     }
+
     public void setEndDate(String date) {
       this.endDate = date;
     }
+
     public int getMaxResults() {
       return maxResults;
     }
+
     public void setMaxResults(int max) {
       this.maxResults = max;
     }
-  //END class Key
   }
 
   /**
@@ -669,27 +685,25 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * entry. If it does then remove that cache entry.
    *
    * @see ArticleFeed
-   *
-   *
    */
   public class Invalidator extends AbstractObjectListener {
-
-     /**
-      * Notify the <code>Invalidator</code> that an object in the
-      * cache may have changed.
-      *
-      * @param session  session info (unused)
-      * @param cm    class metadata  (unused)
-      * @param id    (unused)
-      * @param object  either <code>class Article</code> or <code>class Journal<code>
-      * @param updates  journal updates
-      */
+    /**
+     * Notify the <code>Invalidator</code> that an object in the
+     * cache may have changed.
+     *
+     * @param session  session info (unused)
+     * @param cm    class metadata  (unused)
+     * @param id    (unused)
+     * @param object  either <code>class Article</code> or <code>class Journal<code>
+     * @param updates  journal updates
+     */
     @Override
     public void objectChanged(Session session, ClassMetadata cm, String id, Object object,
                               Interceptor.Updates updates) {
 
-      // If this is an Active Article check to see if it invalidates the feed cache
-      // Else if this is a Journal change invalidate for journals.
+      /* If this is an Active Article check to see if it invalidates the feed cache
+       * Else if this is a Journal change invalidate for journals.
+       */
       if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE) {
         invalidateFeedCacheForArticle((Article)object);
       } else if (object instanceof Journal) {
@@ -715,11 +729,6 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * TODO: Somebody else needs to explain this stuff to me.
-     *      It would be nice to see some documentation on what
-     *      this journal stuff is and under waht circumstance is
-     *      it called.
-     *
      * @param journal  the journal name
      * @param updates  updates to articles
      */
@@ -749,7 +758,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
       if (!articles.isEmpty())
         invalidateFeedCacheForJournalArticle(journal, articles);
-     }
+    }
 
     /**
      * Loop through the feed cache keys and match key parameters to
@@ -819,31 +828,27 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      */
     private boolean matches(ArticleFeed.Key key, Article article, boolean checkJournal) {
 
-      //If it doesn't match the journal nothing else matters
       if (checkJournal && !matchesJournal(key, article))
-        return false;    //No match
+        return false;
 
       DublinCore dc = article.getDublinCore();
 
-      //If the date isn't between Start and End date then
       if (!matchesDates(key, dc))
-        return false;    //No match
-
+        return false;
 
       if (!matchesCategory(key, article) && !matchesAuthor(key, dc))
-        return false;   //No Match
+        return false;
 
-      //It matched all the critera therefore
-      return true;    // Matched  
+      return true;
     }
 
     /**
      * Compares the author in the cache key to the
      * creators specified in Dublin core.
      *
-     * If key.author = null return true
-     * If key.author != one of the creators return false;
-     * Else return true.
+     * If key.author = null return match
+     * If key.author = one of the creators return match
+     * Else return no match.
      *
      * @param key the cache key
      * @param dc Dublin core field from Article
@@ -852,13 +857,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     private boolean matchesAuthor(Key key, DublinCore dc) {
       boolean matches = false;
 
-      /* If the key.author is null then author was
-       * not specified in the query. This is identical to
-       * a wild card match.
-       */
       if (key.getAuthor() != null) {
-        //Since the key.author was specified then we need to
-        //comapre it against all the creators.
         for (String author : dc.getCreators()) {
           if (key.getAuthor().equalsIgnoreCase(author)) {
             matches = true;
@@ -866,16 +865,16 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
           }
         }
       } else
-         matches = true;
+        matches = true;
 
       return matches;
     }
 
     /**
      * Compare key.categery to the article.category
-     * If the key.category = null return true
-     * If the key.category != article category then return false
-     * Else return true for a match.
+     * If the key.category = null then wildcard match
+     * Else If the key.category = article.category then match
+     * Else return no match .
      *
      * @param key a cache key and actiopn data model
      * @param article  the article
@@ -900,21 +899,24 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     /**
      * Check to see if the article date is between the start and
      * end date specified in the key. If it is then return true
-     * and the entry for this key should be removed.
+     * and the entry for this key should be removed. If the user
+     * did not specify the end date then any article after the
+     * start date invalidates the cache key.
      *
      * @param key cache key
      * @param dc  Dublincore field from the article
-     * @return  boolean true if the article date falls between the start and end date
+     * @return boolean true if the article date falls between the start and end date
      */
     private boolean matchesDates(Key key, DublinCore dc) {
       Date articleDate = dc.getDate();
       boolean matches = false;
 
-      //Articles without dates should not be allowed.
       if (articleDate != null) {
-        //Key dates should never be null
-        if (articleDate.after(key.getSDate()) && articleDate.before(key.getEDate()))
+        if ((key.getEndDate() == null) && articleDate.after(key.getSDate())) {
           matches = true;
+        } else if (articleDate.after(key.getSDate()) && articleDate.before(key.getEDate())) {
+          matches = true;
+        }
       }
       return matches;
     }
@@ -939,12 +941,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
           }
         }
       } else
-         matches = true;
+        matches = true;
 
       return matches;
     }
-  // End class Invalidator
   }
-
-//End class ArticleResults
 }
