@@ -53,10 +53,9 @@ import org.jdom.Element;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * <h4>Description</h4>
  * The <code>class AmbraFeedResult</code> creates and serializes the query results from the
  * <code>ArticleFeedAction</code> query. Article ID's are the <code>feedcache</code> cache key
- * are accessed via the Struts value stack. The result uses the Article ID's to fetch the relevent
+ * are accessed via the Struts value stack. The result uses the Article ID's to fetch the relevant
  * articles from the datastore. The cache key contains parameters that were used for the query
  * as well as parameters (title, extend etc) that a affect the format of the resulting feed.
  *
@@ -157,9 +156,9 @@ public class AmbraFeedResult extends Feed implements Result {
 
   /**
    * Main entry point into the WireFeed result. Once the <code>ArticleFeedAction</code> has
-   * preformed the query and provided access to the Aritcle ID's on the value stack it
-   * is the Results responsiblility to get the article information and constuct the actual
-   * Atom feed formated output. The feed result is not currently cached.
+   * preformed the query and provided access to the Article ID's on the value stack it is the
+   * Results responsibility to get the article information and construct the actual Atom feed
+   * formatted output. The feed result is not currently cached.
    *
    * @param ai  action invocation context
    * @throws Exception
@@ -234,7 +233,7 @@ public class AmbraFeedResult extends Feed implements Result {
       // List will be created by newAuthorsList 
       List<Person> authors = new ArrayList<Person>();
 
-      // Returns Comma delimitted string of author names and Adds People to the authors list.
+      // Returns Comma delimited string of author names and Adds People to the authors list.
       String authorNames = newAuthorsList(cacheKey, article, authors);
       entry.setAuthors(authors);
 
@@ -319,13 +318,13 @@ public class AmbraFeedResult extends Feed implements Result {
   }
 
   /**
-   * Creates a description of article contents in HTML format. Currently the description consist of
+   * Creates a description of article contents in HTML format. Currently the description consists of
    * the Author (or Authors if extended format) and the DublinCore description of the article.
    *
-   * @param cacheKey  cache key and input parameters
-   * @param article   the article
+   * @param cacheKey    cache key and input parameters
+   * @param article     the article
    * @param authorNames string concatenated list of author names
-   * @param numAuthors author count
+   * @param numAuthors  author count
    * @return List<Content> consisting of HTML descriptions of the article and author
    */
   private List<Content>newContentsList(ArticleFeed.Key cacheKey,
@@ -441,7 +440,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * Create alternate link for the different representaions of the article.
    *
    * @param article the article
-   * @param rep   a respresentation of the article
+   * @param rep     a respresentation of the article
    * @param xmlBase XML base
    * @return  Link  an alternate link to the article
    */
@@ -462,7 +461,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * Create a link to the article itself.
    *
    * @param article  the article
-   * @param xmlBase xml base of article
+   * @param xmlBase  xml base of article
    * @return  link to the article
    */
   private Link newSelfLink (Article article, String xmlBase) {
@@ -531,7 +530,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * information contained in the cachekey.
    *
    * @param cacheKey cache and data model
-   * @param uri uri of regquest
+   * @param uri      uri of regquest
    * @return <code>Link</code> user provide link.
    */
   private Link newLink(ArticleFeed.Key cacheKey, String uri) {
@@ -555,7 +554,7 @@ public class AmbraFeedResult extends Feed implements Result {
    * Creates a Feed ID from the Config File value + key.Category + key.Author
    *
    * @param cacheKey cache key and input parameters
-   * @return  String identifier generated for this feed
+   * @return String identifier generated for this feed
    */
   private String newFeedID (ArticleFeed.Key cacheKey) {
     String id = FEED_ID();
@@ -570,7 +569,7 @@ public class AmbraFeedResult extends Feed implements Result {
   /**
    * Create a feed Title string from the the key.Category and key.Author fields in the cache entry.
    *
-   * @param cacheKey  cache key and input parameters
+   * @param cacheKey cache key and input parameters
    * @return String feed title.
    */
   private String newFeedTitle(ArticleFeed.Key cacheKey) {
@@ -615,7 +614,7 @@ public class AmbraFeedResult extends Feed implements Result {
   /**
    * Get a String from the Configuration looking first for a Journal override.
    *
-   * @param key to lookup.
+   * @param key          to lookup.
    * @param defaultValue if key is not found.
    * @return value for key.
    */

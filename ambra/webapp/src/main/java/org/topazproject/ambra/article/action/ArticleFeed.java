@@ -53,7 +53,6 @@ import org.topazproject.otm.Interceptor;
 import com.opensymphony.xwork2.ModelDriven;
 
 /**
- * <h4>Description</h4>
  * The <code>class ArticleFeed</code> provides an API for criteria based retrieval of articles and
  * article information. The <code>class ArticleFeed</code> implements the Struts ModelDrive
  * interface. The data model used for <code>ArticleFeed</code> is <code>class Key</code>. The the
@@ -72,11 +71,11 @@ import com.opensymphony.xwork2.ModelDriven;
  * </ul>
  * <p>
  *
- * ArticleFeed implements the <code>ArticleFeed.exceute</code> and <code>ArticleFeed.validate
+ * ArticleFeed implements the <code>ArticleFeed.execute</code> and <code>ArticleFeed.validate
  * </code> Struts entry points. The <code>ArticleFeed.validate</code> method assigns default values
  * to fields not provided by user input and checks parameters that are provided by the user. By the
  * time Struts invokes the <code>ArticleFeed.execute</code> all model data variables should be in a
- * known and exceptable state for execution. <code>ArticleFeed.execute</code> first checks the feed
+ * known and acceptable state for execution. <code>ArticleFeed.execute</code> first checks the feed
  * cache for identical queries or calls <code>ArticleFeed.getFeedData</code> if there is a miss. A
  * list of article ID's is the result. It is up to the result handler to fetch the articles and
  * serialize the output.
@@ -251,7 +250,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * Return the a cahce key which is also the data modle for the model driven interface.
+   * Return the a cache key which is also the data model for the model driven interface.
    *
    * @return Key to the cache which is also the data model of the action
    */
@@ -260,8 +259,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * Retreive the <code>VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT</code> from the servlet
-   * container. This is set by the <code>VirtualJournalCodntextFilter.doFilter</code>
+   * Retrieve the <code>VirtualJournalContext.PUB_VIRTUALJOURNAL_CONTEXT</code> from the servlet
+   * container. This is set by the <code>VirtualJournalContextFilter.doFilter</code>
    *
    * @see org.topazproject.ambra.web.VirtualJournalContextFilter
    *
@@ -281,7 +280,6 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * <h4>Description</h4>
    * The <code>class Key</code> serves three function:
    * <ul>
    * <li> It provides the data model used by the action.
@@ -289,16 +287,10 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
    * <li> It relays these input parameters to AmbraFeedResult.
    * </ul>
    *
-   * Since the parameters uniquely idententfy the query they are used to generate the hash code for
+   * Since the parameters uniquely identify the query they are used to generate the hash code for
    * the key. Only the parameters that can affect query results are used for this purpose. The cache
    * key is also made available to the AmbraFeedResult because it also contains parameters that
    * affect the output.
-   *
-   * <h4>Parameters</h4>
-   * <pre>
-   * <strong>
-   * Param        Format        Required     Default               Description </strong>
-   * </pre>
    *
    * @see       ArticleFeed
    * @see       Invalidator
@@ -435,14 +427,14 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     }
 
     /**
-     * Implementation of the comparable interface. TODO: doesn't comform to compare interface
+     * Implementation of the comparable interface. TODO: doesn't conform to compare interface
      * standard.
      *
      * @param o   the object to compare to.
      * @return    the value 0 if the argument is a string lexicographically equal to this string;
      *            a value less than 0 if the argument is a string lexicographically greater than
      *            this string; and a value greater than 0 if the argument is a string
-     *            Slexicographically less than this string.
+     *            lexicographically less than this string.
      */
     public int compareTo(Object o) {
       if (o == null)
@@ -452,7 +444,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
 
     /**
      * The ArticleFeed supports the ModelDriven interface.  The Key class is the data model used by
-     * ArticleFeed and validates user input parameters. By the time ArticleFeed.excute is invoked
+     * ArticleFeed and validates user input parameters. By the time ArticleFeed.execute is invoked
      * the parameters should be a usable state.
      *
      * Defined a Maximum number of result = 200 articles.  Both sDate and eDate will not be null by
@@ -645,7 +637,6 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
   }
 
   /**
-   * <h4>Description</h4>
    * Invalidate feedCache if new articles are ingested or articles are deleted. This is accomplished
    * via a listener registered with the feed cache. This listener is notified when articles are
    * added or deleted which could potentially affect the results cached.
@@ -667,17 +658,16 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * Notify the <code>Invalidator</code> that an object in the cache may have changed.
      *
      * @param session  session info (unused)
-     * @param cm    class metadata  (unused)
-     * @param id    (unused)
-     * @param object  either <code>class Article</code> or <code>class Journal<code>
+     * @param cm       class metadata  (unused)
+     * @param id       (unused)
+     * @param object   either <code>class Article</code> or <code>class Journal<code>
      * @param updates  journal updates
      */
     @Override
     public void objectChanged(Session session, ClassMetadata cm, String id, Object object,
                               Interceptor.Updates updates) {
-
-      /* If this is an Active Article check to see if it invalidates the feed cache Else if this is
-       * a Journal change invalidate for journals.
+      /* If this is an Active Article check to see if it invalidates the feed cache
+       * Else if this is a Journal change invalidate for journals.
        */
       if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE) {
         invalidateFeedCacheForArticle((Article)object);
@@ -691,9 +681,9 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * remove that entry from the cache.
      *
      * @param session session info (unused)
-     * @param cm    class metadata (unused)
-     * @param id    (unused)
-     * @param object must be <code>class Article</code>
+     * @param cm      class metadata (unused)
+     * @param id      (unused)
+     * @param object  must be <code>class Article</code>
      * @throws Exception
      */
     @Override
@@ -795,11 +785,10 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      *     T                  T                         F                       T
      *
      * If both do not match then don't remove the key
-     * @param key the cache key and input parameters
-     * @param article article that has caused the change
+     * @param key          the cache key and input parameters
+     * @param article      article that has caused the change
      * @param checkJournal include journal as part of match if true.
      * @return boolean true if we need to remove this entry from the cache
-     *
      */
     private boolean matches(ArticleFeed.Key key, Article article, boolean checkJournal) {
       if (checkJournal && !matchesJournal(key, article))
@@ -824,7 +813,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * Else return no match.
      *
      * @param key the cache key
-     * @param dc Dublin core field from Article
+     * @param dc  Dublin core field from Article
      * @return  boolean true if there is a match
      */
     private boolean matchesAuthor(Key key, DublinCore dc) {
@@ -850,7 +839,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * Else If the key.category = article.category then match
      * Else return no match .
      *
-     * @param key a cache key and actiopn data model
+     * @param key      a cache key and actiopn data model
      * @param article  the article
      * @return boolean true if the category matches (key.category = null is wildcard)
      */
@@ -898,7 +887,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * Loop thorugh the Journals to see if the key.journal matches one of the journals the list of
      * journals the article belongs to.
      *
-     * @param key a cache key and actiopn data model
+     * @param key      a cache key and actiopn data model
      * @param article  the article
      * @return boolean true if key.journal matches one of the journals returned
      *         by the journal service.
