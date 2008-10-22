@@ -89,17 +89,21 @@ import com.opensymphony.xwork2.ModelDriven;
  * <h4>Parameters</h4>
  * <pre>
  * <strong>
- * Param        Format        Required     Default                    Description </strong>
- * startDate ISO yyyy/MM/dd     No         -3 months      Start Date - search for articles dated >= to sDate
- * endDate   ISO yyyy/MM/dd     No         today          End Date - search for articles dated <= to eDate
- * category    String           No         none           Article Category
- * author      String           No         none           Article Author name ex: John+Smith
- * relLinks    Boolean          No         false          If relLinks=true; internal links will be relative
- *                                                        to xmlbase
- * extended    Boolean          No         false          If extended=true; provide additional feed information
- * title       String           No         none           Sets the title of the feed
- * selfLink    String           No         none           URL of feed that is to be put in the feed data
- * maxResults  Integer          No         30             The maximun number of result to return.
+ * Param        Format        Required     Default                 Description </strong>
+ * startDate ISO yyyy/MM/dd     No         -3 months   Start Date - search for articles
+ *                                                     dated >= to sDate
+ * endDate   ISO yyyy/MM/dd     No         today       End Date - search for articles
+ *                                                     dated <= to eDate
+ * category    String           No         none        Article Category
+ * author      String           No         none        Article Author name ex: John+Smith
+ * relLinks    Boolean          No         false       If relLinks=true; internal links will be
+ *                                                     relative to xmlbase
+ * extended    Boolean          No         false       If extended=true; provide additional feed
+ *                                                     information
+ * title       String           No         none        Sets the title of the feed
+ * selfLink    String           No         none        URL of feed that is to be put in the feed
+ *                                                     data.
+ * maxResults  Integer          No         30          The maximun number of result to return.
  * </pre>
  *
  * @see       Key
@@ -595,6 +599,7 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
     public void setCategory(String category) {
       this.category = category;
     }
+    
     public String getAuthor() {
       return author;
     }
@@ -722,7 +727,8 @@ public class ArticleFeed extends BaseActionSupport implements ModelDriven {
      * @throws Exception
      */
     @Override
-    public void removing(Session session, ClassMetadata cm, String id, Object object) throws Exception {
+    public void removing(Session session, ClassMetadata cm, String id, Object object)
+        throws Exception {
       // If this is an Active Article check to see if it invalidates the feed cache
       if (object instanceof Article && ((Article) object).getState() == Article.STATE_ACTIVE)
         invalidateFeedCacheForArticle((Article)object);
